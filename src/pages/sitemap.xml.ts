@@ -1,6 +1,6 @@
 import type { APIRoute } from 'astro';
 import { calculators } from '../data/calculators';
-import { countryTaxConfigs } from '../data/tax/countries';
+import { countryTaxProfilesMap } from '../data/tax/countries';
 import { siteUrl, withBasePath } from '../utils/site';
 
 const basePages = [
@@ -16,7 +16,7 @@ const basePages = [
   withBasePath('/tax-calculators/hourly-to-salary/'),
 ];
 
-const countryTaxPages = Object.keys(countryTaxConfigs).map((id) =>
+const countryTaxPages = Object.keys(countryTaxProfilesMap).map((id) =>
   withBasePath(`/${id}-income-tax-calculator/`)
 );
 
