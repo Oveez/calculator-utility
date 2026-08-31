@@ -96,7 +96,7 @@ calculator/
 
 ```bash
 # 1. Clone the repository
-git clone https://github.com/Oveez/calculator.git
+git clone https://github.com/Oveez/calculator-utility.git
 cd calculator
 
 # 2. Install dependencies
