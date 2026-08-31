@@ -91,7 +91,7 @@ Fill in the deployment form:
 
 ### 2.3 Set Production Environment Variables
 Under **Environment Variables (Advanced)**, click **Add variable**:
-- `SITE_URL`: `https://yourdomain.com` (or your temporary `*.pages.dev` URL).
+- `SITE_URL`: `https://calculatorutility.tech` (or your temporary `*.pages.dev` URL).
 - `BASE_PATH`: `/`
 - `NODE_VERSION`: `20`
 
@@ -108,7 +108,7 @@ If you prefer Vercel:
 3. Import your GitHub `calculator` repository.
 4. Framework Preset will auto-detect **Astro**.
 5. Build Command: `npm run build`, Output Directory: `dist`.
-6. Add Environment Variable: `SITE_URL` = `https://yourdomain.com`.
+6. Add Environment Variable: `SITE_URL` = `https://calculatorutility.tech`.
 7. Click **Deploy**.
 
 ---
@@ -118,10 +118,10 @@ If you prefer Vercel:
 ### 3.1 On Cloudflare Pages Dashboard
 1. Go to your Pages project → Click the **Custom Domains** tab.
 2. Click **Set up a custom domain**.
-3. Enter your domain: `yourdomain.com` (and repeat for `www.yourdomain.com`).
+3. Enter your domain: `calculatorutility.tech` (and repeat for `www.calculatorutility.tech`).
 4. If your domain's DNS is already on Cloudflare, it automatically configures DNS records with 1 click.
 5. If your domain is registered on Namecheap, GoDaddy, or Google Domains:
-   - Add a `CNAME` record pointing `yourdomain.com` (or `@`) to `<project-name>.pages.dev`.
+   - Add a `CNAME` record pointing `calculatorutility.tech` (or `@`) to `<project-name>.pages.dev`.
    - Add a `CNAME` record pointing `www` to `<project-name>.pages.dev`.
 6. **HTTPS/SSL**: Cloudflare automatically provisions and renews free SSL certificates. Ensure **SSL/TLS encryption mode** is set to **Full** or **Strict**.
 
@@ -131,7 +131,7 @@ If you prefer Vercel:
 
 ### 4.1 Add Property to Google Search Console
 1. Go to [https://search.google.com/search-console](https://search.google.com/search-console).
-2. Click **Add Property** → Choose **URL prefix** (e.g. `https://yourdomain.com/`).
+2. Click **Add Property** → Choose **URL prefix** (e.g. `https://calculatorutility.tech/`).
 3. Under verification methods, choose **HTML tag**:
    - Copy the verification token (e.g. `google-site-verification=XXXXXXXXXXXXXXXX`).
    - Add it to your hosting environment variables as `PUBLIC_GSC_VERIFICATION=XXXXXXXXXXXXXXXX` and redeploy.
@@ -174,7 +174,7 @@ Our site is pre-built to meet all Google AdSense Publisher Policies:
 
 ### 6.2 Application Steps
 1. Sign up at [https://adsense.google.com](https://adsense.google.com).
-2. Click **Sites** → **Add Site** → Enter `https://yourdomain.com`.
+2. Click **Sites** → **Add Site** → Enter `https://calculatorutility.tech`.
 3. Copy your **AdSense Publisher Client ID** (format: `ca-pub-XXXXXXXXXXXXXXXX`).
 4. Set the environment variable in your hosting dashboard:
    - `PUBLIC_ADSENSE_CLIENT_ID`: `ca-pub-XXXXXXXXXXXXXXXX`

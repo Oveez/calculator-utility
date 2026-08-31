@@ -128,7 +128,7 @@ The site will be live at `http://localhost:4321`.
 
 | Variable | Description | Default |
 | :--- | :--- | :--- |
-| `SITE_URL` | Production website root URL (e.g. `https://yourdomain.com`) | `http://localhost:4321` |
+| `SITE_URL` | Production website root URL (e.g. `https://calculatorutility.tech`) | `https://calculatorutility.tech` |
 | `BASE_PATH` | Base path for sub-directory hosting (e.g. `/`) | `/` |
 | `PUBLIC_GA_MEASUREMENT_ID` | Optional Google Analytics 4 Measurement ID (`G-XXXXXXXXXX`) | `""` |
 | `PUBLIC_GSC_VERIFICATION` | Optional Google Search Console verification meta tag string | `""` |

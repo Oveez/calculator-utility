@@ -11,7 +11,7 @@ function normalizeBasePath(basePath: string): string {
 
 export const siteName = 'Calculator Utility';
 export const siteTagline = 'Fast static calculators and everyday utility tools.';
-export const siteUrl = import.meta.env.SITE_URL ?? 'http://localhost:4321';
+export const siteUrl = import.meta.env.SITE_URL ?? 'https://calculatorutility.tech';
 export const basePath = normalizedBasePath;
 
 export function withBasePath(path = '/'): string {
