@@ -1,0 +1,53 @@
+---
+import { allCountryTaxProfiles } from '../../data/tax/countries';
+
+interface Props {
+  currentCountryId?: string;
+  title?: string;
+  subtitle?: string;
+  compact?: boolean;
+}
+
+const {
+  currentCountryId,
+  title = 'Browse Tax Calculators by Country',
+  subtitle = 'Select your country to calculate income tax, national insurance, and take-home pay with official government rates.',
+  compact = false,
+} = Astro.props;
+---
+
+<section class={`space-y-6 ${compact ? 'mt-6' : 'mt-12'}`} aria-label="Country Tax Calculators">
+  {!compact && (
+    <div class="space-y-1">
+      <p class="text-xs font-semibold uppercase tracking-wider text-[color:var(--accent)]">International Tax Hub</p>
+      <h2 class="text-2xl font-bold tracking-tight text-[color:var(--fg)] sm:text-3xl">{title}</h2>
+      <p class="text-sm text-[color:var(--muted)]">{subtitle}</p>
+    </div>
+  )}
+
+  <div class="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
+    {allCountryTaxProfiles.map((country) => {
+      const isSelected = country.id === currentCountryId;
+      const targetUrl = `/${country.id}-income-tax-calculator/`;
+
+      return (
+        <a
+          href={targetUrl}
+          class={`group flex flex-col items-center justify-center rounded-2xl border p-3.5 text-center transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md ${
+            isSelected
+              ? 'border-[color:var(--accent)] bg-[color:var(--accent-soft)] ring-2 ring-[color:var(--accent)]'
+              : 'border-[color:var(--border)] bg-[color:var(--surface)] hover:border-[color:var(--accent)] hover:bg-[color:var(--surface-strong)]'
+          }`}
+        >
+          <span class="text-2xl transition-transform duration-200 group-hover:scale-110">{country.flagEmoji}</span>
+          <span class="mt-1.5 text-xs font-bold text-[color:var(--fg)] group-hover:text-[color:var(--accent)]">
+            {country.name}
+          </span>
+          <span class="text-[10px] font-mono text-[color:var(--muted)]">
+            {country.defaultCurrency} ({country.defaultCurrencySymbol})
+          </span>
+        </a>
+      );
+    })}
+  </div>
+</section>

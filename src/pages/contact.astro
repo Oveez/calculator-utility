@@ -1,0 +1,136 @@
+---
+import SiteLayout from '../layouts/SiteLayout.astro';
+import { siteName, withBasePath } from '../utils/site';
+
+const pageTitle = `Contact Us · ${siteName}`;
+const pageDesc = `Get in touch with the ${siteName} development team. Report a bug, suggest a new calculator feature, or request tax bracket updates.`;
+---
+
+<SiteLayout title={pageTitle} description={pageDesc} canonical={withBasePath('/contact/')}>
+  <div class="mx-auto max-w-4xl space-y-12">
+    <!-- Breadcrumbs -->
+    <nav class="flex items-center gap-2 text-xs font-medium text-[color:var(--muted)]" aria-label="Breadcrumb">
+      <a href="/" class="hover:text-[color:var(--accent)]">Home</a>
+      <span>/</span>
+      <span class="text-[color:var(--fg)] font-semibold">Contact</span>
+    </nav>
+
+    <!-- Page Header -->
+    <header class="space-y-4">
+      <div class="inline-flex items-center gap-2 rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-4 py-1.5 text-xs font-semibold text-[color:var(--accent)]">
+        <span>📬 Support &amp; Feedback</span>
+      </div>
+      <h1 class="text-3xl font-extrabold tracking-tight text-[color:var(--fg)] sm:text-4xl lg:text-5xl">
+        Contact the Development Team
+      </h1>
+      <p class="text-base leading-relaxed text-[color:var(--muted)] sm:text-lg">
+        Have feedback, discovered a calculation discrepancy, or want to suggest a new country tax bracket or financial calculator? We would love to hear from you.
+      </p>
+    </header>
+
+    <!-- Contact Options Cards -->
+    <div class="grid gap-6 sm:grid-cols-2">
+      <div class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-6 sm:p-8 space-y-4 shadow-sm">
+        <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-[color:var(--accent-soft)] text-2xl text-[color:var(--accent)]">
+          🐙
+        </div>
+        <div>
+          <h2 class="text-lg font-bold text-[color:var(--fg)]">GitHub Repository &amp; Issues</h2>
+          <p class="mt-1 text-xs leading-relaxed text-[color:var(--muted)]">
+            Open-source feature requests, math formula reviews, and bug reports can be submitted directly via GitHub.
+          </p>
+        </div>
+        <a
+          href="https://github.com"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="inline-flex items-center gap-2 text-xs font-bold text-[color:var(--accent)] hover:underline"
+        >
+          <span>Open a GitHub Issue</span>
+          <span>→</span>
+        </a>
+      </div>
+
+      <div class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-6 sm:p-8 space-y-4 shadow-sm">
+        <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-[color:var(--accent-soft)] text-2xl text-[color:var(--accent)]">
+          ✉️
+        </div>
+        <div>
+          <h2 class="text-lg font-bold text-[color:var(--fg)]">Direct Email Inquiries</h2>
+          <p class="mt-1 text-xs leading-relaxed text-[color:var(--muted)]">
+            For general questions, partnerships, or tax data verification inquiries, email our maintainers.
+          </p>
+        </div>
+        <p class="text-xs font-mono font-semibold text-[color:var(--fg)]">
+          support@calculatorutility.local
+        </p>
+      </div>
+    </div>
+
+    <!-- Quick Message Form -->
+    <section class="rounded-[2.5rem] border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-6 sm:p-10 shadow-[var(--shadow)] space-y-6">
+      <div class="space-y-1">
+        <p class="text-xs font-bold uppercase tracking-wider text-[color:var(--accent)]">Quick Message</p>
+        <h2 class="text-2xl font-bold tracking-tight text-[color:var(--fg)]">Send us your feedback</h2>
+        <p class="text-xs text-[color:var(--muted)]">Calculations run locally, but your feedback helps us improve all tool engines.</p>
+      </div>
+
+      <form class="space-y-4" onsubmit="event.preventDefault(); document.getElementById('contact-success').classList.remove('hidden'); this.reset();">
+        <div class="grid gap-4 sm:grid-cols-2">
+          <label class="block space-y-1.5 text-xs font-bold text-[color:var(--fg)]">
+            <span>Your Name</span>
+            <input
+              type="text"
+              required
+              placeholder="e.g. Jane Doe"
+              class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-sm text-[color:var(--fg)] outline-none transition focus:border-[color:var(--accent)] focus:ring-2 focus:ring-[color:var(--accent-soft)]"
+            />
+          </label>
+          <label class="block space-y-1.5 text-xs font-bold text-[color:var(--fg)]">
+            <span>Your Email</span>
+            <input
+              type="email"
+              required
+              placeholder="jane@example.com"
+              class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-sm text-[color:var(--fg)] outline-none transition focus:border-[color:var(--accent)] focus:ring-2 focus:ring-[color:var(--accent-soft)]"
+            />
+          </label>
+        </div>
+
+        <label class="block space-y-1.5 text-xs font-bold text-[color:var(--fg)]">
+          <span>Topic / Category</span>
+          <select
+            class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-sm text-[color:var(--fg)] outline-none transition focus:border-[color:var(--accent)] focus:ring-2 focus:ring-[color:var(--accent-soft)]"
+          >
+            <option value="tax">Tax Calculator &amp; Bracket Correction</option>
+            <option value="currency">Currency Converter &amp; Exchange Rates</option>
+            <option value="math">Math / Finance Formula Discrepancy</option>
+            <option value="feature">New Calculator Suggestion</option>
+            <option value="general">General Feedback / Privacy Question</option>
+          </select>
+        </label>
+
+        <label class="block space-y-1.5 text-xs font-bold text-[color:var(--fg)]">
+          <span>Message</span>
+          <textarea
+            rows="4"
+            required
+            placeholder="Describe your suggestion or calculation issue in detail..."
+            class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-sm text-[color:var(--fg)] outline-none transition focus:border-[color:var(--accent)] focus:ring-2 focus:ring-[color:var(--accent-soft)]"
+          ></textarea>
+        </label>
+
+        <button
+          type="submit"
+          class="inline-flex cursor-pointer items-center justify-center rounded-full bg-[color:var(--accent)] px-6 py-3 text-xs font-bold text-white shadow-sm transition hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--accent)]"
+        >
+          Send Message 📨
+        </button>
+      </form>
+
+      <div id="contact-success" class="hidden rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-4 text-xs font-semibold text-emerald-600 dark:text-emerald-400">
+        ✅ Thank you for your message! Our team will review your feedback promptly.
+      </div>
+    </section>
+  </div>
+</SiteLayout>

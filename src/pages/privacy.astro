@@ -1,0 +1,87 @@
+---
+import SiteLayout from '../layouts/SiteLayout.astro';
+import { siteName, withBasePath } from '../utils/site';
+
+const pageTitle = `Privacy Policy · ${siteName}`;
+const pageDesc = "Privacy policy, cookie disclosures, client-side data handling, and third-party advertising compliance.";
+---
+
+<SiteLayout title={pageTitle} description={pageDesc} canonical={withBasePath('/privacy/')}>
+  <article class="mx-auto max-w-3xl space-y-8 py-6">
+    <header class="space-y-3">
+      <p class="text-xs font-semibold uppercase tracking-wider text-[color:var(--accent)]">Legal &amp; Privacy</p>
+      <h1 class="text-3xl font-bold tracking-tight text-[color:var(--fg)] sm:text-4xl">Privacy Policy</h1>
+      <p class="text-sm text-[color:var(--muted)]">Last updated: August 2026</p>
+    </header>
+
+    <div class="space-y-6 text-sm leading-7 text-[color:var(--muted)]">
+      <section class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-6 shadow-sm">
+        <h2 class="text-lg font-semibold text-[color:var(--fg)]">Summary: Privacy-First Architecture</h2>
+        <p class="mt-2">
+          At <strong>{siteName}</strong>, we believe utility websites shouldn't spy on your financial, medical, or academic data. All calculation engines (including our 24-country progressive tax models, currency conversions, and loan formulas) execute 100% client-side in your browser memory. None of your input numbers are ever sent to our servers.
+        </p>
+      </section>
+
+      <section class="space-y-3">
+        <h2 class="text-lg font-semibold text-[color:var(--fg)]">1. Information We Do Not Collect</h2>
+        <p>When you use any calculator or converter on this site:</p>
+        <ul class="list-disc pl-5 space-y-1">
+          <li>We do NOT transmit or record your salaries, tax brackets, mortgage figures, body weight, dates, or grades.</li>
+          <li>We do NOT require user account registration, login credentials, or personal identification.</li>
+          <li>Calculation state is ephemeral and discards automatically when closing the tab.</li>
+        </ul>
+      </section>
+
+      <section class="space-y-3">
+        <h2 class="text-lg font-semibold text-[color:var(--fg)]">2. Local Storage and Client-Side Preferences</h2>
+        <p>
+          We use standard browser <code class="rounded bg-[color:var(--surface)] px-1.5 py-0.5 text-xs text-[color:var(--fg)]">localStorage</code> strictly for functional client-side purposes:
+        </p>
+        <ul class="list-disc pl-5 space-y-1">
+          <li><strong>Theme Preferences:</strong> Storing your light/dark mode preference.</li>
+          <li><strong>Real-Time Currency Caching:</strong> Caching public foreign exchange rates for up to 1 hour to enable instant, offline-capable conversions without redundant network calls.</li>
+          <li><strong>Cookie Consent:</strong> Remembering your privacy notice preferences.</li>
+        </ul>
+      </section>
+
+      <section class="space-y-3">
+        <h2 class="text-lg font-semibold text-[color:var(--fg)]">3. Google AdSense &amp; Third-Party Advertising</h2>
+        <p>
+          We may partner with Google AdSense and third-party advertising networks to support free access to our tools:
+        </p>
+        <ul class="list-disc pl-5 space-y-1">
+          <li>Third-party vendors, including Google, use cookies to serve ads based on a user's prior visits to this or other websites.</li>
+          <li>Google's use of advertising cookies enables it and its partners to serve ads to users based on their visit to this site and/or other sites on the Internet.</li>
+          <li>Users may opt out of personalized advertising by visiting <a href="https://www.google.com/settings/ads" target="_blank" rel="noopener noreferrer" class="text-[color:var(--accent)] underline">Google Ads Settings</a> or <a href="https://www.aboutads.info" target="_blank" rel="noopener noreferrer" class="text-[color:var(--accent)] underline">aboutads.info</a>.</li>
+        </ul>
+      </section>
+
+      <section class="space-y-3">
+        <h2 class="text-lg font-semibold text-[color:var(--fg)]">4. Web Analytics</h2>
+        <p>
+          We may use privacy-respecting aggregate analytics (such as Google Analytics 4 with IP anonymization) to measure website traffic, popular tool usage, and performance metrics. These analytics contain no personally identifiable financial or medical information.
+        </p>
+      </section>
+
+      <section class="space-y-3">
+        <h2 class="text-lg font-semibold text-[color:var(--fg)]">5. Your GDPR &amp; CCPA Rights</h2>
+        <p>
+          Under European GDPR and California CCPA regulations, you have the right to privacy, non-discrimination, and data protection. Because we collect zero personal records, there is no personal database to export or delete. You can reset your browser cookies and local storage anytime through your browser settings.
+        </p>
+      </section>
+
+      <section class="space-y-3">
+        <h2 class="text-lg font-semibold text-[color:var(--fg)]">6. Contact &amp; Inquiries</h2>
+        <p>
+          For questions regarding this privacy policy, please visit our <a href={withBasePath('/contact/')} class="text-[color:var(--accent)] underline">Contact Page</a>.
+        </p>
+      </section>
+    </div>
+
+    <div class="pt-4">
+      <a href={withBasePath('/')} class="text-sm font-semibold text-[color:var(--accent)] hover:underline">
+        ← Back to Homepage
+      </a>
+    </div>
+  </article>
+</SiteLayout>

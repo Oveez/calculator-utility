@@ -1,0 +1,34 @@
+---
+import SiteLayout from '../layouts/SiteLayout.astro';
+import CurrencyConverterApp from '../components/CurrencyConverterApp.astro';
+import { withBasePath } from '../utils/site';
+
+const pageTitle = "Real-Time Currency Converter | Live Exchange Rates 2026";
+const pageDesc = "Convert 160+ world currencies with free, live real-time exchange rates. Instant conversions for USD, EUR, GBP, JPY, CAD, AUD, INR, and more.";
+---
+
+<SiteLayout title={pageTitle} description={pageDesc} canonical={withBasePath('/currency-converter/')}>
+  <div class="mx-auto max-w-5xl space-y-10">
+    <nav class="flex items-center gap-2 text-xs font-medium text-[color:var(--muted)]" aria-label="Breadcrumb">
+      <a href="/" class="hover:text-[color:var(--accent)]">Home</a>
+      <span>/</span>
+      <a href="/#calculators?category=Converters" class="hover:text-[color:var(--accent)]">Converters</a>
+      <span>/</span>
+      <span class="text-[color:var(--fg)] font-semibold">Currency Converter</span>
+    </nav>
+
+    <header class="space-y-3">
+      <div class="inline-flex items-center gap-2 rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3.5 py-1 text-xs font-semibold text-[color:var(--accent)]">
+        <span>🌐 160+ Currencies • Free Real-Time API</span>
+      </div>
+      <h1 class="text-3xl font-extrabold tracking-tight text-[color:var(--fg)] sm:text-4xl lg:text-5xl">
+        Real-Time Currency Converter
+      </h1>
+      <p class="max-w-3xl text-base leading-relaxed text-[color:var(--muted)] sm:text-lg">
+        Get live foreign exchange rates, compare major world currencies, and calculate conversions instantly with 0% retail bank markup.
+      </p>
+    </header>
+
+    <CurrencyConverterApp />
+  </div>
+</SiteLayout>

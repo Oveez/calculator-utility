@@ -1,0 +1,76 @@
+---
+import { withBasePath } from '../utils/site';
+---
+
+<div
+  id="cookie-consent-banner"
+  class="fixed bottom-4 left-4 right-4 z-50 mx-auto max-w-4xl transform rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-5 shadow-2xl backdrop-blur-xl transition-all duration-300 sm:bottom-6 sm:left-6 sm:right-6 sm:p-6"
+  style="display: none;"
+  role="region"
+  aria-label="Cookie Consent Notice"
+>
+  <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+    <div class="space-y-1.5 pr-4">
+      <div class="flex items-center gap-2">
+        <span class="text-xl">🍪</span>
+        <h4 class="text-sm font-bold tracking-tight text-[color:var(--fg)]">
+          Privacy & Cookie Preferences
+        </h4>
+      </div>
+      <p class="text-xs leading-relaxed text-[color:var(--muted)] max-w-2xl">
+        We respect your privacy. All calculator mathematics run 100% locally in your browser. We use anonymous cookies and local storage only for theme preferences, exchange rate caching, and optional analytics. Read our
+        <a href={withBasePath('/privacy/')} class="font-medium text-[color:var(--accent)] underline hover:opacity-80">
+          Privacy Policy
+        </a>.
+      </p>
+    </div>
+
+    <div class="flex shrink-0 flex-wrap items-center gap-2">
+      <button
+        type="button"
+        id="cookie-accept-all"
+        class="cursor-pointer rounded-full bg-[color:var(--accent)] px-5 py-2.5 text-xs font-bold text-white shadow-sm transition hover:opacity-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--accent)]"
+      >
+        Accept All
+      </button>
+      <button
+        type="button"
+        id="cookie-decline"
+        class="cursor-pointer rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-4 py-2.5 text-xs font-semibold text-[color:var(--muted)] transition hover:border-[color:var(--accent)] hover:text-[color:var(--fg)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--accent)]"
+      >
+        Essential Only
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+  (function () {
+    const CONSENT_KEY = 'calculator_cookie_consent_v1';
+    const banner = document.getElementById('cookie-consent-banner');
+    const acceptBtn = document.getElementById('cookie-accept-all');
+    const declineBtn = document.getElementById('cookie-decline');
+
+    try {
+      const consent = localStorage.getItem(CONSENT_KEY);
+      if (!consent && banner) {
+        banner.style.display = 'block';
+      }
+    } catch (e) {}
+
+    function saveConsent(status: string) {
+      try {
+        localStorage.setItem(CONSENT_KEY, JSON.stringify({
+          status: status,
+          timestamp: new Date().toISOString()
+        }));
+      } catch (e) {}
+      if (banner) {
+        banner.style.display = 'none';
+      }
+    }
+
+    acceptBtn?.addEventListener('click', () => saveConsent('accepted_all'));
+    declineBtn?.addEventListener('click', () => saveConsent('essential_only'));
+  })();
+</script>

@@ -1,0 +1,277 @@
+---
+import SiteLayout from '../../layouts/SiteLayout.astro';
+import AdSlot from '../../components/tax/AdSlot.astro';
+import TaxDisclaimer from '../../components/tax/TaxDisclaimer.astro';
+import { allCountryTaxProfiles } from '../../data/tax/countries';
+
+const countryVatOptions = allCountryTaxProfiles.map((c) => {
+  const defaultYr = c.years[c.defaultTaxYear];
+  return {
+    id: c.id,
+    name: c.name,
+    flag: c.flagEmoji,
+    currency: c.defaultCurrency,
+    symbol: c.defaultCurrencySymbol,
+    vatName: defaultYr.vatConfig.name,
+    standardRate: Math.round(defaultYr.vatConfig.standardRate * 1000) / 10,
+  };
+});
+---
+
+<SiteLayout
+  title="Global VAT / GST / Sales Tax Calculator | Add or Remove Tax Online"
+  description="Free online VAT, GST, and Sales Tax Calculator. Calculate price before tax, price including tax, and net/gross amounts for 24+ countries with official standard tax rates."
+>
+  <div class="mx-auto max-w-4xl space-y-10">
+    <nav class="flex items-center gap-2 text-xs font-medium text-[color:var(--muted)]" aria-label="Breadcrumb">
+      <a href="/" class="hover:text-[color:var(--accent)]">Home</a>
+      <span>/</span>
+      <a href="/tax-calculators/" class="hover:text-[color:var(--accent)]">Tax Calculators</a>
+      <span>/</span>
+      <span class="text-[color:var(--fg)] font-semibold">VAT &amp; GST Calculator</span>
+    </nav>
+
+    <header class="space-y-3">
+      <div class="inline-flex items-center gap-2 rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3.5 py-1 text-xs font-semibold text-[color:var(--accent)]">
+        <span>🏷️ Multi-Country Consumption Tax Tool</span>
+      </div>
+      <h1 class="text-3xl font-extrabold tracking-tight text-[color:var(--fg)] sm:text-4xl">
+        Global VAT / GST / Sales Tax Calculator
+      </h1>
+      <p class="text-base text-[color:var(--muted)]">
+        Quickly add tax to a net price or remove tax from a gross price. Supports standard rates for UK (20%), EU (19%-25.5%), Australia (10%), Canada (5%), Singapore (9%), and custom tax rates.
+      </p>
+    </header>
+
+    <AdSlot slotId="vat-top" position="top" />
+
+    <!-- VAT Calculator App Card -->
+    <div
+      class="rounded-[2.5rem] border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-6 shadow-[var(--shadow)] sm:p-10"
+      data-vat-app
+      data-countries-json={JSON.stringify(countryVatOptions)}
+    >
+      <div class="grid gap-8 lg:grid-cols-2">
+        <div class="space-y-6">
+          <!-- Calculation Mode Switcher -->
+          <div>
+            <label class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Calculation Mode</label>
+            <div class="mt-2 grid grid-cols-2 gap-2 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-1 text-xs font-semibold">
+              <button
+                type="button"
+                class="cursor-pointer rounded-xl bg-[color:var(--accent)] px-3 py-2 text-white shadow-sm transition"
+                data-vat-mode="add_tax"
+              >
+                + Add Tax (Net → Gross)
+              </button>
+              <button
+                type="button"
+                class="cursor-pointer rounded-xl px-3 py-2 text-[color:var(--muted)] transition hover:text-[color:var(--fg)]"
+                data-vat-mode="remove_tax"
+              >
+                - Remove Tax (Gross → Net)
+              </button>
+            </div>
+          </div>
+
+          <!-- Country / Preset Rate Selector -->
+          <div>
+            <label for="vat-country-select" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">
+              Select Country Preset Rate
+            </label>
+            <select
+              id="vat-country-select"
+              class="mt-2 w-full cursor-pointer rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-sm font-semibold text-[color:var(--fg)] outline-none transition focus:border-[color:var(--accent)] focus:ring-2 focus:ring-[color:var(--accent-soft)]"
+              data-vat-country
+            >
+              <option value="custom">Custom Tax Rate</option>
+              {countryVatOptions.map((opt) => (
+                <option value={opt.id} data-rate={opt.standardRate} data-symbol={opt.symbol} data-currency={opt.currency} selected={opt.id === 'uk'}>
+                  {opt.flag} {opt.name} ({opt.vatName} {opt.standardRate}%)
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <!-- Amount Input -->
+          <div>
+            <label for="vat-amount-input" class="block text-sm font-bold text-[color:var(--fg)]" data-amount-label>
+              Price Excluding Tax (Net Amount)
+            </label>
+            <div class="relative mt-2">
+              <span class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4 text-base font-bold text-[color:var(--muted)]" data-vat-symbol>
+                £
+              </span>
+              <input
+                id="vat-amount-input"
+                type="number"
+                min="0"
+                step="0.01"
+                value="100"
+                class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] py-3.5 pl-10 pr-4 text-xl font-extrabold text-[color:var(--fg)] shadow-inner outline-none transition focus:border-[color:var(--accent)] focus:ring-2 focus:ring-[color:var(--accent-soft)]"
+                data-vat-amount
+              />
+            </div>
+          </div>
+
+          <!-- Tax Rate % Input -->
+          <div>
+            <label for="vat-rate-input" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">
+              Tax Rate (%)
+            </label>
+            <div class="relative mt-2">
+              <input
+                id="vat-rate-input"
+                type="number"
+                min="0"
+                max="100"
+                step="0.1"
+                value="20"
+                class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] py-3 pl-4 pr-10 text-base font-bold text-[color:var(--fg)] shadow-inner outline-none transition focus:border-[color:var(--accent)] focus:ring-2 focus:ring-[color:var(--accent-soft)]"
+                data-vat-rate
+              />
+              <span class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-4 text-sm font-bold text-[color:var(--muted)]">
+                %
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- VAT Result Output Card -->
+        <div class="flex flex-col justify-between rounded-3xl border border-[color:var(--accent)]/30 bg-gradient-to-br from-[color:var(--accent-soft)] to-transparent p-6 shadow-sm sm:p-8">
+          <div class="space-y-6">
+            <div>
+              <p class="text-xs font-bold uppercase tracking-wider text-[color:var(--accent)]" data-main-result-label>
+                Total Price (Including Tax)
+              </p>
+              <p class="mt-2 text-4xl font-extrabold text-[color:var(--fg)] sm:text-5xl" data-vat-gross-result>
+                £120.00
+              </p>
+            </div>
+
+            <div class="space-y-3 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-sm">
+              <div class="flex items-center justify-between text-[color:var(--muted)]">
+                <span>Net Amount (Excl. Tax):</span>
+                <span class="font-bold text-[color:var(--fg)]" data-vat-net-result>£100.00</span>
+              </div>
+              <div class="flex items-center justify-between text-[color:var(--muted)]">
+                <span>Tax Rate:</span>
+                <span class="font-bold text-[color:var(--fg)]" data-vat-rate-result>20.0%</span>
+              </div>
+              <div class="border-t border-[color:var(--border)] pt-2 flex items-center justify-between text-rose-500 font-bold">
+                <span>Tax Amount:</span>
+                <span data-vat-tax-result>+£20.00</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-6 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)]/80 p-3.5 text-center text-xs text-[color:var(--muted)]">
+            ⚡ Accurate round-trip arithmetic for accounting and receipts.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <TaxDisclaimer />
+  </div>
+</SiteLayout>
+
+<script>
+  (function () {
+    const app = document.querySelector('[data-vat-app]');
+    if (!app) return;
+
+    const amountInput = app.querySelector('[data-vat-amount]');
+    const rateInput = app.querySelector('[data-vat-rate]');
+    const countrySelect = app.querySelector('[data-vat-country]');
+    const modeButtons = Array.from(app.querySelectorAll('[data-vat-mode]'));
+    const amountLabel = app.querySelector('[data-amount-label]');
+    const mainResultLabel = app.querySelector('[data-main-result-label]');
+    const symbolEl = app.querySelector('[data-vat-symbol]');
+
+    const grossResultEl = app.querySelector('[data-vat-gross-result]');
+    const netResultEl = app.querySelector('[data-vat-net-result]');
+    const rateResultEl = app.querySelector('[data-vat-rate-result]');
+    const taxResultEl = app.querySelector('[data-vat-tax-result]');
+
+    let mode = 'add_tax'; // 'add_tax' or 'remove_tax'
+    let currentSymbol = '£';
+
+    function formatVal(val) {
+      return currentSymbol + val.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+
+    function calculate() {
+      const amt = parseFloat(amountInput?.value) || 0;
+      const rate = parseFloat(rateInput?.value) || 0;
+      const rateDecimal = rate / 100;
+
+      let net = 0;
+      let gross = 0;
+      let tax = 0;
+
+      if (mode === 'add_tax') {
+        net = amt;
+        tax = net * rateDecimal;
+        gross = net + tax;
+      } else {
+        gross = amt;
+        net = rateDecimal > 0 ? gross / (1 + rateDecimal) : gross;
+        tax = gross - net;
+      }
+
+      if (grossResultEl) grossResultEl.textContent = formatVal(mode === 'add_tax' ? gross : net);
+      if (netResultEl) netResultEl.textContent = formatVal(net);
+      if (rateResultEl) rateResultEl.textContent = rate.toFixed(1) + '%';
+      if (taxResultEl) taxResultEl.textContent = (mode === 'add_tax' ? '+' : '') + formatVal(tax);
+    }
+
+    countrySelect?.addEventListener('change', () => {
+      const selected = countrySelect.options[countrySelect.selectedIndex];
+      if (countrySelect.value !== 'custom') {
+        const rate = selected.getAttribute('data-rate');
+        const sym = selected.getAttribute('data-symbol') || '$';
+        if (rate && rateInput) rateInput.value = rate;
+        currentSymbol = sym;
+        if (symbolEl) symbolEl.textContent = sym;
+      }
+      calculate();
+    });
+
+    modeButtons.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const targetMode = btn.dataset.vatMode;
+        if (targetMode) {
+          mode = targetMode;
+          modeButtons.forEach((b) => {
+            const isActive = b.dataset.vatMode === mode;
+            if (isActive) {
+              b.className = 'cursor-pointer rounded-xl bg-[color:var(--accent)] px-3 py-2 text-white shadow-sm transition';
+            } else {
+              b.className = 'cursor-pointer rounded-xl px-3 py-2 text-[color:var(--muted)] transition hover:text-[color:var(--fg)]';
+            }
+          });
+
+          if (amountLabel) {
+            amountLabel.textContent =
+              mode === 'add_tax'
+                ? 'Price Excluding Tax (Net Amount)'
+                : 'Price Including Tax (Gross Amount)';
+          }
+          if (mainResultLabel) {
+            mainResultLabel.textContent =
+              mode === 'add_tax'
+                ? 'Total Price (Including Tax)'
+                : 'Net Price (Excluding Tax)';
+          }
+          calculate();
+        }
+      });
+    });
+
+    amountInput?.addEventListener('input', calculate);
+    rateInput?.addEventListener('input', calculate);
+
+    calculate();
+  })();
+</script>

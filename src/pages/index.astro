@@ -1,0 +1,523 @@
+---
+import SiteLayout from '../layouts/SiteLayout.astro';
+import { calculators } from '../data/calculators';
+import { getCalculatorPath, getUniqueCategories } from '../utils/calculators';
+import { siteName, siteTagline, withBasePath } from '../utils/site';
+
+const categories = getUniqueCategories(calculators).map((category) => ({
+  name: category,
+  count: calculators.filter((calculator) => calculator.category === category).length,
+}));
+
+// Highlight top high-demand calculators for the popular section
+const popularSlugs = [
+  'currency-converter',
+  'mortgage-calculator',
+  'compound-interest-calculator',
+  'bmi-calculator',
+  'gpa-calculator',
+  'discount-calculator',
+];
+const popularCalculators = popularSlugs
+  .map((slug) => calculators.find((c) => c.slug === slug))
+  .filter((c): c is typeof calculators[0] => Boolean(c));
+
+const categoryTabs = [{ name: 'All', count: calculators.length }, ...categories];
+---
+
+<SiteLayout title={siteName} description={siteTagline} canonical={withBasePath('/')}>
+  <!-- Hero Section -->
+  <section class="relative overflow-hidden rounded-[2.5rem] border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-6 shadow-[var(--shadow)] sm:p-10 lg:p-12">
+    <div class="grid gap-10 lg:grid-cols-[1.2fr_0.8fr] lg:items-center">
+      <div class="space-y-6">
+        <div class="inline-flex items-center gap-2 rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-4 py-2 text-xs font-semibold uppercase tracking-wider text-[color:var(--accent)] shadow-sm">
+          <span>⚡ Fast • 100% Client-Side • Real-Time APIs</span>
+        </div>
+
+        <div class="space-y-4">
+          <h1 class="text-4xl font-extrabold tracking-tight text-[color:var(--fg)] sm:text-5xl lg:text-6xl">
+            Smart, static calculators for everyday life.
+          </h1>
+          <p class="max-w-xl text-base leading-7 text-[color:var(--muted)] sm:text-lg">
+            30+ privacy-first utility tools for finance, currency exchange, education, health, conversions, and math. Instant calculations with zero server latency.
+          </p>
+        </div>
+
+        <!-- Hero Search Bar -->
+        <form class="max-w-xl" role="search" aria-label="Search calculators" onsubmit="return false;">
+          <label class="relative block">
+            <span class="sr-only">Search calculators</span>
+            <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4 text-[color:var(--muted)]">
+              🔍
+            </div>
+            <input
+              class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] py-4 pl-12 pr-20 text-base text-[color:var(--fg)] shadow-inner outline-none transition placeholder:text-[color:var(--muted)] focus:border-[color:var(--accent)] focus:ring-2 focus:ring-[color:var(--accent-soft)]"
+              type="search"
+              placeholder="Search currency, mortgage, GPA, BMI, percentage, time..."
+              aria-label="Search calculators"
+              data-calculator-search
+            />
+            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-4">
+              <kbd class="rounded-lg border border-[color:var(--border)] bg-[color:var(--surface)] px-2 py-1 text-xs font-mono text-[color:var(--muted)]">
+                /
+              </kbd>
+            </div>
+          </label>
+        </form>
+
+        <!-- Category Quick Pills -->
+        <div class="flex flex-wrap gap-2 text-xs font-medium">
+          <button type="button" data-hero-category="Finance" class="cursor-pointer rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3.5 py-1.5 text-[color:var(--muted)] shadow-sm transition hover:border-[color:var(--accent)] hover:text-[color:var(--accent)]">
+            💰 Finance
+          </button>
+          <button type="button" data-hero-category="Converters" class="cursor-pointer rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3.5 py-1.5 text-[color:var(--muted)] shadow-sm transition hover:border-[color:var(--accent)] hover:text-[color:var(--accent)]">
+            🔄 Converters
+          </button>
+          <button type="button" data-hero-category="Math" class="cursor-pointer rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3.5 py-1.5 text-[color:var(--muted)] shadow-sm transition hover:border-[color:var(--accent)] hover:text-[color:var(--accent)]">
+            📐 Math
+          </button>
+          <button type="button" data-hero-category="Education" class="cursor-pointer rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3.5 py-1.5 text-[color:var(--muted)] shadow-sm transition hover:border-[color:var(--accent)] hover:text-[color:var(--accent)]">
+            🎓 Education
+          </button>
+          <button type="button" data-hero-category="Health" class="cursor-pointer rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3.5 py-1.5 text-[color:var(--muted)] shadow-sm transition hover:border-[color:var(--accent)] hover:text-[color:var(--accent)]">
+            🩺 Health
+          </button>
+          <button type="button" data-hero-category="Date & Time" class="cursor-pointer rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3.5 py-1.5 text-[color:var(--muted)] shadow-sm transition hover:border-[color:var(--accent)] hover:text-[color:var(--accent)]">
+            📅 Date & Time
+          </button>
+          <button type="button" data-hero-category="Text Tools" class="cursor-pointer rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3.5 py-1.5 text-[color:var(--muted)] shadow-sm transition hover:border-[color:var(--accent)] hover:text-[color:var(--accent)]">
+            ✍️ Text Tools
+          </button>
+        </div>
+      </div>
+
+      <!-- Hero Stats Card -->
+      <aside class="grid gap-4 rounded-3xl border border-[color:var(--border)] bg-[color:var(--bg)] p-6 shadow-inner">
+        <div>
+          <p class="text-xs font-semibold uppercase tracking-wider text-[color:var(--accent)]">Library Overview</p>
+          <p class="mt-1 text-3xl font-extrabold text-[color:var(--fg)]">{calculators.length} Live Tools</p>
+          <p class="text-xs text-[color:var(--muted)]">Completely free, open source, and offline-capable</p>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3 pt-2">
+          <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3.5">
+            <p class="text-xs font-medium text-[color:var(--muted)]">Categories</p>
+            <p class="mt-1 text-2xl font-bold text-[color:var(--fg)]">{categories.length}</p>
+          </div>
+          <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3.5">
+            <p class="text-xs font-medium text-[color:var(--muted)]">Calculations</p>
+            <p class="mt-1 text-2xl font-bold text-emerald-500">100%</p>
+            <p class="text-[10px] text-[color:var(--muted)]">Client-side</p>
+          </div>
+        </div>
+
+        <div class="rounded-2xl border border-dashed border-[color:var(--border)] p-3.5 text-center text-xs text-[color:var(--muted)]">
+          ✨ Press <kbd class="rounded bg-[color:var(--surface)] px-1.5 py-0.5 font-mono text-[color:var(--fg)] border border-[color:var(--border)]">/</kbd> anytime to search tools
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <!-- International Tax & Salary Hub Section -->
+  <section class="mt-16 space-y-6">
+    <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
+      <div>
+        <p class="text-xs font-semibold uppercase tracking-wider text-[color:var(--accent)]">International Tax Suite</p>
+        <h2 class="mt-1 text-2xl font-bold tracking-tight text-[color:var(--fg)] sm:text-3xl">24 Priority Country Tax Engines</h2>
+        <p class="text-sm text-[color:var(--muted)]">Official government tax brackets, social contributions, and take-home pay calculators for 2025/2026.</p>
+      </div>
+      <a href="/tax-calculators/" class="inline-flex items-center gap-1 text-xs font-bold text-[color:var(--accent)] hover:underline whitespace-nowrap">
+        <span>Explore All Tax Tools</span>
+        <span>→</span>
+      </a>
+    </div>
+
+    <!-- Country Selector Quick Flags -->
+    <div class="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
+      <a href="/us-income-tax-calculator/" class="group flex flex-col items-center justify-center rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3.5 text-center transition hover:-translate-y-0.5 hover:border-[color:var(--accent)] hover:bg-[color:var(--surface-strong)] hover:shadow-md">
+        <span class="text-2xl transition group-hover:scale-110">🇺🇸</span>
+        <span class="mt-1.5 text-xs font-bold text-[color:var(--fg)] group-hover:text-[color:var(--accent)]">United States</span>
+        <span class="text-[10px] font-mono text-[color:var(--muted)]">IRS (USD $)</span>
+      </a>
+      <a href="/uk-income-tax-calculator/" class="group flex flex-col items-center justify-center rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3.5 text-center transition hover:-translate-y-0.5 hover:border-[color:var(--accent)] hover:bg-[color:var(--surface-strong)] hover:shadow-md">
+        <span class="text-2xl transition group-hover:scale-110">🇬🇧</span>
+        <span class="mt-1.5 text-xs font-bold text-[color:var(--fg)] group-hover:text-[color:var(--accent)]">United Kingdom</span>
+        <span class="text-[10px] font-mono text-[color:var(--muted)]">HMRC (GBP £)</span>
+      </a>
+      <a href="/canada-income-tax-calculator/" class="group flex flex-col items-center justify-center rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3.5 text-center transition hover:-translate-y-0.5 hover:border-[color:var(--accent)] hover:bg-[color:var(--surface-strong)] hover:shadow-md">
+        <span class="text-2xl transition group-hover:scale-110">🇨🇦</span>
+        <span class="mt-1.5 text-xs font-bold text-[color:var(--fg)] group-hover:text-[color:var(--accent)]">Canada</span>
+        <span class="text-[10px] font-mono text-[color:var(--muted)]">CRA (CAD $)</span>
+      </a>
+      <a href="/australia-income-tax-calculator/" class="group flex flex-col items-center justify-center rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3.5 text-center transition hover:-translate-y-0.5 hover:border-[color:var(--accent)] hover:bg-[color:var(--surface-strong)] hover:shadow-md">
+        <span class="text-2xl transition group-hover:scale-110">🇦🇺</span>
+        <span class="mt-1.5 text-xs font-bold text-[color:var(--fg)] group-hover:text-[color:var(--accent)]">Australia</span>
+        <span class="text-[10px] font-mono text-[color:var(--muted)]">ATO (AUD $)</span>
+      </a>
+      <a href="/germany-income-tax-calculator/" class="group flex flex-col items-center justify-center rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3.5 text-center transition hover:-translate-y-0.5 hover:border-[color:var(--accent)] hover:bg-[color:var(--surface-strong)] hover:shadow-md">
+        <span class="text-2xl transition group-hover:scale-110">🇩🇪</span>
+        <span class="mt-1.5 text-xs font-bold text-[color:var(--fg)] group-hover:text-[color:var(--accent)]">Germany</span>
+        <span class="text-[10px] font-mono text-[color:var(--muted)]">BMF (EUR €)</span>
+      </a>
+      <a href="/france-income-tax-calculator/" class="group flex flex-col items-center justify-center rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3.5 text-center transition hover:-translate-y-0.5 hover:border-[color:var(--accent)] hover:bg-[color:var(--surface-strong)] hover:shadow-md">
+        <span class="text-2xl transition group-hover:scale-110">🇫🇷</span>
+        <span class="mt-1.5 text-xs font-bold text-[color:var(--fg)] group-hover:text-[color:var(--accent)]">France</span>
+        <span class="text-[10px] font-mono text-[color:var(--muted)]">DGFiP (EUR €)</span>
+      </a>
+      <a href="/spain-income-tax-calculator/" class="group flex flex-col items-center justify-center rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3.5 text-center transition hover:-translate-y-0.5 hover:border-[color:var(--accent)] hover:bg-[color:var(--surface-strong)] hover:shadow-md">
+        <span class="text-2xl transition group-hover:scale-110">🇪🇸</span>
+        <span class="mt-1.5 text-xs font-bold text-[color:var(--fg)] group-hover:text-[color:var(--accent)]">Spain</span>
+        <span class="text-[10px] font-mono text-[color:var(--muted)]">AEAT (EUR €)</span>
+      </a>
+      <a href="/italy-income-tax-calculator/" class="group flex flex-col items-center justify-center rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3.5 text-center transition hover:-translate-y-0.5 hover:border-[color:var(--accent)] hover:bg-[color:var(--surface-strong)] hover:shadow-md">
+        <span class="text-2xl transition group-hover:scale-110">🇮🇹</span>
+        <span class="mt-1.5 text-xs font-bold text-[color:var(--fg)] group-hover:text-[color:var(--accent)]">Italy</span>
+        <span class="text-[10px] font-mono text-[color:var(--muted)]">IRPEF (EUR €)</span>
+      </a>
+      <a href="/netherlands-income-tax-calculator/" class="group flex flex-col items-center justify-center rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3.5 text-center transition hover:-translate-y-0.5 hover:border-[color:var(--accent)] hover:bg-[color:var(--surface-strong)] hover:shadow-md">
+        <span class="text-2xl transition group-hover:scale-110">🇳🇱</span>
+        <span class="mt-1.5 text-xs font-bold text-[color:var(--fg)] group-hover:text-[color:var(--accent)]">Netherlands</span>
+        <span class="text-[10px] font-mono text-[color:var(--muted)]">Box 1 (EUR €)</span>
+      </a>
+      <a href="/switzerland-income-tax-calculator/" class="group flex flex-col items-center justify-center rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3.5 text-center transition hover:-translate-y-0.5 hover:border-[color:var(--accent)] hover:bg-[color:var(--surface-strong)] hover:shadow-md">
+        <span class="text-2xl transition group-hover:scale-110">🇨🇭</span>
+        <span class="mt-1.5 text-xs font-bold text-[color:var(--fg)] group-hover:text-[color:var(--accent)]">Switzerland</span>
+        <span class="text-[10px] font-mono text-[color:var(--muted)]">ESTV (CHF)</span>
+      </a>
+      <a href="/singapore-income-tax-calculator/" class="group flex flex-col items-center justify-center rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3.5 text-center transition hover:-translate-y-0.5 hover:border-[color:var(--accent)] hover:bg-[color:var(--surface-strong)] hover:shadow-md">
+        <span class="text-2xl transition group-hover:scale-110">🇸🇬</span>
+        <span class="mt-1.5 text-xs font-bold text-[color:var(--fg)] group-hover:text-[color:var(--accent)]">Singapore</span>
+        <span class="text-[10px] font-mono text-[color:var(--muted)]">IRAS (SGD $)</span>
+      </a>
+      <a href="/japan-income-tax-calculator/" class="group flex flex-col items-center justify-center rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3.5 text-center transition hover:-translate-y-0.5 hover:border-[color:var(--accent)] hover:bg-[color:var(--surface-strong)] hover:shadow-md">
+        <span class="text-2xl transition group-hover:scale-110">🇯🇵</span>
+        <span class="mt-1.5 text-xs font-bold text-[color:var(--fg)] group-hover:text-[color:var(--accent)]">Japan</span>
+        <span class="text-[10px] font-mono text-[color:var(--muted)]">NTA (JPY ¥)</span>
+      </a>
+    </div>
+  </section>
+
+  <!-- Popular Calculators Section -->
+  <section id="popular" class="mt-16 scroll-mt-24 space-y-6">
+    <div class="flex items-end justify-between gap-4">
+      <div>
+        <p class="text-xs font-semibold uppercase tracking-wider text-[color:var(--accent)]">Top Picks</p>
+        <h2 class="mt-1 text-2xl font-bold tracking-tight text-[color:var(--fg)] sm:text-3xl">Popular Calculators</h2>
+      </div>
+      <a href="#calculators" class="text-xs font-semibold text-[color:var(--accent)] hover:underline">
+        View All {calculators.length} Tools ↓
+      </a>
+    </div>
+
+    <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+      {popularCalculators.map((calculator) => (
+        <a
+          class="group flex flex-col justify-between rounded-[2rem] border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-6 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-[color:var(--accent)] hover:shadow-md"
+          href={getCalculatorPath(calculator.slug)}
+        >
+          <div class="space-y-3">
+            <span class="inline-flex rounded-full bg-[color:var(--surface)] px-3 py-1 text-xs font-semibold text-[color:var(--accent)] border border-[color:var(--border)]">
+              {calculator.category}
+            </span>
+            <h3 class="text-xl font-bold tracking-tight text-[color:var(--fg)] group-hover:text-[color:var(--accent)] transition-colors">
+              {calculator.title}
+            </h3>
+            <p class="text-sm leading-6 text-[color:var(--muted)] line-clamp-2">
+              {calculator.metaDescription}
+            </p>
+          </div>
+
+          <div class="mt-6 flex items-center gap-1 text-xs font-semibold text-[color:var(--accent)]">
+            <span>Open Tool</span>
+            <span class="transition group-hover:translate-x-1">→</span>
+          </div>
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <!-- Full Library Directory & Filter Section -->
+  <section id="calculators" class="mt-16 scroll-mt-24 space-y-8">
+    <div class="space-y-4">
+      <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
+        <div id="categories" class="scroll-mt-24">
+          <p class="text-xs font-semibold uppercase tracking-wider text-[color:var(--accent)]">Browse By Category</p>
+          <h2 class="mt-1 text-2xl font-bold tracking-tight text-[color:var(--fg)] sm:text-3xl">All Calculators Directory</h2>
+        </div>
+        <div class="flex items-center gap-2 text-sm text-[color:var(--muted)]">
+          <span class="font-semibold text-[color:var(--fg)]" data-active-category-label>All Categories</span>
+          <span>•</span>
+          <span><strong class="text-[color:var(--fg)]" data-search-count>{calculators.length}</strong> of {calculators.length} tools</span>
+        </div>
+      </div>
+
+      <!-- Category Filter Tabs -->
+      <div class="flex flex-wrap gap-2" role="tablist" aria-label="Calculator Categories">
+        {categoryTabs.map((category, index) => (
+          <button
+            class:list={[
+              'inline-flex cursor-pointer items-center gap-2 rounded-full border px-4 py-2 text-sm font-semibold transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--accent)]',
+              index === 0
+                ? 'border-[color:var(--accent)] bg-[color:var(--accent)] text-white shadow-sm ring-1 ring-[color:var(--accent)]'
+                : 'border-[color:var(--border)] bg-[color:var(--surface)] text-[color:var(--fg)] hover:border-[color:var(--accent)] hover:bg-[color:var(--surface-strong)]',
+            ]}
+            type="button"
+            role="tab"
+            data-category-tab
+            data-category-name={category.name === 'All' ? '' : category.name}
+            aria-pressed={index === 0 ? 'true' : 'false'}
+            aria-selected={index === 0 ? 'true' : 'false'}
+          >
+            <span>{category.name}</span>
+            <span class="rounded-full bg-black/10 dark:bg-white/20 px-2 py-0.5 text-xs font-bold">{category.count}</span>
+          </button>
+        ))}
+      </div>
+
+      <!-- Active Filters Reset Bar (Hidden by default) -->
+      <div class="flex items-center justify-between gap-3 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] px-4 py-2.5 text-xs text-[color:var(--muted)]" data-active-filter-bar hidden>
+        <div class="flex items-center gap-2">
+          <span>Active filter:</span>
+          <span class="font-bold text-[color:var(--fg)]" data-filter-summary>None</span>
+        </div>
+        <button
+          type="button"
+          class="cursor-pointer font-bold text-[color:var(--accent)] hover:underline"
+          data-reset-filters
+        >
+          Reset Filters ✕
+        </button>
+      </div>
+    </div>
+
+    <!-- Calculator Cards Grid -->
+    <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3" data-calculator-grid>
+      {calculators.map((calculator) => (
+        <article
+          class="group flex flex-col justify-between rounded-[2rem] border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-6 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-[color:var(--accent)] hover:shadow-md"
+          data-calculator-card
+          data-calculator-category={calculator.category}
+          data-search-text={`${calculator.title} ${calculator.category} ${calculator.metaDescription} ${calculator.slug}`.toLowerCase()}
+        >
+          <div class="space-y-3">
+            <span class="inline-flex rounded-full bg-[color:var(--surface)] px-3 py-1 text-xs font-semibold text-[color:var(--accent)] border border-[color:var(--border)]">
+              {calculator.category}
+            </span>
+            <h3 class="text-lg font-bold tracking-tight text-[color:var(--fg)] group-hover:text-[color:var(--accent)] transition-colors">
+              {calculator.title}
+            </h3>
+            <p class="text-sm leading-6 text-[color:var(--muted)] line-clamp-2">
+              {calculator.metaDescription}
+            </p>
+          </div>
+
+          <a
+            class="mt-6 inline-flex items-center justify-center rounded-full bg-[color:var(--accent)] px-4 py-2.5 text-xs font-bold text-white shadow-sm transition hover:bg-[color:var(--accent-strong)] hover:shadow"
+            href={getCalculatorPath(calculator.slug)}
+          >
+            Launch Calculator →
+          </a>
+        </article>
+      ))}
+    </div>
+
+    <!-- Empty search result alert -->
+    <div class="rounded-3xl border border-dashed border-[color:var(--border)] bg-[color:var(--surface)] p-10 text-center text-[color:var(--muted)]" data-search-empty hidden>
+      <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-[color:var(--surface-strong)] text-2xl shadow-sm border border-[color:var(--border)]">
+        🔍
+      </div>
+      <p class="mt-4 text-lg font-bold text-[color:var(--fg)]">No calculators found</p>
+      <p class="mt-1 text-sm">No calculators match your current search or category filter.</p>
+      <button
+        type="button"
+        class="mt-5 inline-flex items-center gap-2 rounded-full bg-[color:var(--accent)] px-5 py-2.5 text-xs font-bold text-white shadow-sm transition hover:bg-[color:var(--accent-strong)]"
+        data-reset-filters
+      >
+        Show All Calculators
+      </button>
+    </div>
+  </section>
+
+  <!-- Client-Side Search & Robust Category Filter Logic -->
+  <script is:inline>
+    (function () {
+      const searchInputs = Array.from(document.querySelectorAll('[data-calculator-search]'));
+      const cards = Array.from(document.querySelectorAll('[data-calculator-card]'));
+      const categoryTabs = Array.from(document.querySelectorAll('[data-category-tab]'));
+      const heroCategoryButtons = Array.from(document.querySelectorAll('[data-hero-category]'));
+      const resetButtons = Array.from(document.querySelectorAll('[data-reset-filters]'));
+      const searchCount = document.querySelector('[data-search-count]');
+      const activeCategoryLabel = document.querySelector('[data-active-category-label]');
+      const activeFilterBar = document.querySelector('[data-active-filter-bar]');
+      const filterSummary = document.querySelector('[data-filter-summary]');
+      const emptyState = document.querySelector('[data-search-empty]');
+
+      let activeCategory = '';
+      let currentQuery = '';
+
+      function getSearchQuery() {
+        const input = searchInputs.find((i) => i && i.value);
+        return (input ? input.value : currentQuery).trim().toLowerCase();
+      }
+
+      function updateResults() {
+        const query = getSearchQuery();
+        let visibleCount = 0;
+
+        cards.forEach((card) => {
+          const searchableText = card.dataset.searchText || '';
+          const cardCategory = card.dataset.calculatorCategory || '';
+          const matchesSearch = query.length === 0 || searchableText.includes(query);
+          const matchesCategory = activeCategory.length === 0 || cardCategory === activeCategory;
+          const isVisible = matchesSearch && matchesCategory;
+
+          if (isVisible) {
+            card.removeAttribute('hidden');
+            card.style.display = '';
+            visibleCount += 1;
+          } else {
+            card.setAttribute('hidden', '');
+            card.style.display = 'none';
+          }
+        });
+
+        // Update indicators & counters
+        if (searchCount) searchCount.textContent = String(visibleCount);
+        if (activeCategoryLabel) activeCategoryLabel.textContent = activeCategory || 'All Categories';
+
+        // Update active filter summary bar
+        if (activeFilterBar && filterSummary) {
+          const hasFilters = activeCategory.length > 0 || query.length > 0;
+          if (hasFilters) {
+            activeFilterBar.removeAttribute('hidden');
+            activeFilterBar.style.display = 'flex';
+            const parts = [];
+            if (activeCategory) parts.push(`Category: "${activeCategory}"`);
+            if (query) parts.push(`Search: "${query}"`);
+            filterSummary.textContent = parts.join(' | ');
+          } else {
+            activeFilterBar.setAttribute('hidden', '');
+            activeFilterBar.style.display = 'none';
+          }
+        }
+
+        // Empty state alert
+        if (emptyState) {
+          if (visibleCount === 0) {
+            emptyState.removeAttribute('hidden');
+            emptyState.style.display = 'block';
+          } else {
+            emptyState.setAttribute('hidden', '');
+            emptyState.style.display = 'none';
+          }
+        }
+      }
+
+      function setActiveCategory(catName, shouldScroll = false) {
+        activeCategory = (catName || '').trim();
+
+        categoryTabs.forEach((tab) => {
+          const tabCat = (tab.dataset.categoryName || '').trim();
+          const isSelected = (!activeCategory && !tabCat) || (activeCategory && tabCat === activeCategory);
+
+          tab.setAttribute('aria-pressed', String(isSelected));
+          tab.setAttribute('aria-selected', String(isSelected));
+
+          if (isSelected) {
+            tab.className = 'inline-flex cursor-pointer items-center gap-2 rounded-full border px-4 py-2 text-sm font-semibold transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--accent)] border-[color:var(--accent)] bg-[color:var(--accent)] text-white shadow-sm ring-1 ring-[color:var(--accent)]';
+          } else {
+            tab.className = 'inline-flex cursor-pointer items-center gap-2 rounded-full border px-4 py-2 text-sm font-semibold transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--accent)] border-[color:var(--border)] bg-[color:var(--surface)] text-[color:var(--fg)] hover:border-[color:var(--accent)] hover:bg-[color:var(--surface-strong)]';
+          }
+        });
+
+        updateResults();
+
+        if (shouldScroll) {
+          const target = document.getElementById('calculators');
+          if (target) {
+            target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }
+        }
+      }
+
+      function resetAllFilters() {
+        searchInputs.forEach((input) => {
+          if (input) input.value = '';
+        });
+        currentQuery = '';
+        setActiveCategory('');
+      }
+
+      // Check URL parameters / hashes for initial category filter
+      function readUrlCategory() {
+        try {
+          const params = new URLSearchParams(window.location.search);
+          let cat = params.get('category');
+          if (!cat && window.location.hash) {
+            const hash = window.location.hash;
+            if (hash.includes('category=')) {
+              const hashParams = new URLSearchParams(hash.split('?')[1] || hash.substring(1));
+              cat = hashParams.get('category');
+            }
+          }
+          if (cat) {
+            setActiveCategory(decodeURIComponent(cat));
+          }
+        } catch (e) {}
+      }
+
+      // Category tab click events
+      categoryTabs.forEach((tab) => {
+        tab.addEventListener('click', () => {
+          const cat = tab.dataset.categoryName || '';
+          setActiveCategory(cat);
+        });
+      });
+
+      // Hero quick category buttons
+      heroCategoryButtons.forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const cat = btn.dataset.heroCategory || '';
+          setActiveCategory(cat, true);
+        });
+      });
+
+      // Search input event listeners
+      searchInputs.forEach((input) => {
+        input.addEventListener('input', (e) => {
+          currentQuery = e.target.value;
+          // Synchronize other search inputs if any
+          searchInputs.forEach((other) => {
+            if (other !== input) other.value = currentQuery;
+          });
+          updateResults();
+        });
+      });
+
+      // Reset buttons
+      resetButtons.forEach((btn) => {
+        btn.addEventListener('click', resetAllFilters);
+      });
+
+      // Keyboard shortcut '/' to focus search
+      window.addEventListener('keydown', (e) => {
+        if (e.key === '/' && !['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement?.tagName)) {
+          const mainSearch = searchInputs[0];
+          if (mainSearch) {
+            e.preventDefault();
+            mainSearch.focus();
+            mainSearch.select();
+          }
+        }
+      });
+
+      // Listen to popstate / hashchange
+      window.addEventListener('popstate', readUrlCategory);
+      window.addEventListener('hashchange', readUrlCategory);
+
+      // Initialize
+      readUrlCategory();
+      updateResults();
+    })();
+  </script>
+</SiteLayout>

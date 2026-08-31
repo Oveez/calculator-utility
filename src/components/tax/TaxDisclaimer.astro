@@ -1,0 +1,16 @@
+---
+interface Props {
+  className?: string;
+}
+
+const { className = '' } = Astro.props;
+---
+
+<div class={`rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)]/70 p-4 text-xs leading-relaxed text-[color:var(--muted)] shadow-sm ${className}`}>
+  <div class="flex items-start gap-2.5">
+    <span class="text-base select-none">⚖️</span>
+    <p>
+      <strong>Disclaimer:</strong> This calculator provides an estimate based on the selected country, tax year, and assumptions. It is for informational purposes only and does not constitute tax, legal, or financial advice. Actual tax liability may vary depending on personal circumstances, deductions, residency, region, filing status, and changes in tax law.
+    </p>
+  </div>
+</div>

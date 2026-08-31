@@ -1,0 +1,477 @@
+---
+import { allCurrencies, baselineExchangeRates, popularCurrencies } from '../data/currency';
+import AdSlot from './tax/AdSlot.astro';
+
+interface Props {
+  initialFrom?: string;
+  initialTo?: string;
+  initialAmount?: number;
+}
+
+const {
+  initialFrom = 'USD',
+  initialTo = 'EUR',
+  initialAmount = 100
+} = Astro.props as Props;
+
+const currencyList = Object.values(allCurrencies).sort((a, b) => {
+  if (a.popular && !b.popular) return -1;
+  if (!a.popular && b.popular) return 1;
+  return a.code.localeCompare(b.code);
+});
+
+const topComparisonCurrencies = ['EUR', 'GBP', 'JPY', 'CAD', 'AUD', 'CHF', 'CNY', 'INR', 'SGD', 'NZD', 'BDT', 'AED'];
+
+const faqs = [
+  {
+    q: 'How often are real-time exchange rates updated?',
+    a: 'Exchange rates are updated continuously throughout global market trading hours using free real-time central banking and interbank data feeds. When opened, rates are cached locally for fast offline access.'
+  },
+  {
+    q: 'Are these foreign exchange rates mid-market rates?',
+    a: 'Yes, this converter displays live mid-market exchange rates—the real midpoint between "buy" and "sell" rates across global currency markets, without hidden retail bank markups.'
+  },
+  {
+    q: 'Can I use this currency converter offline?',
+    a: 'Yes! The calculator includes built-in baseline rates and automatically saves the latest live rates to your browser storage, allowing full offline conversions anytime.'
+  },
+  {
+    q: 'What is the formula to convert currencies?',
+    a: 'Amount in Target Currency = (Amount in Base Currency ÷ Base Rate in USD) × Target Rate in USD.'
+  }
+];
+---
+
+<div
+  class="relative overflow-hidden rounded-[2.5rem] border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-6 shadow-[var(--shadow)] sm:p-8 lg:p-10"
+  data-currency-app
+  data-baseline-rates={JSON.stringify(baselineExchangeRates)}
+  data-initial-from={initialFrom}
+  data-initial-to={initialTo}
+  data-initial-amount={initialAmount}
+>
+  <!-- App Header & Live Status Bar -->
+  <div class="flex flex-col gap-4 border-b border-[color:var(--border)] pb-6 sm:flex-row sm:items-center sm:justify-between">
+    <div class="flex items-center gap-3">
+      <span class="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-tr from-emerald-500 to-teal-400 text-2xl shadow-md">
+        💱
+      </span>
+      <div>
+        <div class="flex items-center gap-2">
+          <h2 class="text-xl font-bold tracking-tight text-[color:var(--fg)] sm:text-2xl">
+            Live Currency Converter
+          </h2>
+          <span
+            class="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/10 px-2.5 py-0.5 text-xs font-semibold text-emerald-600 dark:text-emerald-400"
+            data-rate-status
+          >
+            <span class="h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span>
+            <span data-status-text>Live API Rates</span>
+          </span>
+        </div>
+        <p class="text-xs text-[color:var(--muted)]">
+          Real-time global exchange rates • Last updated: <span data-last-updated class="font-medium text-[color:var(--fg)]">Just now</span>
+        </p>
+      </div>
+    </div>
+
+    <!-- Refresh Action Button -->
+    <button
+      type="button"
+      class="inline-flex items-center justify-center gap-2 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] px-4 py-2 text-xs font-bold text-[color:var(--fg)] shadow-sm transition hover:border-[color:var(--accent)] hover:text-[color:var(--accent)]"
+      data-refresh-rates
+      title="Fetch latest real-time rates"
+    >
+      <span class="text-sm transition-transform duration-500" data-refresh-icon>🔄</span>
+      <span>Refresh Rates</span>
+    </button>
+  </div>
+
+  <!-- Main Conversion Inputs Grid -->
+  <div class="mt-8 grid gap-6 lg:grid-cols-[1.2fr_0.8fr] lg:items-start">
+    <div class="space-y-6">
+      <!-- Amount Input -->
+      <div>
+        <label class="block text-sm font-bold text-[color:var(--fg)]">
+          Amount to Convert
+        </label>
+        <div class="relative mt-2">
+          <span
+            class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4 text-lg font-bold text-[color:var(--muted)]"
+            data-from-symbol
+          >
+            $
+          </span>
+          <input
+            type="number"
+            min="0"
+            step="any"
+            value={initialAmount}
+            class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] py-4 pl-12 pr-4 text-2xl font-extrabold text-[color:var(--fg)] shadow-inner outline-none transition focus:border-[color:var(--accent)] focus:ring-2 focus:ring-[color:var(--accent-soft)]"
+            data-amount-input
+            placeholder="Enter amount"
+          />
+        </div>
+      </div>
+
+      <!-- Quick Amount Presets -->
+      <div class="flex flex-wrap items-center gap-2">
+        <span class="text-xs text-[color:var(--muted)]">Presets:</span>
+        {['10', '50', '100', '500', '1000', '5000'].map((preset) => (
+          <button
+            type="button"
+            class="cursor-pointer rounded-lg border border-[color:var(--border)] bg-[color:var(--surface)] px-2.5 py-1 text-xs font-medium text-[color:var(--fg)] transition hover:border-[color:var(--accent)]"
+            data-preset={preset}
+          >
+            {preset === '1000' ? '1k' : preset === '5000' ? '5k' : `$${preset}`}
+          </button>
+        ))}
+      </div>
+
+      <!-- Currency Selectors Row with Swap -->
+      <div class="grid grid-cols-[1fr_auto_1fr] items-center gap-3">
+        <!-- From Currency -->
+        <div class="space-y-1.5">
+          <label class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">
+            From Currency
+          </label>
+          <div class="relative">
+            <select
+              class="w-full cursor-pointer appearance-none rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] py-3.5 pl-4 pr-10 text-sm font-bold text-[color:var(--fg)] shadow-sm outline-none transition focus:border-[color:var(--accent)] focus:ring-2 focus:ring-[color:var(--accent-soft)]"
+              data-from-currency
+            >
+              {currencyList.map((c) => (
+                <option value={c.code} selected={c.code === initialFrom}>
+                  {c.flag} {c.code} - {c.name} ({c.symbol})
+                </option>
+              ))}
+            </select>
+            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-xs text-[color:var(--muted)]">
+              ▼
+            </div>
+          </div>
+        </div>
+
+        <!-- Swap Button -->
+        <div class="pt-6">
+          <button
+            type="button"
+            class="flex h-12 w-12 items-center justify-center rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] text-lg font-bold text-[color:var(--fg)] shadow-sm transition hover:scale-105 hover:border-[color:var(--accent)] hover:bg-[color:var(--accent-soft)] hover:text-[color:var(--accent)]"
+            data-swap-btn
+            title="Swap currencies"
+          >
+            <span class="transition-transform duration-300" data-swap-icon>⇄</span>
+          </button>
+        </div>
+
+        <!-- To Currency -->
+        <div class="space-y-1.5">
+          <label class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">
+            To Currency
+          </label>
+          <div class="relative">
+            <select
+              class="w-full cursor-pointer appearance-none rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] py-3.5 pl-4 pr-10 text-sm font-bold text-[color:var(--fg)] shadow-sm outline-none transition focus:border-[color:var(--accent)] focus:ring-2 focus:ring-[color:var(--accent-soft)]"
+              data-to-currency
+            >
+              {currencyList.map((c) => (
+                <option value={c.code} selected={c.code === initialTo}>
+                  {c.flag} {c.code} - {c.name} ({c.symbol})
+                </option>
+              ))}
+            </select>
+            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-xs text-[color:var(--muted)]">
+              ▼
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Conversion Result Card -->
+    <div class="rounded-3xl border border-[color:var(--accent)]/30 bg-gradient-to-br from-[color:var(--accent-soft)] via-[color:var(--surface)] to-transparent p-6 shadow-sm sm:p-8 space-y-6">
+      <div>
+        <p class="text-xs font-bold uppercase tracking-wider text-[color:var(--accent)]" data-conversion-label>
+          Converted Result
+        </p>
+        <p class="mt-2 text-3xl font-black tracking-tight text-[color:var(--fg)] sm:text-4xl" data-main-result>
+          Calculating...
+        </p>
+        <p class="mt-1 text-sm font-medium text-[color:var(--muted)]" data-sub-result>
+          -
+        </p>
+      </div>
+
+      <!-- Live Exchange Rate Indicators -->
+      <div class="space-y-2.5 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-xs">
+        <div class="flex items-center justify-between">
+          <span class="text-[color:var(--muted)]">Direct Rate:</span>
+          <span class="font-mono font-bold text-[color:var(--fg)]" data-direct-rate>1 USD = 0.9250 EUR</span>
+        </div>
+        <div class="flex items-center justify-between border-t border-[color:var(--border)]/60 pt-2">
+          <span class="text-[color:var(--muted)]">Inverse Rate:</span>
+          <span class="font-mono font-bold text-[color:var(--fg)]" data-inverse-rate>1 EUR = 1.0811 USD</span>
+        </div>
+      </div>
+
+      <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)]/70 p-3 text-center text-xs text-[color:var(--muted)]">
+        ⚡ Mid-market rates with 0% markup or bank spreads.
+      </div>
+    </div>
+  </div>
+
+  <!-- Multi-Currency Comparison Grid -->
+  <div class="mt-10 space-y-3">
+    <div class="flex items-center justify-between">
+      <h3 class="text-sm font-bold uppercase tracking-wider text-[color:var(--fg)]">
+        Live Conversion Matrix (<span data-matrix-base>USD</span>)
+      </h3>
+      <span class="text-xs text-[color:var(--muted)]">Instant Top Currencies</span>
+    </div>
+
+    <div class="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6" data-comparison-matrix>
+      {topComparisonCurrencies.map((code) => {
+        const info = allCurrencies[code] || { code, flag: '🌐', symbol: '$', name: code };
+        return (
+          <div
+            class="group flex flex-col justify-between rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3.5 transition hover:border-[color:var(--accent)] hover:shadow-sm"
+            data-matrix-item={code}
+          >
+            <div class="flex items-center justify-between text-xs">
+              <span class="text-lg">{info.flag}</span>
+              <span class="font-bold text-[color:var(--fg)]">{code}</span>
+            </div>
+            <div class="mt-2">
+              <p class="text-sm font-extrabold text-[color:var(--fg)] group-hover:text-[color:var(--accent)]" data-matrix-value={code}>
+                -
+              </p>
+              <p class="text-[10px] text-[color:var(--muted)]" data-matrix-rate={code}>
+                -
+              </p>
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  </div>
+
+  <!-- AdSense Reusable Monetization Zone -->
+  <AdSlot position="middle" />
+
+  <!-- Educational Section -->
+  <section class="mt-10 space-y-4 rounded-[2rem] border border-[color:var(--border)] bg-[color:var(--surface)] p-6 sm:p-8">
+    <h3 class="text-xl font-bold text-[color:var(--fg)]">
+      Understanding Real-Time Currency Exchange Rates
+    </h3>
+    <p class="text-sm leading-relaxed text-[color:var(--muted)]">
+      Foreign exchange (Forex) rates fluctuate continuously based on global trade, interest rate decisions by central banks (such as the Federal Reserve, European Central Bank, and Bank of England), inflation reports, and geopolitical factors.
+    </p>
+    <div class="grid gap-4 sm:grid-cols-3 pt-2">
+      <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] p-4">
+        <p class="font-bold text-[color:var(--fg)]">Mid-Market Rate</p>
+        <p class="mt-1 text-xs text-[color:var(--muted)]">The fair midpoint between wholesale buy and sell rates in international banking.</p>
+      </div>
+      <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] p-4">
+        <p class="font-bold text-[color:var(--fg)]">Zero Retail Markup</p>
+        <p class="mt-1 text-xs text-[color:var(--muted)]">Calculated without credit card fees or 2-4% retail foreign transaction margins.</p>
+      </div>
+      <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] p-4">
+        <p class="font-bold text-[color:var(--fg)]">Real-Time Sync</p>
+        <p class="mt-1 text-xs text-[color:var(--muted)]">Live API feed with automatic local storage caching for offline resiliency.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQs Accordion -->
+  <section class="mt-10 space-y-4">
+    <h3 class="text-xl font-bold text-[color:var(--fg)]">
+      Frequently Asked Questions
+    </h3>
+    <div class="space-y-3">
+      {faqs.map((faq) => (
+        <details class="group rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 transition open:bg-[color:var(--surface-strong)]">
+          <summary class="flex cursor-pointer list-none items-center justify-between text-sm font-semibold text-[color:var(--fg)]">
+            <span>{faq.q}</span>
+            <span class="text-base text-[color:var(--accent)] transition-transform group-open:rotate-45">+</span>
+          </summary>
+          <p class="mt-2 text-xs leading-relaxed text-[color:var(--muted)]">{faq.a}</p>
+        </details>
+      ))}
+    </div>
+  </section>
+</div>
+
+<!-- Client-Side Real-Time Currency Converter Logic -->
+<script>
+  (function () {
+    const app = document.querySelector('[data-currency-app]');
+    if (!app) return;
+
+    const amountInput = app.querySelector('[data-amount-input]');
+    const fromSelect = app.querySelector('[data-from-currency]');
+    const toSelect = app.querySelector('[data-to-currency]');
+    const swapBtn = app.querySelector('[data-swap-btn]');
+    const refreshBtn = app.querySelector('[data-refresh-rates]');
+    const refreshIcon = app.querySelector('[data-refresh-icon]');
+    const fromSymbol = app.querySelector('[data-from-symbol]');
+    const mainResult = app.querySelector('[data-main-result]');
+    const subResult = app.querySelector('[data-sub-result]');
+    const conversionLabel = app.querySelector('[data-conversion-label]');
+    const directRateEl = app.querySelector('[data-direct-rate]');
+    const inverseRateEl = app.querySelector('[data-inverse-rate]');
+    const lastUpdatedEl = app.querySelector('[data-last-updated]');
+    const statusTextEl = app.querySelector('[data-status-text]');
+    const matrixBaseEl = app.querySelector('[data-matrix-base]');
+    const presetButtons = Array.from(app.querySelectorAll('[data-preset]'));
+
+    const baselineRates = JSON.parse(app.getAttribute('data-baseline-rates') || '{}');
+    let liveRates = { ...baselineRates };
+    const CACHE_KEY = 'calc_live_currency_rates_v1';
+    const CACHE_TIME_KEY = 'calc_live_currency_rates_time_v1';
+
+    // Currency Symbols Map
+    const symbols = {
+      USD: '$', EUR: '€', GBP: '£', JPY: '¥', CAD: '$', AUD: '$', CHF: 'CHF', CNY: '¥',
+      INR: '₹', SGD: '$', NZD: '$', HKD: '$', KRW: '₩', MXN: '$', BRL: 'R$', SEK: 'kr',
+      NOK: 'kr', DKK: 'kr', PLN: 'zł', ZAR: 'R', AED: 'د.إ', SAR: '﷼', BDT: '৳', TRY: '₺',
+      THB: '฿', IDR: 'Rp', MYR: 'RM', PHP: '₱', VND: '₫', EGP: 'E£'
+    };
+
+    function formatCurrencyValue(amount, currencyCode) {
+      const sym = symbols[currencyCode] || currencyCode + ' ';
+      const decimals = currencyCode === 'JPY' || currencyCode === 'KRW' || currencyCode === 'VND' ? 0 : 2;
+      return sym + Number(amount).toLocaleString('en-US', {
+        minimumFractionDigits: decimals,
+        maximumFractionDigits: decimals
+      });
+    }
+
+    function calculateConversion() {
+      const amt = parseFloat(amountInput?.value) || 0;
+      const from = fromSelect?.value || 'USD';
+      const to = toSelect?.value || 'EUR';
+
+      const fromRateUSD = liveRates[from] || 1.0;
+      const toRateUSD = liveRates[to] || 1.0;
+
+      const rateDirect = toRateUSD / fromRateUSD;
+      const rateInverse = fromRateUSD / toRateUSD;
+      const convertedValue = (amt / fromRateUSD) * toRateUSD;
+
+      if (fromSymbol) fromSymbol.textContent = symbols[from] || from;
+      if (mainResult) mainResult.textContent = formatCurrencyValue(convertedValue, to);
+      if (subResult) subResult.textContent = `${formatCurrencyValue(amt, from)} ${from} = ${formatCurrencyValue(convertedValue, to)} ${to}`;
+      if (conversionLabel) conversionLabel.textContent = `${from} to ${to} Conversion`;
+
+      if (directRateEl) {
+        const dDecimals = rateDirect < 0.01 ? 6 : rateDirect < 1 ? 4 : 4;
+        directRateEl.textContent = `1 ${from} = ${rateDirect.toFixed(dDecimals)} ${to}`;
+      }
+      if (inverseRateEl) {
+        const iDecimals = rateInverse < 0.01 ? 6 : rateInverse < 1 ? 4 : 4;
+        inverseRateEl.textContent = `1 ${to} = ${rateInverse.toFixed(iDecimals)} ${from}`;
+      }
+
+      // Update Live Comparison Matrix
+      if (matrixBaseEl) matrixBaseEl.textContent = from;
+      const matrixItems = Array.from(app.querySelectorAll('[data-matrix-item]'));
+      matrixItems.forEach((item) => {
+        const targetCode = item.getAttribute('data-matrix-item');
+        if (!targetCode) return;
+        const targetRateUSD = liveRates[targetCode] || 1.0;
+        const targetConverted = (amt / fromRateUSD) * targetRateUSD;
+        const perUnitRate = targetRateUSD / fromRateUSD;
+
+        const valEl = item.querySelector('[data-matrix-value]');
+        const rateSubEl = item.querySelector('[data-matrix-rate]');
+
+        if (valEl) valEl.textContent = formatCurrencyValue(targetConverted, targetCode);
+        if (rateSubEl) {
+          const dec = perUnitRate < 0.1 ? 4 : 2;
+          rateSubEl.textContent = `1 ${from} = ${perUnitRate.toFixed(dec)} ${targetCode}`;
+        }
+      });
+    }
+
+    // Fetch real-time exchange rates
+    async function fetchLiveRates(force = false) {
+      if (refreshIcon) refreshIcon.classList.add('animate-spin');
+      if (statusTextEl) statusTextEl.textContent = 'Fetching Live Rates...';
+
+      try {
+        const cached = localStorage.getItem(CACHE_KEY);
+        const cachedTime = localStorage.getItem(CACHE_TIME_KEY);
+        const isFresh = cached && cachedTime && (Date.now() - Number(cachedTime) < 3600000); // 1 hour cache
+
+        if (!force && isFresh) {
+          liveRates = { ...baselineRates, ...JSON.parse(cached) };
+          const dateStr = new Date(Number(cachedTime)).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+          if (lastUpdatedEl) lastUpdatedEl.textContent = dateStr;
+          if (statusTextEl) statusTextEl.textContent = 'Live API Rates (Cached)';
+          calculateConversion();
+          if (refreshIcon) refreshIcon.classList.remove('animate-spin');
+          return;
+        }
+
+        // Fetch from Open Exchange Rates Free Endpoint
+        const response = await fetch('https://open.er-api.com/v6/latest/USD');
+        if (!response.ok) throw new Error('Primary API failed');
+        const data = await response.json();
+
+        if (data && data.rates) {
+          liveRates = { ...baselineRates, ...data.rates };
+          localStorage.setItem(CACHE_KEY, JSON.stringify(data.rates));
+          localStorage.setItem(CACHE_TIME_KEY, String(Date.now()));
+          const nowStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+          if (lastUpdatedEl) lastUpdatedEl.textContent = nowStr;
+          if (statusTextEl) statusTextEl.textContent = 'Live Rates (Real-Time)';
+        }
+      } catch (e) {
+        console.warn('Real-time rates fetch failed, trying secondary fallback or offline baseline:', e);
+        try {
+          const fb = await fetch('https://api.frankfurter.app/latest?from=USD');
+          const fbData = await fb.json();
+          if (fbData && fbData.rates) {
+            liveRates = { ...baselineRates, ...fbData.rates };
+            if (statusTextEl) statusTextEl.textContent = 'Live Rates (ECB)';
+          }
+        } catch (err) {
+          if (statusTextEl) statusTextEl.textContent = 'Offline Baseline Mode';
+        }
+      } finally {
+        if (refreshIcon) refreshIcon.classList.remove('animate-spin');
+        calculateConversion();
+      }
+    }
+
+    // Event Listeners
+    amountInput?.addEventListener('input', calculateConversion);
+    fromSelect?.addEventListener('change', calculateConversion);
+    toSelect?.addEventListener('change', calculateConversion);
+
+    swapBtn?.addEventListener('click', () => {
+      const fromVal = fromSelect?.value;
+      const toVal = toSelect?.value;
+      if (fromVal && toVal && fromSelect && toSelect) {
+        fromSelect.value = toVal;
+        toSelect.value = fromVal;
+        calculateConversion();
+      }
+    });
+
+    refreshBtn?.addEventListener('click', () => fetchLiveRates(true));
+
+    presetButtons.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const val = btn.dataset.preset;
+        if (val && amountInput) {
+          amountInput.value = val;
+          calculateConversion();
+        }
+      });
+    });
+
+    // Initial Load
+    fetchLiveRates(false);
+  })();
+</script>

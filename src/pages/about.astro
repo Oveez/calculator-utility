@@ -1,0 +1,88 @@
+---
+import SiteLayout from '../layouts/SiteLayout.astro';
+import { siteName, withBasePath } from '../utils/site';
+---
+
+<SiteLayout title={`About · ${siteName}`} description="Learn about the design principles, zero-tracking privacy, and static architecture of Calculator Utility.">
+  <article class="mx-auto max-w-4xl space-y-10 py-6">
+    <header class="space-y-4">
+      <p class="inline-flex rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-4 py-1.5 text-xs font-semibold uppercase tracking-wider text-[color:var(--accent)]">
+        About The Project
+      </p>
+      <h1 class="text-4xl font-bold tracking-tight text-[color:var(--fg)] sm:text-5xl">
+        Fast, Transparent, and Private Utilities for Everyone.
+      </h1>
+      <p class="text-lg leading-8 text-[color:var(--muted)]">
+        {siteName} is a zero-backend, statically built collection of everyday calculators designed for speed, clarity, and uncompromising privacy.
+      </p>
+    </header>
+
+    <section class="grid gap-6 sm:grid-cols-2">
+      <div class="rounded-[2rem] border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-6 shadow-sm">
+        <span class="text-3xl">⚡</span>
+        <h2 class="mt-3 text-xl font-semibold text-[color:var(--fg)]">Instant Performance</h2>
+        <p class="mt-2 text-sm leading-6 text-[color:var(--muted)]">
+          Built with Astro 7 SSG. Every page is pre-rendered to lightweight static HTML and CSS. Calculations execute directly in browser memory without API delays or network lag.
+        </p>
+      </div>
+
+      <div class="rounded-[2rem] border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-6 shadow-sm">
+        <span class="text-3xl">🔒</span>
+        <h2 class="mt-3 text-xl font-semibold text-[color:var(--fg)]">100% Client-Side Privacy</h2>
+        <p class="mt-2 text-sm leading-6 text-[color:var(--muted)]">
+          Your numbers, financial records, and inputs never leave your device. We use zero tracking cookies, zero marketing pixels, and zero server logging.
+        </p>
+      </div>
+
+      <div class="rounded-[2rem] border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-6 shadow-sm">
+        <span class="text-3xl">📐</span>
+        <h2 class="mt-3 text-xl font-semibold text-[color:var(--fg)]">Clear & Auditable Math</h2>
+        <p class="mt-2 text-sm leading-6 text-[color:var(--muted)]">
+          Every tool is accompanied by an in-depth breakdown of the underlying equations, worked numerical examples, and FAQs so you can verify how answers are derived.
+        </p>
+      </div>
+
+      <div class="rounded-[2rem] border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-6 shadow-sm">
+        <span class="text-3xl">📱</span>
+        <h2 class="mt-3 text-xl font-semibold text-[color:var(--fg)]">Universal Accessibility</h2>
+        <p class="mt-2 text-sm leading-6 text-[color:var(--muted)]">
+          Engineered with responsive layouts, dark mode support, screen reader ARIA landmarks, and keyboard shortcuts for seamless operation on phones, tablets, and desktops.
+        </p>
+      </div>
+    </section>
+
+    <section class="rounded-[2rem] border border-[color:var(--border)] bg-[color:var(--surface)] p-8">
+      <h2 class="text-2xl font-bold text-[color:var(--fg)]">Technology Architecture</h2>
+      <p class="mt-3 leading-7 text-[color:var(--muted)]">
+        The application is powered by modern static web standards:
+      </p>
+      <ul class="mt-4 space-y-3 text-sm text-[color:var(--muted)]">
+        <li class="flex items-start gap-3">
+          <span class="font-bold text-[color:var(--accent)]">✓</span>
+          <span><strong>Astro 7:</strong> Delivers fast SSG routing with zero unnecessary JavaScript hydration.</span>
+        </li>
+        <li class="flex items-start gap-3">
+          <span class="font-bold text-[color:var(--accent)]">✓</span>
+          <span><strong>Tailwind CSS v4:</strong> Provides high-fidelity theme styling with automated dark/light mode tokenization.</span>
+        </li>
+        <li class="flex items-start gap-3">
+          <span class="font-bold text-[color:var(--accent)]">✓</span>
+          <span><strong>TypeScript 5.9:</strong> Ensures type-safe calculator formulas and standardized input configurations.</span>
+        </li>
+        <li class="flex items-start gap-3">
+          <span class="font-bold text-[color:var(--accent)]">✓</span>
+          <span><strong>Schema.org JSON-LD:</strong> Full structured metadata for enhanced search engine discoverability.</span>
+        </li>
+      </ul>
+    </section>
+
+    <div class="flex justify-center pt-4">
+      <a
+        href={withBasePath('/#calculators')}
+        class="inline-flex items-center gap-2 rounded-full bg-[color:var(--accent)] px-8 py-3.5 text-base font-semibold text-white shadow-md transition hover:bg-[color:var(--accent-strong)] hover:shadow-lg"
+      >
+        Explore All Calculators →
+      </a>
+    </div>
+  </article>
+</SiteLayout>

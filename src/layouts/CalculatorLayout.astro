@@ -1,0 +1,91 @@
+---
+import SiteLayout from './SiteLayout.astro';
+import type { BreadcrumbItem, CalculatorConfig, CalculatorFaqItem } from '../types/calculator';
+import { siteName, toAbsoluteUrl } from '../utils/site';
+
+interface Props {
+  calculator: CalculatorConfig;
+  breadcrumbs?: BreadcrumbItem[];
+  faq?: CalculatorFaqItem[];
+  canonical?: string;
+}
+
+const { calculator, breadcrumbs, faq = calculator.faq, canonical } = Astro.props as Props;
+const breadcrumbItems =
+  breadcrumbs ?? [
+    { label: 'Home', href: toAbsoluteUrl('/') },
+    { label: 'Calculators', href: toAbsoluteUrl('/#calculators') },
+    { label: calculator.title },
+  ];
+const canonicalUrl = canonical ?? toAbsoluteUrl(`/calculators/${calculator.slug}/`);
+const pageTitle = calculator.metaTitle ?? `${calculator.title} Calculator`;
+
+const schemaGraph = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebApplication',
+    name: calculator.title,
+    description: calculator.metaDescription,
+    url: canonicalUrl,
+    applicationCategory: calculator.category,
+    operatingSystem: 'Web',
+    publisher: {
+      '@type': 'Organization',
+      name: siteName,
+    },
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: breadcrumbItems
+      .filter((item): item is BreadcrumbItem & { href: string } => Boolean(item.href))
+      .map((item, index) => ({
+        '@type': 'ListItem',
+        position: index + 1,
+        name: item.label,
+        item: item.href,
+      })),
+  },
+  ...(faq.length > 0
+    ? [
+        {
+          '@context': 'https://schema.org',
+          '@type': 'FAQPage',
+          mainEntity: faq.map((entry) => ({
+            '@type': 'Question',
+            name: entry.question,
+            acceptedAnswer: {
+              '@type': 'Answer',
+              text: entry.answer,
+            },
+          })),
+        },
+      ]
+    : []),
+];
+---
+
+<SiteLayout title={pageTitle} description={calculator.metaDescription} canonical={canonicalUrl}>
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(schemaGraph)} />
+
+  <nav aria-label="Breadcrumb" class="mb-6">
+    <ol class="flex flex-wrap items-center gap-2 text-sm text-[color:var(--muted)]">
+      {breadcrumbItems.map((item, index) => (
+        <li class="flex items-center gap-2">
+          {index > 0 && <span aria-hidden="true">/</span>}
+          {item.href ? (
+            <a class="transition hover:text-[color:var(--fg)]" href={item.href}>
+              {item.label}
+            </a>
+          ) : (
+            <span aria-current="page" class="font-medium text-[color:var(--fg)]">
+              {item.label}
+            </span>
+          )}
+        </li>
+      ))}
+    </ol>
+  </nav>
+
+  <slot />
+</SiteLayout>

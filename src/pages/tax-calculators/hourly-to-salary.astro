@@ -1,0 +1,186 @@
+---
+import SiteLayout from '../../layouts/SiteLayout.astro';
+import AdSlot from '../../components/tax/AdSlot.astro';
+import TaxDisclaimer from '../../components/tax/TaxDisclaimer.astro';
+import CountryTaxSelector from '../../components/tax/CountryTaxSelector.astro';
+---
+
+<SiteLayout
+  title="Hourly to Salary Calculator with Overtime Pay | Free Wage Tool"
+  description="Calculate your annual salary from your hourly wage, including overtime hours (1.5x time-and-a-half) and double time (2.0x)."
+>
+  <div class="mx-auto max-w-4xl space-y-10">
+    <nav class="flex items-center gap-2 text-xs font-medium text-[color:var(--muted)]" aria-label="Breadcrumb">
+      <a href="/" class="hover:text-[color:var(--accent)]">Home</a>
+      <span>/</span>
+      <a href="/tax-calculators/" class="hover:text-[color:var(--accent)]">Tax Calculators</a>
+      <span>/</span>
+      <span class="text-[color:var(--fg)] font-semibold">Hourly to Salary</span>
+    </nav>
+
+    <header class="space-y-3">
+      <div class="inline-flex items-center gap-2 rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3.5 py-1 text-xs font-semibold text-[color:var(--accent)]">
+        <span>💼 Hourly Wage &amp; Overtime Tool</span>
+      </div>
+      <h1 class="text-3xl font-extrabold tracking-tight text-[color:var(--fg)] sm:text-4xl">
+        Hourly to Salary Calculator
+      </h1>
+      <p class="text-base text-[color:var(--muted)]">
+        Compute your total annual earnings, regular wages, and overtime compensation based on your hourly pay rate.
+      </p>
+    </header>
+
+    <AdSlot slotId="hourly-salary-top" position="top" />
+
+    <div class="rounded-[2.5rem] border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-6 shadow-[var(--shadow)] sm:p-10" data-hourly-app>
+      <div class="grid gap-8 lg:grid-cols-2">
+        <div class="space-y-4">
+          <div>
+            <label for="hourly-rate-input" class="block text-sm font-bold text-[color:var(--fg)]">
+              Hourly Pay Rate ($/hr)
+            </label>
+            <div class="relative mt-2">
+              <span class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4 text-base font-bold text-[color:var(--muted)]">$</span>
+              <input
+                id="hourly-rate-input"
+                type="number"
+                min="0"
+                step="0.5"
+                value="35"
+                class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] py-3.5 pl-10 pr-4 text-xl font-extrabold text-[color:var(--fg)] shadow-inner outline-none transition focus:border-[color:var(--accent)] focus:ring-2 focus:ring-[color:var(--accent-soft)]"
+                data-hourly-rate
+              />
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label for="reg-hours-input" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">
+                Regular Hours / Week
+              </label>
+              <input
+                id="reg-hours-input"
+                type="number"
+                min="1"
+                max="80"
+                value="40"
+                class="mt-1.5 w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] p-3 text-sm font-bold text-[color:var(--fg)] outline-none"
+                data-reg-hours
+              />
+            </div>
+            <div>
+              <label for="ot-hours-input" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">
+                Overtime (1.5x) Hrs / Week
+              </label>
+              <input
+                id="ot-hours-input"
+                type="number"
+                min="0"
+                max="40"
+                value="5"
+                class="mt-1.5 w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] p-3 text-sm font-bold text-[color:var(--fg)] outline-none"
+                data-ot-hours
+              />
+            </div>
+          </div>
+
+          <div>
+            <label for="work-weeks-input" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">
+              Paid Weeks / Year
+            </label>
+            <input
+              id="work-weeks-input"
+              type="number"
+              min="1"
+              max="52"
+              value="52"
+              class="mt-1.5 w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] p-3 text-sm font-bold text-[color:var(--fg)] outline-none"
+              data-work-weeks
+            />
+          </div>
+        </div>
+
+        <!-- Output Card -->
+        <div class="rounded-3xl border border-[color:var(--accent)]/30 bg-gradient-to-br from-[color:var(--accent-soft)] to-transparent p-6 shadow-sm sm:p-8 space-y-4">
+          <div>
+            <p class="text-xs font-bold uppercase tracking-wider text-[color:var(--accent)]">Total Annual Gross Salary</p>
+            <p class="mt-1 text-4xl font-extrabold text-[color:var(--fg)] sm:text-5xl" data-total-salary>$86,450.00</p>
+            <p class="text-xs text-[color:var(--muted)]">Including overtime compensation</p>
+          </div>
+
+          <div class="space-y-2.5 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-xs">
+            <div class="flex items-center justify-between text-[color:var(--muted)]">
+              <span>Base Regular Pay / Year:</span>
+              <span class="font-bold text-[color:var(--fg)]" data-base-pay>$72,800.00</span>
+            </div>
+            <div class="flex items-center justify-between text-amber-500 font-bold">
+              <span>Overtime Earnings / Year:</span>
+              <span data-ot-pay>+$13,650.00</span>
+            </div>
+            <div class="flex items-center justify-between text-[color:var(--muted)] border-t border-[color:var(--border)] pt-2">
+              <span>Monthly Gross Pay:</span>
+              <span class="font-bold text-[color:var(--fg)]" data-monthly-gross>$7,204.17</span>
+            </div>
+            <div class="flex items-center justify-between text-[color:var(--muted)]">
+              <span>Weekly Gross Pay:</span>
+              <span class="font-bold text-[color:var(--fg)]" data-weekly-gross>$1,662.50</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <CountryTaxSelector compact={true} title="Calculate Taxes on this Salary" />
+    <TaxDisclaimer />
+  </div>
+</SiteLayout>
+
+<script>
+  (function () {
+    const app = document.querySelector('[data-hourly-app]');
+    if (!app) return;
+
+    const rateInput = app.querySelector('[data-hourly-rate]');
+    const regInput = app.querySelector('[data-reg-hours]');
+    const otInput = app.querySelector('[data-ot-hours]');
+    const weeksInput = app.querySelector('[data-work-weeks]');
+
+    const totalSalaryEl = app.querySelector('[data-total-salary]');
+    const basePayEl = app.querySelector('[data-base-pay]');
+    const otPayEl = app.querySelector('[data-ot-pay]');
+    const monthlyGrossEl = app.querySelector('[data-monthly-gross]');
+    const weeklyGrossEl = app.querySelector('[data-weekly-gross]');
+
+    function fmt(val) {
+      return '$' + val.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+
+    function calculate() {
+      const rate = Math.max(0, parseFloat(rateInput?.value) || 0);
+      const regHours = Math.max(0, parseFloat(regInput?.value) || 0);
+      const otHours = Math.max(0, parseFloat(otInput?.value) || 0);
+      const weeks = Math.max(1, parseFloat(weeksInput?.value) || 52);
+
+      const weeklyBase = rate * regHours;
+      const weeklyOT = rate * 1.5 * otHours;
+      const totalWeekly = weeklyBase + weeklyOT;
+
+      const annualBase = weeklyBase * weeks;
+      const annualOT = weeklyOT * weeks;
+      const annualTotal = totalWeekly * weeks;
+
+      if (totalSalaryEl) totalSalaryEl.textContent = fmt(annualTotal);
+      if (basePayEl) basePayEl.textContent = fmt(annualBase);
+      if (otPayEl) otPayEl.textContent = '+' + fmt(annualOT);
+      if (monthlyGrossEl) monthlyGrossEl.textContent = fmt(annualTotal / 12);
+      if (weeklyGrossEl) weeklyGrossEl.textContent = fmt(totalWeekly);
+    }
+
+    rateInput?.addEventListener('input', calculate);
+    regInput?.addEventListener('input', calculate);
+    otInput?.addEventListener('input', calculate);
+    weeksInput?.addEventListener('input', calculate);
+
+    calculate();
+  })();
+</script>

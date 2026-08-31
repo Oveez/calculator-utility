@@ -1,0 +1,50 @@
+---
+import SiteLayout from '../layouts/SiteLayout.astro';
+import { siteName, withBasePath } from '../utils/site';
+---
+
+<SiteLayout title={`Terms of Use · ${siteName}`} description="Terms of service and informational disclaimer for Calculator Utility.">
+  <article class="mx-auto max-w-3xl space-y-8 py-6">
+    <header class="space-y-3">
+      <p class="text-xs font-semibold uppercase tracking-wider text-[color:var(--accent)]">Legal & Terms</p>
+      <h1 class="text-3xl font-bold tracking-tight text-[color:var(--fg)] sm:text-4xl">Terms of Use</h1>
+      <p class="text-sm text-[color:var(--muted)]">Last updated: August 2026</p>
+    </header>
+
+    <div class="space-y-6 text-sm leading-7 text-[color:var(--muted)]">
+      <section class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-6 shadow-sm">
+        <h2 class="text-lg font-semibold text-[color:var(--fg)]">1. Informational & Estimation Purposes Only</h2>
+        <p class="mt-2">
+          The calculation tools provided on <strong>{siteName}</strong> are designed for educational, informational, and personal estimation purposes only. While formulas are built to standard mathematical, financial, and scientific guidelines, outputs do not constitute professional financial, medical, tax, legal, or real estate advice.
+        </p>
+      </section>
+
+      <section class="space-y-3">
+        <h2 class="text-lg font-semibold text-[color:var(--fg)]">2. No Warranties & Limitation of Liability</h2>
+        <p>
+          This website and its calculation engines are provided "as is" without warranties of any kind, express or implied. Users are encouraged to verify important financial decisions (such as mortgage commitments or loan contracts) with certified financial advisors or licensed loan officers.
+        </p>
+      </section>
+
+      <section class="space-y-3">
+        <h2 class="text-lg font-semibold text-[color:var(--fg)]">3. Open Source & Intellectual Property</h2>
+        <p>
+          The architecture, documentation, and mathematical algorithms are provided under open-source terms. Content, branding, and layouts are maintained to offer a clean, non-commercial public utility service.
+        </p>
+      </section>
+
+      <section class="space-y-3">
+        <h2 class="text-lg font-semibold text-[color:var(--fg)]">4. Permitted Use</h2>
+        <p>
+          You are free to use all calculators for personal, educational, or commercial estimation tasks. You may link directly to any tool or bookmark pages for daily reference.
+        </p>
+      </section>
+    </div>
+
+    <div class="pt-4">
+      <a href={withBasePath('/')} class="text-sm font-semibold text-[color:var(--accent)] hover:underline">
+        ← Back to Homepage
+      </a>
+    </div>
+  </article>
+</SiteLayout>

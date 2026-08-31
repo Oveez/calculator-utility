@@ -1,0 +1,293 @@
+---
+// Interactive Standard Keypad Calculator
+---
+
+<div
+  class="relative mx-auto w-full max-w-md overflow-hidden rounded-[2.5rem] border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-6 shadow-[var(--shadow)] transition-all sm:p-7"
+  data-keypad-calc
+>
+  <!-- Display Header -->
+  <div class="mb-5 rounded-3xl border border-[color:var(--border)] bg-[color:var(--bg)] p-5 text-right shadow-inner">
+    <div class="flex items-center justify-between text-xs font-medium text-[color:var(--muted)]">
+      <span class="inline-flex items-center gap-1.5 font-semibold text-[color:var(--accent)]">
+        <span class="h-2 w-2 rounded-full bg-[color:var(--accent)] animate-pulse"></span>
+        Standard Calculator
+      </span>
+      <div class="flex items-center gap-2">
+        <span class="rounded bg-[color:var(--surface)] px-1.5 py-0.5 text-[10px] font-bold text-[color:var(--muted)] hidden" data-keypad-memory-indicator>M</span>
+        <button
+          type="button"
+          class="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] text-[color:var(--muted)] hover:text-[color:var(--accent)] transition"
+          data-keypad-copy
+          title="Copy result"
+        >
+          <span data-keypad-copy-icon>📋</span>
+          <span data-keypad-copy-text>Copy</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Expression trail -->
+    <div class="mt-2 h-5 overflow-hidden text-ellipsis whitespace-nowrap text-xs text-[color:var(--muted)]" data-keypad-history>
+      &nbsp;
+    </div>
+
+    <!-- Main Output -->
+    <div class="mt-1 overflow-x-auto text-3xl font-bold tracking-tight text-[color:var(--fg)] sm:text-4xl" data-keypad-display>
+      0
+    </div>
+  </div>
+
+  <!-- Memory Bar -->
+  <div class="mb-3 grid grid-cols-4 gap-2">
+    <button type="button" class="keypad-btn-secondary" data-action="mc">MC</button>
+    <button type="button" class="keypad-btn-secondary" data-action="mr">MR</button>
+    <button type="button" class="keypad-btn-secondary" data-action="m-plus">M+</button>
+    <button type="button" class="keypad-btn-secondary" data-action="m-minus">M-</button>
+  </div>
+
+  <!-- Main Keypad Grid -->
+  <div class="grid grid-cols-4 gap-2.5">
+    <!-- Row 1 -->
+    <button type="button" class="keypad-btn-fn" data-action="clear">AC</button>
+    <button type="button" class="keypad-btn-fn" data-action="delete">⌫</button>
+    <button type="button" class="keypad-btn-fn" data-action="percent">%</button>
+    <button type="button" class="keypad-btn-op" data-action="op" data-op="÷">÷</button>
+
+    <!-- Row 2 -->
+    <button type="button" class="keypad-btn-num" data-num="7">7</button>
+    <button type="button" class="keypad-btn-num" data-num="8">8</button>
+    <button type="button" class="keypad-btn-num" data-num="9">9</button>
+    <button type="button" class="keypad-btn-op" data-action="op" data-op="×">×</button>
+
+    <!-- Row 3 -->
+    <button type="button" class="keypad-btn-num" data-num="4">4</button>
+    <button type="button" class="keypad-btn-num" data-num="5">5</button>
+    <button type="button" class="keypad-btn-num" data-num="6">6</button>
+    <button type="button" class="keypad-btn-op" data-action="op" data-op="-">−</button>
+
+    <!-- Row 4 -->
+    <button type="button" class="keypad-btn-num" data-num="1">1</button>
+    <button type="button" class="keypad-btn-num" data-num="2">2</button>
+    <button type="button" class="keypad-btn-num" data-num="3">3</button>
+    <button type="button" class="keypad-btn-op" data-action="op" data-op="+">+</button>
+
+    <!-- Row 5 -->
+    <button type="button" class="keypad-btn-fn" data-action="negate">±</button>
+    <button type="button" class="keypad-btn-num" data-num="0">0</button>
+    <button type="button" class="keypad-btn-num" data-num=".">.</button>
+    <button type="button" class="keypad-btn-equals" data-action="equals">=</button>
+  </div>
+
+  <p class="mt-4 text-center text-xs text-[color:var(--muted)]">
+    Supports physical keyboard input (Numpad, Enter, Esc, Backspace)
+  </p>
+</div>
+
+<style>
+  @reference '../styles/global.css';
+
+  .keypad-btn-num {
+    @apply flex h-14 items-center justify-center rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] text-xl font-semibold text-[color:var(--fg)] shadow-sm transition-all hover:-translate-y-0.5 hover:bg-[color:var(--surface-strong)] hover:border-[color:var(--accent)] active:translate-y-0 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--accent)];
+  }
+
+  .keypad-btn-op {
+    @apply flex h-14 items-center justify-center rounded-2xl border border-[color:var(--accent)]/30 bg-[color:var(--accent-soft)] text-xl font-bold text-[color:var(--accent)] shadow-sm transition-all hover:-translate-y-0.5 hover:bg-[color:var(--accent)] hover:text-white active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--accent)];
+  }
+
+  .keypad-btn-fn {
+    @apply flex h-14 items-center justify-center rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] text-base font-semibold text-[color:var(--muted)] shadow-sm transition-all hover:-translate-y-0.5 hover:text-[color:var(--fg)] hover:border-[color:var(--accent)] active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--accent)];
+  }
+
+  .keypad-btn-secondary {
+    @apply flex h-8 items-center justify-center rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] text-xs font-semibold text-[color:var(--muted)] transition hover:text-[color:var(--accent)] hover:border-[color:var(--accent)] active:scale-95;
+  }
+
+  .keypad-btn-equals {
+    @apply flex h-14 items-center justify-center rounded-2xl bg-gradient-to-r from-[color:var(--accent)] to-teal-500 text-xl font-bold text-white shadow-md transition-all hover:-translate-y-0.5 hover:shadow-lg hover:brightness-110 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--accent)];
+  }
+</style>
+
+<script is:inline>
+  (function () {
+    const calc = document.querySelector('[data-keypad-calc]');
+    if (!calc) return;
+
+    const display = calc.querySelector('[data-keypad-display]');
+    const history = calc.querySelector('[data-keypad-history]');
+    const memIndicator = calc.querySelector('[data-keypad-memory-indicator]');
+    const copyBtn = calc.querySelector('[data-keypad-copy]');
+
+    let currentVal = '0';
+    let prevVal = null;
+    let operation = null;
+    let shouldResetScreen = false;
+    let memoryVal = 0;
+
+    const updateDisplay = () => {
+      if (display) display.textContent = currentVal;
+      if (history) {
+        if (prevVal !== null && operation) {
+          history.textContent = `${prevVal} ${operation}`;
+        } else {
+          history.innerHTML = '&nbsp;';
+        }
+      }
+      if (memIndicator) {
+        memIndicator.classList.toggle('hidden', memoryVal === 0);
+      }
+    };
+
+    const appendNumber = (num) => {
+      if (num === '.' && currentVal.includes('.')) return;
+      if (currentVal === '0' || shouldResetScreen) {
+        currentVal = num === '.' ? '0.' : num;
+        shouldResetScreen = false;
+      } else {
+        if (currentVal.length < 16) {
+          currentVal += num;
+        }
+      }
+      updateDisplay();
+    };
+
+    const compute = () => {
+      if (prevVal === null || !operation) return;
+      const a = parseFloat(prevVal);
+      const b = parseFloat(currentVal);
+      let result = 0;
+
+      switch (operation) {
+        case '+': result = a + b; break;
+        case '-': result = a - b; break;
+        case '×': result = a * b; break;
+        case '÷': result = b !== 0 ? a / b : 'Error'; break;
+        default: return;
+      }
+
+      if (typeof result === 'number') {
+        currentVal = String(Math.round(result * 1e10) / 1e10);
+      } else {
+        currentVal = result;
+      }
+      prevVal = null;
+      operation = null;
+      shouldResetScreen = true;
+      updateDisplay();
+    };
+
+    const chooseOperation = (op) => {
+      if (currentVal === 'Error') return;
+      if (prevVal !== null) {
+        compute();
+      }
+      prevVal = currentVal;
+      operation = op;
+      shouldResetScreen = true;
+      updateDisplay();
+    };
+
+    const clearAll = () => {
+      currentVal = '0';
+      prevVal = null;
+      operation = null;
+      shouldResetScreen = false;
+      updateDisplay();
+    };
+
+    const deleteDigit = () => {
+      if (shouldResetScreen || currentVal === 'Error') return;
+      if (currentVal.length === 1 || (currentVal.length === 2 && currentVal.startsWith('-'))) {
+        currentVal = '0';
+      } else {
+        currentVal = currentVal.slice(0, -1);
+      }
+      updateDisplay();
+    };
+
+    const negate = () => {
+      if (currentVal === '0' || currentVal === 'Error') return;
+      currentVal = currentVal.startsWith('-') ? currentVal.slice(1) : '-' + currentVal;
+      updateDisplay();
+    };
+
+    const percentage = () => {
+      const num = parseFloat(currentVal);
+      if (isNaN(num)) return;
+      currentVal = String(num / 100);
+      updateDisplay();
+    };
+
+    // Button click delegation
+    calc.addEventListener('click', (e) => {
+      const target = e.target.closest('button');
+      if (!target) return;
+
+      const num = target.dataset.num;
+      if (num !== undefined) {
+        appendNumber(num);
+        return;
+      }
+
+      const action = target.dataset.action;
+      if (!action) return;
+
+      switch (action) {
+        case 'clear': clearAll(); break;
+        case 'delete': deleteDigit(); break;
+        case 'negate': negate(); break;
+        case 'percent': percentage(); break;
+        case 'equals': compute(); break;
+        case 'op': chooseOperation(target.dataset.op); break;
+        case 'mc': memoryVal = 0; updateDisplay(); break;
+        case 'mr': currentVal = String(memoryVal); shouldResetScreen = true; updateDisplay(); break;
+        case 'm-plus': memoryVal += parseFloat(currentVal) || 0; updateDisplay(); break;
+        case 'm-minus': memoryVal -= parseFloat(currentVal) || 0; updateDisplay(); break;
+      }
+    });
+
+    // Copy result
+    if (copyBtn) {
+      copyBtn.addEventListener('click', async () => {
+        try {
+          await navigator.clipboard.writeText(currentVal);
+          const textSpan = copyBtn.querySelector('[data-keypad-copy-text]');
+          const iconSpan = copyBtn.querySelector('[data-keypad-copy-icon]');
+          if (textSpan) textSpan.textContent = 'Copied!';
+          if (iconSpan) iconSpan.textContent = '✓';
+          setTimeout(() => {
+            if (textSpan) textSpan.textContent = 'Copy';
+            if (iconSpan) iconSpan.textContent = '📋';
+          }, 1500);
+        } catch {}
+      });
+    }
+
+    // Keyboard support
+    window.addEventListener('keydown', (e) => {
+      if (['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement?.tagName)) return;
+
+      if ((e.key >= '0' && e.key <= '9') || e.key === '.') {
+        appendNumber(e.key);
+      } else if (e.key === '+') {
+        chooseOperation('+');
+      } else if (e.key === '-') {
+        chooseOperation('-');
+      } else if (e.key === '*') {
+        chooseOperation('×');
+      } else if (e.key === '/') {
+        e.preventDefault();
+        chooseOperation('÷');
+      } else if (e.key === 'Enter' || e.key === '=') {
+        e.preventDefault();
+        compute();
+      } else if (e.key === 'Backspace') {
+        deleteDigit();
+      } else if (e.key === 'Escape') {
+        clearAll();
+      } else if (e.key === '%') {
+        percentage();
+      }
+    });
+  })();
+</script>

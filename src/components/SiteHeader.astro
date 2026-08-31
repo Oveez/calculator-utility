@@ -1,0 +1,63 @@
+---
+import ThemeToggle from './ThemeToggle.astro';
+import { siteName, withBasePath } from '../utils/site';
+
+const navigationItems = [
+  { href: withBasePath('/'), label: 'Home' },
+  { href: withBasePath('/tax-calculators/'), label: 'Tax Calculators' },
+  { href: withBasePath('/#popular'), label: 'Popular' },
+  { href: withBasePath('/#categories'), label: 'Categories' },
+  { href: withBasePath('/#calculators'), label: 'All Tools' },
+  { href: withBasePath('/about/'), label: 'About' },
+];
+---
+
+<header class="sticky top-0 z-40 border-b border-[color:var(--border)]/70 bg-[color:var(--bg)]/85 backdrop-blur-xl transition-colors">
+  <div class="mx-auto flex w-full max-w-6xl items-center justify-between gap-4 px-4 py-3.5 sm:px-6 lg:px-8">
+    <a class="flex items-center gap-2.5 transition hover:opacity-90" href={withBasePath('/')} aria-label={`${siteName} home`}>
+      <span class="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-tr from-[color:var(--accent)] to-teal-400 text-base font-bold text-white shadow-md">
+        🧮
+      </span>
+      <div class="flex flex-col">
+        <span class="text-base font-bold tracking-tight text-[color:var(--fg)]">{siteName}</span>
+        <span class="text-[11px] font-medium text-[color:var(--muted)]">Fast Static Tools</span>
+      </div>
+    </a>
+
+    <nav class="hidden items-center gap-1 md:flex" aria-label="Primary">
+      {navigationItems.map((item) => (
+        <a
+          class="rounded-full px-3.5 py-1.5 text-sm font-medium text-[color:var(--muted)] transition hover:bg-[color:var(--surface)] hover:text-[color:var(--fg)]"
+          href={item.href}
+        >
+          {item.label}
+        </a>
+      ))}
+    </nav>
+
+    <div class="flex items-center gap-3">
+      <div class="md:hidden">
+        <details class="group relative">
+          <summary class="list-none cursor-pointer rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-4 py-2 text-sm font-medium text-[color:var(--fg)] shadow-sm transition hover:border-[color:var(--accent)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--accent)]">
+            Menu
+          </summary>
+          <nav
+            class="absolute right-0 z-50 mt-3 w-56 rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-2 shadow-[var(--shadow)] backdrop-blur-lg"
+            aria-label="Mobile primary"
+          >
+            {navigationItems.map((item) => (
+              <a
+                class="block rounded-2xl px-4 py-2.5 text-sm font-medium text-[color:var(--fg)] transition hover:bg-[color:var(--surface)] hover:text-[color:var(--accent)]"
+                href={item.href}
+              >
+                {item.label}
+              </a>
+            ))}
+          </nav>
+        </details>
+      </div>
+
+      <ThemeToggle />
+    </div>
+  </div>
+</header>

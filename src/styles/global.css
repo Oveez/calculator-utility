@@ -1,0 +1,60 @@
+@import 'tailwindcss';
+
+[hidden] {
+  display: none !important;
+}
+
+:root {
+  color-scheme: light;
+  --bg: #f7f8fc;
+  --fg: #101828;
+  --surface: rgba(255, 255, 255, 0.78);
+  --surface-strong: #ffffff;
+  --muted: #475467;
+  --border: rgba(16, 24, 40, 0.12);
+  --accent: #0f766e;
+  --accent-strong: #115e59;
+  --accent-soft: rgba(15, 118, 110, 0.12);
+  --shadow: 0 24px 80px rgba(15, 23, 42, 0.12);
+}
+
+html[data-theme='dark'] {
+  color-scheme: dark;
+  --bg: #020617;
+  --fg: #e2e8f0;
+  --surface: rgba(15, 23, 42, 0.8);
+  --surface-strong: #0f172a;
+  --muted: #94a3b8;
+  --border: rgba(148, 163, 184, 0.18);
+  --accent: #2dd4bf;
+  --accent-strong: #5eead4;
+  --accent-soft: rgba(45, 212, 191, 0.14);
+  --shadow: 0 24px 80px rgba(2, 6, 23, 0.45);
+}
+
+html {
+  background:
+    radial-gradient(circle at top left, rgba(45, 212, 191, 0.12), transparent 28%),
+    radial-gradient(circle at top right, rgba(59, 130, 246, 0.1), transparent 24%),
+    var(--bg);
+}
+
+body {
+  background: transparent;
+  color: var(--fg);
+}
+
+::selection {
+  background: var(--accent-soft);
+  color: var(--fg);
+}
+
+a {
+  text-decoration-thickness: from-font;
+}
+
+@layer base {
+  :focus-visible {
+    outline-color: var(--accent);
+  }
+}

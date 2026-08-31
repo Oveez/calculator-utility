@@ -1,0 +1,30 @@
+---
+interface Props {
+  gaId?: string;
+  gscVerification?: string;
+}
+
+const gaId = Astro.props.gaId ?? import.meta.env.PUBLIC_GA_MEASUREMENT_ID ?? '';
+const gscVerification = Astro.props.gscVerification ?? import.meta.env.PUBLIC_GSC_VERIFICATION ?? '';
+---
+
+{/* Google Search Console HTML Tag Verification */}
+{gscVerification && (
+  <meta name="google-site-verification" content={gscVerification} />
+)}
+
+{/* Google Analytics 4 (GA4) Global Site Tag */}
+{gaId && (
+  <>
+    <script is:inline async src={`https://www.googletagmanager.com/gtag/js?id=${gaId}`}></script>
+    <script is:inline define:vars={{ gaId }}>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', gaId, {
+        page_path: window.location.pathname,
+        anonymize_ip: true
+      });
+    </script>
+  </>
+)}

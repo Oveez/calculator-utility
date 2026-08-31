@@ -1,0 +1,113 @@
+---
+import SiteLayout from '../../layouts/SiteLayout.astro';
+import CountryTaxSelector from '../../components/tax/CountryTaxSelector.astro';
+import AdSlot from '../../components/tax/AdSlot.astro';
+import { allCountryTaxProfiles } from '../../data/tax/countries';
+---
+
+<SiteLayout
+  title="International Tax & Salary Calculators 2025/2026 | 24 Countries"
+  description="Comprehensive international tax and salary calculators for 24 priority countries. Accurate progressive tax brackets, social contributions, take-home pay, and VAT/GST tools."
+>
+  <div class="mx-auto max-w-5xl space-y-12">
+    <!-- Breadcrumb & Header -->
+    <nav class="flex items-center gap-2 text-xs font-medium text-[color:var(--muted)]" aria-label="Breadcrumb">
+      <a href="/" class="hover:text-[color:var(--accent)]">Home</a>
+      <span>/</span>
+      <span class="text-[color:var(--fg)] font-semibold">Tax Calculators Hub</span>
+    </nav>
+
+    <!-- Header Banner -->
+    <header class="space-y-4 rounded-[2.5rem] border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-8 shadow-[var(--shadow)] sm:p-12">
+      <div class="inline-flex items-center gap-2 rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-4 py-1.5 text-xs font-semibold text-[color:var(--accent)] shadow-sm">
+        <span>🌐 Verified Official Data • 24 Countries • 2025/2026 Tax Years</span>
+      </div>
+      <h1 class="text-3xl font-extrabold tracking-tight text-[color:var(--fg)] sm:text-4xl lg:text-5xl">
+        International Tax &amp; Financial Calculators
+      </h1>
+      <p class="max-w-3xl text-base leading-relaxed text-[color:var(--muted)] sm:text-lg">
+        Accurate, high-precision salary, income tax, and consumption tax calculators. Powered by verified official data from national revenue authorities (IRS, CRA, HMRC, ATO, BZSt, DGFiP, and more).
+      </p>
+    </header>
+
+    <AdSlot slotId="tax-hub-top" position="top" />
+
+    <!-- Feature Categories Grid -->
+    <section class="space-y-6">
+      <div class="space-y-1">
+        <p class="text-xs font-semibold uppercase tracking-wider text-[color:var(--accent)]">Specialized Tax Engines</p>
+        <h2 class="text-2xl font-bold tracking-tight text-[color:var(--fg)]">Global Tax &amp; Payroll Suites</h2>
+      </div>
+
+      <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <!-- VAT / GST Tool -->
+        <a
+          href="/tax-calculators/vat-calculator/"
+          class="group flex flex-col justify-between rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 transition-all duration-200 hover:-translate-y-1 hover:border-[color:var(--accent)] hover:shadow-lg"
+        >
+          <div class="space-y-3">
+            <span class="flex h-12 w-12 items-center justify-center rounded-2xl bg-[color:var(--accent-soft)] text-2xl text-[color:var(--accent)]">🏷️</span>
+            <h3 class="text-lg font-bold text-[color:var(--fg)] group-hover:text-[color:var(--accent)]">
+              Global VAT &amp; GST Calculator
+            </h3>
+            <p class="text-xs leading-relaxed text-[color:var(--muted)]">
+              Calculate price before/after tax, add or remove VAT/GST with preset rates for 24+ countries.
+            </p>
+          </div>
+          <div class="mt-6 flex items-center gap-1 text-xs font-bold text-[color:var(--accent)]">
+            <span>Open Tool</span>
+            <span class="transition-transform group-hover:translate-x-1">→</span>
+          </div>
+        </a>
+
+        <!-- Salary to Hourly -->
+        <a
+          href="/tax-calculators/salary-to-hourly/"
+          class="group flex flex-col justify-between rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 transition-all duration-200 hover:-translate-y-1 hover:border-[color:var(--accent)] hover:shadow-lg"
+        >
+          <div class="space-y-3">
+            <span class="flex h-12 w-12 items-center justify-center rounded-2xl bg-[color:var(--accent-soft)] text-2xl text-[color:var(--accent)]">⏱️</span>
+            <h3 class="text-lg font-bold text-[color:var(--fg)] group-hover:text-[color:var(--accent)]">
+              Salary to Hourly Converter
+            </h3>
+            <p class="text-xs leading-relaxed text-[color:var(--muted)]">
+              Break down annual salary into monthly, bi-weekly, weekly, daily, and hourly wage rates.
+            </p>
+          </div>
+          <div class="mt-6 flex items-center gap-1 text-xs font-bold text-[color:var(--accent)]">
+            <span>Open Tool</span>
+            <span class="transition-transform group-hover:translate-x-1">→</span>
+          </div>
+        </a>
+
+        <!-- Hourly to Salary -->
+        <a
+          href="/tax-calculators/hourly-to-salary/"
+          class="group flex flex-col justify-between rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 transition-all duration-200 hover:-translate-y-1 hover:border-[color:var(--accent)] hover:shadow-lg"
+        >
+          <div class="space-y-3">
+            <span class="flex h-12 w-12 items-center justify-center rounded-2xl bg-[color:var(--accent-soft)] text-2xl text-[color:var(--accent)]">💼</span>
+            <h3 class="text-lg font-bold text-[color:var(--fg)] group-hover:text-[color:var(--accent)]">
+              Hourly to Salary &amp; Overtime
+            </h3>
+            <p class="text-xs leading-relaxed text-[color:var(--muted)]">
+              Convert hourly wage to annual income with overtime pay (1.5x time-and-a-half &amp; 2.0x double time).
+            </p>
+          </div>
+          <div class="mt-6 flex items-center gap-1 text-xs font-bold text-[color:var(--accent)]">
+            <span>Open Tool</span>
+            <span class="transition-transform group-hover:translate-x-1">→</span>
+          </div>
+        </a>
+      </div>
+    </section>
+
+    <!-- 24 Country Tax Calculators Grid -->
+    <CountryTaxSelector
+      title="All 24 Supported Country Tax Engines"
+      subtitle="Select any country below to compute progressive income tax, social security contributions, and net take-home salary."
+    />
+
+    <AdSlot slotId="tax-hub-bottom" position="bottom" />
+  </div>
+</SiteLayout>

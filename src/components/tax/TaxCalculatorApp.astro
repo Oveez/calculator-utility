@@ -1,0 +1,604 @@
+---
+import type { CountryTaxProfile } from '../../data/tax/types';
+import { calculateTaxForCountry } from '../../utils/tax/engine';
+import { formatCurrency, formatPercent } from '../../utils/tax/formatters';
+import TaxDisclaimer from './TaxDisclaimer.astro';
+
+interface Props {
+  profile: CountryTaxProfile;
+  initialIncome?: number;
+}
+
+const { profile, initialIncome = 65000 } = Astro.props;
+
+// Default initial calculation on server render
+const initialResult = calculateTaxForCountry(profile, initialIncome);
+const defaultYearData = profile.years[profile.defaultTaxYear];
+---
+
+<div
+  class="relative overflow-hidden rounded-[2.5rem] border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-6 shadow-[var(--shadow)] sm:p-8 lg:p-10"
+  data-tax-app
+  data-country-id={profile.id}
+  data-profile-json={JSON.stringify(profile)}
+>
+  <!-- Top Bar: Country Info & Official Source Badge -->
+  <div class="flex flex-col gap-4 border-b border-[color:var(--border)] pb-6 sm:flex-row sm:items-center sm:justify-between">
+    <div class="flex items-center gap-3">
+      <span class="text-3xl sm:text-4xl select-none">{profile.flagEmoji}</span>
+      <div>
+        <div class="flex items-center gap-2">
+          <h2 class="text-xl font-bold tracking-tight text-[color:var(--fg)] sm:text-2xl">
+            {profile.name} Income Tax Calculator
+          </h2>
+          <span class="inline-flex items-center rounded-full bg-emerald-500/10 px-2.5 py-0.5 text-xs font-semibold text-emerald-600 dark:text-emerald-400">
+            Official Data
+          </span>
+        </div>
+        <p class="text-xs text-[color:var(--muted)]">
+          Source: <a href={defaultYearData.officialSourceUrl} target="_blank" rel="noopener noreferrer" class="font-medium text-[color:var(--accent)] hover:underline">{defaultYearData.officialSourceName}</a> • Verified {defaultYearData.lastVerifiedDate}
+        </p>
+      </div>
+    </div>
+
+    <!-- Year & Mode Selectors -->
+    <div class="flex flex-wrap items-center gap-2">
+      <div class="flex items-center gap-1.5 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-1">
+        <label for="tax-year-select" class="sr-only">Tax Year</label>
+        <span class="pl-2 text-xs font-medium text-[color:var(--muted)]">Year:</span>
+        <select
+          id="tax-year-select"
+          class="cursor-pointer rounded-xl bg-transparent px-2.5 py-1 text-xs font-bold text-[color:var(--fg)] outline-none focus:ring-1 focus:ring-[color:var(--accent)]"
+          data-tax-year
+        >
+          {profile.availableTaxYears.map((yr) => (
+            <option value={yr} selected={yr === profile.defaultTaxYear}>{yr}</option>
+          ))}
+        </select>
+      </div>
+
+      <div class="flex rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-1 text-xs font-semibold">
+        <button
+          type="button"
+          class="cursor-pointer rounded-xl bg-[color:var(--accent)] px-3 py-1.5 text-white shadow-sm transition"
+          data-mode-btn="gross_to_net"
+        >
+          Gross to Net
+        </button>
+        <button
+          type="button"
+          class="cursor-pointer rounded-xl px-3 py-1.5 text-[color:var(--muted)] transition hover:text-[color:var(--fg)]"
+          data-mode-btn="net_to_gross"
+        >
+          Net to Gross
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Calculator Form & Input Section -->
+  <div class="mt-8 grid gap-8 lg:grid-cols-[1.1fr_0.9fr]">
+    <div class="space-y-6">
+      <!-- Income Input -->
+      <div>
+        <label for="income-input" class="block text-sm font-bold text-[color:var(--fg)]" data-income-label>
+          Gross Annual Salary ({profile.defaultCurrencySymbol} {profile.defaultCurrency})
+        </label>
+        <div class="relative mt-2">
+          <span class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4 text-base font-bold text-[color:var(--muted)]" data-currency-symbol>
+            {profile.defaultCurrencySymbol}
+          </span>
+          <input
+            id="income-input"
+            type="number"
+            min="0"
+            step="1000"
+            value={initialIncome}
+            class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] py-3.5 pl-10 pr-24 text-xl font-extrabold text-[color:var(--fg)] shadow-inner outline-none transition focus:border-[color:var(--accent)] focus:ring-2 focus:ring-[color:var(--accent-soft)]"
+            data-income-input
+          />
+          <div class="absolute inset-y-0 right-0 flex items-center pr-2">
+            <select
+              class="cursor-pointer rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] px-2 py-1.5 text-xs font-semibold text-[color:var(--fg)] outline-none"
+              data-frequency-select
+            >
+              <option value="annual" selected>Per Year</option>
+              <option value="monthly">Per Month</option>
+              <option value="biweekly">Bi-Weekly</option>
+              <option value="weekly">Per Week</option>
+              <option value="hourly">Per Hour</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Preset Income Buttons -->
+      <div class="flex flex-wrap items-center gap-2">
+        <span class="text-xs text-[color:var(--muted)]">Presets:</span>
+        <button type="button" class="cursor-pointer rounded-lg border border-[color:var(--border)] bg-[color:var(--surface)] px-2.5 py-1 text-xs font-medium text-[color:var(--fg)] transition hover:border-[color:var(--accent)]" data-preset="35000">35k</button>
+        <button type="button" class="cursor-pointer rounded-lg border border-[color:var(--border)] bg-[color:var(--surface)] px-2.5 py-1 text-xs font-medium text-[color:var(--fg)] transition hover:border-[color:var(--accent)]" data-preset="50000">50k</button>
+        <button type="button" class="cursor-pointer rounded-lg border border-[color:var(--border)] bg-[color:var(--surface)] px-2.5 py-1 text-xs font-medium text-[color:var(--fg)] transition hover:border-[color:var(--accent)]" data-preset="75000">75k</button>
+        <button type="button" class="cursor-pointer rounded-lg border border-[color:var(--border)] bg-[color:var(--surface)] px-2.5 py-1 text-xs font-medium text-[color:var(--fg)] transition hover:border-[color:var(--accent)]" data-preset="100000">100k</button>
+        <button type="button" class="cursor-pointer rounded-lg border border-[color:var(--border)] bg-[color:var(--surface)] px-2.5 py-1 text-xs font-medium text-[color:var(--fg)] transition hover:border-[color:var(--accent)]" data-preset="150000">150k</button>
+        <button type="button" class="cursor-pointer rounded-lg border border-[color:var(--border)] bg-[color:var(--surface)] px-2.5 py-1 text-xs font-medium text-[color:var(--fg)] transition hover:border-[color:var(--accent)]" data-preset="250000">250k</button>
+      </div>
+
+      <!-- Region Selector if country supports regional taxes -->
+      {profile.hasRegionalTax && defaultYearData.regions && defaultYearData.regions.length > 0 && (
+        <div>
+          <label for="region-select" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">
+            Select {profile.regionalEntityName || 'Region / Jurisdiction'}
+          </label>
+          <select
+            id="region-select"
+            class="mt-1.5 w-full cursor-pointer rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-sm font-semibold text-[color:var(--fg)] outline-none transition focus:border-[color:var(--accent)] focus:ring-2 focus:ring-[color:var(--accent-soft)]"
+            data-region-select
+          >
+            {defaultYearData.regions.map((reg) => (
+              <option value={reg.code}>{reg.name}</option>
+            ))}
+          </select>
+        </div>
+      )}
+
+      <!-- Primary Net Results Card -->
+      <div class="rounded-3xl border border-[color:var(--accent)]/30 bg-gradient-to-br from-[color:var(--accent-soft)] to-transparent p-6 shadow-sm">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--accent)]">
+            Annual Take-Home Pay
+          </span>
+          <span class="rounded-full bg-[color:var(--surface)] px-2.5 py-0.5 text-xs font-semibold text-[color:var(--fg)]">
+            Net Salary
+          </span>
+        </div>
+        <p class="mt-2 text-3xl font-extrabold text-[color:var(--fg)] sm:text-4xl" data-net-annual>
+          {formatCurrency(initialResult.netIncomeAnnual, profile.defaultCurrency, profile.defaultCurrencySymbol)}
+        </p>
+
+        <div class="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4 border-t border-[color:var(--border)]/60 pt-4">
+          <div>
+            <p class="text-[11px] font-medium text-[color:var(--muted)]">Monthly</p>
+            <p class="text-sm font-bold text-[color:var(--fg)]" data-net-monthly>
+              {formatCurrency(initialResult.netIncomeMonthly, profile.defaultCurrency, profile.defaultCurrencySymbol)}
+            </p>
+          </div>
+          <div>
+            <p class="text-[11px] font-medium text-[color:var(--muted)]">Bi-Weekly</p>
+            <p class="text-sm font-bold text-[color:var(--fg)]" data-net-biweekly>
+              {formatCurrency(initialResult.netIncomeBiweekly, profile.defaultCurrency, profile.defaultCurrencySymbol)}
+            </p>
+          </div>
+          <div>
+            <p class="text-[11px] font-medium text-[color:var(--muted)]">Weekly</p>
+            <p class="text-sm font-bold text-[color:var(--fg)]" data-net-weekly>
+              {formatCurrency(initialResult.netIncomeWeekly, profile.defaultCurrency, profile.defaultCurrencySymbol)}
+            </p>
+          </div>
+          <div>
+            <p class="text-[11px] font-medium text-[color:var(--muted)]">Hourly</p>
+            <p class="text-sm font-bold text-[color:var(--fg)]" data-net-hourly>
+              {formatCurrency(initialResult.netIncomeHourly, profile.defaultCurrency, profile.defaultCurrencySymbol)}
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Summary Metrics & Rates Side -->
+    <div class="space-y-4">
+      <div class="grid grid-cols-2 gap-3">
+        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 shadow-sm">
+          <p class="text-xs font-medium text-[color:var(--muted)]">Effective Tax Rate</p>
+          <p class="mt-1 text-2xl font-bold text-amber-500" data-effective-tax-rate>
+            {formatPercent(initialResult.effectiveTaxRate)}
+          </p>
+          <p class="text-[10px] text-[color:var(--muted)]">Total tax / Gross income</p>
+        </div>
+
+        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 shadow-sm">
+          <p class="text-xs font-medium text-[color:var(--muted)]">Top Marginal Rate</p>
+          <p class="mt-1 text-2xl font-bold text-rose-500" data-marginal-tax-rate>
+            {formatPercent(initialResult.marginalTaxRate)}
+          </p>
+          <p class="text-[10px] text-[color:var(--muted)]">Highest bracket reached</p>
+        </div>
+      </div>
+
+      <!-- Deductions Overview List -->
+      <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 space-y-3 shadow-sm">
+        <h3 class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Tax & Deductions Breakdown</h3>
+        <div class="space-y-2 text-sm">
+          <div class="flex items-center justify-between text-[color:var(--fg)]">
+            <span>Gross Income</span>
+            <span class="font-bold" data-summary-gross>
+              {formatCurrency(initialResult.grossIncome, profile.defaultCurrency, profile.defaultCurrencySymbol)}
+            </span>
+          </div>
+          <div class="flex items-center justify-between text-[color:var(--muted)]">
+            <span>Standard Deduction / Allowance</span>
+            <span class="font-medium" data-summary-deduction>
+              -{formatCurrency(initialResult.standardDeduction, profile.defaultCurrency, profile.defaultCurrencySymbol)}
+            </span>
+          </div>
+          <div class="flex items-center justify-between text-[color:var(--muted)]">
+            <span>Taxable Income</span>
+            <span class="font-medium" data-summary-taxable>
+              {formatCurrency(initialResult.taxableIncome, profile.defaultCurrency, profile.defaultCurrencySymbol)}
+            </span>
+          </div>
+          <div class="flex items-center justify-between text-rose-500 font-medium">
+            <span>Total Income Tax</span>
+            <span data-summary-tax>
+              -{formatCurrency(initialResult.totalIncomeTax, profile.defaultCurrency, profile.defaultCurrencySymbol)}
+            </span>
+          </div>
+          <div class="flex items-center justify-between text-amber-500 font-medium">
+            <span>Social & National Insurance</span>
+            <span data-summary-social>
+              -{formatCurrency(initialResult.totalSocialContributions, profile.defaultCurrency, profile.defaultCurrencySymbol)}
+            </span>
+          </div>
+          <div class="border-t border-[color:var(--border)] pt-2 flex items-center justify-between text-emerald-500 font-bold text-base">
+            <span>Net Take-Home Pay</span>
+            <span data-summary-net>
+              {formatCurrency(initialResult.netIncomeAnnual, profile.defaultCurrency, profile.defaultCurrencySymbol)}
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Step-by-Step Progressive Tax Bracket Table -->
+  <div class="mt-10 space-y-3">
+    <div class="flex items-center justify-between">
+      <h3 class="text-sm font-bold uppercase tracking-wider text-[color:var(--fg)]">
+        Progressive Tax Bracket Breakdown
+      </h3>
+      <span class="text-xs text-[color:var(--muted)]">Official Marginal Slices</span>
+    </div>
+
+    <div class="overflow-x-auto rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)]">
+      <table class="w-full text-left text-xs text-[color:var(--fg)]" data-bracket-table>
+        <thead class="border-b border-[color:var(--border)] bg-[color:var(--surface-strong)] text-[color:var(--muted)] uppercase font-semibold">
+          <tr>
+            <th class="px-4 py-3">Taxable Bracket</th>
+            <th class="px-4 py-3">Rate</th>
+            <th class="px-4 py-3">Taxable in Bracket</th>
+            <th class="px-4 py-3 text-right">Tax Paid</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-[color:var(--border)]" data-bracket-tbody>
+          {initialResult.bracketBreakdown.map((row) => (
+            <tr>
+              <td class="px-4 py-2.5 font-mono">{row.bracketRange}</td>
+              <td class="px-4 py-2.5 font-bold">{row.ratePercent}</td>
+              <td class="px-4 py-2.5">{formatCurrency(row.taxableInBracket, profile.defaultCurrency, profile.defaultCurrencySymbol)}</td>
+              <td class="px-4 py-2.5 text-right font-mono font-bold text-rose-500">{formatCurrency(row.taxAmount, profile.defaultCurrency, profile.defaultCurrencySymbol)}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Assumptions & Metadata Box -->
+  <div class="mt-8 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 space-y-2 text-xs text-[color:var(--muted)]">
+    <div class="flex items-center justify-between">
+      <span class="font-bold text-[color:var(--fg)]">Calculation Assumptions:</span>
+      <span class="text-[11px]">Tax Year: <strong class="text-[color:var(--fg)]" data-meta-year>{profile.defaultTaxYear}</strong></span>
+    </div>
+    <ul class="list-inside list-disc space-y-1" data-assumptions-list>
+      {defaultYearData.assumptions.map((asm) => (
+        <li>{asm}</li>
+      ))}
+    </ul>
+  </div>
+
+  <!-- Legal Disclaimer -->
+  <TaxDisclaimer className="mt-6" />
+</div>
+
+<!-- Client-side Tax Engine Script -->
+<script>
+  (function () {
+    const apps = Array.from(document.querySelectorAll('[data-tax-app]'));
+
+    apps.forEach((app) => {
+      try {
+        const profileJson = app.getAttribute('data-profile-json');
+        if (!profileJson) return;
+        const profile = JSON.parse(profileJson);
+
+        const incomeInput = app.querySelector('[data-income-input]');
+        const incomeLabel = app.querySelector('[data-income-label]');
+        const frequencySelect = app.querySelector('[data-frequency-select]');
+        const yearSelect = app.querySelector('[data-tax-year]');
+        const regionSelect = app.querySelector('[data-region-select]');
+        const presetButtons = Array.from(app.querySelectorAll('[data-preset]'));
+        const modeButtons = Array.from(app.querySelectorAll('[data-mode-btn]'));
+
+        // Results elements
+        const netAnnualEl = app.querySelector('[data-net-annual]');
+        const netMonthlyEl = app.querySelector('[data-net-monthly]');
+        const netBiweeklyEl = app.querySelector('[data-net-biweekly]');
+        const netWeeklyEl = app.querySelector('[data-net-weekly]');
+        const netHourlyEl = app.querySelector('[data-net-hourly]');
+        const effectiveTaxRateEl = app.querySelector('[data-effective-tax-rate]');
+        const marginalTaxRateEl = app.querySelector('[data-marginal-tax-rate]');
+        const summaryGrossEl = app.querySelector('[data-summary-gross]');
+        const summaryDeductionEl = app.querySelector('[data-summary-deduction]');
+        const summaryTaxableEl = app.querySelector('[data-summary-taxable]');
+        const summaryTaxEl = app.querySelector('[data-summary-tax]');
+        const summarySocialEl = app.querySelector('[data-summary-social]');
+        const summaryNetEl = app.querySelector('[data-summary-net]');
+        const bracketTbody = app.querySelector('[data-bracket-tbody]');
+        const assumptionsList = app.querySelector('[data-assumptions-list]');
+        const metaYearEl = app.querySelector('[data-meta-year]');
+
+        let calculationMode = 'gross_to_net'; // or 'net_to_gross'
+
+        function formatMoney(amount, currency, symbol) {
+          try {
+            return new Intl.NumberFormat('en-US', {
+              style: 'currency',
+              currency: currency || 'USD',
+              minimumFractionDigits: 0,
+              maximumFractionDigits: 0,
+            }).format(amount);
+          } catch (e) {
+            return (symbol || '$') + Math.round(amount).toLocaleString('en-US');
+          }
+        }
+
+        function calculateTax(grossIncome, taxYear, regionCode) {
+          const yearData = profile.years[taxYear] || profile.years[profile.defaultTaxYear];
+          const currency = yearData.currency;
+          const currencySymbol = yearData.currencySymbol;
+          const sanitizedGross = Math.max(0, grossIncome);
+
+          // Standard Deduction with UK tapering
+          let standardDeduction = yearData.standardDeduction || 0;
+          if (profile.id === 'uk' && yearData.personalAllowance) {
+            if (sanitizedGross > 100000) {
+              const reduction = Math.floor((sanitizedGross - 100000) / 2);
+              standardDeduction = Math.max(0, yearData.personalAllowance - reduction);
+            } else {
+              standardDeduction = yearData.personalAllowance;
+            }
+          }
+
+          const taxableIncome = Math.max(0, sanitizedGross - standardDeduction);
+
+          // Select Brackets
+          let activeBrackets = yearData.nationalBrackets;
+          let selectedRegion = yearData.regions?.find((r) => r.code === regionCode);
+          if (selectedRegion && selectedRegion.brackets && selectedRegion.brackets.length > 0) {
+            activeBrackets = selectedRegion.brackets;
+          }
+
+          let nationalIncomeTax = 0;
+          let topMarginalRate = 0;
+          const bracketBreakdown = [];
+
+          for (let i = 0; i < activeBrackets.length; i++) {
+            const bracket = activeBrackets[i];
+            const threshold = bracket.threshold;
+            const upTo = bracket.upTo;
+            const rate = bracket.rate;
+
+            if (taxableIncome > threshold) {
+              const taxableInThisBracket = upTo !== undefined
+                ? Math.min(taxableIncome, upTo) - threshold
+                : taxableIncome - threshold;
+
+              const taxInBracket = taxableInThisBracket * rate;
+              nationalIncomeTax += taxInBracket;
+              if (taxableInThisBracket > 0) topMarginalRate = rate * 100;
+
+              const rangeLabel = upTo !== undefined
+                ? `${formatMoney(threshold, currency, currencySymbol)} – ${formatMoney(upTo, currency, currencySymbol)}`
+                : `Over ${formatMoney(threshold, currency, currencySymbol)}`;
+
+              bracketBreakdown.push({
+                range: rangeLabel,
+                rate: (rate * 100).toFixed(1) + '%',
+                taxable: taxableInThisBracket,
+                tax: taxInBracket,
+              });
+            } else {
+              const rangeLabel = upTo !== undefined
+                ? `${formatMoney(threshold, currency, currencySymbol)} – ${formatMoney(upTo, currency, currencySymbol)}`
+                : `Over ${formatMoney(threshold, currency, currencySymbol)}`;
+
+              bracketBreakdown.push({
+                range: rangeLabel,
+                rate: (rate * 100).toFixed(1) + '%',
+                taxable: 0,
+                tax: 0,
+              });
+            }
+          }
+
+          // Regional Tax
+          let regionalIncomeTax = 0;
+          if (selectedRegion) {
+            if (selectedRegion.flatRate !== undefined && selectedRegion.flatRate > 0) {
+              regionalIncomeTax = taxableIncome * selectedRegion.flatRate;
+            } else if (selectedRegion.additionalTaxRate !== undefined && selectedRegion.additionalTaxRate !== 0) {
+              regionalIncomeTax = taxableIncome * selectedRegion.additionalTaxRate;
+            }
+          }
+
+          const totalIncomeTax = Math.max(0, nationalIncomeTax + regionalIncomeTax);
+
+          // Social Contributions
+          let totalSocialContributions = 0;
+          for (const rule of yearData.socialContributions || []) {
+            let base = sanitizedGross;
+            if (rule.minThreshold && base < rule.minThreshold) {
+              base = 0;
+            } else if (rule.minThreshold && base >= rule.minThreshold) {
+              if (profile.id === 'uk' || profile.id === 'ca') {
+                base = sanitizedGross - rule.minThreshold;
+              }
+            }
+            if (rule.capAmount && rule.capAmount > 0) {
+              base = Math.min(base, rule.capAmount);
+            }
+            totalSocialContributions += Math.max(0, base * rule.employeeRate);
+          }
+
+          const totalDeductions = totalIncomeTax + totalSocialContributions;
+          const netAnnual = Math.max(0, sanitizedGross - totalDeductions);
+          const effectiveRate = sanitizedGross > 0 ? (totalIncomeTax / sanitizedGross) * 100 : 0;
+
+          return {
+            gross: sanitizedGross,
+            standardDeduction,
+            taxableIncome,
+            totalIncomeTax,
+            totalSocialContributions,
+            totalDeductions,
+            netAnnual,
+            netMonthly: netAnnual / 12,
+            netBiweekly: netAnnual / 26,
+            netWeekly: netAnnual / 52,
+            netHourly: netAnnual / 2080,
+            effectiveRate,
+            marginalRate: topMarginalRate,
+            bracketBreakdown,
+            currency,
+            currencySymbol,
+            assumptions: yearData.assumptions || [],
+          };
+        }
+
+        // Net to Gross Solver
+        function solveGrossFromNet(targetNet, taxYear, regionCode) {
+          let low = targetNet;
+          let high = targetNet * 3.5 + 50000;
+          let bestGross = targetNet;
+
+          for (let i = 0; i < 40; i++) {
+            const mid = (low + high) / 2;
+            const res = calculateTax(mid, taxYear, regionCode);
+            const diff = res.netAnnual - targetNet;
+            if (Math.abs(diff) < 0.5) {
+              bestGross = mid;
+              break;
+            }
+            if (diff < 0) low = mid;
+            else {
+              high = mid;
+              bestGross = mid;
+            }
+          }
+          return calculateTax(bestGross, taxYear, regionCode);
+        }
+
+        function updateUI() {
+          const rawVal = parseFloat(incomeInput.value) || 0;
+          const freq = frequencySelect ? frequencySelect.value : 'annual';
+          const selectedYear = yearSelect ? yearSelect.value : profile.defaultTaxYear;
+          const selectedRegion = regionSelect ? regionSelect.value : undefined;
+
+          let annualIncome = rawVal;
+          if (freq === 'monthly') annualIncome = rawVal * 12;
+          else if (freq === 'biweekly') annualIncome = rawVal * 26;
+          else if (freq === 'weekly') annualIncome = rawVal * 52;
+          else if (freq === 'hourly') annualIncome = rawVal * 2080;
+
+          let result;
+          if (calculationMode === 'net_to_gross') {
+            result = solveGrossFromNet(annualIncome, selectedYear, selectedRegion);
+          } else {
+            result = calculateTax(annualIncome, selectedYear, selectedRegion);
+          }
+
+          const cur = result.currency;
+          const sym = result.currencySymbol;
+
+          if (netAnnualEl) netAnnualEl.textContent = formatMoney(result.netAnnual, cur, sym);
+          if (netMonthlyEl) netMonthlyEl.textContent = formatMoney(result.netMonthly, cur, sym);
+          if (netBiweeklyEl) netBiweeklyEl.textContent = formatMoney(result.netBiweekly, cur, sym);
+          if (netWeeklyEl) netWeeklyEl.textContent = formatMoney(result.netWeekly, cur, sym);
+          if (netHourlyEl) netHourlyEl.textContent = formatMoney(result.netHourly, cur, sym);
+
+          if (effectiveTaxRateEl) effectiveTaxRateEl.textContent = result.effectiveRate.toFixed(1) + '%';
+          if (marginalTaxRateEl) marginalTaxRateEl.textContent = result.marginalRate.toFixed(1) + '%';
+
+          if (summaryGrossEl) summaryGrossEl.textContent = formatMoney(result.gross, cur, sym);
+          if (summaryDeductionEl) summaryDeductionEl.textContent = '-' + formatMoney(result.standardDeduction, cur, sym);
+          if (summaryTaxableEl) summaryTaxableEl.textContent = formatMoney(result.taxableIncome, cur, sym);
+          if (summaryTaxEl) summaryTaxEl.textContent = '-' + formatMoney(result.totalIncomeTax, cur, sym);
+          if (summarySocialEl) summarySocialEl.textContent = '-' + formatMoney(result.totalSocialContributions, cur, sym);
+          if (summaryNetEl) summaryNetEl.textContent = formatMoney(result.netAnnual, cur, sym);
+
+          if (metaYearEl) metaYearEl.textContent = selectedYear;
+
+          // Render Brackets Table
+          if (bracketTbody) {
+            bracketTbody.innerHTML = result.bracketBreakdown
+              .map(
+                (row) => `
+                <tr class="transition hover:bg-[color:var(--surface-strong)]">
+                  <td class="px-4 py-2.5 font-mono text-[color:var(--muted)]">${row.range}</td>
+                  <td class="px-4 py-2.5 font-bold text-[color:var(--fg)]">${row.rate}</td>
+                  <td class="px-4 py-2.5 text-[color:var(--muted)]">${formatMoney(row.taxable, cur, sym)}</td>
+                  <td class="px-4 py-2.5 text-right font-mono font-bold text-rose-500">${formatMoney(row.tax, cur, sym)}</td>
+                </tr>
+              `
+              )
+              .join('');
+          }
+        }
+
+        incomeInput?.addEventListener('input', updateUI);
+        frequencySelect?.addEventListener('change', updateUI);
+        yearSelect?.addEventListener('change', updateUI);
+        regionSelect?.addEventListener('change', updateUI);
+
+        presetButtons.forEach((btn) => {
+          btn.addEventListener('click', () => {
+            const presetVal = btn.dataset.preset;
+            if (presetVal && incomeInput) {
+              incomeInput.value = presetVal;
+              if (frequencySelect) frequencySelect.value = 'annual';
+              updateUI();
+            }
+          });
+        });
+
+        modeButtons.forEach((btn) => {
+          btn.addEventListener('click', () => {
+            const mode = btn.dataset.modeBtn;
+            if (mode) {
+              calculationMode = mode;
+              modeButtons.forEach((b) => {
+                const isActive = b.dataset.modeBtn === mode;
+                if (isActive) {
+                  b.className = 'cursor-pointer rounded-xl bg-[color:var(--accent)] px-3 py-1.5 text-white shadow-sm transition';
+                } else {
+                  b.className = 'cursor-pointer rounded-xl px-3 py-1.5 text-[color:var(--muted)] transition hover:text-[color:var(--fg)]';
+                }
+              });
+
+              if (incomeLabel) {
+                incomeLabel.textContent =
+                  mode === 'net_to_gross'
+                    ? `Desired Net Take-Home Pay (${profile.defaultCurrencySymbol} ${profile.defaultCurrency})`
+                    : `Gross Annual Salary (${profile.defaultCurrencySymbol} ${profile.defaultCurrency})`;
+              }
+              updateUI();
+            }
+          });
+        });
+
+        updateUI();
+      } catch (err) {
+        console.error('Error initializing tax calculator app:', err);
+      }
+    });
+  })();
+</script>

@@ -1,0 +1,48 @@
+---
+interface Props {
+  slotId?: string;
+  format?: 'auto' | 'fluid' | 'rectangle' | 'horizontal';
+  position?: 'top' | 'middle' | 'bottom' | 'sidebar';
+  className?: string;
+}
+
+const {
+  slotId = '',
+  format = 'auto',
+  position = 'middle',
+  className = ''
+} = Astro.props as Props;
+
+const adsenseClientId = import.meta.env.PUBLIC_ADSENSE_CLIENT_ID ?? '';
+---
+
+{adsenseClientId && slotId ? (
+  <div class:list={['my-8 w-full overflow-hidden text-center', className]}>
+    <ins
+      class="adsbygoogle block"
+      style="display:block"
+      data-ad-client={adsenseClientId}
+      data-ad-slot={slotId}
+      data-ad-format={format}
+      data-full-width-responsive="true"
+    ></ins>
+    <script is:inline>
+      (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+  </div>
+) : (
+  <aside
+    class:list={[
+      'my-8 w-full overflow-hidden rounded-2xl border border-dashed border-[color:var(--border)] bg-[color:var(--surface)]/40 p-4 text-center text-xs text-[color:var(--muted)]',
+      className
+    ]}
+    aria-label="Advertisement Placement"
+  >
+    <div class="flex flex-col items-center justify-center gap-1 min-h-[90px]">
+      <span class="text-[10px] font-semibold uppercase tracking-wider opacity-60">Sponsored / Advertisement</span>
+      <p class="text-[11px] opacity-70">
+        Google AdSense responsive placement zone ({position})
+      </p>
+    </div>
+  </aside>
+)}

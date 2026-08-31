@@ -1,0 +1,22 @@
+---
+interface Props {
+  slotId?: string;
+  position?: 'top' | 'middle' | 'bottom' | 'sidebar';
+  className?: string;
+}
+
+const { slotId = 'default', position = 'middle', className = '' } = Astro.props;
+---
+
+<aside
+  class={`my-8 w-full overflow-hidden rounded-2xl border border-dashed border-[color:var(--border)] bg-[color:var(--surface)]/40 p-4 text-center text-xs text-[color:var(--muted)] transition-all ${className}`}
+  aria-label="Advertisement placement area"
+  data-ad-slot={slotId}
+  data-ad-position={position}
+>
+  <div class="flex flex-col items-center justify-center gap-1 min-h-[90px]">
+    <span class="text-[10px] font-semibold uppercase tracking-wider opacity-60">Sponsored / Advertisement Area</span>
+    <p class="text-[11px] opacity-70">Google AdSense responsive placement zone ({position})</p>
+    <!-- Future AdSense container: <ins class="adsbygoogle" ...></ins> -->
+  </div>
+</aside>
