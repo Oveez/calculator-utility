@@ -1,0 +1,211 @@
+---
+import SiteLayout from '../../layouts/SiteLayout.astro';
+import { siteName, toAbsoluteUrl, withBasePath } from '../../utils/site';
+
+const pageTitle = `How to Make an ATS-Friendly Resume (Complete Guide & Checklist) · ${siteName}`;
+const pageDesc = 'Learn how Applicant Tracking Systems (ATS) scan, parse, and score resumes. Follow our actionable guide, keyword strategies, and pre-submission ATS checklist.';
+const canonicalUrl = toAbsoluteUrl('/career-tools/ats-friendly-resume-guide/');
+
+const breadcrumbItems = [
+  { label: 'Home', href: toAbsoluteUrl('/') },
+  { label: 'Career Tools', href: toAbsoluteUrl('/career-tools/') },
+  { label: 'ATS Resume Guide' },
+];
+
+const faqs = [
+  {
+    question: 'What is an ATS (Applicant Tracking System)?',
+    answer: 'An Applicant Tracking System is software used by recruiters and employers to collect, sort, scan, and rank job applications. Common ATS platforms include Workday, Taleo, Greenhouse, Lever, and iCIMS.',
+  },
+  {
+    question: 'Why do resumes fail ATS scans?',
+    answer: 'Resumes most commonly fail ATS scans due to complex multi-column layouts, graphics/tables, non-standard section headers, missing keywords from the job description, or saving the resume as an unparseable image-based PDF instead of text.',
+  },
+  {
+    question: 'Are PDFs safe for ATS applications?',
+    answer: 'Yes, modern ATS software parses text-based PDFs reliably. Our CV Maker generates crisp, text-based vector PDFs that parse seamlessly without losing formatting.',
+  },
+  {
+    question: 'Should I use skill rating bars or graphical pie charts?',
+    answer: 'No. Never use graphical skill bars (e.g. 80% Python) or star ratings on an ATS resume. ATS parsers cannot interpret these visual graphics, and they provide no context to human hiring managers.',
+  },
+];
+
+const schemaGraph = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    headline: 'How to Make an ATS-Friendly Resume (Complete Guide & Checklist)',
+    description: pageDesc,
+    url: canonicalUrl,
+    publisher: {
+      '@type': 'Organization',
+      name: siteName,
+    },
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: breadcrumbItems.map((item, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      name: item.label,
+      item: item.href ?? canonicalUrl,
+    })),
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faqs.map((faq) => ({
+      '@type': 'Question',
+      name: faq.question,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: faq.answer,
+      },
+    })),
+  },
+];
+---
+
+<SiteLayout title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(schemaGraph)} />
+
+  <article class="mx-auto max-w-4xl space-y-10 py-4">
+    <!-- Breadcrumbs -->
+    <nav aria-label="Breadcrumb">
+      <ol class="flex flex-wrap items-center gap-2 text-sm text-[color:var(--muted)]">
+        {breadcrumbItems.map((item, index) => (
+          <li class="flex items-center gap-2">
+            {index > 0 && <span aria-hidden="true">/</span>}
+            {item.href ? (
+              <a class="transition hover:text-[color:var(--fg)]" href={item.href}>
+                {item.label}
+              </a>
+            ) : (
+              <span aria-current="page" class="font-medium text-[color:var(--fg)]">
+                {item.label}
+              </span>
+            )}
+          </li>
+        ))}
+      </ol>
+    </nav>
+
+    <!-- Header -->
+    <header class="space-y-3">
+      <div class="inline-flex items-center gap-2 rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3.5 py-1 text-xs font-bold text-[color:var(--fg)]">
+        <span>ATS Standards &amp; Formatting Guide</span>
+      </div>
+      <h1 class="text-2xl font-bold tracking-tight text-[color:var(--fg)] sm:text-3xl lg:text-4xl">
+        How to Make an ATS-Friendly Resume (Complete Guide &amp; Checklist)
+      </h1>
+      <p class="text-xs sm:text-sm leading-relaxed text-[color:var(--muted)]">
+        Learn how automated hiring software reads your application, which design mistakes trigger immediate rejections, and how to format your resume so you land more recruiter interviews.
+      </p>
+    </header>
+
+    <!-- Content Sections -->
+    <div class="space-y-8 text-sm leading-relaxed text-[color:var(--muted)]">
+      
+      <!-- Section 1: What is ATS -->
+      <section class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 sm:p-8 space-y-3">
+        <h2 class="text-lg sm:text-xl font-bold text-[color:var(--fg)]">1. How Applicant Tracking Systems Work</h2>
+        <p class="text-xs sm:text-sm leading-relaxed text-[color:var(--muted)]">
+          When you submit an application on a company careers portal, the file doesn't immediately open on a recruiter's screen. Instead, an <strong>Applicant Tracking System (ATS)</strong> converts the document into raw plain text, tokenizes the words, and categorizes information into distinct data fields:
+        </p>
+        <div class="grid gap-3 sm:grid-cols-2 text-xs pt-2">
+          <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-4 space-y-1">
+            <p class="font-bold text-[color:var(--fg)]">Text Extraction</p>
+            <p class="text-[color:var(--muted)]">The parser pulls strings of text line by line from the PDF or DOCX file, attempting to detect your contact details, job titles, companies, and date ranges.</p>
+          </div>
+          <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-4 space-y-1">
+            <p class="font-bold text-[color:var(--fg)]">Keyword &amp; Skill Matching</p>
+            <p class="text-[color:var(--muted)]">The software scans for exact match and semantic match keywords specified in the job description (e.g. <em>"TypeScript"</em>, <em>"Budget Management"</em>, <em>"SEO"</em>).</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 2: Golden Formatting Rules -->
+      <section class="space-y-3">
+        <h2 class="text-lg sm:text-xl font-bold text-[color:var(--fg)]">2. The 5 Golden Rules of ATS Formatting</h2>
+        <div class="grid gap-3 sm:grid-cols-2">
+          <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 space-y-1.5">
+            <h3 class="font-bold text-sm text-[color:var(--fg)]">1. Standard Section Headings</h3>
+            <p class="text-xs text-[color:var(--muted)] leading-relaxed">Always use predictable, standard headings like <em>"Work Experience"</em>, <em>"Education"</em>, <em>"Skills"</em>, and <em>"Certifications"</em>. Avoid creative labels like <em>"Where I've Been"</em> or <em>"My Arsenal"</em>.</p>
+          </div>
+          <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 space-y-1.5">
+            <h3 class="font-bold text-sm text-[color:var(--fg)]">2. Clean Linear Structure</h3>
+            <p class="text-xs text-[color:var(--muted)] leading-relaxed">Single-column or clean top-down layouts parse with the highest accuracy across every ATS engine. Avoid multi-layered text boxes or floating images.</p>
+          </div>
+          <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 space-y-1.5">
+            <h3 class="font-bold text-sm text-[color:var(--fg)]">3. Standard Universal Fonts</h3>
+            <p class="text-xs text-[color:var(--muted)] leading-relaxed">Use standard fonts such as Arial, Calibri, Helvetica, Georgia, Times New Roman, or Segoe UI. Avoid decorative or non-standard custom font files.</p>
+          </div>
+          <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 space-y-1.5">
+            <h3 class="font-bold text-sm text-[color:var(--fg)]">4. Text-Based Vector PDFs</h3>
+            <p class="text-xs text-[color:var(--muted)] leading-relaxed">Export your resume as a text-based PDF (such as that generated by our free CV Maker) so text can be highlighted, copied, and parsed natively.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 3: ATS Pre-Submission Checklist -->
+      <section class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 sm:p-8 space-y-4">
+        <h2 class="text-lg sm:text-xl font-bold text-[color:var(--fg)]">3. ATS Pre-Submission Checklist</h2>
+        <div class="space-y-2.5 text-xs text-[color:var(--muted)]">
+          <div class="flex items-center gap-2">
+            <span class="text-[color:var(--fg)] font-bold">•</span>
+            <span>Does my resume include my full name, professional email, phone number, and location?</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="text-[color:var(--fg)] font-bold">•</span>
+            <span>Are my job experiences arranged in reverse chronological order?</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="text-[color:var(--fg)] font-bold">•</span>
+            <span>Have I included exact hard skill keywords mentioned in the job posting?</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="text-[color:var(--fg)] font-bold">•</span>
+            <span>Did I avoid graphical skill bars, icons in text streams, and complex tables?</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="text-[color:var(--fg)] font-bold">•</span>
+            <span>Is my resume within 1 to 2 pages with proper margins (0.5 - 0.75 in / 10-15 mm)?</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 4: FAQs -->
+      <section class="space-y-4">
+        <h2 class="text-xl font-bold text-[color:var(--fg)]">Frequently Asked Questions</h2>
+        <div class="grid gap-3">
+          {faqs.map((faq) => (
+            <details class="group rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-4 shadow-sm">
+              <summary class="cursor-pointer list-none text-sm font-bold text-[color:var(--fg)] flex items-center justify-between">
+                <span>{faq.question}</span>
+                <span class="text-xs text-[color:var(--accent)] group-open:rotate-180 transition-transform">▼</span>
+              </summary>
+              <p class="mt-3 text-xs leading-relaxed text-[color:var(--muted)]">{faq.answer}</p>
+            </details>
+          ))}
+        </div>
+      </section>
+
+      <!-- Call to Action Banner -->
+      <div class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 sm:p-8 flex flex-col sm:flex-row items-center justify-between gap-6 text-center sm:text-left">
+        <div class="space-y-1">
+          <h3 class="text-lg font-bold text-[color:var(--fg)]">Ready to Build Your ATS-Friendly CV?</h3>
+          <p class="text-xs text-[color:var(--muted)]">Use our 100% free CV builder pre-configured with ATS-compliant templates.</p>
+        </div>
+        <a
+          href={withBasePath('/career-tools/cv-maker/')}
+          class="shrink-0 rounded-full bg-[color:var(--accent)] px-6 py-3 text-xs font-bold text-white shadow-md transition hover:bg-[color:var(--accent-strong)] hover:shadow-lg"
+        >
+          Open Free CV Maker →
+        </a>
+      </div>
+
+    </div>
+  </article>
+</SiteLayout>

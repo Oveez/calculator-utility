@@ -310,13 +310,13 @@ const defaultYearData = profile.years[profile.defaultTaxYear];
         if (!profileJson) return;
         const profile = JSON.parse(profileJson);
 
-        const incomeInput = app.querySelector('[data-income-input]');
+        const incomeInput = app.querySelector('[data-income-input]') as HTMLInputElement | null;
         const incomeLabel = app.querySelector('[data-income-label]');
-        const frequencySelect = app.querySelector('[data-frequency-select]');
-        const yearSelect = app.querySelector('[data-tax-year]');
-        const regionSelect = app.querySelector('[data-region-select]');
-        const presetButtons = Array.from(app.querySelectorAll('[data-preset]'));
-        const modeButtons = Array.from(app.querySelectorAll('[data-mode-btn]'));
+        const frequencySelect = app.querySelector('[data-frequency-select]') as HTMLSelectElement | null;
+        const yearSelect = app.querySelector('[data-tax-year]') as HTMLSelectElement | null;
+        const regionSelect = app.querySelector('[data-region-select]') as HTMLSelectElement | null;
+        const presetButtons = Array.from(app.querySelectorAll('[data-preset]')) as HTMLElement[];
+        const modeButtons = Array.from(app.querySelectorAll('[data-mode-btn]')) as HTMLElement[];
 
         // Results elements
         const netAnnualEl = app.querySelector('[data-net-annual]');
@@ -333,12 +333,11 @@ const defaultYearData = profile.years[profile.defaultTaxYear];
         const summarySocialEl = app.querySelector('[data-summary-social]');
         const summaryNetEl = app.querySelector('[data-summary-net]');
         const bracketTbody = app.querySelector('[data-bracket-tbody]');
-        const assumptionsList = app.querySelector('[data-assumptions-list]');
         const metaYearEl = app.querySelector('[data-meta-year]');
 
         let calculationMode = 'gross_to_net'; // or 'net_to_gross'
 
-        function formatMoney(amount, currency, symbol) {
+        function formatMoney(amount: number, currency?: string, symbol?: string): string {
           try {
             return new Intl.NumberFormat('en-US', {
               style: 'currency',
@@ -351,8 +350,8 @@ const defaultYearData = profile.years[profile.defaultTaxYear];
           }
         }
 
-        function calculateTax(grossIncome, taxYear, regionCode) {
-          const yearData = profile.years[taxYear] || profile.years[profile.defaultTaxYear];
+        function calculateTax(grossIncome: number, taxYear?: string, regionCode?: string) {
+          const yearData = (taxYear && profile.years[taxYear]) || profile.years[profile.defaultTaxYear];
           const currency = yearData.currency;
           const currencySymbol = yearData.currencySymbol;
           const sanitizedGross = Math.max(0, grossIncome);
@@ -372,14 +371,14 @@ const defaultYearData = profile.years[profile.defaultTaxYear];
 
           // Select Brackets
           let activeBrackets = yearData.nationalBrackets;
-          let selectedRegion = yearData.regions?.find((r) => r.code === regionCode);
+          let selectedRegion = yearData.regions?.find((r: any) => r.code === regionCode);
           if (selectedRegion && selectedRegion.brackets && selectedRegion.brackets.length > 0) {
             activeBrackets = selectedRegion.brackets;
           }
 
           let nationalIncomeTax = 0;
           let topMarginalRate = 0;
-          const bracketBreakdown = [];
+          const bracketBreakdown: any[] = [];
 
           for (let i = 0; i < activeBrackets.length; i++) {
             const bracket = activeBrackets[i];
@@ -475,7 +474,7 @@ const defaultYearData = profile.years[profile.defaultTaxYear];
         }
 
         // Net to Gross Solver
-        function solveGrossFromNet(targetNet, taxYear, regionCode) {
+        function solveGrossFromNet(targetNet: number, taxYear?: string, regionCode?: string) {
           let low = targetNet;
           let high = targetNet * 3.5 + 50000;
           let bestGross = targetNet;
@@ -498,7 +497,7 @@ const defaultYearData = profile.years[profile.defaultTaxYear];
         }
 
         function updateUI() {
-          const rawVal = parseFloat(incomeInput.value) || 0;
+          const rawVal = parseFloat(incomeInput?.value || '0') || 0;
           const freq = frequencySelect ? frequencySelect.value : 'annual';
           const selectedYear = yearSelect ? yearSelect.value : profile.defaultTaxYear;
           const selectedRegion = regionSelect ? regionSelect.value : undefined;
@@ -541,7 +540,7 @@ const defaultYearData = profile.years[profile.defaultTaxYear];
           if (bracketTbody) {
             bracketTbody.innerHTML = result.bracketBreakdown
               .map(
-                (row) => `
+                (row: any) => `
                 <tr class="transition hover:bg-[color:var(--surface-strong)]">
                   <td class="px-4 py-2.5 font-mono text-[color:var(--muted)]">${row.range}</td>
                   <td class="px-4 py-2.5 font-bold text-[color:var(--fg)]">${row.rate}</td>

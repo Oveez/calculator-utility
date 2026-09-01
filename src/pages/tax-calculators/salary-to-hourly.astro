@@ -126,9 +126,9 @@ import CountryTaxSelector from '../../components/tax/CountryTaxSelector.astro';
     const app = document.querySelector('[data-salary-app]');
     if (!app) return;
 
-    const salaryInput = app.querySelector('[data-salary-val]');
-    const hoursInput = app.querySelector('[data-hours-week]');
-    const weeksInput = app.querySelector('[data-weeks-year]');
+    const salaryInput = app.querySelector('[data-salary-val]') as HTMLInputElement | null;
+    const hoursInput = app.querySelector('[data-hours-week]') as HTMLInputElement | null;
+    const weeksInput = app.querySelector('[data-weeks-year]') as HTMLInputElement | null;
 
     const outHourly = app.querySelector('[data-out-hourly]');
     const outDaily = app.querySelector('[data-out-daily]');
@@ -136,14 +136,14 @@ import CountryTaxSelector from '../../components/tax/CountryTaxSelector.astro';
     const outBiweekly = app.querySelector('[data-out-biweekly]');
     const outMonthly = app.querySelector('[data-out-monthly]');
 
-    function fmt(num) {
+    function fmt(num: number) {
       return '$' + num.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     }
 
     function update() {
-      const salary = Math.max(0, parseFloat(salaryInput?.value) || 0);
-      const hours = Math.max(1, parseFloat(hoursInput?.value) || 40);
-      const weeks = Math.max(1, parseFloat(weeksInput?.value) || 52);
+      const salary = Math.max(0, parseFloat(salaryInput?.value || '0') || 0);
+      const hours = Math.max(1, parseFloat(hoursInput?.value || '40') || 40);
+      const weeks = Math.max(1, parseFloat(weeksInput?.value || '52') || 52);
 
       const totalHours = hours * weeks;
       const hourly = totalHours > 0 ? salary / totalHours : 0;

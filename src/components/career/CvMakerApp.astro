@@ -1,0 +1,1983 @@
+---
+import { withBasePath } from '../../utils/site';
+
+interface Props {
+  initialTemplate?: 'professional' | 'modern' | 'student';
+}
+
+const { initialTemplate = 'professional' } = Astro.props as Props;
+---
+
+<!-- Include local high-performance html2pdf bundle for instantaneous direct PDF generation -->
+<script is:inline src={withBasePath('/js/html2pdf.bundle.min.js')}></script>
+
+<div id="cv-maker-root" class="space-y-8" data-default-template={initialTemplate}>
+  <!-- Top Control Bar -->
+  <div class="flex flex-col gap-5 rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-5 sm:p-7 shadow-sm lg:flex-row lg:items-center lg:justify-between">
+    <div class="space-y-1.5">
+      <div class="flex items-center gap-2.5">
+        <h2 class="text-xl sm:text-2xl font-bold tracking-tight text-[color:var(--fg)]">
+          Professional CV &amp; Resume Builder
+        </h2>
+        <span class="rounded-full bg-emerald-500/10 px-3 py-0.5 text-xs font-semibold text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+          ATS-Standard
+        </span>
+      </div>
+      <p class="text-xs sm:text-sm text-[color:var(--muted)]">
+        Create a clean, recruiter-approved resume formatted to Harvard and Wall Street standards.
+      </p>
+    </div>
+
+    <!-- Template Selector & Actions -->
+    <div class="flex flex-wrap items-center gap-3">
+      <div class="flex items-center rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-1 shadow-inner">
+        <button
+          type="button"
+          data-template-btn="professional"
+          class="cv-template-btn active cursor-pointer rounded-xl px-3.5 py-1.5 text-xs font-semibold transition"
+        >
+          Professional
+        </button>
+        <button
+          type="button"
+          data-template-btn="modern"
+          class="cv-template-btn cursor-pointer rounded-xl px-3.5 py-1.5 text-xs font-semibold transition"
+        >
+          Modern
+        </button>
+        <button
+          type="button"
+          data-template-btn="student"
+          class="cv-template-btn cursor-pointer rounded-xl px-3.5 py-1.5 text-xs font-semibold transition"
+        >
+          Student / Fresher
+        </button>
+      </div>
+
+      <button
+        type="button"
+        id="cv-load-sample"
+        class="cursor-pointer rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] px-3.5 py-2 text-xs font-semibold text-[color:var(--fg)] shadow-sm transition hover:bg-[color:var(--accent-soft)] hover:text-[color:var(--accent)] hover:border-[color:var(--accent)]"
+      >
+        Sample Data
+      </button>
+
+      <button
+        type="button"
+        id="cv-clear-all"
+        class="cursor-pointer rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] px-3.5 py-2 text-xs font-semibold text-rose-600 dark:text-rose-400 shadow-sm transition hover:bg-rose-500/10 hover:border-rose-300"
+      >
+        Clear
+      </button>
+
+      <!-- The Single Direct Download PDF Button -->
+      <button
+        type="button"
+        id="cv-download-pdf"
+        class="inline-flex cursor-pointer items-center gap-2 rounded-xl bg-[color:var(--fg)] px-5 py-2.5 text-xs font-bold text-[color:var(--bg)] shadow-xs transition hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-[color:var(--accent)]"
+      >
+        <span id="cv-btn-label">Download PDF</span>
+        <svg id="cv-btn-icon" class="h-3.5 w-3.5 stroke-current" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+          <polyline points="7 10 12 15 17 10" />
+          <line x1="12" y1="15" x2="12" y2="3" />
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Main Workspace Grid: Form Editor (Left) & Real A4 Document Preview (Right) -->
+  <div class="grid gap-8 lg:grid-cols-12 lg:items-start">
+    
+    <!-- Left Column: Form Editor (5-6 cols) -->
+    <div class="space-y-6 lg:col-span-6 xl:col-span-5">
+      <form id="cv-form" class="space-y-5" onsubmit="return false;">
+        
+        <!-- Step Navigation Tabs -->
+        <div class="flex overflow-x-auto pb-1 gap-1 border-b border-[color:var(--border)] text-xs font-semibold no-scrollbar">
+          <button type="button" data-tab-target="sec-personal" class="cv-tab-btn active shrink-0 rounded-t-xl px-3.5 py-2 transition">Contact</button>
+          <button type="button" data-tab-target="sec-summary" class="cv-tab-btn shrink-0 rounded-t-xl px-3.5 py-2 transition">Summary</button>
+          <button type="button" data-tab-target="sec-education" class="cv-tab-btn shrink-0 rounded-t-xl px-3.5 py-2 transition">Education</button>
+          <button type="button" data-tab-target="sec-experience" class="cv-tab-btn shrink-0 rounded-t-xl px-3.5 py-2 transition">Experience</button>
+          <button type="button" data-tab-target="sec-skills" class="cv-tab-btn shrink-0 rounded-t-xl px-3.5 py-2 transition">Skills</button>
+          <button type="button" data-tab-target="sec-projects" class="cv-tab-btn shrink-0 rounded-t-xl px-3.5 py-2 transition">Projects</button>
+          <button type="button" data-tab-target="sec-extras" class="cv-tab-btn shrink-0 rounded-t-xl px-3.5 py-2 transition">More</button>
+        </div>
+
+        <!-- 1. PERSONAL / CONTACT SECTION -->
+        <div id="sec-personal" class="cv-tab-content space-y-4 rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-6 shadow-sm">
+          <div class="border-b border-[color:var(--border)] pb-3">
+            <h3 class="text-sm font-bold text-[color:var(--fg)]">Personal &amp; Contact Details</h3>
+            <p class="text-xs text-[color:var(--muted)] mt-0.5">Enter your verified contact info. Do not include personal age, marital status, or full street addresses.</p>
+          </div>
+
+          <div class="space-y-3.5">
+            <div>
+              <label class="block text-xs font-bold text-[color:var(--fg)] mb-1.5">Full Name *</label>
+              <input type="text" id="inp-name" required placeholder="e.g. Alexander J. Morgan" class="cv-input" />
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold text-[color:var(--fg)] mb-1.5">Professional Title</label>
+              <input type="text" id="inp-title" placeholder="e.g. Senior Software Engineer / Financial Analyst" class="cv-input" />
+            </div>
+
+            <div class="grid gap-3.5 sm:grid-cols-2">
+              <div>
+                <label class="block text-xs font-bold text-[color:var(--fg)] mb-1.5">Email Address *</label>
+                <input type="email" id="inp-email" required placeholder="alex.morgan@example.com" class="cv-input" />
+              </div>
+              <div>
+                <label class="block text-xs font-bold text-[color:var(--fg)] mb-1.5">Phone Number</label>
+                <input type="tel" id="inp-phone" placeholder="+1 (555) 234-5678" class="cv-input" />
+              </div>
+            </div>
+
+            <div class="grid gap-3.5 sm:grid-cols-2">
+              <div>
+                <label class="block text-xs font-bold text-[color:var(--fg)] mb-1.5">Location (City, State/Country)</label>
+                <input type="text" id="inp-location" placeholder="e.g. San Francisco, CA / London, UK" class="cv-input" />
+              </div>
+              <div>
+                <label class="block text-xs font-bold text-[color:var(--fg)] mb-1.5">LinkedIn Profile URL</label>
+                <input type="text" id="inp-linkedin" placeholder="linkedin.com/in/alexmorgan" class="cv-input" />
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold text-[color:var(--fg)] mb-1.5">Portfolio / GitHub Website</label>
+              <input type="text" id="inp-website" placeholder="alexmorgan.dev / github.com/alex" class="cv-input" />
+            </div>
+          </div>
+        </div>
+
+        <!-- 2. PROFESSIONAL SUMMARY -->
+        <div id="sec-summary" class="cv-tab-content hidden space-y-4 rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-6 shadow-sm">
+          <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between border-b border-[color:var(--border)] pb-3">
+            <div>
+              <h3 class="text-sm font-bold text-[color:var(--fg)]">Professional Summary</h3>
+              <p class="text-xs text-[color:var(--muted)] mt-0.5">2 to 4 concise sentences summarizing your background, strengths, and impact.</p>
+            </div>
+            <button
+              type="button"
+              id="btn-ai-summary"
+              class="inline-flex cursor-pointer items-center justify-center gap-1.5 rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] px-3.5 py-1.5 text-xs font-bold text-[color:var(--fg)] shadow-xs transition hover:border-[color:var(--border-strong)] hover:bg-[color:var(--surface-strong)] focus:outline-none focus:ring-2 focus:ring-[color:var(--accent)] shrink-0"
+              title="Generate or improve summary using your CV facts"
+            >
+              <svg class="h-3.5 w-3.5 stroke-current" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+              </svg>
+              <span id="ai-summary-btn-text">Improve with AI</span>
+            </button>
+          </div>
+
+          <!-- AI Proposal / Review Card -->
+          <div id="ai-summary-proposal-card" class="hidden rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 space-y-3 shadow-xs transition-all">
+            <div class="flex items-center justify-between">
+              <span class="inline-flex items-center gap-1.5 text-xs font-bold text-[color:var(--fg)]">
+                <svg class="h-3.5 w-3.5 stroke-current" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+                </svg>
+                <span>AI Suggested Summary</span>
+              </span>
+              <span id="ai-provider-badge" class="text-[10px] font-mono text-[color:var(--muted)]"></span>
+            </div>
+            <p id="ai-summary-text" class="text-xs leading-relaxed text-[color:var(--fg)] italic bg-[color:var(--surface-strong)] p-3 rounded-xl border border-[color:var(--border)]"></p>
+            <div class="flex items-center justify-end gap-2 pt-1">
+              <button
+                type="button"
+                id="btn-ai-dismiss"
+                class="cursor-pointer rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1.5 text-xs font-semibold text-[color:var(--muted)] hover:text-[color:var(--fg)] hover:bg-[color:var(--surface-strong)] transition"
+              >
+                Dismiss
+              </button>
+              <button
+                type="button"
+                id="btn-ai-apply"
+                class="inline-flex cursor-pointer items-center gap-1.5 rounded-xl bg-[color:var(--fg)] px-3.5 py-1.5 text-xs font-bold text-[color:var(--bg)] shadow-xs transition hover:opacity-90"
+              >
+                <span>Apply to Summary</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- AI Status / Notice Alert -->
+          <div id="ai-summary-status" class="hidden text-xs rounded-xl p-3 border leading-relaxed"></div>
+
+          <div>
+            <textarea
+              id="inp-summary"
+              rows="6"
+              placeholder="e.g. Results-driven software engineer with 6+ years of experience architecting high-performance web applications. Expert in TypeScript, React, and cloud deployments. Proven track record in boosting application performance by 40% and mentoring junior engineering talent."
+              class="cv-input leading-relaxed"
+            ></textarea>
+            <p class="mt-2 text-[11px] text-[color:var(--muted)]">Harvard Tip: Start with your professional identity, state your core technical competency, and close with an impact metric.</p>
+          </div>
+        </div>
+
+        <!-- 3. EDUCATION SECTION -->
+        <div id="sec-education" class="cv-tab-content hidden space-y-4 rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-6 shadow-sm">
+          <div class="flex items-center justify-between border-b border-[color:var(--border)] pb-3">
+            <div>
+              <h3 class="text-sm font-bold text-[color:var(--fg)]">Education &amp; Degrees</h3>
+              <p class="text-xs text-[color:var(--muted)] mt-0.5">List university degrees, college credentials, or academic programs.</p>
+            </div>
+            <button type="button" id="btn-add-edu" class="inline-flex items-center gap-1.5 rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1.5 text-xs font-bold text-[color:var(--accent)] hover:border-[color:var(--accent)] shadow-sm">
+              <span>+ Add Degree</span>
+            </button>
+          </div>
+          <div id="edu-container" class="space-y-4">
+            <!-- Rendered Dynamic Education Cards -->
+          </div>
+        </div>
+
+        <!-- 4. WORK EXPERIENCE SECTION -->
+        <div id="sec-experience" class="cv-tab-content hidden space-y-4 rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-6 shadow-sm">
+          <div class="flex items-center justify-between border-b border-[color:var(--border)] pb-3">
+            <div>
+              <h3 class="text-sm font-bold text-[color:var(--fg)]">Work Experience</h3>
+              <p class="text-xs text-[color:var(--muted)] mt-0.5">List roles in reverse chronological order with bullet points.</p>
+            </div>
+            <button type="button" id="btn-add-exp" class="inline-flex items-center gap-1.5 rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1.5 text-xs font-bold text-[color:var(--accent)] hover:border-[color:var(--accent)] shadow-sm">
+              <span>+ Add Experience</span>
+            </button>
+          </div>
+          <div id="exp-container" class="space-y-5">
+            <!-- Rendered Dynamic Experience Cards -->
+          </div>
+        </div>
+
+        <!-- 5. SKILLS SECTION -->
+        <div id="sec-skills" class="cv-tab-content hidden space-y-4 rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-6 shadow-sm">
+          <div class="border-b border-[color:var(--border)] pb-3">
+            <h3 class="text-sm font-bold text-[color:var(--fg)]">Skills &amp; Competencies</h3>
+            <p class="text-xs text-[color:var(--muted)] mt-0.5">Add hard skills, programming languages, tools, frameworks, and methodologies.</p>
+          </div>
+          <div class="space-y-3">
+            <div class="flex gap-2">
+              <input type="text" id="inp-skill-item" placeholder="e.g. TypeScript, React, SQL, Financial Modeling, Docker" class="cv-input flex-1" />
+              <button type="button" id="btn-add-skill" class="shrink-0 rounded-xl bg-[color:var(--accent)] px-4 py-2.5 text-xs font-bold text-white shadow-sm hover:bg-[color:var(--accent-strong)]">Add Skill</button>
+            </div>
+            <p class="text-[11px] text-[color:var(--muted)]">Tip: You can paste a comma-separated list of skills to add them all at once.</p>
+            <div id="skills-badge-container" class="mt-3 flex flex-wrap gap-2 min-h-[40px] p-2 rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)]">
+              <!-- Skill Badges -->
+            </div>
+          </div>
+        </div>
+
+        <!-- 6. PROJECTS SECTION -->
+        <div id="sec-projects" class="cv-tab-content hidden space-y-4 rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-6 shadow-sm">
+          <div class="flex items-center justify-between border-b border-[color:var(--border)] pb-3">
+            <div>
+              <h3 class="text-sm font-bold text-[color:var(--fg)]">Projects &amp; Portfolio</h3>
+              <p class="text-xs text-[color:var(--muted)] mt-0.5">Showcase personal, academic, or open-source projects.</p>
+            </div>
+            <button type="button" id="btn-add-project" class="inline-flex items-center gap-1.5 rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1.5 text-xs font-bold text-[color:var(--accent)] hover:border-[color:var(--accent)] shadow-sm">
+              <span>+ Add Project</span>
+            </button>
+          </div>
+          <div id="proj-container" class="space-y-4">
+            <!-- Rendered Dynamic Project Cards -->
+          </div>
+        </div>
+
+        <!-- 7. EXTRA SECTIONS -->
+        <div id="sec-extras" class="cv-tab-content hidden space-y-5 rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-6 shadow-sm">
+          
+          <!-- Certifications -->
+          <div class="space-y-3 border-b border-[color:var(--border)] pb-4">
+            <div class="flex items-center justify-between">
+              <h4 class="text-xs font-bold uppercase tracking-wider text-[color:var(--fg)]">Certifications</h4>
+              <button type="button" id="btn-add-cert" class="text-xs font-bold text-[color:var(--accent)] hover:underline">+ Add Certificate</button>
+            </div>
+            <div id="cert-container" class="space-y-2.5"></div>
+          </div>
+
+          <!-- Languages -->
+          <div class="space-y-3 border-b border-[color:var(--border)] pb-4">
+            <div class="flex items-center justify-between">
+              <h4 class="text-xs font-bold uppercase tracking-wider text-[color:var(--fg)]">Languages</h4>
+              <button type="button" id="btn-add-lang" class="text-xs font-bold text-[color:var(--accent)] hover:underline">+ Add Language</button>
+            </div>
+            <div id="lang-container" class="space-y-2.5"></div>
+          </div>
+
+          <!-- Awards / Honors -->
+          <div class="space-y-3 border-b border-[color:var(--border)] pb-4">
+            <div class="flex items-center justify-between">
+              <h4 class="text-xs font-bold uppercase tracking-wider text-[color:var(--fg)]">Awards &amp; Honors</h4>
+              <button type="button" id="btn-add-award" class="text-xs font-bold text-[color:var(--accent)] hover:underline">+ Add Award</button>
+            </div>
+            <div id="award-container" class="space-y-2.5"></div>
+          </div>
+
+          <!-- Volunteer -->
+          <div class="space-y-3 border-b border-[color:var(--border)] pb-4">
+            <div class="flex items-center justify-between">
+              <h4 class="text-xs font-bold uppercase tracking-wider text-[color:var(--fg)]">Volunteer Experience</h4>
+              <button type="button" id="btn-add-vol" class="text-xs font-bold text-[color:var(--accent)] hover:underline">+ Add Volunteer</button>
+            </div>
+            <div id="vol-container" class="space-y-2.5"></div>
+          </div>
+
+          <!-- Interests -->
+          <div class="space-y-2 border-b border-[color:var(--border)] pb-4">
+            <label class="block text-xs font-bold text-[color:var(--fg)]">Interests / Activities</label>
+            <input type="text" id="inp-interests" placeholder="e.g. Open-source development, Marathon running, Chess, Technical writing" class="cv-input" />
+          </div>
+
+          <!-- References -->
+          <div class="space-y-2">
+            <label class="block text-xs font-bold text-[color:var(--fg)]">References</label>
+            <input type="text" id="inp-references" placeholder="e.g. Available upon request" class="cv-input" />
+          </div>
+        </div>
+
+        <!-- Form Navigation Footer -->
+        <div class="flex items-center justify-between pt-2">
+          <button type="button" id="btn-prev-tab" class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] px-4 py-2 text-xs font-bold text-[color:var(--muted)] hover:text-[color:var(--fg)]">
+            ← Previous
+          </button>
+          <button type="button" id="btn-next-tab" class="rounded-xl bg-[color:var(--accent)] px-5 py-2 text-xs font-bold text-white shadow-sm hover:bg-[color:var(--accent-strong)]">
+            Next Step →
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Right Column: Live A4 Document Canvas Preview (6-7 cols) -->
+    <div class="space-y-3 lg:col-span-6 xl:col-span-7">
+      <div class="flex items-center justify-between px-1">
+        <div class="flex items-center gap-2">
+          <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">A4 Live Document Preview</span>
+          <span id="preview-template-label" class="rounded-md bg-[color:var(--surface)] border border-[color:var(--border)] px-2 py-0.5 text-[11px] font-semibold text-[color:var(--fg)]">
+            Professional (Harvard Standard)
+          </span>
+        </div>
+        <span class="text-[11px] text-[color:var(--muted)]">Exact A4 Output</span>
+      </div>
+
+      <!-- Outer Viewport Frame -->
+      <div class="cv-preview-viewport overflow-x-auto rounded-3xl border border-[color:var(--border)] bg-slate-300 dark:bg-slate-900/80 p-3 sm:p-6 shadow-inner">
+        <!-- The Printable Document Container -->
+        <div
+          id="cv-preview-doc"
+          class="cv-sheet-paper mx-auto bg-white text-slate-900 shadow-2xl transition-all duration-150 template-professional"
+        >
+          <!-- Dynamic CV HTML is rendered here -->
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .cv-input {
+    width: 100%;
+    border-radius: 0.75rem;
+    border: 1.5px solid var(--border);
+    background-color: var(--bg);
+    padding: 0.625rem 0.875rem;
+    font-size: 0.875rem;
+    color: var(--fg);
+    outline: none;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  }
+  .cv-input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-soft);
+  }
+
+  .cv-tab-btn {
+    color: var(--muted);
+    background-color: transparent;
+    border-bottom: 2px solid transparent;
+  }
+  .cv-tab-btn.active {
+    color: var(--accent);
+    border-bottom-color: var(--accent);
+    background-color: var(--surface);
+  }
+
+  .cv-template-btn {
+    color: var(--muted);
+    background-color: transparent;
+  }
+  .cv-template-btn.active {
+    color: var(--fg);
+    background-color: var(--surface-strong);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  }
+</style>
+
+<!-- GLOBAL STYLES FOR THE CV SHEET AND DYNAMIC RENDERED ELEMENTS -->
+<style is:global>
+  /* ========================================================== */
+  /* REAL A4 SHEET DOCUMENT STYLING (Harvard & Corporate ATS)   */
+  /* ========================================================== */
+  .cv-sheet-paper {
+    width: 100%;
+    max-width: 210mm;
+    min-height: 297mm;
+    padding: 16mm 18mm;
+    box-sizing: border-box;
+    background: #ffffff !important;
+    color: #111827 !important;
+    font-size: 9.5pt;
+    line-height: 1.38;
+    letter-spacing: 0.01em;
+  }
+
+  /* Common Reset Inside Document */
+  .cv-sheet-paper h1,
+  .cv-sheet-paper h2,
+  .cv-sheet-paper h3,
+  .cv-sheet-paper p,
+  .cv-sheet-paper ul,
+  .cv-sheet-paper li {
+    margin: 0;
+    padding: 0;
+  }
+
+  .cv-sheet-paper ul {
+    list-style-type: disc;
+    padding-left: 14pt;
+    margin-top: 2.5pt;
+    margin-bottom: 2.5pt;
+  }
+
+  .cv-sheet-paper li {
+    margin-bottom: 2pt;
+    font-size: 9pt;
+    line-height: 1.35;
+    color: #1f2937;
+  }
+
+  /* -------------------------------------------------- */
+  /* TEMPLATE 1: PROFESSIONAL (Harvard Classic Format)  */
+  /* -------------------------------------------------- */
+  .template-professional {
+    font-family: 'Times New Roman', Times, Garamond, Georgia, serif !important;
+  }
+  .template-professional .cv-header {
+    text-align: center;
+    border-bottom: 1.5px solid #111827;
+    padding-bottom: 6pt;
+    margin-bottom: 8pt;
+  }
+  .template-professional .cv-name {
+    font-size: 18pt;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #000000;
+  }
+  .template-professional .cv-title {
+    font-size: 10.5pt;
+    font-weight: 600;
+    color: #374151;
+    margin-top: 1.5pt;
+  }
+  .template-professional .cv-contact-line {
+    font-size: 9pt;
+    color: #374151;
+    margin-top: 3pt;
+  }
+  .template-professional .cv-section-title {
+    font-size: 10.5pt;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #000000;
+    border-bottom: 1px solid #111827;
+    padding-bottom: 1.5pt;
+    margin-top: 9pt;
+    margin-bottom: 4pt;
+  }
+  .template-professional .cv-entry-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+  }
+  .template-professional .cv-bold-title {
+    font-size: 9.5pt;
+    font-weight: 700;
+    color: #000000;
+  }
+  .template-professional .cv-sub-title {
+    font-size: 9.5pt;
+    font-style: italic;
+    color: #1f2937;
+  }
+  .template-professional .cv-date-location {
+    font-size: 9pt;
+    font-weight: 600;
+    color: #1f2937;
+    text-align: right;
+  }
+
+  /* -------------------------------------------------- */
+  /* TEMPLATE 2: MODERN (Silicon Valley Tech Format)    */
+  /* -------------------------------------------------- */
+  .template-modern {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif !important;
+  }
+  .template-modern .cv-header {
+    border-bottom: 2px solid #1e3a8a;
+    padding-bottom: 8pt;
+    margin-bottom: 8pt;
+  }
+  .template-modern .cv-name {
+    font-size: 19pt;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    color: #1e3a8a;
+  }
+  .template-modern .cv-title {
+    font-size: 10.5pt;
+    font-weight: 600;
+    color: #2563eb;
+    margin-top: 1.5pt;
+  }
+  .template-modern .cv-contact-line {
+    font-size: 8.5pt;
+    color: #4b5563;
+    margin-top: 3pt;
+  }
+  .template-modern .cv-section-title {
+    font-size: 10pt;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #1e3a8a;
+    border-bottom: 1.5px solid #dbeafe;
+    padding-bottom: 2pt;
+    margin-top: 9pt;
+    margin-bottom: 4pt;
+  }
+  .template-modern .cv-entry-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+  }
+  .template-modern .cv-bold-title {
+    font-size: 9.5pt;
+    font-weight: 700;
+    color: #0f172a;
+  }
+  .template-modern .cv-sub-title {
+    font-size: 9pt;
+    font-weight: 500;
+    color: #334155;
+  }
+  .template-modern .cv-date-location {
+    font-size: 8.5pt;
+    font-weight: 600;
+    color: #475569;
+    text-align: right;
+  }
+  .template-modern .cv-skill-pill {
+    display: inline-block;
+    background-color: #f1f5f9;
+    color: #1e293b;
+    border: 1px solid #cbd5e1;
+    border-radius: 3px;
+    padding: 1pt 5pt;
+    font-size: 8pt;
+    font-weight: 600;
+    margin: 1pt 2pt 1pt 0;
+  }
+
+  /* -------------------------------------------------- */
+  /* TEMPLATE 3: STUDENT / FRESHER (Ivy League Early)   */
+  /* -------------------------------------------------- */
+  .template-student {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif !important;
+  }
+  .template-student .cv-header {
+    text-align: center;
+    border-bottom: 1.5px solid #065f46;
+    padding-bottom: 6pt;
+    margin-bottom: 8pt;
+  }
+  .template-student .cv-name {
+    font-size: 18pt;
+    font-weight: 800;
+    color: #064e3b;
+    letter-spacing: -0.01em;
+  }
+  .template-student .cv-title {
+    font-size: 10pt;
+    font-weight: 600;
+    color: #047857;
+    margin-top: 1.5pt;
+  }
+  .template-student .cv-contact-line {
+    font-size: 8.5pt;
+    color: #374151;
+    margin-top: 3pt;
+  }
+  .template-student .cv-section-title {
+    font-size: 10pt;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #064e3b;
+    border-bottom: 1px solid #a7f3d0;
+    padding-bottom: 1.5pt;
+    margin-top: 8pt;
+    margin-bottom: 4pt;
+  }
+  .template-student .cv-entry-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+  }
+  .template-student .cv-bold-title {
+    font-size: 9.5pt;
+    font-weight: 700;
+    color: #111827;
+  }
+  .template-student .cv-sub-title {
+    font-size: 9pt;
+    color: #374151;
+  }
+  .template-student .cv-date-location {
+    font-size: 8.5pt;
+    font-weight: 600;
+    color: #4b5563;
+    text-align: right;
+  }
+</style>
+
+<script>
+  import { generateProfessionalSummary } from '../../utils/ai/summary-service';
+
+  interface EducationItem {
+    id: string;
+    degree: string;
+    institution: string;
+    location: string;
+    startYear: string;
+    endYear: string;
+    gpa: string;
+  }
+
+  interface ExperienceItem {
+    id: string;
+    title: string;
+    company: string;
+    location: string;
+    startDate: string;
+    endDate: string;
+    bullets: string;
+  }
+
+  interface ProjectItem {
+    id: string;
+    name: string;
+    linkOrRole: string;
+    description: string;
+    tech: string;
+  }
+
+  interface CertificateItem {
+    id: string;
+    name: string;
+    issuer: string;
+    year: string;
+  }
+
+  interface LanguageItem {
+    id: string;
+    name: string;
+    level: string;
+  }
+
+  interface AwardItem {
+    id: string;
+    title: string;
+    issuer: string;
+    year: string;
+  }
+
+  interface VolunteerItem {
+    id: string;
+    role: string;
+    organization: string;
+    details: string;
+  }
+
+  interface CvState {
+    template: 'professional' | 'modern' | 'student';
+    name: string;
+    title: string;
+    email: string;
+    phone: string;
+    location: string;
+    linkedin: string;
+    website: string;
+    summary: string;
+    education: EducationItem[];
+    experience: ExperienceItem[];
+    skills: string[];
+    projects: ProjectItem[];
+    certifications: CertificateItem[];
+    languages: LanguageItem[];
+    awards: AwardItem[];
+    volunteer: VolunteerItem[];
+    interests: string;
+    references: string;
+  }
+
+  const STORAGE_KEY = 'calculator_cv_state_v2';
+
+  const sampleData: CvState = {
+    template: 'professional',
+    name: 'Alexander J. Morgan',
+    title: 'Senior Software Engineer & Distributed Systems Lead',
+    email: 'alex.morgan@example.com',
+    phone: '(555) 234-8901',
+    location: 'San Francisco, CA',
+    linkedin: 'linkedin.com/in/alexmorgan',
+    website: 'alexmorgan.dev',
+    summary: 'Results-oriented Senior Software Engineer with 6+ years of experience architecting enterprise web applications and distributed backend microservices. Proven leader in boosting application performance by 40%, optimizing database query execution, and mentoring cross-functional engineering talent.',
+    education: [
+      {
+        id: 'edu-1',
+        degree: 'Bachelor of Science in Computer Science',
+        institution: 'University of California, Berkeley',
+        location: 'Berkeley, CA',
+        startYear: '2016',
+        endYear: '2020',
+        gpa: '3.85 / 4.0 (Dean\'s Honors)',
+      },
+    ],
+    experience: [
+      {
+        id: 'exp-1',
+        title: 'Lead Frontend Engineer',
+        company: 'CloudScale Technologies',
+        location: 'San Francisco, CA',
+        startDate: '2022',
+        endDate: 'Present',
+        bullets: '• Spearheaded architectural migration to modern TypeScript and Astro micro-frontends, reducing load times by 48% across 1.2M monthly users.\n• Engineered real-time financial streaming pipeline processing over 200,000 WebSocket events per second with 99.99% uptime.\n• Mentored 5 junior and mid-level engineers through bi-weekly code reviews, test automation standards, and CI/CD best practices.',
+      },
+      {
+        id: 'exp-2',
+        title: 'Software Engineer',
+        company: 'Apex Digital Solutions',
+        location: 'San Jose, CA',
+        startDate: '2020',
+        endDate: '2022',
+        bullets: '• Developed responsive client-facing web portals and REST APIs using TypeScript, React, and PostgreSQL.\n• Automated unit and end-to-end testing pipelines with GitHub Actions, increasing test coverage from 64% to 92%.\n• Awarded Company Innovation Recognition for improving database query efficiency by 35%.',
+      },
+    ],
+    skills: [
+      'TypeScript', 'JavaScript (ESNext)', 'React', 'Node.js', 'Astro', 'Python', 'SQL & PostgreSQL', 'Docker', 'AWS Cloud Infrastructure', 'CI/CD Automation', 'REST & GraphQL APIs', 'Distributed Systems'
+    ],
+    projects: [
+      {
+        id: 'proj-1',
+        name: 'OmniCalc Financial Engine',
+        linkOrRole: 'github.com/alex/omnicalc',
+        description: 'Built a 100% client-side multi-currency and progressive income tax calculator supporting 24 national tax systems with sub-millisecond execution.',
+        tech: 'TypeScript, Web Workers, Tailwind CSS',
+      },
+      {
+        id: 'proj-2',
+        name: 'ATS Resume Text Parser',
+        linkOrRole: 'github.com/alex/ats-parser',
+        description: 'Engineered an open-source parsing library to validate PDF text streams against Applicant Tracking System compliance criteria.',
+        tech: 'Node.js, PDF.js, Regex Parsing',
+      }
+    ],
+    certifications: [
+      { id: 'cert-1', name: 'AWS Certified Solutions Architect – Associate', issuer: 'Amazon Web Services', year: '2023' },
+      { id: 'cert-2', name: 'Meta Professional Frontend Developer Certificate', issuer: 'Meta', year: '2021' }
+    ],
+    languages: [
+      { id: 'lang-1', name: 'English', level: 'Native / Bilingual' },
+      { id: 'lang-2', name: 'Spanish', level: 'Professional Working Proficiency' }
+    ],
+    awards: [
+      { id: 'award-1', title: 'Dean\'s Academic Honor List', issuer: 'UC Berkeley', year: '2019' }
+    ],
+    volunteer: [
+      { id: 'vol-1', role: 'Coding & STEM Mentor', organization: 'Code for Youth Initiative', details: 'Volunteer weekly teaching algorithmic problem solving and Python programming to high school students.' }
+    ],
+    interests: 'Open-source software contributing, marathon running, algorithmic chess, technical writing.',
+    references: 'Available upon request',
+  };
+
+  function initCvMaker() {
+    const root = document.getElementById('cv-maker-root');
+    if (!root) return;
+
+    const defaultTemplateAttr = (root.getAttribute('data-default-template') || 'professional') as CvState['template'];
+
+    let state: CvState = loadSavedState() || {
+      template: defaultTemplateAttr,
+      name: '',
+      title: '',
+      email: '',
+      phone: '',
+      location: '',
+      linkedin: '',
+      website: '',
+      summary: '',
+      education: [
+        { id: 'edu-0', degree: '', institution: '', location: '', startYear: '', endYear: '', gpa: '' }
+      ],
+      experience: [
+        { id: 'exp-0', title: '', company: '', location: '', startDate: '', endDate: '', bullets: '' }
+      ],
+      skills: [],
+      projects: [],
+      certifications: [],
+      languages: [],
+      awards: [],
+      volunteer: [],
+      interests: '',
+      references: 'Available upon request',
+    };
+
+    if (defaultTemplateAttr && !localStorage.getItem(STORAGE_KEY)) {
+      state.template = defaultTemplateAttr;
+    }
+
+    function saveState() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      } catch (e) {}
+    }
+
+    function loadSavedState(): CvState | null {
+      try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        return saved ? JSON.parse(saved) : null;
+      } catch (e) {
+        return null;
+      }
+    }
+
+    // DOM Elements
+    const inpName = document.getElementById('inp-name') as HTMLInputElement;
+    const inpTitle = document.getElementById('inp-title') as HTMLInputElement;
+    const inpEmail = document.getElementById('inp-email') as HTMLInputElement;
+    const inpPhone = document.getElementById('inp-phone') as HTMLInputElement;
+    const inpLocation = document.getElementById('inp-location') as HTMLInputElement;
+    const inpLinkedin = document.getElementById('inp-linkedin') as HTMLInputElement;
+    const inpWebsite = document.getElementById('inp-website') as HTMLInputElement;
+    const inpSummary = document.getElementById('inp-summary') as HTMLTextAreaElement;
+    const inpInterests = document.getElementById('inp-interests') as HTMLInputElement;
+    const inpReferences = document.getElementById('inp-references') as HTMLInputElement;
+    const cvPreviewDoc = document.getElementById('cv-preview-doc') as HTMLElement;
+    const previewTemplateLabel = document.getElementById('preview-template-label') as HTMLElement;
+
+    // Containers
+    const eduContainer = document.getElementById('edu-container') as HTMLElement;
+    const expContainer = document.getElementById('exp-container') as HTMLElement;
+    const skillsBadgeContainer = document.getElementById('skills-badge-container') as HTMLElement;
+    const projContainer = document.getElementById('proj-container') as HTMLElement;
+    const certContainer = document.getElementById('cert-container') as HTMLElement;
+    const langContainer = document.getElementById('lang-container') as HTMLElement;
+    const awardContainer = document.getElementById('award-container') as HTMLElement;
+    const volContainer = document.getElementById('vol-container') as HTMLElement;
+
+    function syncFormInputs() {
+      if (inpName) inpName.value = state.name || '';
+      if (inpTitle) inpTitle.value = state.title || '';
+      if (inpEmail) inpEmail.value = state.email || '';
+      if (inpPhone) inpPhone.value = state.phone || '';
+      if (inpLocation) inpLocation.value = state.location || '';
+      if (inpLinkedin) inpLinkedin.value = state.linkedin || '';
+      if (inpWebsite) inpWebsite.value = state.website || '';
+      if (inpSummary) inpSummary.value = state.summary || '';
+      if (inpInterests) inpInterests.value = state.interests || '';
+      if (inpReferences) inpReferences.value = state.references || '';
+
+      document.querySelectorAll('.cv-template-btn').forEach((btn) => {
+        const t = btn.getAttribute('data-template-btn');
+        if (t === state.template) {
+          btn.classList.add('active');
+        } else {
+          btn.classList.remove('active');
+        }
+      });
+
+      if (previewTemplateLabel) {
+        if (state.template === 'professional') previewTemplateLabel.textContent = 'Professional (Harvard Standard)';
+        else if (state.template === 'modern') previewTemplateLabel.textContent = 'Modern (Tech & Consulting)';
+        else previewTemplateLabel.textContent = 'Student & Fresher (Academic)';
+      }
+
+      renderEducationRows();
+      renderExperienceRows();
+      renderSkillBadges();
+      renderProjectRows();
+      renderCertRows();
+      renderLangRows();
+      renderAwardRows();
+      renderVolRows();
+      renderLivePreview();
+    }
+
+    // Dynamic Row Renderers
+    function renderEducationRows() {
+      if (!eduContainer) return;
+      eduContainer.innerHTML = '';
+      state.education.forEach((edu, idx) => {
+        const el = document.createElement('div');
+        el.className = 'rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 space-y-3 relative shadow-sm';
+        el.innerHTML = `
+          <div class="flex items-center justify-between border-b border-[color:var(--border)] pb-2">
+            <span class="text-xs font-bold text-[color:var(--fg)]">Degree / Program #${idx + 1}</span>
+            ${state.education.length > 1 ? `<button type="button" data-del-edu="${edu.id}" class="text-xs font-semibold text-rose-600 dark:text-rose-400 hover:underline">Remove</button>` : ''}
+          </div>
+          <div class="space-y-2.5">
+            <div>
+              <label class="block text-[11px] font-bold text-[color:var(--fg)] mb-1">Degree Title</label>
+              <input type="text" data-edu-field="degree" data-id="${edu.id}" placeholder="e.g. Bachelor of Science in Computer Science" value="${escapeHtml(edu.degree)}" class="cv-input text-xs" />
+            </div>
+            <div class="grid gap-2.5 sm:grid-cols-2">
+              <div>
+                <label class="block text-[11px] font-bold text-[color:var(--fg)] mb-1">University / Institution</label>
+                <input type="text" data-edu-field="institution" data-id="${edu.id}" placeholder="e.g. UC Berkeley" value="${escapeHtml(edu.institution)}" class="cv-input text-xs" />
+              </div>
+              <div>
+                <label class="block text-[11px] font-bold text-[color:var(--fg)] mb-1">Location (City, State)</label>
+                <input type="text" data-edu-field="location" data-id="${edu.id}" placeholder="e.g. Berkeley, CA" value="${escapeHtml(edu.location)}" class="cv-input text-xs" />
+              </div>
+            </div>
+            <div class="grid gap-2.5 sm:grid-cols-3">
+              <div>
+                <label class="block text-[11px] font-bold text-[color:var(--fg)] mb-1">Start Year</label>
+                <input type="text" data-edu-field="startYear" data-id="${edu.id}" placeholder="2016" value="${escapeHtml(edu.startYear)}" class="cv-input text-xs" />
+              </div>
+              <div>
+                <label class="block text-[11px] font-bold text-[color:var(--fg)] mb-1">Graduation Year</label>
+                <input type="text" data-edu-field="endYear" data-id="${edu.id}" placeholder="2020" value="${escapeHtml(edu.endYear)}" class="cv-input text-xs" />
+              </div>
+              <div>
+                <label class="block text-[11px] font-bold text-[color:var(--fg)] mb-1">GPA / Honors (Optional)</label>
+                <input type="text" data-edu-field="gpa" data-id="${edu.id}" placeholder="e.g. 3.85 / 4.0" value="${escapeHtml(edu.gpa)}" class="cv-input text-xs" />
+              </div>
+            </div>
+          </div>
+        `;
+        eduContainer.appendChild(el);
+      });
+    }
+
+    function renderExperienceRows() {
+      if (!expContainer) return;
+      expContainer.innerHTML = '';
+      state.experience.forEach((exp, idx) => {
+        const el = document.createElement('div');
+        el.className = 'rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 space-y-3 relative shadow-sm';
+        el.innerHTML = `
+          <div class="flex items-center justify-between border-b border-[color:var(--border)] pb-2">
+            <span class="text-xs font-bold text-[color:var(--fg)]">Position #${idx + 1}</span>
+            ${state.experience.length > 1 ? `<button type="button" data-del-exp="${exp.id}" class="text-xs font-semibold text-rose-600 dark:text-rose-400 hover:underline">Remove</button>` : ''}
+          </div>
+          <div class="space-y-2.5">
+            <div class="grid gap-2.5 sm:grid-cols-2">
+              <div>
+                <label class="block text-[11px] font-bold text-[color:var(--fg)] mb-1">Job Title</label>
+                <input type="text" data-exp-field="title" data-id="${exp.id}" placeholder="e.g. Senior Software Engineer" value="${escapeHtml(exp.title)}" class="cv-input text-xs" />
+              </div>
+              <div>
+                <label class="block text-[11px] font-bold text-[color:var(--fg)] mb-1">Company Name</label>
+                <input type="text" data-exp-field="company" data-id="${exp.id}" placeholder="e.g. CloudScale Technologies" value="${escapeHtml(exp.company)}" class="cv-input text-xs" />
+              </div>
+            </div>
+            <div class="grid gap-2.5 sm:grid-cols-3">
+              <div>
+                <label class="block text-[11px] font-bold text-[color:var(--fg)] mb-1">Location</label>
+                <input type="text" data-exp-field="location" data-id="${exp.id}" placeholder="e.g. San Francisco, CA" value="${escapeHtml(exp.location)}" class="cv-input text-xs" />
+              </div>
+              <div>
+                <label class="block text-[11px] font-bold text-[color:var(--fg)] mb-1">Start Date</label>
+                <input type="text" data-exp-field="startDate" data-id="${exp.id}" placeholder="e.g. 2022" value="${escapeHtml(exp.startDate)}" class="cv-input text-xs" />
+              </div>
+              <div>
+                <label class="block text-[11px] font-bold text-[color:var(--fg)] mb-1">End Date</label>
+                <input type="text" data-exp-field="endDate" data-id="${exp.id}" placeholder="e.g. Present" value="${escapeHtml(exp.endDate)}" class="cv-input text-xs" />
+              </div>
+            </div>
+            <div>
+              <label class="block text-[11px] font-bold text-[color:var(--fg)] mb-1">Responsibilities &amp; Achievements (Enter each bullet point on a new line)</label>
+              <textarea rows="4" data-exp-field="bullets" data-id="${exp.id}" placeholder="• Spearheaded architectural migration reducing load times by 48%.\n• Engineered real-time data streaming pipeline with 99.99% uptime.\n• Mentored 5 junior engineers through code reviews." class="cv-input text-xs leading-relaxed font-sans">${escapeHtml(exp.bullets)}</textarea>
+            </div>
+          </div>
+        `;
+        expContainer.appendChild(el);
+      });
+    }
+
+    function renderSkillBadges() {
+      if (!skillsBadgeContainer) return;
+      skillsBadgeContainer.innerHTML = '';
+      if (state.skills.length === 0) {
+        skillsBadgeContainer.innerHTML = '<span class="text-xs text-[color:var(--muted)] italic p-1">No skills added. Type above to add skills.</span>';
+        return;
+      }
+      state.skills.forEach((skill, idx) => {
+        const badge = document.createElement('span');
+        badge.className = 'inline-flex items-center gap-1.5 rounded-lg bg-[color:var(--surface)] px-2.5 py-1 text-xs font-semibold text-[color:var(--fg)] border border-[color:var(--border)] shadow-xs';
+        badge.innerHTML = `
+          <span>${escapeHtml(skill)}</span>
+          <button type="button" data-del-skill="${idx}" class="text-[color:var(--muted)] hover:text-rose-500 font-bold ml-0.5">×</button>
+        `;
+        skillsBadgeContainer.appendChild(badge);
+      });
+    }
+
+    function renderProjectRows() {
+      if (!projContainer) return;
+      projContainer.innerHTML = '';
+      state.projects.forEach((proj, idx) => {
+        const el = document.createElement('div');
+        el.className = 'rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 space-y-2.5 shadow-sm';
+        el.innerHTML = `
+          <div class="flex items-center justify-between border-b border-[color:var(--border)] pb-2">
+            <span class="text-xs font-bold text-[color:var(--fg)]">Project #${idx + 1}</span>
+            <button type="button" data-del-proj="${proj.id}" class="text-xs font-semibold text-rose-600 dark:text-rose-400 hover:underline">Remove</button>
+          </div>
+          <div class="grid gap-2 sm:grid-cols-2">
+            <input type="text" data-proj-field="name" data-id="${proj.id}" placeholder="Project Title (e.g. OmniCalc Engine)" value="${escapeHtml(proj.name)}" class="cv-input text-xs" />
+            <input type="text" data-proj-field="linkOrRole" data-id="${proj.id}" placeholder="Role / Link (e.g. github.com/alex/omnicalc)" value="${escapeHtml(proj.linkOrRole)}" class="cv-input text-xs" />
+          </div>
+          <textarea rows="2" data-proj-field="description" data-id="${proj.id}" placeholder="Key problem solved, architectural methodology, and measurable outcome..." class="cv-input text-xs leading-relaxed">${escapeHtml(proj.description)}</textarea>
+          <input type="text" data-proj-field="tech" data-id="${proj.id}" placeholder="Technologies used (e.g. TypeScript, React, Docker, AWS)" value="${escapeHtml(proj.tech)}" class="cv-input text-xs" />
+        `;
+        projContainer.appendChild(el);
+      });
+    }
+
+    function renderCertRows() {
+      if (!certContainer) return;
+      certContainer.innerHTML = '';
+      state.certifications.forEach((cert) => {
+        const el = document.createElement('div');
+        el.className = 'flex items-center gap-2';
+        el.innerHTML = `
+          <input type="text" data-cert-field="name" data-id="${cert.id}" placeholder="Certificate Name" value="${escapeHtml(cert.name)}" class="cv-input text-xs flex-1" />
+          <input type="text" data-cert-field="issuer" data-id="${cert.id}" placeholder="Issuer (e.g. AWS)" value="${escapeHtml(cert.issuer)}" class="cv-input text-xs w-1/3" />
+          <input type="text" data-cert-field="year" data-id="${cert.id}" placeholder="Year" value="${escapeHtml(cert.year)}" class="cv-input text-xs w-20" />
+          <button type="button" data-del-cert="${cert.id}" class="text-rose-500 font-bold px-2 text-sm">×</button>
+        `;
+        certContainer.appendChild(el);
+      });
+    }
+
+    function renderLangRows() {
+      if (!langContainer) return;
+      langContainer.innerHTML = '';
+      state.languages.forEach((lang) => {
+        const el = document.createElement('div');
+        el.className = 'flex items-center gap-2';
+        el.innerHTML = `
+          <input type="text" data-lang-field="name" data-id="${lang.id}" placeholder="Language (e.g. English)" value="${escapeHtml(lang.name)}" class="cv-input text-xs flex-1" />
+          <input type="text" data-lang-field="level" data-id="${lang.id}" placeholder="Proficiency (e.g. Native, Fluent)" value="${escapeHtml(lang.level)}" class="cv-input text-xs w-1/2" />
+          <button type="button" data-del-lang="${lang.id}" class="text-rose-500 font-bold px-2 text-sm">×</button>
+        `;
+        langContainer.appendChild(el);
+      });
+    }
+
+    function renderAwardRows() {
+      if (!awardContainer) return;
+      awardContainer.innerHTML = '';
+      state.awards.forEach((award) => {
+        const el = document.createElement('div');
+        el.className = 'flex items-center gap-2';
+        el.innerHTML = `
+          <input type="text" data-award-field="title" data-id="${award.id}" placeholder="Award Title" value="${escapeHtml(award.title)}" class="cv-input text-xs flex-1" />
+          <input type="text" data-award-field="issuer" data-id="${award.id}" placeholder="Issuer" value="${escapeHtml(award.issuer)}" class="cv-input text-xs w-1/3" />
+          <input type="text" data-award-field="year" data-id="${award.id}" placeholder="Year" value="${escapeHtml(award.year)}" class="cv-input text-xs w-20" />
+          <button type="button" data-del-award="${award.id}" class="text-rose-500 font-bold px-2 text-sm">×</button>
+        `;
+        awardContainer.appendChild(el);
+      });
+    }
+
+    function renderVolRows() {
+      if (!volContainer) return;
+      volContainer.innerHTML = '';
+      state.volunteer.forEach((vol) => {
+        const el = document.createElement('div');
+        el.className = 'space-y-1.5 rounded-xl border border-[color:var(--border)] p-3 bg-[color:var(--surface)]';
+        el.innerHTML = `
+          <div class="flex items-center justify-between gap-2">
+            <input type="text" data-vol-field="role" data-id="${vol.id}" placeholder="Role / Title" value="${escapeHtml(vol.role)}" class="cv-input text-xs flex-1" />
+            <input type="text" data-vol-field="organization" data-id="${vol.id}" placeholder="Organization" value="${escapeHtml(vol.organization)}" class="cv-input text-xs w-1/3" />
+            <button type="button" data-del-vol="${vol.id}" class="text-rose-500 font-bold px-2 text-sm">×</button>
+          </div>
+          <input type="text" data-vol-field="details" data-id="${vol.id}" placeholder="Contributions..." value="${escapeHtml(vol.details)}" class="cv-input text-xs w-full" />
+        `;
+        volContainer.appendChild(el);
+      });
+    }
+
+    // Helper: Convert raw textarea lines to semantic <ul><li>
+    function parseBulletPoints(text: string): string {
+      if (!text || !text.trim()) return '';
+      const lines = text
+        .split('\n')
+        .map((l) => l.trim().replace(/^[•\-\*]\s*/, ''))
+        .filter(Boolean);
+      if (lines.length === 0) return '';
+      return `<ul>${lines.map((l) => `<li>${escapeHtml(l)}</li>`).join('')}</ul>`;
+    }
+
+    // MAIN REACTIVE PREVIEW RENDERER
+    function renderLivePreview() {
+      if (!cvPreviewDoc) return;
+
+      cvPreviewDoc.className = `cv-sheet-paper mx-auto bg-white text-slate-900 shadow-2xl transition-all duration-150 template-${state.template}`;
+
+      const name = state.name.trim() || 'YOUR NAME';
+      const title = state.title.trim();
+      const email = state.email.trim();
+      const phone = state.phone.trim();
+      const location = state.location.trim();
+      const linkedin = state.linkedin.trim();
+      const website = state.website.trim();
+      const summary = state.summary.trim();
+
+      // Clean typographic contact bar without unprofessional emojis
+      const contactItems = [
+        email ? escapeHtml(email) : '',
+        phone ? escapeHtml(phone) : '',
+        location ? escapeHtml(location) : '',
+        linkedin ? escapeHtml(linkedin) : '',
+        website ? escapeHtml(website) : '',
+      ].filter(Boolean);
+
+      const contactLineHtml = contactItems.length > 0 ? `<div class="cv-contact-line">${contactItems.join(' &nbsp;|&nbsp; ')}</div>` : '';
+
+      // Header Block
+      const headerHtml = `
+        <div class="cv-header">
+          <div class="cv-name">${escapeHtml(name)}</div>
+          ${title ? `<div class="cv-title">${escapeHtml(title)}</div>` : ''}
+          ${contactLineHtml}
+        </div>
+      `;
+
+      // Summary Block
+      let summaryHtml = '';
+      if (summary) {
+        summaryHtml = `
+          <div class="cv-section-block">
+            <div class="cv-section-title">Professional Summary</div>
+            <p style="font-size: 9pt; color: #1f2937; line-height: 1.4;">${escapeHtml(summary)}</p>
+          </div>
+        `;
+      }
+
+      // Education Block
+      const validEdu = state.education.filter((e) => e.degree.trim() || e.institution.trim());
+      let eduHtml = '';
+      if (validEdu.length > 0) {
+        eduHtml = `
+          <div class="cv-section-block">
+            <div class="cv-section-title">Education</div>
+            <div style="display: flex; flex-direction: column; gap: 6pt;">
+              ${validEdu.map((edu) => {
+                const dates = [edu.startYear, edu.endYear].filter(Boolean).join(' – ');
+                const locationOrGpa = [edu.location, edu.gpa ? `GPA: ${edu.gpa}` : ''].filter(Boolean).join(' | ');
+                return `
+                  <div class="cv-item-node" style="break-inside: avoid;">
+                    <div class="cv-entry-row">
+                      <span class="cv-bold-title">${escapeHtml(edu.institution || 'University')}</span>
+                      <span class="cv-date-location">${escapeHtml(dates)}</span>
+                    </div>
+                    <div class="cv-entry-row">
+                      <span class="cv-sub-title">${escapeHtml(edu.degree || 'Degree')}</span>
+                      ${locationOrGpa ? `<span style="font-size: 8.5pt; color: #374151;">${escapeHtml(locationOrGpa)}</span>` : ''}
+                    </div>
+                  </div>
+                `;
+              }).join('')}
+            </div>
+          </div>
+        `;
+      }
+
+      // Experience Block
+      const validExp = state.experience.filter((e) => e.title.trim() || e.company.trim());
+      let expHtml = '';
+      if (validExp.length > 0) {
+        expHtml = `
+          <div class="cv-section-block">
+            <div class="cv-section-title">Work Experience</div>
+            <div style="display: flex; flex-direction: column; gap: 7pt;">
+              ${validExp.map((exp) => {
+                const dates = [exp.startDate, exp.endDate].filter(Boolean).join(' – ');
+                return `
+                  <div class="cv-item-node" style="break-inside: avoid;">
+                    <div class="cv-entry-row">
+                      <span class="cv-bold-title">${escapeHtml(exp.company || 'Company')}</span>
+                      <span class="cv-date-location">${escapeHtml(exp.location || '')}</span>
+                    </div>
+                    <div class="cv-entry-row" style="margin-bottom: 2pt;">
+                      <span class="cv-sub-title">${escapeHtml(exp.title || 'Role')}</span>
+                      <span class="cv-date-location" style="font-weight: normal; font-style: italic;">${escapeHtml(dates)}</span>
+                    </div>
+                    ${parseBulletPoints(exp.bullets)}
+                  </div>
+                `;
+              }).join('')}
+            </div>
+          </div>
+        `;
+      }
+
+      // Skills Block
+      let skillsHtml = '';
+      if (state.skills.length > 0) {
+        if (state.template === 'modern') {
+          skillsHtml = `
+            <div class="cv-section-block">
+              <div class="cv-section-title">Technical &amp; Professional Skills</div>
+              <div>
+                ${state.skills.map((s) => `<span class="cv-skill-pill">${escapeHtml(s)}</span>`).join('')}
+              </div>
+            </div>
+          `;
+        } else {
+          skillsHtml = `
+            <div class="cv-section-block">
+              <div class="cv-section-title">Technical &amp; Core Skills</div>
+              <p style="font-size: 9pt; color: #1f2937; line-height: 1.45;">
+                ${state.skills.map((s) => `<strong>${escapeHtml(s)}</strong>`).join(' &nbsp;•&nbsp; ')}
+              </p>
+            </div>
+          `;
+        }
+      }
+
+      // Projects Block
+      const validProj = state.projects.filter((p) => p.name.trim());
+      let projHtml = '';
+      if (validProj.length > 0) {
+        projHtml = `
+          <div class="cv-section-block">
+            <div class="cv-section-title">Projects &amp; Technical Work</div>
+            <div style="display: flex; flex-direction: column; gap: 6pt;">
+              ${validProj.map((p) => `
+                <div class="cv-item-node" style="break-inside: avoid;">
+                  <div class="cv-entry-row">
+                    <span class="cv-bold-title">${escapeHtml(p.name)}</span>
+                    ${p.linkOrRole ? `<span class="cv-date-location" style="font-weight: 500;">${escapeHtml(p.linkOrRole)}</span>` : ''}
+                  </div>
+                  ${p.description ? `<p style="font-size: 9pt; color: #1f2937; margin-top: 1pt;">${escapeHtml(p.description)}</p>` : ''}
+                  ${p.tech ? `<p style="font-size: 8.5pt; color: #4b5563; margin-top: 1pt;"><em>Technologies:</em> ${escapeHtml(p.tech)}</p>` : ''}
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        `;
+      }
+
+      // Certifications & Languages
+      const validCerts = state.certifications.filter((c) => c.name.trim());
+      const validLangs = state.languages.filter((l) => l.name.trim());
+      let certsAndLangsHtml = '';
+      if (validCerts.length > 0 || validLangs.length > 0) {
+        certsAndLangsHtml = `
+          <div style="display: grid; grid-template-columns: ${validCerts.length > 0 && validLangs.length > 0 ? '1fr 1fr' : '1fr'}; gap: 12pt; margin-top: 2pt;">
+            ${validCerts.length > 0 ? `
+              <div class="cv-section-block">
+                <div class="cv-section-title">Certifications</div>
+                <ul>
+                  ${validCerts.map((c) => `<li><strong>${escapeHtml(c.name)}</strong>${c.issuer ? ` – ${escapeHtml(c.issuer)}` : ''}${c.year ? ` (${escapeHtml(c.year)})` : ''}</li>`).join('')}
+                </ul>
+              </div>
+            ` : ''}
+            ${validLangs.length > 0 ? `
+              <div class="cv-section-block">
+                <div class="cv-section-title">Languages</div>
+                <ul>
+                  ${validLangs.map((l) => `<li><strong>${escapeHtml(l.name)}</strong>${l.level ? `: ${escapeHtml(l.level)}` : ''}</li>`).join('')}
+                </ul>
+              </div>
+            ` : ''}
+          </div>
+        `;
+      }
+
+      // Awards & Volunteer
+      const validAwards = state.awards.filter((a) => a.title.trim());
+      const validVol = state.volunteer.filter((v) => v.role.trim() || v.organization.trim());
+      let extrasHtml = '';
+      if (validAwards.length > 0 || validVol.length > 0) {
+        extrasHtml = `
+          <div style="display: grid; grid-template-columns: ${validAwards.length > 0 && validVol.length > 0 ? '1fr 1fr' : '1fr'}; gap: 12pt; margin-top: 2pt;">
+            ${validAwards.length > 0 ? `
+              <div class="cv-section-block">
+                <div class="cv-section-title">Honors &amp; Awards</div>
+                <ul>
+                  ${validAwards.map((a) => `<li><strong>${escapeHtml(a.title)}</strong>${a.issuer ? ` (${escapeHtml(a.issuer)})` : ''}${a.year ? ` – ${escapeHtml(a.year)}` : ''}</li>`).join('')}
+                </ul>
+              </div>
+            ` : ''}
+            ${validVol.length > 0 ? `
+              <div class="cv-section-block">
+                <div class="cv-section-title">Leadership &amp; Volunteer</div>
+                <ul>
+                  ${validVol.map((v) => `<li><strong>${escapeHtml(v.role)}</strong>${v.organization ? ` – ${escapeHtml(v.organization)}` : ''}${v.details ? `: ${escapeHtml(v.details)}` : ''}</li>`).join('')}
+                </ul>
+              </div>
+            ` : ''}
+          </div>
+        `;
+      }
+
+      // Footer
+      let footerHtml = '';
+      if (state.interests.trim() || state.references.trim()) {
+        footerHtml = `
+          <div style="margin-top: 8pt; font-size: 8.5pt; color: #374151; border-top: 1px solid #e5e7eb; padding-top: 4pt;">
+            ${state.interests.trim() ? `<div><strong>Activities &amp; Interests:</strong> ${escapeHtml(state.interests.trim())}</div>` : ''}
+            ${state.references.trim() ? `<div><strong>References:</strong> ${escapeHtml(state.references.trim())}</div>` : ''}
+          </div>
+        `;
+      }
+
+      // Assemble Template Order
+      if (state.template === 'student') {
+        // Education & Projects First
+        cvPreviewDoc.innerHTML = `
+          ${headerHtml}
+          ${summaryHtml}
+          ${eduHtml}
+          ${skillsHtml}
+          ${projHtml}
+          ${expHtml}
+          ${certsAndLangsHtml}
+          ${extrasHtml}
+          ${footerHtml}
+        `;
+      } else {
+        // Professional / Modern
+        cvPreviewDoc.innerHTML = `
+          ${headerHtml}
+          ${summaryHtml}
+          ${expHtml}
+          ${skillsHtml}
+          ${eduHtml}
+          ${projHtml}
+          ${certsAndLangsHtml}
+          ${extrasHtml}
+          ${footerHtml}
+        `;
+      }
+    }
+
+    function escapeHtml(str: string): string {
+      return (str || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    // Input bindings
+    const bindInput = (el: HTMLInputElement | HTMLTextAreaElement | null, key: keyof CvState) => {
+      if (!el) return;
+      el.addEventListener('input', () => {
+        (state as any)[key] = el.value;
+        saveState();
+        renderLivePreview();
+      });
+    };
+
+    bindInput(inpName, 'name');
+    bindInput(inpTitle, 'title');
+    bindInput(inpEmail, 'email');
+    bindInput(inpPhone, 'phone');
+    bindInput(inpLocation, 'location');
+    bindInput(inpLinkedin, 'linkedin');
+    bindInput(inpWebsite, 'website');
+    bindInput(inpSummary, 'summary');
+    bindInput(inpInterests, 'interests');
+    bindInput(inpReferences, 'references');
+
+    // =========================================================================
+    // AI SUMMARY GENERATION HANDLER (ZERO EXPOSED SECRETS, RATE LIMITED)
+    // =========================================================================
+    const btnAiSummary = document.getElementById('btn-ai-summary') as HTMLButtonElement | null;
+    const aiSummaryBtnText = document.getElementById('ai-summary-btn-text');
+    const aiProposalCard = document.getElementById('ai-summary-proposal-card');
+    const aiSummaryText = document.getElementById('ai-summary-text');
+    const aiProviderBadge = document.getElementById('ai-provider-badge');
+    const aiSummaryStatus = document.getElementById('ai-summary-status');
+    const btnAiApply = document.getElementById('btn-ai-apply');
+    const btnAiDismiss = document.getElementById('btn-ai-dismiss');
+
+    let pendingAiSummary = '';
+
+    const showAiStatus = (msg: string, isError = false) => {
+      if (!aiSummaryStatus) return;
+      aiSummaryStatus.textContent = msg;
+      aiSummaryStatus.className = isError
+        ? 'block text-xs rounded-xl p-3 border border-rose-500/20 bg-rose-500/5 text-rose-600 dark:text-rose-400'
+        : 'block text-xs rounded-xl p-3 border border-[color:var(--border)] bg-[color:var(--surface)] text-[color:var(--muted)]';
+    };
+
+    const hideAiStatus = () => {
+      if (aiSummaryStatus) aiSummaryStatus.className = 'hidden';
+    };
+
+    btnAiSummary?.addEventListener('click', async () => {
+      hideAiStatus();
+      if (aiProposalCard) aiProposalCard.classList.add('hidden');
+
+      // Check if candidate entered any career facts
+      const hasFacts =
+        state.title.trim().length > 0 ||
+        state.skills.length > 0 ||
+        state.experience.some((e) => e.title || e.company || e.bullets) ||
+        state.education.some((ed) => ed.degree || ed.institution);
+
+      if (!hasFacts) {
+        showAiStatus(
+          'Please enter your job title, education, skills, or work experience first so AI has factual information to write your summary.',
+          true
+        );
+        return;
+      }
+
+      if (btnAiSummary) btnAiSummary.disabled = true;
+      if (aiSummaryBtnText) aiSummaryBtnText.textContent = 'Generating with AI...';
+
+      try {
+        const payload = {
+          title: state.title,
+          skills: state.skills,
+          education: state.education.map((e) => ({
+            degree: e.degree,
+            field: '',
+            school: e.institution,
+            year: e.endYear || e.startYear,
+          })),
+          experience: state.experience.map((e) => ({
+            role: e.title,
+            company: e.company,
+            duration: [e.startDate, e.endDate].filter(Boolean).join(' - '),
+            description: e.bullets,
+          })),
+          projects: state.projects.map((p) => ({
+            title: p.name,
+            tech: p.tech,
+            description: p.description,
+          })),
+          existingSummary: state.summary,
+        };
+
+        const result = await generateProfessionalSummary(payload);
+
+        if (result.success && result.summary) {
+          pendingAiSummary = result.summary;
+          if (aiSummaryText) aiSummaryText.textContent = result.summary;
+          if (aiProviderBadge) aiProviderBadge.textContent = result.provider ? `(${result.provider})` : '';
+          if (aiProposalCard) aiProposalCard.classList.remove('hidden');
+        } else {
+          showAiStatus(
+            result.error || 'AI assistance is temporarily unavailable. You can continue writing your summary manually.',
+            true
+          );
+        }
+      } catch (err) {
+        showAiStatus(
+          'AI assistance is temporarily unavailable. You can continue writing your summary manually.',
+          true
+        );
+      } finally {
+        if (btnAiSummary) btnAiSummary.disabled = false;
+        if (aiSummaryBtnText) aiSummaryBtnText.textContent = 'Improve with AI';
+      }
+    });
+
+    btnAiApply?.addEventListener('click', () => {
+      if (pendingAiSummary && inpSummary) {
+        inpSummary.value = pendingAiSummary;
+        state.summary = pendingAiSummary;
+        saveState();
+        renderLivePreview();
+        if (aiProposalCard) aiProposalCard.classList.add('hidden');
+        showAiStatus('AI Summary successfully applied to your CV!');
+        setTimeout(hideAiStatus, 3000);
+      }
+    });
+
+    btnAiDismiss?.addEventListener('click', () => {
+      if (aiProposalCard) aiProposalCard.classList.add('hidden');
+      hideAiStatus();
+    });
+
+    // Tab Navigation
+    const tabButtons = document.querySelectorAll('.cv-tab-btn');
+    const tabContents = document.querySelectorAll('.cv-tab-content');
+    let currentTabIndex = 0;
+
+    tabButtons.forEach((btn, idx) => {
+      btn.addEventListener('click', () => {
+        const targetId = btn.getAttribute('data-tab-target');
+        if (!targetId) return;
+        currentTabIndex = idx;
+        tabButtons.forEach((b) => b.classList.remove('active'));
+        tabContents.forEach((c) => c.classList.add('hidden'));
+        btn.classList.add('active');
+        document.getElementById(targetId)?.classList.remove('hidden');
+      });
+    });
+
+    document.getElementById('btn-prev-tab')?.addEventListener('click', () => {
+      if (currentTabIndex > 0) (tabButtons[currentTabIndex - 1] as HTMLElement).click();
+    });
+
+    document.getElementById('btn-next-tab')?.addEventListener('click', () => {
+      if (currentTabIndex < tabButtons.length - 1) (tabButtons[currentTabIndex + 1] as HTMLElement).click();
+    });
+
+    // Template Selector
+    document.querySelectorAll('.cv-template-btn').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const t = btn.getAttribute('data-template-btn') as CvState['template'];
+        if (t) {
+          state.template = t;
+          saveState();
+          syncFormInputs();
+        }
+      });
+    });
+
+    // Dynamic Row Event Handlers
+    // Education
+    document.getElementById('btn-add-edu')?.addEventListener('click', () => {
+      state.education.push({ id: `edu-${Date.now()}`, degree: '', institution: '', location: '', startYear: '', endYear: '', gpa: '' });
+      saveState();
+      renderEducationRows();
+      renderLivePreview();
+    });
+
+    eduContainer?.addEventListener('input', (e) => {
+      const target = e.target as HTMLInputElement;
+      const id = target.getAttribute('data-id');
+      const field = target.getAttribute('data-edu-field') as keyof EducationItem;
+      if (id && field) {
+        const item = state.education.find((x) => x.id === id);
+        if (item) { item[field] = target.value; saveState(); renderLivePreview(); }
+      }
+    });
+
+    eduContainer?.addEventListener('click', (e) => {
+      const target = e.target as HTMLElement;
+      const delId = target.getAttribute('data-del-edu');
+      if (delId) {
+        state.education = state.education.filter((x) => x.id !== delId);
+        saveState();
+        renderEducationRows();
+        renderLivePreview();
+      }
+    });
+
+    // Experience
+    document.getElementById('btn-add-exp')?.addEventListener('click', () => {
+      state.experience.push({ id: `exp-${Date.now()}`, title: '', company: '', location: '', startDate: '', endDate: '', bullets: '' });
+      saveState();
+      renderExperienceRows();
+      renderLivePreview();
+    });
+
+    expContainer?.addEventListener('input', (e) => {
+      const target = e.target as HTMLInputElement | HTMLTextAreaElement;
+      const id = target.getAttribute('data-id');
+      const field = target.getAttribute('data-exp-field') as keyof ExperienceItem;
+      if (id && field) {
+        const item = state.experience.find((x) => x.id === id);
+        if (item) { item[field] = target.value; saveState(); renderLivePreview(); }
+      }
+    });
+
+    expContainer?.addEventListener('click', (e) => {
+      const target = e.target as HTMLElement;
+      const delId = target.getAttribute('data-del-exp');
+      if (delId) {
+        state.experience = state.experience.filter((x) => x.id !== delId);
+        saveState();
+        renderExperienceRows();
+        renderLivePreview();
+      }
+    });
+
+    // Skills
+    const inpSkillItem = document.getElementById('inp-skill-item') as HTMLInputElement;
+    const btnAddSkill = document.getElementById('btn-add-skill');
+
+    const handleAddSkill = () => {
+      if (!inpSkillItem) return;
+      const val = inpSkillItem.value.trim();
+      if (!val) return;
+      const splitSkills = val.split(',').map((s) => s.trim()).filter(Boolean);
+      splitSkills.forEach((s) => {
+        if (!state.skills.includes(s)) state.skills.push(s);
+      });
+      inpSkillItem.value = '';
+      saveState();
+      renderSkillBadges();
+      renderLivePreview();
+    };
+
+    btnAddSkill?.addEventListener('click', handleAddSkill);
+    inpSkillItem?.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') { e.preventDefault(); handleAddSkill(); }
+    });
+
+    skillsBadgeContainer?.addEventListener('click', (e) => {
+      const target = e.target as HTMLElement;
+      const delIdx = target.getAttribute('data-del-skill');
+      if (delIdx !== null) {
+        state.skills.splice(parseInt(delIdx, 10), 1);
+        saveState();
+        renderSkillBadges();
+        renderLivePreview();
+      }
+    });
+
+    // Projects
+    document.getElementById('btn-add-project')?.addEventListener('click', () => {
+      state.projects.push({ id: `proj-${Date.now()}`, name: '', linkOrRole: '', description: '', tech: '' });
+      saveState();
+      renderProjectRows();
+      renderLivePreview();
+    });
+
+    projContainer?.addEventListener('input', (e) => {
+      const target = e.target as HTMLInputElement | HTMLTextAreaElement;
+      const id = target.getAttribute('data-id');
+      const field = target.getAttribute('data-proj-field') as keyof ProjectItem;
+      if (id && field) {
+        const item = state.projects.find((x) => x.id === id);
+        if (item) { item[field] = target.value; saveState(); renderLivePreview(); }
+      }
+    });
+
+    projContainer?.addEventListener('click', (e) => {
+      const target = e.target as HTMLElement;
+      const delId = target.getAttribute('data-del-proj');
+      if (delId) {
+        state.projects = state.projects.filter((x) => x.id !== delId);
+        saveState();
+        renderProjectRows();
+        renderLivePreview();
+      }
+    });
+
+    // Certifications
+    document.getElementById('btn-add-cert')?.addEventListener('click', () => {
+      state.certifications.push({ id: `cert-${Date.now()}`, name: '', issuer: '', year: '' });
+      saveState();
+      renderCertRows();
+      renderLivePreview();
+    });
+    certContainer?.addEventListener('input', (e) => {
+      const target = e.target as HTMLInputElement;
+      const id = target.getAttribute('data-id');
+      const field = target.getAttribute('data-cert-field') as keyof CertificateItem;
+      if (id && field) {
+        const item = state.certifications.find((x) => x.id === id);
+        if (item) { item[field] = target.value; saveState(); renderLivePreview(); }
+      }
+    });
+    certContainer?.addEventListener('click', (e) => {
+      const target = e.target as HTMLElement;
+      const delId = target.getAttribute('data-del-cert');
+      if (delId) { state.certifications = state.certifications.filter((x) => x.id !== delId); saveState(); renderCertRows(); renderLivePreview(); }
+    });
+
+    // Languages
+    document.getElementById('btn-add-lang')?.addEventListener('click', () => {
+      state.languages.push({ id: `lang-${Date.now()}`, name: '', level: '' });
+      saveState();
+      renderLangRows();
+      renderLivePreview();
+    });
+    langContainer?.addEventListener('input', (e) => {
+      const target = e.target as HTMLInputElement;
+      const id = target.getAttribute('data-id');
+      const field = target.getAttribute('data-lang-field') as keyof LanguageItem;
+      if (id && field) {
+        const item = state.languages.find((x) => x.id === id);
+        if (item) { item[field] = target.value; saveState(); renderLivePreview(); }
+      }
+    });
+    langContainer?.addEventListener('click', (e) => {
+      const target = e.target as HTMLElement;
+      const delId = target.getAttribute('data-del-lang');
+      if (delId) { state.languages = state.languages.filter((x) => x.id !== delId); saveState(); renderLangRows(); renderLivePreview(); }
+    });
+
+    // Awards
+    document.getElementById('btn-add-award')?.addEventListener('click', () => {
+      state.awards.push({ id: `award-${Date.now()}`, title: '', issuer: '', year: '' });
+      saveState();
+      renderAwardRows();
+      renderLivePreview();
+    });
+    awardContainer?.addEventListener('input', (e) => {
+      const target = e.target as HTMLInputElement;
+      const id = target.getAttribute('data-id');
+      const field = target.getAttribute('data-award-field') as keyof AwardItem;
+      if (id && field) {
+        const item = state.awards.find((x) => x.id === id);
+        if (item) { item[field] = target.value; saveState(); renderLivePreview(); }
+      }
+    });
+    awardContainer?.addEventListener('click', (e) => {
+      const target = e.target as HTMLElement;
+      const delId = target.getAttribute('data-del-award');
+      if (delId) { state.awards = state.awards.filter((x) => x.id !== delId); saveState(); renderAwardRows(); renderLivePreview(); }
+    });
+
+    // Volunteer
+    document.getElementById('btn-add-vol')?.addEventListener('click', () => {
+      state.volunteer.push({ id: `vol-${Date.now()}`, role: '', organization: '', details: '' });
+      saveState();
+      renderVolRows();
+      renderLivePreview();
+    });
+    volContainer?.addEventListener('input', (e) => {
+      const target = e.target as HTMLInputElement;
+      const id = target.getAttribute('data-id');
+      const field = target.getAttribute('data-vol-field') as keyof VolunteerItem;
+      if (id && field) {
+        const item = state.volunteer.find((x) => x.id === id);
+        if (item) { item[field] = target.value; saveState(); renderLivePreview(); }
+      }
+    });
+    volContainer?.addEventListener('click', (e) => {
+      const target = e.target as HTMLElement;
+      const delId = target.getAttribute('data-del-vol');
+      if (delId) { state.volunteer = state.volunteer.filter((x) => x.id !== delId); saveState(); renderVolRows(); renderLivePreview(); }
+    });
+
+    // Load Sample Data
+    document.getElementById('cv-load-sample')?.addEventListener('click', () => {
+      state = JSON.parse(JSON.stringify(sampleData));
+      saveState();
+      syncFormInputs();
+    });
+
+    // Clear Form
+    document.getElementById('cv-clear-all')?.addEventListener('click', () => {
+      if (confirm('Clear all resume fields?')) {
+        state = {
+          template: state.template,
+          name: '',
+          title: '',
+          email: '',
+          phone: '',
+          location: '',
+          linkedin: '',
+          website: '',
+          summary: '',
+          education: [{ id: 'edu-0', degree: '', institution: '', location: '', startYear: '', endYear: '', gpa: '' }],
+          experience: [{ id: 'exp-0', title: '', company: '', location: '', startDate: '', endDate: '', bullets: '' }],
+          skills: [],
+          projects: [],
+          certifications: [],
+          languages: [],
+          awards: [],
+          volunteer: [],
+          interests: '',
+          references: 'Available upon request',
+        };
+        saveState();
+        syncFormInputs();
+      }
+    });
+
+    // Helper: Ensure html2pdf is loaded with multiple fallbacks
+    function loadHtml2PdfEngine(): Promise<any> {
+      if ((window as any).html2pdf) {
+        return Promise.resolve((window as any).html2pdf);
+      }
+
+      return new Promise((resolve, reject) => {
+        const script = document.createElement('script');
+        script.src = '/js/html2pdf.bundle.min.js';
+        script.onload = () => {
+          if ((window as any).html2pdf) resolve((window as any).html2pdf);
+          else reject(new Error('html2pdf global not defined'));
+        };
+        script.onerror = () => {
+          // CDN Fallback
+          const cdnScript = document.createElement('script');
+          cdnScript.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js';
+          cdnScript.onload = () => {
+            if ((window as any).html2pdf) resolve((window as any).html2pdf);
+            else reject(new Error('html2pdf global not defined from CDN'));
+          };
+          cdnScript.onerror = () => reject(new Error('Could not load html2pdf from CDN'));
+          document.head.appendChild(cdnScript);
+        };
+        document.head.appendChild(script);
+      });
+    }
+
+    // =========================================================================
+    // DIRECT CLIENT-SIDE PDF DOWNLOAD (NO PRINT DIALOG, NO DATE/URL HEADERS)
+    // =========================================================================
+    async function downloadPdfDirect() {
+      if (!state.name.trim()) {
+        alert('Please enter at least your Full Name before downloading your CV PDF.');
+        (tabButtons[0] as HTMLElement)?.click();
+        inpName?.focus();
+        return;
+      }
+
+      const cvElement = document.getElementById('cv-preview-doc');
+      if (!cvElement) return;
+
+      const btn = document.getElementById('cv-download-pdf') as HTMLButtonElement;
+      const btnLabel = document.getElementById('cv-btn-label');
+      const btnIcon = document.getElementById('cv-btn-icon');
+
+      if (btn) btn.disabled = true;
+      if (btnLabel) btnLabel.textContent = 'Generating PDF...';
+      if (btnIcon) btnIcon.style.opacity = '0.5';
+
+      try {
+        const html2pdf = await loadHtml2PdfEngine();
+        const safeFileName = (state.name.trim() || 'Resume').replace(/[^a-zA-Z0-9_-]/g, '_');
+
+        // Create an isolated container for crisp vector/canvas conversion with strictly bounded dimensions
+        const clone = cvElement.cloneNode(true) as HTMLElement;
+        clone.style.boxSizing = 'border-box';
+        clone.style.boxShadow = 'none';
+        clone.style.margin = '0';
+        clone.style.width = '210mm';
+        clone.style.maxWidth = '210mm';
+        clone.style.height = 'auto';
+        clone.style.minHeight = 'auto';
+        clone.style.padding = '12mm 14mm';
+        clone.style.background = '#ffffff';
+
+        // Ensure all nested children obey border-box sizing
+        const nestedNodes = clone.querySelectorAll<HTMLElement>('*');
+        nestedNodes.forEach((node) => {
+          node.style.boxSizing = 'border-box';
+        });
+
+        const wrapper = document.createElement('div');
+        wrapper.style.position = 'fixed';
+        wrapper.style.left = '-9999px';
+        wrapper.style.top = '0';
+        wrapper.style.zIndex = '-1000';
+        wrapper.style.boxSizing = 'border-box';
+        wrapper.appendChild(clone);
+        document.body.appendChild(wrapper);
+
+        const opt = {
+          margin: 0,
+          filename: `${safeFileName}_CV.pdf`,
+          image: { type: 'jpeg', quality: 0.98 },
+          html2canvas: {
+            scale: 2,
+            useCORS: true,
+            letterRendering: true,
+            backgroundColor: '#ffffff',
+            scrollY: 0,
+            scrollX: 0,
+            logging: false,
+          },
+          jsPDF: {
+            unit: 'mm',
+            format: 'a4',
+            orientation: 'portrait',
+          },
+          pagebreak: { mode: ['avoid-all', 'css', 'legacy'] },
+        };
+
+        await html2pdf().set(opt).from(clone).save();
+        wrapper.remove();
+      } catch (err) {
+        console.error('Direct PDF export error:', err);
+        // Fallback: Isolated printable window with zero headers/footers
+        triggerCleanPrintFallback();
+      } finally {
+        if (btn) btn.disabled = false;
+        if (btnLabel) btnLabel.textContent = 'Download PDF';
+        if (btnIcon) btnIcon.style.opacity = '1';
+      }
+    }
+
+    function triggerCleanPrintFallback() {
+      const cvElement = document.getElementById('cv-preview-doc');
+      if (!cvElement) return;
+
+      const printWindow = window.open('', '_blank');
+      if (!printWindow) {
+        window.print();
+        return;
+      }
+
+      const templateClass = cvElement.className;
+      const innerHtml = cvElement.innerHTML;
+
+      printWindow.document.write(`
+        <!DOCTYPE html>
+        <html>
+          <head>
+            <meta charset="utf-8" />
+            <title></title>
+            <style>
+              @page {
+                size: A4 portrait;
+                margin: 0;
+              }
+              body {
+                margin: 0;
+                padding: 12mm 15mm;
+                background: #ffffff;
+                color: #111827;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+              }
+            </style>
+          </head>
+          <body>
+            <div class="${templateClass}">
+              ${innerHtml}
+            </div>
+            <script>
+              window.onload = function() {
+                window.focus();
+                window.print();
+                setTimeout(function() { window.close(); }, 500);
+              };
+            <\/script>
+          </body>
+        </html>
+      `);
+      printWindow.document.close();
+    }
+
+    document.getElementById('cv-download-pdf')?.addEventListener('click', downloadPdfDirect);
+
+    syncFormInputs();
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initCvMaker);
+  } else {
+    initCvMaker();
+  }
+</script>

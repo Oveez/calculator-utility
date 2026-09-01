@@ -3,18 +3,18 @@ import { withBasePath } from './site';
 
 export interface CategoryMeta {
   name: string;
-  emoji: string;
+  icon: 'finance' | 'converter' | 'math' | 'education' | 'health' | 'calendar' | 'text';
   description: string;
 }
 
-export const CATEGORY_METAS: Record<string, { emoji: string; description: string }> = {
-  Finance: { emoji: '💰', description: 'Loans, compound interest, mortgages, salary, and financial planning.' },
-  Converters: { emoji: '🔄', description: 'Real-time currency rates, length, mass, temperature, and digital storage.' },
-  Math: { emoji: '📐', description: 'Percentages, percentage differences, ratios, fractions, and averages.' },
-  Education: { emoji: '🎓', description: 'GPA, CGPA, grade weighting, and academic achievement calculators.' },
-  Health: { emoji: '🩺', description: 'Body mass index (BMI), calorie burn, and daily hydration requirements.' },
-  'Date & Time': { emoji: '📅', description: 'Age computation, date spans, countdown timers, and working business days.' },
-  'Text Tools': { emoji: '✍️', description: 'Word counts, character measurements, and text casing transformations.' },
+export const CATEGORY_METAS: Record<string, { icon: 'finance' | 'converter' | 'math' | 'education' | 'health' | 'calendar' | 'text'; description: string }> = {
+  Finance: { icon: 'finance', description: 'Loans, compound interest, mortgages, salary, and financial planning.' },
+  Converters: { icon: 'converter', description: 'Real-time currency rates, length, mass, temperature, and digital storage.' },
+  Math: { icon: 'math', description: 'Percentages, percentage differences, ratios, fractions, and averages.' },
+  Education: { icon: 'education', description: 'GPA, CGPA, grade weighting, and academic achievement calculators.' },
+  Health: { icon: 'health', description: 'Body mass index (BMI), calorie burn, and daily hydration requirements.' },
+  'Date & Time': { icon: 'calendar', description: 'Age computation, date spans, countdown timers, and working business days.' },
+  'Text Tools': { icon: 'text', description: 'Word counts, character measurements, and text casing transformations.' },
 };
 
 export const CATEGORY_ORDER = [

@@ -92,17 +92,14 @@ function setupRoot(root: HTMLElement): void {
 			try {
 				await navigator.clipboard.writeText(textToCopy);
 				const copyTextSpan = copyBtn.querySelector<HTMLElement>('[data-copy-text]');
-				const copyIconSpan = copyBtn.querySelector<HTMLElement>('[data-copy-icon]');
 				const originalText = copyTextSpan?.textContent || 'Copy';
 
 				if (copyTextSpan) copyTextSpan.textContent = 'Copied!';
-				if (copyIconSpan) copyIconSpan.textContent = '✓';
-				copyBtn.classList.add('border-emerald-500', 'text-emerald-600', 'dark:text-emerald-400');
+				copyBtn.classList.add('border-[color:var(--fg)]', 'bg-[color:var(--surface-strong)]');
 
 				setTimeout(() => {
 					if (copyTextSpan) copyTextSpan.textContent = originalText;
-					if (copyIconSpan) copyIconSpan.textContent = '📋';
-					copyBtn.classList.remove('border-emerald-500', 'text-emerald-600', 'dark:text-emerald-400');
+					copyBtn.classList.remove('border-[color:var(--fg)]', 'bg-[color:var(--surface-strong)]');
 				}, 2000);
 			} catch {
 				// Fallback if clipboard API is not available

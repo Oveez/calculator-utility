@@ -17,11 +17,14 @@
         <span class="rounded bg-[color:var(--surface)] px-1.5 py-0.5 text-[10px] font-bold text-[color:var(--muted)] hidden" data-keypad-memory-indicator>M</span>
         <button
           type="button"
-          class="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] text-[color:var(--muted)] hover:text-[color:var(--accent)] transition"
+          class="inline-flex items-center gap-1.5 rounded-lg border border-[color:var(--border)] bg-[color:var(--surface)] px-2.5 py-1 text-[11px] font-semibold text-[color:var(--fg)] hover:bg-[color:var(--surface-strong)] transition"
           data-keypad-copy
           title="Copy result"
         >
-          <span data-keypad-copy-icon>📋</span>
+          <svg class="h-3 w-3 stroke-current" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+          </svg>
           <span data-keypad-copy-text>Copy</span>
         </button>
       </div>
@@ -252,12 +255,9 @@
         try {
           await navigator.clipboard.writeText(currentVal);
           const textSpan = copyBtn.querySelector('[data-keypad-copy-text]');
-          const iconSpan = copyBtn.querySelector('[data-keypad-copy-icon]');
           if (textSpan) textSpan.textContent = 'Copied!';
-          if (iconSpan) iconSpan.textContent = '✓';
           setTimeout(() => {
             if (textSpan) textSpan.textContent = 'Copy';
-            if (iconSpan) iconSpan.textContent = '📋';
           }, 1500);
         } catch {}
       });

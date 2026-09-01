@@ -7,28 +7,28 @@ export const esProfile: CountryTaxProfile = {
   flagEmoji: '🇪🇸',
   defaultCurrency: 'EUR',
   defaultCurrencySymbol: '€',
-  defaultTaxYear: '2025',
-  availableTaxYears: ['2025'],
+  defaultTaxYear: '2026',
+  availableTaxYears: ['2026', '2025'],
   hasRegionalTax: true,
   regionalEntityName: 'Autonomous Community',
-  metaDescription: 'Calculate Spanish IRPF income tax, Seguridad Social employee contributions, and net take-home salary with official Agencia Tributaria rates.',
+  metaDescription: 'Calculate Spanish IRPF income tax, Seguridad Social employee contributions, and net take-home salary with official 2026 Agencia Tributaria & Seguridad Social rates.',
   faqItems: [
     {
-      question: 'How is IRPF calculated in Spain?',
-      answer: 'IRPF consists of a state portion (gravamen estatal) and an autonomous community portion (gravamen autonómico). Rates range from 19% on income up to €12,450 to 47% on income over €300,000.',
+      question: 'How is IRPF calculated in Spain for 2026?',
+      answer: 'IRPF consists of a state portion (gravamen estatal) and an autonomous community portion (gravamen autonómico). Baseline combined rates range from 19% on income up to €12,450 to 47% on income over €300,000.',
     },
     {
-      question: 'What is the Spanish Mínimo Personal?',
-      answer: 'The general personal and family minimum (Mínimo personal y familiar) is €5,550 for individual taxpayers under 65, which is taxed at 0% effectively through the tax credit calculation.',
+      question: 'What is the Spanish Mínimo Personal in 2026?',
+      answer: 'The general personal and family minimum (Mínimo personal y familiar) is €5,550 for individual taxpayers under 65, which acts as the basic tax-exempt threshold.',
     },
     {
-      question: 'What percentage do employees pay for Social Security in Spain?',
-      answer: 'Employees pay 6.47% to 6.50% of their gross monthly salary (up to the maximum monthly contribution base of €4,720.50), covering common contingencies (4.70%), unemployment (1.55%), professional training (0.10%), and the Intergenerational Equity Mechanism MEI (0.12%).',
+      question: 'What is the maximum Social Security contribution base in Spain for 2026?',
+      answer: 'For 2026, the maximum monthly contribution base (Base máxima de cotización) is €5,101.20 (€61,214.40 annually), on which employees pay ~6.47% to 6.50% in standard contributions.',
     },
   ],
   years: {
-    '2025': {
-      taxYear: '2025',
+    '2026': {
+      taxYear: '2026',
       currency: 'EUR',
       currencySymbol: '€',
       standardDeduction: 5550, // Mínimo personal general
@@ -46,7 +46,7 @@ export const esProfile: CountryTaxProfile = {
           name: 'Seguridad Social (Trabajador)',
           rate: 0.0647,
           employeeRate: 0.0647,
-          capAmount: 56646, // Base máxima anual (€4,720.50 * 12)
+          capAmount: 61214.40, // Base máxima anual 2026 (€5,101.20 * 12)
           description: 'Contingencias comunes (4.70%) + Desempleo (1.55%) + Formación (0.10%) + MEI (0.12%).',
         },
       ],
@@ -65,14 +65,48 @@ export const esProfile: CountryTaxProfile = {
           { name: 'Superreducido (4%)', rate: 0.04 },
         ],
       },
-      officialSourceName: 'Agencia Estatal de Administración Tributaria (AEAT)',
+      officialSourceName: 'Agencia Estatal de Administración Tributaria (AEAT) & Seguridad Social',
       officialSourceUrl: 'https://sede.agenciatributaria.gob.es',
-      lastVerifiedDate: '2025-01-15',
+      lastVerifiedDate: '2026-09-01',
       assumptions: [
         'Single individual under 65 years with no dependent children',
         'Standard employee contract (Régimen General de la Seguridad Social)',
         'Mínimo personal general applied (€5,550)',
       ],
+    },
+    '2025': {
+      taxYear: '2025',
+      currency: 'EUR',
+      currencySymbol: '€',
+      standardDeduction: 5550,
+      nationalBrackets: [
+        { threshold: 0, upTo: 6900, rate: 0.19, label: 'Tramo 1 (19%)' },
+        { threshold: 6900, upTo: 14650, rate: 0.24, label: 'Tramo 2 (24%)' },
+        { threshold: 14650, upTo: 29650, rate: 0.30, label: 'Tramo 3 (30%)' },
+        { threshold: 29650, upTo: 54450, rate: 0.37, label: 'Tramo 4 (37%)' },
+        { threshold: 54450, upTo: 294450, rate: 0.45, label: 'Tramo 5 (45%)' },
+        { threshold: 294450, rate: 0.47, label: 'Tramo 6 (47%)' },
+      ],
+      socialContributions: [
+        {
+          id: 'seguridad_social',
+          name: 'Seguridad Social (Trabajador)',
+          rate: 0.0647,
+          employeeRate: 0.0647,
+          capAmount: 56646,
+        },
+      ],
+      regions: [
+        { code: 'general', name: 'General State/Regional Baseline', flatRate: 0 },
+      ],
+      vatConfig: {
+        name: 'IVA',
+        standardRate: 0.21,
+      },
+      officialSourceName: 'Agencia Estatal de Administración Tributaria (AEAT)',
+      officialSourceUrl: 'https://sede.agenciatributaria.gob.es',
+      lastVerifiedDate: '2025-01-15',
+      assumptions: ['Single individual under 65 for 2025 tax year'],
     },
   },
 };

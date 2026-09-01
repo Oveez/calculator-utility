@@ -1,0 +1,408 @@
+---
+import SiteLayout from '../../layouts/SiteLayout.astro';
+import CvMakerApp from '../../components/career/CvMakerApp.astro';
+import { siteName, toAbsoluteUrl, withBasePath } from '../../utils/site';
+
+const pageTitle = `Free CV Maker Online · ATS Friendly Resume Builder · ${siteName}`;
+const pageDesc = 'Create a professional, ATS-friendly CV or resume in minutes. Choose from 3 clean templates, edit in real-time, and download a free vector A4 PDF. 100% private & client-side.';
+const canonicalUrl = toAbsoluteUrl('/career-tools/cv-maker/');
+
+const breadcrumbItems = [
+  { label: 'Home', href: toAbsoluteUrl('/') },
+  { label: 'Career Tools', href: toAbsoluteUrl('/career-tools/') },
+  { label: 'CV Maker' },
+];
+
+const faqs = [
+  {
+    question: 'Is this CV maker completely free to use?',
+    answer: 'Yes, our CV Maker is 100% free with no hidden paywalls, no mandatory account registration, and no watermarks on your downloaded PDF.',
+  },
+  {
+    question: 'How do I download my CV as a PDF?',
+    answer: 'Once you fill in your details and select your preferred template, click the "Download PDF / Print" button. This triggers your browser\'s native vector print engine formatted precisely for standard A4 paper dimensions.',
+  },
+  {
+    question: 'Are the templates ATS-friendly (Applicant Tracking System compliant)?',
+    answer: 'Yes. All three templates (Professional, Modern, and Student/Fresher) use standard semantic headings, clean single-column or linear flow, parseable typography, and avoid complex graphical charts or tables that cause ATS scanners to reject resumes.',
+  },
+  {
+    question: 'Is my personal information stored or tracked on a server?',
+    answer: 'No. All CV generation, photo handling, and editing execute 100% locally in your browser memory. Your personal details are never uploaded or saved to an external database.',
+  },
+  {
+    question: 'What is the difference between a CV and a Resume?',
+    answer: 'In North America, a resume is typically a concise 1-page summary of relevant work experience and skills tailored for a specific job, while a CV (Curriculum Vitae) is a longer, comprehensive document detailing complete academic and professional credentials. In the UK, Europe, and many other countries, "CV" and "resume" are used interchangeably for job applications.',
+  },
+  {
+    question: 'Can I edit my CV later if I close the tab?',
+    answer: 'Yes! Your progress is automatically saved to your browser\'s local storage. When you return using the same browser and device, your previous information is restored automatically.',
+  },
+];
+
+const schemaGraph = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebApplication',
+    name: 'Free Online CV Maker & ATS Resume Builder',
+    description: pageDesc,
+    url: canonicalUrl,
+    applicationCategory: 'CareerApplication',
+    operatingSystem: 'Web Browser',
+    offers: {
+      '@type': 'Offer',
+      price: '0',
+      priceCurrency: 'USD',
+    },
+    publisher: {
+      '@type': 'Organization',
+      name: siteName,
+    },
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: breadcrumbItems.map((item, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      name: item.label,
+      item: item.href ?? canonicalUrl,
+    })),
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faqs.map((faq) => ({
+      '@type': 'Question',
+      name: faq.question,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: faq.answer,
+      },
+    })),
+  },
+];
+---
+
+<SiteLayout title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(schemaGraph)} />
+
+  <article class="space-y-12">
+    <!-- Breadcrumbs -->
+    <nav aria-label="Breadcrumb" class="mb-2">
+      <ol class="flex flex-wrap items-center gap-2 text-sm text-[color:var(--muted)]">
+        {breadcrumbItems.map((item, index) => (
+          <li class="flex items-center gap-2">
+            {index > 0 && <span aria-hidden="true">/</span>}
+            {item.href ? (
+              <a class="transition hover:text-[color:var(--fg)]" href={item.href}>
+                {item.label}
+              </a>
+            ) : (
+              <span aria-current="page" class="font-medium text-[color:var(--fg)]">
+                {item.label}
+              </span>
+            )}
+          </li>
+        ))}
+      </ol>
+    </nav>
+
+    <!-- Header / Hero -->
+    <header class="space-y-3">
+      <div class="inline-flex items-center gap-2 rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3.5 py-1 text-xs font-bold text-[color:var(--fg)]">
+        <span>Career Tools &amp; Resume Builder</span>
+      </div>
+      <h1 class="text-2xl font-bold tracking-tight text-[color:var(--fg)] sm:text-3xl lg:text-4xl">
+        Free CV Maker Online — Build ATS-Friendly Resumes
+      </h1>
+      <p class="max-w-3xl text-xs sm:text-sm leading-relaxed text-[color:var(--muted)]">
+        Build a high-converting, professional CV in minutes. Designed to pass automated Applicant Tracking Systems (ATS) with clean typography, A4 vector PDF downloads, and zero paywalls.
+      </p>
+    </header>
+
+    <!-- The Interactive CV Maker App -->
+    <section aria-label="Interactive CV Maker Engine">
+      <CvMakerApp initialTemplate="professional" />
+    </section>
+
+    <!-- Deep In-Depth SEO Guide & Search Intent Content -->
+    <section class="space-y-10 border-t border-[color:var(--border)] pt-10">
+      
+      <!-- 1. How Our CV Maker Works -->
+      <article class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-6 sm:p-8 space-y-6 shadow-sm">
+        <div>
+          <p class="text-xs font-bold uppercase tracking-wider text-[color:var(--accent)]">Quick Walkthrough</p>
+          <h2 class="text-2xl font-bold tracking-tight text-[color:var(--fg)] mt-1">How to Create a Professional CV in 5 Steps</h2>
+        </div>
+
+        <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+          <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] p-4 space-y-2">
+            <span class="inline-flex h-7 w-7 items-center justify-center rounded-lg bg-[color:var(--accent-soft)] text-xs font-bold text-[color:var(--accent)]">1</span>
+            <h3 class="text-sm font-bold text-[color:var(--fg)]">Enter Your Info</h3>
+            <p class="text-xs leading-relaxed text-[color:var(--muted)]">Add your contact information, summary, education, experience, and key skills.</p>
+          </div>
+          <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] p-4 space-y-2">
+            <span class="inline-flex h-7 w-7 items-center justify-center rounded-lg bg-[color:var(--accent-soft)] text-xs font-bold text-[color:var(--accent)]">2</span>
+            <h3 class="text-sm font-bold text-[color:var(--fg)]">Choose a Template</h3>
+            <p class="text-xs leading-relaxed text-[color:var(--muted)]">Select between Professional (Corporate), Modern (Tech/Creative), or Student/Fresher.</p>
+          </div>
+          <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] p-4 space-y-2">
+            <span class="inline-flex h-7 w-7 items-center justify-center rounded-lg bg-[color:var(--accent-soft)] text-xs font-bold text-[color:var(--accent)]">3</span>
+            <h3 class="text-sm font-bold text-[color:var(--fg)]">Preview in Real-Time</h3>
+            <p class="text-xs leading-relaxed text-[color:var(--muted)]">See your changes reflected live on an A4 sheet canvas as you type.</p>
+          </div>
+          <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] p-4 space-y-2">
+            <span class="inline-flex h-7 w-7 items-center justify-center rounded-lg bg-[color:var(--accent-soft)] text-xs font-bold text-[color:var(--accent)]">4</span>
+            <h3 class="text-sm font-bold text-[color:var(--fg)]">Review &amp; Refine</h3>
+            <p class="text-xs leading-relaxed text-[color:var(--muted)]">Check for action verbs, quantifiable achievements, and ATS keyword alignment.</p>
+          </div>
+          <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] p-4 space-y-2">
+            <span class="inline-flex h-7 w-7 items-center justify-center rounded-lg bg-[color:var(--accent-soft)] text-xs font-bold text-[color:var(--accent)]">5</span>
+            <h3 class="text-sm font-bold text-[color:var(--fg)]">Download PDF</h3>
+            <p class="text-xs leading-relaxed text-[color:var(--muted)]">Export your print-ready vector PDF instantly with zero watermark or signup.</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- 2. What Should You Include in a CV? -->
+      <article class="space-y-6">
+        <div>
+          <p class="text-xs font-bold uppercase tracking-wider text-[color:var(--accent)]">Resume Architecture</p>
+          <h2 class="text-2xl font-bold tracking-tight text-[color:var(--fg)] mt-1">What Should You Include in a High-Impact CV?</h2>
+          <p class="text-sm text-[color:var(--muted)] mt-1">Recruiters spend an average of 6 to 8 seconds scanning a resume. Organizing your content with clear semantic hierarchy ensures they find your top strengths immediately.</p>
+        </div>
+
+        <div class="grid gap-6 md:grid-cols-2">
+          <div class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-6 space-y-3 shadow-sm">
+            <h3 class="text-base font-bold text-[color:var(--fg)]">
+              1. Contact Information
+            </h3>
+            <p class="text-xs leading-relaxed text-[color:var(--muted)]">
+              Include your full legal name, clear professional title, primary phone number, professional email address (e.g. name@gmail.com), location (City, State/Country), and a clean link to your LinkedIn profile or GitHub/portfolio website. Avoid unnecessary details like marital status or full street addresses.
+            </p>
+          </div>
+
+          <div class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-6 space-y-3 shadow-sm">
+            <h3 class="text-base font-bold text-[color:var(--fg)]">
+              2. Professional Summary / Career Objective
+            </h3>
+            <p class="text-xs leading-relaxed text-[color:var(--muted)]">
+              A 2-to-4 sentence elevator pitch highlighting your key professional achievements, core technical competencies, and the unique value you bring to a prospective employer. If you are a student or career changer, use an objective statement focusing on transferable skills and enthusiasm.
+            </p>
+          </div>
+
+          <div class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-6 space-y-3 shadow-sm">
+            <h3 class="text-base font-bold text-[color:var(--fg)]">
+              3. Work Experience &amp; Impact
+            </h3>
+            <p class="text-xs leading-relaxed text-[color:var(--muted)]">
+              List positions in reverse chronological order. For each role, include your job title, employer name, dates of employment, and 3-5 bullet points emphasizing <strong>measurable impact and results</strong> (e.g. <em>"Boosted organic search traffic by 45% within 6 months"</em>) rather than passive duty descriptions.
+            </p>
+          </div>
+
+          <div class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-6 space-y-3 shadow-sm">
+            <h3 class="text-base font-bold text-[color:var(--fg)]">
+              4. Education &amp; Academic Honors
+            </h3>
+            <p class="text-xs leading-relaxed text-[color:var(--muted)]">
+              Include your degree title, university or college name, graduation year, and GPA (if 3.5+ or requested). Students and fresh graduates should place Education above Work Experience and include relevant coursework, academic awards, and capstone research.
+            </p>
+          </div>
+
+          <div class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-6 space-y-3 shadow-sm">
+            <h3 class="text-base font-bold text-[color:var(--fg)]">
+              5. Hard &amp; Soft Skills
+            </h3>
+            <p class="text-xs leading-relaxed text-[color:var(--muted)]">
+              Include technical tools, programming languages, software proficiencies, and industry certifications. Organize skills into recognizable industry terms to maximize match scoring in ATS algorithms.
+            </p>
+          </div>
+
+          <div class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-6 space-y-3 shadow-sm">
+            <h3 class="text-base font-bold text-[color:var(--fg)]">
+              6. Projects &amp; Extracurriculars
+            </h3>
+            <p class="text-xs leading-relaxed text-[color:var(--muted)]">
+              Highlight real-world personal projects, open-source contributions, hackathons, or volunteer leadership. Include live links, github repositories, and a brief description of the technical challenges solved.
+            </p>
+          </div>
+        </div>
+      </article>
+
+      <!-- 3. ATS Optimization Guide -->
+      <article class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-6 sm:p-8 space-y-4">
+        <div class="inline-flex items-center gap-2 rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1 text-xs font-bold text-[color:var(--fg)]">
+          <span>ATS Compatibility Standards</span>
+        </div>
+        <h2 class="text-2xl font-bold tracking-tight text-[color:var(--fg)]">How to Make an ATS-Friendly CV</h2>
+        <p class="text-sm leading-relaxed text-[color:var(--muted)]">
+          Over 90% of Fortune 500 companies and large employers use Applicant Tracking Systems (such as Workday, Greenhouse, Taleo, and Lever) to filter resumes before human hiring managers ever see them. Follow these ATS golden rules:
+        </p>
+        <div class="grid gap-3 sm:grid-cols-2 text-xs text-[color:var(--muted)] pt-2">
+          <div class="flex items-start gap-2">
+            <span class="text-[color:var(--fg)] font-bold">•</span>
+            <span><strong>Use Standard Headings:</strong> Use conventional titles like <em>"Work Experience"</em>, <em>"Education"</em>, and <em>"Skills"</em> so algorithms map fields accurately.</span>
+          </div>
+          <div class="flex items-start gap-2">
+            <span class="text-[color:var(--fg)] font-bold">•</span>
+            <span><strong>Select Parseable Fonts:</strong> Stick to universal typefaces like Arial, Calibri, Helvetica, Georgia, or Segoe UI.</span>
+          </div>
+          <div class="flex items-start gap-2">
+            <span class="text-[color:var(--fg)] font-bold">•</span>
+            <span><strong>Avoid Graphical Skill Bars:</strong> Visual percent bars or star ratings cannot be parsed by text extractors and waste valuable resume space.</span>
+          </div>
+          <div class="flex items-start gap-2">
+            <span class="text-[color:var(--fg)] font-bold">•</span>
+            <span><strong>Match Keywords Naturally:</strong> Integrate specific keywords and technologies mentioned in the job description naturally in your bullet points.</span>
+          </div>
+        </div>
+      </article>
+
+      <!-- 4. Student & Fresher Tips -->
+      <section class="grid gap-6 md:grid-cols-2">
+        <article class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-6 space-y-4 shadow-sm">
+          <div class="flex items-center gap-2 text-[color:var(--fg)] font-bold text-sm">
+            <h3>CV Advice for University Students</h3>
+          </div>
+          <ul class="space-y-2.5 text-xs text-[color:var(--muted)] leading-relaxed">
+            <li class="flex items-start gap-2">
+              <span class="text-[color:var(--accent)] font-bold">•</span>
+              <span><strong>Highlight Relevant Coursework:</strong> Mention advanced courses, lab work, or seminars directly related to the internship.</span>
+            </li>
+            <li class="flex items-start gap-2">
+              <span class="text-[color:var(--accent)] font-bold">•</span>
+              <span><strong>Showcase Campus Leadership:</strong> Roles in student societies, hackathons, and sports clubs prove soft skills, time management, and initiative.</span>
+            </li>
+            <li class="flex items-start gap-2">
+              <span class="text-[color:var(--accent)] font-bold">•</span>
+              <span><strong>Include Capstone Projects:</strong> Treat substantial academic projects like professional experience, describing the stack, methodology, and outcome.</span>
+            </li>
+          </ul>
+        </article>
+
+        <article class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-6 space-y-4 shadow-sm">
+          <div class="flex items-center gap-2 text-[color:var(--fg)] font-bold text-sm">
+            <h3>CV Advice for Fresh Graduates</h3>
+          </div>
+          <ul class="space-y-2.5 text-xs text-[color:var(--muted)] leading-relaxed">
+            <li class="flex items-start gap-2">
+              <span class="text-[color:var(--accent)] font-bold">•</span>
+              <span><strong>Focus on Transferable Skills:</strong> Highlight problem solving, communication, agile teamwork, and technical tool proficiency.</span>
+            </li>
+            <li class="flex items-start gap-2">
+              <span class="text-[color:var(--accent)] font-bold">•</span>
+              <span><strong>Add Professional Certifications:</strong> AWS, Google, Meta, or Coursera certificates prove self-motivation and ongoing learning.</span>
+            </li>
+            <li class="flex items-start gap-2">
+              <span class="text-[color:var(--accent)] font-bold">•</span>
+              <span><strong>Tailor for Every Application:</strong> Spend 5 minutes tweaking your summary and project bullets to match each employer's job specs.</span>
+            </li>
+          </ul>
+        </article>
+      </section>
+
+      <!-- 5. 8 Common CV Mistakes to Avoid -->
+      <article class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-6 sm:p-8 space-y-4 shadow-sm">
+        <h2 class="text-xl font-bold tracking-tight text-[color:var(--fg)]">8 Common CV Mistakes to Avoid</h2>
+        <div class="grid gap-3 sm:grid-cols-2 text-xs text-[color:var(--muted)]">
+          <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3 space-y-1">
+            <p class="font-bold text-[color:var(--fg)]">1. Spelling and Grammar Typos</p>
+            <p>Always proofread carefully. Use our <a href={withBasePath('/calculators/word-counter/')} class="text-[color:var(--accent)] underline">Word Counter</a> to review your text density.</p>
+          </div>
+          <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3 space-y-1">
+            <p class="font-bold text-[color:var(--fg)]">2. Listing Responsibilities Instead of Achievements</p>
+            <p>Replace generic duties ("Responsible for emails") with impact metrics ("Reduced response times by 30%").</p>
+          </div>
+          <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3 space-y-1">
+            <p class="font-bold text-[color:var(--fg)]">3. Overly Complex Multi-Column Layouts</p>
+            <p>Heavy sidebar graphics often confuse automated ATS parsers, scrambling your contact information.</p>
+          </div>
+          <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3 space-y-1">
+            <p class="font-bold text-[color:var(--fg)]">4. Using Unprofessional Email Addresses</p>
+            <p>Use a clean standard format such as <code>firstname.lastname@gmail.com</code>.</p>
+          </div>
+          <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3 space-y-1">
+            <p class="font-bold text-[color:var(--fg)]">5. Generic, Untailored Resumes</p>
+            <p>Sending the exact same resume to 50 distinct roles lowers interview conversion rates significantly.</p>
+          </div>
+          <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3 space-y-1">
+            <p class="font-bold text-[color:var(--fg)]">6. Exceeding Appropriate Page Length</p>
+            <p>For early-to-mid career professionals, keep your resume strictly to 1 or 2 concise pages.</p>
+          </div>
+          <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3 space-y-1">
+            <p class="font-bold text-[color:var(--fg)]">7. Missing Quantifiable Data</p>
+            <p>Whenever possible, include numbers, percentages, team sizes, dollar amounts, or timelines.</p>
+          </div>
+          <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3 space-y-1">
+            <p class="font-bold text-[color:var(--fg)]">8. Including Outdated or Personal Details</p>
+            <p>Avoid including marital status, religion, age, or high school details once in university.</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- 6. Frequently Asked Questions -->
+      <article class="space-y-4">
+        <div>
+          <p class="text-xs font-bold uppercase tracking-wider text-[color:var(--accent)]">Frequently Asked Questions</p>
+          <h2 class="text-2xl font-bold tracking-tight text-[color:var(--fg)] mt-1">CV Maker FAQs</h2>
+        </div>
+
+        <div class="grid gap-3">
+          {faqs.map((faq) => (
+            <details class="group rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-4 shadow-sm transition hover:border-[color:var(--accent)]">
+              <summary class="cursor-pointer list-none text-sm font-bold text-[color:var(--fg)] flex items-center justify-between">
+                <span>{faq.question}</span>
+                <span class="text-xs text-[color:var(--accent)] group-open:rotate-180 transition-transform">▼</span>
+              </summary>
+              <p class="mt-3 text-xs leading-relaxed text-[color:var(--muted)]">{faq.answer}</p>
+            </details>
+          ))}
+        </div>
+      </article>
+
+      <!-- 7. Related Tools & Internal Links -->
+      <article class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 space-y-4">
+        <h3 class="text-base font-bold text-[color:var(--fg)]">Related Career &amp; Utility Calculators</h3>
+        <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          <a
+            href={withBasePath('/career-tools/student-cv-maker/')}
+            class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-4 transition hover:-translate-y-0.5 hover:border-[color:var(--accent)] shadow-sm"
+          >
+            <p class="text-xs font-bold text-[color:var(--accent)]">Student Tool</p>
+            <h4 class="text-sm font-bold text-[color:var(--fg)] mt-1">Student CV Maker</h4>
+            <p class="text-xs text-[color:var(--muted)] mt-1">Specialized for internships, first jobs, and academic projects.</p>
+          </a>
+
+          <a
+            href={withBasePath('/career-tools/fresher-resume-maker/')}
+            class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-4 transition hover:-translate-y-0.5 hover:border-[color:var(--accent)] shadow-sm"
+          >
+            <p class="text-xs font-bold text-[color:var(--accent)]">Entry Level</p>
+            <h4 class="text-sm font-bold text-[color:var(--fg)] mt-1">Fresher Resume Maker</h4>
+            <p class="text-xs text-[color:var(--muted)] mt-1">Highlight projects, skills, and certifications with no prior history.</p>
+          </a>
+
+          <a
+            href={withBasePath('/career-tools/ats-friendly-resume-guide/')}
+            class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-4 transition hover:-translate-y-0.5 hover:border-[color:var(--accent)] shadow-sm"
+          >
+            <p class="text-xs font-bold text-[color:var(--accent)]">ATS Guide</p>
+            <h4 class="text-sm font-bold text-[color:var(--fg)] mt-1">ATS Resume Guide</h4>
+            <p class="text-xs text-[color:var(--muted)] mt-1">Learn how Applicant Tracking Systems parse and rank resumes.</p>
+          </a>
+
+          <a
+            href={withBasePath('/calculators/salary-calculator/')}
+            class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-4 transition hover:-translate-y-0.5 hover:border-[color:var(--accent)] shadow-sm"
+          >
+            <p class="text-xs font-bold text-[color:var(--accent)]">Finance Tool</p>
+            <h4 class="text-sm font-bold text-[color:var(--fg)] mt-1">Salary Calculator</h4>
+            <p class="text-xs text-[color:var(--muted)] mt-1">Convert between annual salary, monthly pay, and hourly rates.</p>
+          </a>
+        </div>
+      </article>
+
+    </section>
+  </article>
+</SiteLayout>

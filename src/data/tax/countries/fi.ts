@@ -7,41 +7,40 @@ export const fiProfile: CountryTaxProfile = {
   flagEmoji: '🇫🇮',
   defaultCurrency: 'EUR',
   defaultCurrencySymbol: '€',
-  defaultTaxYear: '2025',
-  availableTaxYears: ['2025'],
+  defaultTaxYear: '2026',
+  availableTaxYears: ['2026', '2025'],
   hasRegionalTax: true,
   regionalEntityName: 'Municipality (Kunta)',
-  metaDescription: 'Calculate Finnish state and municipal income tax (Valtion tulovero & Kunnallisvero), Työeläke, and take-home pay with official Vero.fi 2025 rates.',
+  metaDescription: 'Calculate Finnish state and municipal income tax (Valtion tulovero & Kunnallisvero), Työeläke (7.30%), and take-home pay with official Vero.fi 2026 rates.',
   faqItems: [
     {
-      question: 'How is income tax calculated in Finland?',
-      answer: 'Finnish income tax is divided into progressive state tax (Valtionvero) and municipal tax (Kunnallisvero, averaging ~7.50% to 8.60%). State tax begins above €20,900.',
+      question: 'How is income tax calculated in Finland for 2026?',
+      answer: 'Finnish income tax is divided into progressive state tax (Valtionvero) and municipal tax (Kunnallisvero, averaging ~7.50% to 8.60%). State tax begins above €22,000 in 2026.',
     },
     {
-      question: 'What are the employee social security deductions in Finland?',
-      answer: 'Employees contribute 7.15% for employment pension (Työeläkevakuutusmaksu for employees under 53), 0.79% for unemployment insurance (Työttömyysvakuutusmaksu), and ~1.52% for healthcare contributions.',
+      question: 'What are the employee social security deductions in Finland for 2026?',
+      answer: 'Employees contribute 7.30% for employment pension (Työeläkevakuutusmaksu), 0.79% for unemployment insurance, and ~1.10% for healthcare contributions.',
     },
   ],
   years: {
-    '2025': {
-      taxYear: '2025',
+    '2026': {
+      taxYear: '2026',
       currency: 'EUR',
       currencySymbol: '€',
-      standardDeduction: 20900, // State tax-free threshold
+      standardDeduction: 22000, // State tax-free threshold 2026
       nationalBrackets: [
-        { threshold: 0, upTo: 11000, rate: 0.044, label: 'Valtionvero 4.40%' }, // €20,900 to €31,900
-        { threshold: 11000, upTo: 30800, rate: 0.173, label: 'Valtionvero 17.30%' }, // €31,900 to €51,700
-        { threshold: 30800, upTo: 67300, rate: 0.308, label: 'Valtionvero 30.80%' }, // €51,700 to €88,200
-        { threshold: 67300, upTo: 129100, rate: 0.340, label: 'Valtionvero 34.00%' }, // €88,200 to €150,000
-        { threshold: 129100, rate: 0.4425, label: 'Valtionvero Top (44.25%)' }, // Over €150,000
+        { threshold: 0, upTo: 10600, rate: 0.190, label: 'Valtionvero 19.00%' }, // €22,000 to €32,600
+        { threshold: 10600, upTo: 18100, rate: 0.3025, label: 'Valtionvero 30.25%' }, // €32,600 to €40,100
+        { threshold: 18100, upTo: 30100, rate: 0.3325, label: 'Valtionvero 33.25%' }, // €40,100 to €52,100
+        { threshold: 30100, rate: 0.375, label: 'Valtionvero Top (37.50%)' }, // Over €52,100
       ],
       socialContributions: [
         {
           id: 'tyoelake',
           name: 'Pension Insurance (Työeläkemaksu)',
-          rate: 0.0715,
-          employeeRate: 0.0715,
-          description: '7.15% employee pension contribution (under 53 years old).',
+          rate: 0.073,
+          employeeRate: 0.073,
+          description: '7.30% employee pension contribution.',
         },
         {
           id: 'tyottomyys',
@@ -53,9 +52,9 @@ export const fiProfile: CountryTaxProfile = {
         {
           id: 'sairaus',
           name: 'Health Insurance (Sairausvakuutus)',
-          rate: 0.0152,
-          employeeRate: 0.0152,
-          description: 'Healthcare and daily allowance insurance contribution.',
+          rate: 0.011,
+          employeeRate: 0.011,
+          description: '1.10% healthcare insurance contribution.',
         },
       ],
       regions: [
@@ -66,7 +65,7 @@ export const fiProfile: CountryTaxProfile = {
       ],
       vatConfig: {
         name: 'ALV',
-        standardRate: 0.255, // 25.5% (increased from 24% late 2024 / 2025)
+        standardRate: 0.255, // 25.5%
         reducedRates: [
           { name: '14% (ruoka, ravintolapalvelut)', rate: 0.14 },
           { name: '10% (kirjat, lääkkeet)', rate: 0.10 },
@@ -74,12 +73,56 @@ export const fiProfile: CountryTaxProfile = {
       },
       officialSourceName: 'Verohallinto (Finnish Tax Administration - Vero.fi)',
       officialSourceUrl: 'https://www.vero.fi',
-      lastVerifiedDate: '2025-01-15',
+      lastVerifiedDate: '2026-09-01',
       assumptions: [
-        'Single employee under 53 years of age',
+        'Single resident employee',
         'State income tax scale and selected municipal tax rate applied',
-        'Standard pension and unemployment insurance contributions deducted',
+        '2026 pension (TyEL 7.30%) and unemployment insurance contributions deducted',
       ],
+    },
+    '2025': {
+      taxYear: '2025',
+      currency: 'EUR',
+      currencySymbol: '€',
+      standardDeduction: 20900,
+      nationalBrackets: [
+        { threshold: 0, upTo: 11000, rate: 0.044, label: 'Valtionvero 4.40%' },
+        { threshold: 11000, upTo: 30800, rate: 0.173, label: 'Valtionvero 17.30%' },
+        { threshold: 30800, upTo: 67300, rate: 0.308, label: 'Valtionvero 30.80%' },
+        { threshold: 67300, upTo: 129100, rate: 0.340, label: 'Valtionvero 34.00%' },
+        { threshold: 129100, rate: 0.4425, label: 'Valtionvero Top (44.25%)' },
+      ],
+      socialContributions: [
+        {
+          id: 'tyoelake',
+          name: 'Pension Insurance (Työeläkemaksu)',
+          rate: 0.0715,
+          employeeRate: 0.0715,
+        },
+        {
+          id: 'tyottomyys',
+          name: 'Unemployment (Työttömyysvakuutus)',
+          rate: 0.0079,
+          employeeRate: 0.0079,
+        },
+        {
+          id: 'sairaus',
+          name: 'Health Insurance (Sairausvakuutus)',
+          rate: 0.0152,
+          employeeRate: 0.0152,
+        },
+      ],
+      regions: [
+        { code: 'national_avg', name: 'National Average Municipal (~7.50%)', additionalTaxRate: 0.075 },
+      ],
+      vatConfig: {
+        name: 'ALV',
+        standardRate: 0.255,
+      },
+      officialSourceName: 'Verohallinto (Vero.fi)',
+      officialSourceUrl: 'https://www.vero.fi',
+      lastVerifiedDate: '2025-01-15',
+      assumptions: ['Single employee for 2025 tax year'],
     },
   },
 };

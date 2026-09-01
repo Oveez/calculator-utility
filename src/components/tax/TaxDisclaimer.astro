@@ -1,4 +1,6 @@
 ---
+import Icon from '../Icon.astro';
+
 interface Props {
   className?: string;
 }
@@ -6,11 +8,13 @@ interface Props {
 const { className = '' } = Astro.props;
 ---
 
-<div class={`rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)]/70 p-4 text-xs leading-relaxed text-[color:var(--muted)] shadow-sm ${className}`}>
+<div class={`rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-xs leading-relaxed text-[color:var(--muted)] ${className}`}>
   <div class="flex items-start gap-2.5">
-    <span class="text-base select-none">⚖️</span>
+    <div class="mt-0.5 shrink-0 text-[color:var(--fg)]">
+      <Icon name="info" class="w-4 h-4" />
+    </div>
     <p>
-      <strong>Disclaimer:</strong> This calculator provides an estimate based on the selected country, tax year, and assumptions. It is for informational purposes only and does not constitute tax, legal, or financial advice. Actual tax liability may vary depending on personal circumstances, deductions, residency, region, filing status, and changes in tax law.
+      <strong>Disclaimer:</strong> This calculator provides an estimate based on official tax brackets and assumptions. It is for informational purposes only and does not constitute tax, legal, or financial advice. Actual tax liability may vary depending on personal circumstances, regional rules, and deductions.
     </p>
   </div>
 </div>

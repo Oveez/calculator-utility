@@ -1,0 +1,173 @@
+---
+import SiteLayout from '../../layouts/SiteLayout.astro';
+import Icon from '../../components/Icon.astro';
+import { siteName, toAbsoluteUrl, withBasePath } from '../../utils/site';
+
+const pageTitle = `Career Tools & Resume Utilities · ${siteName}`;
+const pageDesc = 'Free, privacy-focused career tools. Build ATS-friendly CVs, calculate salary breakdowns, convert hourly wages, and prepare professional job applications with zero signup.';
+const canonicalUrl = toAbsoluteUrl('/career-tools/');
+
+const breadcrumbItems = [
+  { label: 'Home', href: toAbsoluteUrl('/') },
+  { label: 'Career Tools' },
+];
+
+const careerTools: Array<{
+  title: string;
+  badge: string;
+  desc: string;
+  href: string;
+  icon: 'text' | 'education' | 'career' | 'finance' | 'converter';
+}> = [
+  {
+    title: 'Free CV Maker & Resume Builder',
+    badge: 'Core Tool',
+    desc: 'Build professional, ATS-compliant CVs with 3 clean templates, live A4 preview, and instant client-side vector PDF downloads.',
+    href: withBasePath('/career-tools/cv-maker/'),
+    icon: 'career',
+  },
+  {
+    title: 'Student CV Maker & Internship Builder',
+    badge: 'Students',
+    desc: 'Specifically structured for high school, college, and university students applying for internships, research programs, or first jobs.',
+    href: withBasePath('/career-tools/student-cv-maker/'),
+    icon: 'education',
+  },
+  {
+    title: 'Fresher Resume Maker (First-Time Job Seekers)',
+    badge: 'Entry Level',
+    desc: 'Designed for recent graduates with zero or minimal corporate experience. Focuses on coursework, projects, soft skills, and certifications.',
+    href: withBasePath('/career-tools/fresher-resume-maker/'),
+    icon: 'career',
+  },
+  {
+    title: 'ATS-Friendly Resume Formatting Guide',
+    badge: 'Guide & Standards',
+    desc: 'In-depth guide on how Applicant Tracking Systems (ATS) scan, parse, and score resumes, plus an ATS pre-submission checklist.',
+    href: withBasePath('/career-tools/ats-friendly-resume-guide/'),
+    icon: 'text',
+  },
+  {
+    title: 'Salary & Compensation Calculator',
+    badge: 'Finance',
+    desc: 'Convert your annual salary into bi-weekly, weekly, daily, and hourly earnings to evaluate job offers and counter-offers accurately.',
+    href: withBasePath('/calculators/salary-calculator/'),
+    icon: 'finance',
+  },
+  {
+    title: 'Hourly to Annual Salary Converter',
+    badge: 'Finance',
+    desc: 'Compute yearly take-home and gross compensation from hourly rates based on standard working hours and overtime.',
+    href: withBasePath('/tax-calculators/hourly-to-salary/'),
+    icon: 'finance',
+  },
+  {
+    title: 'Salary to Hourly Rate Converter',
+    badge: 'Finance',
+    desc: 'Calculate your effective hourly wage from your base annual salary to compare freelance and contract rates against full-time employment.',
+    href: withBasePath('/tax-calculators/salary-to-hourly/'),
+    icon: 'finance',
+  },
+  {
+    title: 'Word & Character Density Counter',
+    badge: 'Text Tool',
+    desc: 'Measure exact character counts, reading time, and keyword frequency for resume summaries, cover letters, and LinkedIn bios.',
+    href: withBasePath('/calculators/word-counter/'),
+    icon: 'text',
+  },
+  {
+    title: 'College GPA & Grade Calculator',
+    badge: 'Education',
+    desc: 'Calculate your cumulative GPA and weighted semester averages to report verified academic scores accurately on your resume.',
+    href: withBasePath('/calculators/gpa-calculator/'),
+    icon: 'education',
+  },
+];
+---
+
+<SiteLayout title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
+  <article class="space-y-8 py-2">
+    <!-- Breadcrumbs -->
+    <nav aria-label="Breadcrumb">
+      <ol class="flex flex-wrap items-center gap-2 text-xs text-[color:var(--muted)]">
+        {breadcrumbItems.map((item, index) => (
+          <li class="flex items-center gap-2">
+            {index > 0 && <span aria-hidden="true">/</span>}
+            {item.href ? (
+              <a class="transition hover:text-[color:var(--fg)]" href={item.href}>
+                {item.label}
+              </a>
+            ) : (
+              <span aria-current="page" class="font-semibold text-[color:var(--fg)]">
+                {item.label}
+              </span>
+            )}
+          </li>
+        ))}
+      </ol>
+    </nav>
+
+    <!-- Header -->
+    <header class="space-y-3">
+      <div class="inline-flex items-center gap-2 rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1 text-xs font-bold text-[color:var(--fg)]">
+        <span>Career &amp; Employment Toolkit</span>
+      </div>
+      <h1 class="text-2xl font-bold tracking-tight text-[color:var(--fg)] sm:text-3xl lg:text-4xl">
+        Career Tools &amp; Resume Utilities
+      </h1>
+      <p class="max-w-3xl text-xs sm:text-sm leading-relaxed text-[color:var(--muted)]">
+        Free, privacy-first career tools designed to accelerate your job search. Build ATS-compliant resumes, calculate compensation tradeoffs, analyze cover letter readability, and format application credentials.
+      </p>
+    </header>
+
+    <!-- Career Tools Grid -->
+    <section class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      {careerTools.map((tool) => (
+        <a
+          href={tool.href}
+          class="group rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 space-y-3 transition hover:border-[color:var(--border-strong)] hover:bg-[color:var(--surface-strong)] flex flex-col justify-between"
+        >
+          <div class="space-y-2.5">
+            <div class="flex items-center justify-between">
+              <div class="flex h-9 w-9 items-center justify-center rounded-xl bg-[color:var(--surface-strong)] border border-[color:var(--border)] text-[color:var(--fg)]">
+                <Icon name={tool.icon} class="w-4 h-4" />
+              </div>
+              <span class="rounded-md bg-[color:var(--surface-strong)] border border-[color:var(--border)] px-2.5 py-0.5 text-[11px] font-semibold text-[color:var(--muted)]">
+                {tool.badge}
+              </span>
+            </div>
+            <h2 class="text-base font-bold text-[color:var(--fg)] transition-colors">
+              {tool.title}
+            </h2>
+            <p class="text-xs leading-relaxed text-[color:var(--muted)]">
+              {tool.desc}
+            </p>
+          </div>
+          <div class="pt-2 flex items-center gap-1.5 text-xs font-bold text-[color:var(--fg)]">
+            <span>Open Tool</span>
+            <Icon name="arrow-right" class="w-3.5 h-3.5 transition group-hover:translate-x-1" />
+          </div>
+        </a>
+      ))}
+    </section>
+
+    <!-- Overview & Value Proposition -->
+    <section class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 space-y-3">
+      <h2 class="text-base font-bold text-[color:var(--fg)]">Why Use Our Career Utilities?</h2>
+      <div class="grid gap-4 sm:grid-cols-3 text-xs text-[color:var(--muted)] pt-1">
+        <div class="space-y-1">
+          <p class="font-bold text-[color:var(--fg)]">100% Privacy Guaranteed</p>
+          <p>Your resume data, salaries, and personal contact info never touch a remote server. Everything executes locally in your browser.</p>
+        </div>
+        <div class="space-y-1">
+          <p class="font-bold text-[color:var(--fg)]">Zero Signups or Watermarks</p>
+          <p>Download clean, vector-rendered A4 PDFs directly without forced subscriptions or email walls.</p>
+        </div>
+        <div class="space-y-1">
+          <p class="font-bold text-[color:var(--fg)]">ATS Compatibility Built-In</p>
+          <p>Templates and guides are structured to pass automated Applicant Tracking Systems used by top global employers.</p>
+        </div>
+      </div>
+    </section>
+  </article>
+</SiteLayout>

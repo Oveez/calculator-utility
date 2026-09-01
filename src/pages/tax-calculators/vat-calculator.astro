@@ -32,8 +32,8 @@ const countryVatOptions = allCountryTaxProfiles.map((c) => {
     </nav>
 
     <header class="space-y-3">
-      <div class="inline-flex items-center gap-2 rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3.5 py-1 text-xs font-semibold text-[color:var(--accent)]">
-        <span>🏷️ Multi-Country Consumption Tax Tool</span>
+      <div class="inline-flex items-center gap-2 rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3.5 py-1 text-xs font-semibold text-[color:var(--fg)]">
+        <span>Multi-Country Consumption Tax Tool</span>
       </div>
       <h1 class="text-3xl font-extrabold tracking-tight text-[color:var(--fg)] sm:text-4xl">
         Global VAT / GST / Sales Tax Calculator
@@ -165,8 +165,8 @@ const countryVatOptions = allCountryTaxProfiles.map((c) => {
             </div>
           </div>
 
-          <div class="mt-6 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)]/80 p-3.5 text-center text-xs text-[color:var(--muted)]">
-            ⚡ Accurate round-trip arithmetic for accounting and receipts.
+          <div class="mt-6 rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3 text-center text-xs text-[color:var(--muted)]">
+            Accurate round-trip arithmetic for accounting and receipts.
           </div>
         </div>
       </div>
@@ -181,10 +181,10 @@ const countryVatOptions = allCountryTaxProfiles.map((c) => {
     const app = document.querySelector('[data-vat-app]');
     if (!app) return;
 
-    const amountInput = app.querySelector('[data-vat-amount]');
-    const rateInput = app.querySelector('[data-vat-rate]');
-    const countrySelect = app.querySelector('[data-vat-country]');
-    const modeButtons = Array.from(app.querySelectorAll('[data-vat-mode]'));
+    const amountInput = app.querySelector('[data-vat-amount]') as HTMLInputElement | null;
+    const rateInput = app.querySelector('[data-vat-rate]') as HTMLInputElement | null;
+    const countrySelect = app.querySelector('[data-vat-country]') as HTMLSelectElement | null;
+    const modeButtons = Array.from(app.querySelectorAll('[data-vat-mode]')) as HTMLElement[];
     const amountLabel = app.querySelector('[data-amount-label]');
     const mainResultLabel = app.querySelector('[data-main-result-label]');
     const symbolEl = app.querySelector('[data-vat-symbol]');
@@ -197,13 +197,13 @@ const countryVatOptions = allCountryTaxProfiles.map((c) => {
     let mode = 'add_tax'; // 'add_tax' or 'remove_tax'
     let currentSymbol = '£';
 
-    function formatVal(val) {
+    function formatVal(val: number) {
       return currentSymbol + val.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     }
 
     function calculate() {
-      const amt = parseFloat(amountInput?.value) || 0;
-      const rate = parseFloat(rateInput?.value) || 0;
+      const amt = parseFloat(amountInput?.value || '0') || 0;
+      const rate = parseFloat(rateInput?.value || '0') || 0;
       const rateDecimal = rate / 100;
 
       let net = 0;

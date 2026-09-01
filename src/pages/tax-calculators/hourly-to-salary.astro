@@ -19,8 +19,8 @@ import CountryTaxSelector from '../../components/tax/CountryTaxSelector.astro';
     </nav>
 
     <header class="space-y-3">
-      <div class="inline-flex items-center gap-2 rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3.5 py-1 text-xs font-semibold text-[color:var(--accent)]">
-        <span>💼 Hourly Wage &amp; Overtime Tool</span>
+      <div class="inline-flex items-center gap-2 rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3.5 py-1 text-xs font-semibold text-[color:var(--fg)]">
+        <span>Hourly Wage &amp; Overtime Tool</span>
       </div>
       <h1 class="text-3xl font-extrabold tracking-tight text-[color:var(--fg)] sm:text-4xl">
         Hourly to Salary Calculator
@@ -140,10 +140,10 @@ import CountryTaxSelector from '../../components/tax/CountryTaxSelector.astro';
     const app = document.querySelector('[data-hourly-app]');
     if (!app) return;
 
-    const rateInput = app.querySelector('[data-hourly-rate]');
-    const regInput = app.querySelector('[data-reg-hours]');
-    const otInput = app.querySelector('[data-ot-hours]');
-    const weeksInput = app.querySelector('[data-work-weeks]');
+    const rateInput = app.querySelector('[data-hourly-rate]') as HTMLInputElement | null;
+    const regInput = app.querySelector('[data-reg-hours]') as HTMLInputElement | null;
+    const otInput = app.querySelector('[data-ot-hours]') as HTMLInputElement | null;
+    const weeksInput = app.querySelector('[data-work-weeks]') as HTMLInputElement | null;
 
     const totalSalaryEl = app.querySelector('[data-total-salary]');
     const basePayEl = app.querySelector('[data-base-pay]');
@@ -151,15 +151,15 @@ import CountryTaxSelector from '../../components/tax/CountryTaxSelector.astro';
     const monthlyGrossEl = app.querySelector('[data-monthly-gross]');
     const weeklyGrossEl = app.querySelector('[data-weekly-gross]');
 
-    function fmt(val) {
+    function fmt(val: number) {
       return '$' + val.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     }
 
     function calculate() {
-      const rate = Math.max(0, parseFloat(rateInput?.value) || 0);
-      const regHours = Math.max(0, parseFloat(regInput?.value) || 0);
-      const otHours = Math.max(0, parseFloat(otInput?.value) || 0);
-      const weeks = Math.max(1, parseFloat(weeksInput?.value) || 52);
+      const rate = Math.max(0, parseFloat(rateInput?.value || '0') || 0);
+      const regHours = Math.max(0, parseFloat(regInput?.value || '0') || 0);
+      const otHours = Math.max(0, parseFloat(otInput?.value || '0') || 0);
+      const weeks = Math.max(1, parseFloat(weeksInput?.value || '52') || 52);
 
       const weeklyBase = rate * regHours;
       const weeklyOT = rate * 1.5 * otHours;
