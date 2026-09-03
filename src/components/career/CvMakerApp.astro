@@ -11,15 +11,15 @@ const { initialTemplate = 'professional' } = Astro.props as Props;
 <!-- Include local high-performance html2pdf bundle for instantaneous direct PDF generation -->
 <script is:inline src={withBasePath('/js/html2pdf.bundle.min.js')}></script>
 
-<div id="cv-maker-root" class="space-y-8" data-default-template={initialTemplate}>
+<div id="cv-maker-root" class="space-y-6 sm:space-y-8 w-full max-w-full min-w-0 overflow-x-hidden" data-default-template={initialTemplate}>
   <!-- Top Control Bar -->
-  <div class="flex flex-col gap-5 rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-5 sm:p-7 shadow-sm lg:flex-row lg:items-center lg:justify-between">
-    <div class="space-y-1.5">
-      <div class="flex items-center gap-2.5">
-        <h2 class="text-xl sm:text-2xl font-bold tracking-tight text-[color:var(--fg)]">
+  <div class="flex flex-col gap-4 sm:gap-5 rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-4 sm:p-7 shadow-sm lg:flex-row lg:items-center lg:justify-between w-full max-w-full min-w-0">
+    <div class="space-y-1.5 min-w-0">
+      <div class="flex flex-wrap items-center gap-2">
+        <h2 class="text-lg sm:text-2xl font-bold tracking-tight text-[color:var(--fg)]">
           Professional CV &amp; Resume Builder
         </h2>
-        <span class="rounded-full bg-emerald-500/10 px-3 py-0.5 text-xs font-semibold text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+        <span class="rounded-full bg-emerald-500/10 px-2.5 py-0.5 text-[11px] font-semibold text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
           ATS-Standard
         </span>
       </div>
@@ -29,65 +29,67 @@ const { initialTemplate = 'professional' } = Astro.props as Props;
     </div>
 
     <!-- Template Selector & Actions -->
-    <div class="flex flex-wrap items-center gap-3">
-      <div class="flex items-center rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-1 shadow-inner">
+    <div class="flex flex-col sm:flex-row sm:flex-wrap sm:items-center gap-2.5 w-full lg:w-auto min-w-0">
+      <div class="grid grid-cols-3 sm:flex items-center rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-1 shadow-inner w-full sm:w-auto min-w-0">
         <button
           type="button"
           data-template-btn="professional"
-          class="cv-template-btn active cursor-pointer rounded-xl px-3.5 py-1.5 text-xs font-semibold transition"
+          class="cv-template-btn active cursor-pointer rounded-xl px-2 sm:px-3.5 py-1.5 text-[11px] sm:text-xs font-semibold transition text-center truncate"
         >
           Professional
         </button>
         <button
           type="button"
           data-template-btn="modern"
-          class="cv-template-btn cursor-pointer rounded-xl px-3.5 py-1.5 text-xs font-semibold transition"
+          class="cv-template-btn cursor-pointer rounded-xl px-2 sm:px-3.5 py-1.5 text-[11px] sm:text-xs font-semibold transition text-center truncate"
         >
           Modern
         </button>
         <button
           type="button"
           data-template-btn="student"
-          class="cv-template-btn cursor-pointer rounded-xl px-3.5 py-1.5 text-xs font-semibold transition"
+          class="cv-template-btn cursor-pointer rounded-xl px-2 sm:px-3.5 py-1.5 text-[11px] sm:text-xs font-semibold transition text-center truncate"
         >
-          Student / Fresher
+          Student
         </button>
       </div>
 
-      <button
-        type="button"
-        id="cv-load-sample"
-        class="cursor-pointer rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] px-3.5 py-2 text-xs font-semibold text-[color:var(--fg)] shadow-sm transition hover:bg-[color:var(--accent-soft)] hover:text-[color:var(--accent)] hover:border-[color:var(--accent)]"
-      >
-        Sample Data
-      </button>
+      <div class="flex items-center gap-2 w-full sm:w-auto">
+        <button
+          type="button"
+          id="cv-load-sample"
+          class="flex-1 sm:flex-none cursor-pointer rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] shadow-sm transition hover:bg-[color:var(--accent-soft)] hover:text-[color:var(--accent)] hover:border-[color:var(--accent)] text-center"
+        >
+          Sample Data
+        </button>
 
-      <button
-        type="button"
-        id="cv-clear-all"
-        class="cursor-pointer rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] px-3.5 py-2 text-xs font-semibold text-rose-600 dark:text-rose-400 shadow-sm transition hover:bg-rose-500/10 hover:border-rose-300"
-      >
-        Clear
-      </button>
+        <button
+          type="button"
+          id="cv-clear-all"
+          class="cursor-pointer rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-2 text-xs font-semibold text-rose-600 dark:text-rose-400 shadow-sm transition hover:bg-rose-500/10 hover:border-rose-300 text-center"
+        >
+          Clear
+        </button>
 
-      <!-- The Single Direct Download PDF Button -->
-      <button
-        type="button"
-        id="cv-download-pdf"
-        class="inline-flex cursor-pointer items-center gap-2 rounded-xl bg-[color:var(--fg)] px-5 py-2.5 text-xs font-bold text-[color:var(--bg)] shadow-xs transition hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-[color:var(--accent)]"
-      >
-        <span id="cv-btn-label">Download PDF</span>
-        <svg id="cv-btn-icon" class="h-3.5 w-3.5 stroke-current" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-          <polyline points="7 10 12 15 17 10" />
-          <line x1="12" y1="15" x2="12" y2="3" />
-        </svg>
-      </button>
+        <!-- The Single Direct Download PDF Button -->
+        <button
+          type="button"
+          id="cv-download-pdf"
+          class="flex-1 sm:flex-none inline-flex cursor-pointer items-center justify-center gap-1.5 rounded-xl bg-[color:var(--fg)] px-4 sm:px-5 py-2 text-xs font-bold text-[color:var(--bg)] shadow-xs transition hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-[color:var(--accent)]"
+        >
+          <span id="cv-btn-label">Download PDF</span>
+          <svg id="cv-btn-icon" class="h-3.5 w-3.5 stroke-current" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+            <polyline points="7 10 12 15 17 10" />
+            <line x1="12" y1="15" x2="12" y2="3" />
+          </svg>
+        </button>
+      </div>
     </div>
   </div>
 
   <!-- Mobile Mode Switcher Bar (Visible on mobile screens < 1024px) -->
-  <div class="flex items-center justify-between gap-2 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-1.5 shadow-sm lg:hidden">
+  <div class="flex items-center justify-between gap-1.5 sm:gap-2 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-1.5 shadow-sm lg:hidden w-full max-w-full min-w-0">
     <button
       type="button"
       id="cv-mobile-tab-edit"
@@ -113,7 +115,7 @@ const { initialTemplate = 'professional' } = Astro.props as Props;
     <button
       type="button"
       id="cv-mobile-btn-download"
-      class="flex items-center justify-center gap-1.5 rounded-xl bg-emerald-600 text-white px-3.5 py-2 text-xs font-bold shadow-xs hover:bg-emerald-700 transition cursor-pointer"
+      class="flex items-center justify-center gap-1.5 rounded-xl bg-emerald-600 text-white px-3 sm:px-3.5 py-2 text-xs font-bold shadow-xs hover:bg-emerald-700 transition cursor-pointer"
       title="Download PDF"
     >
       <svg class="w-3.5 h-3.5 stroke-current" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -126,21 +128,21 @@ const { initialTemplate = 'professional' } = Astro.props as Props;
   </div>
 
   <!-- Main Workspace Grid: Form Editor (Left) & Real A4 Document Preview (Right) -->
-  <div class="grid gap-8 lg:grid-cols-12 lg:items-start">
+  <div class="grid gap-6 lg:gap-8 lg:grid-cols-12 lg:items-start w-full max-w-full min-w-0">
     
     <!-- Left Column: Form Editor (5-6 cols on desktop, full width on mobile edit mode) -->
-    <div id="cv-editor-column" class="space-y-6 w-full lg:col-span-6 xl:col-span-5">
-      <form id="cv-form" class="space-y-5" onsubmit="return false;">
+    <div id="cv-editor-column" class="space-y-6 w-full max-w-full min-w-0 overflow-hidden lg:col-span-6 xl:col-span-5">
+      <form id="cv-form" class="space-y-5 w-full min-w-0" onsubmit="return false;">
         
         <!-- Step Navigation Tabs -->
-        <div class="flex overflow-x-auto pb-1 gap-1 border-b border-[color:var(--border)] text-xs font-semibold no-scrollbar">
-          <button type="button" data-tab-target="sec-personal" class="cv-tab-btn active shrink-0 rounded-t-xl px-3.5 py-2 transition">Contact</button>
-          <button type="button" data-tab-target="sec-summary" class="cv-tab-btn shrink-0 rounded-t-xl px-3.5 py-2 transition">Summary</button>
-          <button type="button" data-tab-target="sec-education" class="cv-tab-btn shrink-0 rounded-t-xl px-3.5 py-2 transition">Education</button>
-          <button type="button" data-tab-target="sec-experience" class="cv-tab-btn shrink-0 rounded-t-xl px-3.5 py-2 transition">Experience</button>
-          <button type="button" data-tab-target="sec-skills" class="cv-tab-btn shrink-0 rounded-t-xl px-3.5 py-2 transition">Skills</button>
-          <button type="button" data-tab-target="sec-projects" class="cv-tab-btn shrink-0 rounded-t-xl px-3.5 py-2 transition">Projects</button>
-          <button type="button" data-tab-target="sec-extras" class="cv-tab-btn shrink-0 rounded-t-xl px-3.5 py-2 transition">More</button>
+        <div class="flex overflow-x-auto pb-1 gap-1 border-b border-[color:var(--border)] text-xs font-semibold no-scrollbar w-full max-w-full min-w-0">
+          <button type="button" data-tab-target="sec-personal" class="cv-tab-btn active shrink-0 rounded-t-xl px-3 py-2 transition">Contact</button>
+          <button type="button" data-tab-target="sec-summary" class="cv-tab-btn shrink-0 rounded-t-xl px-3 py-2 transition">Summary</button>
+          <button type="button" data-tab-target="sec-education" class="cv-tab-btn shrink-0 rounded-t-xl px-3 py-2 transition">Education</button>
+          <button type="button" data-tab-target="sec-experience" class="cv-tab-btn shrink-0 rounded-t-xl px-3 py-2 transition">Experience</button>
+          <button type="button" data-tab-target="sec-skills" class="cv-tab-btn shrink-0 rounded-t-xl px-3 py-2 transition">Skills</button>
+          <button type="button" data-tab-target="sec-projects" class="cv-tab-btn shrink-0 rounded-t-xl px-3 py-2 transition">Projects</button>
+          <button type="button" data-tab-target="sec-extras" class="cv-tab-btn shrink-0 rounded-t-xl px-3 py-2 transition">More</button>
         </div>
 
         <!-- 1. PERSONAL / CONTACT SECTION -->
@@ -385,7 +387,7 @@ const { initialTemplate = 'professional' } = Astro.props as Props;
     </div>
 
     <!-- Right Column: Live A4 Document Canvas Preview (6-7 cols on desktop, dedicated preview mode on mobile) -->
-    <div id="cv-preview-column" class="hidden lg:block space-y-3 w-full lg:col-span-6 xl:col-span-7">
+    <div id="cv-preview-column" class="hidden lg:block space-y-3 w-full max-w-full min-w-0 overflow-hidden lg:col-span-6 xl:col-span-7">
       <div class="flex items-center justify-between px-1">
         <div class="flex items-center gap-2">
           <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">A4 Live Document Preview</span>
@@ -393,25 +395,25 @@ const { initialTemplate = 'professional' } = Astro.props as Props;
             Professional (Harvard Standard)
           </span>
         </div>
-        <span class="text-[11px] text-[color:var(--muted)]">Exact A4 Output</span>
+        <span class="text-[11px] text-[color:var(--muted)]">Exact A4 (1:1.41)</span>
       </div>
 
       <!-- Outer Viewport Frame -->
-      <div class="cv-preview-viewport overflow-x-auto rounded-3xl border border-[color:var(--border)] bg-slate-200 dark:bg-slate-900/90 p-2 sm:p-5 shadow-inner flex flex-col items-center">
+      <div class="cv-preview-viewport w-full max-w-full overflow-hidden rounded-3xl border border-[color:var(--border)] bg-slate-200 dark:bg-slate-900/90 p-3 sm:p-5 shadow-inner flex flex-col items-center">
         <!-- Zoom Toolbar -->
-        <div class="flex items-center justify-between w-full max-w-[210mm] mb-2 px-1 text-xs text-[color:var(--muted)]">
+        <div class="flex items-center justify-between w-full mb-2 px-1 text-xs text-[color:var(--muted)]">
           <div class="flex items-center gap-1.5">
-            <button type="button" id="cv-zoom-fit" class="rounded-lg bg-[color:var(--surface)] border border-[color:var(--border)] px-2.5 py-1 text-[11px] font-bold text-[color:var(--fg)] shadow-xs">Fit Width</button>
+            <button type="button" id="cv-zoom-fit" class="rounded-lg bg-[color:var(--surface)] border border-[color:var(--border)] px-2.5 py-1 text-[11px] font-bold text-[color:var(--fg)] shadow-xs">Fit Screen</button>
             <button type="button" id="cv-zoom-100" class="rounded-lg bg-[color:var(--surface)] border border-[color:var(--border)] px-2.5 py-1 text-[11px] font-semibold text-[color:var(--muted)] hover:text-[color:var(--fg)]">100%</button>
           </div>
-          <span id="cv-zoom-level-label" class="text-[10px] font-mono font-bold text-[color:var(--fg)]">Fit Width</span>
+          <span id="cv-zoom-level-label" class="text-[10px] font-mono font-bold text-[color:var(--fg)]">Fit Screen</span>
         </div>
 
         <!-- The Scaled Document Container -->
-        <div id="cv-scale-wrapper" class="w-full flex justify-center overflow-hidden transition-all duration-150">
+        <div id="cv-scale-wrapper" class="w-full max-w-full flex justify-center items-start overflow-hidden transition-all duration-150 relative">
           <div
             id="cv-preview-doc"
-            class="cv-sheet-paper mx-auto bg-white text-slate-900 shadow-2xl transition-transform duration-150 template-professional origin-top"
+            class="cv-sheet-paper mx-auto bg-white text-slate-900 shadow-xl transition-transform duration-150 template-professional origin-top"
           >
             <!-- Dynamic CV HTML is rendered here -->
           </div>
@@ -466,16 +468,22 @@ const { initialTemplate = 'professional' } = Astro.props as Props;
   /* REAL A4 SHEET DOCUMENT STYLING (Harvard & Corporate ATS)   */
   /* ========================================================== */
   .cv-sheet-paper {
-    width: 100%;
-    max-width: 210mm;
-    min-height: 297mm;
-    padding: 16mm 18mm;
+    width: 794px;
+    min-width: 794px;
+    max-width: 794px;
+    height: 1123px;
+    min-height: 1123px;
+    max-height: 1123px;
+    aspect-ratio: 210 / 297;
+    padding: 14mm 16mm;
     box-sizing: border-box;
     background: #ffffff !important;
     color: #111827 !important;
     font-size: 9.5pt;
-    line-height: 1.38;
+    line-height: 1.35;
     letter-spacing: 0.01em;
+    overflow: hidden;
+    flex-shrink: 0;
   }
 
   /* Common Reset Inside Document */
@@ -2040,34 +2048,31 @@ const { initialTemplate = 'professional' } = Astro.props as Props;
     function updateDocumentScale() {
       if (!cvPreviewDoc || !scaleWrapper) return;
       const isMobile = window.innerWidth < 1024;
-      const docNaturalWidth = 794; // Standard 210mm in 96 DPI CSS pixels
+      const docNaturalWidth = 794;
+      const docNaturalHeight = 1123;
 
       if (currentScaleMode === '100' && !isMobile) {
         cvPreviewDoc.style.transform = 'none';
-        cvPreviewDoc.style.width = '100%';
-        cvPreviewDoc.style.maxWidth = '210mm';
-        scaleWrapper.style.height = 'auto';
+        scaleWrapper.style.height = `${docNaturalHeight}px`;
         if (zoomLabel) zoomLabel.textContent = '100%';
         return;
       }
 
-      // Calculate container width available
-      const containerWidth = scaleWrapper.parentElement?.clientWidth || window.innerWidth;
-      const targetWidth = Math.max(containerWidth - (isMobile ? 16 : 40), 280);
-      const scale = Math.min(1, targetWidth / docNaturalWidth);
+      // Calculate available inner container width
+      const viewportEl = scaleWrapper.closest('.cv-preview-viewport') as HTMLElement | null;
+      const containerWidth = viewportEl?.clientWidth || scaleWrapper.parentElement?.clientWidth || window.innerWidth;
+      const horizontalPadding = isMobile ? 24 : 40;
+      const availableWidth = Math.max(containerWidth - horizontalPadding, 240);
+      const scale = Math.min(1, availableWidth / docNaturalWidth);
 
-      if (scale < 0.98 || isMobile) {
-        cvPreviewDoc.style.transform = `scale(${scale.toFixed(3)})`;
-        cvPreviewDoc.style.transformOrigin = 'top center';
-        // Adjust wrapper height to eliminate blank space below scaled A4
-        const naturalHeight = cvPreviewDoc.offsetHeight || 1122;
-        scaleWrapper.style.height = `${Math.ceil(naturalHeight * scale) + 12}px`;
-        if (zoomLabel) zoomLabel.textContent = `${Math.round(scale * 100)}%`;
-      } else {
-        cvPreviewDoc.style.transform = 'none';
-        scaleWrapper.style.height = 'auto';
-        if (zoomLabel) zoomLabel.textContent = '100%';
-      }
+      cvPreviewDoc.style.transform = `scale(${scale.toFixed(3)})`;
+      cvPreviewDoc.style.transformOrigin = 'top center';
+      
+      // Set exact container height to match scaled A4 without excess blank length
+      const scaledHeight = Math.ceil(docNaturalHeight * scale);
+      scaleWrapper.style.height = `${scaledHeight + 4}px`;
+      
+      if (zoomLabel) zoomLabel.textContent = `${Math.round(scale * 100)}%`;
     }
 
     function setMobileMode(mode: 'edit' | 'preview') {

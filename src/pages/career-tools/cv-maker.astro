@@ -87,9 +87,9 @@ const schemaGraph = [
 <SiteLayout title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
   <script is:inline type="application/ld+json" set:html={JSON.stringify(schemaGraph)} />
 
-  <article class="space-y-12">
+  <article class="space-y-10 sm:space-y-12 w-full max-w-full min-w-0 overflow-hidden">
     <!-- Breadcrumbs -->
-    <nav aria-label="Breadcrumb" class="mb-2">
+    <nav aria-label="Breadcrumb" class="mb-2 w-full min-w-0 overflow-x-auto">
       <ol class="flex flex-wrap items-center gap-2 text-sm text-[color:var(--muted)]">
         {breadcrumbItems.map((item, index) => (
           <li class="flex items-center gap-2">
@@ -109,7 +109,7 @@ const schemaGraph = [
     </nav>
 
     <!-- Header / Hero -->
-    <header class="space-y-3">
+    <header class="space-y-3 w-full min-w-0">
       <div class="inline-flex items-center gap-2 rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3.5 py-1 text-xs font-bold text-[color:var(--fg)]">
         <span>Career Tools &amp; Resume Builder</span>
       </div>
@@ -122,7 +122,7 @@ const schemaGraph = [
     </header>
 
     <!-- The Interactive CV Maker App -->
-    <section aria-label="Interactive CV Maker Engine">
+    <section aria-label="Interactive CV Maker Engine" class="w-full max-w-full min-w-0">
       <CvMakerApp initialTemplate="professional" />
     </section>
 

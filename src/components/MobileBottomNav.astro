@@ -4,6 +4,8 @@ import { withBasePath } from '../utils/site';
 
 const currentPath = Astro.url.pathname;
 const isHome = currentPath === withBasePath('/') || currentPath === '/';
+const isTax = currentPath.includes('/tax-calculators') || currentPath.includes('-income-tax-calculator');
+const isDev = currentPath.includes('/developer-tools');
 const isCv = currentPath.includes('/career-tools/cv-maker');
 ---
 
@@ -28,17 +30,20 @@ const isCv = currentPath.includes('/career-tools/cv-maker');
       <span class="text-[10px] tracking-tight">Home</span>
     </a>
 
-    <!-- 2. Categories / All Tools Tab -->
+    <!-- 2. Tax Suite Tab -->
     <a
-      href={withBasePath('/#calculators')}
-      class="flex flex-col items-center justify-center gap-0.5 py-1 text-center text-[color:var(--muted)] hover:text-[color:var(--fg)] transition"
-      aria-label="Browse Categories"
+      href={withBasePath('/tax-calculators/')}
+      class:list={[
+        'flex flex-col items-center justify-center gap-0.5 py-1 text-center transition',
+        isTax ? 'text-[color:var(--fg)] font-bold' : 'text-[color:var(--muted)] hover:text-[color:var(--fg)]',
+      ]}
+      aria-label="Tax & Salary Suite"
     >
-      <Icon name="math" class="w-5 h-5" />
-      <span class="text-[10px] tracking-tight">Tools</span>
+      <Icon name="finance" class="w-5 h-5" />
+      <span class="text-[10px] tracking-tight">Tax Hub</span>
     </a>
 
-    <!-- 3. Instant Search Tab (Opens Search Modal) -->
+    <!-- 3. Instant Search Tab (Center Elevated Quick Search) -->
     <button
       type="button"
       data-trigger-search
@@ -51,7 +56,20 @@ const isCv = currentPath.includes('/career-tools/cv-maker');
       <span class="text-[9px] font-semibold text-[color:var(--fg)]">Search</span>
     </button>
 
-    <!-- 4. CV Maker Tab -->
+    <!-- 4. Developer Tools Tab -->
+    <a
+      href={withBasePath('/developer-tools/')}
+      class:list={[
+        'flex flex-col items-center justify-center gap-0.5 py-1 text-center transition',
+        isDev ? 'text-[color:var(--fg)] font-bold' : 'text-[color:var(--muted)] hover:text-[color:var(--fg)]',
+      ]}
+      aria-label="Developer Tools"
+    >
+      <Icon name="code" class="w-5 h-5" />
+      <span class="text-[10px] tracking-tight">Dev Tools</span>
+    </a>
+
+    <!-- 5. CV Maker Tab -->
     <a
       href={withBasePath('/career-tools/cv-maker/')}
       class:list={[
@@ -63,16 +81,5 @@ const isCv = currentPath.includes('/career-tools/cv-maker');
       <Icon name="career" class="w-5 h-5" />
       <span class="text-[10px] tracking-tight">CV Maker</span>
     </a>
-
-    <!-- 5. Drawer Menu Tab (Opens Slide-out Drawer) -->
-    <button
-      type="button"
-      data-trigger-drawer
-      class="flex flex-col items-center justify-center gap-0.5 py-1 text-center text-[color:var(--muted)] hover:text-[color:var(--fg)] cursor-pointer transition"
-      aria-label="Open Navigation Menu"
-    >
-      <Icon name="menu" class="w-5 h-5" />
-      <span class="text-[10px] tracking-tight">Menu</span>
-    </button>
   </div>
 </nav>
