@@ -51,18 +51,18 @@ const navigationItems = [
 
     <!-- Header Actions (Search + Theme Toggle + Mobile Menu Trigger) -->
     <div class="flex items-center gap-2">
-      <!-- Quick Search Trigger Button -->
+      <!-- Quick Search Trigger Button (Desktop & Tablet only; mobile uses the dedicated Bottom Nav search button) -->
       <button
         type="button"
         data-trigger-search
-        class="flex h-9 items-center gap-2 rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] px-2.5 sm:px-3 text-xs text-[color:var(--muted)] hover:border-[color:var(--border-strong)] hover:text-[color:var(--fg)] transition"
+        class="hidden sm:flex h-9 items-center gap-2 rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] px-2.5 sm:px-3 text-xs text-[color:var(--muted)] hover:border-[color:var(--border-strong)] hover:text-[color:var(--fg)] transition cursor-pointer"
         aria-label="Search all tools"
       >
         <svg class="h-3.5 w-3.5 stroke-current" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <circle cx="11" cy="11" r="8"></circle>
           <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
         </svg>
-        <span class="hidden sm:inline font-medium">Search 186+ tools...</span>
+        <span class="font-medium">Search 186+ tools...</span>
         <kbd class="hidden md:inline rounded-md border border-[color:var(--border)] bg-[color:var(--surface-strong)] px-1.5 py-0.5 text-[10px] font-mono text-[color:var(--muted)]">/</kbd>
       </button>
 
