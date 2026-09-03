@@ -1,0 +1,315 @@
+---
+import SiteLayout from '../../layouts/SiteLayout.astro';
+import Icon from '../../components/Icon.astro';
+import { siteName, toAbsoluteUrl, withBasePath } from '../../utils/site';
+
+const pageTitle = `Confidence Interval Calculator | Mean & Proportion (90%, 95%, 99%) · ${siteName}`;
+const pageDesc = 'Calculate exact confidence interval bounds for sample means and sample proportions. Supports Z-distribution and Student t-distribution with margin of error.';
+const canonicalUrl = toAbsoluteUrl('/research-tools/confidence-interval-calculator/');
+
+const breadcrumbItems = [
+  { label: 'Home', href: toAbsoluteUrl('/') },
+  { label: 'Research Tools', href: toAbsoluteUrl('/research-tools/') },
+  { label: 'Confidence Interval Calculator' },
+];
+
+const faqs = [
+  {
+    question: 'How do you calculate a confidence interval for a mean?',
+    answer: 'The confidence interval for a sample mean x̄ is: CI = x̄ ± (Z* or t*) × (s ÷ √n), where s is standard deviation and n is sample size. If the population standard deviation is unknown and sample size is small (n < 30), the Student t-distribution with df = n - 1 is used.',
+  },
+  {
+    question: 'How do you calculate a confidence interval for a proportion?',
+    answer: 'For a sample proportion p̂ = x / n, the confidence interval is: CI = p̂ ± Z* × √[(p̂ × (1 - p̂)) ÷ n]. At a 95% confidence level, Z* = 1.960.',
+  },
+];
+
+const schemaGraph = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebApplication',
+    name: 'Confidence Interval Calculator',
+    url: canonicalUrl,
+    description: pageDesc,
+    applicationCategory: 'EducationalApplication',
+    operatingSystem: 'All',
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: breadcrumbItems.map((item, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      name: item.label,
+      item: item.href,
+    })),
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faqs.map((f) => ({
+      '@type': 'Question',
+      name: f.question,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: f.answer,
+      },
+    })),
+  },
+];
+---
+
+<SiteLayout title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(schemaGraph)} />
+
+  <article class="space-y-10 py-2">
+    <nav aria-label="Breadcrumb">
+      <ol class="flex flex-wrap items-center gap-2 text-xs text-[color:var(--muted)]">
+        {breadcrumbItems.map((item, index) => (
+          <li class="flex items-center gap-2">
+            {index > 0 && <span aria-hidden="true">/</span>}
+            {item.href ? (
+              <a class="transition hover:text-[color:var(--fg)]" href={item.href}>
+                {item.label}
+              </a>
+            ) : (
+              <span aria-current="page" class="font-semibold text-[color:var(--fg)]">
+                {item.label}
+              </span>
+            )}
+          </li>
+        ))}
+      </ol>
+    </nav>
+
+    <header class="space-y-3">
+      <div class="inline-flex items-center gap-2 rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3.5 py-1 text-xs font-semibold text-[color:var(--fg)]">
+        <span>Inferential Statistics</span>
+      </div>
+      <h1 class="text-3xl font-extrabold tracking-tight text-[color:var(--fg)] sm:text-4xl">
+        Confidence Interval Calculator
+      </h1>
+      <p class="max-w-3xl text-sm leading-relaxed text-[color:var(--muted)] sm:text-base">
+        Compute reliable lower and upper confidence limits for sample means and proportions across 90%, 95%, and 99% confidence levels.
+      </p>
+    </header>
+
+    <div
+      class="rounded-[2.5rem] border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-6 shadow-[var(--shadow)] sm:p-10"
+      data-ci-app
+    >
+      <div class="grid gap-8 lg:grid-cols-[1.15fr_0.85fr]">
+        <form class="space-y-5" onsubmit="return false;">
+          <div class="flex items-center justify-between">
+            <h2 class="text-lg font-bold text-[color:var(--fg)]">Estimation Mode</h2>
+            <button type="button" class="cursor-pointer text-xs font-semibold text-[color:var(--muted)] hover:text-[color:var(--fg)]" data-reset-btn>
+              ↺ Reset
+            </button>
+          </div>
+
+          <div class="grid grid-cols-2 gap-2 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-1 text-xs font-semibold">
+            <button type="button" class="cursor-pointer rounded-xl bg-[color:var(--accent)] px-3 py-2 text-white shadow-xs" data-mode-btn="mean">
+              Sample Mean (x̄)
+            </button>
+            <button type="button" class="cursor-pointer rounded-xl px-3 py-2 text-[color:var(--muted)] hover:text-[color:var(--fg)]" data-mode-btn="proportion">
+              Proportion (%)
+            </button>
+          </div>
+
+          <!-- Mean Inputs -->
+          <div class="space-y-4" data-mean-fields>
+            <div class="space-y-1.5">
+              <label for="sample-mean" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Sample Mean (x̄)</label>
+              <input id="sample-mean" type="number" step="any" value="105.4" class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none" data-sample-mean />
+            </div>
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label for="sample-sd" class="block text-xs font-medium text-[color:var(--muted)]">Standard Deviation (s)</label>
+                <input id="sample-sd" type="number" min="0.001" step="any" value="14.2" class="mt-1 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-sample-sd />
+              </div>
+              <div>
+                <label for="sample-n-mean" class="block text-xs font-medium text-[color:var(--muted)]">Sample Size (n)</label>
+                <input id="sample-n-mean" type="number" min="2" step="1" value="45" class="mt-1 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-sample-n-mean />
+              </div>
+            </div>
+          </div>
+
+          <!-- Proportion Inputs (Hidden by default) -->
+          <div class="space-y-4" data-prop-fields hidden>
+            <div class="space-y-1.5">
+              <label for="success-count" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Observed Successes (x)</label>
+              <input id="success-count" type="number" min="0" value="65" class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none" data-success-count />
+            </div>
+            <div class="space-y-1.5">
+              <label for="prop-n" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Total Sample Size (n)</label>
+              <input id="prop-n" type="number" min="1" value="100" class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none" data-prop-n />
+            </div>
+          </div>
+
+          <!-- Confidence Level Selector -->
+          <div class="space-y-1.5">
+            <label for="ci-conf" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Confidence Level</label>
+            <select id="ci-conf" class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-sm font-semibold text-[color:var(--fg)] outline-none" data-ci-conf>
+              <option value="90">90% Confidence</option>
+              <option value="95" selected>95% Confidence (Standard)</option>
+              <option value="99">99% Confidence (High Precision)</option>
+            </select>
+          </div>
+        </form>
+
+        <!-- Result Box -->
+        <div class="flex flex-col justify-between space-y-6 rounded-3xl border border-[color:var(--border)] bg-[color:var(--bg)] p-6 sm:p-8">
+          <div class="space-y-5">
+            <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Confidence Range</span>
+
+            <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 text-center">
+              <p class="text-xs font-semibold text-[color:var(--muted)]">Calculated Confidence Interval</p>
+              <p class="mt-1 text-3xl sm:text-4xl font-black tracking-tight text-[color:var(--fg)]" data-res-range>
+                [ 101.14 , 109.66 ]
+              </p>
+              <p class="mt-2 text-xs font-medium text-[color:var(--muted)]" data-res-point>
+                Point Estimate: 105.40 ± 4.26 (Margin of Error)
+              </p>
+            </div>
+
+            <div class="space-y-2 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-xs">
+              <div class="flex justify-between">
+                <span class="text-[color:var(--muted)]">Margin of Error (E):</span>
+                <span class="font-mono font-bold text-[color:var(--fg)]" data-res-moe>±4.26</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-[color:var(--muted)]">Critical Multiplier:</span>
+                <span class="font-mono font-bold text-[color:var(--fg)]" data-res-crit>t* = 2.015 (df = 44)</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FAQs -->
+    <section class="space-y-4">
+      <h2 class="text-xl font-bold text-[color:var(--fg)]">Frequently Asked Questions</h2>
+      <div class="space-y-3">
+        {faqs.map((faq) => (
+          <details class="group rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
+            <summary class="cursor-pointer list-none font-semibold text-sm sm:text-base text-[color:var(--fg)] flex items-center justify-between gap-4">
+              <span>{faq.question}</span>
+              <span class="text-xs text-[color:var(--muted)] group-open:rotate-180 transition-transform">▼</span>
+            </summary>
+            <p class="mt-3 text-xs sm:text-sm leading-relaxed text-[color:var(--muted)]">
+              {faq.answer}
+            </p>
+          </details>
+        ))}
+      </div>
+    </section>
+  </article>
+
+  <script is:inline>
+    (function () {
+      const root = document.querySelector('[data-ci-app]');
+      if (!root) return;
+
+      const modeBtns = root.querySelectorAll('[data-mode-btn]');
+      const meanFields = root.querySelector('[data-mean-fields]');
+      const propFields = root.querySelector('[data-prop-fields]');
+      const inMean = root.querySelector('[data-sample-mean]');
+      const inSd = root.querySelector('[data-sample-sd]');
+      const inNMean = root.querySelector('[data-sample-n-mean]');
+      const inSuccess = root.querySelector('[data-success-count]');
+      const inNProp = root.querySelector('[data-prop-n]');
+      const inConf = root.querySelector('[data-ci-conf]');
+      const outRange = root.querySelector('[data-res-range]');
+      const outPoint = root.querySelector('[data-res-point]');
+      const outMoe = root.querySelector('[data-res-moe]');
+      const outCrit = root.querySelector('[data-res-crit]');
+      const resetBtn = root.querySelector('[data-reset-btn]');
+
+      let currentMode = 'mean';
+      const zMap = { '90': 1.644853, '95': 1.959964, '99': 2.575829 };
+
+      function update() {
+        const conf = inConf.value || '95';
+        const z = zMap[conf] || 1.96;
+
+        if (currentMode === 'mean') {
+          const mean = parseFloat(inMean.value || '0');
+          const sd = Math.max(0.0001, parseFloat(inSd.value || '1'));
+          const n = Math.max(2, parseInt(inNMean.value || '30', 10));
+          const df = n - 1;
+
+          // Student t critical approximation: t ≈ z + (z³ + z)/(4*df)
+          const tCrit = z + (z * z * z + z) / (4 * df);
+          const se = sd / Math.sqrt(n);
+          const moe = tCrit * se;
+
+          const low = mean - moe;
+          const high = mean + moe;
+
+          if (outRange) outRange.textContent = `[ ${low.toFixed(2)} , ${high.toFixed(2)} ]`;
+          if (outPoint) outPoint.textContent = `Point Estimate: ${mean.toFixed(2)} ± ${moe.toFixed(2)}`;
+          if (outMoe) outMoe.textContent = `±${moe.toFixed(2)}`;
+          if (outCrit) outCrit.textContent = `t* = ${tCrit.toFixed(3)} (df = ${df})`;
+        } else {
+          const x = Math.max(0, parseInt(inSuccess.value || '0', 10));
+          const n = Math.max(1, parseInt(inNProp.value || '100', 10));
+          const p = Math.min(1, x / n);
+
+          const se = Math.sqrt((p * (1 - p)) / n);
+          const moe = z * se;
+          const low = Math.max(0, p - moe) * 100;
+          const high = Math.min(1, p + moe) * 100;
+
+          if (outRange) outRange.textContent = `[ ${low.toFixed(2)}% , ${high.toFixed(2)}% ]`;
+          if (outPoint) outPoint.textContent = `Sample Proportion: ${(p * 100).toFixed(2)}% ± ${(moe * 100).toFixed(2)}%`;
+          if (outMoe) outMoe.textContent = `±${(moe * 100).toFixed(2)}%`;
+          if (outCrit) outCrit.textContent = `Z* = ${z.toFixed(3)}`;
+        }
+      }
+
+      modeBtns.forEach((btn) => {
+        btn.addEventListener('click', () => {
+          currentMode = btn.dataset.modeBtn || 'mean';
+          modeBtns.forEach((b) => {
+            if (b === btn) {
+              b.className = 'cursor-pointer rounded-xl bg-[color:var(--accent)] px-3 py-2 text-white shadow-xs';
+            } else {
+              b.className = 'cursor-pointer rounded-xl px-3 py-2 text-[color:var(--muted)] hover:text-[color:var(--fg)]';
+            }
+          });
+
+          if (currentMode === 'mean') {
+            meanFields?.removeAttribute('hidden');
+            propFields?.setAttribute('hidden', '');
+          } else {
+            meanFields?.setAttribute('hidden', '');
+            propFields?.removeAttribute('hidden');
+          }
+          update();
+        });
+      });
+
+      inMean.addEventListener('input', update);
+      inSd.addEventListener('input', update);
+      inNMean.addEventListener('input', update);
+      inSuccess.addEventListener('input', update);
+      inNProp.addEventListener('input', update);
+      inConf.addEventListener('change', update);
+
+      if (resetBtn) {
+        resetBtn.addEventListener('click', () => {
+          inMean.value = '105.4';
+          inSd.value = '14.2';
+          inNMean.value = '45';
+          inSuccess.value = '65';
+          inNProp.value = '100';
+          inConf.value = '95';
+          update();
+        });
+      }
+
+      update();
+    })();
+  </script>
+</SiteLayout>

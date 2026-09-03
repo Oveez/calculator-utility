@@ -1,0 +1,214 @@
+---
+import SiteLayout from '../../layouts/SiteLayout.astro';
+import Icon from '../../components/Icon.astro';
+import { siteName, toAbsoluteUrl, withBasePath } from '../../utils/site';
+
+const pageTitle = `Standard Error Calculator (SEM) | Mean & Proportion · ${siteName}`;
+const pageDesc = 'Calculate the standard error of the mean (SEM) and standard error of proportions from standard deviation, sample size, and finite population correction.';
+const canonicalUrl = toAbsoluteUrl('/research-tools/standard-error-calculator/');
+
+const breadcrumbItems = [
+  { label: 'Home', href: toAbsoluteUrl('/') },
+  { label: 'Research Tools', href: toAbsoluteUrl('/research-tools/') },
+  { label: 'Standard Error Calculator' },
+];
+
+const faqs = [
+  {
+    question: 'What is standard error of the mean (SEM)?',
+    answer: 'Standard error of the mean measures the dispersion of sample means around the true population mean: SEM = s ÷ √n, where s is the sample standard deviation and n is the sample size.',
+  },
+  {
+    question: 'What is the difference between standard deviation (SD) and standard error (SE)?',
+    answer: 'Standard deviation describes variability among individual data points in a single sample. Standard error describes the uncertainty and variability of the sample estimate across multiple repeated samples.',
+  },
+];
+
+const schemaGraph = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebApplication',
+    name: 'Standard Error Calculator',
+    url: canonicalUrl,
+    description: pageDesc,
+    applicationCategory: 'EducationalApplication',
+    operatingSystem: 'All',
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: breadcrumbItems.map((item, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      name: item.label,
+      item: item.href,
+    })),
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faqs.map((f) => ({
+      '@type': 'Question',
+      name: f.question,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: f.answer,
+      },
+    })),
+  },
+];
+---
+
+<SiteLayout title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(schemaGraph)} />
+
+  <article class="space-y-10 py-2">
+    <nav aria-label="Breadcrumb">
+      <ol class="flex flex-wrap items-center gap-2 text-xs text-[color:var(--muted)]">
+        {breadcrumbItems.map((item, index) => (
+          <li class="flex items-center gap-2">
+            {index > 0 && <span aria-hidden="true">/</span>}
+            {item.href ? (
+              <a class="transition hover:text-[color:var(--fg)]" href={item.href}>
+                {item.label}
+              </a>
+            ) : (
+              <span aria-current="page" class="font-semibold text-[color:var(--fg)]">
+                {item.label}
+              </span>
+            )}
+          </li>
+        ))}
+      </ol>
+    </nav>
+
+    <header class="space-y-3">
+      <div class="inline-flex items-center gap-2 rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3.5 py-1 text-xs font-semibold text-[color:var(--fg)]">
+        <span>Measurement &amp; Sampling Variability</span>
+      </div>
+      <h1 class="text-3xl font-extrabold tracking-tight text-[color:var(--fg)] sm:text-4xl">
+        Standard Error Calculator (SEM)
+      </h1>
+      <p class="max-w-3xl text-sm leading-relaxed text-[color:var(--muted)] sm:text-base">
+        Calculate the Standard Error of the Mean (SEM) or Standard Error of a Proportion with optional finite population correction.
+      </p>
+    </header>
+
+    <div
+      class="rounded-[2.5rem] border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-6 shadow-[var(--shadow)] sm:p-10"
+      data-sem-app
+    >
+      <div class="grid gap-8 lg:grid-cols-[1.15fr_0.85fr]">
+        <form class="space-y-5" onsubmit="return false;">
+          <div class="flex items-center justify-between">
+            <h2 class="text-lg font-bold text-[color:var(--fg)]">Sample Inputs</h2>
+            <button type="button" class="cursor-pointer text-xs font-semibold text-[color:var(--muted)] hover:text-[color:var(--fg)]" data-reset-btn>
+              ↺ Reset
+            </button>
+          </div>
+
+          <div class="space-y-1.5">
+            <label for="sem-sd" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Sample Standard Deviation (s)</label>
+            <input id="sem-sd" type="number" min="0.0001" step="any" value="12.5" class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none" data-sem-sd />
+          </div>
+
+          <div class="space-y-1.5">
+            <label for="sem-n" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Sample Size (n)</label>
+            <input id="sem-n" type="number" min="1" step="1" value="64" class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none" data-sem-n />
+          </div>
+
+          <div class="space-y-1.5 pt-1">
+            <label for="sem-pop" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Population Size (N - Optional)</label>
+            <input id="sem-pop" type="number" min="10" placeholder="Leave empty for infinite/large populations" class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-sm font-semibold text-[color:var(--fg)] outline-none" data-sem-pop />
+          </div>
+        </form>
+
+        <div class="flex flex-col justify-between space-y-6 rounded-3xl border border-[color:var(--border)] bg-[color:var(--bg)] p-6 sm:p-8">
+          <div class="space-y-5">
+            <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Uncertainty Metric</span>
+
+            <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 text-center">
+              <p class="text-xs font-semibold text-[color:var(--muted)]">Standard Error of Mean (SEM)</p>
+              <p class="mt-1 text-5xl font-black tracking-tight text-[color:var(--fg)]" data-res-sem>
+                1.5625
+              </p>
+              <p class="mt-2 text-xs font-medium text-[color:var(--muted)]">
+                Sample mean variability = ±1.5625 units
+              </p>
+            </div>
+
+            <div class="space-y-2 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-xs">
+              <div class="flex justify-between">
+                <span class="text-[color:var(--muted)]">95% Confidence Margin (1.96 × SEM):</span>
+                <span class="font-mono font-bold text-[color:var(--fg)]" data-res-margin>±3.062</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FAQs -->
+    <section class="space-y-4">
+      <h2 class="text-xl font-bold text-[color:var(--fg)]">Frequently Asked Questions</h2>
+      <div class="space-y-3">
+        {faqs.map((faq) => (
+          <details class="group rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
+            <summary class="cursor-pointer list-none font-semibold text-sm sm:text-base text-[color:var(--fg)] flex items-center justify-between gap-4">
+              <span>{faq.question}</span>
+              <span class="text-xs text-[color:var(--muted)] group-open:rotate-180 transition-transform">▼</span>
+            </summary>
+            <p class="mt-3 text-xs sm:text-sm leading-relaxed text-[color:var(--muted)]">
+              {faq.answer}
+            </p>
+          </details>
+        ))}
+      </div>
+    </section>
+  </article>
+
+  <script is:inline>
+    (function () {
+      const root = document.querySelector('[data-sem-app]');
+      if (!root) return;
+
+      const inSd = root.querySelector('[data-sem-sd]');
+      const inN = root.querySelector('[data-sem-n]');
+      const inPop = root.querySelector('[data-sem-pop]');
+      const outSem = root.querySelector('[data-res-sem]');
+      const outMargin = root.querySelector('[data-res-margin]');
+      const resetBtn = root.querySelector('[data-reset-btn]');
+
+      function update() {
+        const s = Math.max(0, parseFloat(inSd.value || '0'));
+        const n = Math.max(1, parseInt(inN.value || '1', 10));
+        const pop = inPop.value ? parseInt(inPop.value, 10) : undefined;
+
+        let sem = s / Math.sqrt(n);
+        if (pop && pop > n) {
+          sem *= Math.sqrt((pop - n) / (pop - 1));
+        }
+
+        const m95 = sem * 1.959964;
+
+        if (outSem) outSem.textContent = sem.toFixed(4);
+        if (outMargin) outMargin.textContent = `±${m95.toFixed(3)}`;
+      }
+
+      inSd.addEventListener('input', update);
+      inN.addEventListener('input', update);
+      inPop.addEventListener('input', update);
+
+      if (resetBtn) {
+        resetBtn.addEventListener('click', () => {
+          inSd.value = '12.5';
+          inN.value = '64';
+          inPop.value = '';
+          update();
+        });
+      }
+
+      update();
+    })();
+  </script>
+</SiteLayout>

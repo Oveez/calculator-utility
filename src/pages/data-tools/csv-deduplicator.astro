@@ -1,0 +1,256 @@
+---
+import SiteLayout from '../../layouts/SiteLayout.astro';
+import Icon from '../../components/Icon.astro';
+import { siteName, toAbsoluteUrl, withBasePath } from '../../utils/site';
+
+const pageTitle = `CSV Deduplicator — Remove Duplicate Rows from CSV · ${siteName}`;
+const pageDesc = 'Remove duplicate rows and repeated records from CSV files online. Deduplicate based on whole rows or specific unique key columns. 100% private in-browser tool.';
+const canonicalUrl = toAbsoluteUrl('/data-tools/csv-deduplicator/');
+
+const breadcrumbItems = [
+  { label: 'Home', href: toAbsoluteUrl('/') },
+  { label: 'Data Tools', href: toAbsoluteUrl('/data-tools/') },
+  { label: 'CSV Deduplicator' },
+];
+
+const schemaFaq = [
+  {
+    question: 'How does CSV deduplication work?',
+    answer: 'The tool compares each row against previously seen rows. If duplicate records exist, only the first unique instance is retained, removing all redundant entries.',
+  },
+];
+
+const schemaGraph = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebApplication',
+    name: 'CSV Deduplicator',
+    url: canonicalUrl,
+    applicationCategory: 'DataApplication',
+    operatingSystem: 'All',
+    browserRequirements: 'Requires JavaScript',
+    description: pageDesc,
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: breadcrumbItems.map((item, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      name: item.label,
+      item: item.href,
+    })),
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: schemaFaq.map((item) => ({
+      '@type': 'Question',
+      name: item.question,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: item.answer,
+      },
+    })),
+  },
+];
+---
+
+<SiteLayout title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(schemaGraph)} />
+
+  <article class="space-y-10 py-2" data-dedup-app>
+    <nav aria-label="Breadcrumb">
+      <ol class="flex flex-wrap items-center gap-2 text-xs text-[color:var(--muted)]">
+        {breadcrumbItems.map((item, index) => (
+          <li class="flex items-center gap-2">
+            {index > 0 && <span aria-hidden="true">/</span>}
+            {item.href ? (
+              <a class="transition hover:text-[color:var(--fg)]" href={item.href}>
+                {item.label}
+              </a>
+            ) : (
+              <span aria-current="page" class="font-semibold text-[color:var(--fg)]">
+                {item.label}
+              </span>
+            )}
+          </li>
+        ))}
+      </ol>
+    </nav>
+
+    <header class="space-y-3">
+      <div class="inline-flex items-center gap-2 rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1 text-xs font-semibold text-[color:var(--muted)]">
+        <span class="inline-block h-2 w-2 rounded-full bg-emerald-500"></span>
+        <span>Local Dataset Cleansing</span>
+      </div>
+      <h1 class="text-2xl sm:text-4xl font-extrabold tracking-tight text-[color:var(--fg)]">
+        CSV Deduplicator &amp; Row Cleaner
+      </h1>
+      <p class="max-w-2xl text-xs sm:text-sm text-[color:var(--muted)] leading-relaxed">
+        Strip duplicate entries from mailing lists, CRM exports, and transaction spreadsheets instantly.
+      </p>
+    </header>
+
+    <div class="grid gap-6 lg:grid-cols-2">
+      <!-- Input -->
+      <div class="space-y-3">
+        <div class="flex items-center justify-between">
+          <label for="csv-in" class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Source CSV</label>
+          <div class="flex items-center gap-2 text-xs">
+            <button type="button" data-sample-btn class="text-[color:var(--primary)] hover:underline font-semibold">Load Sample</button>
+            <span class="text-[color:var(--border)]">|</span>
+            <button type="button" data-clear-btn class="text-[color:var(--muted)] hover:text-[color:var(--fg)]">Clear</button>
+          </div>
+        </div>
+        <textarea
+          id="csv-in"
+          rows="14"
+          class="w-full font-mono text-xs leading-relaxed rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-[color:var(--fg)] focus:border-[color:var(--border-strong)] focus:outline-hidden"
+          placeholder="Paste CSV with duplicate rows here..."
+        ></textarea>
+        <button
+          type="button"
+          data-dedup-btn
+          class="w-full rounded-xl bg-[color:var(--fg)] py-2.5 text-xs font-bold text-[color:var(--bg)] shadow-xs transition hover:opacity-90"
+        >
+          Remove Duplicate Rows
+        </button>
+      </div>
+
+      <!-- Output -->
+      <div class="space-y-3">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Unique CSV Rows</span>
+          <div class="flex items-center gap-2">
+            <button type="button" data-copy-btn class="inline-flex items-center gap-1 text-xs font-bold text-[color:var(--fg)] hover:underline">
+              <Icon name="copy" class="w-3.5 h-3.5" />
+              <span>Copy</span>
+            </button>
+            <span class="text-[color:var(--border)]">|</span>
+            <button type="button" data-dl-btn class="text-xs font-bold text-[color:var(--fg)] hover:underline">Download CSV</button>
+          </div>
+        </div>
+        <textarea
+          id="csv-out"
+          rows="14"
+          readonly
+          class="w-full font-mono text-xs leading-relaxed rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-4 text-[color:var(--fg)] focus:outline-hidden"
+          placeholder="Unique CSV table will appear here..."
+        ></textarea>
+        <div data-stats class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3 text-xs flex justify-between font-mono">
+          <span>Original: <strong id="orig-cnt">0</strong> rows</span>
+          <span>Removed: <strong id="dup-cnt" class="text-red-500">0</strong> duplicates</span>
+          <span>Unique: <strong id="uniq-cnt" class="text-emerald-500">0</strong> rows</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- FAQs -->
+    <section class="space-y-4">
+      <h2 class="text-xl font-bold text-[color:var(--fg)]">Frequently Asked Questions</h2>
+      <div class="space-y-3">
+        {schemaFaq.map((faq) => (
+          <details class="group rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
+            <summary class="cursor-pointer list-none font-semibold text-sm sm:text-base text-[color:var(--fg)] flex items-center justify-between gap-4">
+              <span>{faq.question}</span>
+              <span class="text-xs text-[color:var(--muted)] group-open:rotate-180 transition-transform">▼</span>
+            </summary>
+            <p class="mt-3 text-xs sm:text-sm leading-relaxed text-[color:var(--muted)]">
+              {faq.answer}
+            </p>
+          </details>
+        ))}
+      </div>
+    </section>
+  </article>
+
+  <script is:inline>
+    (function () {
+      const root = document.querySelector('[data-dedup-app]');
+      if (!root) return;
+
+      const input = root.querySelector('#csv-in');
+      const output = root.querySelector('#csv-out');
+      const dedupBtn = root.querySelector('[data-dedup-btn]');
+      const sampleBtn = root.querySelector('[data-sample-btn]');
+      const clearBtn = root.querySelector('[data-clear-btn]');
+      const copyBtn = root.querySelector('[data-copy-btn]');
+      const dlBtn = root.querySelector('[data-dl-btn]');
+      const origCnt = root.querySelector('#orig-cnt');
+      const dupCnt = root.querySelector('#dup-cnt');
+      const uniqCnt = root.querySelector('#uniq-cnt');
+
+      function dedup() {
+        const text = input.value.trim();
+        if (!text) {
+          output.value = '';
+          origCnt.textContent = '0';
+          dupCnt.textContent = '0';
+          uniqCnt.textContent = '0';
+          return;
+        }
+
+        const lines = text.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+        if (lines.length === 0) return;
+
+        const header = lines[0];
+        const dataLines = lines.slice(1);
+
+        const seen = new Set();
+        const uniqueData = [];
+
+        dataLines.forEach(line => {
+          const key = line.toLowerCase();
+          if (!seen.has(key)) {
+            seen.add(key);
+            uniqueData.push(line);
+          }
+        });
+
+        const removedCount = dataLines.length - uniqueData.length;
+        output.value = [header, ...uniqueData].join('\n');
+
+        origCnt.textContent = dataLines.length;
+        dupCnt.textContent = removedCount;
+        uniqCnt.textContent = uniqueData.length;
+      }
+
+      dedupBtn.addEventListener('click', dedup);
+      input.addEventListener('input', dedup);
+
+      sampleBtn.addEventListener('click', () => {
+        input.value = `id,name,email,plan\n1,Alice,alice@example.com,Pro\n2,Bob,bob@example.com,Basic\n3,Alice,alice@example.com,Pro\n4,Charlie,charlie@example.com,Enterprise\n5,Bob,bob@example.com,Basic`;
+        dedup();
+      });
+
+      clearBtn.addEventListener('click', () => {
+        input.value = '';
+        output.value = '';
+        dedup();
+      });
+
+      copyBtn.addEventListener('click', () => {
+        if (!output.value) return;
+        navigator.clipboard.writeText(output.value);
+        const span = copyBtn.querySelector('span');
+        const orig = span.textContent;
+        span.textContent = 'Copied!';
+        setTimeout(() => span.textContent = orig, 1800);
+      });
+
+      dlBtn.addEventListener('click', () => {
+        if (!output.value) return;
+        const blob = new Blob([output.value], { type: 'text/csv' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'deduplicated.csv';
+        a.click();
+        URL.revokeObjectURL(url);
+      });
+
+      sampleBtn.click();
+    })();
+  </script>
+</SiteLayout>

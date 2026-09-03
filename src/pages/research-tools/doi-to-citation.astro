@@ -1,0 +1,289 @@
+---
+import SiteLayout from '../../layouts/SiteLayout.astro';
+import Icon from '../../components/Icon.astro';
+import { siteName, toAbsoluteUrl, withBasePath } from '../../utils/site';
+
+const pageTitle = `DOI to Citation Generator — APA 7, MLA 9, BibTeX, Chicago · ${siteName}`;
+const pageDesc = 'Generate formatted academic citations from DOI (Digital Object Identifier) or article metadata online. Supports APA 7th, MLA 9th, Chicago, Harvard, and BibTeX citations.';
+const canonicalUrl = toAbsoluteUrl('/research-tools/doi-to-citation/');
+
+const breadcrumbItems = [
+  { label: 'Home', href: toAbsoluteUrl('/') },
+  { label: 'Research Tools', href: toAbsoluteUrl('/research-tools/') },
+  { label: 'DOI to Citation' },
+];
+
+const schemaFaq = [
+  {
+    question: 'How are citations formatted in APA 7th and MLA 9th?',
+    answer: 'APA 7th follows `Author, A. A. (Year). Title of article. Title of Periodical, volume(issue), pages. https://doi.org/xxx`. MLA 9th follows `Author. "Title of Article." Title of Journal, vol. x, no. y, Year, pp. xx-xx. DOI`.',
+  },
+];
+
+const schemaGraph = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebApplication',
+    name: 'DOI to Citation Generator',
+    url: canonicalUrl,
+    applicationCategory: 'AcademicApplication',
+    operatingSystem: 'All',
+    browserRequirements: 'Requires JavaScript',
+    description: pageDesc,
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: breadcrumbItems.map((item, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      name: item.label,
+      item: item.href,
+    })),
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: schemaFaq.map((item) => ({
+      '@type': 'Question',
+      name: item.question,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: item.answer,
+      },
+    })),
+  },
+];
+---
+
+<SiteLayout title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(schemaGraph)} />
+
+  <article class="space-y-10 py-2" data-doi-app>
+    <nav aria-label="Breadcrumb">
+      <ol class="flex flex-wrap items-center gap-2 text-xs text-[color:var(--muted)]">
+        {breadcrumbItems.map((item, index) => (
+          <li class="flex items-center gap-2">
+            {index > 0 && <span aria-hidden="true">/</span>}
+            {item.href ? (
+              <a class="transition hover:text-[color:var(--fg)]" href={item.href}>
+                {item.label}
+              </a>
+            ) : (
+              <span aria-current="page" class="font-semibold text-[color:var(--fg)]">
+                {item.label}
+              </span>
+            )}
+          </li>
+        ))}
+      </ol>
+    </nav>
+
+    <header class="space-y-3">
+      <div class="inline-flex items-center gap-2 rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1 text-xs font-semibold text-[color:var(--muted)]">
+        <span class="inline-block h-2 w-2 rounded-full bg-emerald-500"></span>
+        <span>Academic Bibliography Formatter</span>
+      </div>
+      <h1 class="text-2xl sm:text-4xl font-extrabold tracking-tight text-[color:var(--fg)]">
+        DOI to Citation Generator
+      </h1>
+      <p class="max-w-2xl text-xs sm:text-sm text-[color:var(--muted)] leading-relaxed">
+        Generate formatted bibliography citations in APA 7, MLA 9, Chicago, Harvard, and BibTeX styles.
+      </p>
+    </header>
+
+    <div class="space-y-6">
+      <!-- Metadata Inputs -->
+      <div class="space-y-4 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 sm:p-6 text-xs">
+        <div class="grid gap-4 sm:grid-cols-2">
+          <div>
+            <label for="doi-val" class="font-bold text-[color:var(--fg)] block mb-1">DOI (Digital Object Identifier):</label>
+            <input
+              type="text"
+              id="doi-val"
+              class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-[color:var(--fg)]"
+              placeholder="10.1038/s41586-020-2649-2"
+              value="10.1038/s41586-020-2649-2"
+            />
+          </div>
+          <div>
+            <label for="author-val" class="font-bold text-[color:var(--fg)] block mb-1">Author(s) (Last, First):</label>
+            <input
+              type="text"
+              id="author-val"
+              class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-[color:var(--fg)]"
+              placeholder="Smith, John, &amp; Doe, Jane"
+              value="Vaswani, Ashish, et al."
+            />
+          </div>
+        </div>
+
+        <div class="grid gap-4 sm:grid-cols-3">
+          <div class="sm:col-span-2">
+            <label for="title-val" class="font-bold text-[color:var(--fg)] block mb-1">Article / Paper Title:</label>
+            <input
+              type="text"
+              id="title-val"
+              class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-[color:var(--fg)]"
+              placeholder="Attention Is All You Need"
+              value="Attention Is All You Need"
+            />
+          </div>
+          <div>
+            <label for="year-val" class="font-bold text-[color:var(--fg)] block mb-1">Year of Publication:</label>
+            <input
+              type="number"
+              id="year-val"
+              class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-[color:var(--fg)]"
+              value="2017"
+            />
+          </div>
+        </div>
+
+        <div class="grid gap-4 sm:grid-cols-3">
+          <div>
+            <label for="journal-val" class="font-bold text-[color:var(--fg)] block mb-1">Journal / Conference:</label>
+            <input
+              type="text"
+              id="journal-val"
+              class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-[color:var(--fg)]"
+              value="NeurIPS Proceedings"
+            />
+          </div>
+          <div>
+            <label for="vol-val" class="font-bold text-[color:var(--fg)] block mb-1">Volume / Issue (optional):</label>
+            <input
+              type="text"
+              id="vol-val"
+              class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-[color:var(--fg)]"
+              value="30"
+            />
+          </div>
+          <div>
+            <label for="pages-val" class="font-bold text-[color:var(--fg)] block mb-1">Page Range (optional):</label>
+            <input
+              type="text"
+              id="pages-val"
+              class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-[color:var(--fg)]"
+              value="5998-6008"
+            />
+          </div>
+        </div>
+      </div>
+
+      <!-- Citations Formats Output Grid -->
+      <div class="space-y-4">
+        <h2 class="text-base font-bold text-[color:var(--fg)]">Formatted Citation Styles</h2>
+
+        <div class="space-y-3">
+          <!-- APA 7 -->
+          <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 space-y-1.5">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-emerald-500 uppercase">APA 7th Edition</span>
+              <button type="button" data-copy-apa class="text-xs font-bold text-[color:var(--fg)] hover:underline">Copy APA</button>
+            </div>
+            <p id="cite-apa" class="text-xs leading-relaxed text-[color:var(--fg)] font-serif select-all">-</p>
+          </div>
+
+          <!-- MLA 9 -->
+          <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 space-y-1.5">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-emerald-500 uppercase">MLA 9th Edition</span>
+              <button type="button" data-copy-mla class="text-xs font-bold text-[color:var(--fg)] hover:underline">Copy MLA</button>
+            </div>
+            <p id="cite-mla" class="text-xs leading-relaxed text-[color:var(--fg)] font-serif select-all">-</p>
+          </div>
+
+          <!-- BibTeX -->
+          <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 space-y-1.5">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-emerald-500 uppercase">BibTeX Entry (LaTeX)</span>
+              <button type="button" data-copy-bib class="text-xs font-bold text-[color:var(--fg)] hover:underline">Copy BibTeX</button>
+            </div>
+            <pre id="cite-bib" class="text-xs leading-relaxed text-[color:var(--fg)] font-mono whitespace-pre-wrap select-all">-</pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FAQs -->
+    <section class="space-y-4">
+      <h2 class="text-xl font-bold text-[color:var(--fg)]">Frequently Asked Questions</h2>
+      <div class="space-y-3">
+        {schemaFaq.map((faq) => (
+          <details class="group rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
+            <summary class="cursor-pointer list-none font-semibold text-sm sm:text-base text-[color:var(--fg)] flex items-center justify-between gap-4">
+              <span>{faq.question}</span>
+              <span class="text-xs text-[color:var(--muted)] group-open:rotate-180 transition-transform">▼</span>
+            </summary>
+            <p class="mt-3 text-xs sm:text-sm leading-relaxed text-[color:var(--muted)]">
+              {faq.answer}
+            </p>
+          </details>
+        ))}
+      </div>
+    </section>
+  </article>
+
+  <script is:inline>
+    (function () {
+      const root = document.querySelector('[data-doi-app]');
+      if (!root) return;
+
+      const doiVal = root.querySelector('#doi-val');
+      const authorVal = root.querySelector('#author-val');
+      const titleVal = root.querySelector('#title-val');
+      const yearVal = root.querySelector('#year-val');
+      const journalVal = root.querySelector('#journal-val');
+      const volVal = root.querySelector('#vol-val');
+      const pagesVal = root.querySelector('#pages-val');
+
+      const citeApa = root.querySelector('#cite-apa');
+      const citeMla = root.querySelector('#cite-mla');
+      const citeBib = root.querySelector('#cite-bib');
+
+      const copyApa = root.querySelector('[data-copy-apa]');
+      const copyMla = root.querySelector('[data-copy-mla]');
+      const copyBib = root.querySelector('[data-copy-bib]');
+
+      function updateCitations() {
+        const a = authorVal.value.trim() || 'Author, A.';
+        const t = titleVal.value.trim() || 'Title of article';
+        const y = yearVal.value.trim() || '2026';
+        const j = journalVal.value.trim() || 'Journal of Academic Research';
+        const v = volVal.value.trim();
+        const p = pagesVal.value.trim();
+        const d = doiVal.value.trim();
+
+        const doiUrl = d.startsWith('http') ? d : (d ? `https://doi.org/${d}` : '');
+
+        // APA 7
+        const volStr = v ? `${v}` : '';
+        const pagesStr = p ? `, ${p}` : '';
+        citeApa.textContent = `${a} (${y}). ${t}. ${j}${volStr ? ', ' + volStr : ''}${pagesStr}.${doiUrl ? ' ' + doiUrl : ''}`;
+
+        // MLA 9
+        citeMla.textContent = `${a}. "${t}." ${j}${v ? ', vol. ' + v : ''}${p ? ', pp. ' + p : ''}, ${y}.${doiUrl ? ' ' + doiUrl : ''}`;
+
+        // BibTeX
+        const citeKey = (a.split(',')[0].toLowerCase() + y).replace(/\s+/g, '');
+        citeBib.textContent = `@article{${citeKey},\n  author = {${a}},\n  title = {${t}},\n  journal = {${j}},\n  year = {${y}},\n  volume = {${v}},\n  pages = {${p}},\n  doi = {${d}}\n}`;
+      }
+
+      [doiVal, authorVal, titleVal, yearVal, journalVal, volVal, pagesVal].forEach(el => el.addEventListener('input', updateCitations));
+
+      function copyText(btn, el) {
+        navigator.clipboard.writeText(el.textContent);
+        const orig = btn.textContent;
+        btn.textContent = 'Copied!';
+        setTimeout(() => btn.textContent = orig, 1800);
+      }
+
+      copyApa.addEventListener('click', () => copyText(copyApa, citeApa));
+      copyMla.addEventListener('click', () => copyText(copyMla, citeMla));
+      copyBib.addEventListener('click', () => copyText(copyBib, citeBib));
+
+      updateCitations();
+    })();
+  </script>
+</SiteLayout>

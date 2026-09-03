@@ -1,0 +1,184 @@
+---
+import SiteLayout from '../../layouts/SiteLayout.astro';
+import Icon from '../../components/Icon.astro';
+import { siteName, toAbsoluteUrl, withBasePath } from '../../utils/site';
+
+const pageTitle = `Coefficient of Variation Calculator — Relative Standard Deviation (RSD %) · ${siteName}`;
+const pageDesc = 'Calculate Coefficient of Variation (CV %) and Relative Standard Deviation (RSD) from mean and standard deviation or raw datasets online.';
+const canonicalUrl = toAbsoluteUrl('/research-tools/coefficient-of-variation-calculator/');
+
+const breadcrumbItems = [
+  { label: 'Home', href: toAbsoluteUrl('/') },
+  { label: 'Research Tools', href: toAbsoluteUrl('/research-tools/') },
+  { label: 'Coefficient of Variation' },
+];
+
+const schemaFaq = [
+  {
+    question: 'What is Coefficient of Variation (CV %)?',
+    answer: 'The Coefficient of Variation (CV) measures relative statistical variability: `CV = (Standard Deviation / Mean) * 100%`. It allows direct comparison of dispersion across datasets with different units or scales.',
+  },
+];
+
+const schemaGraph = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebApplication',
+    name: 'Coefficient of Variation Calculator',
+    url: canonicalUrl,
+    applicationCategory: 'AcademicApplication',
+    operatingSystem: 'All',
+    browserRequirements: 'Requires JavaScript',
+    description: pageDesc,
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: breadcrumbItems.map((item, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      name: item.label,
+      item: item.href,
+    })),
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: schemaFaq.map((item) => ({
+      '@type': 'Question',
+      name: item.question,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: item.answer,
+      },
+    })),
+  },
+];
+---
+
+<SiteLayout title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(schemaGraph)} />
+
+  <article class="space-y-10 py-2" data-cv-app>
+    <nav aria-label="Breadcrumb">
+      <ol class="flex flex-wrap items-center gap-2 text-xs text-[color:var(--muted)]">
+        {breadcrumbItems.map((item, index) => (
+          <li class="flex items-center gap-2">
+            {index > 0 && <span aria-hidden="true">/</span>}
+            {item.href ? (
+              <a class="transition hover:text-[color:var(--fg)]" href={item.href}>
+                {item.label}
+              </a>
+            ) : (
+              <span aria-current="page" class="font-semibold text-[color:var(--fg)]">
+                {item.label}
+              </span>
+            )}
+          </li>
+        ))}
+      </ol>
+    </nav>
+
+    <header class="space-y-3">
+      <div class="inline-flex items-center gap-2 rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1 text-xs font-semibold text-[color:var(--muted)]">
+        <span class="inline-block h-2 w-2 rounded-full bg-emerald-500"></span>
+        <span>Relative Precision Metric</span>
+      </div>
+      <h1 class="text-2xl sm:text-4xl font-extrabold tracking-tight text-[color:var(--fg)]">
+        Coefficient of Variation Calculator (CV / RSD)
+      </h1>
+      <p class="max-w-2xl text-xs sm:text-sm text-[color:var(--muted)] leading-relaxed">
+        Calculate Relative Standard Deviation (RSD %) to evaluate dataset precision and variability across different measurement units.
+      </p>
+    </header>
+
+    <div class="space-y-6">
+      <div class="grid gap-4 sm:grid-cols-2 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 text-xs">
+        <div>
+          <label for="mean-val" class="font-bold text-[color:var(--fg)] block mb-1">Mean (μ or x̄):</label>
+          <input
+            type="number"
+            id="mean-val"
+            step="any"
+            value="50"
+            class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-[color:var(--fg)]"
+          />
+        </div>
+        <div>
+          <label for="sd-val" class="font-bold text-[color:var(--fg)] block mb-1">Standard Deviation (s or σ):</label>
+          <input
+            type="number"
+            id="sd-val"
+            step="any"
+            value="4.5"
+            class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-[color:var(--fg)]"
+          />
+        </div>
+      </div>
+
+      <!-- Result Card -->
+      <div class="grid gap-4 sm:grid-cols-2">
+        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 space-y-2 text-center">
+          <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Coefficient of Variation (CV %)</span>
+          <p id="res-cv" class="text-4xl font-extrabold text-emerald-500">-</p>
+        </div>
+        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 space-y-2 text-center">
+          <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Variability Interpretation</span>
+          <p id="res-interp" class="text-lg font-bold text-[color:var(--fg)]">-</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- FAQs -->
+    <section class="space-y-4">
+      <h2 class="text-xl font-bold text-[color:var(--fg)]">Frequently Asked Questions</h2>
+      <div class="space-y-3">
+        {schemaFaq.map((faq) => (
+          <details class="group rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
+            <summary class="cursor-pointer list-none font-semibold text-sm sm:text-base text-[color:var(--fg)] flex items-center justify-between gap-4">
+              <span>{faq.question}</span>
+              <span class="text-xs text-[color:var(--muted)] group-open:rotate-180 transition-transform">▼</span>
+            </summary>
+            <p class="mt-3 text-xs sm:text-sm leading-relaxed text-[color:var(--muted)]">
+              {faq.answer}
+            </p>
+          </details>
+        ))}
+      </div>
+    </section>
+  </article>
+
+  <script is:inline>
+    (function () {
+      const root = document.querySelector('[data-cv-app]');
+      if (!root) return;
+
+      const meanInput = root.querySelector('#mean-val');
+      const sdInput = root.querySelector('#sd-val');
+      const resCv = root.querySelector('#res-cv');
+      const resInterp = root.querySelector('#res-interp');
+
+      function calculate() {
+        const mean = parseFloat(meanInput.value);
+        const sd = parseFloat(sdInput.value);
+
+        if (isNaN(mean) || isNaN(sd) || mean === 0) {
+          resCv.textContent = '-';
+          resInterp.textContent = 'Mean cannot be zero';
+          return;
+        }
+
+        const cv = (Math.abs(sd) / Math.abs(mean)) * 100;
+        resCv.textContent = `${cv.toFixed(2)}%`;
+
+        if (cv < 10) resInterp.textContent = 'Low variability (High precision)';
+        else if (cv <= 30) resInterp.textContent = 'Moderate variability';
+        else resInterp.textContent = 'High variability (Wide dispersion)';
+      }
+
+      meanInput.addEventListener('input', calculate);
+      sdInput.addEventListener('input', calculate);
+      calculate();
+    })();
+  </script>
+</SiteLayout>

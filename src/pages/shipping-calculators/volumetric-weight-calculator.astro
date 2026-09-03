@@ -1,0 +1,263 @@
+---
+import SiteLayout from '../../layouts/SiteLayout.astro';
+import Icon from '../../components/Icon.astro';
+import { siteName, toAbsoluteUrl, withBasePath } from '../../utils/site';
+
+const pageTitle = `Volumetric Weight Calculator | Air Freight & Courier Divisors · ${siteName}`;
+const pageDesc = 'Calculate dimensional volumetric weight for express couriers (DHL, FedEx, UPS divisor 5000) and IATA air freight (divisor 6000) in kg and lbs.';
+const canonicalUrl = toAbsoluteUrl('/shipping-calculators/volumetric-weight-calculator/');
+
+const breadcrumbItems = [
+  { label: 'Home', href: toAbsoluteUrl('/') },
+  { label: 'Shipping Calculators', href: toAbsoluteUrl('/shipping-calculators/') },
+  { label: 'Volumetric Weight Calculator' },
+];
+
+const faqs = [
+  {
+    question: 'How is volumetric weight calculated for air freight and couriers?',
+    answer: 'For dimensions in centimeters: Volumetric Weight (kg) = (Length × Width × Height) ÷ Divisor. Express couriers (DHL, FedEx, UPS International) use divisor 5000 (1 CBM = 200 kg). Standard IATA Air Freight uses divisor 6000 (1 CBM = 167 kg).',
+  },
+  {
+    question: 'Why do shipping carriers charge by volumetric weight?',
+    answer: 'Air cargo holds are limited by physical volume as well as payload weight. Lightweight, bulky goods (like pillows or styrofoam) consume large space without adding weight, so airlines charge for the equivalent volumetric weight.',
+  },
+];
+
+const schemaGraph = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebApplication',
+    name: 'Volumetric Weight Calculator',
+    url: canonicalUrl,
+    description: pageDesc,
+    applicationCategory: 'BusinessApplication',
+    operatingSystem: 'All',
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: breadcrumbItems.map((item, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      name: item.label,
+      item: item.href,
+    })),
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faqs.map((f) => ({
+      '@type': 'Question',
+      name: f.question,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: f.answer,
+      },
+    })),
+  },
+];
+---
+
+<SiteLayout title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(schemaGraph)} />
+
+  <article class="space-y-10 py-2">
+    <nav aria-label="Breadcrumb">
+      <ol class="flex flex-wrap items-center gap-2 text-xs text-[color:var(--muted)]">
+        {breadcrumbItems.map((item, index) => (
+          <li class="flex items-center gap-2">
+            {index > 0 && <span aria-hidden="true">/</span>}
+            {item.href ? (
+              <a class="transition hover:text-[color:var(--fg)]" href={item.href}>
+                {item.label}
+              </a>
+            ) : (
+              <span aria-current="page" class="font-semibold text-[color:var(--fg)]">
+                {item.label}
+              </span>
+            )}
+          </li>
+        ))}
+      </ol>
+    </nav>
+
+    <header class="space-y-3">
+      <div class="inline-flex items-center gap-2 rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3.5 py-1 text-xs font-semibold text-[color:var(--fg)]">
+        <span>Air Cargo &amp; Courier Logistics</span>
+      </div>
+      <h1 class="text-3xl font-extrabold tracking-tight text-[color:var(--fg)] sm:text-4xl">
+        Volumetric Weight Calculator
+      </h1>
+      <p class="max-w-3xl text-sm leading-relaxed text-[color:var(--muted)] sm:text-base">
+        Calculate dimensional weight for air cargo and express courier shipments. Supports standard 5000 and 6000 divisors in metric (cm/kg) and imperial (in/lbs) units.
+      </p>
+    </header>
+
+    <div
+      class="rounded-[2.5rem] border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-6 shadow-[var(--shadow)] sm:p-10"
+      data-vol-app
+    >
+      <div class="grid gap-8 lg:grid-cols-[1.15fr_0.85fr]">
+        <form class="space-y-5" onsubmit="return false;">
+          <div class="flex items-center justify-between">
+            <h2 class="text-lg font-bold text-[color:var(--fg)]">Package Dimensions</h2>
+            <button type="button" class="cursor-pointer text-xs font-semibold text-[color:var(--muted)] hover:text-[color:var(--fg)]" data-reset-btn>
+              ↺ Reset
+            </button>
+          </div>
+
+          <div class="space-y-1.5">
+            <label for="carrier-mode" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Carrier / Freight Standard</label>
+            <select id="carrier-mode" class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-sm font-semibold text-[color:var(--fg)] outline-none" data-carrier-mode>
+              <option value="5000" selected>Express Courier - DHL / FedEx / UPS (Divisor 5000)</option>
+              <option value="6000">IATA Air Freight Standard (Divisor 6000)</option>
+              <option value="custom">Custom Divisor</option>
+            </select>
+          </div>
+
+          <div class="grid grid-cols-3 gap-3">
+            <div>
+              <label for="vol-l" class="block text-xs font-medium text-[color:var(--muted)]">Length (cm)</label>
+              <input id="vol-l" type="number" min="0" step="any" value="60" class="mt-1 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-vol-l />
+            </div>
+            <div>
+              <label for="vol-w" class="block text-xs font-medium text-[color:var(--muted)]">Width (cm)</label>
+              <input id="vol-w" type="number" min="0" step="any" value="40" class="mt-1 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-vol-w />
+            </div>
+            <div>
+              <label for="vol-h" class="block text-xs font-medium text-[color:var(--muted)]">Height (cm)</label>
+              <input id="vol-h" type="number" min="0" step="any" value="40" class="mt-1 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-vol-h />
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-3 pt-1">
+            <div>
+              <label for="vol-qty" class="block text-xs font-medium text-[color:var(--muted)]">Package Quantity</label>
+              <input id="vol-qty" type="number" min="1" step="1" value="5" class="mt-1 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-vol-qty />
+            </div>
+            <div>
+              <label for="vol-act-wt" class="block text-xs font-medium text-[color:var(--muted)]">Actual Weight (kg/unit opt)</label>
+              <input id="vol-act-wt" type="number" min="0" step="0.1" value="12" class="mt-1 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-vol-act />
+            </div>
+          </div>
+        </form>
+
+        <div class="flex flex-col justify-between space-y-6 rounded-3xl border border-[color:var(--border)] bg-[color:var(--bg)] p-6 sm:p-8">
+          <div class="space-y-5">
+            <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Chargeable Estimate</span>
+
+            <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 text-center">
+              <p class="text-xs font-semibold text-[color:var(--muted)]">Total Volumetric Weight</p>
+              <p class="mt-1 text-5xl font-black tracking-tight text-[color:var(--fg)]" data-res-volkg>
+                96.00 kg
+              </p>
+              <p class="mt-2 text-xs font-medium text-[color:var(--muted)]" data-res-vollbs>
+                211.64 lbs (19.20 kg / package)
+              </p>
+            </div>
+
+            <div class="space-y-2 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-xs">
+              <div class="flex justify-between">
+                <span class="text-[color:var(--muted)]">Total Actual Weight:</span>
+                <span class="font-bold text-[color:var(--fg)]" data-disp-act>60.00 kg (132.28 lbs)</span>
+              </div>
+              <div class="flex justify-between border-t border-[color:var(--border)] pt-2">
+                <span class="font-bold text-[color:var(--fg)]">Chargeable Weight Basis:</span>
+                <span class="font-bold text-red-500 font-mono" data-disp-basis>Volumetric (96.00 kg)</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FAQs -->
+    <section class="space-y-4">
+      <h2 class="text-xl font-bold text-[color:var(--fg)]">Frequently Asked Questions</h2>
+      <div class="space-y-3">
+        {faqs.map((faq) => (
+          <details class="group rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
+            <summary class="cursor-pointer list-none font-semibold text-sm sm:text-base text-[color:var(--fg)] flex items-center justify-between gap-4">
+              <span>{faq.question}</span>
+              <span class="text-xs text-[color:var(--muted)] group-open:rotate-180 transition-transform">▼</span>
+            </summary>
+            <p class="mt-3 text-xs sm:text-sm leading-relaxed text-[color:var(--muted)]">
+              {faq.answer}
+            </p>
+          </details>
+        ))}
+      </div>
+    </section>
+  </article>
+
+  <script is:inline>
+    (function () {
+      const root = document.querySelector('[data-vol-app]');
+      if (!root) return;
+
+      const inDiv = root.querySelector('[data-carrier-mode]');
+      const inL = root.querySelector('[data-vol-l]');
+      const inW = root.querySelector('[data-vol-w]');
+      const inH = root.querySelector('[data-vol-h]');
+      const inQty = root.querySelector('[data-vol-qty]');
+      const inAct = root.querySelector('[data-vol-act]');
+      const outKg = root.querySelector('[data-res-volkg]');
+      const outLbs = root.querySelector('[data-res-vollbs]');
+      const outAct = root.querySelector('[data-disp-act]');
+      const outBasis = root.querySelector('[data-disp-basis]');
+      const resetBtn = root.querySelector('[data-reset-btn]');
+
+      function update() {
+        const div = parseFloat(inDiv.value || '5000');
+        const l = Math.max(0, parseFloat(inL.value || '0'));
+        const w = Math.max(0, parseFloat(inW.value || '0'));
+        const h = Math.max(0, parseFloat(inH.value || '0'));
+        const qty = Math.max(1, parseInt(inQty.value || '1', 10));
+        const actPer = parseFloat(inAct.value || '0');
+
+        const unitVolKg = (l * w * h) / div;
+        const totalVolKg = unitVolKg * qty;
+        const totalVolLbs = totalVolKg * 2.20462;
+
+        const totalActKg = actPer * qty;
+        const totalActLbs = totalActKg * 2.20462;
+
+        if (outKg) outKg.textContent = `${totalVolKg.toFixed(2)} kg`;
+        if (outLbs) outLbs.textContent = `${totalVolLbs.toFixed(2)} lbs (${unitVolKg.toFixed(2)} kg / package)`;
+        if (outAct) outAct.textContent = `${totalActKg.toFixed(2)} kg (${totalActLbs.toFixed(2)} lbs)`;
+
+        if (outBasis) {
+          if (totalVolKg >= totalActKg) {
+            outBasis.textContent = `Volumetric Weight (${totalVolKg.toFixed(2)} kg)`;
+            outBasis.className = 'font-bold text-red-500 font-mono';
+          } else {
+            outBasis.textContent = `Actual Gross Weight (${totalActKg.toFixed(2)} kg)`;
+            outBasis.className = 'font-bold text-green-600 font-mono';
+          }
+        }
+      }
+
+      inDiv.addEventListener('change', update);
+      inL.addEventListener('input', update);
+      inW.addEventListener('input', update);
+      inH.addEventListener('input', update);
+      inQty.addEventListener('input', update);
+      inAct.addEventListener('input', update);
+
+      if (resetBtn) {
+        resetBtn.addEventListener('click', () => {
+          inDiv.value = '5000';
+          inL.value = '60';
+          inW.value = '40';
+          inH.value = '40';
+          inQty.value = '5';
+          inAct.value = '12';
+          update();
+        });
+      }
+
+      update();
+    })();
+  </script>
+</SiteLayout>

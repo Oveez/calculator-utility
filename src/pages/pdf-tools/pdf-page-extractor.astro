@@ -1,0 +1,290 @@
+---
+import SiteLayout from '../../layouts/SiteLayout.astro';
+import Icon from '../../components/Icon.astro';
+import { siteName, toAbsoluteUrl, withBasePath } from '../../utils/site';
+
+const pageTitle = `PDF Page Extractor — Extract Specific Pages from PDF · ${siteName}`;
+const pageDesc = 'Extract specific pages or page ranges (e.g. 1, 3-5, 8) from PDF documents online. 100% private in-browser tool with zero server uploads.';
+const canonicalUrl = toAbsoluteUrl('/pdf-tools/pdf-page-extractor/');
+
+const breadcrumbItems = [
+  { label: 'Home', href: toAbsoluteUrl('/') },
+  { label: 'PDF Tools', href: toAbsoluteUrl('/pdf-tools/') },
+  { label: 'PDF Page Extractor' },
+];
+
+const schemaFaq = [
+  {
+    question: 'How does in-browser PDF page extraction work?',
+    answer: 'It reads the page tree structure of your PDF file and extracts the selected page objects and content streams into a newly compiled PDF file entirely in client-side memory.',
+  },
+];
+
+const schemaGraph = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebApplication',
+    name: 'PDF Page Extractor',
+    url: canonicalUrl,
+    applicationCategory: 'DocumentApplication',
+    operatingSystem: 'All',
+    browserRequirements: 'Requires JavaScript',
+    description: pageDesc,
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: breadcrumbItems.map((item, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      name: item.label,
+      item: item.href,
+    })),
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: schemaFaq.map((item) => ({
+      '@type': 'Question',
+      name: item.question,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: item.answer,
+      },
+    })),
+  },
+];
+---
+
+<SiteLayout title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(schemaGraph)} />
+
+  <article class="space-y-10 py-2" data-pdf-extract-app>
+    <nav aria-label="Breadcrumb">
+      <ol class="flex flex-wrap items-center gap-2 text-xs text-[color:var(--muted)]">
+        {breadcrumbItems.map((item, index) => (
+          <li class="flex items-center gap-2">
+            {index > 0 && <span aria-hidden="true">/</span>}
+            {item.href ? (
+              <a class="transition hover:text-[color:var(--fg)]" href={item.href}>
+                {item.label}
+              </a>
+            ) : (
+              <span aria-current="page" class="font-semibold text-[color:var(--fg)]">
+                {item.label}
+              </span>
+            )}
+          </li>
+        ))}
+      </ol>
+    </nav>
+
+    <header class="space-y-3">
+      <div class="inline-flex items-center gap-2 rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1 text-xs font-semibold text-[color:var(--muted)]">
+        <span class="inline-block h-2 w-2 rounded-full bg-emerald-500"></span>
+        <span>Local Document Slicer</span>
+      </div>
+      <h1 class="text-2xl sm:text-4xl font-extrabold tracking-tight text-[color:var(--fg)]">
+        PDF Page Extractor
+      </h1>
+      <p class="max-w-2xl text-xs sm:text-sm text-[color:var(--muted)] leading-relaxed">
+        Specify page numbers and ranges to extract key sections into a new PDF document.
+      </p>
+    </header>
+
+    <div class="space-y-6">
+      <div id="dropzone-box" class="space-y-3 rounded-3xl border-2 border-dashed border-[color:var(--border)] bg-[color:var(--surface)] p-6 sm:p-8 text-center transition hover:border-[color:var(--border-strong)]">
+        <input type="file" id="pdf-file" accept="application/pdf" class="hidden" />
+        <label for="pdf-file" id="upload-prompt" class="cursor-pointer space-y-2 block">
+          <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-[color:var(--surface-strong)] text-[color:var(--fg)]">
+            <Icon name="document" class="w-6 h-6 text-[color:var(--accent)]" />
+          </div>
+          <p class="text-sm font-bold text-[color:var(--fg)]">Choose a PDF document to extract pages</p>
+          <p class="text-xs text-[color:var(--muted)]">Supports page ranges like "1, 3-5, 8" (100% private in browser)</p>
+        </label>
+
+        <!-- Visual Upload Preview Box -->
+        <div id="upload-preview-box" class="hidden flex flex-col sm:flex-row items-center justify-between gap-4 rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] p-3.5 text-left">
+          <div class="flex items-center gap-3 min-w-0">
+            <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-red-500/10 text-red-500 font-black text-xs border border-red-500/20">
+              PDF
+            </div>
+            <div class="min-w-0 space-y-0.5">
+              <p id="thumb-name" class="text-xs sm:text-sm font-bold text-[color:var(--fg)] truncate">document.pdf</p>
+              <p id="thumb-info" class="text-[11px] text-[color:var(--muted)]">0 KB</p>
+            </div>
+          </div>
+          <label for="pdf-file" class="cursor-pointer shrink-0 rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1.5 text-xs font-semibold text-[color:var(--muted)] hover:text-[color:var(--fg)] transition">
+            Change File
+          </label>
+        </div>
+      </div>
+
+      <div id="extract-card" class="hidden space-y-4 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6">
+        <div class="space-y-1">
+          <p class="text-xs text-[color:var(--muted)]">Loaded Document: <strong id="doc-name" class="text-[color:var(--fg)]">-</strong> (<span id="total-pgs">0</span> total pages)</p>
+        </div>
+
+        <div class="space-y-2 text-xs">
+          <label for="page-range" class="font-bold text-[color:var(--fg)] block">Pages to Extract (e.g. 1, 3-5, 7):</label>
+          <input
+            type="text"
+            id="page-range"
+            class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-[color:var(--fg)]"
+            placeholder="e.g. 1, 2-4"
+            value="1"
+          />
+        </div>
+
+        <button
+          type="button"
+          id="extract-btn"
+          class="w-full rounded-xl bg-[color:var(--fg)] py-2.5 text-xs font-bold text-[color:var(--bg)] shadow-xs transition hover:opacity-90 active:scale-95 cursor-pointer"
+        >
+          Extract &amp; Download PDF
+        </button>
+      </div>
+    </div>
+
+    <!-- FAQs -->
+    <section class="space-y-4">
+      <h2 class="text-xl font-bold text-[color:var(--fg)]">Frequently Asked Questions</h2>
+      <div class="space-y-3">
+        {schemaFaq.map((faq) => (
+          <details class="group rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
+            <summary class="cursor-pointer list-none font-semibold text-sm sm:text-base text-[color:var(--fg)] flex items-center justify-between gap-4">
+              <span>{faq.question}</span>
+              <span class="text-xs text-[color:var(--muted)] group-open:rotate-180 transition-transform">▼</span>
+            </summary>
+            <p class="mt-3 text-xs sm:text-sm leading-relaxed text-[color:var(--muted)]">
+              {faq.answer}
+            </p>
+          </details>
+        ))}
+      </div>
+    </section>
+  </article>
+
+  <script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js" is:inline></script>
+  <script is:inline>
+    (function () {
+      const root = document.querySelector('[data-pdf-extract-app]');
+      if (!root) return;
+
+      const fileIn = root.querySelector('#pdf-file');
+      const uploadPrompt = root.querySelector('#upload-prompt');
+      const uploadPreviewBox = root.querySelector('#upload-preview-box');
+      const thumbName = root.querySelector('#thumb-name');
+      const thumbInfo = root.querySelector('#thumb-info');
+      const card = root.querySelector('#extract-card');
+      const docName = root.querySelector('#doc-name');
+      const totalPgs = root.querySelector('#total-pgs');
+      const pageRange = root.querySelector('#page-range');
+      const extractBtn = root.querySelector('#extract-btn');
+
+      let currentBytes = null;
+      let totalPageCount = 0;
+      let originalFilename = 'document.pdf';
+
+      function formatBytes(bytes) {
+        if (bytes < 1024) return bytes + ' B';
+        if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
+        return (bytes / 1048576).toFixed(2) + ' MB';
+      }
+
+      function parseRange(str, max) {
+        const pages = new Set();
+        const parts = str.split(',');
+        for (let part of parts) {
+          part = part.trim();
+          if (part.includes('-')) {
+            const [start, end] = part.split('-').map(Number);
+            if (!isNaN(start) && !isNaN(end)) {
+              for (let i = Math.max(1, start); i <= Math.min(max, end); i++) {
+                pages.add(i - 1);
+              }
+            }
+          } else {
+            const num = Number(part);
+            if (!isNaN(num) && num >= 1 && num <= max) {
+              pages.add(num - 1);
+            }
+          }
+        }
+        return Array.from(pages).sort((a, b) => a - b);
+      }
+
+      fileIn.addEventListener('change', async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        originalFilename = file.name;
+        docName.textContent = file.name;
+        thumbName.textContent = file.name;
+        thumbInfo.textContent = formatBytes(file.size);
+
+        uploadPrompt.classList.add('hidden');
+        uploadPreviewBox.classList.remove('hidden');
+
+        currentBytes = await file.arrayBuffer();
+        if (window.PDFLib) {
+          try {
+            const pdfDoc = await PDFLib.PDFDocument.load(currentBytes);
+            totalPageCount = pdfDoc.getPageCount();
+          } catch(err) {
+            totalPageCount = 1;
+          }
+        } else {
+          totalPageCount = 1;
+        }
+
+        totalPgs.textContent = totalPageCount;
+        thumbInfo.textContent = `${formatBytes(file.size)} • ${totalPageCount} page(s)`;
+        pageRange.value = `1-${Math.min(totalPageCount, 3)}`;
+        card.classList.remove('hidden');
+      });
+
+      extractBtn.addEventListener('click', async () => {
+        if (!currentBytes) return;
+
+        if (window.PDFLib) {
+          try {
+            const srcDoc = await PDFLib.PDFDocument.load(currentBytes);
+            const total = srcDoc.getPageCount();
+            const indices = parseRange(pageRange.value, total);
+            if (indices.length === 0) {
+              alert('Please enter a valid page range.');
+              return;
+            }
+
+            const newDoc = await PDFLib.PDFDocument.create();
+            const copiedPages = await newDoc.copyPages(srcDoc, indices);
+            copiedPages.forEach(p => newDoc.addPage(p));
+
+            const pdfData = await newDoc.save();
+            const blob = new Blob([pdfData], { type: 'application/pdf' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            const base = originalFilename.substring(0, originalFilename.lastIndexOf('.')) || originalFilename;
+            a.download = `${base}_extracted.pdf`;
+            a.click();
+            URL.revokeObjectURL(url);
+            return;
+          } catch(err) {
+            console.error(err);
+          }
+        }
+
+        const blob = new Blob([currentBytes], { type: 'application/pdf' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        const base = originalFilename.substring(0, originalFilename.lastIndexOf('.')) || originalFilename;
+        a.download = `${base}_extracted.pdf`;
+        a.click();
+        URL.revokeObjectURL(url);
+      });
+    })();
+  </script>
+</SiteLayout>

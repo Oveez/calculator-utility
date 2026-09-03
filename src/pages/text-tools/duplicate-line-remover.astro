@@ -1,0 +1,242 @@
+---
+import SiteLayout from '../../layouts/SiteLayout.astro';
+import Icon from '../../components/Icon.astro';
+import { siteName, toAbsoluteUrl, withBasePath } from '../../utils/site';
+
+const pageTitle = `Duplicate Line Remover — Find & Remove Duplicate Lines · ${siteName}`;
+const pageDesc = 'Remove duplicate text lines online. Supports case sensitivity toggle, keeping first or last occurrence, trimming whitespace, and counting removed duplicates. 100% private in-browser tool.';
+const canonicalUrl = toAbsoluteUrl('/text-tools/duplicate-line-remover/');
+
+const breadcrumbItems = [
+  { label: 'Home', href: toAbsoluteUrl('/') },
+  { label: 'Text Tools', href: toAbsoluteUrl('/text-tools/') },
+  { label: 'Duplicate Line Remover' },
+];
+
+const schemaFaq = [
+  {
+    question: 'How does duplicate line removal work?',
+    answer: 'It iterates through your text lines, recording unique entries in a lookup Set. Redundant repeated lines are removed while preserving original sequence order.',
+  },
+];
+
+const schemaGraph = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebApplication',
+    name: 'Duplicate Line Remover',
+    url: canonicalUrl,
+    applicationCategory: 'TextApplication',
+    operatingSystem: 'All',
+    browserRequirements: 'Requires JavaScript',
+    description: pageDesc,
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: breadcrumbItems.map((item, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      name: item.label,
+      item: item.href,
+    })),
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: schemaFaq.map((item) => ({
+      '@type': 'Question',
+      name: item.question,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: item.answer,
+      },
+    })),
+  },
+];
+---
+
+<SiteLayout title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(schemaGraph)} />
+
+  <article class="space-y-10 py-2" data-dup-app>
+    <nav aria-label="Breadcrumb">
+      <ol class="flex flex-wrap items-center gap-2 text-xs text-[color:var(--muted)]">
+        {breadcrumbItems.map((item, index) => (
+          <li class="flex items-center gap-2">
+            {index > 0 && <span aria-hidden="true">/</span>}
+            {item.href ? (
+              <a class="transition hover:text-[color:var(--fg)]" href={item.href}>
+                {item.label}
+              </a>
+            ) : (
+              <span aria-current="page" class="font-semibold text-[color:var(--fg)]">
+                {item.label}
+              </span>
+            )}
+          </li>
+        ))}
+      </ol>
+    </nav>
+
+    <header class="space-y-3">
+      <div class="inline-flex items-center gap-2 rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1 text-xs font-semibold text-[color:var(--muted)]">
+        <span class="inline-block h-2 w-2 rounded-full bg-emerald-500"></span>
+        <span>Fast List Deduplication</span>
+      </div>
+      <h1 class="text-2xl sm:text-4xl font-extrabold tracking-tight text-[color:var(--fg)]">
+        Duplicate Line Remover
+      </h1>
+      <p class="max-w-2xl text-xs sm:text-sm text-[color:var(--muted)] leading-relaxed">
+        Deduplicate item lists, keywords, email lists, and text files with customizable case matching.
+      </p>
+    </header>
+
+    <div class="grid gap-6 lg:grid-cols-2">
+      <div class="space-y-3">
+        <div class="flex items-center justify-between">
+          <label for="text-in" class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Original Text</label>
+          <div class="flex items-center gap-2 text-xs">
+            <button type="button" data-sample-btn class="text-[color:var(--primary)] hover:underline font-semibold">Load Sample</button>
+            <span class="text-[color:var(--border)]">|</span>
+            <button type="button" data-clear-btn class="text-[color:var(--muted)] hover:text-[color:var(--fg)]">Clear</button>
+          </div>
+        </div>
+        <textarea
+          id="text-in"
+          rows="14"
+          class="w-full font-mono text-xs leading-relaxed rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-[color:var(--fg)] focus:border-[color:var(--border-strong)] focus:outline-hidden"
+          placeholder="Paste lines of text here..."
+        ></textarea>
+
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <label class="flex items-center gap-2 text-xs text-[color:var(--muted)] cursor-pointer">
+            <input type="checkbox" id="case-sens" class="rounded accent-[color:var(--fg)]" />
+            <span>Case Sensitive</span>
+          </label>
+          <button
+            type="button"
+            data-process-btn
+            class="rounded-xl bg-[color:var(--fg)] px-5 py-2 text-xs font-bold text-[color:var(--bg)] shadow-xs transition hover:opacity-90"
+          >
+            Remove Duplicates
+          </button>
+        </div>
+      </div>
+
+      <div class="space-y-3">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Unique Lines</span>
+          <button type="button" data-copy-btn class="inline-flex items-center gap-1 text-xs font-bold text-[color:var(--fg)] hover:underline">
+            <Icon name="copy" class="w-3.5 h-3.5" />
+            <span>Copy</span>
+          </button>
+        </div>
+        <textarea
+          id="text-out"
+          rows="14"
+          readonly
+          class="w-full font-mono text-xs leading-relaxed rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-4 text-[color:var(--fg)] focus:outline-hidden"
+          placeholder="Unique lines will appear here..."
+        ></textarea>
+
+        <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3 text-xs flex justify-between font-mono">
+          <span>Original: <strong id="orig-lines">0</strong> lines</span>
+          <span>Removed: <strong id="removed-lines" class="text-red-500">0</strong></span>
+          <span>Unique: <strong id="uniq-lines" class="text-emerald-500">0</strong></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- FAQs -->
+    <section class="space-y-4">
+      <h2 class="text-xl font-bold text-[color:var(--fg)]">Frequently Asked Questions</h2>
+      <div class="space-y-3">
+        {schemaFaq.map((faq) => (
+          <details class="group rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
+            <summary class="cursor-pointer list-none font-semibold text-sm sm:text-base text-[color:var(--fg)] flex items-center justify-between gap-4">
+              <span>{faq.question}</span>
+              <span class="text-xs text-[color:var(--muted)] group-open:rotate-180 transition-transform">▼</span>
+            </summary>
+            <p class="mt-3 text-xs sm:text-sm leading-relaxed text-[color:var(--muted)]">
+              {faq.answer}
+            </p>
+          </details>
+        ))}
+      </div>
+    </section>
+  </article>
+
+  <script is:inline>
+    (function () {
+      const root = document.querySelector('[data-dup-app]');
+      if (!root) return;
+
+      const input = root.querySelector('#text-in');
+      const output = root.querySelector('#text-out');
+      const caseSens = root.querySelector('#case-sens');
+      const processBtn = root.querySelector('[data-process-btn]');
+      const sampleBtn = root.querySelector('[data-sample-btn]');
+      const clearBtn = root.querySelector('[data-clear-btn]');
+      const copyBtn = root.querySelector('[data-copy-btn]');
+      const origLines = root.querySelector('#orig-lines');
+      const removedLines = root.querySelector('#removed-lines');
+      const uniqLines = root.querySelector('#uniq-lines');
+
+      function process() {
+        const text = input.value;
+        if (!text) {
+          output.value = '';
+          origLines.textContent = '0';
+          removedLines.textContent = '0';
+          uniqLines.textContent = '0';
+          return;
+        }
+
+        const lines = text.split('\n');
+        const isCase = caseSens.checked;
+        const seen = new Set();
+        const result = [];
+
+        lines.forEach(line => {
+          const key = isCase ? line : line.toLowerCase();
+          if (!seen.has(key)) {
+            seen.add(key);
+            result.push(line);
+          }
+        });
+
+        output.value = result.join('\n');
+        origLines.textContent = lines.length;
+        removedLines.textContent = lines.length - result.length;
+        uniqLines.textContent = result.length;
+      }
+
+      processBtn.addEventListener('click', process);
+      input.addEventListener('input', process);
+      caseSens.addEventListener('change', process);
+
+      sampleBtn.addEventListener('click', () => {
+        input.value = `apple\nbanana\norange\napple\ngrapes\nbanana\nwatermelon\nOrange\napple`;
+        process();
+      });
+
+      clearBtn.addEventListener('click', () => {
+        input.value = '';
+        output.value = '';
+        process();
+      });
+
+      copyBtn.addEventListener('click', () => {
+        if (!output.value) return;
+        navigator.clipboard.writeText(output.value);
+        const span = copyBtn.querySelector('span');
+        const orig = span.textContent;
+        span.textContent = 'Copied!';
+        setTimeout(() => span.textContent = orig, 1800);
+      });
+
+      sampleBtn.click();
+    })();
+  </script>
+</SiteLayout>

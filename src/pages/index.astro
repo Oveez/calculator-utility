@@ -40,25 +40,28 @@ const categoryTabs = [{ name: 'All', count: calculators.length }, ...categories]
             Smart, static calculators for everyday life.
           </h1>
           <p class="max-w-xl text-sm leading-relaxed text-[color:var(--muted)] sm:text-base">
-            Over 30+ precision utility tools for finance, tax computation, currency exchange, GPA calculation, health, conversions, and career builders. Instant calculations with zero server latency.
+            Over 186 precision utility tools across 16 specialized hubs for finance, developer tools, tax engines, PDF utilities, image processors, academic research, and career builders. Instant calculations with zero server latency.
           </p>
         </div>
 
         <!-- Hero Search Bar -->
         <form class="max-w-xl" role="search" aria-label="Search calculators" onsubmit="return false;">
-          <label class="relative block">
-            <span class="sr-only">Search calculators</span>
+          <label class="relative block cursor-pointer" data-trigger-search>
+            <span class="sr-only">Search all tools and calculators</span>
             <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4 text-[color:var(--muted)]">
-              <Icon name="search" class="w-4 h-4" />
+              <Icon name="search" class="w-4 h-4 text-[color:var(--accent)]" />
             </div>
             <input
-              class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] py-3.5 pl-11 pr-16 text-sm sm:text-base text-[color:var(--fg)] outline-none transition placeholder:text-[color:var(--muted)] focus:border-[color:var(--border-strong)] focus:ring-1 focus:ring-[color:var(--accent)]"
+              class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] py-3.5 pl-11 pr-24 text-sm sm:text-base text-[color:var(--fg)] outline-none transition placeholder:text-[color:var(--muted)] hover:border-[color:var(--border-strong)] focus:border-[color:var(--border-strong)] focus:ring-1 focus:ring-[color:var(--accent)] cursor-pointer"
               type="search"
-              placeholder="Search currency, mortgage, GPA, BMI, percentage, time..."
+              placeholder="Search 186+ tools (JSON, PDF, GPA, Tax, BMI)..."
               aria-label="Search calculators"
               data-calculator-search
+              data-trigger-search
+              readonly
             />
-            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-4">
+            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-4 gap-1.5">
+              <span class="hidden sm:inline text-[11px] font-semibold text-[color:var(--muted)]">Quick Search</span>
               <kbd class="rounded-lg border border-[color:var(--border)] bg-[color:var(--surface)] px-2 py-0.5 text-xs font-mono text-[color:var(--muted)]">
                 /
               </kbd>
@@ -68,38 +71,38 @@ const categoryTabs = [{ name: 'All', count: calculators.length }, ...categories]
 
         <!-- Category Quick Pills -->
         <div class="flex flex-wrap gap-2 text-xs font-medium">
+          <a href={withBasePath('/developer-tools/')} class="inline-flex items-center gap-1.5 cursor-pointer rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3.5 py-1.5 text-[color:var(--fg)] font-semibold shadow-xs transition hover:border-[color:var(--border-strong)] hover:bg-[color:var(--surface-strong)]">
+            <Icon name="code" class="w-3.5 h-3.5" />
+            <span>Dev Tools (17)</span>
+          </a>
+          <a href={withBasePath('/text-tools/')} class="inline-flex items-center gap-1.5 cursor-pointer rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3.5 py-1.5 text-[color:var(--fg)] font-semibold shadow-xs transition hover:border-[color:var(--border-strong)] hover:bg-[color:var(--surface-strong)]">
+            <Icon name="text" class="w-3.5 h-3.5" />
+            <span>Text Tools (11)</span>
+          </a>
+          <a href={withBasePath('/image-tools/')} class="inline-flex items-center gap-1.5 cursor-pointer rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3.5 py-1.5 text-[color:var(--fg)] font-semibold shadow-xs transition hover:border-[color:var(--border-strong)] hover:bg-[color:var(--surface-strong)]">
+            <Icon name="image" class="w-3.5 h-3.5" />
+            <span>Image Tools (10)</span>
+          </a>
+          <a href={withBasePath('/pdf-tools/')} class="inline-flex items-center gap-1.5 cursor-pointer rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3.5 py-1.5 text-[color:var(--fg)] font-semibold shadow-xs transition hover:border-[color:var(--border-strong)] hover:bg-[color:var(--surface-strong)]">
+            <Icon name="document" class="w-3.5 h-3.5" />
+            <span>PDF Tools (10)</span>
+          </a>
+          <a href={withBasePath('/color-tools/')} class="inline-flex items-center gap-1.5 cursor-pointer rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3.5 py-1.5 text-[color:var(--fg)] font-semibold shadow-xs transition hover:border-[color:var(--border-strong)] hover:bg-[color:var(--surface-strong)]">
+            <Icon name="color" class="w-3.5 h-3.5" />
+            <span>Color Tools (8)</span>
+          </a>
+          <a href={withBasePath('/generators/')} class="inline-flex items-center gap-1.5 cursor-pointer rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3.5 py-1.5 text-[color:var(--fg)] font-semibold shadow-xs transition hover:border-[color:var(--border-strong)] hover:bg-[color:var(--surface-strong)]">
+            <Icon name="dice" class="w-3.5 h-3.5" />
+            <span>Generators (8)</span>
+          </a>
+          <a href={withBasePath('/academic-tools/')} class="inline-flex items-center gap-1.5 cursor-pointer rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3.5 py-1.5 text-[color:var(--fg)] font-semibold shadow-xs transition hover:border-[color:var(--border-strong)] hover:bg-[color:var(--surface-strong)]">
+            <Icon name="education" class="w-3.5 h-3.5" />
+            <span>Academic (7)</span>
+          </a>
           <a href={withBasePath('/career-tools/cv-maker/')} class="inline-flex items-center gap-1.5 cursor-pointer rounded-full border border-[color:var(--fg)] bg-[color:var(--fg)] px-3.5 py-1.5 text-[color:var(--bg)] font-semibold shadow-xs transition hover:opacity-90">
             <Icon name="career" class="w-3.5 h-3.5" />
             <span>CV Maker</span>
           </a>
-          <button type="button" data-hero-category="Finance" class="inline-flex items-center gap-1.5 cursor-pointer rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3.5 py-1.5 text-[color:var(--muted)] shadow-xs transition hover:border-[color:var(--border-strong)] hover:text-[color:var(--fg)]">
-            <Icon name="finance" class="w-3.5 h-3.5" />
-            <span>Finance</span>
-          </button>
-          <button type="button" data-hero-category="Converters" class="inline-flex items-center gap-1.5 cursor-pointer rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3.5 py-1.5 text-[color:var(--muted)] shadow-xs transition hover:border-[color:var(--border-strong)] hover:text-[color:var(--fg)]">
-            <Icon name="converter" class="w-3.5 h-3.5" />
-            <span>Converters</span>
-          </button>
-          <button type="button" data-hero-category="Math" class="inline-flex items-center gap-1.5 cursor-pointer rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3.5 py-1.5 text-[color:var(--muted)] shadow-xs transition hover:border-[color:var(--border-strong)] hover:text-[color:var(--fg)]">
-            <Icon name="math" class="w-3.5 h-3.5" />
-            <span>Math</span>
-          </button>
-          <button type="button" data-hero-category="Education" class="inline-flex items-center gap-1.5 cursor-pointer rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3.5 py-1.5 text-[color:var(--muted)] shadow-xs transition hover:border-[color:var(--border-strong)] hover:text-[color:var(--fg)]">
-            <Icon name="education" class="w-3.5 h-3.5" />
-            <span>Education</span>
-          </button>
-          <button type="button" data-hero-category="Health" class="inline-flex items-center gap-1.5 cursor-pointer rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3.5 py-1.5 text-[color:var(--muted)] shadow-xs transition hover:border-[color:var(--border-strong)] hover:text-[color:var(--fg)]">
-            <Icon name="health" class="w-3.5 h-3.5" />
-            <span>Health</span>
-          </button>
-          <button type="button" data-hero-category="Date & Time" class="inline-flex items-center gap-1.5 cursor-pointer rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3.5 py-1.5 text-[color:var(--muted)] shadow-xs transition hover:border-[color:var(--border-strong)] hover:text-[color:var(--fg)]">
-            <Icon name="calendar" class="w-3.5 h-3.5" />
-            <span>Date &amp; Time</span>
-          </button>
-          <button type="button" data-hero-category="Text Tools" class="inline-flex items-center gap-1.5 cursor-pointer rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3.5 py-1.5 text-[color:var(--muted)] shadow-xs transition hover:border-[color:var(--border-strong)] hover:text-[color:var(--fg)]">
-            <Icon name="text" class="w-3.5 h-3.5" />
-            <span>Text Tools</span>
-          </button>
         </div>
       </div>
 
@@ -107,17 +110,17 @@ const categoryTabs = [{ name: 'All', count: calculators.length }, ...categories]
       <aside class="grid gap-4 rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] p-6">
         <div>
           <p class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Library Overview</p>
-          <p class="mt-1 text-2xl sm:text-3xl font-bold tracking-tight text-[color:var(--fg)]">{calculators.length + 5} Tools &amp; Engines</p>
-          <p class="text-xs text-[color:var(--muted)] mt-0.5">Free, privacy-focused, and offline-capable</p>
+          <p class="mt-1 text-2xl sm:text-3xl font-bold tracking-tight text-[color:var(--fg)]">186 Precision Utilities &amp; Calculators</p>
+          <p class="text-xs text-[color:var(--muted)] mt-0.5">Free, 100% private, and browser-computed</p>
         </div>
 
         <div class="grid grid-cols-2 gap-3 pt-1">
           <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3.5">
-            <p class="text-xs font-medium text-[color:var(--muted)]">Categories</p>
-            <p class="mt-1 text-xl sm:text-2xl font-bold text-[color:var(--fg)]">{categories.length + 1}</p>
+            <p class="text-xs font-medium text-[color:var(--muted)]">Tool Suites</p>
+            <p class="mt-1 text-xl sm:text-2xl font-bold text-[color:var(--fg)]">16 Hubs</p>
           </div>
           <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3.5">
-            <p class="text-xs font-medium text-[color:var(--muted)]">Execution</p>
+            <p class="text-xs font-medium text-[color:var(--muted)]">Zero Latency</p>
             <p class="mt-1 text-xl sm:text-2xl font-bold text-[color:var(--fg)]">100%</p>
             <p class="text-[10px] text-[color:var(--muted)]">Client-side</p>
           </div>
@@ -127,6 +130,75 @@ const categoryTabs = [{ name: 'All', count: calculators.length }, ...categories]
           Press <kbd class="rounded bg-[color:var(--surface-strong)] px-1.5 py-0.5 font-mono text-[color:var(--fg)] border border-[color:var(--border)]">/</kbd> anytime to search
         </div>
       </aside>
+    </div>
+  </section>
+
+  <!-- New Specialized Tool Suites Showcase -->
+  <section class="mt-12 space-y-5">
+    <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
+      <div>
+        <p class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Utility Directory</p>
+        <h2 class="mt-1 text-xl sm:text-2xl font-bold tracking-tight text-[color:var(--fg)]">Browser-Side Utility Hubs</h2>
+        <p class="text-xs sm:text-sm text-[color:var(--muted)]">Developer tools, data processors, image &amp; PDF slicers, and study generators running 100% in your browser.</p>
+      </div>
+    </div>
+
+    <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <a href={withBasePath('/developer-tools/')} class="group flex flex-col justify-between rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 transition hover:border-[color:var(--border-strong)] hover:bg-[color:var(--surface-strong)]">
+        <div class="space-y-2">
+          <div class="flex items-center justify-between">
+            <div class="flex h-9 w-9 items-center justify-center rounded-xl bg-[color:var(--surface-strong)] border border-[color:var(--border)] text-[color:var(--fg)]">
+              <Icon name="code" class="w-4 h-4" />
+            </div>
+            <span class="rounded-md bg-[color:var(--surface-strong)] border border-[color:var(--border)] px-2 py-0.5 text-[10px] font-bold text-[color:var(--muted)]">17 Tools</span>
+          </div>
+          <h3 class="font-bold text-sm text-[color:var(--fg)]">Developer Utilities</h3>
+          <p class="text-[11px] text-[color:var(--muted)] leading-relaxed">JSON formatter, JWT decoder, Regex tester, UUIDs &amp; Cron generator.</p>
+        </div>
+        <span class="mt-4 inline-flex items-center gap-1 text-[11px] font-bold text-[color:var(--fg)]">Open Suite →</span>
+      </a>
+
+      <a href={withBasePath('/data-tools/')} class="group flex flex-col justify-between rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 transition hover:border-[color:var(--border-strong)] hover:bg-[color:var(--surface-strong)]">
+        <div class="space-y-2">
+          <div class="flex items-center justify-between">
+            <div class="flex h-9 w-9 items-center justify-center rounded-xl bg-[color:var(--surface-strong)] border border-[color:var(--border)] text-[color:var(--fg)]">
+              <Icon name="converter" class="w-4 h-4" />
+            </div>
+            <span class="rounded-md bg-[color:var(--surface-strong)] border border-[color:var(--border)] px-2 py-0.5 text-[10px] font-bold text-[color:var(--muted)]">6 Tools</span>
+          </div>
+          <h3 class="font-bold text-sm text-[color:var(--fg)]">Data &amp; CSV Utilities</h3>
+          <p class="text-[11px] text-[color:var(--muted)] leading-relaxed">CSV to JSON, column extractor, deduplicator, sorter &amp; markdown tables.</p>
+        </div>
+        <span class="mt-4 inline-flex items-center gap-1 text-[11px] font-bold text-[color:var(--fg)]">Open Suite →</span>
+      </a>
+
+      <a href={withBasePath('/image-tools/')} class="group flex flex-col justify-between rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 transition hover:border-[color:var(--border-strong)] hover:bg-[color:var(--surface-strong)]">
+        <div class="space-y-2">
+          <div class="flex items-center justify-between">
+            <div class="flex h-9 w-9 items-center justify-center rounded-xl bg-[color:var(--surface-strong)] border border-[color:var(--border)] text-[color:var(--fg)]">
+              <Icon name="image" class="w-4 h-4" />
+            </div>
+            <span class="rounded-md bg-[color:var(--surface-strong)] border border-[color:var(--border)] px-2 py-0.5 text-[10px] font-bold text-[color:var(--muted)]">10 Tools</span>
+          </div>
+          <h3 class="font-bold text-sm text-[color:var(--fg)]">Image &amp; Privacy Tools</h3>
+          <p class="text-[11px] text-[color:var(--muted)] leading-relaxed">EXIF remover, DPI checker, color picker, compressor &amp; converter.</p>
+        </div>
+        <span class="mt-4 inline-flex items-center gap-1 text-[11px] font-bold text-[color:var(--fg)]">Open Suite →</span>
+      </a>
+
+      <a href={withBasePath('/pdf-tools/')} class="group flex flex-col justify-between rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 transition hover:border-[color:var(--border-strong)] hover:bg-[color:var(--surface-strong)]">
+        <div class="space-y-2">
+          <div class="flex items-center justify-between">
+            <div class="flex h-9 w-9 items-center justify-center rounded-xl bg-[color:var(--surface-strong)] border border-[color:var(--border)] text-[color:var(--fg)]">
+              <Icon name="document" class="w-4 h-4" />
+            </div>
+            <span class="rounded-md bg-[color:var(--surface-strong)] border border-[color:var(--border)] px-2 py-0.5 text-[10px] font-bold text-[color:var(--muted)]">10 Tools</span>
+          </div>
+          <h3 class="font-bold text-sm text-[color:var(--fg)]">PDF Document Utilities</h3>
+          <p class="text-[11px] text-[color:var(--muted)] leading-relaxed">Page counter, metadata remover, extractor, merger, images to PDF.</p>
+        </div>
+        <span class="mt-4 inline-flex items-center gap-1 text-[11px] font-bold text-[color:var(--fg)]">Open Suite →</span>
+      </a>
     </div>
   </section>
 

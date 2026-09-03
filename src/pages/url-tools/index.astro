@@ -1,0 +1,199 @@
+---
+import SiteLayout from '../../layouts/SiteLayout.astro';
+import Icon from '../../components/Icon.astro';
+import { siteName, toAbsoluteUrl, withBasePath } from '../../utils/site';
+
+const pageTitle = `URL & Web Tools | UTM Builder, Query Parsers & URL Cleaners · ${siteName}`;
+const pageDesc = 'Free client-side URL and query parameter tools. Build UTM campaign links, extract query parameters, parse and construct query strings, strip tracking tags, and encode HTML entities.';
+const canonicalUrl = toAbsoluteUrl('/url-tools/');
+
+const breadcrumbItems = [
+  { label: 'Home', href: toAbsoluteUrl('/') },
+  { label: 'URL Tools' },
+];
+
+const urlToolsList = [
+  {
+    slug: 'url-parameter-extractor',
+    title: 'URL Parameter Extractor',
+    badge: 'Popular',
+    metaDescription: 'Extract, decode, and table all URL query parameters and hash fragments from complex links.',
+    href: withBasePath('/url-tools/url-parameter-extractor/'),
+    icon: 'converter',
+  },
+  {
+    slug: 'query-string-parser',
+    title: 'Query String Parser',
+    badge: 'Debugging',
+    metaDescription: 'Parse raw query string fragments (?key=value) into structured JSON and key-value tables.',
+    href: withBasePath('/url-tools/query-string-parser/'),
+    icon: 'converter',
+  },
+  {
+    slug: 'query-string-builder',
+    title: 'Query String Builder',
+    badge: 'Builder',
+    metaDescription: 'Construct formatted, percent-encoded query strings from key-value inputs with live URL preview.',
+    href: withBasePath('/url-tools/query-string-builder/'),
+    icon: 'converter',
+  },
+  {
+    slug: 'utm-builder',
+    title: 'Google Analytics UTM Builder',
+    badge: 'Marketing',
+    metaDescription: 'Build clean marketing campaign URLs with Source, Medium, Campaign, Term, and Content parameters.',
+    href: withBasePath('/url-tools/utm-builder/'),
+    icon: 'converter',
+  },
+  {
+    slug: 'utm-parser',
+    title: 'UTM Parameter Parser',
+    badge: 'Marketing',
+    metaDescription: 'Inspect and extract campaign marketing tags from tracked URLs and ad links.',
+    href: withBasePath('/url-tools/utm-parser/'),
+    icon: 'converter',
+  },
+  {
+    slug: 'url-cleaner',
+    title: 'URL Tracking Parameter Cleaner',
+    badge: 'Privacy',
+    metaDescription: 'Strip spy tracking and ad parameters (fbclid, gclid, utm_*, msclkid) while keeping clean destination links.',
+    href: withBasePath('/url-tools/url-cleaner/'),
+    icon: 'converter',
+  },
+  {
+    slug: 'html-entity-encoder-decoder',
+    title: 'HTML Entity Encoder & Decoder',
+    badge: 'Web',
+    metaDescription: 'Encode special characters into HTML entities (&amp;, &lt;, &gt;) and decode entities back to text.',
+    href: withBasePath('/url-tools/html-entity-encoder-decoder/'),
+    icon: 'code',
+  },
+];
+
+const schemaFaq = [
+  {
+    question: 'Are my URLs or marketing links tracked on this site?',
+    answer: 'No. All URL parsing, parameter extraction, and link generation occur 100% locally in your browser memory. We never log or store your links.',
+  },
+];
+
+const schemaGraph = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: breadcrumbItems.map((item, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      name: item.label,
+      item: item.href,
+    })),
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: schemaFaq.map((item) => ({
+      '@type': 'Question',
+      name: item.question,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: item.answer,
+      },
+    })),
+  },
+];
+---
+
+<SiteLayout title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(schemaGraph)} />
+
+  <article class="space-y-10 py-2">
+    <nav aria-label="Breadcrumb">
+      <ol class="flex flex-wrap items-center gap-2 text-xs text-[color:var(--muted)]">
+        {breadcrumbItems.map((item, index) => (
+          <li class="flex items-center gap-2">
+            {index > 0 && <span aria-hidden="true">/</span>}
+            {item.href ? (
+              <a class="transition hover:text-[color:var(--fg)]" href={item.href}>
+                {item.label}
+              </a>
+            ) : (
+              <span aria-current="page" class="font-semibold text-[color:var(--fg)]">
+                {item.label}
+              </span>
+            )}
+          </li>
+        ))}
+      </ol>
+    </nav>
+
+    <header class="space-y-4 rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-6 sm:p-10">
+      <div class="inline-flex items-center gap-2 rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3.5 py-1 text-xs font-bold text-[color:var(--fg)]">
+        <span>Client-Side URL Suite</span>
+      </div>
+      <h1 class="text-3xl font-extrabold tracking-tight text-[color:var(--fg)] sm:text-4xl">
+        URL &amp; Query String Utilities
+      </h1>
+      <p class="max-w-3xl text-sm leading-relaxed text-[color:var(--muted)] sm:text-base">
+        Inspect, build, parse, clean, and format web URLs and marketing links with zero server tracking.
+      </p>
+    </header>
+
+    <section class="space-y-4">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Tool Directory</p>
+          <h2 class="text-xl font-bold tracking-tight text-[color:var(--fg)]">7 In-Browser Web Engines</h2>
+        </div>
+        <span class="rounded-lg bg-[color:var(--surface)] border border-[color:var(--border)] px-2.5 py-1 text-xs font-bold text-[color:var(--fg)]">
+          7 Tools
+        </span>
+      </div>
+
+      <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {urlToolsList.map((tool) => (
+          <a
+            href={tool.href}
+            class="group flex flex-col justify-between rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 transition hover:border-[color:var(--border-strong)] hover:bg-[color:var(--surface-strong)]"
+          >
+            <div class="space-y-2.5">
+              <div class="flex items-center justify-between">
+                <span class="rounded-md bg-[color:var(--surface-strong)] border border-[color:var(--border)] px-2 py-0.5 text-[10px] font-bold text-[color:var(--muted)]">
+                  {tool.badge}
+                </span>
+              </div>
+              <h3 class="text-base font-bold text-[color:var(--fg)] transition-colors">
+                {tool.title}
+              </h3>
+              <p class="text-xs leading-relaxed text-[color:var(--muted)]">
+                {tool.metaDescription}
+              </p>
+            </div>
+            <div class="mt-5 flex items-center gap-1.5 text-xs font-bold text-[color:var(--fg)]">
+              <span>Open Tool</span>
+              <Icon name="arrow-right" class="w-3.5 h-3.5" />
+            </div>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <!-- FAQs -->
+    <section class="space-y-4">
+      <h2 class="text-xl font-bold text-[color:var(--fg)]">Frequently Asked Questions</h2>
+      <div class="space-y-3">
+        {schemaFaq.map((faq) => (
+          <details class="group rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
+            <summary class="cursor-pointer list-none font-semibold text-sm sm:text-base text-[color:var(--fg)] flex items-center justify-between gap-4">
+              <span>{faq.question}</span>
+              <span class="text-xs text-[color:var(--muted)] group-open:rotate-180 transition-transform">▼</span>
+            </summary>
+            <p class="mt-3 text-xs sm:text-sm leading-relaxed text-[color:var(--muted)]">
+              {faq.answer}
+            </p>
+          </details>
+        ))}
+      </div>
+    </section>
+  </article>
+</SiteLayout>

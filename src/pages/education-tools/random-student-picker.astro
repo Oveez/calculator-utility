@@ -1,0 +1,251 @@
+---
+import SiteLayout from '../../layouts/SiteLayout.astro';
+import Icon from '../../components/Icon.astro';
+import { siteName, toAbsoluteUrl, withBasePath } from '../../utils/site';
+
+const pageTitle = `Random Student Picker — Fair Name Picker Wheel for Teachers · ${siteName}`;
+const pageDesc = 'Pick a random student name fairly with animated slot effect and optional remove-after-drawn feature. 100% private in-browser classroom tool.';
+const canonicalUrl = toAbsoluteUrl('/education-tools/random-student-picker/');
+
+const breadcrumbItems = [
+  { label: 'Home', href: toAbsoluteUrl('/') },
+  { label: 'Education Tools', href: toAbsoluteUrl('/education-tools/') },
+  { label: 'Random Student Picker' },
+];
+
+const schemaFaq = [
+  {
+    question: 'How does the random student picker ensure equal fairness?',
+    answer: 'It uses `crypto.getRandomValues` (CSPRNG) to index the student roster, ensuring every student has an equal mathematical probability of being selected on every spin.',
+  },
+];
+
+const schemaGraph = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebApplication',
+    name: 'Random Student Picker',
+    url: canonicalUrl,
+    applicationCategory: 'EducationalApplication',
+    operatingSystem: 'All',
+    browserRequirements: 'Requires JavaScript',
+    description: pageDesc,
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: breadcrumbItems.map((item, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      name: item.label,
+      item: item.href,
+    })),
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: schemaFaq.map((item) => ({
+      '@type': 'Question',
+      name: item.question,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: item.answer,
+      },
+    })),
+  },
+];
+---
+
+<SiteLayout title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(schemaGraph)} />
+
+  <article class="space-y-10 py-2" data-picker-app>
+    <nav aria-label="Breadcrumb">
+      <ol class="flex flex-wrap items-center gap-2 text-xs text-[color:var(--muted)]">
+        {breadcrumbItems.map((item, index) => (
+          <li class="flex items-center gap-2">
+            {index > 0 && <span aria-hidden="true">/</span>}
+            {item.href ? (
+              <a class="transition hover:text-[color:var(--fg)]" href={item.href}>
+                {item.label}
+              </a>
+            ) : (
+              <span aria-current="page" class="font-semibold text-[color:var(--fg)]">
+                {item.label}
+              </span>
+            )}
+          </li>
+        ))}
+      </ol>
+    </nav>
+
+    <header class="space-y-3">
+      <div class="inline-flex items-center gap-2 rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1 text-xs font-semibold text-[color:var(--muted)]">
+        <span class="inline-block h-2 w-2 rounded-full bg-emerald-500"></span>
+        <span>Classroom Cold Calling &amp; Volunteer Tool</span>
+      </div>
+      <h1 class="text-2xl sm:text-4xl font-extrabold tracking-tight text-[color:var(--fg)]">
+        Random Student Picker
+      </h1>
+      <p class="max-w-2xl text-xs sm:text-sm text-[color:var(--muted)] leading-relaxed">
+        Call on students fairly with animated random selection and remove-after-drawn options.
+      </p>
+    </header>
+
+    <div class="space-y-6">
+      <!-- Winner Hero Display -->
+      <div class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-8 sm:p-12 text-center space-y-4">
+        <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Selected Student</span>
+        <p id="winner-name" class="text-3xl sm:text-5xl font-black text-emerald-500 min-h-16 flex items-center justify-center">
+          Ready to Pick!
+        </p>
+
+        <button
+          type="button"
+          id="pick-btn"
+          class="inline-flex items-center justify-center gap-2 rounded-2xl bg-[color:var(--fg)] px-8 py-3.5 text-sm sm:text-base font-extrabold text-[color:var(--bg)] shadow-md transition hover:opacity-90 active:scale-95 cursor-pointer"
+        >
+          <Icon name="dice" class="w-5 h-5" />
+          <span>Pick Random Student</span>
+        </button>
+      </div>
+
+      <div class="grid gap-6 lg:grid-cols-2">
+        <!-- Roster Input -->
+        <div class="space-y-3">
+          <div class="flex items-center justify-between">
+            <label for="roster-in" class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Class Roster (One name per line)</label>
+            <button type="button" data-sample-btn class="text-xs font-semibold text-[color:var(--primary)] hover:underline">Load Sample Class</button>
+          </div>
+          <textarea
+            id="roster-in"
+            rows="10"
+            class="w-full font-mono text-xs leading-relaxed rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-[color:var(--fg)] focus:border-[color:var(--border-strong)] focus:outline-hidden"
+            placeholder="Paste student names here..."
+          >Emma Watson
+Liam Smith
+Olivia Johnson
+Noah Williams
+Ava Brown
+Oliver Jones
+Sophia Garcia
+Elijah Miller</textarea>
+          <div class="flex items-center gap-2 text-xs text-[color:var(--muted)]">
+            <label class="flex items-center gap-2 cursor-pointer">
+              <input type="checkbox" id="remove-drawn" class="rounded accent-[color:var(--fg)]" />
+              <span>Remove student name once picked</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- History of Picked Students -->
+        <div class="space-y-3">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Previously Called</span>
+            <button type="button" data-clear-hist class="text-xs text-[color:var(--muted)] hover:text-[color:var(--fg)]">Clear History</button>
+          </div>
+          <ul id="history-list" class="space-y-1.5 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-4 text-xs font-mono text-[color:var(--fg)] min-h-48 max-h-56 overflow-y-auto">
+            <li class="text-[color:var(--muted)] italic">No students picked yet.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- FAQs -->
+    <section class="space-y-4">
+      <h2 class="text-xl font-bold text-[color:var(--fg)]">Frequently Asked Questions</h2>
+      <div class="space-y-3">
+        {schemaFaq.map((faq) => (
+          <details class="group rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
+            <summary class="cursor-pointer list-none font-semibold text-sm sm:text-base text-[color:var(--fg)] flex items-center justify-between gap-4">
+              <span>{faq.question}</span>
+              <span class="text-xs text-[color:var(--muted)] group-open:rotate-180 transition-transform">▼</span>
+            </summary>
+            <p class="mt-3 text-xs sm:text-sm leading-relaxed text-[color:var(--muted)]">
+              {faq.answer}
+            </p>
+          </details>
+        ))}
+      </div>
+    </section>
+  </article>
+
+  <script is:inline>
+    (function () {
+      const root = document.querySelector('[data-picker-app]');
+      if (!root) return;
+
+      const rosterInput = root.querySelector('#roster-in');
+      const pickBtn = root.querySelector('#pick-btn');
+      const winnerName = root.querySelector('#winner-name');
+      const removeDrawn = root.querySelector('#remove-drawn');
+      const historyList = root.querySelector('#history-list');
+      const sampleBtn = root.querySelector('[data-sample-btn]');
+      const clearHistBtn = root.querySelector('[data-clear-hist]');
+
+      let history = [];
+
+      function getRoster() {
+        return rosterInput.value.split('\n').map(s => s.trim()).filter(s => s.length > 0);
+      }
+
+      function pick() {
+        const list = getRoster();
+        if (list.length === 0) {
+          winnerName.textContent = 'Please enter student names!';
+          return;
+        }
+
+        pickBtn.disabled = true;
+        let counter = 0;
+        const interval = setInterval(() => {
+          const rand = list[Math.floor(Math.random() * list.length)];
+          winnerName.textContent = rand;
+          counter++;
+          if (counter > 15) {
+            clearInterval(interval);
+            const randArr = new Uint32Array(1);
+            crypto.getRandomValues(randArr);
+            const chosenIdx = randArr[0] % list.length;
+            const chosen = list[chosenIdx];
+
+            winnerName.textContent = chosen;
+            history.unshift(chosen);
+            renderHistory();
+
+            if (removeDrawn.checked) {
+              list.splice(chosenIdx, 1);
+              rosterInput.value = list.join('\n');
+            }
+            pickBtn.disabled = false;
+          }
+        }, 60);
+      }
+
+      function renderHistory() {
+        if (history.length === 0) {
+          historyList.innerHTML = '<li class="text-[color:var(--muted)] italic">No students picked yet.</li>';
+          return;
+        }
+        historyList.innerHTML = history.map((name, i) => `
+          <li class="flex items-center justify-between border-b border-[color:var(--border)] pb-1">
+            <span>#${history.length - i}. ${name}</span>
+            <span class="text-[10px] text-[color:var(--muted)]">Picked</span>
+          </li>
+        `).join('');
+      }
+
+      pickBtn.addEventListener('click', pick);
+
+      sampleBtn.addEventListener('click', () => {
+        rosterInput.value = `Alexander Pierce\nCharlotte Evans\nDaniel Brooks\nHarper Scott\nJames Wilson\nIsabella Murphy\nLucas Taylor\nMia Anderson`;
+        winnerName.textContent = 'Ready to Pick!';
+      });
+
+      clearHistBtn.addEventListener('click', () => {
+        history = [];
+        renderHistory();
+      });
+    })();
+  </script>
+</SiteLayout>

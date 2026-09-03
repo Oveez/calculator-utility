@@ -1,0 +1,256 @@
+---
+import SiteLayout from '../../layouts/SiteLayout.astro';
+import Icon from '../../components/Icon.astro';
+import { siteName, toAbsoluteUrl, withBasePath } from '../../utils/site';
+
+const pageTitle = `Real Estate Commission Calculator | Realtor Splits & Seller Net Proceeds · ${siteName}`;
+const pageDesc = 'Calculate real estate agent commissions, listing vs buyer broker splits, and estimated net seller cash proceeds at closing.';
+const canonicalUrl = toAbsoluteUrl('/business-tools/real-estate-commission-calculator/');
+
+const breadcrumbItems = [
+  { label: 'Home', href: toAbsoluteUrl('/') },
+  { label: 'Business Tools', href: toAbsoluteUrl('/business-tools/') },
+  { label: 'Real Estate Commission Calculator' },
+];
+
+const faqs = [
+  {
+    question: 'How are real estate commissions structured in 2026?',
+    answer: 'Real estate commission rates are fully negotiable by law. Typically, a total agreed commission (e.g. 5.0% to 6.0%) is split between the listing brokerage (representing the seller) and the buyer brokerage. Inside each brokerage, the supervising broker and individual real estate agent share the commission according to their split agreement (e.g. 70/30 or 80/20).',
+  },
+  {
+    question: 'How do you calculate seller net proceeds?',
+    answer: 'Seller Net Proceeds = Home Sale Price - Total Commission Paid - Existing Mortgage Payoff - Closing Costs / Concessions.',
+  },
+];
+
+const schemaGraph = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebApplication',
+    name: 'Real Estate Commission Calculator',
+    url: canonicalUrl,
+    description: pageDesc,
+    applicationCategory: 'BusinessApplication',
+    operatingSystem: 'All',
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: breadcrumbItems.map((item, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      name: item.label,
+      item: item.href,
+    })),
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faqs.map((f) => ({
+      '@type': 'Question',
+      name: f.question,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: f.answer,
+      },
+    })),
+  },
+];
+---
+
+<SiteLayout title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(schemaGraph)} />
+
+  <article class="space-y-10 py-2">
+    <nav aria-label="Breadcrumb">
+      <ol class="flex flex-wrap items-center gap-2 text-xs text-[color:var(--muted)]">
+        {breadcrumbItems.map((item, index) => (
+          <li class="flex items-center gap-2">
+            {index > 0 && <span aria-hidden="true">/</span>}
+            {item.href ? (
+              <a class="transition hover:text-[color:var(--fg)]" href={item.href}>
+                {item.label}
+              </a>
+            ) : (
+              <span aria-current="page" class="font-semibold text-[color:var(--fg)]">
+                {item.label}
+              </span>
+            )}
+          </li>
+        ))}
+      </ol>
+    </nav>
+
+    <header class="space-y-3">
+      <div class="inline-flex items-center gap-2 rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3.5 py-1 text-xs font-semibold text-[color:var(--fg)]">
+        <span>Real Estate &amp; Property Transactions</span>
+      </div>
+      <h1 class="text-3xl font-extrabold tracking-tight text-[color:var(--fg)] sm:text-4xl">
+        Real Estate Commission Calculator
+      </h1>
+      <p class="max-w-3xl text-sm leading-relaxed text-[color:var(--muted)] sm:text-base">
+        Calculate Realtor fee breakdowns, agent-to-broker commission splits, and estimate your net home sale proceeds at closing.
+      </p>
+    </header>
+
+    <div
+      class="rounded-[2.5rem] border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-6 shadow-[var(--shadow)] sm:p-10"
+      data-re-app
+    >
+      <div class="grid gap-8 lg:grid-cols-[1.15fr_0.85fr]">
+        <form class="space-y-5" onsubmit="return false;">
+          <div class="flex items-center justify-between">
+            <h2 class="text-lg font-bold text-[color:var(--fg)]">Property &amp; Fee Details</h2>
+            <button type="button" class="cursor-pointer text-xs font-semibold text-[color:var(--muted)] hover:text-[color:var(--fg)]" data-reset-btn>
+              ↺ Reset
+            </button>
+          </div>
+
+          <div class="space-y-1.5">
+            <label for="sale-price" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">
+              Home Sale Price ($)
+            </label>
+            <input
+              id="sale-price"
+              type="number"
+              min="10000"
+              step="5000"
+              value="450000"
+              class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none"
+              data-sale-price
+            />
+          </div>
+
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label for="comm-rate" class="block text-xs font-medium text-[color:var(--muted)]">Total Commission (%)</label>
+              <input id="comm-rate" type="number" min="1" max="10" step="0.1" value="5.5" class="mt-1 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-comm-rate />
+            </div>
+            <div>
+              <label for="agent-split" class="block text-xs font-medium text-[color:var(--muted)]">Agent / Broker Split (%)</label>
+              <input id="agent-split" type="number" min="10" max="100" step="5" value="70" class="mt-1 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-agent-split />
+              <p class="text-[10px] text-[color:var(--muted)] mt-0.5">e.g. 70% Agent / 30% Broker</p>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-3 pt-1">
+            <div>
+              <label for="mortgage-payoff" class="block text-xs font-medium text-[color:var(--muted)]">Mortgage Payoff ($)</label>
+              <input id="mortgage-payoff" type="number" step="1000" value="210000" class="mt-1 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-mortgage-payoff />
+            </div>
+            <div>
+              <label for="closing-fees" class="block text-xs font-medium text-[color:var(--muted)]">Other Closing Fees ($)</label>
+              <input id="closing-fees" type="number" step="500" value="4500" class="mt-1 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-closing-fees />
+            </div>
+          </div>
+        </form>
+
+        <div class="flex flex-col justify-between space-y-6 rounded-3xl border border-[color:var(--border)] bg-[color:var(--bg)] p-6 sm:p-8">
+          <div class="space-y-5">
+            <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Transaction Summary</span>
+
+            <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 text-center">
+              <p class="text-xs font-semibold text-[color:var(--muted)]">Estimated Seller Net Proceeds</p>
+              <p class="mt-1 text-4xl sm:text-5xl font-black tracking-tight text-green-600 dark:text-green-400" data-net-proceeds>
+                $210,750
+              </p>
+              <p class="mt-2 text-xs font-medium text-[color:var(--muted)]">
+                Net cash in pocket after commissions &amp; payoffs.
+              </p>
+            </div>
+
+            <div class="space-y-2 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-xs">
+              <div class="flex justify-between">
+                <span class="text-[color:var(--muted)]">Total Commission Paid:</span>
+                <span class="font-bold text-red-500" data-total-comm>-$24,750 (5.5%)</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-[color:var(--muted)]">Listing Agent Take-Home (70%):</span>
+                <span class="font-bold text-[color:var(--fg)]" data-listing-takehome>$8,662.50</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-[color:var(--muted)]">Buyer Agent Take-Home (70%):</span>
+                <span class="font-bold text-[color:var(--fg)]" data-buyer-takehome>$8,662.50</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FAQs -->
+    <section class="space-y-4">
+      <h2 class="text-xl font-bold text-[color:var(--fg)]">Frequently Asked Questions</h2>
+      <div class="space-y-3">
+        {faqs.map((faq) => (
+          <details class="group rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
+            <summary class="cursor-pointer list-none font-semibold text-sm sm:text-base text-[color:var(--fg)] flex items-center justify-between gap-4">
+              <span>{faq.question}</span>
+              <span class="text-xs text-[color:var(--muted)] group-open:rotate-180 transition-transform">▼</span>
+            </summary>
+            <p class="mt-3 text-xs sm:text-sm leading-relaxed text-[color:var(--muted)]">
+              {faq.answer}
+            </p>
+          </details>
+        ))}
+      </div>
+    </section>
+  </article>
+
+  <script is:inline>
+    (function () {
+      const root = document.querySelector('[data-re-app]');
+      if (!root) return;
+
+      const inPrice = root.querySelector('[data-sale-price]');
+      const inRate = root.querySelector('[data-comm-rate]');
+      const inSplit = root.querySelector('[data-agent-split]');
+      const inMortgage = root.querySelector('[data-mortgage-payoff]');
+      const inClosing = root.querySelector('[data-closing-fees]');
+      const outProceeds = root.querySelector('[data-net-proceeds]');
+      const outTotalComm = root.querySelector('[data-total-comm]');
+      const outListing = root.querySelector('[data-listing-takehome]');
+      const outBuyer = root.querySelector('[data-buyer-takehome]');
+      const resetBtn = root.querySelector('[data-reset-btn]');
+
+      function update() {
+        const price = Math.max(0, parseFloat(inPrice.value || '0'));
+        const rate = Math.max(0, parseFloat(inRate.value || '5.5'));
+        const split = Math.min(100, Math.max(0, parseFloat(inSplit.value || '70'))) / 100;
+        const mortgage = Math.max(0, parseFloat(inMortgage.value || '0'));
+        const closing = Math.max(0, parseFloat(inClosing.value || '0'));
+
+        const totalComm = price * (rate / 100);
+        const sideComm = totalComm / 2;
+        const agentTake = sideComm * split;
+
+        const netProceeds = price - totalComm - mortgage - closing;
+
+        if (outProceeds) outProceeds.textContent = `$${Math.round(netProceeds).toLocaleString()}`;
+        if (outTotalComm) outTotalComm.textContent = `-$${Math.round(totalComm).toLocaleString()} (${rate.toFixed(1)}%)`;
+        if (outListing) outListing.textContent = `$${agentTake.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+        if (outBuyer) outBuyer.textContent = `$${agentTake.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+      }
+
+      inPrice.addEventListener('input', update);
+      inRate.addEventListener('input', update);
+      inSplit.addEventListener('input', update);
+      inMortgage.addEventListener('input', update);
+      inClosing.addEventListener('input', update);
+
+      if (resetBtn) {
+        resetBtn.addEventListener('click', () => {
+          inPrice.value = '450000';
+          inRate.value = '5.5';
+          inSplit.value = '70';
+          inMortgage.value = '210000';
+          inClosing.value = '4500';
+          update();
+        });
+      }
+
+      update();
+    })();
+  </script>
+</SiteLayout>

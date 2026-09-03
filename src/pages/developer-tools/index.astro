@@ -1,0 +1,286 @@
+---
+import SiteLayout from '../../layouts/SiteLayout.astro';
+import Icon from '../../components/Icon.astro';
+import { siteName, toAbsoluteUrl, withBasePath } from '../../utils/site';
+
+const pageTitle = `Developer Tools & Encoders | JSON, Regex, Base64 & Hashes · ${siteName}`;
+const pageDesc = 'Free, client-side developer utility tools. Format & validate JSON, test regular expressions, encode/decode Base64 & URLs, decode JWT tokens, and generate UUIDs locally.';
+const canonicalUrl = toAbsoluteUrl('/developer-tools/');
+
+const breadcrumbItems = [
+  { label: 'Home', href: toAbsoluteUrl('/') },
+  { label: 'Developer Tools' },
+];
+
+const developerTools = [
+  {
+    slug: 'json-formatter',
+    title: 'JSON Formatter & Beautifier',
+    badge: 'Essential',
+    metaDescription: 'Format, beautify, validate, and inspect JSON data with custom indentation (2/4 spaces, tabs) and syntax tree view.',
+    href: withBasePath('/developer-tools/json-formatter/'),
+    icon: 'code',
+  },
+  {
+    slug: 'json-validator',
+    title: 'JSON Syntax Validator',
+    badge: 'Debugging',
+    metaDescription: 'Validate raw JSON strings with exact line and column error position indicators.',
+    href: withBasePath('/developer-tools/json-validator/'),
+    icon: 'code',
+  },
+  {
+    slug: 'json-minifier',
+    title: 'JSON Minifier & Compressor',
+    badge: 'Optimization',
+    metaDescription: 'Compress JSON payloads by removing unnecessary whitespaces and line breaks for API optimization.',
+    href: withBasePath('/developer-tools/json-minifier/'),
+    icon: 'code',
+  },
+  {
+    slug: 'json-diff',
+    title: 'JSON Diff & Comparator',
+    badge: 'Debugging',
+    metaDescription: 'Compare two JSON objects side-by-side with structural additions, deletions, and modifications highlighted.',
+    href: withBasePath('/developer-tools/json-diff/'),
+    icon: 'code',
+  },
+  {
+    slug: 'json-to-csv',
+    title: 'JSON to CSV Converter',
+    badge: 'Data Export',
+    metaDescription: 'Convert JSON arrays and nested objects into clean tabular CSV files with custom delimiters.',
+    href: withBasePath('/developer-tools/json-to-csv/'),
+    icon: 'converter',
+  },
+  {
+    slug: 'json-to-yaml',
+    title: 'JSON to YAML Converter',
+    badge: 'Config',
+    metaDescription: 'Convert JSON configurations to clean, human-readable YAML for Docker, Kubernetes, and CI/CD pipelines.',
+    href: withBasePath('/developer-tools/json-to-yaml/'),
+    icon: 'code',
+  },
+  {
+    slug: 'yaml-to-json',
+    title: 'YAML to JSON Converter',
+    badge: 'Config',
+    metaDescription: 'Convert YAML files into valid structured JSON format entirely in your browser.',
+    href: withBasePath('/developer-tools/yaml-to-json/'),
+    icon: 'code',
+  },
+  {
+    slug: 'xml-to-json',
+    title: 'XML to JSON Converter',
+    badge: 'Parser',
+    metaDescription: 'Parse XML tags and node hierarchies into structured JSON trees locally.',
+    href: withBasePath('/developer-tools/xml-to-json/'),
+    icon: 'code',
+  },
+  {
+    slug: 'base64-encoder-decoder',
+    title: 'Base64 Encoder & Decoder',
+    badge: 'Encoding',
+    metaDescription: 'Encode and decode standard and URL-safe Base64 strings, binary text, and image data URLs.',
+    href: withBasePath('/developer-tools/base64-encoder-decoder/'),
+    icon: 'code',
+  },
+  {
+    slug: 'url-encoder-decoder',
+    title: 'URL Percent Encoder & Decoder',
+    badge: 'Web',
+    metaDescription: 'Encode and decode URL percent-encoded characters for safe transmission across HTTP requests.',
+    href: withBasePath('/developer-tools/url-encoder-decoder/'),
+    icon: 'code',
+  },
+  {
+    slug: 'regex-tester',
+    title: 'Regex Tester & Matcher',
+    badge: 'Popular',
+    metaDescription: 'Live interactive regular expression tester with capture groups, flags, and match breakdowns.',
+    href: withBasePath('/developer-tools/regex-tester/'),
+    icon: 'code',
+  },
+  {
+    slug: 'regex-escape',
+    title: 'Regex Special Character Escaper',
+    badge: 'Utility',
+    metaDescription: 'Escape special regex characters in literal strings for safe inclusion in dynamic RegExp queries.',
+    href: withBasePath('/developer-tools/regex-escape/'),
+    icon: 'code',
+  },
+  {
+    slug: 'jwt-decoder',
+    title: 'JWT Token Decoder',
+    badge: 'Security',
+    metaDescription: 'Decode JSON Web Token (JWT) headers and payload claims locally in your browser memory.',
+    href: withBasePath('/developer-tools/jwt-decoder/'),
+    icon: 'code',
+  },
+  {
+    slug: 'hash-generator',
+    title: 'Hash Generator (MD5, SHA-256)',
+    badge: 'Cryptography',
+    metaDescription: 'Generate MD5, SHA-1, SHA-256, and SHA-512 cryptographic hashes using native Web Crypto.',
+    href: withBasePath('/developer-tools/hash-generator/'),
+    icon: 'code',
+  },
+  {
+    slug: 'uuid-generator',
+    title: 'UUID / GUID v4 Generator',
+    badge: 'Identifiers',
+    metaDescription: 'Generate single and bulk batches of cryptographically secure Version 4 UUIDs.',
+    href: withBasePath('/developer-tools/uuid-generator/'),
+    icon: 'code',
+  },
+  {
+    slug: 'timestamp-converter',
+    title: 'Unix Timestamp Converter',
+    badge: 'Time',
+    metaDescription: 'Convert Unix epoch timestamps in seconds and milliseconds to human-readable UTC and ISO 8601 dates.',
+    href: withBasePath('/developer-tools/timestamp-converter/'),
+    icon: 'calendar',
+  },
+  {
+    slug: 'cron-expression-generator',
+    title: 'Cron Expression Generator & Parser',
+    badge: 'Automation',
+    metaDescription: 'Visual cron schedule builder, human translation, and next 5 execution time previews.',
+    href: withBasePath('/developer-tools/cron-expression-generator/'),
+    icon: 'calendar',
+  },
+];
+
+const schemaFaq = [
+  {
+    question: 'Are my JSON payloads and code snippets sent to a remote server?',
+    answer: 'No. All developer tools on Calculator Utility execute 100% locally in your browser’s JavaScript engine. Your JSON data, tokens, and regular expressions never leave your device.',
+  },
+  {
+    question: 'Does decoding a JWT on this site verify its cryptographic signature?',
+    answer: 'No. The JWT decoder parses and inspects the Base64-encoded Header and Payload claims. Signature verification requires validating against your private/public secret key, which should only be done in your secure backend.',
+  },
+];
+
+const schemaGraph = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: breadcrumbItems.map((item, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      name: item.label,
+      item: item.href,
+    })),
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: schemaFaq.map((item) => ({
+      '@type': 'Question',
+      name: item.question,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: item.answer,
+      },
+    })),
+  },
+];
+---
+
+<SiteLayout title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(schemaGraph)} />
+
+  <article class="space-y-10 py-2">
+    <!-- Breadcrumbs -->
+    <nav aria-label="Breadcrumb">
+      <ol class="flex flex-wrap items-center gap-2 text-xs text-[color:var(--muted)]">
+        {breadcrumbItems.map((item, index) => (
+          <li class="flex items-center gap-2">
+            {index > 0 && <span aria-hidden="true">/</span>}
+            {item.href ? (
+              <a class="transition hover:text-[color:var(--fg)]" href={item.href}>
+                {item.label}
+              </a>
+            ) : (
+              <span aria-current="page" class="font-semibold text-[color:var(--fg)]">
+                {item.label}
+              </span>
+            )}
+          </li>
+        ))}
+      </ol>
+    </nav>
+
+    <!-- Header -->
+    <header class="space-y-4 rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-6 sm:p-10">
+      <div class="inline-flex items-center gap-2 rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3.5 py-1 text-xs font-bold text-[color:var(--fg)]">
+        <span>Client-Side Developer Suite</span>
+      </div>
+      <h1 class="text-3xl font-extrabold tracking-tight text-[color:var(--fg)] sm:text-4xl">
+        Developer Utilities &amp; Encoders
+      </h1>
+      <p class="max-w-3xl text-sm leading-relaxed text-[color:var(--muted)] sm:text-base">
+        A fast, privacy-first toolset for software engineers, frontend developers, and data analysts. Format JSON, debug regular expressions, encode Base64, decode JWT tokens, and build cron schedules entirely in your browser.
+      </p>
+    </header>
+
+    <!-- Tools Grid -->
+    <section class="space-y-4">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Engine Directory</p>
+          <h2 class="text-xl font-bold tracking-tight text-[color:var(--fg)]">17 Browser-Side Utilities</h2>
+        </div>
+        <span class="rounded-lg bg-[color:var(--surface)] border border-[color:var(--border)] px-2.5 py-1 text-xs font-bold text-[color:var(--fg)]">
+          17 Tools
+        </span>
+      </div>
+
+      <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {developerTools.map((tool) => (
+          <a
+            href={tool.href}
+            class="group flex flex-col justify-between rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 transition hover:border-[color:var(--border-strong)] hover:bg-[color:var(--surface-strong)]"
+          >
+            <div class="space-y-2.5">
+              <div class="flex items-center justify-between">
+                <span class="rounded-md bg-[color:var(--surface-strong)] border border-[color:var(--border)] px-2 py-0.5 text-[10px] font-bold text-[color:var(--muted)]">
+                  {tool.badge}
+                </span>
+              </div>
+              <h3 class="text-base font-bold text-[color:var(--fg)] transition-colors">
+                {tool.title}
+              </h3>
+              <p class="text-xs leading-relaxed text-[color:var(--muted)]">
+                {tool.metaDescription}
+              </p>
+            </div>
+            <div class="mt-5 flex items-center gap-1.5 text-xs font-bold text-[color:var(--fg)]">
+              <span>Open Tool</span>
+              <Icon name="arrow-right" class="w-3.5 h-3.5 transition group-hover:translate-x-1" />
+            </div>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <!-- FAQs -->
+    <section class="space-y-4">
+      <h2 class="text-xl font-bold text-[color:var(--fg)]">Frequently Asked Questions</h2>
+      <div class="space-y-3">
+        {schemaFaq.map((faq) => (
+          <details class="group rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
+            <summary class="cursor-pointer list-none font-semibold text-sm sm:text-base text-[color:var(--fg)] flex items-center justify-between gap-4">
+              <span>{faq.question}</span>
+              <span class="text-xs text-[color:var(--muted)] group-open:rotate-180 transition-transform">▼</span>
+            </summary>
+            <p class="mt-3 text-xs sm:text-sm leading-relaxed text-[color:var(--muted)]">
+              {faq.answer}
+            </p>
+          </details>
+        ))}
+      </div>
+    </section>
+  </article>
+</SiteLayout>

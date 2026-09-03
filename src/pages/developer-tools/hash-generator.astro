@@ -1,0 +1,329 @@
+---
+import SiteLayout from '../../layouts/SiteLayout.astro';
+import Icon from '../../components/Icon.astro';
+import { siteName, toAbsoluteUrl, withBasePath } from '../../utils/site';
+
+const pageTitle = `Hash Generator — MD5, SHA-1, SHA-256, SHA-512 Online · ${siteName}`;
+const pageDesc = 'Generate cryptographic hashes (MD5, SHA-1, SHA-256, SHA-512) for text and passwords online. Uses native Web Crypto API for secure, 100% private in-browser computation.';
+const canonicalUrl = toAbsoluteUrl('/developer-tools/hash-generator/');
+
+const breadcrumbItems = [
+  { label: 'Home', href: toAbsoluteUrl('/') },
+  { label: 'Developer Tools', href: toAbsoluteUrl('/developer-tools/') },
+  { label: 'Hash Generator' },
+];
+
+const schemaFaq = [
+  {
+    question: 'How are hashes calculated in this tool?',
+    answer: 'SHA-1, SHA-256, and SHA-512 hashes are computed using the browser’s hardware-accelerated Web Cryptography API (`crypto.subtle.digest`). MD5 is computed client-side using standard RFC 1321 algorithms.',
+  },
+  {
+    question: 'Is it safe to generate password hashes here?',
+    answer: 'Yes. All hash generation takes place 100% locally in your device’s memory. No text or passwords are ever sent to an external server.',
+  },
+];
+
+const schemaGraph = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebApplication',
+    name: 'Hash Generator',
+    url: canonicalUrl,
+    applicationCategory: 'DeveloperApplication',
+    operatingSystem: 'All',
+    browserRequirements: 'Requires JavaScript',
+    description: pageDesc,
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: breadcrumbItems.map((item, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      name: item.label,
+      item: item.href,
+    })),
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: schemaFaq.map((item) => ({
+      '@type': 'Question',
+      name: item.question,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: item.answer,
+      },
+    })),
+  },
+];
+---
+
+<SiteLayout title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(schemaGraph)} />
+
+  <article class="space-y-10 py-2" data-hash-app>
+    <nav aria-label="Breadcrumb">
+      <ol class="flex flex-wrap items-center gap-2 text-xs text-[color:var(--muted)]">
+        {breadcrumbItems.map((item, index) => (
+          <li class="flex items-center gap-2">
+            {index > 0 && <span aria-hidden="true">/</span>}
+            {item.href ? (
+              <a class="transition hover:text-[color:var(--fg)]" href={item.href}>
+                {item.label}
+              </a>
+            ) : (
+              <span aria-current="page" class="font-semibold text-[color:var(--fg)]">
+                {item.label}
+              </span>
+            )}
+          </li>
+        ))}
+      </ol>
+    </nav>
+
+    <header class="space-y-3">
+      <div class="inline-flex items-center gap-2 rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1 text-xs font-semibold text-[color:var(--muted)]">
+        <span class="inline-block h-2 w-2 rounded-full bg-emerald-500"></span>
+        <span>Hardware-Accelerated Web Crypto API</span>
+      </div>
+      <h1 class="text-2xl sm:text-4xl font-extrabold tracking-tight text-[color:var(--fg)]">
+        Cryptographic Hash Generator
+      </h1>
+      <p class="max-w-2xl text-xs sm:text-sm text-[color:var(--muted)] leading-relaxed">
+        Generate MD5, SHA-1, SHA-256, and SHA-512 cryptographic hashes for checksum validation, integrity verification, and signature hashing.
+      </p>
+    </header>
+
+    <div class="space-y-6">
+      <!-- Input -->
+      <div class="space-y-2">
+        <div class="flex items-center justify-between">
+          <label for="hash-in" class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Input String</label>
+          <div class="flex items-center gap-2 text-xs">
+            <button type="button" data-sample-btn class="text-[color:var(--primary)] hover:underline font-semibold">Sample</button>
+            <span class="text-[color:var(--border)]">|</span>
+            <button type="button" data-clear-btn class="text-[color:var(--muted)] hover:text-[color:var(--fg)]">Clear</button>
+          </div>
+        </div>
+        <textarea
+          id="hash-in"
+          rows="4"
+          class="w-full font-mono text-xs leading-relaxed rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-[color:var(--fg)] focus:border-[color:var(--border-strong)] focus:outline-hidden"
+          placeholder="Type or paste text to generate cryptographic hashes..."
+        >The quick brown fox jumps over the lazy dog</textarea>
+      </div>
+
+      <!-- Hash Results Grid -->
+      <div class="space-y-4">
+        <h2 class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Calculated Hash Digests</h2>
+
+        <!-- SHA-256 -->
+        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 space-y-1.5">
+          <div class="flex items-center justify-between">
+            <span class="font-bold text-xs text-[color:var(--fg)]">SHA-256 (256-bit / 64 hex chars)</span>
+            <button type="button" data-copy-hash="sha256" class="inline-flex items-center gap-1 text-xs font-bold text-[color:var(--fg)] hover:underline">
+              <Icon name="copy" class="w-3.5 h-3.5" />
+              <span>Copy</span>
+            </button>
+          </div>
+          <p id="hash-sha256" class="font-mono text-xs text-[color:var(--fg)] break-all select-all bg-[color:var(--surface-strong)] p-2.5 rounded-xl border border-[color:var(--border)]">-</p>
+        </div>
+
+        <!-- MD5 -->
+        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 space-y-1.5">
+          <div class="flex items-center justify-between">
+            <span class="font-bold text-xs text-[color:var(--fg)]">MD5 (128-bit / 32 hex chars)</span>
+            <button type="button" data-copy-hash="md5" class="inline-flex items-center gap-1 text-xs font-bold text-[color:var(--fg)] hover:underline">
+              <Icon name="copy" class="w-3.5 h-3.5" />
+              <span>Copy</span>
+            </button>
+          </div>
+          <p id="hash-md5" class="font-mono text-xs text-[color:var(--fg)] break-all select-all bg-[color:var(--surface-strong)] p-2.5 rounded-xl border border-[color:var(--border)]">-</p>
+        </div>
+
+        <!-- SHA-512 -->
+        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 space-y-1.5">
+          <div class="flex items-center justify-between">
+            <span class="font-bold text-xs text-[color:var(--fg)]">SHA-512 (512-bit / 128 hex chars)</span>
+            <button type="button" data-copy-hash="sha512" class="inline-flex items-center gap-1 text-xs font-bold text-[color:var(--fg)] hover:underline">
+              <Icon name="copy" class="w-3.5 h-3.5" />
+              <span>Copy</span>
+            </button>
+          </div>
+          <p id="hash-sha512" class="font-mono text-xs text-[color:var(--fg)] break-all select-all bg-[color:var(--surface-strong)] p-2.5 rounded-xl border border-[color:var(--border)]">-</p>
+        </div>
+
+        <!-- SHA-1 -->
+        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 space-y-1.5">
+          <div class="flex items-center justify-between">
+            <span class="font-bold text-xs text-[color:var(--fg)]">SHA-1 (160-bit / 40 hex chars)</span>
+            <button type="button" data-copy-hash="sha1" class="inline-flex items-center gap-1 text-xs font-bold text-[color:var(--fg)] hover:underline">
+              <Icon name="copy" class="w-3.5 h-3.5" />
+              <span>Copy</span>
+            </button>
+          </div>
+          <p id="hash-sha1" class="font-mono text-xs text-[color:var(--fg)] break-all select-all bg-[color:var(--surface-strong)] p-2.5 rounded-xl border border-[color:var(--border)]">-</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- FAQs -->
+    <section class="space-y-4">
+      <h2 class="text-xl font-bold text-[color:var(--fg)]">Frequently Asked Questions</h2>
+      <div class="space-y-3">
+        {schemaFaq.map((faq) => (
+          <details class="group rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
+            <summary class="cursor-pointer list-none font-semibold text-sm sm:text-base text-[color:var(--fg)] flex items-center justify-between gap-4">
+              <span>{faq.question}</span>
+              <span class="text-xs text-[color:var(--muted)] group-open:rotate-180 transition-transform">▼</span>
+            </summary>
+            <p class="mt-3 text-xs sm:text-sm leading-relaxed text-[color:var(--muted)]">
+              {faq.answer}
+            </p>
+          </details>
+        ))}
+      </div>
+    </section>
+  </article>
+
+  <script is:inline>
+    (function () {
+      const root = document.querySelector('[data-hash-app]');
+      if (!root) return;
+
+      const input = root.querySelector('#hash-in');
+      const sha256Out = root.querySelector('#hash-sha256');
+      const sha512Out = root.querySelector('#hash-sha512');
+      const sha1Out = root.querySelector('#hash-sha1');
+      const md5Out = root.querySelector('#hash-md5');
+      const sampleBtn = root.querySelector('[data-sample-btn]');
+      const clearBtn = root.querySelector('[data-clear-btn]');
+
+      async function cryptoHash(str, algo) {
+        const encoder = new TextEncoder();
+        const data = encoder.encode(str);
+        const buffer = await crypto.subtle.digest(algo, data);
+        return Array.from(new Uint8Array(buffer)).map(b => b.toString(16).padStart(2, '0')).join('');
+      }
+
+      // Pure JS MD5
+      function calculateMd5(string) {
+        function rotateLeft(lValue, iShiftBits) { return (lValue << iShiftBits) | (lValue >>> (32 - iShiftBits)); }
+        function addUnsigned(lX, lY) {
+          const lX4 = lX & 0x40000000, lY4 = lY & 0x40000000, lX8 = lX & 0x80000000, lY8 = lY & 0x80000000;
+          const lResult = (lX & 0x3fffffff) + (lY & 0x3fffffff);
+          if (lX4 & lY4) return lResult ^ 0x80000000 ^ lX8 ^ lY8;
+          if (lX4 | lY4) {
+            if (lResult & 0x40000000) return lResult ^ 0xc0000000 ^ lX8 ^ lY8;
+            return lResult ^ 0x40000000 ^ lX8 ^ lY8;
+          }
+          return lResult ^ lX8 ^ lY8;
+        }
+        function F(x,y,z){return(x&y)|(~x&z);} function G(x,y,z){return(x&z)|(y&~z);}
+        function H(x,y,z){return x^y^z;} function I(x,y,z){return y^(x|~z);}
+        function FF(a,b,c,d,x,s,ac){a=addUnsigned(a,addUnsigned(addUnsigned(F(b,c,d),x),ac));return addUnsigned(rotateLeft(a,s),b);}
+        function GG(a,b,c,d,x,s,ac){a=addUnsigned(a,addUnsigned(addUnsigned(G(b,c,d),x),ac));return addUnsigned(rotateLeft(a,s),b);}
+        function HH(a,b,c,d,x,s,ac){a=addUnsigned(a,addUnsigned(addUnsigned(H(b,c,d),x),ac));return addUnsigned(rotateLeft(a,s),b);}
+        function II(a,b,c,d,x,s,ac){a=addUnsigned(a,addUnsigned(addUnsigned(I(b,c,d),x),ac));return addUnsigned(rotateLeft(a,s),b);}
+
+        const str = unescape(encodeURIComponent(string));
+        const lMessageLength = str.length;
+        const lNumberOfWords = (((lMessageLength + 8) - ((lMessageLength + 8) % 64)) / 64 + 1) * 16;
+        const x = Array(lNumberOfWords - 1);
+        let lBytePosition = 0, lByteCount = 0;
+        while (lByteCount < lMessageLength) {
+          const lWordCount = (lByteCount - (lByteCount % 4)) / 4;
+          lBytePosition = (lByteCount % 4) * 8;
+          x[lWordCount] = (x[lWordCount] | (str.charCodeAt(lByteCount) << lBytePosition));
+          lByteCount++;
+        }
+        const lWordCount = (lByteCount - (lByteCount % 4)) / 4;
+        lBytePosition = (lByteCount % 4) * 8;
+        x[lWordCount] = (x[lWordCount] | (0x80 << lBytePosition));
+        x[lNumberOfWords - 2] = lMessageLength << 3;
+        x[lNumberOfWords - 1] = lMessageLength >>> 29;
+
+        let a = 0x67452301, b = 0xefcdab89, c = 0x98badcfe, d = 0x10325476;
+        for (let k = 0; k < x.length; k += 16) {
+          const AA = a, BB = b, CC = c, DD = d;
+          a=FF(a,b,c,d,x[k+0]||0,7,0xd76aa478); d=FF(d,a,b,c,x[k+1]||0,12,0xe8c7b756); c=FF(c,d,a,b,x[k+2]||0,17,0x242070db); b=FF(b,c,d,a,x[k+3]||0,22,0xc1bdceee);
+          a=FF(a,b,c,d,x[k+4]||0,7,0xf57c0faf); d=FF(d,a,b,c,x[k+5]||0,12,0x4787c62a); c=FF(c,d,a,b,x[k+6]||0,17,0xa8304613); b=FF(b,c,d,a,x[k+7]||0,22,0xfd469501);
+          a=FF(a,b,c,d,x[k+8]||0,7,0x698098d8); d=FF(d,a,b,c,x[k+9]||0,12,0x8b44f7af); c=FF(c,d,a,b,x[k+10]||0,17,0xffff5bb1); b=FF(b,c,d,a,x[k+11]||0,22,0x895cd7be);
+          a=FF(a,b,c,d,x[k+12]||0,7,0x6b901122); d=FF(d,a,b,c,x[k+13]||0,12,0xfd987193); c=FF(c,d,a,b,x[k+14]||0,17,0xa679438e); b=FF(b,c,d,a,x[k+15]||0,22,0x49b40821);
+
+          a=GG(a,b,c,d,x[k+1]||0,5,0xf61e2562); d=GG(d,a,b,c,x[k+6]||0,9,0xc040b340); c=GG(c,d,a,b,x[k+11]||0,14,0x265e5a51); b=GG(b,c,d,a,x[k+0]||0,20,0xe9b6c7aa);
+          a=GG(a,b,c,d,x[k+5]||0,5,0xd62f105d); d=GG(d,a,b,c,x[k+10]||0,9,0x2441453); c=GG(c,d,a,b,x[k+15]||0,14,0xd8a1e681); b=GG(b,c,d,a,x[k+4]||0,20,0xe7d3fbc8);
+          a=GG(a,b,c,d,x[k+9]||0,5,0x21e1cde6); d=GG(d,a,b,c,x[k+14]||0,9,0xc33707d6); c=GG(c,d,a,b,x[k+3]||0,14,0xf4d50d87); b=GG(b,c,d,a,x[k+8]||0,20,0x455a14ed);
+          a=GG(a,b,c,d,x[k+13]||0,5,0xa9e3e905); d=GG(d,a,b,c,x[k+2]||0,9,0xfcefa3f8); c=GG(c,d,a,b,x[k+7]||0,14,0x676f02d9); b=GG(b,c,d,a,x[k+12]||0,20,0x8d2a4c8a);
+
+          a=HH(a,b,c,d,x[k+5]||0,4,0xfffa3942); d=HH(d,a,b,c,x[k+8]||0,11,0x8771f681); c=HH(c,d,a,b,x[k+11]||0,16,0x6d9d6122); b=HH(b,c,d,a,x[k+14]||0,23,0xfde5380c);
+          a=HH(a,b,c,d,x[k+1]||0,4,0xa4beea44); d=HH(d,a,b,c,x[k+4]||0,11,0x4bdecfa9); c=HH(c,d,a,b,x[k+7]||0,16,0xf6bb4b60); b=HH(b,c,d,a,x[k+10]||0,23,0xbebfbc70);
+          a=HH(a,b,c,d,x[k+13]||0,4,0x289b7ec6); d=HH(d,a,b,c,x[k+0]||0,11,0xeaa127fa); c=HH(c,d,a,b,x[k+3]||0,16,0xd4ef3085); b=HH(b,c,d,a,x[k+6]||0,23,0x4881d05);
+          a=HH(a,b,c,d,x[k+9]||0,4,0xd9d4d039); d=HH(d,a,b,c,x[k+12]||0,11,0xe6db99e5); c=HH(c,d,a,b,x[k+15]||0,16,0x1fa27cf8); b=HH(b,c,d,a,x[k+2]||0,23,0xc4ac5665);
+
+          a=II(a,b,c,d,x[k+0]||0,6,0xf4292244); d=II(d,a,b,c,x[k+7]||0,10,0x432aff97); c=II(c,d,a,b,x[k+14]||0,15,0xab9423a7); b=II(b,c,d,a,x[k+5]||0,21,0xfc93a039);
+          a=II(a,b,c,d,x[k+12]||0,6,0x655b59c3); d=II(d,a,b,c,x[k+3]||0,10,0x8f0ccc92); c=II(c,d,a,b,x[k+10]||0,15,0xffeff47d); b=II(b,c,d,a,x[k+1]||0,21,0x85845dd1);
+          a=II(a,b,c,d,x[k+8]||0,6,0x6fa87e4f); d=II(d,a,b,c,x[k+15]||0,10,0xfe2ce6e0); c=II(c,d,a,b,x[k+6]||0,15,0xa3014314); b=II(b,c,d,a,x[k+13]||0,21,0x4e0811a1);
+          a=II(a,b,c,d,x[k+4]||0,6,0xf7537e82); d=II(d,a,b,c,x[k+11]||0,10,0xbd3af235); c=II(c,d,a,b,x[k+2]||0,15,0x2ad7d2bb); b=II(b,c,d,a,x[k+9]||0,21,0xeb86d391);
+
+          a = addUnsigned(a, AA); b = addUnsigned(b, BB); c = addUnsigned(c, CC); d = addUnsigned(d, DD);
+        }
+        function wordToHex(lValue) {
+          let wordToHexValue = '', wordToHexValueTemp = '', lByte, lCount;
+          for (lCount = 0; lCount <= 3; lCount++) {
+            lByte = (lValue >>> (lCount * 8)) & 255;
+            wordToHexValueTemp = '0' + lByte.toString(16);
+            wordToHexValue = wordToHexValue + wordToHexValueTemp.substr(wordToHexValueTemp.length - 2, 2);
+          }
+          return wordToHexValue;
+        }
+        return (wordToHex(a) + wordToHex(b) + wordToHex(c) + wordToHex(d)).toLowerCase();
+      }
+
+      async function generate() {
+        const text = input.value;
+        if (!text) {
+          sha256Out.textContent = '-';
+          sha512Out.textContent = '-';
+          sha1Out.textContent = '-';
+          md5Out.textContent = '-';
+          return;
+        }
+
+        sha256Out.textContent = await cryptoHash(text, 'SHA-256');
+        sha512Out.textContent = await cryptoHash(text, 'SHA-512');
+        sha1Out.textContent = await cryptoHash(text, 'SHA-1');
+        md5Out.textContent = calculateMd5(text);
+      }
+
+      input.addEventListener('input', generate);
+
+      sampleBtn.addEventListener('click', () => {
+        input.value = 'The quick brown fox jumps over the lazy dog';
+        generate();
+      });
+
+      clearBtn.addEventListener('click', () => {
+        input.value = '';
+        generate();
+      });
+
+      root.querySelectorAll('[data-copy-hash]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const type = btn.dataset.copyHash;
+          const target = root.querySelector('#hash-' + type);
+          if (!target || target.textContent === '-') return;
+          navigator.clipboard.writeText(target.textContent);
+          const span = btn.querySelector('span');
+          const orig = span.textContent;
+          span.textContent = 'Copied!';
+          setTimeout(() => span.textContent = orig, 1800);
+        });
+      });
+
+      generate();
+    })();
+  </script>
+</SiteLayout>

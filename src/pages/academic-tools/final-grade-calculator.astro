@@ -1,0 +1,338 @@
+---
+import SiteLayout from '../../layouts/SiteLayout.astro';
+import Icon from '../../components/Icon.astro';
+import { siteName, toAbsoluteUrl, withBasePath } from '../../utils/site';
+
+const pageTitle = `Final Grade Calculator | What Score Do I Need on My Final Exam? · ${siteName}`;
+const pageDesc = 'Free final grade calculator. Calculate the exact final exam score needed to get an A, B, C, or target overall grade in your high school or college course.';
+const canonicalUrl = toAbsoluteUrl('/academic-tools/final-grade-calculator/');
+
+const breadcrumbItems = [
+  { label: 'Home', href: toAbsoluteUrl('/') },
+  { label: 'Academic Tools', href: toAbsoluteUrl('/academic-tools/') },
+  { label: 'Final Grade Calculator' },
+];
+
+const faqs = [
+  {
+    question: 'How do you calculate the grade needed on a final exam?',
+    answer: 'The required final exam score is calculated using: Required Final Score = [Target Grade - (Current Grade × (1 - Final Exam Weight))] ÷ Final Exam Weight. For example, if your current grade is 84%, your target grade is 90% (an A), and the final is worth 30%, you need [90 - (84 × 0.70)] ÷ 0.30 = (90 - 58.8) ÷ 0.30 = 104.0% (meaning you need extra credit).',
+  },
+  {
+    question: 'What if the required score is over 100%?',
+    answer: 'If the calculation produces a required score exceeding 100%, it means reaching that target grade is mathematically impossible with standard grading unless your professor offers bonus points or extra credit.',
+  },
+  {
+    question: 'Can this calculate for midterms and weighted assignments?',
+    answer: 'Yes! You can treat any upcoming major exam or project as the final component by entering your current overall standing and the percentage weight of that upcoming test.',
+  },
+];
+
+const schemaGraph = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebApplication',
+    name: 'Final Grade Calculator',
+    url: canonicalUrl,
+    description: pageDesc,
+    applicationCategory: 'EducationalApplication',
+    operatingSystem: 'All',
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: breadcrumbItems.map((item, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      name: item.label,
+      item: item.href,
+    })),
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faqs.map((f) => ({
+      '@type': 'Question',
+      name: f.question,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: f.answer,
+      },
+    })),
+  },
+];
+---
+
+<SiteLayout title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(schemaGraph)} />
+
+  <article class="space-y-10 py-2">
+    <!-- Breadcrumbs -->
+    <nav aria-label="Breadcrumb">
+      <ol class="flex flex-wrap items-center gap-2 text-xs text-[color:var(--muted)]">
+        {breadcrumbItems.map((item, index) => (
+          <li class="flex items-center gap-2">
+            {index > 0 && <span aria-hidden="true">/</span>}
+            {item.href ? (
+              <a class="transition hover:text-[color:var(--fg)]" href={item.href}>
+                {item.label}
+              </a>
+            ) : (
+              <span aria-current="page" class="font-semibold text-[color:var(--fg)]">
+                {item.label}
+              </span>
+            )}
+          </li>
+        ))}
+      </ol>
+    </nav>
+
+    <!-- Header -->
+    <header class="space-y-3">
+      <div class="inline-flex items-center gap-2 rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3.5 py-1 text-xs font-semibold text-[color:var(--fg)]">
+        <span>Exam Preparation &amp; Grade Target</span>
+      </div>
+      <h1 class="text-3xl font-extrabold tracking-tight text-[color:var(--fg)] sm:text-4xl">
+        Final Grade Calculator
+      </h1>
+      <p class="max-w-3xl text-sm leading-relaxed text-[color:var(--muted)] sm:text-base">
+        Eliminate exam stress before finals week. Enter your current course standing, final exam weight, and target letter grade to see the exact percentage you must score on the test.
+      </p>
+    </header>
+
+    <!-- Calculator App Card -->
+    <div
+      class="rounded-[2.5rem] border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-6 shadow-[var(--shadow)] sm:p-10"
+      data-final-grade-app
+    >
+      <div class="grid gap-8 lg:grid-cols-[1.1fr_0.9fr]">
+        <form class="space-y-5" onsubmit="return false;">
+          <div class="flex items-center justify-between">
+            <h2 class="text-lg font-bold text-[color:var(--fg)]">Grade Information</h2>
+            <button type="button" class="cursor-pointer text-xs font-semibold text-[color:var(--muted)] hover:text-[color:var(--fg)]" data-reset-btn>
+              ↺ Reset
+            </button>
+          </div>
+
+          <!-- Current Grade -->
+          <div class="space-y-1.5">
+            <label for="current-grade" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">
+              Current Course Grade (%)
+            </label>
+            <input
+              id="current-grade"
+              type="number"
+              min="0"
+              max="150"
+              step="0.1"
+              value="82"
+              class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none transition focus:border-[color:var(--accent)]"
+              data-curr-grade
+            />
+          </div>
+
+          <!-- Desired Final Grade -->
+          <div class="space-y-1.5">
+            <div class="flex items-center justify-between">
+              <label for="target-grade" class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">
+                Desired Final Course Grade (%)
+              </label>
+              <div class="flex gap-1 text-xs">
+                <button type="button" class="cursor-pointer font-bold px-2 py-0.5 rounded bg-[color:var(--surface)] border border-[color:var(--border)]" data-target-preset="90">A (90%)</button>
+                <button type="button" class="cursor-pointer font-bold px-2 py-0.5 rounded bg-[color:var(--surface)] border border-[color:var(--border)]" data-target-preset="80">B (80%)</button>
+                <button type="button" class="cursor-pointer font-bold px-2 py-0.5 rounded bg-[color:var(--surface)] border border-[color:var(--border)]" data-target-preset="70">C (70%)</button>
+              </div>
+            </div>
+            <input
+              id="target-grade"
+              type="number"
+              min="0"
+              max="100"
+              step="0.1"
+              value="90"
+              class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none transition focus:border-[color:var(--accent)]"
+              data-target-grade
+            />
+          </div>
+
+          <!-- Final Exam Weight -->
+          <div class="space-y-2">
+            <div class="flex items-center justify-between">
+              <label for="exam-weight" class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">
+                Final Exam Weight (%)
+              </label>
+              <span class="rounded-lg bg-[color:var(--surface)] border border-[color:var(--border)] px-2.5 py-0.5 text-xs font-bold text-[color:var(--fg)]" data-weight-display>
+                30%
+              </span>
+            </div>
+            <input
+              id="exam-weight"
+              type="range"
+              min="5"
+              max="70"
+              step="1"
+              value="30"
+              class="w-full accent-[color:var(--accent)] cursor-pointer"
+              data-exam-weight
+            />
+          </div>
+        </form>
+
+        <!-- Result Box -->
+        <div class="flex flex-col justify-between space-y-6 rounded-3xl border border-[color:var(--border)] bg-[color:var(--bg)] p-6 sm:p-8">
+          <div class="space-y-5">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Required Exam Score</span>
+              <span class="rounded-full px-3 py-0.5 text-xs font-bold" data-diff-badge>Challenging</span>
+            </div>
+
+            <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 text-center">
+              <p class="text-xs font-semibold text-[color:var(--muted)]">Score Needed on Final Exam</p>
+              <p class="mt-1 text-5xl font-black tracking-tight text-[color:var(--fg)]" data-score-needed>
+                108.67%
+              </p>
+              <p class="mt-2 text-xs font-medium text-[color:var(--muted)]" data-score-advice>
+                Requires extra credit to achieve an overall grade of 90.0%.
+              </p>
+            </div>
+
+            <!-- What-If Scenario Matrix -->
+            <div class="space-y-2">
+              <p class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">What-If Final Exam Outcomes</p>
+              <div class="space-y-1.5 text-xs" data-whatif-table>
+                <!-- Populated via JS -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Methodology & Formula -->
+    <section class="grid gap-6 sm:grid-cols-2">
+      <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 space-y-2">
+        <h2 class="text-base font-bold text-[color:var(--fg)]">Final Grade Formula</h2>
+        <p class="text-xs text-[color:var(--muted)] leading-relaxed">
+          Course grading splits your overall standing into existing coursework weight <span class="font-mono">(1 - W)</span> and final exam weight <span class="font-mono">W</span>.
+        </p>
+        <div class="rounded-xl bg-[color:var(--bg)] p-3 font-mono text-xs text-[color:var(--fg)] border border-[color:var(--border)]">
+          Score Needed = [Target - (Current × (1 - W))] ÷ W
+        </div>
+      </div>
+      <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 space-y-2">
+        <h2 class="text-base font-bold text-[color:var(--fg)]">Interpreting Results</h2>
+        <p class="text-xs text-[color:var(--muted)] leading-relaxed">
+          A score below 60% indicates you have a solid grade cushion and can comfortably pass. A score between 70% and 90% is typical for aiming for honors. Scores above 100% mean you will need extra credit assignments or a curve.
+        </p>
+      </div>
+    </section>
+
+    <!-- FAQs -->
+    <section class="space-y-4">
+      <h2 class="text-xl font-bold text-[color:var(--fg)]">Frequently Asked Questions</h2>
+      <div class="space-y-3">
+        {faqs.map((faq) => (
+          <details class="group rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
+            <summary class="cursor-pointer list-none font-semibold text-sm sm:text-base text-[color:var(--fg)] flex items-center justify-between gap-4">
+              <span>{faq.question}</span>
+              <span class="text-xs text-[color:var(--muted)] group-open:rotate-180 transition-transform">▼</span>
+            </summary>
+            <p class="mt-3 text-xs sm:text-sm leading-relaxed text-[color:var(--muted)]">
+              {faq.answer}
+            </p>
+          </details>
+        ))}
+      </div>
+    </section>
+  </article>
+
+  <script is:inline>
+    (function () {
+      const root = document.querySelector('[data-final-grade-app]');
+      if (!root) return;
+
+      const inCurr = root.querySelector('[data-curr-grade]');
+      const inTar = root.querySelector('[data-target-grade]');
+      const inWeight = root.querySelector('[data-exam-weight]');
+      const weightDisp = root.querySelector('[data-weight-display]');
+      const scoreNeeded = root.querySelector('[data-score-needed]');
+      const scoreAdvice = root.querySelector('[data-score-advice]');
+      const diffBadge = root.querySelector('[data-diff-badge]');
+      const whatIfTable = root.querySelector('[data-whatif-table]');
+      const resetBtn = root.querySelector('[data-reset-btn]');
+      const presets = root.querySelectorAll('[data-target-preset]');
+
+      function update() {
+        const curr = Math.max(0, parseFloat(inCurr.value || '0'));
+        const target = Math.max(0, parseFloat(inTar.value || '90'));
+        const weight = Math.max(1, Math.min(99, parseFloat(inWeight.value || '30')));
+        const wFrac = weight / 100;
+        const currFrac = 1 - wFrac;
+
+        if (weightDisp) weightDisp.textContent = `${weight}%`;
+
+        const required = (target - (curr * currFrac)) / wFrac;
+        if (scoreNeeded) scoreNeeded.textContent = `${required.toFixed(2)}%`;
+
+        if (diffBadge && scoreAdvice) {
+          if (required <= 50) {
+            diffBadge.className = 'rounded-full px-3 py-0.5 text-xs font-bold bg-green-500/10 text-green-600 dark:text-green-400 border border-green-500/20';
+            diffBadge.textContent = 'Very Easy';
+            scoreAdvice.textContent = `You only need a score of ${required.toFixed(1)}% to reach ${target}%.`;
+          } else if (required <= 80) {
+            diffBadge.className = 'rounded-full px-3 py-0.5 text-xs font-bold bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20';
+            diffBadge.textContent = 'Manageable';
+            scoreAdvice.textContent = `A steady study plan will achieve this target.`;
+          } else if (required <= 95) {
+            diffBadge.className = 'rounded-full px-3 py-0.5 text-xs font-bold bg-yellow-500/10 text-yellow-600 dark:text-yellow-400 border border-yellow-500/20';
+            diffBadge.textContent = 'Challenging';
+            scoreAdvice.textContent = `You will need a high A on your final exam.`;
+          } else if (required <= 100) {
+            diffBadge.className = 'rounded-full px-3 py-0.5 text-xs font-bold bg-orange-500/10 text-orange-600 dark:text-orange-400 border border-orange-500/20';
+            diffBadge.textContent = 'Extreme (>95%)';
+            scoreAdvice.textContent = `Near-perfect final exam score required.`;
+          } else {
+            diffBadge.className = 'rounded-full px-3 py-0.5 text-xs font-bold bg-red-500/10 text-red-600 dark:text-red-400 border border-red-500/20';
+            diffBadge.textContent = 'Requires Extra Credit';
+            scoreAdvice.textContent = `Score exceeds 100%. Extra credit or curve needed for a ${target}% course grade.`;
+          }
+        }
+
+        if (whatIfTable) {
+          const testScores = [60, 70, 80, 90, 100];
+          whatIfTable.innerHTML = testScores.map((score) => {
+            const finalGrade = (curr * currFrac) + (score * wFrac);
+            return `
+              <div class="flex items-center justify-between p-2 rounded-xl bg-[color:var(--surface)] border border-[color:var(--border)]">
+                <span class="font-medium text-[color:var(--muted)]">If you score ${score}% on exam</span>
+                <span class="font-bold text-[color:var(--fg)]">${finalGrade.toFixed(2)}% Overall</span>
+              </div>
+            `;
+          }).join('');
+        }
+      }
+
+      inCurr.addEventListener('input', update);
+      inTar.addEventListener('input', update);
+      inWeight.addEventListener('input', update);
+
+      presets.forEach((btn) => {
+        btn.addEventListener('click', () => {
+          inTar.value = btn.dataset.targetPreset || '90';
+          update();
+        });
+      });
+
+      if (resetBtn) {
+        resetBtn.addEventListener('click', () => {
+          inCurr.value = '82';
+          inTar.value = '90';
+          inWeight.value = '30';
+          update();
+        });
+      }
+
+      update();
+    })();
+  </script>
+</SiteLayout>

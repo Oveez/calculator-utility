@@ -1,0 +1,193 @@
+---
+import SiteLayout from '../../layouts/SiteLayout.astro';
+import Icon from '../../components/Icon.astro';
+import { siteName, toAbsoluteUrl, withBasePath } from '../../utils/site';
+
+const pageTitle = `UTM Parameter Parser — Extract UTM Tags from Links · ${siteName}`;
+const pageDesc = 'Extract and inspect Google Analytics UTM campaign tags (Source, Medium, Campaign, Term, Content) from marketing links online. 100% private in-browser tool.';
+const canonicalUrl = toAbsoluteUrl('/url-tools/utm-parser/');
+
+const breadcrumbItems = [
+  { label: 'Home', href: toAbsoluteUrl('/') },
+  { label: 'URL Tools', href: toAbsoluteUrl('/url-tools/') },
+  { label: 'UTM Parser' },
+];
+
+const schemaFaq = [
+  {
+    question: 'How does the UTM Parser extract tags?',
+    answer: 'It inspects the link’s query parameters for standard tracking keys: `utm_source`, `utm_medium`, `utm_campaign`, `utm_term`, and `utm_content`.',
+  },
+];
+
+const schemaGraph = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebApplication',
+    name: 'UTM Parameter Parser',
+    url: canonicalUrl,
+    applicationCategory: 'MarketingApplication',
+    operatingSystem: 'All',
+    browserRequirements: 'Requires JavaScript',
+    description: pageDesc,
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: breadcrumbItems.map((item, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      name: item.label,
+      item: item.href,
+    })),
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: schemaFaq.map((item) => ({
+      '@type': 'Question',
+      name: item.question,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: item.answer,
+      },
+    })),
+  },
+];
+---
+
+<SiteLayout title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(schemaGraph)} />
+
+  <article class="space-y-10 py-2" data-utm-parser-app>
+    <nav aria-label="Breadcrumb">
+      <ol class="flex flex-wrap items-center gap-2 text-xs text-[color:var(--muted)]">
+        {breadcrumbItems.map((item, index) => (
+          <li class="flex items-center gap-2">
+            {index > 0 && <span aria-hidden="true">/</span>}
+            {item.href ? (
+              <a class="transition hover:text-[color:var(--fg)]" href={item.href}>
+                {item.label}
+              </a>
+            ) : (
+              <span aria-current="page" class="font-semibold text-[color:var(--fg)]">
+                {item.label}
+              </span>
+            )}
+          </li>
+        ))}
+      </ol>
+    </nav>
+
+    <header class="space-y-3">
+      <div class="inline-flex items-center gap-2 rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1 text-xs font-semibold text-[color:var(--muted)]">
+        <span class="inline-block h-2 w-2 rounded-full bg-emerald-500"></span>
+        <span>Campaign Tag Inspector</span>
+      </div>
+      <h1 class="text-2xl sm:text-4xl font-extrabold tracking-tight text-[color:var(--fg)]">
+        UTM Parameter Parser &amp; Inspector
+      </h1>
+      <p class="max-w-2xl text-xs sm:text-sm text-[color:var(--muted)] leading-relaxed">
+        Decode and extract Google Analytics UTM marketing tags from ad links, sponsored posts, and email campaigns.
+      </p>
+    </header>
+
+    <div class="space-y-6">
+      <div class="space-y-2">
+        <label for="url-in" class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Tracked URL Input</label>
+        <textarea
+          id="url-in"
+          rows="3"
+          class="w-full font-mono text-xs leading-relaxed rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-[color:var(--fg)] focus:border-[color:var(--border-strong)] focus:outline-hidden"
+          placeholder="Paste URL containing utm_ parameters here..."
+        >https://calculatorutility.tech/developer-tools/?utm_source=twitter&utm_medium=social&utm_campaign=summer_launch&utm_term=dev_tools&utm_content=hero_banner</textarea>
+      </div>
+
+      <!-- UTM Breakdown Cards -->
+      <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 space-y-1">
+          <span class="text-[10px] font-bold text-[color:var(--muted)] uppercase">Campaign Source</span>
+          <p id="res-source" class="font-mono text-sm font-bold text-emerald-500">-</p>
+        </div>
+        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 space-y-1">
+          <span class="text-[10px] font-bold text-[color:var(--muted)] uppercase">Campaign Medium</span>
+          <p id="res-medium" class="font-mono text-sm font-bold text-[color:var(--fg)]">-</p>
+        </div>
+        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 space-y-1">
+          <span class="text-[10px] font-bold text-[color:var(--muted)] uppercase">Campaign Name</span>
+          <p id="res-campaign" class="font-mono text-sm font-bold text-[color:var(--fg)]">-</p>
+        </div>
+        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 space-y-1">
+          <span class="text-[10px] font-bold text-[color:var(--muted)] uppercase">Campaign Term</span>
+          <p id="res-term" class="font-mono text-sm text-[color:var(--fg)]">-</p>
+        </div>
+        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 space-y-1">
+          <span class="text-[10px] font-bold text-[color:var(--muted)] uppercase">Campaign Content</span>
+          <p id="res-content" class="font-mono text-sm text-[color:var(--fg)]">-</p>
+        </div>
+        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 space-y-1">
+          <span class="text-[10px] font-bold text-[color:var(--muted)] uppercase">Clean Base URL</span>
+          <p id="res-clean" class="font-mono text-xs text-[color:var(--muted)] truncate">-</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- FAQs -->
+    <section class="space-y-4">
+      <h2 class="text-xl font-bold text-[color:var(--fg)]">Frequently Asked Questions</h2>
+      <div class="space-y-3">
+        {schemaFaq.map((faq) => (
+          <details class="group rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
+            <summary class="cursor-pointer list-none font-semibold text-sm sm:text-base text-[color:var(--fg)] flex items-center justify-between gap-4">
+              <span>{faq.question}</span>
+              <span class="text-xs text-[color:var(--muted)] group-open:rotate-180 transition-transform">▼</span>
+            </summary>
+            <p class="mt-3 text-xs sm:text-sm leading-relaxed text-[color:var(--muted)]">
+              {faq.answer}
+            </p>
+          </details>
+        ))}
+      </div>
+    </section>
+  </article>
+
+  <script is:inline>
+    (function () {
+      const root = document.querySelector('[data-utm-parser-app]');
+      if (!root) return;
+
+      const input = root.querySelector('#url-in');
+      const srcEl = root.querySelector('#res-source');
+      const medEl = root.querySelector('#res-medium');
+      const cmpEl = root.querySelector('#res-campaign');
+      const trmEl = root.querySelector('#res-term');
+      const cntEl = root.querySelector('#res-content');
+      const clnEl = root.querySelector('#res-clean');
+
+      function parseUtm() {
+        const raw = input.value.trim();
+        if (!raw) {
+          srcEl.textContent = '-'; medEl.textContent = '-'; cmpEl.textContent = '-';
+          trmEl.textContent = '-'; cntEl.textContent = '-'; clnEl.textContent = '-';
+          return;
+        }
+
+        try {
+          const url = new URL(raw.startsWith('http') ? raw : `https://${raw}`);
+          srcEl.textContent = url.searchParams.get('utm_source') || 'Not set';
+          medEl.textContent = url.searchParams.get('utm_medium') || 'Not set';
+          cmpEl.textContent = url.searchParams.get('utm_campaign') || 'Not set';
+          trmEl.textContent = url.searchParams.get('utm_term') || 'Not set';
+          cntEl.textContent = url.searchParams.get('utm_content') || 'Not set';
+
+          clnEl.textContent = `${url.origin}${url.pathname}`;
+        } catch (e) {
+          srcEl.textContent = 'Invalid URL';
+        }
+      }
+
+      input.addEventListener('input', parseUtm);
+      parseUtm();
+    })();
+  </script>
+</SiteLayout>

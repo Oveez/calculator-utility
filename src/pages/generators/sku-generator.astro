@@ -1,0 +1,204 @@
+---
+import SiteLayout from '../../layouts/SiteLayout.astro';
+import Icon from '../../components/Icon.astro';
+import { siteName, toAbsoluteUrl, withBasePath } from '../../utils/site';
+
+const pageTitle = `Retail SKU Generator — Product Inventory Code Maker · ${siteName}`;
+const pageDesc = 'Create structured Stock Keeping Unit (SKU) product codes for e-commerce, Shopify, and warehouse inventory management online. 100% private in-browser tool.';
+const canonicalUrl = toAbsoluteUrl('/generators/sku-generator/');
+
+const breadcrumbItems = [
+  { label: 'Home', href: toAbsoluteUrl('/') },
+  { label: 'Generators', href: toAbsoluteUrl('/generators/') },
+  { label: 'SKU Generator' },
+];
+
+const schemaFaq = [
+  {
+    question: 'What is the structure of an e-commerce SKU code?',
+    answer: 'An effective SKU follows a hierarchical alphanumeric pattern: `[Brand]-[Category]-[Subcategory]-[Color/Size]-[Variant]` (e.g. `APP-TSH-BLK-MD-001` for Apparel > T-Shirt > Black > Medium > Item 1).',
+  },
+];
+
+const schemaGraph = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebApplication',
+    name: 'Retail SKU Generator',
+    url: canonicalUrl,
+    applicationCategory: 'BusinessApplication',
+    operatingSystem: 'All',
+    browserRequirements: 'Requires JavaScript',
+    description: pageDesc,
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: breadcrumbItems.map((item, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      name: item.label,
+      item: item.href,
+    })),
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: schemaFaq.map((item) => ({
+      '@type': 'Question',
+      name: item.question,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: item.answer,
+      },
+    })),
+  },
+];
+---
+
+<SiteLayout title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(schemaGraph)} />
+
+  <article class="space-y-10 py-2" data-sku-app>
+    <nav aria-label="Breadcrumb">
+      <ol class="flex flex-wrap items-center gap-2 text-xs text-[color:var(--muted)]">
+        {breadcrumbItems.map((item, index) => (
+          <li class="flex items-center gap-2">
+            {index > 0 && <span aria-hidden="true">/</span>}
+            {item.href ? (
+              <a class="transition hover:text-[color:var(--fg)]" href={item.href}>
+                {item.label}
+              </a>
+            ) : (
+              <span aria-current="page" class="font-semibold text-[color:var(--fg)]">
+                {item.label}
+              </span>
+            )}
+          </li>
+        ))}
+      </ol>
+    </nav>
+
+    <header class="space-y-3">
+      <div class="inline-flex items-center gap-2 rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1 text-xs font-semibold text-[color:var(--muted)]">
+        <span class="inline-block h-2 w-2 rounded-full bg-emerald-500"></span>
+        <span>E-Commerce Inventory Serializer</span>
+      </div>
+      <h1 class="text-2xl sm:text-4xl font-extrabold tracking-tight text-[color:var(--fg)]">
+        Retail Product SKU Generator
+      </h1>
+      <p class="max-w-2xl text-xs sm:text-sm text-[color:var(--muted)] leading-relaxed">
+        Generate structured, easy-to-read Stock Keeping Unit (SKU) codes for Shopify, Amazon, and inventory stores.
+      </p>
+    </header>
+
+    <div class="space-y-6">
+      <!-- Generated SKU Hero Preview -->
+      <div class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-8 sm:p-12 text-center space-y-4">
+        <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Sample SKU Output</span>
+        <p id="sku-hero" class="text-3xl sm:text-5xl font-black text-emerald-500 min-h-16 flex items-center justify-center font-mono select-all">
+          APP-TSH-BLK-MD-001
+        </p>
+        <button
+          type="button"
+          data-copy-hero
+          class="rounded-xl bg-[color:var(--fg)] px-6 py-2.5 text-xs font-bold text-[color:var(--bg)] shadow-xs transition hover:opacity-90 active:scale-95"
+        >
+          Copy Sample SKU
+        </button>
+      </div>
+
+      <!-- Attributes Form -->
+      <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 text-xs">
+        <div>
+          <label for="brand-code" class="font-bold text-[color:var(--fg)] block mb-1">Brand / Dept (3-4 chars):</label>
+          <input
+            type="text"
+            id="brand-code"
+            value="APP"
+            class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-[color:var(--fg)] uppercase"
+          />
+        </div>
+        <div>
+          <label for="cat-code" class="font-bold text-[color:var(--fg)] block mb-1">Product Type / Category:</label>
+          <input
+            type="text"
+            id="cat-code"
+            value="TSH"
+            class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-[color:var(--fg)] uppercase"
+          />
+        </div>
+        <div>
+          <label for="color-code" class="font-bold text-[color:var(--fg)] block mb-1">Color / Finish:</label>
+          <input
+            type="text"
+            id="color-code"
+            value="BLK"
+            class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-[color:var(--fg)] uppercase"
+          />
+        </div>
+        <div>
+          <label for="size-code" class="font-bold text-[color:var(--fg)] block mb-1">Size / Variant:</label>
+          <input
+            type="text"
+            id="size-code"
+            value="MD"
+            class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-[color:var(--fg)] uppercase"
+          />
+        </div>
+      </div>
+    </div>
+
+    <!-- FAQs -->
+    <section class="space-y-4">
+      <h2 class="text-xl font-bold text-[color:var(--fg)]">Frequently Asked Questions</h2>
+      <div class="space-y-3">
+        {schemaFaq.map((faq) => (
+          <details class="group rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
+            <summary class="cursor-pointer list-none font-semibold text-sm sm:text-base text-[color:var(--fg)] flex items-center justify-between gap-4">
+              <span>{faq.question}</span>
+              <span class="text-xs text-[color:var(--muted)] group-open:rotate-180 transition-transform">▼</span>
+            </summary>
+            <p class="mt-3 text-xs sm:text-sm leading-relaxed text-[color:var(--muted)]">
+              {faq.answer}
+            </p>
+          </details>
+        ))}
+      </div>
+    </section>
+  </article>
+
+  <script is:inline>
+    (function () {
+      const root = document.querySelector('[data-sku-app]');
+      if (!root) return;
+
+      const brand = root.querySelector('#brand-code');
+      const cat = root.querySelector('#cat-code');
+      const col = root.querySelector('#color-code');
+      const size = root.querySelector('#size-code');
+      const hero = root.querySelector('#sku-hero');
+      const copyBtn = root.querySelector('[data-copy-hero]');
+
+      function update() {
+        const b = (brand.value.trim() || 'BRD').toUpperCase();
+        const c = (cat.value.trim() || 'CAT').toUpperCase();
+        const cl = (col.value.trim() || 'CLR').toUpperCase();
+        const s = (size.value.trim() || 'SZ').toUpperCase();
+
+        hero.textContent = `${b}-${c}-${cl}-${s}-001`;
+      }
+
+      [brand, cat, col, size].forEach(el => el.addEventListener('input', update));
+
+      copyBtn.addEventListener('click', () => {
+        navigator.clipboard.writeText(hero.textContent);
+        const orig = copyBtn.textContent;
+        copyBtn.textContent = 'Copied!';
+        setTimeout(() => copyBtn.textContent = orig, 1800);
+      });
+
+      update();
+    })();
+  </script>
+</SiteLayout>

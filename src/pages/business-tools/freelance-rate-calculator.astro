@@ -1,0 +1,263 @@
+---
+import SiteLayout from '../../layouts/SiteLayout.astro';
+import Icon from '../../components/Icon.astro';
+import { siteName, toAbsoluteUrl, withBasePath } from '../../utils/site';
+
+const pageTitle = `Freelance Rate Calculator | Hourly & Day Rate Pricing · ${siteName}`;
+const pageDesc = 'Calculate what you should charge as a freelancer per hour and per day based on target take-home salary, business expenses, taxes, billable hours, and unpaid vacation.';
+const canonicalUrl = toAbsoluteUrl('/business-tools/freelance-rate-calculator/');
+
+const breadcrumbItems = [
+  { label: 'Home', href: toAbsoluteUrl('/') },
+  { label: 'Business Tools', href: toAbsoluteUrl('/business-tools/') },
+  { label: 'Freelance Rate Calculator' },
+];
+
+const faqs = [
+  {
+    question: 'How do you calculate your freelance hourly rate from a salary target?',
+    answer: 'Freelancers cannot simply divide an annual salary by 2,080 hours (40 hrs × 52 weeks) because freelancers must pay both employee and employer self-employment taxes (15.3% in the US), cover software/hardware overhead, pay for health insurance, and cannot bill 100% of their working hours. A realistic billable ratio is 50% to 65% (20 to 25 billable hours per week).',
+  },
+  {
+    question: 'What is the standard rule of thumb for freelance pricing?',
+    answer: 'A common rule of thumb is to take your desired full-time employee salary (e.g. $80,000), add 25% to 35% for taxes and overhead ($105,000 gross), and divide by 1,000 to 1,200 annual billable hours, yielding an hourly rate between $85 and $105 per hour.',
+  },
+];
+
+const schemaGraph = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebApplication',
+    name: 'Freelance Rate Calculator',
+    url: canonicalUrl,
+    description: pageDesc,
+    applicationCategory: 'BusinessApplication',
+    operatingSystem: 'All',
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: breadcrumbItems.map((item, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      name: item.label,
+      item: item.href,
+    })),
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faqs.map((f) => ({
+      '@type': 'Question',
+      name: f.question,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: f.answer,
+      },
+    })),
+  },
+];
+---
+
+<SiteLayout title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(schemaGraph)} />
+
+  <article class="space-y-10 py-2">
+    <nav aria-label="Breadcrumb">
+      <ol class="flex flex-wrap items-center gap-2 text-xs text-[color:var(--muted)]">
+        {breadcrumbItems.map((item, index) => (
+          <li class="flex items-center gap-2">
+            {index > 0 && <span aria-hidden="true">/</span>}
+            {item.href ? (
+              <a class="transition hover:text-[color:var(--fg)]" href={item.href}>
+                {item.label}
+              </a>
+            ) : (
+              <span aria-current="page" class="font-semibold text-[color:var(--fg)]">
+                {item.label}
+              </span>
+            )}
+          </li>
+        ))}
+      </ol>
+    </nav>
+
+    <header class="space-y-3">
+      <div class="inline-flex items-center gap-2 rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3.5 py-1 text-xs font-semibold text-[color:var(--fg)]">
+        <span>Freelance Pricing &amp; Income Planning</span>
+      </div>
+      <h1 class="text-3xl font-extrabold tracking-tight text-[color:var(--fg)] sm:text-4xl">
+        Freelance Rate Calculator
+      </h1>
+      <p class="max-w-3xl text-sm leading-relaxed text-[color:var(--muted)] sm:text-base">
+        Determine the exact hourly rate and day rate you must charge clients to reach your annual take-home salary after factoring in taxes, software expenses, unpaid vacation, and non-billable hours.
+      </p>
+    </header>
+
+    <div
+      class="rounded-[2.5rem] border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-6 shadow-[var(--shadow)] sm:p-10"
+      data-freelance-app
+    >
+      <div class="grid gap-8 lg:grid-cols-[1.15fr_0.85fr]">
+        <form class="space-y-5" onsubmit="return false;">
+          <div class="flex items-center justify-between">
+            <h2 class="text-lg font-bold text-[color:var(--fg)]">Income &amp; Overhead Goals</h2>
+            <button type="button" class="cursor-pointer text-xs font-semibold text-[color:var(--muted)] hover:text-[color:var(--fg)]" data-reset-btn>
+              ↺ Reset
+            </button>
+          </div>
+
+          <div class="space-y-1.5">
+            <label for="target-net" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">
+              Desired Annual Take-Home Income ($)
+            </label>
+            <input
+              id="target-net"
+              type="number"
+              min="10000"
+              step="1000"
+              value="80000"
+              class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none"
+              data-target-net
+            />
+          </div>
+
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label for="annual-exp" class="block text-xs font-medium text-[color:var(--muted)]">Annual Expenses ($)</label>
+              <input id="annual-exp" type="number" value="6000" class="mt-1 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-annual-exp />
+              <p class="text-[10px] text-[color:var(--muted)] mt-0.5">Software, gear, accounting</p>
+            </div>
+            <div>
+              <label for="tax-rate" class="block text-xs font-medium text-[color:var(--muted)]">Estimated Tax Rate (%)</label>
+              <input id="tax-rate" type="number" min="0" max="60" value="28" class="mt-1 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-tax-rate />
+              <p class="text-[10px] text-[color:var(--muted)] mt-0.5">Self-employment + Income tax</p>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-3 pt-1">
+            <div>
+              <label for="vac-weeks" class="block text-xs font-medium text-[color:var(--muted)]">Vacation / Off (Weeks/Yr)</label>
+              <input id="vac-weeks" type="number" min="0" max="20" value="4" class="mt-1 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-vac-weeks />
+            </div>
+            <div>
+              <label for="billable-hrs" class="block text-xs font-medium text-[color:var(--muted)]">Billable Hours / Week</label>
+              <input id="billable-hrs" type="number" min="5" max="60" value="25" class="mt-1 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-billable-hrs />
+              <p class="text-[10px] text-[color:var(--muted)] mt-0.5">Excludes admin, sales, emails</p>
+            </div>
+          </div>
+        </form>
+
+        <div class="flex flex-col justify-between space-y-6 rounded-3xl border border-[color:var(--border)] bg-[color:var(--bg)] p-6 sm:p-8">
+          <div class="space-y-5">
+            <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Recommended Rates</span>
+
+            <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 text-center">
+              <p class="text-xs font-semibold text-[color:var(--muted)]">Minimum Hourly Rate</p>
+              <p class="mt-1 text-5xl font-black tracking-tight text-[color:var(--fg)]" data-res-hourly>
+                $97.59/hr
+              </p>
+              <p class="mt-2 text-xs font-medium text-[color:var(--muted)]" data-res-day>
+                Standard Day Rate (8 hrs): $781 / day
+              </p>
+            </div>
+
+            <div class="space-y-2 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-xs">
+              <div class="flex justify-between">
+                <span class="text-[color:var(--muted)]">Gross Annual Invoicing:</span>
+                <span class="font-bold text-[color:var(--fg)]" data-gross-annual>$117,111 / yr</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-[color:var(--muted)]">Monthly Invoicing Target:</span>
+                <span class="font-bold text-[color:var(--fg)]" data-gross-monthly>$9,759 / mo</span>
+              </div>
+              <div class="flex justify-between border-t border-[color:var(--border)] pt-2">
+                <span class="text-[color:var(--muted)]">Total Annual Billable Hours:</span>
+                <span class="font-mono font-bold text-[color:var(--accent)]" data-total-billable>1,200 hrs</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FAQs -->
+    <section class="space-y-4">
+      <h2 class="text-xl font-bold text-[color:var(--fg)]">Frequently Asked Questions</h2>
+      <div class="space-y-3">
+        {faqs.map((faq) => (
+          <details class="group rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
+            <summary class="cursor-pointer list-none font-semibold text-sm sm:text-base text-[color:var(--fg)] flex items-center justify-between gap-4">
+              <span>{faq.question}</span>
+              <span class="text-xs text-[color:var(--muted)] group-open:rotate-180 transition-transform">▼</span>
+            </summary>
+            <p class="mt-3 text-xs sm:text-sm leading-relaxed text-[color:var(--muted)]">
+              {faq.answer}
+            </p>
+          </details>
+        ))}
+      </div>
+    </section>
+  </article>
+
+  <script is:inline>
+    (function () {
+      const root = document.querySelector('[data-freelance-app]');
+      if (!root) return;
+
+      const inNet = root.querySelector('[data-target-net]');
+      const inExp = root.querySelector('[data-annual-exp]');
+      const inTax = root.querySelector('[data-tax-rate]');
+      const inVac = root.querySelector('[data-vac-weeks]');
+      const inBillable = root.querySelector('[data-billable-hrs]');
+      const outHourly = root.querySelector('[data-res-hourly]');
+      const outDay = root.querySelector('[data-res-day]');
+      const outGrossAnn = root.querySelector('[data-gross-annual]');
+      const outGrossMo = root.querySelector('[data-gross-monthly]');
+      const outBillableTot = root.querySelector('[data-total-billable]');
+      const resetBtn = root.querySelector('[data-reset-btn]');
+
+      function update() {
+        const net = Math.max(0, parseFloat(inNet.value || '0'));
+        const exp = Math.max(0, parseFloat(inExp.value || '0'));
+        const taxRate = Math.min(0.6, Math.max(0, parseFloat(inTax.value || '28') / 100));
+        const vacWeeks = Math.min(20, Math.max(0, parseFloat(inVac.value || '4')));
+        const billableHrs = Math.max(1, parseFloat(inBillable.value || '25'));
+
+        const workingWeeks = Math.max(1, 52 - vacWeeks);
+        const totalBillable = workingWeeks * billableHrs;
+
+        // Gross = (Net / (1 - TaxRate)) + Expenses
+        const grossAnnual = (net / Math.max(0.01, 1 - taxRate)) + exp;
+        const hourly = totalBillable > 0 ? grossAnnual / totalBillable : 0;
+        const daily = hourly * 8;
+        const monthly = grossAnnual / 12;
+
+        if (outHourly) outHourly.textContent = `$${hourly.toFixed(2)}/hr`;
+        if (outDay) outDay.textContent = `Standard Day Rate (8 hrs): $${Math.round(daily).toLocaleString()} / day`;
+        if (outGrossAnn) outGrossAnn.textContent = `$${Math.round(grossAnnual).toLocaleString()} / yr`;
+        if (outGrossMo) outGrossMo.textContent = `$${Math.round(monthly).toLocaleString()} / mo`;
+        if (outBillableTot) outBillableTot.textContent = `${Math.round(totalBillable).toLocaleString()} hrs (${workingWeeks} working wks)`;
+      }
+
+      inNet.addEventListener('input', update);
+      inExp.addEventListener('input', update);
+      inTax.addEventListener('input', update);
+      inVac.addEventListener('input', update);
+      inBillable.addEventListener('input', update);
+
+      if (resetBtn) {
+        resetBtn.addEventListener('click', () => {
+          inNet.value = '80000';
+          inExp.value = '6000';
+          inTax.value = '28';
+          inVac.value = '4';
+          inBillable.value = '25';
+          update();
+        });
+      }
+
+      update();
+    })();
+  </script>
+</SiteLayout>

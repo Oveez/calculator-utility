@@ -1,0 +1,220 @@
+---
+import SiteLayout from '../../layouts/SiteLayout.astro';
+import Icon from '../../components/Icon.astro';
+import { siteName, toAbsoluteUrl, withBasePath } from '../../utils/site';
+
+const pageTitle = `Whitespace Remover — Strip Extra Spaces & Tabs · ${siteName}`;
+const pageDesc = 'Remove extra spaces, collapse multiple whitespaces, strip leading/trailing spaces, and remove tab characters online. 100% private in-browser tool.';
+const canonicalUrl = toAbsoluteUrl('/text-tools/whitespace-remover/');
+
+const breadcrumbItems = [
+  { label: 'Home', href: toAbsoluteUrl('/') },
+  { label: 'Text Tools', href: toAbsoluteUrl('/text-tools/') },
+  { label: 'Whitespace Remover' },
+];
+
+const schemaFaq = [
+  {
+    question: 'How does the whitespace remover collapse spaces?',
+    answer: 'It replaces multiple consecutive spaces or tabs with a single space (`\\s+` to ` `), and trims leading and trailing whitespace from the start and end of every line.',
+  },
+];
+
+const schemaGraph = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebApplication',
+    name: 'Whitespace Remover',
+    url: canonicalUrl,
+    applicationCategory: 'TextApplication',
+    operatingSystem: 'All',
+    browserRequirements: 'Requires JavaScript',
+    description: pageDesc,
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: breadcrumbItems.map((item, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      name: item.label,
+      item: item.href,
+    })),
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: schemaFaq.map((item) => ({
+      '@type': 'Question',
+      name: item.question,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: item.answer,
+      },
+    })),
+  },
+];
+---
+
+<SiteLayout title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(schemaGraph)} />
+
+  <article class="space-y-10 py-2" data-ws-app>
+    <nav aria-label="Breadcrumb">
+      <ol class="flex flex-wrap items-center gap-2 text-xs text-[color:var(--muted)]">
+        {breadcrumbItems.map((item, index) => (
+          <li class="flex items-center gap-2">
+            {index > 0 && <span aria-hidden="true">/</span>}
+            {item.href ? (
+              <a class="transition hover:text-[color:var(--fg)]" href={item.href}>
+                {item.label}
+              </a>
+            ) : (
+              <span aria-current="page" class="font-semibold text-[color:var(--fg)]">
+                {item.label}
+              </span>
+            )}
+          </li>
+        ))}
+      </ol>
+    </nav>
+
+    <header class="space-y-3">
+      <div class="inline-flex items-center gap-2 rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1 text-xs font-semibold text-[color:var(--muted)]">
+        <span class="inline-block h-2 w-2 rounded-full bg-emerald-500"></span>
+        <span>Space &amp; Tab Normalization</span>
+      </div>
+      <h1 class="text-2xl sm:text-4xl font-extrabold tracking-tight text-[color:var(--fg)]">
+        Whitespace Remover &amp; Normalizer
+      </h1>
+      <p class="max-w-2xl text-xs sm:text-sm text-[color:var(--muted)] leading-relaxed">
+        Collapse double spaces, remove leading and trailing padding, and convert tabs into single spaces.
+      </p>
+    </header>
+
+    <div class="grid gap-6 lg:grid-cols-2">
+      <div class="space-y-3">
+        <div class="flex items-center justify-between">
+          <label for="text-in" class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Original Text</label>
+          <div class="flex items-center gap-2 text-xs">
+            <button type="button" data-sample-btn class="text-[color:var(--primary)] hover:underline font-semibold">Load Sample</button>
+            <span class="text-[color:var(--border)]">|</span>
+            <button type="button" data-clear-btn class="text-[color:var(--muted)] hover:text-[color:var(--fg)]">Clear</button>
+          </div>
+        </div>
+        <textarea
+          id="text-in"
+          rows="14"
+          class="w-full font-mono text-xs leading-relaxed rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-[color:var(--fg)] focus:border-[color:var(--border-strong)] focus:outline-hidden"
+          placeholder="Paste text with excessive spaces here..."
+        ></textarea>
+
+        <div class="space-y-2 rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3 text-xs">
+          <label class="flex items-center gap-2 text-[color:var(--muted)] cursor-pointer">
+            <input type="checkbox" id="opt-collapse" checked class="rounded accent-[color:var(--fg)]" />
+            <span>Collapse multiple spaces to single space</span>
+          </label>
+          <label class="flex items-center gap-2 text-[color:var(--muted)] cursor-pointer">
+            <input type="checkbox" id="opt-trim" checked class="rounded accent-[color:var(--fg)]" />
+            <span>Trim line start and end spaces</span>
+          </label>
+          <label class="flex items-center gap-2 text-[color:var(--muted)] cursor-pointer">
+            <input type="checkbox" id="opt-tabs" checked class="rounded accent-[color:var(--fg)]" />
+            <span>Replace tabs with single space</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="space-y-3">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Cleaned Output</span>
+          <button type="button" data-copy-btn class="inline-flex items-center gap-1 text-xs font-bold text-[color:var(--fg)] hover:underline">
+            <Icon name="copy" class="w-3.5 h-3.5" />
+            <span>Copy</span>
+          </button>
+        </div>
+        <textarea
+          id="text-out"
+          rows="16"
+          readonly
+          class="w-full font-mono text-xs leading-relaxed rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-4 text-[color:var(--fg)] focus:outline-hidden"
+          placeholder="Normalized text will appear here..."
+        ></textarea>
+      </div>
+    </div>
+
+    <!-- FAQs -->
+    <section class="space-y-4">
+      <h2 class="text-xl font-bold text-[color:var(--fg)]">Frequently Asked Questions</h2>
+      <div class="space-y-3">
+        {schemaFaq.map((faq) => (
+          <details class="group rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
+            <summary class="cursor-pointer list-none font-semibold text-sm sm:text-base text-[color:var(--fg)] flex items-center justify-between gap-4">
+              <span>{faq.question}</span>
+              <span class="text-xs text-[color:var(--muted)] group-open:rotate-180 transition-transform">▼</span>
+            </summary>
+            <p class="mt-3 text-xs sm:text-sm leading-relaxed text-[color:var(--muted)]">
+              {faq.answer}
+            </p>
+          </details>
+        ))}
+      </div>
+    </section>
+  </article>
+
+  <script is:inline>
+    (function () {
+      const root = document.querySelector('[data-ws-app]');
+      if (!root) return;
+
+      const input = root.querySelector('#text-in');
+      const output = root.querySelector('#text-out');
+      const optCollapse = root.querySelector('#opt-collapse');
+      const optTrim = root.querySelector('#opt-trim');
+      const optTabs = root.querySelector('#opt-tabs');
+      const sampleBtn = root.querySelector('[data-sample-btn]');
+      const clearBtn = root.querySelector('[data-clear-btn]');
+      const copyBtn = root.querySelector('[data-copy-btn]');
+
+      function clean() {
+        let text = input.value;
+        if (!text) { output.value = ''; return; }
+
+        if (optTabs.checked) text = text.replace(/\t/g, ' ');
+
+        const lines = text.split('\n').map(line => {
+          let l = line;
+          if (optCollapse.checked) l = l.replace(/ +/g, ' ');
+          if (optTrim.checked) l = l.trim();
+          return l;
+        });
+
+        output.value = lines.join('\n');
+      }
+
+      input.addEventListener('input', clean);
+      [optCollapse, optTrim, optTabs].forEach(cb => cb.addEventListener('change', clean));
+
+      sampleBtn.addEventListener('click', () => {
+        input.value = `    This    sentence     has   excessive     spaces.   \n\t\tAnd this   line\tused multiple tabs.\t\n   Trailing whitespace at the end.     `;
+        clean();
+      });
+
+      clearBtn.addEventListener('click', () => {
+        input.value = '';
+        output.value = '';
+      });
+
+      copyBtn.addEventListener('click', () => {
+        if (!output.value) return;
+        navigator.clipboard.writeText(output.value);
+        const span = copyBtn.querySelector('span');
+        const orig = span.textContent;
+        span.textContent = 'Copied!';
+        setTimeout(() => span.textContent = orig, 1800);
+      });
+
+      sampleBtn.click();
+    })();
+  </script>
+</SiteLayout>

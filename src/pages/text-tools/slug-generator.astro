@@ -1,0 +1,210 @@
+---
+import SiteLayout from '../../layouts/SiteLayout.astro';
+import Icon from '../../components/Icon.astro';
+import { siteName, toAbsoluteUrl, withBasePath } from '../../utils/site';
+
+const pageTitle = `URL Slug Generator — Free SEO Slug Maker · ${siteName}`;
+const pageDesc = 'Convert blog post titles, article headlines, and strings into clean, SEO-friendly URL slugs online. Removes stop words, replaces spaces with hyphens, and formats in lowercase.';
+const canonicalUrl = toAbsoluteUrl('/text-tools/slug-generator/');
+
+const breadcrumbItems = [
+  { label: 'Home', href: toAbsoluteUrl('/') },
+  { label: 'Text Tools', href: toAbsoluteUrl('/text-tools/') },
+  { label: 'URL Slug Generator' },
+];
+
+const schemaFaq = [
+  {
+    question: 'What makes an SEO-friendly URL slug?',
+    answer: 'An optimal URL slug uses lowercase letters, replaces spaces and symbols with hyphens, removes common stop words (like "the", "a", "and"), and stays concise for search engine indexing.',
+  },
+];
+
+const schemaGraph = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebApplication',
+    name: 'URL Slug Generator',
+    url: canonicalUrl,
+    applicationCategory: 'TextApplication',
+    operatingSystem: 'All',
+    browserRequirements: 'Requires JavaScript',
+    description: pageDesc,
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: breadcrumbItems.map((item, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      name: item.label,
+      item: item.href,
+    })),
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: schemaFaq.map((item) => ({
+      '@type': 'Question',
+      name: item.question,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: item.answer,
+      },
+    })),
+  },
+];
+---
+
+<SiteLayout title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(schemaGraph)} />
+
+  <article class="space-y-10 py-2" data-slug-app>
+    <nav aria-label="Breadcrumb">
+      <ol class="flex flex-wrap items-center gap-2 text-xs text-[color:var(--muted)]">
+        {breadcrumbItems.map((item, index) => (
+          <li class="flex items-center gap-2">
+            {index > 0 && <span aria-hidden="true">/</span>}
+            {item.href ? (
+              <a class="transition hover:text-[color:var(--fg)]" href={item.href}>
+                {item.label}
+              </a>
+            ) : (
+              <span aria-current="page" class="font-semibold text-[color:var(--fg)]">
+                {item.label}
+              </span>
+            )}
+          </li>
+        ))}
+      </ol>
+    </nav>
+
+    <header class="space-y-3">
+      <div class="inline-flex items-center gap-2 rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1 text-xs font-semibold text-[color:var(--muted)]">
+        <span class="inline-block h-2 w-2 rounded-full bg-emerald-500"></span>
+        <span>SEO Permanent Link Builder</span>
+      </div>
+      <h1 class="text-2xl sm:text-4xl font-extrabold tracking-tight text-[color:var(--fg)]">
+        URL Slug Generator &amp; Permalink Maker
+      </h1>
+      <p class="max-w-2xl text-xs sm:text-sm text-[color:var(--muted)] leading-relaxed">
+        Convert headlines, blog titles, and product names into clean, lowercase URL slugs.
+      </p>
+    </header>
+
+    <div class="space-y-6">
+      <div class="space-y-2">
+        <label for="title-in" class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Article Title or Headline</label>
+        <input
+          type="text"
+          id="title-in"
+          class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-sm sm:text-base font-semibold text-[color:var(--fg)] focus:border-[color:var(--border-strong)] focus:outline-hidden"
+          placeholder="e.g. 10 Best Online Developer Tools for 2026 & Beyond!"
+          value="10 Best Online Developer Tools for 2026 & Beyond!"
+        />
+      </div>
+
+      <!-- Generated Slug Output Card -->
+      <div class="space-y-3 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 sm:p-6">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Generated SEO Slug</span>
+          <button type="button" data-copy-btn class="inline-flex items-center gap-1 text-xs font-bold text-[color:var(--fg)] hover:underline">
+            <Icon name="copy" class="w-3.5 h-3.5" />
+            <span>Copy Slug</span>
+          </button>
+        </div>
+        <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] px-4 py-3">
+          <p id="slug-out" class="font-mono text-base sm:text-lg font-bold text-emerald-500 select-all break-all">-</p>
+        </div>
+      </div>
+
+      <!-- Settings -->
+      <div class="flex flex-wrap items-center gap-4 text-xs text-[color:var(--muted)]">
+        <label class="flex items-center gap-2 cursor-pointer">
+          <input type="checkbox" id="opt-stopwords" class="rounded accent-[color:var(--fg)]" />
+          <span>Strip Common Stop Words (a, the, in, for, of)</span>
+        </label>
+        <label class="flex items-center gap-2 cursor-pointer">
+          <input type="checkbox" id="opt-lowercase" checked class="rounded accent-[color:var(--fg)]" />
+          <span>Force Lowercase</span>
+        </label>
+      </div>
+    </div>
+
+    <!-- FAQs -->
+    <section class="space-y-4">
+      <h2 class="text-xl font-bold text-[color:var(--fg)]">Frequently Asked Questions</h2>
+      <div class="space-y-3">
+        {schemaFaq.map((faq) => (
+          <details class="group rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
+            <summary class="cursor-pointer list-none font-semibold text-sm sm:text-base text-[color:var(--fg)] flex items-center justify-between gap-4">
+              <span>{faq.question}</span>
+              <span class="text-xs text-[color:var(--muted)] group-open:rotate-180 transition-transform">▼</span>
+            </summary>
+            <p class="mt-3 text-xs sm:text-sm leading-relaxed text-[color:var(--muted)]">
+              {faq.answer}
+            </p>
+          </details>
+        ))}
+      </div>
+    </section>
+  </article>
+
+  <script is:inline>
+    (function () {
+      const root = document.querySelector('[data-slug-app]');
+      if (!root) return;
+
+      const input = root.querySelector('#title-in');
+      const slugOut = root.querySelector('#slug-out');
+      const optStopwords = root.querySelector('#opt-stopwords');
+      const optLowercase = root.querySelector('#opt-lowercase');
+      const copyBtn = root.querySelector('[data-copy-btn]');
+
+      const STOP_WORDS = new Set(['a', 'an', 'the', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for', 'of', 'with', 'by']);
+
+      function generateSlug() {
+        let text = input.value.trim();
+        if (!text) { slugOut.textContent = '-'; return; }
+
+        if (optLowercase.checked) {
+          text = text.toLowerCase();
+        }
+
+        // Replace ampersands
+        text = text.replace(/&/g, ' and ');
+
+        // Split tokens
+        let tokens = text.split(/\s+/).filter(t => t.length > 0);
+
+        if (optStopwords.checked) {
+          tokens = tokens.filter(t => !STOP_WORDS.has(t.toLowerCase()));
+        }
+
+        let slug = tokens.join('-')
+          .replace(/[^\w\-]+/g, '')
+          .replace(/\-\-+/g, '-')
+          .replace(/^-+/, '')
+          .replace(/-+$/, '');
+
+        slugOut.textContent = slug || '-';
+      }
+
+      input.addEventListener('input', generateSlug);
+      optStopwords.addEventListener('change', generateSlug);
+      optLowercase.addEventListener('change', generateSlug);
+
+      copyBtn.addEventListener('click', () => {
+        const text = slugOut.textContent;
+        if (!text || text === '-') return;
+        navigator.clipboard.writeText(text);
+        const span = copyBtn.querySelector('span');
+        const orig = span.textContent;
+        span.textContent = 'Copied!';
+        setTimeout(() => span.textContent = orig, 1800);
+      });
+
+      generateSlug();
+    })();
+  </script>
+</SiteLayout>

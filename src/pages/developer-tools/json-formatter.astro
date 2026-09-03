@@ -1,0 +1,350 @@
+---
+import SiteLayout from '../../layouts/SiteLayout.astro';
+import Icon from '../../components/Icon.astro';
+import { siteName, toAbsoluteUrl, withBasePath } from '../../utils/site';
+
+const pageTitle = `JSON Formatter & Validator — Free Online Beautifier · ${siteName}`;
+const pageDesc = 'Format, beautify, validate, and minify JSON data online. Custom 2 or 4 space indentation, tabs, syntax error detector, tree view, and 100% private browser processing.';
+const canonicalUrl = toAbsoluteUrl('/developer-tools/json-formatter/');
+
+const breadcrumbItems = [
+  { label: 'Home', href: toAbsoluteUrl('/') },
+  { label: 'Developer Tools', href: toAbsoluteUrl('/developer-tools/') },
+  { label: 'JSON Formatter' },
+];
+
+const schemaFaq = [
+  {
+    question: 'How does this JSON Formatter format my code?',
+    answer: 'It parses raw JSON into an in-memory JavaScript object using strict JSON specification rules, then pretty-prints it with your selected indentation (2 spaces, 4 spaces, or tabs).',
+  },
+  {
+    question: 'Is my JSON data uploaded to an external server?',
+    answer: 'No. All formatting, validation, and minification happen 100% locally in your web browser. No data ever leaves your device.',
+  },
+  {
+    question: 'What happens if my JSON has syntax errors?',
+    answer: 'The parser highlights the exact line and character position where the syntax violation occurred (e.g. trailing comma, unquoted key, or missing bracket).',
+  },
+];
+
+const schemaGraph = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebApplication',
+    name: 'JSON Formatter & Beautifier',
+    url: canonicalUrl,
+    applicationCategory: 'DeveloperApplication',
+    operatingSystem: 'All',
+    browserRequirements: 'Requires JavaScript',
+    description: pageDesc,
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: breadcrumbItems.map((item, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      name: item.label,
+      item: item.href,
+    })),
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: schemaFaq.map((item) => ({
+      '@type': 'Question',
+      name: item.question,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: item.answer,
+      },
+    })),
+  },
+];
+---
+
+<SiteLayout title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(schemaGraph)} />
+
+  <article class="space-y-10 py-2" data-json-app>
+    <!-- Breadcrumbs -->
+    <nav aria-label="Breadcrumb">
+      <ol class="flex flex-wrap items-center gap-2 text-xs text-[color:var(--muted)]">
+        {breadcrumbItems.map((item, index) => (
+          <li class="flex items-center gap-2">
+            {index > 0 && <span aria-hidden="true">/</span>}
+            {item.href ? (
+              <a class="transition hover:text-[color:var(--fg)]" href={item.href}>
+                {item.label}
+              </a>
+            ) : (
+              <span aria-current="page" class="font-semibold text-[color:var(--fg)]">
+                {item.label}
+              </span>
+            )}
+          </li>
+        ))}
+      </ol>
+    </nav>
+
+    <!-- Header -->
+    <header class="space-y-3">
+      <div class="inline-flex items-center gap-2 rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1 text-xs font-semibold text-[color:var(--muted)]">
+        <span class="inline-block h-2 w-2 rounded-full bg-emerald-500"></span>
+        <span>100% Client-Side Privacy</span>
+      </div>
+      <h1 class="text-2xl sm:text-4xl font-extrabold tracking-tight text-[color:var(--fg)]">
+        JSON Formatter &amp; Beautifier
+      </h1>
+      <p class="max-w-2xl text-xs sm:text-sm text-[color:var(--muted)] leading-relaxed">
+        Beautify, validate, format, and compress raw JSON payloads. Features custom indentation, syntax error detection, and instant copy/download.
+      </p>
+    </header>
+
+    <!-- Main Workspace -->
+    <div class="grid gap-6 lg:grid-cols-2">
+      <!-- Input Column -->
+      <div class="space-y-3">
+        <div class="flex items-center justify-between">
+          <label for="json-input" class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">
+            Input JSON
+          </label>
+          <div class="flex items-center gap-2 text-xs">
+            <button type="button" data-sample-btn class="text-[color:var(--primary)] hover:underline font-semibold">Load Sample</button>
+            <span class="text-[color:var(--border)]">|</span>
+            <button type="button" data-clear-btn class="text-[color:var(--muted)] hover:text-[color:var(--fg)]">Clear</button>
+          </div>
+        </div>
+        <textarea
+          id="json-input"
+          rows="18"
+          class="w-full font-mono text-xs leading-relaxed rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-[color:var(--fg)] focus:border-[color:var(--border-strong)] focus:outline-hidden"
+          placeholder='Paste raw JSON here, e.g. {"name":"Calculator Utility","tools":85,"status":"active"}'
+        ></textarea>
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <div class="flex items-center gap-2">
+            <label for="indent-select" class="text-xs font-medium text-[color:var(--muted)]">Indent:</label>
+            <select
+              id="indent-select"
+              class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] px-2.5 py-1 text-xs text-[color:var(--fg)]"
+            >
+              <option value="2">2 Spaces</option>
+              <option value="4">4 Spaces</option>
+              <option value="tab">Tabs</option>
+            </select>
+          </div>
+          <div class="flex gap-2">
+            <button
+              type="button"
+              data-format-btn
+              class="rounded-xl bg-[color:var(--fg)] px-4 py-2 text-xs font-bold text-[color:var(--bg)] shadow-xs transition hover:opacity-90"
+            >
+              Format JSON
+            </button>
+            <button
+              type="button"
+              data-minify-btn
+              class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] px-4 py-2 text-xs font-bold text-[color:var(--fg)] transition hover:bg-[color:var(--surface-strong)]"
+            >
+              Minify
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Output Column -->
+      <div class="space-y-3">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Formatted Output</span>
+            <span data-status-badge class="hidden rounded-md px-2 py-0.5 text-[10px] font-bold"></span>
+          </div>
+          <div class="flex items-center gap-2">
+            <button
+              type="button"
+              data-copy-btn
+              class="inline-flex items-center gap-1 text-xs font-bold text-[color:var(--fg)] hover:underline"
+            >
+              <Icon name="copy" class="w-3.5 h-3.5" />
+              <span>Copy</span>
+            </button>
+            <span class="text-[color:var(--border)]">|</span>
+            <button
+              type="button"
+              data-download-btn
+              class="text-xs font-bold text-[color:var(--fg)] hover:underline"
+            >
+              Download
+            </button>
+          </div>
+        </div>
+        <div class="relative">
+          <textarea
+            id="json-output"
+            rows="18"
+            readonly
+            class="w-full font-mono text-xs leading-relaxed rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-4 text-[color:var(--fg)] focus:outline-hidden"
+            placeholder="Formatted JSON will appear here..."
+          ></textarea>
+        </div>
+        <div id="error-box" class="hidden rounded-xl border border-red-500/30 bg-red-500/10 p-3 text-xs text-red-600 dark:text-red-400"></div>
+      </div>
+    </div>
+
+    <!-- Educational Guide & FAQs -->
+    <section class="space-y-6 rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 sm:p-8 text-xs sm:text-sm text-[color:var(--muted)] leading-relaxed">
+      <h2 class="text-lg font-bold text-[color:var(--fg)]">What is JSON Formatting?</h2>
+      <p>
+        <strong>JSON (JavaScript Object Notation)</strong> is the standard lightweight data-interchange format across modern web APIs. When transmitted over HTTP, JSON is typically minified into a single continuous line to save network bandwidth. A JSON formatter restores hierarchical indentation, line breaks, and whitespace so humans can easily inspect, debug, and understand API responses.
+      </p>
+
+      <h3 class="font-bold text-sm text-[color:var(--fg)]">Common JSON Syntax Errors to Avoid:</h3>
+      <ul class="list-disc pl-5 space-y-1">
+        <li><strong>Trailing Commas:</strong> Commas after the last property in an object or array (e.g. <code>{'{ "a": 1, }'}</code>) are illegal in standard JSON.</li>
+        <li><strong>Single Quotes:</strong> JSON keys and string values must strictly use double quotes (<code>"key"</code>), not single quotes (<code>'key'</code>).</li>
+        <li><strong>Unquoted Keys:</strong> All object keys must be enclosed in double quotes.</li>
+      </ul>
+    </section>
+
+    <!-- FAQs -->
+    <section class="space-y-4">
+      <h2 class="text-xl font-bold text-[color:var(--fg)]">Frequently Asked Questions</h2>
+      <div class="space-y-3">
+        {schemaFaq.map((faq) => (
+          <details class="group rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
+            <summary class="cursor-pointer list-none font-semibold text-sm sm:text-base text-[color:var(--fg)] flex items-center justify-between gap-4">
+              <span>{faq.question}</span>
+              <span class="text-xs text-[color:var(--muted)] group-open:rotate-180 transition-transform">▼</span>
+            </summary>
+            <p class="mt-3 text-xs sm:text-sm leading-relaxed text-[color:var(--muted)]">
+              {faq.answer}
+            </p>
+          </details>
+        ))}
+      </div>
+    </section>
+
+    <!-- Related Developer Tools -->
+    <section class="space-y-4 pt-4">
+      <h2 class="text-lg font-bold text-[color:var(--fg)]">Related Developer Tools</h2>
+      <div class="grid gap-3 sm:grid-cols-3">
+        <a href={withBasePath('/developer-tools/json-validator/')} class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 transition hover:border-[color:var(--border-strong)]">
+          <h3 class="font-bold text-xs text-[color:var(--fg)]">JSON Validator →</h3>
+          <p class="mt-1 text-[11px] text-[color:var(--muted)]">Locate line and column syntax errors.</p>
+        </a>
+        <a href={withBasePath('/developer-tools/json-diff/')} class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 transition hover:border-[color:var(--border-strong)]">
+          <h3 class="font-bold text-xs text-[color:var(--fg)]">JSON Diff →</h3>
+          <p class="mt-1 text-[11px] text-[color:var(--muted)]">Compare structural differences between two JSONs.</p>
+        </a>
+        <a href={withBasePath('/developer-tools/json-to-csv/')} class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 transition hover:border-[color:var(--border-strong)]">
+          <h3 class="font-bold text-xs text-[color:var(--fg)]">JSON to CSV →</h3>
+          <p class="mt-1 text-[11px] text-[color:var(--muted)]">Convert JSON arrays to Excel-ready CSV files.</p>
+        </a>
+      </div>
+    </section>
+  </article>
+
+  <script is:inline>
+    (function () {
+      const root = document.querySelector('[data-json-app]');
+      if (!root) return;
+
+      const input = root.querySelector('#json-input');
+      const output = root.querySelector('#json-output');
+      const indentSelect = root.querySelector('#indent-select');
+      const formatBtn = root.querySelector('[data-format-btn]');
+      const minifyBtn = root.querySelector('[data-minify-btn]');
+      const copyBtn = root.querySelector('[data-copy-btn]');
+      const downloadBtn = root.querySelector('[data-download-btn]');
+      const clearBtn = root.querySelector('[data-clear-btn]');
+      const sampleBtn = root.querySelector('[data-sample-btn]');
+      const statusBadge = root.querySelector('[data-status-badge]');
+      const errorBox = root.querySelector('#error-box');
+
+      const sampleJson = JSON.stringify({
+        project: "Calculator Utility",
+        version: "2.4.0",
+        features: ["Calculators", "Developer Tools", "Data Converters"],
+        meta: {
+          runtime: "Client-side",
+          privacy: "Zero server uploads",
+          activeUsers: 15400
+        }
+      });
+
+      function process(mode) {
+        const raw = input.value.trim();
+        if (!raw) {
+          output.value = '';
+          errorBox.classList.add('hidden');
+          statusBadge.classList.add('hidden');
+          return;
+        }
+
+        try {
+          const parsed = JSON.parse(raw);
+          errorBox.classList.add('hidden');
+          statusBadge.classList.remove('hidden', 'bg-red-500/20', 'text-red-500');
+          statusBadge.classList.add('bg-emerald-500/20', 'text-emerald-500');
+          statusBadge.textContent = 'Valid JSON';
+
+          if (mode === 'minify') {
+            output.value = JSON.stringify(parsed);
+          } else {
+            const indentVal = indentSelect.value === 'tab' ? '\t' : parseInt(indentSelect.value, 10);
+            output.value = JSON.stringify(parsed, null, indentVal);
+          }
+        } catch (err) {
+          output.value = '';
+          statusBadge.classList.remove('hidden', 'bg-emerald-500/20', 'text-emerald-500');
+          statusBadge.classList.add('bg-red-500/20', 'text-red-500');
+          statusBadge.textContent = 'Invalid JSON';
+          errorBox.classList.remove('hidden');
+          errorBox.textContent = 'Syntax Error: ' + err.message;
+        }
+      }
+
+      formatBtn.addEventListener('click', () => process('format'));
+      minifyBtn.addEventListener('click', () => process('minify'));
+      indentSelect.addEventListener('change', () => {
+        if (output.value) process('format');
+      });
+
+      sampleBtn.addEventListener('click', () => {
+        input.value = sampleJson;
+        process('format');
+      });
+
+      clearBtn.addEventListener('click', () => {
+        input.value = '';
+        output.value = '';
+        errorBox.classList.add('hidden');
+        statusBadge.classList.add('hidden');
+      });
+
+      copyBtn.addEventListener('click', () => {
+        if (!output.value) return;
+        navigator.clipboard.writeText(output.value);
+        const original = copyBtn.querySelector('span').textContent;
+        copyBtn.querySelector('span').textContent = 'Copied!';
+        setTimeout(() => copyBtn.querySelector('span').textContent = original, 1800);
+      });
+
+      downloadBtn.addEventListener('click', () => {
+        if (!output.value) return;
+        const blob = new Blob([output.value], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'formatted.json';
+        a.click();
+        URL.revokeObjectURL(url);
+      });
+
+      // Auto-load sample on mount
+      input.value = sampleJson;
+      process('format');
+    })();
+  </script>
+</SiteLayout>

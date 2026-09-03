@@ -1,0 +1,78 @@
+---
+import Icon from './Icon.astro';
+import { withBasePath } from '../utils/site';
+
+const currentPath = Astro.url.pathname;
+const isHome = currentPath === withBasePath('/') || currentPath === '/';
+const isCv = currentPath.includes('/career-tools/cv-maker');
+---
+
+<!-- Fixed App-Style Bottom Navigation Bar (Mobile only) -->
+<nav
+  id="mobile-bottom-nav"
+  class="fixed bottom-0 left-0 right-0 z-40 md:hidden border-t border-[color:var(--border)] bg-[color:var(--bg)]/95 backdrop-blur-lg shadow-lg transition-colors"
+  aria-label="Mobile Bottom Navigation"
+  style="padding-bottom: env(safe-area-inset-bottom, 0px);"
+>
+  <div class="grid grid-cols-5 items-center justify-around h-14 px-1">
+    <!-- 1. Home Tab -->
+    <a
+      href={withBasePath('/')}
+      class:list={[
+        'flex flex-col items-center justify-center gap-0.5 py-1 text-center transition',
+        isHome ? 'text-[color:var(--fg)] font-bold' : 'text-[color:var(--muted)] hover:text-[color:var(--fg)]',
+      ]}
+      aria-label="Home"
+    >
+      <Icon name="calculator" class="w-5 h-5" />
+      <span class="text-[10px] tracking-tight">Home</span>
+    </a>
+
+    <!-- 2. Categories / All Tools Tab -->
+    <a
+      href={withBasePath('/#calculators')}
+      class="flex flex-col items-center justify-center gap-0.5 py-1 text-center text-[color:var(--muted)] hover:text-[color:var(--fg)] transition"
+      aria-label="Browse Categories"
+    >
+      <Icon name="math" class="w-5 h-5" />
+      <span class="text-[10px] tracking-tight">Tools</span>
+    </a>
+
+    <!-- 3. Instant Search Tab (Opens Search Modal) -->
+    <button
+      type="button"
+      data-trigger-search
+      class="flex flex-col items-center justify-center gap-0.5 py-1 text-center text-[color:var(--muted)] hover:text-[color:var(--fg)] cursor-pointer transition"
+      aria-label="Search 186 Tools"
+    >
+      <div class="flex h-7 w-7 items-center justify-center rounded-xl bg-[color:var(--surface-strong)] border border-[color:var(--border)] text-[color:var(--fg)] shadow-xs">
+        <Icon name="search" class="w-3.5 h-3.5" />
+      </div>
+      <span class="text-[9px] font-semibold text-[color:var(--fg)]">Search</span>
+    </button>
+
+    <!-- 4. CV Maker Tab -->
+    <a
+      href={withBasePath('/career-tools/cv-maker/')}
+      class:list={[
+        'flex flex-col items-center justify-center gap-0.5 py-1 text-center transition',
+        isCv ? 'text-[color:var(--fg)] font-bold' : 'text-[color:var(--muted)] hover:text-[color:var(--fg)]',
+      ]}
+      aria-label="CV Maker"
+    >
+      <Icon name="career" class="w-5 h-5" />
+      <span class="text-[10px] tracking-tight">CV Maker</span>
+    </a>
+
+    <!-- 5. Drawer Menu Tab (Opens Slide-out Drawer) -->
+    <button
+      type="button"
+      data-trigger-drawer
+      class="flex flex-col items-center justify-center gap-0.5 py-1 text-center text-[color:var(--muted)] hover:text-[color:var(--fg)] cursor-pointer transition"
+      aria-label="Open Navigation Menu"
+    >
+      <Icon name="menu" class="w-5 h-5" />
+      <span class="text-[10px] tracking-tight">Menu</span>
+    </button>
+  </div>
+</nav>

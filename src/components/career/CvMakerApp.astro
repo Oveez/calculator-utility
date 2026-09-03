@@ -86,11 +86,50 @@ const { initialTemplate = 'professional' } = Astro.props as Props;
     </div>
   </div>
 
+  <!-- Mobile Mode Switcher Bar (Visible on mobile screens < 1024px) -->
+  <div class="flex items-center justify-between gap-2 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-1.5 shadow-sm lg:hidden">
+    <button
+      type="button"
+      id="cv-mobile-tab-edit"
+      class="flex-1 flex items-center justify-center gap-1.5 rounded-xl bg-[color:var(--fg)] text-[color:var(--bg)] py-2 text-xs font-bold transition shadow-xs cursor-pointer"
+    >
+      <svg class="w-3.5 h-3.5 stroke-current" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M12 20h9" />
+        <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
+      </svg>
+      <span>Edit Details</span>
+    </button>
+    <button
+      type="button"
+      id="cv-mobile-tab-preview"
+      class="flex-1 flex items-center justify-center gap-1.5 rounded-xl text-[color:var(--muted)] py-2 text-xs font-bold hover:text-[color:var(--fg)] transition cursor-pointer"
+    >
+      <svg class="w-3.5 h-3.5 stroke-current" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+        <circle cx="12" cy="12" r="3" />
+      </svg>
+      <span>Preview A4</span>
+    </button>
+    <button
+      type="button"
+      id="cv-mobile-btn-download"
+      class="flex items-center justify-center gap-1.5 rounded-xl bg-emerald-600 text-white px-3.5 py-2 text-xs font-bold shadow-xs hover:bg-emerald-700 transition cursor-pointer"
+      title="Download PDF"
+    >
+      <svg class="w-3.5 h-3.5 stroke-current" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+        <polyline points="7 10 12 15 17 10" />
+        <line x1="12" y1="15" x2="12" y2="3" />
+      </svg>
+      <span>PDF</span>
+    </button>
+  </div>
+
   <!-- Main Workspace Grid: Form Editor (Left) & Real A4 Document Preview (Right) -->
   <div class="grid gap-8 lg:grid-cols-12 lg:items-start">
     
-    <!-- Left Column: Form Editor (5-6 cols) -->
-    <div class="space-y-6 lg:col-span-6 xl:col-span-5">
+    <!-- Left Column: Form Editor (5-6 cols on desktop, full width on mobile edit mode) -->
+    <div id="cv-editor-column" class="space-y-6 w-full lg:col-span-6 xl:col-span-5">
       <form id="cv-form" class="space-y-5" onsubmit="return false;">
         
         <!-- Step Navigation Tabs -->
@@ -105,7 +144,7 @@ const { initialTemplate = 'professional' } = Astro.props as Props;
         </div>
 
         <!-- 1. PERSONAL / CONTACT SECTION -->
-        <div id="sec-personal" class="cv-tab-content space-y-4 rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-6 shadow-sm">
+        <div id="sec-personal" class="cv-tab-content space-y-4 rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-5 sm:p-6 shadow-sm">
           <div class="border-b border-[color:var(--border)] pb-3">
             <h3 class="text-sm font-bold text-[color:var(--fg)]">Personal &amp; Contact Details</h3>
             <p class="text-xs text-[color:var(--muted)] mt-0.5">Enter your verified contact info. Do not include personal age, marital status, or full street addresses.</p>
@@ -152,7 +191,7 @@ const { initialTemplate = 'professional' } = Astro.props as Props;
         </div>
 
         <!-- 2. PROFESSIONAL SUMMARY -->
-        <div id="sec-summary" class="cv-tab-content hidden space-y-4 rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-6 shadow-sm">
+        <div id="sec-summary" class="cv-tab-content hidden space-y-4 rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-5 sm:p-6 shadow-sm">
           <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between border-b border-[color:var(--border)] pb-3">
             <div>
               <h3 class="text-sm font-bold text-[color:var(--fg)]">Professional Summary</h3>
@@ -216,7 +255,7 @@ const { initialTemplate = 'professional' } = Astro.props as Props;
         </div>
 
         <!-- 3. EDUCATION SECTION -->
-        <div id="sec-education" class="cv-tab-content hidden space-y-4 rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-6 shadow-sm">
+        <div id="sec-education" class="cv-tab-content hidden space-y-4 rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-5 sm:p-6 shadow-sm">
           <div class="flex items-center justify-between border-b border-[color:var(--border)] pb-3">
             <div>
               <h3 class="text-sm font-bold text-[color:var(--fg)]">Education &amp; Degrees</h3>
@@ -232,7 +271,7 @@ const { initialTemplate = 'professional' } = Astro.props as Props;
         </div>
 
         <!-- 4. WORK EXPERIENCE SECTION -->
-        <div id="sec-experience" class="cv-tab-content hidden space-y-4 rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-6 shadow-sm">
+        <div id="sec-experience" class="cv-tab-content hidden space-y-4 rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-5 sm:p-6 shadow-sm">
           <div class="flex items-center justify-between border-b border-[color:var(--border)] pb-3">
             <div>
               <h3 class="text-sm font-bold text-[color:var(--fg)]">Work Experience</h3>
@@ -248,7 +287,7 @@ const { initialTemplate = 'professional' } = Astro.props as Props;
         </div>
 
         <!-- 5. SKILLS SECTION -->
-        <div id="sec-skills" class="cv-tab-content hidden space-y-4 rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-6 shadow-sm">
+        <div id="sec-skills" class="cv-tab-content hidden space-y-4 rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-5 sm:p-6 shadow-sm">
           <div class="border-b border-[color:var(--border)] pb-3">
             <h3 class="text-sm font-bold text-[color:var(--fg)]">Skills &amp; Competencies</h3>
             <p class="text-xs text-[color:var(--muted)] mt-0.5">Add hard skills, programming languages, tools, frameworks, and methodologies.</p>
@@ -266,7 +305,7 @@ const { initialTemplate = 'professional' } = Astro.props as Props;
         </div>
 
         <!-- 6. PROJECTS SECTION -->
-        <div id="sec-projects" class="cv-tab-content hidden space-y-4 rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-6 shadow-sm">
+        <div id="sec-projects" class="cv-tab-content hidden space-y-4 rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-5 sm:p-6 shadow-sm">
           <div class="flex items-center justify-between border-b border-[color:var(--border)] pb-3">
             <div>
               <h3 class="text-sm font-bold text-[color:var(--fg)]">Projects &amp; Portfolio</h3>
@@ -282,7 +321,7 @@ const { initialTemplate = 'professional' } = Astro.props as Props;
         </div>
 
         <!-- 7. EXTRA SECTIONS -->
-        <div id="sec-extras" class="cv-tab-content hidden space-y-5 rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-6 shadow-sm">
+        <div id="sec-extras" class="cv-tab-content hidden space-y-5 rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-5 sm:p-6 shadow-sm">
           
           <!-- Certifications -->
           <div class="space-y-3 border-b border-[color:var(--border)] pb-4">
@@ -345,8 +384,8 @@ const { initialTemplate = 'professional' } = Astro.props as Props;
       </form>
     </div>
 
-    <!-- Right Column: Live A4 Document Canvas Preview (6-7 cols) -->
-    <div class="space-y-3 lg:col-span-6 xl:col-span-7">
+    <!-- Right Column: Live A4 Document Canvas Preview (6-7 cols on desktop, dedicated preview mode on mobile) -->
+    <div id="cv-preview-column" class="hidden lg:block space-y-3 w-full lg:col-span-6 xl:col-span-7">
       <div class="flex items-center justify-between px-1">
         <div class="flex items-center gap-2">
           <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">A4 Live Document Preview</span>
@@ -358,13 +397,24 @@ const { initialTemplate = 'professional' } = Astro.props as Props;
       </div>
 
       <!-- Outer Viewport Frame -->
-      <div class="cv-preview-viewport overflow-x-auto rounded-3xl border border-[color:var(--border)] bg-slate-300 dark:bg-slate-900/80 p-3 sm:p-6 shadow-inner">
-        <!-- The Printable Document Container -->
-        <div
-          id="cv-preview-doc"
-          class="cv-sheet-paper mx-auto bg-white text-slate-900 shadow-2xl transition-all duration-150 template-professional"
-        >
-          <!-- Dynamic CV HTML is rendered here -->
+      <div class="cv-preview-viewport overflow-x-auto rounded-3xl border border-[color:var(--border)] bg-slate-200 dark:bg-slate-900/90 p-2 sm:p-5 shadow-inner flex flex-col items-center">
+        <!-- Zoom Toolbar -->
+        <div class="flex items-center justify-between w-full max-w-[210mm] mb-2 px-1 text-xs text-[color:var(--muted)]">
+          <div class="flex items-center gap-1.5">
+            <button type="button" id="cv-zoom-fit" class="rounded-lg bg-[color:var(--surface)] border border-[color:var(--border)] px-2.5 py-1 text-[11px] font-bold text-[color:var(--fg)] shadow-xs">Fit Width</button>
+            <button type="button" id="cv-zoom-100" class="rounded-lg bg-[color:var(--surface)] border border-[color:var(--border)] px-2.5 py-1 text-[11px] font-semibold text-[color:var(--muted)] hover:text-[color:var(--fg)]">100%</button>
+          </div>
+          <span id="cv-zoom-level-label" class="text-[10px] font-mono font-bold text-[color:var(--fg)]">Fit Width</span>
+        </div>
+
+        <!-- The Scaled Document Container -->
+        <div id="cv-scale-wrapper" class="w-full flex justify-center overflow-hidden transition-all duration-150">
+          <div
+            id="cv-preview-doc"
+            class="cv-sheet-paper mx-auto bg-white text-slate-900 shadow-2xl transition-transform duration-150 template-professional origin-top"
+          >
+            <!-- Dynamic CV HTML is rendered here -->
+          </div>
         </div>
       </div>
     </div>
@@ -1971,8 +2021,106 @@ const { initialTemplate = 'professional' } = Astro.props as Props;
     }
 
     document.getElementById('cv-download-pdf')?.addEventListener('click', downloadPdfDirect);
+    document.getElementById('cv-mobile-btn-download')?.addEventListener('click', downloadPdfDirect);
+
+    // =========================================================================
+    // MOBILE APP-STYLE VIEW TOGGLE & RESPONSIVE A4 DOCUMENT SCALING
+    // =========================================================================
+    const mobileTabEdit = document.getElementById('cv-mobile-tab-edit');
+    const mobileTabPreview = document.getElementById('cv-mobile-tab-preview');
+    const editorColumn = document.getElementById('cv-editor-column');
+    const previewColumn = document.getElementById('cv-preview-column');
+    const scaleWrapper = document.getElementById('cv-scale-wrapper');
+    const zoomFitBtn = document.getElementById('cv-zoom-fit');
+    const zoom100Btn = document.getElementById('cv-zoom-100');
+    const zoomLabel = document.getElementById('cv-zoom-level-label');
+
+    let currentScaleMode: 'fit' | '100' = 'fit';
+
+    function updateDocumentScale() {
+      if (!cvPreviewDoc || !scaleWrapper) return;
+      const isMobile = window.innerWidth < 1024;
+      const docNaturalWidth = 794; // Standard 210mm in 96 DPI CSS pixels
+
+      if (currentScaleMode === '100' && !isMobile) {
+        cvPreviewDoc.style.transform = 'none';
+        cvPreviewDoc.style.width = '100%';
+        cvPreviewDoc.style.maxWidth = '210mm';
+        scaleWrapper.style.height = 'auto';
+        if (zoomLabel) zoomLabel.textContent = '100%';
+        return;
+      }
+
+      // Calculate container width available
+      const containerWidth = scaleWrapper.parentElement?.clientWidth || window.innerWidth;
+      const targetWidth = Math.max(containerWidth - (isMobile ? 16 : 40), 280);
+      const scale = Math.min(1, targetWidth / docNaturalWidth);
+
+      if (scale < 0.98 || isMobile) {
+        cvPreviewDoc.style.transform = `scale(${scale.toFixed(3)})`;
+        cvPreviewDoc.style.transformOrigin = 'top center';
+        // Adjust wrapper height to eliminate blank space below scaled A4
+        const naturalHeight = cvPreviewDoc.offsetHeight || 1122;
+        scaleWrapper.style.height = `${Math.ceil(naturalHeight * scale) + 12}px`;
+        if (zoomLabel) zoomLabel.textContent = `${Math.round(scale * 100)}%`;
+      } else {
+        cvPreviewDoc.style.transform = 'none';
+        scaleWrapper.style.height = 'auto';
+        if (zoomLabel) zoomLabel.textContent = '100%';
+      }
+    }
+
+    function setMobileMode(mode: 'edit' | 'preview') {
+      if (!editorColumn || !previewColumn) return;
+      if (mode === 'edit') {
+        editorColumn.classList.remove('hidden');
+        previewColumn.classList.add('hidden');
+        previewColumn.classList.remove('block');
+        mobileTabEdit?.classList.add('bg-[color:var(--fg)]', 'text-[color:var(--bg)]');
+        mobileTabEdit?.classList.remove('text-[color:var(--muted)]');
+        mobileTabPreview?.classList.remove('bg-[color:var(--fg)]', 'text-[color:var(--bg)]');
+        mobileTabPreview?.classList.add('text-[color:var(--muted)]');
+      } else {
+        editorColumn.classList.add('hidden');
+        previewColumn.classList.remove('hidden');
+        previewColumn.classList.add('block');
+        mobileTabPreview?.classList.add('bg-[color:var(--fg)]', 'text-[color:var(--bg)]');
+        mobileTabPreview?.classList.remove('text-[color:var(--muted)]');
+        mobileTabEdit?.classList.remove('bg-[color:var(--fg)]', 'text-[color:var(--bg)]');
+        mobileTabEdit?.classList.add('text-[color:var(--muted)]');
+        // Render & scale immediately upon switching to preview
+        renderLivePreview();
+        setTimeout(updateDocumentScale, 50);
+      }
+    }
+
+    mobileTabEdit?.addEventListener('click', () => setMobileMode('edit'));
+    mobileTabPreview?.addEventListener('click', () => setMobileMode('preview'));
+
+    zoomFitBtn?.addEventListener('click', () => {
+      currentScaleMode = 'fit';
+      zoomFitBtn.classList.add('font-bold', 'text-[color:var(--fg)]');
+      zoom100Btn?.classList.remove('font-bold', 'text-[color:var(--fg)]');
+      updateDocumentScale();
+    });
+
+    zoom100Btn?.addEventListener('click', () => {
+      currentScaleMode = '100';
+      zoom100Btn.classList.add('font-bold', 'text-[color:var(--fg)]');
+      zoomFitBtn?.classList.remove('font-bold', 'text-[color:var(--fg)]');
+      updateDocumentScale();
+    });
+
+    window.addEventListener('resize', () => {
+      if (window.innerWidth >= 1024) {
+        editorColumn?.classList.remove('hidden');
+        previewColumn?.classList.remove('hidden');
+      }
+      updateDocumentScale();
+    });
 
     syncFormInputs();
+    setTimeout(updateDocumentScale, 100);
   }
 
   if (document.readyState === 'loading') {

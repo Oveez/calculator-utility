@@ -1,0 +1,242 @@
+---
+import SiteLayout from '../../layouts/SiteLayout.astro';
+import Icon from '../../components/Icon.astro';
+import { siteName, toAbsoluteUrl, withBasePath } from '../../utils/site';
+
+const pageTitle = `Classroom Seating Chart Generator — Visual Desk Layout Maker · ${siteName}`;
+const pageDesc = 'Create randomized classroom seating charts with customizable grid rows and columns (e.g. 5x5, 4x6). 100% private in-browser tool.';
+const canonicalUrl = toAbsoluteUrl('/education-tools/seating-chart-generator/');
+
+const breadcrumbItems = [
+  { label: 'Home', href: toAbsoluteUrl('/') },
+  { label: 'Education Tools', href: toAbsoluteUrl('/education-tools/') },
+  { label: 'Seating Chart Generator' },
+];
+
+const schemaFaq = [
+  {
+    question: 'How are students assigned to desks in the seating chart?',
+    answer: 'It shuffles the student roster using Fisher-Yates randomization and populates the classroom desk grid matrix sequentially, leaving extra unoccupied desks labeled as "Empty Desk".',
+  },
+];
+
+const schemaGraph = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebApplication',
+    name: 'Classroom Seating Chart Generator',
+    url: canonicalUrl,
+    applicationCategory: 'EducationalApplication',
+    operatingSystem: 'All',
+    browserRequirements: 'Requires JavaScript',
+    description: pageDesc,
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: breadcrumbItems.map((item, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      name: item.label,
+      item: item.href,
+    })),
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: schemaFaq.map((item) => ({
+      '@type': 'Question',
+      name: item.question,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: item.answer,
+      },
+    })),
+  },
+];
+---
+
+<SiteLayout title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(schemaGraph)} />
+
+  <article class="space-y-10 py-2" data-seating-app>
+    <nav aria-label="Breadcrumb">
+      <ol class="flex flex-wrap items-center gap-2 text-xs text-[color:var(--muted)]">
+        {breadcrumbItems.map((item, index) => (
+          <li class="flex items-center gap-2">
+            {index > 0 && <span aria-hidden="true">/</span>}
+            {item.href ? (
+              <a class="transition hover:text-[color:var(--fg)]" href={item.href}>
+                {item.label}
+              </a>
+            ) : (
+              <span aria-current="page" class="font-semibold text-[color:var(--fg)]">
+                {item.label}
+              </span>
+            )}
+          </li>
+        ))}
+      </ol>
+    </nav>
+
+    <header class="space-y-3">
+      <div class="inline-flex items-center gap-2 rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1 text-xs font-semibold text-[color:var(--muted)]">
+        <span class="inline-block h-2 w-2 rounded-full bg-emerald-500"></span>
+        <span>Classroom Desk Matrix Builder</span>
+      </div>
+      <h1 class="text-2xl sm:text-4xl font-extrabold tracking-tight text-[color:var(--fg)]">
+        Classroom Seating Chart Generator
+      </h1>
+      <p class="max-w-2xl text-xs sm:text-sm text-[color:var(--muted)] leading-relaxed">
+        Design custom grid seating arrangements with randomized student desk assignments for teachers.
+      </p>
+    </header>
+
+    <div class="space-y-6">
+      <div class="grid gap-4 sm:grid-cols-2 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 text-xs">
+        <div>
+          <label for="grid-rows" class="font-bold text-[color:var(--fg)] block mb-1">Rows (Depth):</label>
+          <input
+            type="number"
+            id="grid-rows"
+            min="2"
+            max="10"
+            value="4"
+            class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-[color:var(--fg)]"
+          />
+        </div>
+        <div>
+          <label for="grid-cols" class="font-bold text-[color:var(--fg)] block mb-1">Columns (Width):</label>
+          <input
+            type="number"
+            id="grid-cols"
+            min="2"
+            max="10"
+            value="5"
+            class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-[color:var(--fg)]"
+          />
+        </div>
+      </div>
+
+      <div class="space-y-2">
+        <label for="students-in" class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Student Names (One per line)</label>
+        <textarea
+          id="students-in"
+          rows="6"
+          class="w-full font-mono text-xs leading-relaxed rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-[color:var(--fg)] focus:border-[color:var(--border-strong)] focus:outline-hidden"
+          placeholder="Student Name 1&#10;Student Name 2"
+        >Alexander
+Charlotte
+Daniel
+Harper
+James
+Isabella
+Lucas
+Mia
+Ethan
+Amelia
+Benjamin
+Evelyn
+Liam
+Sophia
+Noah
+Ava</textarea>
+      </div>
+
+      <button
+        type="button"
+        id="gen-chart-btn"
+        class="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-[color:var(--fg)] py-2.5 text-xs font-bold text-[color:var(--bg)] shadow-xs transition hover:opacity-90 cursor-pointer"
+      >
+        <Icon name="education" class="w-4 h-4" />
+        <span>Generate Seating Chart</span>
+      </button>
+
+      <!-- Seating Chart Matrix Card -->
+      <div class="space-y-4 rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 sm:p-8">
+        <div class="rounded-xl bg-[color:var(--surface-strong)] py-2 text-center text-xs font-bold text-[color:var(--muted)] uppercase tracking-wider">
+          Teacher's Desk / Whiteboard
+        </div>
+
+        <div id="grid-container" class="grid gap-3 pt-4"></div>
+      </div>
+    </div>
+
+    <!-- FAQs -->
+    <section class="space-y-4">
+      <h2 class="text-xl font-bold text-[color:var(--fg)]">Frequently Asked Questions</h2>
+      <div class="space-y-3">
+        {schemaFaq.map((faq) => (
+          <details class="group rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
+            <summary class="cursor-pointer list-none font-semibold text-sm sm:text-base text-[color:var(--fg)] flex items-center justify-between gap-4">
+              <span>{faq.question}</span>
+              <span class="text-xs text-[color:var(--muted)] group-open:rotate-180 transition-transform">▼</span>
+            </summary>
+            <p class="mt-3 text-xs sm:text-sm leading-relaxed text-[color:var(--muted)]">
+              {faq.answer}
+            </p>
+          </details>
+        ))}
+      </div>
+    </section>
+  </article>
+
+  <script is:inline>
+    (function () {
+      const root = document.querySelector('[data-seating-app]');
+      if (!root) return;
+
+      const rowsIn = root.querySelector('#grid-rows');
+      const colsIn = root.querySelector('#grid-cols');
+      const studentsIn = root.querySelector('#students-in');
+      const genBtn = root.querySelector('#gen-chart-btn');
+      const grid = root.querySelector('#grid-container');
+
+      function shuffle(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+          const randArr = new Uint32Array(1);
+          crypto.getRandomValues(randArr);
+          const j = randArr[0] % (i + 1);
+          [array[i], array[j]] = [array[j], array[i]];
+        }
+        return array;
+      }
+
+      function generate() {
+        const rows = Math.min(10, Math.max(2, parseInt(rowsIn.value, 10) || 4));
+        const cols = Math.min(10, Math.max(2, parseInt(colsIn.value, 10) || 5));
+        const students = studentsIn.value.split('\n').map(s => s.trim()).filter(s => s.length > 0);
+
+        const shuffled = shuffle([...students]);
+        const totalDesks = rows * cols;
+
+        grid.style.gridTemplateColumns = `repeat(${cols}, minmax(0, 1fr))`;
+
+        const desks = [];
+        for (let i = 0; i < totalDesks; i++) {
+          const name = shuffled[i];
+          if (name) {
+            desks.push(`
+              <div class="flex flex-col items-center justify-center rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-3 text-center transition hover:border-emerald-500">
+                <span class="text-[10px] font-mono text-[color:var(--muted)]">Desk ${i + 1}</span>
+                <span class="text-xs font-bold text-[color:var(--fg)] truncate w-full mt-0.5">${name}</span>
+              </div>
+            `);
+          } else {
+            desks.push(`
+              <div class="flex flex-col items-center justify-center rounded-2xl border border-dashed border-[color:var(--border)] bg-transparent p-3 text-center opacity-40">
+                <span class="text-[10px] font-mono text-[color:var(--muted)]">Desk ${i + 1}</span>
+                <span class="text-xs italic text-[color:var(--muted)]">Empty</span>
+              </div>
+            `);
+          }
+        }
+
+        grid.innerHTML = desks.join('');
+      }
+
+      genBtn.addEventListener('click', generate);
+      generate();
+    })();
+  </script>
+</SiteLayout>

@@ -1,0 +1,241 @@
+---
+import SiteLayout from '../../layouts/SiteLayout.astro';
+import Icon from '../../components/Icon.astro';
+import { siteName, toAbsoluteUrl, withBasePath } from '../../utils/site';
+
+const pageTitle = `Image Format Converter — PNG to JPG, WebP Online · ${siteName}`;
+const pageDesc = 'Convert images between PNG, JPEG, and WebP formats online using client-side canvas. Fast conversion, zero server uploads, and instant download.';
+const canonicalUrl = toAbsoluteUrl('/image-tools/image-converter/');
+
+const breadcrumbItems = [
+  { label: 'Home', href: toAbsoluteUrl('/') },
+  { label: 'Image Tools', href: toAbsoluteUrl('/image-tools/') },
+  { label: 'Image Converter' },
+];
+
+const schemaFaq = [
+  {
+    question: 'Can I convert PNG transparency to JPEG without black backgrounds?',
+    answer: 'Yes. The converter renders a clean white background layer beneath PNG transparent pixels before encoding to JPEG, ensuring no dark artifact halos.',
+  },
+];
+
+const schemaGraph = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebApplication',
+    name: 'Image Format Converter',
+    url: canonicalUrl,
+    applicationCategory: 'ImageApplication',
+    operatingSystem: 'All',
+    browserRequirements: 'Requires JavaScript',
+    description: pageDesc,
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: breadcrumbItems.map((item, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      name: item.label,
+      item: item.href,
+    })),
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: schemaFaq.map((item) => ({
+      '@type': 'Question',
+      name: item.question,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: item.answer,
+      },
+    })),
+  },
+];
+---
+
+<SiteLayout title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(schemaGraph)} />
+
+  <article class="space-y-10 py-2" data-converter-app>
+    <nav aria-label="Breadcrumb">
+      <ol class="flex flex-wrap items-center gap-2 text-xs text-[color:var(--muted)]">
+        {breadcrumbItems.map((item, index) => (
+          <li class="flex items-center gap-2">
+            {index > 0 && <span aria-hidden="true">/</span>}
+            {item.href ? (
+              <a class="transition hover:text-[color:var(--fg)]" href={item.href}>
+                {item.label}
+              </a>
+            ) : (
+              <span aria-current="page" class="font-semibold text-[color:var(--fg)]">
+                {item.label}
+              </span>
+            )}
+          </li>
+        ))}
+      </ol>
+    </nav>
+
+    <header class="space-y-3">
+      <div class="inline-flex items-center gap-2 rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1 text-xs font-semibold text-[color:var(--muted)]">
+        <span class="inline-block h-2 w-2 rounded-full bg-emerald-500"></span>
+        <span>Canvas Format Transcoding</span>
+      </div>
+      <h1 class="text-2xl sm:text-4xl font-extrabold tracking-tight text-[color:var(--fg)]">
+        Image Format Converter
+      </h1>
+      <p class="max-w-2xl text-xs sm:text-sm text-[color:var(--muted)] leading-relaxed">
+        Convert between PNG, JPEG, and WebP image formats instantly inside your browser.
+      </p>
+    </header>
+
+    <div class="space-y-6">
+      <div id="dropzone-box" class="space-y-3 rounded-3xl border-2 border-dashed border-[color:var(--border)] bg-[color:var(--surface)] p-6 sm:p-8 text-center transition hover:border-[color:var(--border-strong)]">
+        <input type="file" id="img-file" accept="image/*" class="hidden" />
+        <label for="img-file" id="upload-prompt" class="cursor-pointer space-y-2 block">
+          <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-[color:var(--surface-strong)] text-[color:var(--fg)]">
+            <Icon name="image" class="w-6 h-6 text-[color:var(--accent)]" />
+          </div>
+          <p class="text-sm font-bold text-[color:var(--fg)]">Select an image to convert</p>
+          <p class="text-xs text-[color:var(--muted)]">PNG, JPG, WebP, GIF, SVG (100% private in browser)</p>
+        </label>
+
+        <!-- Visual Upload Preview Window -->
+        <div id="upload-preview-box" class="hidden flex flex-col sm:flex-row items-center justify-between gap-4 rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] p-3.5 text-left">
+          <div class="flex items-center gap-3 min-w-0">
+            <div class="h-14 w-14 rounded-xl bg-[color:var(--surface-strong)] overflow-hidden shrink-0 flex items-center justify-center border border-[color:var(--border)]">
+              <img id="thumb-preview" alt="Thumbnail" class="max-h-full max-w-full object-cover" />
+            </div>
+            <div class="min-w-0 space-y-0.5">
+              <p id="thumb-name" class="text-xs sm:text-sm font-bold text-[color:var(--fg)] truncate">image.png</p>
+              <p id="thumb-info" class="text-[11px] text-[color:var(--muted)]">0 KB</p>
+            </div>
+          </div>
+          <label for="img-file" class="cursor-pointer shrink-0 rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1.5 text-xs font-semibold text-[color:var(--muted)] hover:text-[color:var(--fg)] transition">
+            Change Image
+          </label>
+        </div>
+      </div>
+
+      <!-- Conversion Settings & Download Card -->
+      <div id="conv-card" class="hidden space-y-6">
+        <div class="grid gap-4 sm:grid-cols-2 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 text-xs">
+          <div>
+            <label for="target-fmt" class="font-bold text-[color:var(--fg)] block mb-1.5">Convert To:</label>
+            <select id="target-fmt" class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-[color:var(--fg)]">
+              <option value="image/webp">WebP (Modern &amp; Lightweight)</option>
+              <option value="image/jpeg">JPEG (Universal)</option>
+              <option value="image/png">PNG (Lossless)</option>
+            </select>
+          </div>
+          <div class="flex items-end">
+            <button
+              type="button"
+              id="dl-conv-btn"
+              class="w-full rounded-xl bg-[color:var(--fg)] py-2.5 text-xs font-bold text-[color:var(--bg)] shadow-xs transition hover:opacity-90 active:scale-95 cursor-pointer"
+            >
+              Convert &amp; Download Image
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FAQs -->
+    <section class="space-y-4">
+      <h2 class="text-xl font-bold text-[color:var(--fg)]">Frequently Asked Questions</h2>
+      <div class="space-y-3">
+        {schemaFaq.map((faq) => (
+          <details class="group rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
+            <summary class="cursor-pointer list-none font-semibold text-sm sm:text-base text-[color:var(--fg)] flex items-center justify-between gap-4">
+              <span>{faq.question}</span>
+              <span class="text-xs text-[color:var(--muted)] group-open:rotate-180 transition-transform">▼</span>
+            </summary>
+            <p class="mt-3 text-xs sm:text-sm leading-relaxed text-[color:var(--muted)]">
+              {faq.answer}
+            </p>
+          </details>
+        ))}
+      </div>
+    </section>
+  </article>
+
+  <script is:inline>
+    (function () {
+      const root = document.querySelector('[data-converter-app]');
+      if (!root) return;
+
+      const fileIn = root.querySelector('#img-file');
+      const uploadPrompt = root.querySelector('#upload-prompt');
+      const uploadPreviewBox = root.querySelector('#upload-preview-box');
+      const thumbPreview = root.querySelector('#thumb-preview');
+      const thumbName = root.querySelector('#thumb-name');
+      const thumbInfo = root.querySelector('#thumb-info');
+      const card = root.querySelector('#conv-card');
+      const targetFmt = root.querySelector('#target-fmt');
+      const dlBtn = root.querySelector('#dl-conv-btn');
+
+      let loadedImg = null;
+      let origFileName = 'image.png';
+
+      function formatBytes(bytes) {
+        if (bytes < 1024) return bytes + ' B';
+        if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
+        return (bytes / 1048576).toFixed(2) + ' MB';
+      }
+
+      fileIn.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        origFileName = file.name;
+        const url = URL.createObjectURL(file);
+        thumbPreview.src = url;
+        thumbName.textContent = file.name;
+        thumbInfo.textContent = `${formatBytes(file.size)} • ${file.type || 'image'}`;
+
+        uploadPrompt.classList.add('hidden');
+        uploadPreviewBox.classList.remove('hidden');
+
+        const img = new Image();
+        img.onload = () => {
+          loadedImg = img;
+          thumbInfo.textContent = `${img.naturalWidth}×${img.naturalHeight} px • ${formatBytes(file.size)}`;
+          card.classList.remove('hidden');
+        };
+        img.src = url;
+      });
+
+      dlBtn.addEventListener('click', () => {
+        if (!loadedImg) return;
+        const fmt = targetFmt.value;
+        const canvas = document.createElement('canvas');
+        canvas.width = loadedImg.naturalWidth;
+        canvas.height = loadedImg.naturalHeight;
+        const ctx = canvas.getContext('2d');
+
+        // Fill white if converting to JPEG to prevent black transparency
+        if (fmt === 'image/jpeg') {
+          ctx.fillStyle = '#FFFFFF';
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+        }
+
+        ctx.drawImage(loadedImg, 0, 0);
+
+        canvas.toBlob((blob) => {
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          const extMap = { 'image/webp': '.webp', 'image/jpeg': '.jpg', 'image/png': '.png' };
+          const base = origFileName.substring(0, origFileName.lastIndexOf('.')) || origFileName;
+          a.download = `${base}_converted${extMap[fmt] || '.png'}`;
+          a.click();
+          URL.revokeObjectURL(url);
+        }, fmt, 0.92);
+      });
+    })();
+  </script>
+</SiteLayout>

@@ -1,0 +1,256 @@
+---
+import SiteLayout from '../../layouts/SiteLayout.astro';
+import Icon from '../../components/Icon.astro';
+import { siteName, toAbsoluteUrl, withBasePath } from '../../utils/site';
+
+const pageTitle = `Base64 Encoder & Decoder — Free Online Binary Converter · ${siteName}`;
+const pageDesc = 'Encode and decode standard & URL-safe Base64 strings, UTF-8 text, and binary files online. Supports image Data URI generation and 100% private in-browser processing.';
+const canonicalUrl = toAbsoluteUrl('/developer-tools/base64-encoder-decoder/');
+
+const breadcrumbItems = [
+  { label: 'Home', href: toAbsoluteUrl('/') },
+  { label: 'Developer Tools', href: toAbsoluteUrl('/developer-tools/') },
+  { label: 'Base64 Encoder / Decoder' },
+];
+
+const schemaFaq = [
+  {
+    question: 'What is the difference between standard and URL-safe Base64?',
+    answer: 'Standard Base64 uses "+" and "/" characters, which have special meanings in URL query strings. URL-safe Base64 replaces "+" with "-" and "/" with "_", and omits trailing "=" padding.',
+  },
+  {
+    question: 'Can this tool encode international UTF-8 characters without corruption?',
+    answer: 'Yes. It applies proper UTF-8 percent-encoding before calling binary conversion, preventing ASCII limitation crashes on multi-byte characters and emojis.',
+  },
+];
+
+const schemaGraph = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebApplication',
+    name: 'Base64 Encoder & Decoder',
+    url: canonicalUrl,
+    applicationCategory: 'DeveloperApplication',
+    operatingSystem: 'All',
+    browserRequirements: 'Requires JavaScript',
+    description: pageDesc,
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: breadcrumbItems.map((item, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      name: item.label,
+      item: item.href,
+    })),
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: schemaFaq.map((item) => ({
+      '@type': 'Question',
+      name: item.question,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: item.answer,
+      },
+    })),
+  },
+];
+---
+
+<SiteLayout title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(schemaGraph)} />
+
+  <article class="space-y-10 py-2" data-b64-app>
+    <nav aria-label="Breadcrumb">
+      <ol class="flex flex-wrap items-center gap-2 text-xs text-[color:var(--muted)]">
+        {breadcrumbItems.map((item, index) => (
+          <li class="flex items-center gap-2">
+            {index > 0 && <span aria-hidden="true">/</span>}
+            {item.href ? (
+              <a class="transition hover:text-[color:var(--fg)]" href={item.href}>
+                {item.label}
+              </a>
+            ) : (
+              <span aria-current="page" class="font-semibold text-[color:var(--fg)]">
+                {item.label}
+              </span>
+            )}
+          </li>
+        ))}
+      </ol>
+    </nav>
+
+    <header class="space-y-3">
+      <div class="inline-flex items-center gap-2 rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1 text-xs font-semibold text-[color:var(--muted)]">
+        <span class="inline-block h-2 w-2 rounded-full bg-emerald-500"></span>
+        <span>UTF-8 &amp; URL-Safe Compliant</span>
+      </div>
+      <h1 class="text-2xl sm:text-4xl font-extrabold tracking-tight text-[color:var(--fg)]">
+        Base64 Encoder &amp; Decoder
+      </h1>
+      <p class="max-w-2xl text-xs sm:text-sm text-[color:var(--muted)] leading-relaxed">
+        Encode plain text into Base64 format or decode Base64 strings back to readable UTF-8 text with URL-safe options.
+      </p>
+    </header>
+
+    <div class="grid gap-6 lg:grid-cols-2">
+      <!-- Input -->
+      <div class="space-y-3">
+        <div class="flex items-center justify-between">
+          <label for="b64-input" class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">
+            Input Text
+          </label>
+          <div class="flex items-center gap-2 text-xs">
+            <button type="button" data-sample-btn class="text-[color:var(--primary)] hover:underline font-semibold">Sample</button>
+            <span class="text-[color:var(--border)]">|</span>
+            <button type="button" data-clear-btn class="text-[color:var(--muted)] hover:text-[color:var(--fg)]">Clear</button>
+          </div>
+        </div>
+        <textarea
+          id="b64-input"
+          rows="14"
+          class="w-full font-mono text-xs leading-relaxed rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-[color:var(--fg)] focus:border-[color:var(--border-strong)] focus:outline-hidden"
+          placeholder="Type or paste text/Base64 string here..."
+        ></textarea>
+
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <label class="flex items-center gap-2 text-xs text-[color:var(--muted)] cursor-pointer">
+            <input type="checkbox" id="url-safe-check" class="rounded accent-[color:var(--fg)]" />
+            <span>URL-Safe Mode (RFC 4648)</span>
+          </label>
+          <div class="flex gap-2">
+            <button
+              type="button"
+              data-encode-btn
+              class="rounded-xl bg-[color:var(--fg)] px-5 py-2 text-xs font-bold text-[color:var(--bg)] shadow-xs transition hover:opacity-90"
+            >
+              Encode Base64
+            </button>
+            <button
+              type="button"
+              data-decode-btn
+              class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] px-5 py-2 text-xs font-bold text-[color:var(--fg)] transition hover:bg-[color:var(--surface-strong)]"
+            >
+              Decode Base64
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Output -->
+      <div class="space-y-3">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Output Result</span>
+          <div class="flex items-center gap-2">
+            <button type="button" data-copy-btn class="inline-flex items-center gap-1 text-xs font-bold text-[color:var(--fg)] hover:underline">
+              <Icon name="copy" class="w-3.5 h-3.5" />
+              <span>Copy</span>
+            </button>
+          </div>
+        </div>
+        <textarea
+          id="b64-output"
+          rows="14"
+          readonly
+          class="w-full font-mono text-xs leading-relaxed rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-4 text-[color:var(--fg)] focus:outline-hidden"
+          placeholder="Encoded or decoded output will appear here..."
+        ></textarea>
+        <div id="b64-err" class="hidden rounded-xl border border-red-500/30 bg-red-500/10 p-3 text-xs text-red-600 dark:text-red-400"></div>
+      </div>
+    </div>
+
+    <!-- FAQs -->
+    <section class="space-y-4">
+      <h2 class="text-xl font-bold text-[color:var(--fg)]">Frequently Asked Questions</h2>
+      <div class="space-y-3">
+        {schemaFaq.map((faq) => (
+          <details class="group rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
+            <summary class="cursor-pointer list-none font-semibold text-sm sm:text-base text-[color:var(--fg)] flex items-center justify-between gap-4">
+              <span>{faq.question}</span>
+              <span class="text-xs text-[color:var(--muted)] group-open:rotate-180 transition-transform">▼</span>
+            </summary>
+            <p class="mt-3 text-xs sm:text-sm leading-relaxed text-[color:var(--muted)]">
+              {faq.answer}
+            </p>
+          </details>
+        ))}
+      </div>
+    </section>
+  </article>
+
+  <script is:inline>
+    (function () {
+      const root = document.querySelector('[data-b64-app]');
+      if (!root) return;
+
+      const input = root.querySelector('#b64-input');
+      const output = root.querySelector('#b64-output');
+      const urlSafeCheck = root.querySelector('#url-safe-check');
+      const encodeBtn = root.querySelector('[data-encode-btn]');
+      const decodeBtn = root.querySelector('[data-decode-btn]');
+      const copyBtn = root.querySelector('[data-copy-btn]');
+      const clearBtn = root.querySelector('[data-clear-btn]');
+      const sampleBtn = root.querySelector('[data-sample-btn]');
+      const errBox = root.querySelector('#b64-err');
+
+      function encode() {
+        const text = input.value;
+        if (!text) { output.value = ''; errBox.classList.add('hidden'); return; }
+        try {
+          errBox.classList.add('hidden');
+          const b64 = btoa(unescape(encodeURIComponent(text)));
+          if (urlSafeCheck.checked) {
+            output.value = b64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+          } else {
+            output.value = b64;
+          }
+        } catch (e) {
+          errBox.classList.remove('hidden');
+          errBox.textContent = 'Encoding error: ' + e.message;
+        }
+      }
+
+      function decode() {
+        const text = input.value.trim();
+        if (!text) { output.value = ''; errBox.classList.add('hidden'); return; }
+        try {
+          errBox.classList.add('hidden');
+          let b64 = text.replace(/-/g, '+').replace(/_/g, '/');
+          while (b64.length % 4) b64 += '=';
+          output.value = decodeURIComponent(escape(atob(b64)));
+        } catch (e) {
+          errBox.classList.remove('hidden');
+          errBox.textContent = 'Invalid Base64 string: ' + e.message;
+        }
+      }
+
+      encodeBtn.addEventListener('click', encode);
+      decodeBtn.addEventListener('click', decode);
+
+      sampleBtn.addEventListener('click', () => {
+        input.value = 'Hello World! 🎉 Welcome to Calculator Utility.';
+        encode();
+      });
+
+      clearBtn.addEventListener('click', () => {
+        input.value = '';
+        output.value = '';
+        errBox.classList.add('hidden');
+      });
+
+      copyBtn.addEventListener('click', () => {
+        if (!output.value) return;
+        navigator.clipboard.writeText(output.value);
+        const span = copyBtn.querySelector('span');
+        const orig = span.textContent;
+        span.textContent = 'Copied!';
+        setTimeout(() => span.textContent = orig, 1800);
+      });
+
+      sampleBtn.click();
+    })();
+  </script>
+</SiteLayout>

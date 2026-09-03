@@ -1,0 +1,225 @@
+---
+import SiteLayout from '../../layouts/SiteLayout.astro';
+import Icon from '../../components/Icon.astro';
+import { siteName, toAbsoluteUrl, withBasePath } from '../../utils/site';
+
+const pageTitle = `Random Team Generator — Split Players & Teams Online · ${siteName}`;
+const pageDesc = 'Split players and coworkers into balanced random teams (e.g. 2 Teams, 3 Teams, 4 Teams) with custom team names. 100% private in-browser tool.';
+const canonicalUrl = toAbsoluteUrl('/education-tools/random-team-generator/');
+
+const breadcrumbItems = [
+  { label: 'Home', href: toAbsoluteUrl('/') },
+  { label: 'Education Tools', href: toAbsoluteUrl('/education-tools/') },
+  { label: 'Random Team Generator' },
+];
+
+const schemaFaq = [
+  {
+    question: 'How does the random team generator balance team sizes?',
+    answer: 'It uses CSPRNG shuffling to randomly order participants and distributes players sequentially into teams, ensuring team sizes differ by at most 1 member.',
+  },
+];
+
+const schemaGraph = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebApplication',
+    name: 'Random Team Generator',
+    url: canonicalUrl,
+    applicationCategory: 'EducationalApplication',
+    operatingSystem: 'All',
+    browserRequirements: 'Requires JavaScript',
+    description: pageDesc,
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: breadcrumbItems.map((item, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      name: item.label,
+      item: item.href,
+    })),
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: schemaFaq.map((item) => ({
+      '@type': 'Question',
+      name: item.question,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: item.answer,
+      },
+    })),
+  },
+];
+---
+
+<SiteLayout title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(schemaGraph)} />
+
+  <article class="space-y-10 py-2" data-team-app>
+    <nav aria-label="Breadcrumb">
+      <ol class="flex flex-wrap items-center gap-2 text-xs text-[color:var(--muted)]">
+        {breadcrumbItems.map((item, index) => (
+          <li class="flex items-center gap-2">
+            {index > 0 && <span aria-hidden="true">/</span>}
+            {item.href ? (
+              <a class="transition hover:text-[color:var(--fg)]" href={item.href}>
+                {item.label}
+              </a>
+            ) : (
+              <span aria-current="page" class="font-semibold text-[color:var(--fg)]">
+                {item.label}
+              </span>
+            )}
+          </li>
+        ))}
+      </ol>
+    </nav>
+
+    <header class="space-y-3">
+      <div class="inline-flex items-center gap-2 rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1 text-xs font-semibold text-[color:var(--muted)]">
+        <span class="inline-block h-2 w-2 rounded-full bg-emerald-500"></span>
+        <span>Sports &amp; Project Team Divider</span>
+      </div>
+      <h1 class="text-2xl sm:text-4xl font-extrabold tracking-tight text-[color:var(--fg)]">
+        Random Team Generator
+      </h1>
+      <p class="max-w-2xl text-xs sm:text-sm text-[color:var(--muted)] leading-relaxed">
+        Split players and coworkers into 2 or more balanced teams with custom team names.
+      </p>
+    </header>
+
+    <div class="space-y-6">
+      <div class="grid gap-4 sm:grid-cols-2 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 text-xs">
+        <div>
+          <label for="num-teams" class="font-bold text-[color:var(--fg)] block mb-1">Number of Teams:</label>
+          <select id="num-teams" class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-[color:var(--fg)]">
+            <option value="2">2 Teams (Head-to-Head)</option>
+            <option value="3">3 Teams</option>
+            <option value="4">4 Teams</option>
+            <option value="5">5 Teams</option>
+            <option value="6">6 Teams</option>
+          </select>
+        </div>
+        <div>
+          <label for="team-theme" class="font-bold text-[color:var(--fg)] block mb-1">Team Naming Theme:</label>
+          <select id="team-theme" class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-[color:var(--fg)]">
+            <option value="colors">Colors (Red, Blue, Green...)</option>
+            <option value="animals">Animals (Lions, Tigers, Eagles...)</option>
+            <option value="numbers">Numbers (Team 1, Team 2...)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="space-y-2">
+        <label for="players-in" class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Players List (One per line)</label>
+        <textarea
+          id="players-in"
+          rows="8"
+          class="w-full font-mono text-xs leading-relaxed rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-[color:var(--fg)] focus:border-[color:var(--border-strong)] focus:outline-hidden"
+          placeholder="Player 1&#10;Player 2&#10;Player 3"
+        >Alex
+Jordan
+Taylor
+Morgan
+Sam
+Casey
+Riley
+Jamie
+Avery
+Logan</textarea>
+      </div>
+
+      <button
+        type="button"
+        id="gen-teams-btn"
+        class="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-[color:var(--fg)] py-2.5 text-xs font-bold text-[color:var(--bg)] shadow-xs transition hover:opacity-90 cursor-pointer"
+      >
+        <Icon name="dice" class="w-4 h-4" />
+        <span>Generate Teams</span>
+      </button>
+
+      <!-- Teams Display -->
+      <div id="teams-container" class="grid gap-4 sm:grid-cols-2"></div>
+    </div>
+
+    <!-- FAQs -->
+    <section class="space-y-4">
+      <h2 class="text-xl font-bold text-[color:var(--fg)]">Frequently Asked Questions</h2>
+      <div class="space-y-3">
+        {schemaFaq.map((faq) => (
+          <details class="group rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
+            <summary class="cursor-pointer list-none font-semibold text-sm sm:text-base text-[color:var(--fg)] flex items-center justify-between gap-4">
+              <span>{faq.question}</span>
+              <span class="text-xs text-[color:var(--muted)] group-open:rotate-180 transition-transform">▼</span>
+            </summary>
+            <p class="mt-3 text-xs sm:text-sm leading-relaxed text-[color:var(--muted)]">
+              {faq.answer}
+            </p>
+          </details>
+        ))}
+      </div>
+    </section>
+  </article>
+
+  <script is:inline>
+    (function () {
+      const root = document.querySelector('[data-team-app]');
+      if (!root) return;
+
+      const numTeams = root.querySelector('#num-teams');
+      const themeSelect = root.querySelector('#team-theme');
+      const playersIn = root.querySelector('#players-in');
+      const genBtn = root.querySelector('#gen-teams-btn');
+      const container = root.querySelector('#teams-container');
+
+      const THEMES = {
+        colors: ['Team Red', 'Team Blue', 'Team Green', 'Team Yellow', 'Team Purple', 'Team Orange'],
+        animals: ['Lions', 'Tigers', 'Eagles', 'Falcons', 'Wolves', 'Sharks'],
+        numbers: ['Team 1', 'Team 2', 'Team 3', 'Team 4', 'Team 5', 'Team 6']
+      };
+
+      function shuffle(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+          const randArr = new Uint32Array(1);
+          crypto.getRandomValues(randArr);
+          const j = randArr[0] % (i + 1);
+          [array[i], array[j]] = [array[j], array[i]];
+        }
+        return array;
+      }
+
+      function generate() {
+        const players = playersIn.value.split('\n').map(s => s.trim()).filter(s => s.length > 0);
+        if (players.length === 0) return;
+
+        const count = parseInt(numTeams.value, 10);
+        const theme = THEMES[themeSelect.value];
+        const shuffled = shuffle([...players]);
+
+        const teams = Array.from({ length: count }, () => []);
+        shuffled.forEach((p, idx) => {
+          teams[idx % count].push(p);
+        });
+
+        container.innerHTML = teams.map((team, idx) => `
+          <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 space-y-3">
+            <div class="flex items-center justify-between border-b border-[color:var(--border)] pb-2">
+              <span class="font-bold text-sm text-[color:var(--fg)]">${theme[idx] || `Team ${idx + 1}`}</span>
+              <span class="text-[10px] rounded-md bg-[color:var(--surface-strong)] px-2 py-0.5 font-mono text-[color:var(--muted)]">${team.length} players</span>
+            </div>
+            <ul class="space-y-1.5 text-xs text-[color:var(--fg)] font-medium">
+              ${team.map(p => `<li>• ${p}</li>`).join('')}
+            </ul>
+          </div>
+        `).join('');
+      }
+
+      genBtn.addEventListener('click', generate);
+      generate();
+    })();
+  </script>
+</SiteLayout>

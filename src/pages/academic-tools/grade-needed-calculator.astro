@@ -1,0 +1,277 @@
+---
+import SiteLayout from '../../layouts/SiteLayout.astro';
+import Icon from '../../components/Icon.astro';
+import { siteName, toAbsoluteUrl, withBasePath } from '../../utils/site';
+
+const pageTitle = `Grade Needed Calculator | Target Score Across Assignments & Exams · ${siteName}`;
+const pageDesc = 'Calculate the exact points and percentage score needed on your remaining coursework, tests, and quizzes to pass or achieve your target course grade.';
+const canonicalUrl = toAbsoluteUrl('/academic-tools/grade-needed-calculator/');
+
+const breadcrumbItems = [
+  { label: 'Home', href: toAbsoluteUrl('/') },
+  { label: 'Academic Tools', href: toAbsoluteUrl('/academic-tools/') },
+  { label: 'Grade Needed Calculator' },
+];
+
+const faqs = [
+  {
+    question: 'How is the grade needed on remaining work calculated?',
+    answer: 'The required score on remaining coursework is: Required Score = [Total Target Points - Points Earned So Far] ÷ Remaining Weight. If you currently have 75% across 60% of the syllabus and want an 85% course grade, you need [85 - (75 × 0.60)] ÷ 0.40 = [85 - 45] ÷ 0.40 = 100% on the remaining 40% of coursework.',
+  },
+  {
+    question: 'What is the difference between this and the Final Grade Calculator?',
+    answer: 'While the Final Grade Calculator specifically calculates an upcoming single exam, the Grade Needed Calculator allows you to configure general remaining coursework percentages or point distributions across assignments, papers, and lab reports.',
+  },
+];
+
+const schemaGraph = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebApplication',
+    name: 'Grade Needed Calculator',
+    url: canonicalUrl,
+    description: pageDesc,
+    applicationCategory: 'EducationalApplication',
+    operatingSystem: 'All',
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: breadcrumbItems.map((item, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      name: item.label,
+      item: item.href,
+    })),
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faqs.map((f) => ({
+      '@type': 'Question',
+      name: f.question,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: f.answer,
+      },
+    })),
+  },
+];
+---
+
+<SiteLayout title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(schemaGraph)} />
+
+  <article class="space-y-10 py-2">
+    <!-- Breadcrumbs -->
+    <nav aria-label="Breadcrumb">
+      <ol class="flex flex-wrap items-center gap-2 text-xs text-[color:var(--muted)]">
+        {breadcrumbItems.map((item, index) => (
+          <li class="flex items-center gap-2">
+            {index > 0 && <span aria-hidden="true">/</span>}
+            {item.href ? (
+              <a class="transition hover:text-[color:var(--fg)]" href={item.href}>
+                {item.label}
+              </a>
+            ) : (
+              <span aria-current="page" class="font-semibold text-[color:var(--fg)]">
+                {item.label}
+              </span>
+            )}
+          </li>
+        ))}
+      </ol>
+    </nav>
+
+    <!-- Header -->
+    <header class="space-y-3">
+      <div class="inline-flex items-center gap-2 rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3.5 py-1 text-xs font-semibold text-[color:var(--fg)]">
+        <span>Coursework &amp; Exam Target Tool</span>
+      </div>
+      <h1 class="text-3xl font-extrabold tracking-tight text-[color:var(--fg)] sm:text-4xl">
+        Grade Needed Calculator
+      </h1>
+      <p class="max-w-3xl text-sm leading-relaxed text-[color:var(--muted)] sm:text-base">
+        Determine the average score or percentage you must achieve across all remaining assignments, midterm tests, and final submissions to achieve your target letter grade.
+      </p>
+    </header>
+
+    <!-- App Card -->
+    <div
+      class="rounded-[2.5rem] border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-6 shadow-[var(--shadow)] sm:p-10"
+      data-grade-needed-app
+    >
+      <div class="grid gap-8 lg:grid-cols-[1.1fr_0.9fr]">
+        <form class="space-y-5" onsubmit="return false;">
+          <div class="flex items-center justify-between">
+            <h2 class="text-lg font-bold text-[color:var(--fg)]">Course Parameters</h2>
+            <button type="button" class="cursor-pointer text-xs font-semibold text-[color:var(--muted)] hover:text-[color:var(--fg)]" data-reset-btn>
+              ↺ Reset
+            </button>
+          </div>
+
+          <div class="space-y-1.5">
+            <label for="curr-score" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">
+              Current Average Score on Completed Work (%)
+            </label>
+            <input
+              id="curr-score"
+              type="number"
+              min="0"
+              max="150"
+              step="0.5"
+              value="78"
+              class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none transition focus:border-[color:var(--accent)]"
+              data-curr-score
+            />
+          </div>
+
+          <div class="space-y-1.5">
+            <label for="completed-weight" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">
+              Coursework Weight Completed So Far (%)
+            </label>
+            <input
+              id="completed-weight"
+              type="number"
+              min="1"
+              max="99"
+              step="1"
+              value="60"
+              class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none transition focus:border-[color:var(--accent)]"
+              data-completed-weight
+            />
+          </div>
+
+          <div class="space-y-1.5">
+            <label for="target-course-grade" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">
+              Desired Overall Final Grade (%)
+            </label>
+            <input
+              id="target-course-grade"
+              type="number"
+              min="1"
+              max="100"
+              step="0.5"
+              value="85"
+              class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none transition focus:border-[color:var(--accent)]"
+              data-target-grade
+            />
+          </div>
+        </form>
+
+        <!-- Result Display -->
+        <div class="flex flex-col justify-between space-y-6 rounded-3xl border border-[color:var(--border)] bg-[color:var(--bg)] p-6 sm:p-8">
+          <div class="space-y-5">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Requirement</span>
+              <span class="rounded-full px-3 py-0.5 text-xs font-bold bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20" data-letter-badge>Grade B</span>
+            </div>
+
+            <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 text-center">
+              <p class="text-xs font-semibold text-[color:var(--muted)]">Required Score on Remaining Work</p>
+              <p class="mt-1 text-5xl font-black tracking-tight text-[color:var(--fg)]" data-res-score>
+                95.50%
+              </p>
+              <p class="mt-2 text-xs font-medium text-[color:var(--muted)]" data-res-summary>
+                You must average 95.50% on the remaining 40% of the syllabus.
+              </p>
+            </div>
+
+            <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 space-y-2 text-xs">
+              <div class="flex justify-between">
+                <span class="text-[color:var(--muted)]">Points Earned So Far:</span>
+                <span class="font-bold text-[color:var(--fg)]" data-pts-earned>46.80 / 60</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-[color:var(--muted)]">Points Needed from Remaining 40%:</span>
+                <span class="font-bold text-[color:var(--fg)]" data-pts-needed>38.20 / 40</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Educational & FAQs -->
+    <section class="space-y-4">
+      <h2 class="text-xl font-bold text-[color:var(--fg)]">Frequently Asked Questions</h2>
+      <div class="space-y-3">
+        {faqs.map((faq) => (
+          <details class="group rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
+            <summary class="cursor-pointer list-none font-semibold text-sm sm:text-base text-[color:var(--fg)] flex items-center justify-between gap-4">
+              <span>{faq.question}</span>
+              <span class="text-xs text-[color:var(--muted)] group-open:rotate-180 transition-transform">▼</span>
+            </summary>
+            <p class="mt-3 text-xs sm:text-sm leading-relaxed text-[color:var(--muted)]">
+              {faq.answer}
+            </p>
+          </details>
+        ))}
+      </div>
+    </section>
+  </article>
+
+  <script is:inline>
+    (function () {
+      const root = document.querySelector('[data-grade-needed-app]');
+      if (!root) return;
+
+      const inScore = root.querySelector('[data-curr-score]');
+      const inComp = root.querySelector('[data-completed-weight]');
+      const inTar = root.querySelector('[data-target-grade]');
+      const resScore = root.querySelector('[data-res-score]');
+      const resSummary = root.querySelector('[data-res-summary]');
+      const letterBadge = root.querySelector('[data-letter-badge]');
+      const ptsEarned = root.querySelector('[data-pts-earned]');
+      const ptsNeeded = root.querySelector('[data-pts-needed]');
+      const resetBtn = root.querySelector('[data-reset-btn]');
+
+      function update() {
+        const score = Math.max(0, parseFloat(inScore.value || '0'));
+        const comp = Math.max(1, Math.min(99, parseFloat(inComp.value || '50')));
+        const tar = Math.max(0, parseFloat(inTar.value || '85'));
+        const remWeight = 100 - comp;
+
+        const earned = (score / 100) * comp;
+        const needed = Math.max(0, tar - earned);
+        const reqScore = remWeight > 0 ? (needed / remWeight) * 100 : 0;
+
+        if (resScore) resScore.textContent = `${reqScore.toFixed(2)}%`;
+        if (resSummary) {
+          resSummary.textContent = reqScore > 100
+            ? `Requires over 100% (bonus points needed) on the remaining ${remWeight}% of coursework.`
+            : `You must average ${reqScore.toFixed(2)}% across the remaining ${remWeight}% of the course.`;
+        }
+
+        if (ptsEarned) ptsEarned.textContent = `${earned.toFixed(2)} / ${comp}`;
+        if (ptsNeeded) ptsNeeded.textContent = `${needed.toFixed(2)} / ${remWeight}`;
+
+        if (letterBadge) {
+          let letter = 'F';
+          if (reqScore >= 93) letter = 'Solid A';
+          else if (reqScore >= 90) letter = 'A-';
+          else if (reqScore >= 80) letter = 'Grade B';
+          else if (reqScore >= 70) letter = 'Grade C';
+          else if (reqScore >= 60) letter = 'Grade D';
+          else letter = 'Easy Pass';
+          letterBadge.textContent = letter;
+        }
+      }
+
+      inScore.addEventListener('input', update);
+      inComp.addEventListener('input', update);
+      inTar.addEventListener('input', update);
+
+      if (resetBtn) {
+        resetBtn.addEventListener('click', () => {
+          inScore.value = '78';
+          inComp.value = '60';
+          inTar.value = '85';
+          update();
+        });
+      }
+
+      update();
+    })();
+  </script>
+</SiteLayout>

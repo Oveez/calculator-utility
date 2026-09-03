@@ -1,0 +1,260 @@
+---
+import SiteLayout from '../../layouts/SiteLayout.astro';
+import Icon from '../../components/Icon.astro';
+import { siteName, toAbsoluteUrl, withBasePath } from '../../utils/site';
+
+const pageTitle = `Query String Builder — Build URL Query Parameters Online · ${siteName}`;
+const pageDesc = 'Build formatted URL query strings online from key-value pairs with automatic percent-encoding and live full URL preview. 100% private in-browser tool.';
+const canonicalUrl = toAbsoluteUrl('/url-tools/query-string-builder/');
+
+const breadcrumbItems = [
+  { label: 'Home', href: toAbsoluteUrl('/') },
+  { label: 'URL Tools', href: toAbsoluteUrl('/url-tools/') },
+  { label: 'Query String Builder' },
+];
+
+const schemaFaq = [
+  {
+    question: 'How does the query string builder encode parameters?',
+    answer: 'It formats each key-value pair as `key=value` separated by `&`, using `encodeURIComponent` to ensure special characters and spaces are safely percent-encoded.',
+  },
+];
+
+const schemaGraph = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebApplication',
+    name: 'Query String Builder',
+    url: canonicalUrl,
+    applicationCategory: 'WebApplication',
+    operatingSystem: 'All',
+    browserRequirements: 'Requires JavaScript',
+    description: pageDesc,
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: breadcrumbItems.map((item, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      name: item.label,
+      item: item.href,
+    })),
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: schemaFaq.map((item) => ({
+      '@type': 'Question',
+      name: item.question,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: item.answer,
+      },
+    })),
+  },
+];
+---
+
+<SiteLayout title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(schemaGraph)} />
+
+  <article class="space-y-10 py-2" data-qs-builder-app>
+    <nav aria-label="Breadcrumb">
+      <ol class="flex flex-wrap items-center gap-2 text-xs text-[color:var(--muted)]">
+        {breadcrumbItems.map((item, index) => (
+          <li class="flex items-center gap-2">
+            {index > 0 && <span aria-hidden="true">/</span>}
+            {item.href ? (
+              <a class="transition hover:text-[color:var(--fg)]" href={item.href}>
+                {item.label}
+              </a>
+            ) : (
+              <span aria-current="page" class="font-semibold text-[color:var(--fg)]">
+                {item.label}
+              </span>
+            )}
+          </li>
+        ))}
+      </ol>
+    </nav>
+
+    <header class="space-y-3">
+      <div class="inline-flex items-center gap-2 rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1 text-xs font-semibold text-[color:var(--muted)]">
+        <span class="inline-block h-2 w-2 rounded-full bg-emerald-500"></span>
+        <span>Interactive Parameter Formatter</span>
+      </div>
+      <h1 class="text-2xl sm:text-4xl font-extrabold tracking-tight text-[color:var(--fg)]">
+        URL Query String Builder
+      </h1>
+      <p class="max-w-2xl text-xs sm:text-sm text-[color:var(--muted)] leading-relaxed">
+        Add key-value pairs to build properly percent-encoded query strings and full web URLs.
+      </p>
+    </header>
+
+    <div class="space-y-6">
+      <!-- Base URL Input -->
+      <div class="space-y-2">
+        <label for="base-url" class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Base URL (Optional)</label>
+        <input
+          type="text"
+          id="base-url"
+          class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-xs sm:text-sm font-mono text-[color:var(--fg)] focus:border-[color:var(--border-strong)] focus:outline-hidden"
+          placeholder="https://example.com/api/v1/search"
+          value="https://calculatorutility.tech/developer-tools/"
+        />
+      </div>
+
+      <!-- Dynamic Key-Value Rows -->
+      <div class="space-y-3 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Parameters List</span>
+          <button type="button" data-add-row class="text-xs font-bold text-[color:var(--primary)] hover:underline">+ Add Parameter</button>
+        </div>
+        <div id="param-rows" class="space-y-2"></div>
+      </div>
+
+      <!-- Generated Outputs -->
+      <div class="space-y-4">
+        <div class="space-y-2">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Full URL Preview</span>
+            <button type="button" data-copy-url class="inline-flex items-center gap-1 text-xs font-bold text-[color:var(--fg)] hover:underline">
+              <Icon name="copy" class="w-3.5 h-3.5" />
+              <span>Copy Full URL</span>
+            </button>
+          </div>
+          <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-4">
+            <p id="full-url-out" class="font-mono text-xs font-bold text-emerald-500 break-all select-all">-</p>
+          </div>
+        </div>
+
+        <div class="space-y-2">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Query String Only</span>
+            <button type="button" data-copy-qs class="inline-flex items-center gap-1 text-xs font-bold text-[color:var(--fg)] hover:underline">
+              <Icon name="copy" class="w-3.5 h-3.5" />
+              <span>Copy Query String</span>
+            </button>
+          </div>
+          <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-4">
+            <p id="qs-only-out" class="font-mono text-xs text-[color:var(--fg)] break-all select-all">-</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FAQs -->
+    <section class="space-y-4">
+      <h2 class="text-xl font-bold text-[color:var(--fg)]">Frequently Asked Questions</h2>
+      <div class="space-y-3">
+        {schemaFaq.map((faq) => (
+          <details class="group rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
+            <summary class="cursor-pointer list-none font-semibold text-sm sm:text-base text-[color:var(--fg)] flex items-center justify-between gap-4">
+              <span>{faq.question}</span>
+              <span class="text-xs text-[color:var(--muted)] group-open:rotate-180 transition-transform">▼</span>
+            </summary>
+            <p class="mt-3 text-xs sm:text-sm leading-relaxed text-[color:var(--muted)]">
+              {faq.answer}
+            </p>
+          </details>
+        ))}
+      </div>
+    </section>
+  </article>
+
+  <script is:inline>
+    (function () {
+      const root = document.querySelector('[data-qs-builder-app]');
+      if (!root) return;
+
+      const baseUrl = root.querySelector('#base-url');
+      const paramRows = root.querySelector('#param-rows');
+      const addRowBtn = root.querySelector('[data-add-row]');
+      const fullUrlOut = root.querySelector('#full-url-out');
+      const qsOnlyOut = root.querySelector('#qs-only-out');
+      const copyUrlBtn = root.querySelector('[data-copy-url]');
+      const copyQsBtn = root.querySelector('[data-copy-qs]');
+
+      let pairs = [
+        { key: 'category', value: 'developer-tools' },
+        { key: 'sort', value: 'popular' },
+        { key: 'page', value: '1' }
+      ];
+
+      function renderRows() {
+        paramRows.innerHTML = pairs.map((p, idx) => `
+          <div class="flex items-center gap-2">
+            <input type="text" placeholder="Key (e.g. q)" value="${p.key}" data-idx="${idx}" data-field="key" class="flex-1 rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-1.5 text-xs font-mono text-[color:var(--fg)]" />
+            <span class="text-xs text-[color:var(--muted)]">=</span>
+            <input type="text" placeholder="Value" value="${p.value}" data-idx="${idx}" data-field="val" class="flex-1 rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-1.5 text-xs font-mono text-[color:var(--fg)]" />
+            <button type="button" data-del-idx="${idx}" class="p-1.5 text-red-500 hover:text-red-700 text-xs font-bold">✕</button>
+          </div>
+        `).join('');
+
+        paramRows.querySelectorAll('input').forEach(inp => {
+          inp.addEventListener('input', (e) => {
+            const idx = parseInt(e.target.dataset.idx, 10);
+            const field = e.target.dataset.field;
+            if (field === 'key') pairs[idx].key = e.target.value;
+            if (field === 'val') pairs[idx].value = e.target.value;
+            update();
+          });
+        });
+
+        paramRows.querySelectorAll('[data-del-idx]').forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            const idx = parseInt(e.target.dataset.delIdx, 10);
+            pairs.splice(idx, 1);
+            renderRows();
+            update();
+          });
+        });
+
+        update();
+      }
+
+      function update() {
+        const validPairs = pairs.filter(p => p.key.trim().length > 0);
+        const searchParams = new URLSearchParams();
+        validPairs.forEach(p => searchParams.append(p.key.trim(), p.value));
+
+        const qs = searchParams.toString();
+        qsOnlyOut.textContent = qs ? `?${qs}` : 'None';
+
+        const base = baseUrl.value.trim();
+        if (base) {
+          const cleanBase = base.includes('?') ? base.split('?')[0] : base;
+          fullUrlOut.textContent = qs ? `${cleanBase}?${qs}` : cleanBase;
+        } else {
+          fullUrlOut.textContent = qs ? `?${qs}` : '-';
+        }
+      }
+
+      addRowBtn.addEventListener('click', () => {
+        pairs.push({ key: '', value: '' });
+        renderRows();
+      });
+
+      baseUrl.addEventListener('input', update);
+
+      copyUrlBtn.addEventListener('click', () => {
+        navigator.clipboard.writeText(fullUrlOut.textContent);
+        const span = copyUrlBtn.querySelector('span');
+        const orig = span.textContent;
+        span.textContent = 'Copied!';
+        setTimeout(() => span.textContent = orig, 1800);
+      });
+
+      copyQsBtn.addEventListener('click', () => {
+        navigator.clipboard.writeText(qsOnlyOut.textContent);
+        const span = copyQsBtn.querySelector('span');
+        const orig = span.textContent;
+        span.textContent = 'Copied!';
+        setTimeout(() => span.textContent = orig, 1800);
+      });
+
+      renderRows();
+    })();
+  </script>
+</SiteLayout>

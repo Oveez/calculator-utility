@@ -1,0 +1,253 @@
+---
+import SiteLayout from '../../layouts/SiteLayout.astro';
+import Icon from '../../components/Icon.astro';
+import { siteName, toAbsoluteUrl, withBasePath } from '../../utils/site';
+
+const pageTitle = `Find and Replace Text Online — Bulk String Replacer · ${siteName}`;
+const pageDesc = 'Bulk find and replace text and regular expressions online. Supports case sensitivity, whole word matching, regex mode, and live replacement counter. 100% private in-browser tool.';
+const canonicalUrl = toAbsoluteUrl('/text-tools/find-and-replace/');
+
+const breadcrumbItems = [
+  { label: 'Home', href: toAbsoluteUrl('/') },
+  { label: 'Text Tools', href: toAbsoluteUrl('/text-tools/') },
+  { label: 'Find and Replace' },
+];
+
+const schemaFaq = [
+  {
+    question: 'Can I use Regular Expressions in Find and Replace?',
+    answer: 'Yes. Check the "Use Regular Expression" toggle to use standard regex syntax (e.g., `\\bfoo\\d+`) in your search query.',
+  },
+];
+
+const schemaGraph = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebApplication',
+    name: 'Find and Replace Tool',
+    url: canonicalUrl,
+    applicationCategory: 'TextApplication',
+    operatingSystem: 'All',
+    browserRequirements: 'Requires JavaScript',
+    description: pageDesc,
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: breadcrumbItems.map((item, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      name: item.label,
+      item: item.href,
+    })),
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: schemaFaq.map((item) => ({
+      '@type': 'Question',
+      name: item.question,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: item.answer,
+      },
+    })),
+  },
+];
+---
+
+<SiteLayout title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(schemaGraph)} />
+
+  <article class="space-y-10 py-2" data-replace-app>
+    <nav aria-label="Breadcrumb">
+      <ol class="flex flex-wrap items-center gap-2 text-xs text-[color:var(--muted)]">
+        {breadcrumbItems.map((item, index) => (
+          <li class="flex items-center gap-2">
+            {index > 0 && <span aria-hidden="true">/</span>}
+            {item.href ? (
+              <a class="transition hover:text-[color:var(--fg)]" href={item.href}>
+                {item.label}
+              </a>
+            ) : (
+              <span aria-current="page" class="font-semibold text-[color:var(--fg)]">
+                {item.label}
+              </span>
+            )}
+          </li>
+        ))}
+      </ol>
+    </nav>
+
+    <header class="space-y-3">
+      <div class="inline-flex items-center gap-2 rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1 text-xs font-semibold text-[color:var(--muted)]">
+        <span class="inline-block h-2 w-2 rounded-full bg-emerald-500"></span>
+        <span>Bulk Text Manipulation</span>
+      </div>
+      <h1 class="text-2xl sm:text-4xl font-extrabold tracking-tight text-[color:var(--fg)]">
+        Find and Replace Text Online
+      </h1>
+      <p class="max-w-2xl text-xs sm:text-sm text-[color:var(--muted)] leading-relaxed">
+        Search and replace text strings or regex patterns in bulk with live replacement counts.
+      </p>
+    </header>
+
+    <div class="space-y-4">
+      <div class="grid gap-4 sm:grid-cols-2 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
+        <div>
+          <label for="find-val" class="font-bold text-xs text-[color:var(--fg)] block mb-1.5">Find String / Pattern:</label>
+          <input
+            type="text"
+            id="find-val"
+            class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs text-[color:var(--fg)] font-mono"
+            placeholder="Text to find..."
+            value="old_string"
+          />
+        </div>
+        <div>
+          <label for="replace-val" class="font-bold text-xs text-[color:var(--fg)] block mb-1.5">Replace With:</label>
+          <input
+            type="text"
+            id="replace-val"
+            class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs text-[color:var(--fg)] font-mono"
+            placeholder="Replacement text..."
+            value="new_string"
+          />
+        </div>
+      </div>
+
+      <div class="flex flex-wrap items-center justify-between gap-3 text-xs">
+        <div class="flex flex-wrap items-center gap-4 text-[color:var(--muted)]">
+          <label class="flex items-center gap-1.5 cursor-pointer">
+            <input type="checkbox" id="match-case" class="rounded accent-[color:var(--fg)]" />
+            <span>Match Case</span>
+          </label>
+          <label class="flex items-center gap-1.5 cursor-pointer">
+            <input type="checkbox" id="match-word" class="rounded accent-[color:var(--fg)]" />
+            <span>Whole Word</span>
+          </label>
+          <label class="flex items-center gap-1.5 cursor-pointer">
+            <input type="checkbox" id="use-regex" class="rounded accent-[color:var(--fg)]" />
+            <span>Use Regex</span>
+          </label>
+        </div>
+        <span id="rep-count" class="font-bold text-emerald-500 font-mono">0 Replacements</span>
+      </div>
+
+      <div class="grid gap-6 lg:grid-cols-2">
+        <div class="space-y-2">
+          <label for="text-in" class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Source Text</label>
+          <textarea
+            id="text-in"
+            rows="12"
+            class="w-full font-mono text-xs leading-relaxed rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-[color:var(--fg)] focus:border-[color:var(--border-strong)] focus:outline-hidden"
+            placeholder="Paste text here..."
+          >This is an old_string example with old_string repeated multiple times in this old_string test block.</textarea>
+        </div>
+
+        <div class="space-y-2">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Replaced Output</span>
+            <button type="button" data-copy-btn class="inline-flex items-center gap-1 text-xs font-bold text-[color:var(--fg)] hover:underline">
+              <Icon name="copy" class="w-3.5 h-3.5" />
+              <span>Copy</span>
+            </button>
+          </div>
+          <textarea
+            id="text-out"
+            rows="12"
+            readonly
+            class="w-full font-mono text-xs leading-relaxed rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-4 text-[color:var(--fg)] focus:outline-hidden"
+            placeholder="Result text will appear here..."
+          ></textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- FAQs -->
+    <section class="space-y-4">
+      <h2 class="text-xl font-bold text-[color:var(--fg)]">Frequently Asked Questions</h2>
+      <div class="space-y-3">
+        {schemaFaq.map((faq) => (
+          <details class="group rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
+            <summary class="cursor-pointer list-none font-semibold text-sm sm:text-base text-[color:var(--fg)] flex items-center justify-between gap-4">
+              <span>{faq.question}</span>
+              <span class="text-xs text-[color:var(--muted)] group-open:rotate-180 transition-transform">▼</span>
+            </summary>
+            <p class="mt-3 text-xs sm:text-sm leading-relaxed text-[color:var(--muted)]">
+              {faq.answer}
+            </p>
+          </details>
+        ))}
+      </div>
+    </section>
+  </article>
+
+  <script is:inline>
+    (function () {
+      const root = document.querySelector('[data-replace-app]');
+      if (!root) return;
+
+      const input = root.querySelector('#text-in');
+      const output = root.querySelector('#text-out');
+      const findVal = root.querySelector('#find-val');
+      const replaceVal = root.querySelector('#replace-val');
+      const matchCase = root.querySelector('#match-case');
+      const matchWord = root.querySelector('#match-word');
+      const useRegex = root.querySelector('#use-regex');
+      const repCount = root.querySelector('#rep-count');
+      const copyBtn = root.querySelector('[data-copy-btn]');
+
+      function doReplace() {
+        const text = input.value;
+        const find = findVal.value;
+        const repl = replaceVal.value;
+
+        if (!text || !find) {
+          output.value = text;
+          repCount.textContent = '0 Replacements';
+          return;
+        }
+
+        try {
+          let pattern = find;
+          let flags = 'g';
+          if (!matchCase.checked) flags += 'i';
+
+          if (!useRegex.checked) {
+            pattern = pattern.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+          }
+          if (matchWord.checked) {
+            pattern = `\\b${pattern}\\b`;
+          }
+
+          const regex = new RegExp(pattern, flags);
+          const matches = text.match(regex);
+          const count = matches ? matches.length : 0;
+
+          output.value = text.replace(regex, repl);
+          repCount.textContent = `${count} Replacement${count === 1 ? '' : 's'}`;
+        } catch (e) {
+          output.value = 'Regex Error: ' + e.message;
+          repCount.textContent = 'Error';
+        }
+      }
+
+      input.addEventListener('input', doReplace);
+      findVal.addEventListener('input', doReplace);
+      replaceVal.addEventListener('input', doReplace);
+      [matchCase, matchWord, useRegex].forEach(cb => cb.addEventListener('change', doReplace));
+
+      copyBtn.addEventListener('click', () => {
+        if (!output.value) return;
+        navigator.clipboard.writeText(output.value);
+        const span = copyBtn.querySelector('span');
+        const orig = span.textContent;
+        span.textContent = 'Copied!';
+        setTimeout(() => span.textContent = orig, 1800);
+      });
+
+      doReplace();
+    })();
+  </script>
+</SiteLayout>

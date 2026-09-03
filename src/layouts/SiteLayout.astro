@@ -1,5 +1,8 @@
 ---
 import SiteHeader from '../components/SiteHeader.astro';
+import MobileDrawer from '../components/MobileDrawer.astro';
+import MobileBottomNav from '../components/MobileBottomNav.astro';
+import MobileSearchModal from '../components/MobileSearchModal.astro';
 import Analytics from '../components/Analytics.astro';
 import CookieConsent from '../components/CookieConsent.astro';
 import '../styles/global.css';
@@ -52,7 +55,7 @@ const websiteSchema = {
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
     <meta name="theme-color" content="#09090b" media="(prefers-color-scheme: dark)" />
     <link rel="icon" type="image/png" href={withBasePath('/calc.png')} />
@@ -101,14 +104,16 @@ const websiteSchema = {
       Skip to content
     </a>
 
+    <!-- Top Sticky Header -->
     <SiteHeader />
 
-    <main id="content" class="flex-1 mx-auto w-full max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
+    <!-- Main Content Container with safe mobile bottom spacing for BottomNav -->
+    <main id="content" class="flex-1 mx-auto w-full max-w-6xl px-3 sm:px-6 lg:px-8 py-5 sm:py-8 pb-24 lg:pb-10">
       <slot />
     </main>
 
     <!-- Clean, Professional Black & White Footer -->
-    <footer class="mt-auto border-t border-[color:var(--border)] bg-[color:var(--surface)]">
+    <footer class="mt-auto border-t border-[color:var(--border)] bg-[color:var(--surface)] pb-16 lg:pb-0">
       <div class="mx-auto w-full max-w-6xl px-4 py-10 sm:px-6 lg:px-8">
         <div class="grid gap-8 sm:grid-cols-2 lg:grid-cols-5">
           
@@ -129,40 +134,39 @@ const websiteSchema = {
             </p>
           </div>
 
-          <!-- Column 2: Career Tools -->
+          <!-- Column 2: Developer & Data -->
           <div class="space-y-2.5">
-            <p class="text-xs font-bold uppercase tracking-wider text-[color:var(--fg)]">Career Tools</p>
+            <p class="text-xs font-bold uppercase tracking-wider text-[color:var(--fg)]">Dev &amp; Data Tools</p>
             <ul class="space-y-1.5 text-xs text-[color:var(--muted)]">
-              <li><a class="transition hover:text-[color:var(--fg)]" href={withBasePath('/career-tools/cv-maker/')}>CV &amp; Resume Maker</a></li>
-              <li><a class="transition hover:text-[color:var(--fg)]" href={withBasePath('/career-tools/student-cv-maker/')}>Student CV Builder</a></li>
-              <li><a class="transition hover:text-[color:var(--fg)]" href={withBasePath('/career-tools/fresher-resume-maker/')}>Fresher Resume Maker</a></li>
-              <li><a class="transition hover:text-[color:var(--fg)]" href={withBasePath('/career-tools/ats-friendly-resume-guide/')}>ATS Resume Guide</a></li>
-              <li><a class="transition hover:text-[color:var(--fg)]" href={withBasePath('/career-tools/')}>All Career Tools</a></li>
+              <li><a class="transition hover:text-[color:var(--fg)]" href={withBasePath('/developer-tools/')}>Developer Utilities</a></li>
+              <li><a class="transition hover:text-[color:var(--fg)]" href={withBasePath('/developer-tools/json-formatter/')}>JSON Formatter</a></li>
+              <li><a class="transition hover:text-[color:var(--fg)]" href={withBasePath('/developer-tools/jwt-decoder/')}>JWT Decoder</a></li>
+              <li><a class="transition hover:text-[color:var(--fg)]" href={withBasePath('/data-tools/')}>CSV &amp; Data Utilities</a></li>
+              <li><a class="transition hover:text-[color:var(--fg)]" href={withBasePath('/url-tools/')}>URL &amp; Query Tools</a></li>
             </ul>
           </div>
 
-          <!-- Column 3: Tax & Finance -->
+          <!-- Column 3: Text & Images -->
           <div class="space-y-2.5">
-            <p class="text-xs font-bold uppercase tracking-wider text-[color:var(--fg)]">Tax &amp; Finance</p>
+            <p class="text-xs font-bold uppercase tracking-wider text-[color:var(--fg)]">Media &amp; Text</p>
             <ul class="space-y-1.5 text-xs text-[color:var(--muted)]">
-              <li><a class="transition hover:text-[color:var(--fg)]" href={withBasePath('/tax-calculators/')}>Tax Calculators Hub</a></li>
-              <li><a class="transition hover:text-[color:var(--fg)]" href={withBasePath('/currency-converter/')}>Currency Converter</a></li>
-              <li><a class="transition hover:text-[color:var(--fg)]" href={withBasePath('/us-income-tax-calculator/')}>US Tax Calculator</a></li>
-              <li><a class="transition hover:text-[color:var(--fg)]" href={withBasePath('/uk-income-tax-calculator/')}>UK Salary Calculator</a></li>
-              <li><a class="transition hover:text-[color:var(--fg)]" href={withBasePath('/calculators/salary-calculator/')}>Salary Calculator</a></li>
-              <li><a class="transition hover:text-[color:var(--fg)]" href={withBasePath('/tax-calculators/vat-calculator/')}>Global VAT Calculator</a></li>
+              <li><a class="transition hover:text-[color:var(--fg)]" href={withBasePath('/text-tools/')}>Text Utilities</a></li>
+              <li><a class="transition hover:text-[color:var(--fg)]" href={withBasePath('/image-tools/')}>Image &amp; Privacy Tools</a></li>
+              <li><a class="transition hover:text-[color:var(--fg)]" href={withBasePath('/pdf-tools/')}>PDF Document Tools</a></li>
+              <li><a class="transition hover:text-[color:var(--fg)]" href={withBasePath('/color-tools/')}>Color &amp; Accessibility</a></li>
+              <li><a class="transition hover:text-[color:var(--fg)]" href={withBasePath('/generators/')}>Online Generators</a></li>
             </ul>
           </div>
 
-          <!-- Column 4: Categories -->
+          <!-- Column 4: Academics & Career -->
           <div class="space-y-2.5">
-            <p class="text-xs font-bold uppercase tracking-wider text-[color:var(--fg)]">Categories</p>
+            <p class="text-xs font-bold uppercase tracking-wider text-[color:var(--fg)]">Study &amp; Career</p>
             <ul class="space-y-1.5 text-xs text-[color:var(--muted)]">
-              <li><a class="transition hover:text-[color:var(--fg)]" href={withBasePath('/#calculators?category=Finance')}>Finance &amp; Loans</a></li>
-              <li><a class="transition hover:text-[color:var(--fg)]" href={withBasePath('/#calculators?category=Health')}>Health &amp; Fitness</a></li>
-              <li><a class="transition hover:text-[color:var(--fg)]" href={withBasePath('/#calculators?category=Math')}>Math &amp; Numbers</a></li>
-              <li><a class="transition hover:text-[color:var(--fg)]" href={withBasePath('/#calculators?category=Education')}>Education &amp; Grades</a></li>
-              <li><a class="transition hover:text-[color:var(--fg)]" href={withBasePath('/#calculators?category=Text%20Tools')}>Text &amp; Words</a></li>
+              <li><a class="transition hover:text-[color:var(--fg)]" href={withBasePath('/academic-tools/')}>Academic Calculators</a></li>
+              <li><a class="transition hover:text-[color:var(--fg)]" href={withBasePath('/research-tools/')}>Research &amp; Statistics</a></li>
+              <li><a class="transition hover:text-[color:var(--fg)]" href={withBasePath('/education-tools/')}>Education &amp; Classroom</a></li>
+              <li><a class="transition hover:text-[color:var(--fg)]" href={withBasePath('/career-tools/cv-maker/')}>ATS Resume Maker</a></li>
+              <li><a class="transition hover:text-[color:var(--fg)]" href={withBasePath('/tax-calculators/')}>Tax Calculators (24 Countries)</a></li>
             </ul>
           </div>
 
@@ -185,6 +189,15 @@ const websiteSchema = {
         </div>
       </div>
     </footer>
+
+    <!-- Mobile Slide-out Drawer -->
+    <MobileDrawer />
+
+    <!-- Mobile Fixed Bottom Navigation Bar -->
+    <MobileBottomNav />
+
+    <!-- Global / Mobile Quick Search Modal -->
+    <MobileSearchModal />
 
     {/* Cookie Consent Banner */}
     <CookieConsent />

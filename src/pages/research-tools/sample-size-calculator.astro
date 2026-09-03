@@ -1,0 +1,403 @@
+---
+import SiteLayout from '../../layouts/SiteLayout.astro';
+import Icon from '../../components/Icon.astro';
+import { siteName, toAbsoluteUrl, withBasePath } from '../../utils/site';
+
+const pageTitle = `Sample Size Calculator | Survey & Research Sample Size · ${siteName}`;
+const pageDesc = 'Calculate the exact scientific sample size needed for research studies, surveys, and thesis dissertations using Cochran’s formula and Finite Population Correction.';
+const canonicalUrl = toAbsoluteUrl('/research-tools/sample-size-calculator/');
+
+const breadcrumbItems = [
+  { label: 'Home', href: toAbsoluteUrl('/') },
+  { label: 'Research Tools', href: toAbsoluteUrl('/research-tools/') },
+  { label: 'Sample Size Calculator' },
+];
+
+const faqs = [
+  {
+    question: 'How is sample size calculated for an unknown or infinite population?',
+    answer: 'For large or unknown populations, Cochran’s formula is applied: n₀ = (Z² × p(1 - p)) ÷ e², where Z is the critical value for your chosen confidence level (e.g., 1.96 for 95%), p is the estimated proportion (0.50 gives the most conservative sample size), and e is the acceptable margin of error (e.g., 0.05 for ±5%).',
+  },
+  {
+    question: 'What is Finite Population Correction (FPC)?',
+    answer: 'When sampling from a small or known finite population N (such as employees in a specific company or registered patients in a clinic), the unadjusted sample size n₀ is adjusted down using FPC: n = n₀ ÷ [1 + (n₀ - 1) ÷ N]. This prevents over-sampling when the sample exceeds 5% of the total population.',
+  },
+  {
+    question: 'Why is 50% proportion (p = 0.5) the default standard?',
+    answer: 'A proportion of p = 0.5 maximizes the product p(1 - p) = 0.25, ensuring the resulting sample size is mathematically sufficient regardless of what the actual observed survey responses turn out to be.',
+  },
+];
+
+const schemaGraph = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebApplication',
+    name: 'Scientific Sample Size Calculator',
+    url: canonicalUrl,
+    description: pageDesc,
+    applicationCategory: 'EducationalApplication',
+    operatingSystem: 'All',
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: breadcrumbItems.map((item, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      name: item.label,
+      item: item.href,
+    })),
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faqs.map((f) => ({
+      '@type': 'Question',
+      name: f.question,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: f.answer,
+      },
+    })),
+  },
+];
+---
+
+<SiteLayout title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(schemaGraph)} />
+
+  <article class="space-y-10 py-2">
+    <!-- Breadcrumbs -->
+    <nav aria-label="Breadcrumb">
+      <ol class="flex flex-wrap items-center gap-2 text-xs text-[color:var(--muted)]">
+        {breadcrumbItems.map((item, index) => (
+          <li class="flex items-center gap-2">
+            {index > 0 && <span aria-hidden="true">/</span>}
+            {item.href ? (
+              <a class="transition hover:text-[color:var(--fg)]" href={item.href}>
+                {item.label}
+              </a>
+            ) : (
+              <span aria-current="page" class="font-semibold text-[color:var(--fg)]">
+                {item.label}
+              </span>
+            )}
+          </li>
+        ))}
+      </ol>
+    </nav>
+
+    <!-- Header -->
+    <header class="space-y-3">
+      <div class="inline-flex items-center gap-2 rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3.5 py-1 text-xs font-semibold text-[color:var(--fg)]">
+        <span>Scientific Sampling Methodology</span>
+      </div>
+      <h1 class="text-3xl font-extrabold tracking-tight text-[color:var(--fg)] sm:text-4xl">
+        Sample Size Calculator
+      </h1>
+      <p class="max-w-3xl text-sm leading-relaxed text-[color:var(--muted)] sm:text-base">
+        Calculate the exact number of survey respondents or experimental subjects needed to achieve statistically significant results for your thesis dissertation, clinical trial, or market research poll.
+      </p>
+    </header>
+
+    <!-- App Card -->
+    <div
+      class="rounded-[2.5rem] border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-6 shadow-[var(--shadow)] sm:p-10"
+      data-sample-size-app
+    >
+      <div class="grid gap-8 lg:grid-cols-[1.15fr_0.85fr]">
+        <form class="space-y-5" onsubmit="return false;">
+          <div class="flex items-center justify-between">
+            <h2 class="text-lg font-bold text-[color:var(--fg)]">Study Parameters</h2>
+            <button type="button" class="cursor-pointer text-xs font-semibold text-[color:var(--muted)] hover:text-[color:var(--fg)]" data-reset-btn>
+              ↺ Reset
+            </button>
+          </div>
+
+          <!-- Confidence Level -->
+          <div class="space-y-1.5">
+            <label for="conf-level" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">
+              Confidence Level
+            </label>
+            <select
+              id="conf-level"
+              class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-sm font-semibold text-[color:var(--fg)] outline-none"
+              data-conf-level
+            >
+              <option value="90">90% (Z = 1.645)</option>
+              <option value="95" selected>95% - Scientific Standard (Z = 1.960)</option>
+              <option value="99">99% - High Precision (Z = 2.576)</option>
+            </select>
+          </div>
+
+          <!-- Margin of Error -->
+          <div class="space-y-1.5">
+            <div class="flex items-center justify-between">
+              <label for="moe-input" class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">
+                Margin of Error (±%)
+              </label>
+              <span class="text-xs font-mono text-[color:var(--fg)]" data-moe-display>5.0%</span>
+            </div>
+            <input
+              id="moe-input"
+              type="number"
+              min="0.1"
+              max="20"
+              step="0.1"
+              value="5.0"
+              class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none"
+              data-moe-input
+            />
+          </div>
+
+          <!-- Expected Proportion -->
+          <div class="space-y-1.5">
+            <div class="flex items-center justify-between">
+              <label for="prop-input" class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">
+                Expected Proportion (Response Distribution %)
+              </label>
+              <span class="text-xs font-mono text-[color:var(--fg)]" data-prop-display>50%</span>
+            </div>
+            <input
+              id="prop-input"
+              type="number"
+              min="1"
+              max="99"
+              step="1"
+              value="50"
+              class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none"
+              data-prop-input
+            />
+            <p class="text-[11px] text-[color:var(--muted)]">Default 50% gives maximum variability and the safest sample size.</p>
+          </div>
+
+          <!-- Population Size (Optional) -->
+          <div class="space-y-1.5 pt-1">
+            <label for="pop-input" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">
+              Population Size (Leave Blank if Unknown / Large)
+            </label>
+            <input
+              id="pop-input"
+              type="number"
+              min="10"
+              step="1"
+              placeholder="e.g. 5000 (Optional for finite population correction)"
+              class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-sm font-semibold text-[color:var(--fg)] outline-none"
+              data-pop-input
+            />
+          </div>
+        </form>
+
+        <!-- Result Box -->
+        <div class="flex flex-col justify-between space-y-6 rounded-3xl border border-[color:var(--border)] bg-[color:var(--bg)] p-6 sm:p-8">
+          <div class="space-y-5">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Required Respondents</span>
+              <button
+                type="button"
+                class="inline-flex items-center gap-1 cursor-pointer text-xs font-bold text-[color:var(--fg)] hover:underline"
+                data-copy-btn
+              >
+                <Icon name="copy" class="w-3.5 h-3.5" />
+                <span>Copy Result</span>
+              </button>
+            </div>
+
+            <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 text-center">
+              <p class="text-xs font-semibold text-[color:var(--muted)]">Recommended Sample Size</p>
+              <p class="mt-1 text-5xl font-black tracking-tight text-[color:var(--fg)]" data-res-sample>
+                385
+              </p>
+              <p class="mt-2 text-xs font-medium text-[color:var(--muted)]" data-res-note>
+                Minimum respondents needed for 95% confidence with ±5.0% precision.
+              </p>
+            </div>
+
+            <div class="space-y-2 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-xs">
+              <div class="flex justify-between">
+                <span class="text-[color:var(--muted)]">Critical Z-Value:</span>
+                <span class="font-mono font-bold text-[color:var(--fg)]" data-z-val>1.960</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-[color:var(--muted)]">Unadjusted Sample Size (Cochran n₀):</span>
+                <span class="font-mono font-bold text-[color:var(--fg)]" data-unadj-sample>385</span>
+              </div>
+              <div class="flex justify-between" data-fpc-row hidden>
+                <span class="text-[color:var(--muted)]">Finite Population Correction (FPC):</span>
+                <span class="font-mono font-bold text-[color:var(--accent)]" data-fpc-val>Applied</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Comparison Table Matrix -->
+          <div class="space-y-2 pt-2 border-t border-[color:var(--border)]">
+            <p class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Sample Size Matrix (95% Conf)</p>
+            <div class="grid grid-cols-3 gap-2 text-center text-xs">
+              <div class="p-2 rounded-xl bg-[color:var(--surface)] border border-[color:var(--border)]">
+                <p class="text-[10px] text-[color:var(--muted)]">±3% Precision</p>
+                <p class="font-bold text-[color:var(--fg)] mt-0.5" data-mat-3>1,068</p>
+              </div>
+              <div class="p-2 rounded-xl bg-[color:var(--surface)] border border-[color:var(--border)]">
+                <p class="text-[10px] text-[color:var(--muted)]">±5% Precision</p>
+                <p class="font-bold text-[color:var(--fg)] mt-0.5" data-mat-5>385</p>
+              </div>
+              <div class="p-2 rounded-xl bg-[color:var(--surface)] border border-[color:var(--border)]">
+                <p class="text-[10px] text-[color:var(--muted)]">±10% Precision</p>
+                <p class="font-bold text-[color:var(--fg)] mt-0.5" data-mat-10>97</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Educational & Methodology Content -->
+    <section class="grid gap-6 sm:grid-cols-2">
+      <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 space-y-2">
+        <h2 class="text-base font-bold text-[color:var(--fg)]">Cochran's Sample Size Formula</h2>
+        <p class="text-xs text-[color:var(--muted)] leading-relaxed">
+          For large or infinite target populations:
+        </p>
+        <div class="rounded-xl bg-[color:var(--bg)] p-3 font-mono text-xs text-[color:var(--fg)] border border-[color:var(--border)]">
+          n₀ = (Z² × p × (1 - p)) ÷ e²
+        </div>
+        <p class="text-xs text-[color:var(--muted)]">
+          Where <span class="font-mono">Z</span> is the critical value (1.96 for 95%), <span class="font-mono">p</span> is proportion, and <span class="font-mono">e</span> is margin of error.
+        </p>
+      </div>
+
+      <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 space-y-2">
+        <h2 class="text-base font-bold text-[color:var(--fg)]">Finite Population Correction (FPC)</h2>
+        <p class="text-xs text-[color:var(--muted)] leading-relaxed">
+          When sampling a known group of size <span class="font-mono">N</span>:
+        </p>
+        <div class="rounded-xl bg-[color:var(--bg)] p-3 font-mono text-xs text-[color:var(--fg)] border border-[color:var(--border)]">
+          n = n₀ ÷ [1 + (n₀ - 1) ÷ N]
+        </div>
+        <p class="text-xs text-[color:var(--muted)]">
+          FPC reduces required sample size without sacrificing precision when <span class="font-mono">n / N &gt; 0.05</span>.
+        </p>
+      </div>
+    </section>
+
+    <!-- FAQs -->
+    <section class="space-y-4">
+      <h2 class="text-xl font-bold text-[color:var(--fg)]">Frequently Asked Questions</h2>
+      <div class="space-y-3">
+        {faqs.map((faq) => (
+          <details class="group rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
+            <summary class="cursor-pointer list-none font-semibold text-sm sm:text-base text-[color:var(--fg)] flex items-center justify-between gap-4">
+              <span>{faq.question}</span>
+              <span class="text-xs text-[color:var(--muted)] group-open:rotate-180 transition-transform">▼</span>
+            </summary>
+            <p class="mt-3 text-xs sm:text-sm leading-relaxed text-[color:var(--muted)]">
+              {faq.answer}
+            </p>
+          </details>
+        ))}
+      </div>
+    </section>
+  </article>
+
+  <script is:inline>
+    (function () {
+      const root = document.querySelector('[data-sample-size-app]');
+      if (!root) return;
+
+      const inConf = root.querySelector('[data-conf-level]');
+      const inMoe = root.querySelector('[data-moe-input]');
+      const inProp = root.querySelector('[data-prop-input]');
+      const inPop = root.querySelector('[data-pop-input]');
+      const outMoeDisp = root.querySelector('[data-moe-display]');
+      const outPropDisp = root.querySelector('[data-prop-display]');
+      const outSample = root.querySelector('[data-res-sample]');
+      const outNote = root.querySelector('[data-res-note]');
+      const outZVal = root.querySelector('[data-z-val]');
+      const outUnadj = root.querySelector('[data-unadj-sample]');
+      const fpcRow = root.querySelector('[data-fpc-row]');
+      const fpcVal = root.querySelector('[data-fpc-val]');
+      const mat3 = root.querySelector('[data-mat-3]');
+      const mat5 = root.querySelector('[data-mat-5]');
+      const mat10 = root.querySelector('[data-mat-10]');
+      const resetBtn = root.querySelector('[data-reset-btn]');
+      const copyBtn = root.querySelector('[data-copy-btn]');
+
+      const zMap = { '90': 1.644853, '95': 1.959964, '99': 2.575829 };
+
+      function update() {
+        const confStr = inConf.value || '95';
+        const z = zMap[confStr] || 1.96;
+        const moePct = Math.max(0.1, Math.min(25, parseFloat(inMoe.value || '5.0')));
+        const propPct = Math.max(1, Math.min(99, parseFloat(inProp.value || '50')));
+        const popVal = inPop.value ? parseInt(inPop.value, 10) : undefined;
+
+        if (outMoeDisp) outMoeDisp.textContent = `${moePct.toFixed(1)}%`;
+        if (outPropDisp) outPropDisp.textContent = `${propPct}%`;
+        if (outZVal) outZVal.textContent = z.toFixed(3);
+
+        const p = propPct / 100;
+        const e = moePct / 100;
+        const n0 = (z * z * p * (1 - p)) / (e * e);
+
+        let finalN = n0;
+        if (popVal && popVal > 0) {
+          finalN = n0 / (1 + (n0 - 1) / popVal);
+          if (fpcRow && fpcVal) {
+            fpcRow.removeAttribute('hidden');
+            fpcVal.textContent = `Adjusted for N = ${popVal.toLocaleString()}`;
+          }
+        } else {
+          if (fpcRow) fpcRow.setAttribute('hidden', '');
+        }
+
+        const sampleInt = Math.ceil(finalN);
+        if (outSample) outSample.textContent = sampleInt.toLocaleString();
+        if (outUnadj) outUnadj.textContent = Math.ceil(n0).toLocaleString();
+
+        if (outNote) {
+          outNote.textContent = `Minimum respondents needed for ${confStr}% confidence with ±${moePct.toFixed(1)}% margin of error.`;
+        }
+
+        // Matrix calculation at 95%
+        const z95 = 1.959964;
+        const calcN = (m) => {
+          const raw = (z95 * z95 * p * (1 - p)) / (m * m);
+          return Math.ceil(popVal && popVal > 0 ? raw / (1 + (raw - 1) / popVal) : raw);
+        };
+
+        if (mat3) mat3.textContent = calcN(0.03).toLocaleString();
+        if (mat5) mat5.textContent = calcN(0.05).toLocaleString();
+        if (mat10) mat10.textContent = calcN(0.10).toLocaleString();
+      }
+
+      inConf.addEventListener('change', update);
+      inMoe.addEventListener('input', update);
+      inProp.addEventListener('input', update);
+      inPop.addEventListener('input', update);
+
+      if (resetBtn) {
+        resetBtn.addEventListener('click', () => {
+          inConf.value = '95';
+          inMoe.value = '5.0';
+          inProp.value = '50';
+          inPop.value = '';
+          update();
+        });
+      }
+
+      if (copyBtn) {
+        copyBtn.addEventListener('click', async () => {
+          const text = `Sample Size Calculation:\nSample Size Needed: ${outSample.textContent}\nConfidence Level: ${inConf.value}%\nMargin of Error: ±${inMoe.value}%\nProportion: ${inProp.value}%\nSource: CalculatorUtility.tech`;
+          try {
+            await navigator.clipboard.writeText(text);
+            const orig = copyBtn.textContent;
+            copyBtn.textContent = '✓ Copied!';
+            setTimeout(() => { copyBtn.textContent = orig; }, 2000);
+          } catch (e) {}
+        });
+      }
+
+      update();
+    })();
+  </script>
+</SiteLayout>

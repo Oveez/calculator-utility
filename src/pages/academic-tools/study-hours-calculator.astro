@@ -1,0 +1,324 @@
+---
+import SiteLayout from '../../layouts/SiteLayout.astro';
+import Icon from '../../components/Icon.astro';
+import { siteName, toAbsoluteUrl, withBasePath } from '../../utils/site';
+
+const pageTitle = `Study Hours Calculator | College Time Budget & Weekly Schedule · ${siteName}`;
+const pageDesc = 'Calculate recommended weekly study hours based on course difficulty (STEM, humanities), enrolled credits, target GPA, and 168-hour weekly life balance.';
+const canonicalUrl = toAbsoluteUrl('/academic-tools/study-hours-calculator/');
+
+const breadcrumbItems = [
+  { label: 'Home', href: toAbsoluteUrl('/') },
+  { label: 'Academic Tools', href: toAbsoluteUrl('/academic-tools/') },
+  { label: 'Study Hours Calculator' },
+];
+
+const faqs = [
+  {
+    question: 'How many hours should I study per college credit hour?',
+    answer: 'Standard university guidance suggests 2 to 3 hours of outside study per credit hour each week. For introductory courses, 1.5 to 2 hours is typically sufficient, while rigorous STEM, engineering, pre-med, or upper-division courses frequently require 3 to 4 hours per credit.',
+  },
+  {
+    question: 'How does the 168-hour week rule work?',
+    answer: 'Every week has exactly 168 hours (24 × 7). By budgeting your classes, study hours, sleep (56 hrs for 8 hrs/night), job commitments, and commute/meals, you can ensure your academic goals are realistic and sustainable without causing burnout.',
+  },
+];
+
+const schemaGraph = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebApplication',
+    name: 'Study Hours Calculator',
+    url: canonicalUrl,
+    description: pageDesc,
+    applicationCategory: 'EducationalApplication',
+    operatingSystem: 'All',
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: breadcrumbItems.map((item, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      name: item.label,
+      item: item.href,
+    })),
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faqs.map((f) => ({
+      '@type': 'Question',
+      name: f.question,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: f.answer,
+      },
+    })),
+  },
+];
+---
+
+<SiteLayout title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(schemaGraph)} />
+
+  <article class="space-y-10 py-2">
+    <!-- Breadcrumbs -->
+    <nav aria-label="Breadcrumb">
+      <ol class="flex flex-wrap items-center gap-2 text-xs text-[color:var(--muted)]">
+        {breadcrumbItems.map((item, index) => (
+          <li class="flex items-center gap-2">
+            {index > 0 && <span aria-hidden="true">/</span>}
+            {item.href ? (
+              <a class="transition hover:text-[color:var(--fg)]" href={item.href}>
+                {item.label}
+              </a>
+            ) : (
+              <span aria-current="page" class="font-semibold text-[color:var(--fg)]">
+                {item.label}
+              </span>
+            )}
+          </li>
+        ))}
+      </ol>
+    </nav>
+
+    <!-- Header -->
+    <header class="space-y-3">
+      <div class="inline-flex items-center gap-2 rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3.5 py-1 text-xs font-semibold text-[color:var(--fg)]">
+        <span>Academic Time Management</span>
+      </div>
+      <h1 class="text-3xl font-extrabold tracking-tight text-[color:var(--fg)] sm:text-4xl">
+        Study Hours Calculator
+      </h1>
+      <p class="max-w-3xl text-sm leading-relaxed text-[color:var(--muted)] sm:text-base">
+        How many hours should you actually study each week? Calculate customized study time recommendations tailored to your enrolled credit load, course difficulty, and target GPA.
+      </p>
+    </header>
+
+    <!-- App Card -->
+    <div
+      class="rounded-[2.5rem] border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-6 shadow-[var(--shadow)] sm:p-10"
+      data-study-hours-app
+    >
+      <div class="grid gap-8 lg:grid-cols-[1.1fr_0.9fr]">
+        <form class="space-y-5" onsubmit="return false;">
+          <div class="flex items-center justify-between">
+            <h2 class="text-lg font-bold text-[color:var(--fg)]">Academic &amp; Life Inputs</h2>
+            <button type="button" class="cursor-pointer text-xs font-semibold text-[color:var(--muted)] hover:text-[color:var(--fg)]" data-reset-btn>
+              ↺ Reset
+            </button>
+          </div>
+
+          <div class="space-y-1.5">
+            <label for="study-credits" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">
+              Enrolled Credit Hours
+            </label>
+            <input
+              id="study-credits"
+              type="number"
+              min="1"
+              max="24"
+              step="1"
+              value="15"
+              class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none transition focus:border-[color:var(--accent)]"
+              data-study-credits
+            />
+          </div>
+
+          <div class="space-y-1.5">
+            <label for="course-diff" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">
+              Overall Course Rigor
+            </label>
+            <select
+              id="course-diff"
+              class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-sm font-semibold text-[color:var(--fg)] outline-none"
+              data-course-diff
+            >
+              <option value="intro">Introductory / General Education (1.5h/credit)</option>
+              <option value="moderate" selected>Standard Undergraduate (2.0h/credit)</option>
+              <option value="challenging">Advanced Upper-Division (2.75h/credit)</option>
+              <option value="stem_heavy">Heavy STEM / Pre-Med / Engineering (3.5h/credit)</option>
+            </select>
+          </div>
+
+          <div class="space-y-1.5">
+            <label for="target-gpa" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">
+              Target Academic Goal
+            </label>
+            <select
+              id="target-gpa"
+              class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-sm font-semibold text-[color:var(--fg)] outline-none"
+              data-target-gpa
+            >
+              <option value="pass">Passing Grade (C / 2.0)</option>
+              <option value="b_average" selected>Solid Performance (B / 3.0)</option>
+              <option value="a_average">Dean's List / Honors (A / 3.7+)</option>
+            </select>
+          </div>
+
+          <div class="grid grid-cols-2 gap-3 pt-1">
+            <div>
+              <label for="work-hrs" class="block text-xs font-medium text-[color:var(--muted)]">Job / Work (hrs/wk)</label>
+              <input
+                id="work-hrs"
+                type="number"
+                value="10"
+                class="mt-1 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none"
+                data-work-hrs
+              />
+            </div>
+            <div>
+              <label for="sleep-hrs" class="block text-xs font-medium text-[color:var(--muted)]">Sleep (hrs/night)</label>
+              <input
+                id="sleep-hrs"
+                type="number"
+                value="8"
+                class="mt-1 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none"
+                data-sleep-hrs
+              />
+            </div>
+          </div>
+        </form>
+
+        <!-- Result Box -->
+        <div class="flex flex-col justify-between space-y-6 rounded-3xl border border-[color:var(--border)] bg-[color:var(--bg)] p-6 sm:p-8">
+          <div class="space-y-5">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Recommended Plan</span>
+              <span class="rounded-full px-3 py-0.5 text-xs font-bold bg-green-500/10 text-green-600 dark:text-green-400 border border-green-500/20" data-feasibility-badge>
+                Balanced
+              </span>
+            </div>
+
+            <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 text-center">
+              <p class="text-xs font-semibold text-[color:var(--muted)]">Weekly Outside Study Time</p>
+              <p class="mt-1 text-5xl font-black tracking-tight text-[color:var(--fg)]" data-rec-weekly>
+                30.0 hrs
+              </p>
+              <p class="mt-2 text-xs font-medium text-[color:var(--muted)]" data-rec-daily>
+                ~4.2 hours per day across the week
+              </p>
+            </div>
+
+            <div class="space-y-2 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-xs">
+              <div class="flex justify-between">
+                <span class="text-[color:var(--muted)]">Mon-Fri Daily Target:</span>
+                <span class="font-bold text-[color:var(--fg)]" data-weekday-study>4.2 hrs/day</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-[color:var(--muted)]">Sat-Sun Weekend Sessions:</span>
+                <span class="font-bold text-[color:var(--fg)]" data-weekend-study>4.5 hrs/day</span>
+              </div>
+              <div class="flex justify-between border-t border-[color:var(--border)] pt-2">
+                <span class="font-bold text-[color:var(--fg)]">Free / Leisure Time Left:</span>
+                <span class="font-bold text-[color:var(--accent)]" data-free-hours>57.0 hrs/wk</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FAQs -->
+    <section class="space-y-4">
+      <h2 class="text-xl font-bold text-[color:var(--fg)]">Frequently Asked Questions</h2>
+      <div class="space-y-3">
+        {faqs.map((faq) => (
+          <details class="group rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
+            <summary class="cursor-pointer list-none font-semibold text-sm sm:text-base text-[color:var(--fg)] flex items-center justify-between gap-4">
+              <span>{faq.question}</span>
+              <span class="text-xs text-[color:var(--muted)] group-open:rotate-180 transition-transform">▼</span>
+            </summary>
+            <p class="mt-3 text-xs sm:text-sm leading-relaxed text-[color:var(--muted)]">
+              {faq.answer}
+            </p>
+          </details>
+        ))}
+      </div>
+    </section>
+  </article>
+
+  <script is:inline>
+    (function () {
+      const root = document.querySelector('[data-study-hours-app]');
+      if (!root) return;
+
+      const inCred = root.querySelector('[data-study-credits]');
+      const inDiff = root.querySelector('[data-course-diff]');
+      const inGpa = root.querySelector('[data-target-gpa]');
+      const inWork = root.querySelector('[data-work-hrs]');
+      const inSleep = root.querySelector('[data-sleep-hrs]');
+      const outWeekly = root.querySelector('[data-rec-weekly]');
+      const outDaily = root.querySelector('[data-rec-daily]');
+      const outWeekday = root.querySelector('[data-weekday-study]');
+      const outWeekend = root.querySelector('[data-weekend-study]');
+      const outFree = root.querySelector('[data-free-hours]');
+      const badge = root.querySelector('[data-feasibility-badge]');
+      const resetBtn = root.querySelector('[data-reset-btn]');
+
+      function update() {
+        const credits = Math.max(1, parseFloat(inCred.value || '15'));
+        const diff = inDiff.value;
+        const gpa = inGpa.value;
+        const work = Math.max(0, parseFloat(inWork.value || '0'));
+        const sleep = Math.max(0, parseFloat(inSleep.value || '8'));
+
+        let diffMult = 2.0;
+        if (diff === 'intro') diffMult = 1.5;
+        else if (diff === 'challenging') diffMult = 2.75;
+        else if (diff === 'stem_heavy') diffMult = 3.5;
+
+        let gpaMult = 1.0;
+        if (gpa === 'pass') gpaMult = 0.8;
+        else if (gpa === 'a_average') gpaMult = 1.25;
+
+        const weeklyStudy = credits * diffMult * gpaMult;
+        const dailyAvg = weeklyStudy / 7;
+        const weekday = (weeklyStudy * 0.7) / 5;
+        const weekend = (weeklyStudy * 0.3) / 2;
+
+        const totalCommitment = weeklyStudy + credits + work + (sleep * 7) + 10;
+        const freeHrs = Math.max(0, 168 - totalCommitment);
+
+        if (outWeekly) outWeekly.textContent = `${weeklyStudy.toFixed(1)} hrs`;
+        if (outDaily) outDaily.textContent = `~${dailyAvg.toFixed(1)} hours per day`;
+        if (outWeekday) outWeekday.textContent = `${weekday.toFixed(1)} hrs/day`;
+        if (outWeekend) outWeekend.textContent = `${weekend.toFixed(1)} hrs/day`;
+        if (outFree) outFree.textContent = `${freeHrs.toFixed(1)} hrs/wk`;
+
+        if (badge) {
+          if (totalCommitment > 168) {
+            badge.className = 'rounded-full px-3 py-0.5 text-xs font-bold bg-red-500/10 text-red-600 dark:text-red-400 border border-red-500/20';
+            badge.textContent = 'Unsustainable (>168 hrs)';
+          } else if (freeHrs < 20) {
+            badge.className = 'rounded-full px-3 py-0.5 text-xs font-bold bg-orange-500/10 text-orange-600 dark:text-orange-400 border border-orange-500/20';
+            badge.textContent = 'Heavy Workload';
+          } else {
+            badge.className = 'rounded-full px-3 py-0.5 text-xs font-bold bg-green-500/10 text-green-600 dark:text-green-400 border border-green-500/20';
+            badge.textContent = 'Balanced Schedule';
+          }
+        }
+      }
+
+      inCred.addEventListener('input', update);
+      inDiff.addEventListener('change', update);
+      inGpa.addEventListener('change', update);
+      inWork.addEventListener('input', update);
+      inSleep.addEventListener('input', update);
+
+      if (resetBtn) {
+        resetBtn.addEventListener('click', () => {
+          inCred.value = '15';
+          inDiff.value = 'moderate';
+          inGpa.value = 'b_average';
+          inWork.value = '10';
+          inSleep.value = '8';
+          update();
+        });
+      }
+
+      update();
+    })();
+  </script>
+</SiteLayout>

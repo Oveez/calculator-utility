@@ -1,0 +1,245 @@
+---
+import SiteLayout from '../../layouts/SiteLayout.astro';
+import Icon from '../../components/Icon.astro';
+import { siteName, toAbsoluteUrl, withBasePath } from '../../utils/site';
+
+const pageTitle = `RGB to HSL Color Converter — Hue, Saturation & Lightness · ${siteName}`;
+const pageDesc = 'Convert RGB color coordinates (0-255) into HSL (Hue 0-360°, Saturation %, Lightness %) online with live color preview and copy-ready CSS.';
+const canonicalUrl = toAbsoluteUrl('/color-tools/rgb-to-hsl/');
+
+const breadcrumbItems = [
+  { label: 'Home', href: toAbsoluteUrl('/') },
+  { label: 'Color Tools', href: toAbsoluteUrl('/color-tools/') },
+  { label: 'RGB to HSL' },
+];
+
+const schemaFaq = [
+  {
+    question: 'What is HSL and how does it relate to RGB?',
+    answer: 'HSL represents color using cylindrical coordinates: Hue (0-360° color wheel angle), Saturation (0-100% color intensity), and Lightness (0-100% brightness from black to white).',
+  },
+];
+
+const schemaGraph = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebApplication',
+    name: 'RGB to HSL Converter',
+    url: canonicalUrl,
+    applicationCategory: 'DesignApplication',
+    operatingSystem: 'All',
+    browserRequirements: 'Requires JavaScript',
+    description: pageDesc,
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: breadcrumbItems.map((item, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      name: item.label,
+      item: item.href,
+    })),
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: schemaFaq.map((item) => ({
+      '@type': 'Question',
+      name: item.question,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: item.answer,
+      },
+    })),
+  },
+];
+---
+
+<SiteLayout title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(schemaGraph)} />
+
+  <article class="space-y-10 py-2" data-rgb-hsl-app>
+    <nav aria-label="Breadcrumb">
+      <ol class="flex flex-wrap items-center gap-2 text-xs text-[color:var(--muted)]">
+        {breadcrumbItems.map((item, index) => (
+          <li class="flex items-center gap-2">
+            {index > 0 && <span aria-hidden="true">/</span>}
+            {item.href ? (
+              <a class="transition hover:text-[color:var(--fg)]" href={item.href}>
+                {item.label}
+              </a>
+            ) : (
+              <span aria-current="page" class="font-semibold text-[color:var(--fg)]">
+                {item.label}
+              </span>
+            )}
+          </li>
+        ))}
+      </ol>
+    </nav>
+
+    <header class="space-y-3">
+      <div class="inline-flex items-center gap-2 rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1 text-xs font-semibold text-[color:var(--muted)]">
+        <span class="inline-block h-2 w-2 rounded-full bg-emerald-500"></span>
+        <span>Cylindrical Color Space Converter</span>
+      </div>
+      <h1 class="text-2xl sm:text-4xl font-extrabold tracking-tight text-[color:var(--fg)]">
+        RGB to HSL Color Converter
+      </h1>
+      <p class="max-w-2xl text-xs sm:text-sm text-[color:var(--muted)] leading-relaxed">
+        Convert RGB channel values into Hue angle, Saturation percentage, and Lightness coordinates.
+      </p>
+    </header>
+
+    <div class="space-y-6">
+      <div class="grid gap-6 lg:grid-cols-2">
+        <div class="space-y-4 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 sm:p-6 text-xs">
+          <div>
+            <div class="flex justify-between mb-1 font-bold text-[color:var(--fg)]">
+              <span>Red (R):</span>
+              <span id="r-val-txt" class="font-mono text-red-500">99</span>
+            </div>
+            <input type="range" id="r-slider" min="0" max="255" value="99" class="w-full accent-red-500 cursor-pointer" />
+          </div>
+
+          <div>
+            <div class="flex justify-between mb-1 font-bold text-[color:var(--fg)]">
+              <span>Green (G):</span>
+              <span id="g-val-txt" class="font-mono text-emerald-500">102</span>
+            </div>
+            <input type="range" id="g-slider" min="0" max="255" value="102" class="w-full accent-emerald-500 cursor-pointer" />
+          </div>
+
+          <div>
+            <div class="flex justify-between mb-1 font-bold text-[color:var(--fg)]">
+              <span>Blue (B):</span>
+              <span id="b-val-txt" class="font-mono text-blue-500">241</span>
+            </div>
+            <input type="range" id="b-slider" min="0" max="255" value="241" class="w-full accent-blue-500 cursor-pointer" />
+          </div>
+        </div>
+
+        <div class="space-y-4 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 sm:p-6">
+          <div class="flex items-center gap-4">
+            <div id="swatch" class="h-20 w-20 rounded-2xl border border-[color:var(--border)] shadow-xs bg-[#6366F1]"></div>
+            <div>
+              <p id="hsl-out" class="font-mono text-xl font-extrabold text-[color:var(--fg)]">hsl(239, 84%, 67%)</p>
+              <button type="button" data-copy-hsl class="mt-1 inline-flex items-center gap-1 text-xs font-bold text-emerald-500 hover:underline">
+                <Icon name="copy" class="w-3.5 h-3.5" />
+                <span>Copy HSL</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-3 gap-2 text-center text-xs">
+            <div class="rounded-xl bg-[color:var(--surface-strong)] p-2.5">
+              <span class="text-[10px] text-[color:var(--muted)]">Hue (H)</span>
+              <p id="h-val" class="font-mono font-bold text-[color:var(--fg)]">239°</p>
+            </div>
+            <div class="rounded-xl bg-[color:var(--surface-strong)] p-2.5">
+              <span class="text-[10px] text-[color:var(--muted)]">Saturation (S)</span>
+              <p id="s-val" class="font-mono font-bold text-[color:var(--fg)]">84%</p>
+            </div>
+            <div class="rounded-xl bg-[color:var(--surface-strong)] p-2.5">
+              <span class="text-[10px] text-[color:var(--muted)]">Lightness (L)</span>
+              <p id="l-val" class="font-mono font-bold text-[color:var(--fg)]">67%</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FAQs -->
+    <section class="space-y-4">
+      <h2 class="text-xl font-bold text-[color:var(--fg)]">Frequently Asked Questions</h2>
+      <div class="space-y-3">
+        {schemaFaq.map((faq) => (
+          <details class="group rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
+            <summary class="cursor-pointer list-none font-semibold text-sm sm:text-base text-[color:var(--fg)] flex items-center justify-between gap-4">
+              <span>{faq.question}</span>
+              <span class="text-xs text-[color:var(--muted)] group-open:rotate-180 transition-transform">▼</span>
+            </summary>
+            <p class="mt-3 text-xs sm:text-sm leading-relaxed text-[color:var(--muted)]">
+              {faq.answer}
+            </p>
+          </details>
+        ))}
+      </div>
+    </section>
+  </article>
+
+  <script is:inline>
+    (function () {
+      const root = document.querySelector('[data-rgb-hsl-app]');
+      if (!root) return;
+
+      const rSlider = root.querySelector('#r-slider');
+      const gSlider = root.querySelector('#g-slider');
+      const bSlider = root.querySelector('#b-slider');
+
+      const rValTxt = root.querySelector('#r-val-txt');
+      const gValTxt = root.querySelector('#g-val-txt');
+      const bValTxt = root.querySelector('#b-val-txt');
+
+      const swatch = root.querySelector('#swatch');
+      const hslOut = root.querySelector('#hsl-out');
+      const hVal = root.querySelector('#h-val');
+      const sVal = root.querySelector('#s-val');
+      const lVal = root.querySelector('#l-val');
+      const copyBtn = root.querySelector('[data-copy-hsl]');
+
+      function rgbToHsl(r, g, b) {
+        r /= 255; g /= 255; b /= 255;
+        const max = Math.max(r, g, b), min = Math.min(r, g, b);
+        let h = 0, s = 0, l = (max + min) / 2;
+
+        if (max !== min) {
+          const d = max - min;
+          s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+          switch (max) {
+            case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+            case g: h = (b - r) / d + 2; break;
+            case b: h = (r - g) / d + 4; break;
+          }
+          h /= 6;
+        }
+        return {
+          h: Math.round(h * 360),
+          s: Math.round(s * 100),
+          l: Math.round(l * 100)
+        };
+      }
+
+      function update() {
+        const r = parseInt(rSlider.value, 10);
+        const g = parseInt(gSlider.value, 10);
+        const b = parseInt(bSlider.value, 10);
+
+        rValTxt.textContent = r;
+        gValTxt.textContent = g;
+        bValTxt.textContent = b;
+
+        const { h, s, l } = rgbToHsl(r, g, b);
+        hVal.textContent = `${h}°`;
+        sVal.textContent = `${s}%`;
+        lVal.textContent = `${l}%`;
+
+        hslOut.textContent = `hsl(${h}, ${s}%, ${l}%)`;
+        swatch.style.backgroundColor = `rgb(${r}, ${g}, ${b})`;
+      }
+
+      [rSlider, gSlider, bSlider].forEach(s => s.addEventListener('input', update));
+
+      copyBtn.addEventListener('click', () => {
+        navigator.clipboard.writeText(hslOut.textContent);
+        const span = copyBtn.querySelector('span');
+        const orig = span.textContent;
+        span.textContent = 'Copied!';
+        setTimeout(() => span.textContent = orig, 1800);
+      });
+
+      update();
+    })();
+  </script>
+</SiteLayout>

@@ -1,0 +1,233 @@
+---
+import SiteLayout from '../../layouts/SiteLayout.astro';
+import Icon from '../../components/Icon.astro';
+import { siteName, toAbsoluteUrl, withBasePath } from '../../utils/site';
+
+const pageTitle = `PDF Metadata Viewer — View PDF Title, Author & Properties · ${siteName}`;
+const pageDesc = 'Inspect PDF document properties including Title, Author, Subject, Creator, Producer software, PDF version, and creation timestamps. 100% private in-browser tool.';
+const canonicalUrl = toAbsoluteUrl('/pdf-tools/pdf-metadata-viewer/');
+
+const breadcrumbItems = [
+  { label: 'Home', href: toAbsoluteUrl('/') },
+  { label: 'PDF Tools', href: toAbsoluteUrl('/pdf-tools/') },
+  { label: 'PDF Metadata Viewer' },
+];
+
+const schemaFaq = [
+  {
+    question: 'How are PDF document properties extracted?',
+    answer: 'It parses the PDF trailer and Info dictionary objects (`/Title`, `/Author`, `/Creator`, `/Producer`, `/CreationDate`) in memory using client-side JavaScript.',
+  },
+];
+
+const schemaGraph = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebApplication',
+    name: 'PDF Metadata Viewer',
+    url: canonicalUrl,
+    applicationCategory: 'DocumentApplication',
+    operatingSystem: 'All',
+    browserRequirements: 'Requires JavaScript',
+    description: pageDesc,
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: breadcrumbItems.map((item, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      name: item.label,
+      item: item.href,
+    })),
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: schemaFaq.map((item) => ({
+      '@type': 'Question',
+      name: item.question,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: item.answer,
+      },
+    })),
+  },
+];
+---
+
+<SiteLayout title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(schemaGraph)} />
+
+  <article class="space-y-10 py-2" data-pdf-meta-app>
+    <nav aria-label="Breadcrumb">
+      <ol class="flex flex-wrap items-center gap-2 text-xs text-[color:var(--muted)]">
+        {breadcrumbItems.map((item, index) => (
+          <li class="flex items-center gap-2">
+            {index > 0 && <span aria-hidden="true">/</span>}
+            {item.href ? (
+              <a class="transition hover:text-[color:var(--fg)]" href={item.href}>
+                {item.label}
+              </a>
+            ) : (
+              <span aria-current="page" class="font-semibold text-[color:var(--fg)]">
+                {item.label}
+              </span>
+            )}
+          </li>
+        ))}
+      </ol>
+    </nav>
+
+    <header class="space-y-3">
+      <div class="inline-flex items-center gap-2 rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1 text-xs font-semibold text-[color:var(--muted)]">
+        <span class="inline-block h-2 w-2 rounded-full bg-emerald-500"></span>
+        <span>Local Binary PDF Inspection</span>
+      </div>
+      <h1 class="text-2xl sm:text-4xl font-extrabold tracking-tight text-[color:var(--fg)]">
+        PDF Metadata Viewer &amp; Inspector
+      </h1>
+      <p class="max-w-2xl text-xs sm:text-sm text-[color:var(--muted)] leading-relaxed">
+        Inspect PDF document authors, creation software, revision timestamps, and document metadata.
+      </p>
+    </header>
+
+    <div class="space-y-6">
+      <div id="dropzone-box" class="space-y-3 rounded-3xl border-2 border-dashed border-[color:var(--border)] bg-[color:var(--surface)] p-6 sm:p-8 text-center transition hover:border-[color:var(--border-strong)]">
+        <input type="file" id="pdf-file" accept="application/pdf" class="hidden" />
+        <label for="pdf-file" id="upload-prompt" class="cursor-pointer space-y-2 block">
+          <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-[color:var(--surface-strong)] text-[color:var(--fg)]">
+            <Icon name="document" class="w-6 h-6 text-[color:var(--accent)]" />
+          </div>
+          <p class="text-sm font-bold text-[color:var(--fg)]">Choose a PDF to inspect metadata</p>
+          <p class="text-xs text-[color:var(--muted)]">Inspect authors, producers, and dates (100% private in browser)</p>
+        </label>
+
+        <!-- Visual Upload Preview Box -->
+        <div id="upload-preview-box" class="hidden flex flex-col sm:flex-row items-center justify-between gap-4 rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] p-3.5 text-left">
+          <div class="flex items-center gap-3 min-w-0">
+            <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-red-500/10 text-red-500 font-black text-xs border border-red-500/20">
+              PDF
+            </div>
+            <div class="min-w-0 space-y-0.5">
+              <p id="thumb-name" class="text-xs sm:text-sm font-bold text-[color:var(--fg)] truncate">document.pdf</p>
+              <p id="thumb-info" class="text-[11px] text-[color:var(--muted)]">0 KB</p>
+            </div>
+          </div>
+          <label for="pdf-file" class="cursor-pointer shrink-0 rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1.5 text-xs font-semibold text-[color:var(--muted)] hover:text-[color:var(--fg)] transition">
+            Change File
+          </label>
+        </div>
+      </div>
+
+      <!-- Metadata Table Card -->
+      <div id="meta-card" class="hidden space-y-3">
+        <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Extracted PDF Properties</span>
+        <div class="overflow-x-auto rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)]">
+          <table class="w-full text-left text-xs">
+            <thead class="bg-[color:var(--surface-strong)] text-[color:var(--muted)] border-b border-[color:var(--border)]">
+              <tr>
+                <th class="p-3.5 font-bold">PDF Property</th>
+                <th class="p-3.5 font-bold">Value</th>
+              </tr>
+            </thead>
+            <tbody id="pdf-tbody" class="divide-y divide-[color:var(--border)] font-mono text-[color:var(--fg)]"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- FAQs -->
+    <section class="space-y-4">
+      <h2 class="text-xl font-bold text-[color:var(--fg)]">Frequently Asked Questions</h2>
+      <div class="space-y-3">
+        {schemaFaq.map((faq) => (
+          <details class="group rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
+            <summary class="cursor-pointer list-none font-semibold text-sm sm:text-base text-[color:var(--fg)] flex items-center justify-between gap-4">
+              <span>{faq.question}</span>
+              <span class="text-xs text-[color:var(--muted)] group-open:rotate-180 transition-transform">▼</span>
+            </summary>
+            <p class="mt-3 text-xs sm:text-sm leading-relaxed text-[color:var(--muted)]">
+              {faq.answer}
+            </p>
+          </details>
+        ))}
+      </div>
+    </section>
+  </article>
+
+  <script is:inline>
+    (function () {
+      const root = document.querySelector('[data-pdf-meta-app]');
+      if (!root) return;
+
+      const fileIn = root.querySelector('#pdf-file');
+      const uploadPrompt = root.querySelector('#upload-prompt');
+      const uploadPreviewBox = root.querySelector('#upload-preview-box');
+      const thumbName = root.querySelector('#thumb-name');
+      const thumbInfo = root.querySelector('#thumb-info');
+      const card = root.querySelector('#meta-card');
+      const tbody = root.querySelector('#pdf-tbody');
+
+      function formatBytes(bytes) {
+        if (bytes < 1024) return bytes + ' B';
+        if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
+        return (bytes / 1048576).toFixed(2) + ' MB';
+      }
+
+      function extractPdfTag(text, tag) {
+        const regex = new RegExp(`\\/${tag}\\s*\\(([^)]+)\\)`);
+        const match = text.match(regex);
+        return match ? match[1] : 'Not specified';
+      }
+
+      fileIn.addEventListener('change', async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        thumbName.textContent = file.name;
+        thumbInfo.textContent = formatBytes(file.size);
+
+        uploadPrompt.classList.add('hidden');
+        uploadPreviewBox.classList.remove('hidden');
+
+        const buffer = await file.arrayBuffer();
+        const text = new TextDecoder('latin1').decode(buffer);
+
+        const versionMatch = text.match(/%PDF-(\d+\.\d+)/);
+        const version = versionMatch ? versionMatch[1] : '1.4';
+
+        const title = extractPdfTag(text, 'Title');
+        const author = extractPdfTag(text, 'Author');
+        const creator = extractPdfTag(text, 'Creator');
+        const producer = extractPdfTag(text, 'Producer');
+        const creationDate = extractPdfTag(text, 'CreationDate');
+
+        const pageMatches = text.match(/\/Type\s*\/Page\b/g);
+        const pageCount = pageMatches ? pageMatches.length : 1;
+
+        thumbInfo.textContent = `${formatBytes(file.size)} • ${pageCount} page(s) • PDF ${version}`;
+
+        const rows = [
+          { key: 'File Name', val: file.name },
+          { key: 'File Size', val: formatBytes(file.size) },
+          { key: 'PDF Version', val: `PDF ${version}` },
+          { key: 'Total Pages', val: `${pageCount} page(s)` },
+          { key: 'Title', val: title },
+          { key: 'Author', val: author },
+          { key: 'Creator Tool', val: creator },
+          { key: 'PDF Producer', val: producer },
+          { key: 'Creation Date', val: creationDate }
+        ];
+
+        card.classList.remove('hidden');
+        tbody.innerHTML = rows.map(r => `
+          <tr class="hover:bg-[color:var(--surface-strong)]">
+            <td class="p-3.5 font-bold text-emerald-500">${r.key}</td>
+            <td class="p-3.5">${r.val}</td>
+          </tr>
+        `).join('');
+      });
+    })();
+  </script>
+</SiteLayout>

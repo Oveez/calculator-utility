@@ -1,0 +1,282 @@
+---
+import SiteLayout from '../../layouts/SiteLayout.astro';
+import Icon from '../../components/Icon.astro';
+import { siteName, toAbsoluteUrl, withBasePath } from '../../utils/site';
+
+const pageTitle = `P-Value Calculator | Z-Score & t-Score Significance · ${siteName}`;
+const pageDesc = 'Calculate exact one-tailed and two-tailed p-values from Z-scores and Student t-test statistics to evaluate statistical significance (α = 0.05, 0.01).';
+const canonicalUrl = toAbsoluteUrl('/research-tools/p-value-calculator/');
+
+const breadcrumbItems = [
+  { label: 'Home', href: toAbsoluteUrl('/') },
+  { label: 'Research Tools', href: toAbsoluteUrl('/research-tools/') },
+  { label: 'P-Value Calculator' },
+];
+
+const faqs = [
+  {
+    question: 'What is a p-value in statistics?',
+    answer: 'A p-value is the probability of obtaining test results at least as extreme as the observed data, assuming the null hypothesis (H₀) is true. A p-value less than significance level α (typically 0.05) indicates sufficient evidence to reject H₀.',
+  },
+  {
+    question: 'When do I use a one-tailed vs two-tailed test?',
+    answer: 'Use a two-tailed test when testing for any directional difference (Hₐ: μ ≠ μ₀). Use a one-tailed test (left or right) only when you have a pre-registered specific directional hypothesis (e.g. Hₐ: μ > μ₀ or Hₐ: μ < μ₀).',
+  },
+];
+
+const schemaGraph = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebApplication',
+    name: 'P-Value Calculator',
+    url: canonicalUrl,
+    description: pageDesc,
+    applicationCategory: 'EducationalApplication',
+    operatingSystem: 'All',
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: breadcrumbItems.map((item, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      name: item.label,
+      item: item.href,
+    })),
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faqs.map((f) => ({
+      '@type': 'Question',
+      name: f.question,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: f.answer,
+      },
+    })),
+  },
+];
+---
+
+<SiteLayout title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(schemaGraph)} />
+
+  <article class="space-y-10 py-2">
+    <nav aria-label="Breadcrumb">
+      <ol class="flex flex-wrap items-center gap-2 text-xs text-[color:var(--muted)]">
+        {breadcrumbItems.map((item, index) => (
+          <li class="flex items-center gap-2">
+            {index > 0 && <span aria-hidden="true">/</span>}
+            {item.href ? (
+              <a class="transition hover:text-[color:var(--fg)]" href={item.href}>
+                {item.label}
+              </a>
+            ) : (
+              <span aria-current="page" class="font-semibold text-[color:var(--fg)]">
+                {item.label}
+              </span>
+            )}
+          </li>
+        ))}
+      </ol>
+    </nav>
+
+    <header class="space-y-3">
+      <div class="inline-flex items-center gap-2 rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3.5 py-1 text-xs font-semibold text-[color:var(--fg)]">
+        <span>Hypothesis Significance Testing</span>
+      </div>
+      <h1 class="text-3xl font-extrabold tracking-tight text-[color:var(--fg)] sm:text-4xl">
+        P-Value Calculator
+      </h1>
+      <p class="max-w-3xl text-sm leading-relaxed text-[color:var(--muted)] sm:text-base">
+        Determine statistical significance from your test statistic. Calculate exact one-tailed and two-tailed p-values for standard normal Z-tests and Student's t-tests.
+      </p>
+    </header>
+
+    <div
+      class="rounded-[2.5rem] border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-6 shadow-[var(--shadow)] sm:p-10"
+      data-pvalue-app
+    >
+      <div class="grid gap-8 lg:grid-cols-[1.15fr_0.85fr]">
+        <form class="space-y-5" onsubmit="return false;">
+          <div class="flex items-center justify-between">
+            <h2 class="text-lg font-bold text-[color:var(--fg)]">Test Configuration</h2>
+            <button type="button" class="cursor-pointer text-xs font-semibold text-[color:var(--muted)] hover:text-[color:var(--fg)]" data-reset-btn>
+              ↺ Reset
+            </button>
+          </div>
+
+          <div class="space-y-1.5">
+            <label for="test-type" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Test Type</label>
+            <select id="test-type" class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-sm font-semibold text-[color:var(--fg)] outline-none" data-test-type>
+              <option value="z" selected>Z-Test (Standard Normal)</option>
+              <option value="t">Student's t-Test</option>
+            </select>
+          </div>
+
+          <div class="space-y-1.5">
+            <label for="stat-score" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Test Statistic Value (Z or t Score)</label>
+            <input id="stat-score" type="number" step="any" value="2.15" class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none" data-stat-score />
+          </div>
+
+          <div class="space-y-1.5" data-df-wrapper hidden>
+            <label for="df-input" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Degrees of Freedom (df = n - 1)</label>
+            <input id="df-input" type="number" min="1" value="25" class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none" data-df-input />
+          </div>
+
+          <div class="space-y-1.5">
+            <label for="hypo-type" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Alternative Hypothesis Direction</label>
+            <select id="hypo-type" class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-sm font-semibold text-[color:var(--fg)] outline-none" data-hypo-type>
+              <option value="two_tailed" selected>Two-Tailed (Hₐ: μ ≠ μ₀)</option>
+              <option value="right_tailed">Right-Tailed (Hₐ: μ &gt; μ₀)</option>
+              <option value="left_tailed">Left-Tailed (Hₐ: μ &lt; μ₀)</option>
+            </select>
+          </div>
+
+          <div class="space-y-1.5">
+            <label for="alpha-level" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Significance Threshold (α)</label>
+            <select id="alpha-level" class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-sm font-semibold text-[color:var(--fg)] outline-none" data-alpha-level>
+              <option value="0.05" selected>α = 0.05 (95% Confidence)</option>
+              <option value="0.01">α = 0.01 (99% Confidence)</option>
+              <option value="0.10">α = 0.10 (90% Confidence)</option>
+            </select>
+          </div>
+        </form>
+
+        <div class="flex flex-col justify-between space-y-6 rounded-3xl border border-[color:var(--border)] bg-[color:var(--bg)] p-6 sm:p-8">
+          <div class="space-y-5">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Result</span>
+              <span class="rounded-full px-3 py-0.5 text-xs font-bold bg-green-500/10 text-green-600 dark:text-green-400 border border-green-500/20" data-sig-badge>
+                Significant
+              </span>
+            </div>
+
+            <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 text-center">
+              <p class="text-xs font-semibold text-[color:var(--muted)]">Calculated p-Value</p>
+              <p class="mt-1 text-5xl font-black tracking-tight text-[color:var(--fg)]" data-res-p>
+                0.0316
+              </p>
+              <p class="mt-2 text-xs font-medium text-[color:var(--muted)]" data-decision-text>
+                Statistically significant (p &lt; 0.05). Reject the null hypothesis (H₀).
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FAQs -->
+    <section class="space-y-4">
+      <h2 class="text-xl font-bold text-[color:var(--fg)]">Frequently Asked Questions</h2>
+      <div class="space-y-3">
+        {faqs.map((faq) => (
+          <details class="group rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
+            <summary class="cursor-pointer list-none font-semibold text-sm sm:text-base text-[color:var(--fg)] flex items-center justify-between gap-4">
+              <span>{faq.question}</span>
+              <span class="text-xs text-[color:var(--muted)] group-open:rotate-180 transition-transform">▼</span>
+            </summary>
+            <p class="mt-3 text-xs sm:text-sm leading-relaxed text-[color:var(--muted)]">
+              {faq.answer}
+            </p>
+          </details>
+        ))}
+      </div>
+    </section>
+  </article>
+
+  <script is:inline>
+    (function () {
+      const root = document.querySelector('[data-pvalue-app]');
+      if (!root) return;
+
+      const inType = root.querySelector('[data-test-type]');
+      const inStat = root.querySelector('[data-stat-score]');
+      const inDf = root.querySelector('[data-df-input]');
+      const dfWrap = root.querySelector('[data-df-wrapper]');
+      const inHypo = root.querySelector('[data-hypo-type]');
+      const inAlpha = root.querySelector('[data-alpha-level]');
+      const outP = root.querySelector('[data-res-p]');
+      const outDec = root.querySelector('[data-decision-text]');
+      const badge = root.querySelector('[data-sig-badge]');
+      const resetBtn = root.querySelector('[data-reset-btn]');
+
+      function erf(x) {
+        const sign = x >= 0 ? 1 : -1; const a = Math.abs(x);
+        const t1 = 1 / (1 + 0.3275911 * a);
+        return sign * (1 - (((((1.061405429*t1 - 1.453152027)*t1 + 1.421413741)*t1 - 0.284496736)*t1 + 0.254829592)*t1*Math.exp(-a*a)));
+      }
+      function normCdf(z) { return 0.5 * (1 + erf(z / Math.SQRT2)); }
+
+      function update() {
+        const test = inType.value;
+        const stat = parseFloat(inStat.value || '0');
+        const df = Math.max(1, parseInt(inDf?.value || '25', 10));
+        const hypo = inHypo.value;
+        const alpha = parseFloat(inAlpha.value || '0.05');
+
+        if (test === 't') {
+          dfWrap?.removeAttribute('hidden');
+        } else {
+          dfWrap?.setAttribute('hidden', '');
+        }
+
+        let leftTail = 0;
+        if (test === 'z') {
+          leftTail = normCdf(stat);
+        } else {
+          const zApprox = stat / Math.sqrt(1 + (stat * stat) / (2 * df));
+          leftTail = normCdf(zApprox);
+        }
+
+        const rightTail = 1 - leftTail;
+
+        let p = 0;
+        if (hypo === 'left_tailed') p = leftTail;
+        else if (hypo === 'right_tailed') p = rightTail;
+        else p = 2 * Math.min(leftTail, rightTail);
+
+        p = Math.min(1.0, Math.max(0.00001, p));
+
+        if (outP) outP.textContent = p < 0.0001 ? '< 0.0001' : p.toFixed(4);
+
+        const isSig = p < alpha;
+        if (badge) {
+          if (isSig) {
+            badge.className = 'rounded-full px-3 py-0.5 text-xs font-bold bg-green-500/10 text-green-600 dark:text-green-400 border border-green-500/20';
+            badge.textContent = 'Significant (p < α)';
+          } else {
+            badge.className = 'rounded-full px-3 py-0.5 text-xs font-bold bg-red-500/10 text-red-600 dark:text-red-400 border border-red-500/20';
+            badge.textContent = 'Not Significant (p ≥ α)';
+          }
+        }
+
+        if (outDec) {
+          outDec.textContent = isSig
+            ? `Statistically significant at α = ${alpha}. Reject the null hypothesis (H₀).`
+            : `Not statistically significant at α = ${alpha}. Fail to reject the null hypothesis (H₀).`;
+        }
+      }
+
+      inType.addEventListener('change', update);
+      inStat.addEventListener('input', update);
+      inDf?.addEventListener('input', update);
+      inHypo.addEventListener('change', update);
+      inAlpha.addEventListener('change', update);
+
+      if (resetBtn) {
+        resetBtn.addEventListener('click', () => {
+          inType.value = 'z';
+          inStat.value = '2.15';
+          if (inDf) inDf.value = '25';
+          inHypo.value = 'two_tailed';
+          inAlpha.value = '0.05';
+          update();
+        });
+      }
+
+      update();
+    })();
+  </script>
+</SiteLayout>

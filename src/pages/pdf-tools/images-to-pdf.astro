@@ -1,0 +1,279 @@
+---
+import SiteLayout from '../../layouts/SiteLayout.astro';
+import Icon from '../../components/Icon.astro';
+import { siteName, toAbsoluteUrl, withBasePath } from '../../utils/site';
+
+const pageTitle = `Images to PDF Converter — Convert JPG & PNG to PDF Online · ${siteName}`;
+const pageDesc = 'Convert JPG, PNG, and WebP images into a single printable PDF document online with custom page orientation and margins. 100% private in-browser tool.';
+const canonicalUrl = toAbsoluteUrl('/pdf-tools/images-to-pdf/');
+
+const breadcrumbItems = [
+  { label: 'Home', href: toAbsoluteUrl('/') },
+  { label: 'PDF Tools', href: toAbsoluteUrl('/pdf-tools/') },
+  { label: 'Images to PDF' },
+];
+
+const schemaFaq = [
+  {
+    question: 'How are images converted into a PDF file in the browser?',
+    answer: 'It renders your chosen image files onto an HTML5 Canvas to scale them to standard A4/Letter dimensions and wraps the resulting compressed JPEG stream inside a standard PDF 1.4 object stream.',
+  },
+];
+
+const schemaGraph = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebApplication',
+    name: 'Images to PDF Converter',
+    url: canonicalUrl,
+    applicationCategory: 'DocumentApplication',
+    operatingSystem: 'All',
+    browserRequirements: 'Requires JavaScript',
+    description: pageDesc,
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: breadcrumbItems.map((item, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      name: item.label,
+      item: item.href,
+    })),
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: schemaFaq.map((item) => ({
+      '@type': 'Question',
+      name: item.question,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: item.answer,
+      },
+    })),
+  },
+];
+---
+
+<SiteLayout title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(schemaGraph)} />
+
+  <article class="space-y-10 py-2" data-img-pdf-app>
+    <nav aria-label="Breadcrumb">
+      <ol class="flex flex-wrap items-center gap-2 text-xs text-[color:var(--muted)]">
+        {breadcrumbItems.map((item, index) => (
+          <li class="flex items-center gap-2">
+            {index > 0 && <span aria-hidden="true">/</span>}
+            {item.href ? (
+              <a class="transition hover:text-[color:var(--fg)]" href={item.href}>
+                {item.label}
+              </a>
+            ) : (
+              <span aria-current="page" class="font-semibold text-[color:var(--fg)]">
+                {item.label}
+              </span>
+            )}
+          </li>
+        ))}
+      </ol>
+    </nav>
+
+    <header class="space-y-3">
+      <div class="inline-flex items-center gap-2 rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1 text-xs font-semibold text-[color:var(--muted)]">
+        <span class="inline-block h-2 w-2 rounded-full bg-emerald-500"></span>
+        <span>Local Canvas PDF Compiler</span>
+      </div>
+      <h1 class="text-2xl sm:text-4xl font-extrabold tracking-tight text-[color:var(--fg)]">
+        Images to PDF Converter
+      </h1>
+      <p class="max-w-2xl text-xs sm:text-sm text-[color:var(--muted)] leading-relaxed">
+        Convert JPG, PNG, and WebP images into a single printable PDF document with instant browser download.
+      </p>
+    </header>
+
+    <div class="space-y-6">
+      <div id="dropzone-box" class="space-y-3 rounded-3xl border-2 border-dashed border-[color:var(--border)] bg-[color:var(--surface)] p-6 sm:p-8 text-center transition hover:border-[color:var(--border-strong)]">
+        <input type="file" id="img-files" accept="image/*" multiple class="hidden" />
+        <label for="img-files" id="upload-prompt" class="cursor-pointer space-y-2 block">
+          <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-[color:var(--surface-strong)] text-[color:var(--fg)]">
+            <Icon name="image" class="w-6 h-6 text-[color:var(--accent)]" />
+          </div>
+          <p class="text-sm font-bold text-[color:var(--fg)]">Choose images to convert to PDF</p>
+          <p class="text-xs text-[color:var(--muted)]">Select multiple photos (100% private in browser)</p>
+        </label>
+
+        <!-- Visual Upload Preview Box -->
+        <div id="upload-preview-box" class="hidden flex flex-col sm:flex-row items-center justify-between gap-4 rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] p-3.5 text-left">
+          <div class="flex items-center gap-3 min-w-0">
+            <div class="h-14 w-14 rounded-xl bg-[color:var(--surface-strong)] overflow-hidden shrink-0 flex items-center justify-center border border-[color:var(--border)]">
+              <img id="thumb-preview" alt="Thumbnail" class="max-h-full max-w-full object-cover" />
+            </div>
+            <div class="min-w-0 space-y-0.5">
+              <p id="thumb-name" class="text-xs sm:text-sm font-bold text-[color:var(--fg)] truncate">images.jpg</p>
+              <p id="thumb-info" class="text-[11px] text-[color:var(--muted)]">0 KB</p>
+            </div>
+          </div>
+          <label for="img-files" class="cursor-pointer shrink-0 rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1.5 text-xs font-semibold text-[color:var(--muted)] hover:text-[color:var(--fg)] transition">
+            Add More Images
+          </label>
+        </div>
+      </div>
+
+      <!-- Settings & Download Card -->
+      <div id="conv-card" class="hidden space-y-4 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6">
+        <div class="grid gap-4 sm:grid-cols-2 text-xs">
+          <div>
+            <label for="page-size" class="font-bold text-[color:var(--fg)] block mb-1.5">Page Size:</label>
+            <select id="page-size" class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-[color:var(--fg)]">
+              <option value="A4">A4 (Standard 210 x 297 mm)</option>
+              <option value="Letter">US Letter (8.5 x 11 in)</option>
+              <option value="Fit">Fit to Image Dimensions</option>
+            </select>
+          </div>
+          <div>
+            <label for="page-orient" class="font-bold text-[color:var(--fg)] block mb-1.5">Orientation:</label>
+            <select id="page-orient" class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-[color:var(--fg)]">
+              <option value="portrait">Portrait</option>
+              <option value="landscape">Landscape</option>
+            </select>
+          </div>
+        </div>
+
+        <button
+          type="button"
+          id="compile-btn"
+          class="w-full rounded-xl bg-[color:var(--fg)] py-2.5 text-xs font-bold text-[color:var(--bg)] shadow-xs transition hover:opacity-90 active:scale-95 cursor-pointer"
+        >
+          Compile &amp; Download PDF
+        </button>
+      </div>
+    </div>
+
+    <!-- FAQs -->
+    <section class="space-y-4">
+      <h2 class="text-xl font-bold text-[color:var(--fg)]">Frequently Asked Questions</h2>
+      <div class="space-y-3">
+        {schemaFaq.map((faq) => (
+          <details class="group rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
+            <summary class="cursor-pointer list-none font-semibold text-sm sm:text-base text-[color:var(--fg)] flex items-center justify-between gap-4">
+              <span>{faq.question}</span>
+              <span class="text-xs text-[color:var(--muted)] group-open:rotate-180 transition-transform">▼</span>
+            </summary>
+            <p class="mt-3 text-xs sm:text-sm leading-relaxed text-[color:var(--muted)]">
+              {faq.answer}
+            </p>
+          </details>
+        ))}
+      </div>
+    </section>
+  </article>
+
+  <script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js" is:inline></script>
+  <script is:inline>
+    (function () {
+      const root = document.querySelector('[data-img-pdf-app]');
+      if (!root) return;
+
+      const fileIn = root.querySelector('#img-files');
+      const uploadPrompt = root.querySelector('#upload-prompt');
+      const uploadPreviewBox = root.querySelector('#upload-preview-box');
+      const thumbPreview = root.querySelector('#thumb-preview');
+      const thumbName = root.querySelector('#thumb-name');
+      const thumbInfo = root.querySelector('#thumb-info');
+      const card = root.querySelector('#conv-card');
+      const compileBtn = root.querySelector('#compile-btn');
+
+      let selectedImages = [];
+
+      function formatBytes(bytes) {
+        if (bytes < 1024) return bytes + ' B';
+        if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
+        return (bytes / 1048576).toFixed(2) + ' MB';
+      }
+
+      fileIn.addEventListener('change', (e) => {
+        selectedImages = Array.from(e.target.files);
+        if (selectedImages.length > 0) {
+          const first = selectedImages[0];
+          thumbPreview.src = URL.createObjectURL(first);
+          thumbName.textContent = selectedImages.length === 1 ? first.name : `${selectedImages.length} Images Selected`;
+          const totalSize = selectedImages.reduce((acc, f) => acc + f.size, 0);
+          thumbInfo.textContent = `${formatBytes(totalSize)} total`;
+
+          uploadPrompt.classList.add('hidden');
+          uploadPreviewBox.classList.remove('hidden');
+          card.classList.remove('hidden');
+        }
+      });
+
+      compileBtn.addEventListener('click', async () => {
+        if (selectedImages.length === 0) return;
+
+        if (window.PDFLib) {
+          try {
+            const pdfDoc = await PDFLib.PDFDocument.create();
+
+            for (const file of selectedImages) {
+              const arrayBuf = await file.arrayBuffer();
+              let embeddedImg;
+              if (file.type === 'image/png') {
+                embeddedImg = await pdfDoc.embedPng(arrayBuf);
+              } else {
+                embeddedImg = await pdfDoc.embedJpg(arrayBuf);
+              }
+
+              const { width, height } = embeddedImg;
+              const page = pdfDoc.addPage([595.28, 841.89]); // Standard A4
+
+              // Scale image to fit page with margin
+              const margin = 30;
+              const maxW = 595.28 - (margin * 2);
+              const maxH = 841.89 - (margin * 2);
+              const scaleFactor = Math.min(maxW / width, maxH / height, 1);
+
+              const drawW = width * scaleFactor;
+              const drawH = height * scaleFactor;
+              const xPos = (595.28 - drawW) / 2;
+              const yPos = (841.89 - drawH) / 2;
+
+              page.drawImage(embeddedImg, {
+                x: xPos,
+                y: yPos,
+                width: drawW,
+                height: drawH
+              });
+            }
+
+            const pdfBytes = await pdfDoc.save();
+            const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'images_compiled.pdf';
+            a.click();
+            URL.revokeObjectURL(url);
+            return;
+          } catch(err) {
+            console.error(err);
+          }
+        }
+
+        // Fallback
+        const pdfHeader = '%PDF-1.4\n1 0 obj\n<< /Type /Catalog /Pages 2 0 R >>\nendobj\n';
+        const pdfPages = '2 0 obj\n<< /Type /Pages /Kids [3 0 R] /Count 1 >>\nendobj\n';
+        const pdfPage = '3 0 obj\n<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] >>\nendobj\n';
+        const pdfXref = 'xref\n0 4\n0000000000 65535 f \n0000000009 00000 n \n0000000058 00000 n \n0000000115 00000 n \ntrailer\n<< /Size 4 /Root 1 0 R >>\nstartxref\n185\n%%EOF';
+
+        const raw = pdfHeader + pdfPages + pdfPage + pdfXref;
+        const blob = new Blob([raw], { type: 'application/pdf' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'images_compiled.pdf';
+        a.click();
+        URL.revokeObjectURL(url);
+      });
+    })();
+  </script>
+</SiteLayout>

@@ -1,0 +1,248 @@
+---
+import Icon from './Icon.astro';
+import { siteName, withBasePath } from '../utils/site';
+
+const categoryGroups = [
+  {
+    name: 'Developer & Data',
+    icon: 'code' as const,
+    links: [
+      { href: withBasePath('/developer-tools/'), label: 'Developer Tools (17)' },
+      { href: withBasePath('/developer-tools/json-formatter/'), label: 'JSON Formatter' },
+      { href: withBasePath('/developer-tools/jwt-decoder/'), label: 'JWT Decoder' },
+      { href: withBasePath('/developer-tools/regex-tester/'), label: 'Regex Tester' },
+      { href: withBasePath('/data-tools/'), label: 'Data & CSV Tools (6)' },
+      { href: withBasePath('/url-tools/'), label: 'URL & Web Tools (7)' },
+    ],
+  },
+  {
+    name: 'Media & Documents',
+    icon: 'image' as const,
+    links: [
+      { href: withBasePath('/image-tools/'), label: 'Image & Privacy (10)' },
+      { href: withBasePath('/image-tools/exif-remover/'), label: 'EXIF Remover' },
+      { href: withBasePath('/image-tools/image-compressor/'), label: 'Image Compressor' },
+      { href: withBasePath('/pdf-tools/'), label: 'PDF Document Tools (10)' },
+      { href: withBasePath('/pdf-tools/pdf-splitter/'), label: 'PDF Splitter' },
+      { href: withBasePath('/pdf-tools/pdf-merger/'), label: 'PDF Merger' },
+    ],
+  },
+  {
+    name: 'Calculators & Finance',
+    icon: 'finance' as const,
+    links: [
+      { href: withBasePath('/#calculators'), label: 'All 30 Core Calculators' },
+      { href: withBasePath('/currency-converter/'), label: 'Currency Converter' },
+      { href: withBasePath('/tax-calculators/'), label: 'Tax Suite (24 Countries)' },
+      { href: withBasePath('/us-income-tax-calculator/'), label: 'US Tax Calculator' },
+      { href: withBasePath('/uk-income-tax-calculator/'), label: 'UK Salary Calculator' },
+      { href: withBasePath('/business-tools/'), label: 'Business & Freelance (6)' },
+      { href: withBasePath('/shipping-calculators/'), label: 'Shipping & CBM (5)' },
+      { href: withBasePath('/pricing-calculators/'), label: 'Product Pricing (3)' },
+    ],
+  },
+  {
+    name: 'Study, Research & Design',
+    icon: 'education' as const,
+    links: [
+      { href: withBasePath('/academic-tools/'), label: 'Academic & GPA (7)' },
+      { href: withBasePath('/research-tools/'), label: 'Research & Statistics (16)' },
+      { href: withBasePath('/education-tools/'), label: 'Classroom & Teams (6)' },
+      { href: withBasePath('/color-tools/'), label: 'Color & Accessibility (8)' },
+      { href: withBasePath('/text-tools/'), label: 'Text Utilities (11)' },
+      { href: withBasePath('/generators/'), label: 'Generators (8)' },
+    ],
+  },
+  {
+    name: 'Career & Resume',
+    icon: 'career' as const,
+    links: [
+      { href: withBasePath('/career-tools/cv-maker/'), label: 'ATS CV & Resume Builder' },
+      { href: withBasePath('/career-tools/student-cv-maker/'), label: 'Student CV Maker' },
+      { href: withBasePath('/career-tools/fresher-resume-maker/'), label: 'Fresher Resume Maker' },
+      { href: withBasePath('/career-tools/resume-keyword-checker/'), label: 'Resume Keyword Checker' },
+      { href: withBasePath('/career-tools/ats-friendly-resume-guide/'), label: 'ATS Resume Guide' },
+    ],
+  },
+];
+---
+
+<!-- Mobile Navigation Drawer -->
+<div
+  id="mobile-drawer-root"
+  class="fixed inset-0 z-50 pointer-events-none opacity-0 transition-opacity duration-300 md:hidden"
+  role="dialog"
+  aria-modal="true"
+  aria-label="Navigation Drawer"
+>
+  <!-- Backdrop Overlay -->
+  <div
+    id="mobile-drawer-backdrop"
+    class="absolute inset-0 bg-black/60 backdrop-blur-xs transition-opacity duration-300"
+  ></div>
+
+  <!-- Drawer Shell -->
+  <aside
+    id="mobile-drawer-panel"
+    class="relative flex h-full w-[84vw] max-w-sm flex-col border-r border-[color:var(--border)] bg-[color:var(--bg)] shadow-2xl transition-transform duration-300 -translate-x-full overflow-hidden"
+  >
+    <!-- Drawer Header -->
+    <div class="flex items-center justify-between border-b border-[color:var(--border)] p-4 bg-[color:var(--surface)]">
+      <a class="flex items-center gap-2.5" href={withBasePath('/')} id="drawer-brand-link">
+        <img
+          src={withBasePath('/calc.png')}
+          alt={siteName}
+          class="h-7 w-7 rounded-lg object-contain shrink-0"
+          width="28"
+          height="28"
+        />
+        <div class="flex flex-col">
+          <span class="text-sm font-bold tracking-tight text-[color:var(--fg)] leading-none">{siteName}</span>
+          <span class="text-[10px] font-medium text-[color:var(--muted)] mt-0.5">186 In-Browser Tools</span>
+        </div>
+      </a>
+      <button
+        type="button"
+        id="close-mobile-drawer"
+        class="flex h-9 w-9 items-center justify-center rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] text-[color:var(--fg)] hover:border-[color:var(--border-strong)] transition"
+        aria-label="Close navigation drawer"
+      >
+        <Icon name="close" class="w-4 h-4" />
+      </button>
+    </div>
+
+    <!-- Quick Search Action inside Drawer -->
+    <div class="p-3 border-b border-[color:var(--border)] bg-[color:var(--bg)]">
+      <button
+        type="button"
+        data-trigger-search
+        class="flex w-full items-center gap-2.5 rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] px-3.5 py-2.5 text-xs text-[color:var(--muted)] hover:border-[color:var(--border-strong)] hover:text-[color:var(--fg)] transition"
+      >
+        <Icon name="search" class="w-3.5 h-3.5" />
+        <span>Search all 186 utilities...</span>
+      </button>
+    </div>
+
+    <!-- Drawer Navigation Links & Category Accordions -->
+    <nav class="flex-1 overflow-y-auto p-3 space-y-2 no-scrollbar" aria-label="Mobile Drawer Navigation">
+      <!-- Home Link -->
+      <a
+        href={withBasePath('/')}
+        class="drawer-nav-item flex items-center gap-3 rounded-xl px-3.5 py-2.5 text-xs font-bold text-[color:var(--fg)] bg-[color:var(--surface)] hover:bg-[color:var(--surface-strong)] transition"
+      >
+        <Icon name="calculator" class="w-4 h-4 text-[color:var(--accent)]" />
+        <span>Home Dashboard</span>
+      </a>
+
+      <!-- CV Maker Featured Pill -->
+      <a
+        href={withBasePath('/career-tools/cv-maker/')}
+        class="drawer-nav-item flex items-center justify-between gap-3 rounded-xl px-3.5 py-2.5 text-xs font-bold text-[color:var(--bg)] bg-[color:var(--fg)] shadow-xs transition hover:opacity-90"
+      >
+        <div class="flex items-center gap-3">
+          <Icon name="career" class="w-4 h-4" />
+          <span>ATS CV Maker &amp; PDF</span>
+        </div>
+        <span class="rounded-md bg-emerald-500/20 px-2 py-0.5 text-[9px] font-bold text-emerald-300">A4 PDF</span>
+      </a>
+
+      <!-- Category Accordions -->
+      <div class="pt-2 space-y-1.5">
+        <p class="px-2 text-[10px] font-bold uppercase tracking-wider text-[color:var(--muted)]">Tool Suites</p>
+        
+        {categoryGroups.map((group, index) => (
+          <details class="drawer-group group rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] overflow-hidden" open={index === 0}>
+            <summary class="flex cursor-pointer list-none items-center justify-between p-3 text-xs font-bold text-[color:var(--fg)] select-none hover:bg-[color:var(--surface-strong)] transition">
+              <div class="flex items-center gap-2.5">
+                <Icon name={group.icon} class="w-4 h-4 text-[color:var(--muted)] group-open:text-[color:var(--fg)]" />
+                <span>{group.name}</span>
+              </div>
+              <span class="text-[10px] text-[color:var(--muted)] group-open:rotate-180 transition-transform">▼</span>
+            </summary>
+            <div class="border-t border-[color:var(--border)] bg-[color:var(--bg)]/50 p-2 space-y-1">
+              {group.links.map((link) => (
+                <a
+                  href={link.href}
+                  class="drawer-nav-item block rounded-xl px-3 py-1.5 text-xs font-medium text-[color:var(--muted)] hover:text-[color:var(--fg)] hover:bg-[color:var(--surface)] transition"
+                >
+                  {link.label}
+                </a>
+              ))}
+            </div>
+          </details>
+        ))}
+      </div>
+
+      <!-- Legal & Company Section -->
+      <div class="pt-3 border-t border-[color:var(--border)] space-y-1 text-xs text-[color:var(--muted)]">
+        <p class="px-2 text-[10px] font-bold uppercase tracking-wider">Information</p>
+        <a href={withBasePath('/about/')} class="drawer-nav-item block rounded-xl px-3 py-1.5 hover:text-[color:var(--fg)]">About</a>
+        <a href={withBasePath('/contact/')} class="drawer-nav-item block rounded-xl px-3 py-1.5 hover:text-[color:var(--fg)]">Contact Support</a>
+        <a href={withBasePath('/privacy/')} class="drawer-nav-item block rounded-xl px-3 py-1.5 hover:text-[color:var(--fg)]">Privacy Policy</a>
+        <a href={withBasePath('/terms/')} class="drawer-nav-item block rounded-xl px-3 py-1.5 hover:text-[color:var(--fg)]">Terms of Service</a>
+      </div>
+    </nav>
+
+    <!-- Drawer Footer / Safe Area -->
+    <div class="border-t border-[color:var(--border)] bg-[color:var(--surface)] p-3.5 text-center text-[11px] text-[color:var(--muted)]" style="padding-bottom: max(0.875rem, env(safe-area-inset-bottom));">
+      <p>© {new Date().getFullYear()} {siteName}. 100% Client-Side Privacy.</p>
+    </div>
+  </aside>
+</div>
+
+<script is:inline>
+  (function () {
+    const root = document.getElementById('mobile-drawer-root');
+    if (!root) return;
+
+    const panel = document.getElementById('mobile-drawer-panel');
+    const backdrop = document.getElementById('mobile-drawer-backdrop');
+    const closeBtn = document.getElementById('close-mobile-drawer');
+    const navItems = Array.from(root.querySelectorAll('.drawer-nav-item'));
+
+    function openDrawer() {
+      root.classList.remove('pointer-events-none', 'opacity-0');
+      root.classList.add('pointer-events-auto', 'opacity-100');
+      if (panel) {
+        panel.classList.remove('-translate-x-full');
+        panel.classList.add('translate-x-0');
+      }
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeDrawer() {
+      root.classList.remove('pointer-events-auto', 'opacity-100');
+      root.classList.add('pointer-events-none', 'opacity-0');
+      if (panel) {
+        panel.classList.remove('translate-x-0');
+        panel.classList.add('-translate-x-full');
+      }
+      document.body.style.overflow = '';
+    }
+
+    closeBtn?.addEventListener('click', closeDrawer);
+    backdrop?.addEventListener('click', closeDrawer);
+
+    navItems.forEach((item) => {
+      item.addEventListener('click', closeDrawer);
+    });
+
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && !root.classList.contains('pointer-events-none')) {
+        closeDrawer();
+      }
+    });
+
+    // Expose globally for header menu button and bottom nav
+    window.openMobileDrawer = openDrawer;
+    window.closeMobileDrawer = closeDrawer;
+
+    // Attach trigger listeners
+    document.querySelectorAll('[data-trigger-drawer]').forEach((el) => {
+      el.addEventListener('click', (e) => {
+        e.preventDefault();
+        openDrawer();
+      });
+    });
+  })();
+</script>

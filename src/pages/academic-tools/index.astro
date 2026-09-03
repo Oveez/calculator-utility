@@ -1,0 +1,239 @@
+---
+import SiteLayout from '../../layouts/SiteLayout.astro';
+import Icon from '../../components/Icon.astro';
+import { siteName, toAbsoluteUrl, withBasePath } from '../../utils/site';
+
+const pageTitle = `Student & Academic Calculators | Attendance, GPA & Study Planning · ${siteName}`;
+const pageDesc = 'Free student utility tools. Calculate college attendance percentage, safe bunks remaining, final exam grades needed, semester GPA, credit hour workloads, and study schedules.';
+const canonicalUrl = toAbsoluteUrl('/academic-tools/');
+
+const breadcrumbItems = [
+  { label: 'Home', href: toAbsoluteUrl('/') },
+  { label: 'Academic Tools' },
+];
+
+const academicCalculators = [
+  {
+    slug: 'attendance-calculator',
+    title: 'Attendance Calculator',
+    badge: 'High Intent',
+    metaDescription: 'Calculate your current attendance percentage, classes you can miss, and how many consecutive lectures you must attend to achieve 75%, 80%, 85%, or 90%.',
+    href: withBasePath('/academic-tools/attendance-calculator/'),
+    icon: 'education',
+  },
+  {
+    slug: 'bunk-calculator',
+    title: 'Bunk Calculator',
+    badge: 'College Essential',
+    metaDescription: 'Find out exactly how many classes you can skip without falling below your university minimum attendance criteria (75% rule).',
+    href: withBasePath('/academic-tools/bunk-calculator/'),
+    icon: 'calendar',
+  },
+  {
+    slug: 'final-grade-calculator',
+    title: 'Final Grade Calculator',
+    badge: 'Exam Prep',
+    metaDescription: 'Determine the exact percentage score required on your final exam to secure your desired overall letter grade in any weighted course.',
+    href: withBasePath('/academic-tools/final-grade-calculator/'),
+    icon: 'math',
+  },
+  {
+    slug: 'grade-needed-calculator',
+    title: 'Grade Needed Calculator',
+    badge: 'Target Score',
+    metaDescription: 'Calculate the points and test scores needed on remaining coursework, midterms, and assignments to pass or reach your target grade.',
+    href: withBasePath('/academic-tools/grade-needed-calculator/'),
+    icon: 'math',
+  },
+  {
+    slug: 'semester-gpa-calculator',
+    title: 'Semester GPA Calculator',
+    badge: 'Credit Weighted',
+    metaDescription: 'Add course credits and letter grades to calculate your weighted semester GPA on a 4.0 scale and project your new cumulative GPA.',
+    href: withBasePath('/academic-tools/semester-gpa-calculator/'),
+    icon: 'education',
+  },
+  {
+    slug: 'credit-hour-calculator',
+    title: 'Credit Hour Calculator',
+    badge: 'Course Planning',
+    metaDescription: 'Convert semester credit hours into weekly contact hours, lab time, Carnegie study time, and degree completion timelines.',
+    href: withBasePath('/academic-tools/credit-hour-calculator/'),
+    icon: 'calendar',
+  },
+  {
+    slug: 'study-hours-calculator',
+    title: 'Study Hours Calculator',
+    badge: 'Time Budget',
+    metaDescription: 'Plan your weekly study schedule based on enrolled credits, course difficulty (STEM/humanities), and work-life balance.',
+    href: withBasePath('/academic-tools/study-hours-calculator/'),
+    icon: 'career',
+  },
+];
+
+const schemaFaq = [
+  {
+    question: 'How is attendance shortage calculated in college?',
+    answer: 'Attendance percentage is computed as (Classes Attended ÷ Total Classes Held) × 100. If your attendance is below 75%, our calculator solves the formula (Attended + X) ÷ (Total + X) = 0.75 to give the exact number of consecutive lectures you must attend.',
+  },
+  {
+    question: 'What is the Carnegie Unit for college credit hours?',
+    answer: 'Under the standard Carnegie Unit rule, 1 semester credit hour corresponds to 1 hour of weekly lecture plus an estimated 2 to 3 hours of outside study time per week over a 15-week semester.',
+  },
+  {
+    question: 'Are all academic calculations processed locally?',
+    answer: 'Yes! All grade calculations, attendance projections, and GPA scores execute 100% in your browser. No course data or student credentials are transmitted to any server.',
+  },
+];
+
+const schemaGraph = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: breadcrumbItems.map((item, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      name: item.label,
+      item: item.href,
+    })),
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: schemaFaq.map((item) => ({
+      '@type': 'Question',
+      name: item.question,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: item.answer,
+      },
+    })),
+  },
+];
+---
+
+<SiteLayout title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(schemaGraph)} />
+
+  <article class="space-y-10 py-2">
+    <!-- Breadcrumb Navigation -->
+    <nav aria-label="Breadcrumb">
+      <ol class="flex flex-wrap items-center gap-2 text-xs text-[color:var(--muted)]">
+        {breadcrumbItems.map((item, index) => (
+          <li class="flex items-center gap-2">
+            {index > 0 && <span aria-hidden="true">/</span>}
+            {item.href ? (
+              <a class="transition hover:text-[color:var(--fg)]" href={item.href}>
+                {item.label}
+              </a>
+            ) : (
+              <span aria-current="page" class="font-semibold text-[color:var(--fg)]">
+                {item.label}
+              </span>
+            )}
+          </li>
+        ))}
+      </ol>
+    </nav>
+
+    <!-- Header Banner -->
+    <header class="space-y-4 rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-6 sm:p-10">
+      <div class="inline-flex items-center gap-2 rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3.5 py-1 text-xs font-bold text-[color:var(--fg)]">
+        <span>Academic Toolkit • 100% Free &amp; Private</span>
+      </div>
+      <h1 class="text-3xl font-extrabold tracking-tight text-[color:var(--fg)] sm:text-4xl">
+        Student &amp; Academic Calculators
+      </h1>
+      <p class="max-w-3xl text-sm leading-relaxed text-[color:var(--muted)] sm:text-base">
+        A dedicated suite of academic forecasting tools designed for high school, college, and university students. Effortlessly track attendance quotas, calculate final exam targets, compute semester GPAs, and balance weekly study schedules with zero guesswork.
+      </p>
+    </header>
+
+    <!-- Category Grid -->
+    <section class="space-y-4">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Student Suite</p>
+          <h2 class="text-xl font-bold tracking-tight text-[color:var(--fg)]">7 Specialized Academic Tools</h2>
+        </div>
+        <span class="rounded-lg bg-[color:var(--surface)] border border-[color:var(--border)] px-2.5 py-1 text-xs font-bold text-[color:var(--fg)]">
+          7 Calculators
+        </span>
+      </div>
+
+      <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {academicCalculators.map((tool) => (
+          <a
+            href={tool.href}
+            class="group flex flex-col justify-between rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 transition hover:border-[color:var(--border-strong)] hover:bg-[color:var(--surface-strong)]"
+          >
+            <div class="space-y-2.5">
+              <div class="flex items-center justify-between">
+                <div class="flex h-9 w-9 items-center justify-center rounded-xl bg-[color:var(--surface-strong)] border border-[color:var(--border)] text-[color:var(--fg)]">
+                  <Icon name={tool.icon as any} class="w-4 h-4" />
+                </div>
+                <span class="rounded-md bg-[color:var(--surface-strong)] border border-[color:var(--border)] px-2 py-0.5 text-[10px] font-bold text-[color:var(--muted)]">
+                  {tool.badge}
+                </span>
+              </div>
+              <h3 class="text-base font-bold text-[color:var(--fg)] transition-colors">
+                {tool.title}
+              </h3>
+              <p class="text-xs leading-relaxed text-[color:var(--muted)]">
+                {tool.metaDescription}
+              </p>
+            </div>
+            <div class="mt-5 flex items-center gap-1.5 text-xs font-bold text-[color:var(--fg)]">
+              <span>Open Tool</span>
+              <Icon name="arrow-right" class="w-3.5 h-3.5 transition group-hover:translate-x-1" />
+            </div>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <!-- Why Academic Suite -->
+    <section class="grid gap-6 sm:grid-cols-3 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6">
+      <div class="space-y-1.5">
+        <h3 class="font-bold text-sm text-[color:var(--fg)]">Prevent Attendance Shortages</h3>
+        <p class="text-xs text-[color:var(--muted)] leading-relaxed">
+          Quickly identify whether you are above the 75% or 80% cutoff threshold and calculate exact class attendance recovery requirements.
+        </p>
+      </div>
+      <div class="space-y-1.5">
+        <h3 class="font-bold text-sm text-[color:var(--fg)]">Targeted Final Exam Prep</h3>
+        <p class="text-xs text-[color:var(--muted)] leading-relaxed">
+          Remove exam anxiety by calculating the precise score required on your final exam to protect or raise your overall course grade.
+        </p>
+      </div>
+      <div class="space-y-1.5">
+        <h3 class="font-bold text-sm text-[color:var(--fg)]">Realistic Time Budgeting</h3>
+        <p class="text-xs text-[color:var(--muted)] leading-relaxed">
+          Align course credit loads with genuine study hour requirements to maintain high academic performance without burnout.
+        </p>
+      </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section class="space-y-4">
+      <div>
+        <p class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Common Inquiries</p>
+        <h2 class="text-xl font-bold tracking-tight text-[color:var(--fg)]">Frequently Asked Questions</h2>
+      </div>
+
+      <div class="space-y-3">
+        {schemaFaq.map((faq) => (
+          <details class="group rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
+            <summary class="cursor-pointer list-none font-semibold text-sm sm:text-base text-[color:var(--fg)] flex items-center justify-between gap-4">
+              <span>{faq.question}</span>
+              <span class="text-xs text-[color:var(--muted)] group-open:rotate-180 transition-transform">▼</span>
+            </summary>
+            <p class="mt-3 text-xs sm:text-sm leading-relaxed text-[color:var(--muted)]">
+              {faq.answer}
+            </p>
+          </details>
+        ))}
+      </div>
+    </section>
+  </article>
+</SiteLayout>

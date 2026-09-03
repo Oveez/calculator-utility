@@ -1,0 +1,209 @@
+---
+import SiteLayout from '../../layouts/SiteLayout.astro';
+import Icon from '../../components/Icon.astro';
+import { siteName, toAbsoluteUrl, withBasePath } from '../../utils/site';
+
+const pageTitle = `Likert Scale Question Generator — 5 & 7 Point Survey Scales · ${siteName}`;
+const pageDesc = 'Create standardized 5-point and 7-point Likert scale survey questions (Agreement, Satisfaction, Frequency, Quality, Importance) with live matrix preview and export.';
+const canonicalUrl = toAbsoluteUrl('/research-tools/likert-scale-generator/');
+
+const breadcrumbItems = [
+  { label: 'Home', href: toAbsoluteUrl('/') },
+  { label: 'Research Tools', href: toAbsoluteUrl('/research-tools/') },
+  { label: 'Likert Scale Generator' },
+];
+
+const schemaFaq = [
+  {
+    question: 'What is a 5-point vs 7-point Likert scale?',
+    answer: 'A 5-point scale measures sentiment symmetrically with 5 choices (Strongly Disagree, Disagree, Neutral, Agree, Strongly Agree). A 7-point scale provides higher statistical granularity with subtle gradations (e.g. Somewhat Agree/Disagree).',
+  },
+];
+
+const schemaGraph = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebApplication',
+    name: 'Likert Scale Question Generator',
+    url: canonicalUrl,
+    applicationCategory: 'AcademicApplication',
+    operatingSystem: 'All',
+    browserRequirements: 'Requires JavaScript',
+    description: pageDesc,
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: breadcrumbItems.map((item, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      name: item.label,
+      item: item.href,
+    })),
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: schemaFaq.map((item) => ({
+      '@type': 'Question',
+      name: item.question,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: item.answer,
+      },
+    })),
+  },
+];
+---
+
+<SiteLayout title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(schemaGraph)} />
+
+  <article class="space-y-10 py-2" data-likert-app>
+    <nav aria-label="Breadcrumb">
+      <ol class="flex flex-wrap items-center gap-2 text-xs text-[color:var(--muted)]">
+        {breadcrumbItems.map((item, index) => (
+          <li class="flex items-center gap-2">
+            {index > 0 && <span aria-hidden="true">/</span>}
+            {item.href ? (
+              <a class="transition hover:text-[color:var(--fg)]" href={item.href}>
+                {item.label}
+              </a>
+            ) : (
+              <span aria-current="page" class="font-semibold text-[color:var(--fg)]">
+                {item.label}
+              </span>
+            )}
+          </li>
+        ))}
+      </ol>
+    </nav>
+
+    <header class="space-y-3">
+      <div class="inline-flex items-center gap-2 rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1 text-xs font-semibold text-[color:var(--muted)]">
+        <span class="inline-block h-2 w-2 rounded-full bg-emerald-500"></span>
+        <span>Psychometric Survey Designer</span>
+      </div>
+      <h1 class="text-2xl sm:text-4xl font-extrabold tracking-tight text-[color:var(--fg)]">
+        Likert Scale Question Generator
+      </h1>
+      <p class="max-w-2xl text-xs sm:text-sm text-[color:var(--muted)] leading-relaxed">
+        Design psychometric Likert survey questions with standardized anchors (Agreement, Satisfaction, Frequency).
+      </p>
+    </header>
+
+    <div class="space-y-6">
+      <div class="grid gap-4 sm:grid-cols-3 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 text-xs">
+        <div>
+          <label for="likert-dimension" class="font-bold text-[color:var(--fg)] block mb-1">Dimension:</label>
+          <select id="likert-dimension" class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-[color:var(--fg)]">
+            <option value="agreement">Agreement (Agree - Disagree)</option>
+            <option value="satisfaction">Satisfaction (Satisfied - Dissatisfied)</option>
+            <option value="frequency">Frequency (Always - Never)</option>
+            <option value="importance">Importance (Important - Unimportant)</option>
+            <option value="quality">Quality (Excellent - Poor)</option>
+          </select>
+        </div>
+        <div>
+          <label for="likert-points" class="font-bold text-[color:var(--fg)] block mb-1">Scale Points:</label>
+          <select id="likert-points" class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-[color:var(--fg)]">
+            <option value="5">5-Point Scale</option>
+            <option value="7">7-Point Scale</option>
+          </select>
+        </div>
+        <div>
+          <label for="prompt-text" class="font-bold text-[color:var(--fg)] block mb-1">Question Prompt:</label>
+          <input
+            type="text"
+            id="prompt-text"
+            class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-[color:var(--fg)]"
+            value="The user interface was easy and intuitive to navigate."
+          />
+        </div>
+      </div>
+
+      <!-- Live Survey Preview Card -->
+      <div class="space-y-4 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6">
+        <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Survey Matrix Preview</span>
+
+        <div class="space-y-3">
+          <p id="preview-prompt" class="text-sm font-bold text-[color:var(--fg)]">-</p>
+          <div id="options-matrix" class="grid gap-2 text-xs text-center font-medium"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FAQs -->
+    <section class="space-y-4">
+      <h2 class="text-xl font-bold text-[color:var(--fg)]">Frequently Asked Questions</h2>
+      <div class="space-y-3">
+        {schemaFaq.map((faq) => (
+          <details class="group rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
+            <summary class="cursor-pointer list-none font-semibold text-sm sm:text-base text-[color:var(--fg)] flex items-center justify-between gap-4">
+              <span>{faq.question}</span>
+              <span class="text-xs text-[color:var(--muted)] group-open:rotate-180 transition-transform">▼</span>
+            </summary>
+            <p class="mt-3 text-xs sm:text-sm leading-relaxed text-[color:var(--muted)]">
+              {faq.answer}
+            </p>
+          </details>
+        ))}
+      </div>
+    </section>
+  </article>
+
+  <script is:inline>
+    (function () {
+      const root = document.querySelector('[data-likert-app]');
+      if (!root) return;
+
+      const dim = root.querySelector('#likert-dimension');
+      const pts = root.querySelector('#likert-points');
+      const promptIn = root.querySelector('#prompt-text');
+      const previewPrompt = root.querySelector('#preview-prompt');
+      const matrix = root.querySelector('#options-matrix');
+
+      const SCALES = {
+        agreement: {
+          5: ['Strongly Disagree', 'Disagree', 'Neutral', 'Agree', 'Strongly Agree'],
+          7: ['Strongly Disagree', 'Disagree', 'Somewhat Disagree', 'Neutral', 'Somewhat Agree', 'Agree', 'Strongly Agree']
+        },
+        satisfaction: {
+          5: ['Very Dissatisfied', 'Dissatisfied', 'Neutral', 'Satisfied', 'Very Satisfied'],
+          7: ['Completely Dissatisfied', 'Mostly Dissatisfied', 'Somewhat Dissatisfied', 'Neutral', 'Somewhat Satisfied', 'Mostly Satisfied', 'Completely Satisfied']
+        },
+        frequency: {
+          5: ['Never', 'Rarely', 'Sometimes', 'Often', 'Always'],
+          7: ['Never', 'Very Rarely', 'Rarely', 'Occasionally', 'Frequently', 'Very Frequently', 'Always']
+        },
+        importance: {
+          5: ['Not at all Important', 'Slightly Important', 'Moderately Important', 'Important', 'Very Important'],
+          7: ['Not at all Important', 'Low Importance', 'Slightly Important', 'Neutral', 'Moderately Important', 'Very Important', 'Extremely Important']
+        },
+        quality: {
+          5: ['Poor', 'Fair', 'Good', 'Very Good', 'Excellent'],
+          7: ['Very Poor', 'Poor', 'Fair', 'Acceptable', 'Good', 'Very Good', 'Exceptional']
+        }
+      };
+
+      function update() {
+        const dimension = dim.value;
+        const count = parseInt(pts.value, 10);
+        previewPrompt.textContent = promptIn.value.trim() || 'Prompt question goes here';
+
+        const labels = SCALES[dimension][count];
+        matrix.style.gridTemplateColumns = `repeat(${count}, minmax(0, 1fr))`;
+
+        matrix.innerHTML = labels.map((lbl, idx) => `
+          <label class="flex flex-col items-center gap-2 rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-3 cursor-pointer hover:border-emerald-500">
+            <input type="radio" name="likert-choice" value="${idx + 1}" class="accent-[color:var(--fg)]" />
+            <span class="text-[11px] leading-tight text-[color:var(--fg)]">${lbl}</span>
+          </label>
+        `).join('');
+      }
+
+      [dim, pts, promptIn].forEach(el => el.addEventListener('input', update));
+      update();
+    })();
+  </script>
+</SiteLayout>

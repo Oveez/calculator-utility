@@ -1,0 +1,500 @@
+---
+import SiteLayout from '../../layouts/SiteLayout.astro';
+import Icon from '../../components/Icon.astro';
+import { siteName, toAbsoluteUrl, withBasePath } from '../../utils/site';
+
+const pageTitle = `Attendance Calculator | Track Percentage, Shortage & Safe Bunks · ${siteName}`;
+const pageDesc = 'Free college attendance calculator. Calculate your current attendance percentage, find out how many classes you can miss or must attend to reach 75%, 80%, 85%, or 90%.';
+const canonicalUrl = toAbsoluteUrl('/academic-tools/attendance-calculator/');
+
+const breadcrumbItems = [
+  { label: 'Home', href: toAbsoluteUrl('/') },
+  { label: 'Academic Tools', href: toAbsoluteUrl('/academic-tools/') },
+  { label: 'Attendance Calculator' },
+];
+
+const faqs = [
+  {
+    question: 'How do you calculate attendance percentage?',
+    answer: 'Attendance percentage is calculated using the formula: (Classes Attended ÷ Total Classes Conducted) × 100. For example, if you attended 38 out of 50 lectures, your attendance is (38 ÷ 50) × 100 = 76.0%.',
+  },
+  {
+    question: 'How many classes can I miss and still maintain 75% attendance?',
+    answer: 'If your current attendance is above 75%, you can calculate safe bunks using: Safe Bunks = ⌊(Classes Attended ÷ 0.75) - Total Classes⌋. If you have attended 45 out of 50 classes, you can miss ⌊(45 ÷ 0.75) - 50⌋ = 60 - 50 = 10 upcoming classes.',
+  },
+  {
+    question: 'How do I recover from an attendance shortage below 75%?',
+    answer: 'To recover from an attendance shortage, solve for consecutive attended classes X: X = ⌈(0.75 × Total Classes - Classes Attended) ÷ (1 - 0.75)⌉. If you attended 25 out of 40 classes (62.5%), you must attend ⌈(30 - 25) ÷ 0.25⌉ = 20 consecutive classes without missing.',
+  },
+  {
+    question: 'Why do universities enforce the 75% attendance rule?',
+    answer: 'Most universities, state education boards, and accrediting bodies (such as UGC, AICTE, and UK/US university guidelines) require 75% minimum attendance to ensure students absorb coursework, participate in laboratory work, and qualify for end-semester examinations.',
+  },
+];
+
+const schemaGraph = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebApplication',
+    name: 'College Attendance Calculator',
+    url: canonicalUrl,
+    description: pageDesc,
+    applicationCategory: 'EducationalApplication',
+    operatingSystem: 'All',
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: breadcrumbItems.map((item, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      name: item.label,
+      item: item.href,
+    })),
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faqs.map((f) => ({
+      '@type': 'Question',
+      name: f.question,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: f.answer,
+      },
+    })),
+  },
+];
+---
+
+<SiteLayout title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(schemaGraph)} />
+
+  <article class="space-y-10 py-2">
+    <!-- Breadcrumbs -->
+    <nav aria-label="Breadcrumb">
+      <ol class="flex flex-wrap items-center gap-2 text-xs text-[color:var(--muted)]">
+        {breadcrumbItems.map((item, index) => (
+          <li class="flex items-center gap-2">
+            {index > 0 && <span aria-hidden="true">/</span>}
+            {item.href ? (
+              <a class="transition hover:text-[color:var(--fg)]" href={item.href}>
+                {item.label}
+              </a>
+            ) : (
+              <span aria-current="page" class="font-semibold text-[color:var(--fg)]">
+                {item.label}
+              </span>
+            )}
+          </li>
+        ))}
+      </ol>
+    </nav>
+
+    <!-- Header & Introduction -->
+    <header class="space-y-3">
+      <div class="inline-flex items-center gap-2 rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3.5 py-1 text-xs font-semibold text-[color:var(--fg)]">
+        <span>Academic Attendance Tool</span>
+      </div>
+      <h1 class="text-3xl font-extrabold tracking-tight text-[color:var(--fg)] sm:text-4xl">
+        College Attendance Calculator
+      </h1>
+      <p class="max-w-3xl text-sm leading-relaxed text-[color:var(--muted)] sm:text-base">
+        A precision academic planner for college and university students. Calculate your live attendance percentage, discover how many lectures you can safely skip, and compute the exact consecutive classes needed to clear 75%, 80%, 85%, or 90% attendance cutoffs.
+      </p>
+    </header>
+
+    <!-- Interactive Calculator Card -->
+    <div
+      class="rounded-[2.5rem] border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-6 shadow-[var(--shadow)] sm:p-10"
+      data-attendance-app
+    >
+      <div class="grid gap-8 lg:grid-cols-[1.1fr_0.9fr]">
+        <!-- Form Inputs -->
+        <form class="space-y-5" onsubmit="return false;">
+          <div class="flex items-center justify-between">
+            <h2 class="text-lg font-bold text-[color:var(--fg)]">Enter Class Attendance</h2>
+            <button
+              type="button"
+              class="cursor-pointer text-xs font-semibold text-[color:var(--muted)] hover:text-[color:var(--fg)] transition"
+              data-reset-btn
+            >
+              ↺ Reset Values
+            </button>
+          </div>
+
+          <!-- Classes Attended -->
+          <div class="space-y-1.5">
+            <div class="flex items-center justify-between">
+              <label for="classes-attended" class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">
+                Classes Attended
+              </label>
+              <span class="text-xs font-mono text-[color:var(--fg)]" data-attended-display>38</span>
+            </div>
+            <input
+              id="classes-attended"
+              type="number"
+              min="0"
+              step="1"
+              value="38"
+              class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none transition focus:border-[color:var(--accent)] focus:ring-2 focus:ring-[color:var(--accent-soft)]"
+              data-input-attended
+              placeholder="e.g. 38"
+            />
+          </div>
+
+          <!-- Total Classes Conducted -->
+          <div class="space-y-1.5">
+            <div class="flex items-center justify-between">
+              <label for="total-classes" class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">
+                Total Classes Conducted
+              </label>
+              <span class="text-xs font-mono text-[color:var(--fg)]" data-total-display>50</span>
+            </div>
+            <input
+              id="total-classes"
+              type="number"
+              min="1"
+              step="1"
+              value="50"
+              class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none transition focus:border-[color:var(--accent)] focus:ring-2 focus:ring-[color:var(--accent-soft)]"
+              data-input-total
+              placeholder="e.g. 50"
+            />
+          </div>
+
+          <!-- Target Attendance % -->
+          <div class="space-y-2">
+            <div class="flex items-center justify-between">
+              <label for="target-attendance" class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">
+                Target Attendance Goal
+              </label>
+              <span class="rounded-lg bg-[color:var(--surface)] border border-[color:var(--border)] px-2.5 py-0.5 text-xs font-bold text-[color:var(--fg)]" data-target-display>
+                75%
+              </span>
+            </div>
+            <input
+              id="target-attendance"
+              type="range"
+              min="50"
+              max="95"
+              step="1"
+              value="75"
+              class="w-full accent-[color:var(--accent)] cursor-pointer"
+              data-input-target
+            />
+            <div class="flex justify-between text-[11px] font-semibold text-[color:var(--muted)]">
+              <span>50%</span>
+              <span class="font-bold text-[color:var(--fg)]">75% (Standard)</span>
+              <span>80%</span>
+              <span>85%</span>
+              <span>90%</span>
+            </div>
+          </div>
+
+          <!-- Quick Scenario Presets -->
+          <div class="pt-1">
+            <p class="text-xs font-bold text-[color:var(--muted)] mb-2">Preset Thresholds:</p>
+            <div class="grid grid-cols-4 gap-2">
+              <button type="button" class="cursor-pointer rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] py-2 text-xs font-bold text-[color:var(--fg)] hover:bg-[color:var(--surface-strong)] transition" data-preset="75">75%</button>
+              <button type="button" class="cursor-pointer rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] py-2 text-xs font-bold text-[color:var(--fg)] hover:bg-[color:var(--surface-strong)] transition" data-preset="80">80%</button>
+              <button type="button" class="cursor-pointer rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] py-2 text-xs font-bold text-[color:var(--fg)] hover:bg-[color:var(--surface-strong)] transition" data-preset="85">85%</button>
+              <button type="button" class="cursor-pointer rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] py-2 text-xs font-bold text-[color:var(--fg)] hover:bg-[color:var(--surface-strong)] transition" data-preset="90">90%</button>
+            </div>
+          </div>
+        </form>
+
+        <!-- Live Results Panel -->
+        <div class="flex flex-col justify-between space-y-6 rounded-3xl border border-[color:var(--border)] bg-[color:var(--bg)] p-6 sm:p-8">
+          <div class="space-y-5">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Current Standing</span>
+              <button
+                type="button"
+                class="inline-flex items-center gap-1.5 rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1.5 text-xs font-bold text-[color:var(--fg)] hover:bg-[color:var(--surface-strong)] transition cursor-pointer"
+                data-copy-btn
+              >
+                <Icon name="copy" class="w-3.5 h-3.5" />
+                <span>Copy Summary</span>
+              </button>
+            </div>
+
+            <!-- Primary Attendance Percentage Display -->
+            <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 text-center">
+              <p class="text-xs font-semibold text-[color:var(--muted)]">Current Attendance Percentage</p>
+              <p class="mt-1 text-4xl sm:text-5xl font-extrabold tracking-tight text-[color:var(--fg)]" data-res-pct>
+                76.0%
+              </p>
+              <div class="mt-3 inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-bold" data-status-badge>
+                <span data-status-text>Safe (Above 75% Target)</span>
+              </div>
+            </div>
+
+            <!-- Action Advice Metric -->
+            <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 space-y-2" data-advice-box>
+              <p class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Action Guidance</p>
+              <p class="text-sm font-semibold text-[color:var(--fg)]" data-advice-text>
+                You can safely miss <strong>0 more classes</strong> and remain at or above 75%.
+              </p>
+            </div>
+
+            <!-- Projections for Next Class -->
+            <div class="grid grid-cols-2 gap-3">
+              <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3 text-center">
+                <p class="text-[11px] font-medium text-[color:var(--muted)]">If You Attend Next Class</p>
+                <p class="mt-1 text-base font-bold text-[color:var(--fg)]" data-proj-attend>76.47%</p>
+                <p class="text-[10px] text-[color:var(--muted)]">+0.47%</p>
+              </div>
+              <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3 text-center">
+                <p class="text-[11px] font-medium text-[color:var(--muted)]">If You Miss Next Class</p>
+                <p class="mt-1 text-base font-bold text-[color:var(--fg)]" data-proj-miss>74.51%</p>
+                <p class="text-[10px] text-[color:var(--muted)]">-1.49%</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Target Breakdown Table -->
+          <div class="space-y-2 pt-2 border-t border-[color:var(--border)]">
+            <p class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Cutoff Benchmarks</p>
+            <div class="space-y-1.5 text-xs" data-scenario-table>
+              <!-- Populated via JS -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Educational Content Sections -->
+    <section class="grid gap-6 lg:grid-cols-2">
+      <div class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 space-y-3">
+        <h2 class="text-lg font-bold text-[color:var(--fg)]">How Attendance Is Calculated</h2>
+        <p class="text-xs sm:text-sm text-[color:var(--muted)] leading-relaxed">
+          Your attendance percentage reflects the ratio of lectures attended to total lectures scheduled. When planning absences or recovering from medical leaves, simple addition cannot be used because both the numerator (attended classes) and denominator (total classes held) increment simultaneously.
+        </p>
+        <div class="rounded-xl bg-[color:var(--bg)] p-3 font-mono text-xs text-[color:var(--fg)] border border-[color:var(--border)]">
+          Attendance % = (Attended ÷ Total) × 100
+        </div>
+      </div>
+
+      <div class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 space-y-3">
+        <h2 class="text-lg font-bold text-[color:var(--fg)]">Attendance Shortage Formula</h2>
+        <p class="text-xs sm:text-sm text-[color:var(--muted)] leading-relaxed">
+          To find how many consecutive future classes <span class="font-mono">X</span> you must attend to elevate your attendance to target fraction <span class="font-mono">T</span>:
+        </p>
+        <div class="rounded-xl bg-[color:var(--bg)] p-3 font-mono text-xs text-[color:var(--fg)] border border-[color:var(--border)]">
+          X = ⌈(T × Total - Attended) ÷ (1 - T)⌉
+        </div>
+        <p class="text-xs text-[color:var(--muted)]">
+          Where <span class="font-mono">T = 0.75</span> for 75% or <span class="font-mono">0.80</span> for 80%.
+        </p>
+      </div>
+    </section>
+
+    <!-- Step-by-Step Worked Example -->
+    <section class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 sm:p-8 space-y-4">
+      <div>
+        <p class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Step-By-Step Walkthrough</p>
+        <h2 class="text-xl font-bold text-[color:var(--fg)]">Example Calculation: 75% Attendance Requirement</h2>
+      </div>
+
+      <div class="grid gap-4 sm:grid-cols-3 text-xs sm:text-sm">
+        <div class="rounded-2xl bg-[color:var(--bg)] p-4 border border-[color:var(--border)] space-y-1.5">
+          <p class="font-bold text-[color:var(--fg)]">1. Starting Situation</p>
+          <p class="text-[color:var(--muted)]">Total classes conducted = 60.</p>
+          <p class="text-[color:var(--muted)]">Classes attended = 40 (66.67%).</p>
+          <p class="text-[color:var(--muted)]">Current status: Attendance Shortage.</p>
+        </div>
+        <div class="rounded-2xl bg-[color:var(--bg)] p-4 border border-[color:var(--border)] space-y-1.5">
+          <p class="font-bold text-[color:var(--fg)]">2. Compute Needed Classes</p>
+          <p class="text-[color:var(--muted)]">T = 0.75, (0.75 × 60) = 45.</p>
+          <p class="text-[color:var(--muted)]">Numerator: 45 - 40 = 5.</p>
+          <p class="text-[color:var(--muted)]">Denominator: 1 - 0.75 = 0.25.</p>
+          <p class="text-[color:var(--muted)]">X = 5 ÷ 0.25 = <strong>20 classes</strong>.</p>
+        </div>
+        <div class="rounded-2xl bg-[color:var(--bg)] p-4 border border-[color:var(--border)] space-y-1.5">
+          <p class="font-bold text-[color:var(--fg)]">3. Verification</p>
+          <p class="text-[color:var(--muted)]">New Attended = 40 + 20 = 60.</p>
+          <p class="text-[color:var(--muted)]">New Total = 60 + 20 = 80.</p>
+          <p class="text-[color:var(--muted)]">Attendance = (60 ÷ 80) = <strong>75.0%</strong>.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQs Section -->
+    <section class="space-y-4">
+      <div>
+        <p class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Questions &amp; Answers</p>
+        <h2 class="text-xl font-bold tracking-tight text-[color:var(--fg)]">Frequently Asked Questions</h2>
+      </div>
+
+      <div class="space-y-3">
+        {faqs.map((faq) => (
+          <details class="group rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
+            <summary class="cursor-pointer list-none font-semibold text-sm sm:text-base text-[color:var(--fg)] flex items-center justify-between gap-4">
+              <span>{faq.question}</span>
+              <span class="text-xs text-[color:var(--muted)] group-open:rotate-180 transition-transform">▼</span>
+            </summary>
+            <p class="mt-3 text-xs sm:text-sm leading-relaxed text-[color:var(--muted)]">
+              {faq.answer}
+            </p>
+          </details>
+        ))}
+      </div>
+    </section>
+
+    <!-- Related Calculators -->
+    <section class="space-y-4">
+      <h2 class="text-lg font-bold text-[color:var(--fg)]">Related Academic Tools</h2>
+      <div class="grid gap-3 sm:grid-cols-3">
+        <a href={withBasePath('/academic-tools/bunk-calculator/')} class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 hover:border-[color:var(--border-strong)] transition">
+          <p class="font-bold text-xs text-[color:var(--fg)]">Bunk Calculator →</p>
+          <p class="text-[11px] text-[color:var(--muted)] mt-1">Check how many lectures you can safely skip.</p>
+        </a>
+        <a href={withBasePath('/academic-tools/final-grade-calculator/')} class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 hover:border-[color:var(--border-strong)] transition">
+          <p class="font-bold text-xs text-[color:var(--fg)]">Final Grade Calculator →</p>
+          <p class="text-[11px] text-[color:var(--muted)] mt-1">Calculate score needed on your final exam.</p>
+        </a>
+        <a href={withBasePath('/academic-tools/semester-gpa-calculator/')} class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 hover:border-[color:var(--border-strong)] transition">
+          <p class="font-bold text-xs text-[color:var(--fg)]">Semester GPA Calculator →</p>
+          <p class="text-[11px] text-[color:var(--muted)] mt-1">Calculate 4.0 scale weighted course GPA.</p>
+        </a>
+      </div>
+    </section>
+  </article>
+
+  <!-- Client-side Interactive Logic -->
+  <script is:inline>
+    (function () {
+      const root = document.querySelector('[data-attendance-app]');
+      if (!root) return;
+
+      const inputAttended = root.querySelector('[data-input-attended]');
+      const inputTotal = root.querySelector('[data-input-total]');
+      const inputTarget = root.querySelector('[data-input-target]');
+      const attendedDisplay = root.querySelector('[data-attended-display]');
+      const totalDisplay = root.querySelector('[data-total-display]');
+      const targetDisplay = root.querySelector('[data-target-display]');
+      const resPct = root.querySelector('[data-res-pct]');
+      const statusBadge = root.querySelector('[data-status-badge]');
+      const statusText = root.querySelector('[data-status-text]');
+      const adviceText = root.querySelector('[data-advice-text]');
+      const projAttend = root.querySelector('[data-proj-attend]');
+      const projMiss = root.querySelector('[data-proj-miss]');
+      const scenarioTable = root.querySelector('[data-scenario-table]');
+      const copyBtn = root.querySelector('[data-copy-btn]');
+      const resetBtn = root.querySelector('[data-reset-btn]');
+      const presetBtns = root.querySelectorAll('[data-preset]');
+
+      function update() {
+        const attended = Math.max(0, parseInt(inputAttended.value || '0', 10));
+        const total = Math.max(1, parseInt(inputTotal.value || '1', 10));
+        const target = Math.max(1, Math.min(100, parseInt(inputTarget.value || '75', 10)));
+
+        if (attendedDisplay) attendedDisplay.textContent = String(attended);
+        if (totalDisplay) totalDisplay.textContent = String(total);
+        if (targetDisplay) targetDisplay.textContent = `${target}%`;
+
+        const pct = total === 0 ? 100 : (attended / total) * 100;
+        const targetFraction = target / 100;
+
+        if (resPct) resPct.textContent = `${pct.toFixed(2)}%`;
+
+        let canMiss = 0;
+        let mustAttend = 0;
+
+        if (pct >= target) {
+          canMiss = Math.max(0, Math.floor((attended / targetFraction) - total));
+        } else {
+          mustAttend = targetFraction >= 1
+            ? (total - attended > 0 ? 999 : 0)
+            : Math.max(0, Math.ceil((targetFraction * total - attended) / (1 - targetFraction)));
+        }
+
+        // Status Badge & Advice Box
+        if (pct >= target) {
+          if (statusBadge) {
+            statusBadge.className = 'mt-3 inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-bold bg-green-500/10 text-green-600 dark:text-green-400 border border-green-500/20';
+          }
+          if (statusText) statusText.textContent = `Safe (Above ${target}% Target)`;
+          if (adviceText) {
+            adviceText.innerHTML = `You can safely miss <strong>${canMiss} upcoming class${canMiss === 1 ? '' : 'es'}</strong> while staying at or above ${target}%.`;
+          }
+        } else {
+          if (statusBadge) {
+            statusBadge.className = 'mt-3 inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-bold bg-red-500/10 text-red-600 dark:text-red-400 border border-red-500/20';
+          }
+          if (statusText) statusText.textContent = `Attendance Shortage (Below ${target}%)`;
+          if (adviceText) {
+            adviceText.innerHTML = `You must attend <strong>${mustAttend} consecutive class${mustAttend === 1 ? '' : 'es'}</strong> without missing to reach ${target}%.`;
+          }
+        }
+
+        // Projections
+        const pAtt = ((attended + 1) / (total + 1)) * 100;
+        const pMiss = (attended / (total + 1)) * 100;
+        if (projAttend) projAttend.textContent = `${pAtt.toFixed(2)}%`;
+        if (projMiss) projMiss.textContent = `${pMiss.toFixed(2)}%`;
+
+        // Scenario Table
+        if (scenarioTable) {
+          const cutoffs = [75, 80, 85, 90];
+          scenarioTable.innerHTML = cutoffs.map((t) => {
+            const tFrac = t / 100;
+            let note = '';
+            if (pct >= t) {
+              const m = Math.max(0, Math.floor((attended / tFrac) - total));
+              note = `<span class="text-green-600 dark:text-green-400 font-bold">Can miss ${m} class${m === 1 ? '' : 'es'}</span>`;
+            } else {
+              const a = tFrac >= 1 ? 999 : Math.max(0, Math.ceil((tFrac * total - attended) / (1 - tFrac)));
+              note = `<span class="text-red-600 dark:text-red-400 font-bold">Must attend ${a} class${a === 1 ? '' : 'es'}</span>`;
+            }
+
+            return `
+              <div class="flex items-center justify-between p-2 rounded-xl bg-[color:var(--surface)] border border-[color:var(--border)]">
+                <span class="font-bold text-[color:var(--fg)]">${t}% Goal</span>
+                <span>${note}</span>
+              </div>
+            `;
+          }).join('');
+        }
+      }
+
+      inputAttended.addEventListener('input', update);
+      inputTotal.addEventListener('input', update);
+      inputTarget.addEventListener('input', update);
+
+      presetBtns.forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const val = btn.dataset.preset;
+          if (val && inputTarget) {
+            inputTarget.value = val;
+            update();
+          }
+        });
+      });
+
+      if (resetBtn) {
+        resetBtn.addEventListener('click', () => {
+          inputAttended.value = '38';
+          inputTotal.value = '50';
+          inputTarget.value = '75';
+          update();
+        });
+      }
+
+      if (copyBtn) {
+        copyBtn.addEventListener('click', async () => {
+          const text = `College Attendance Summary:\nAttended: ${inputAttended.value}/${inputTotal.value} (${resPct.textContent})\nTarget: ${inputTarget.value}%\nStatus: ${adviceText.textContent.trim()}\nCalculated at CalculatorUtility.tech`;
+          try {
+            await navigator.clipboard.writeText(text);
+            const original = copyBtn.innerHTML;
+            copyBtn.innerHTML = '<span>✓ Copied!</span>';
+            setTimeout(() => { copyBtn.innerHTML = original; }, 2000);
+          } catch (e) {}
+        });
+      }
+
+      update();
+    })();
+  </script>
+</SiteLayout>

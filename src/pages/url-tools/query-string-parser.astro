@@ -1,0 +1,217 @@
+---
+import SiteLayout from '../../layouts/SiteLayout.astro';
+import Icon from '../../components/Icon.astro';
+import { siteName, toAbsoluteUrl, withBasePath } from '../../utils/site';
+
+const pageTitle = `Query String Parser — Parse URL Query String to JSON · ${siteName}`;
+const pageDesc = 'Parse URL query string parameters into structured JSON objects and key-value pairs online. Handles percent-encoding, arrays, and special characters. 100% private in-browser tool.';
+const canonicalUrl = toAbsoluteUrl('/url-tools/query-string-parser/');
+
+const breadcrumbItems = [
+  { label: 'Home', href: toAbsoluteUrl('/') },
+  { label: 'URL Tools', href: toAbsoluteUrl('/url-tools/') },
+  { label: 'Query String Parser' },
+];
+
+const schemaFaq = [
+  {
+    question: 'How does the query string parser convert strings to JSON?',
+    answer: 'It parses `?key=value&key2=val2` query fragments using URLSearchParams, converting pairs into an in-memory JSON object with automatic URI decoding.',
+  },
+];
+
+const schemaGraph = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebApplication',
+    name: 'Query String Parser',
+    url: canonicalUrl,
+    applicationCategory: 'WebApplication',
+    operatingSystem: 'All',
+    browserRequirements: 'Requires JavaScript',
+    description: pageDesc,
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: breadcrumbItems.map((item, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      name: item.label,
+      item: item.href,
+    })),
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: schemaFaq.map((item) => ({
+      '@type': 'Question',
+      name: item.question,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: item.answer,
+      },
+    })),
+  },
+];
+---
+
+<SiteLayout title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(schemaGraph)} />
+
+  <article class="space-y-10 py-2" data-qs-parser-app>
+    <nav aria-label="Breadcrumb">
+      <ol class="flex flex-wrap items-center gap-2 text-xs text-[color:var(--muted)]">
+        {breadcrumbItems.map((item, index) => (
+          <li class="flex items-center gap-2">
+            {index > 0 && <span aria-hidden="true">/</span>}
+            {item.href ? (
+              <a class="transition hover:text-[color:var(--fg)]" href={item.href}>
+                {item.label}
+              </a>
+            ) : (
+              <span aria-current="page" class="font-semibold text-[color:var(--fg)]">
+                {item.label}
+              </span>
+            )}
+          </li>
+        ))}
+      </ol>
+    </nav>
+
+    <header class="space-y-3">
+      <div class="inline-flex items-center gap-2 rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1 text-xs font-semibold text-[color:var(--muted)]">
+        <span class="inline-block h-2 w-2 rounded-full bg-emerald-500"></span>
+        <span>Query String to JSON Engine</span>
+      </div>
+      <h1 class="text-2xl sm:text-4xl font-extrabold tracking-tight text-[color:var(--fg)]">
+        Query String Parser
+      </h1>
+      <p class="max-w-2xl text-xs sm:text-sm text-[color:var(--muted)] leading-relaxed">
+        Parse raw URL query strings into structured JSON objects with automatic percent-decoding.
+      </p>
+    </header>
+
+    <div class="grid gap-6 lg:grid-cols-2">
+      <div class="space-y-3">
+        <div class="flex items-center justify-between">
+          <label for="qs-in" class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Query String Input</label>
+          <div class="flex items-center gap-2 text-xs">
+            <button type="button" data-sample-btn class="text-[color:var(--primary)] hover:underline font-semibold">Load Sample</button>
+            <span class="text-[color:var(--border)]">|</span>
+            <button type="button" data-clear-btn class="text-[color:var(--muted)] hover:text-[color:var(--fg)]">Clear</button>
+          </div>
+        </div>
+        <textarea
+          id="qs-in"
+          rows="14"
+          class="w-full font-mono text-xs leading-relaxed rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-[color:var(--fg)] focus:border-[color:var(--border-strong)] focus:outline-hidden"
+          placeholder="?name=John%20Doe&role=Admin&active=true&tags=dev&tags=tech"
+        >?search=developer+tools&category=web&page=2&sort=desc&filters=active</textarea>
+      </div>
+
+      <div class="space-y-3">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Parsed JSON Object</span>
+          <button type="button" data-copy-btn class="inline-flex items-center gap-1 text-xs font-bold text-[color:var(--fg)] hover:underline">
+            <Icon name="copy" class="w-3.5 h-3.5" />
+            <span>Copy JSON</span>
+          </button>
+        </div>
+        <textarea
+          id="qs-out"
+          rows="14"
+          readonly
+          class="w-full font-mono text-xs leading-relaxed rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-4 text-[color:var(--fg)] focus:outline-hidden"
+          placeholder="Parsed JSON output will appear here..."
+        ></textarea>
+      </div>
+    </div>
+
+    <!-- FAQs -->
+    <section class="space-y-4">
+      <h2 class="text-xl font-bold text-[color:var(--fg)]">Frequently Asked Questions</h2>
+      <div class="space-y-3">
+        {schemaFaq.map((faq) => (
+          <details class="group rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
+            <summary class="cursor-pointer list-none font-semibold text-sm sm:text-base text-[color:var(--fg)] flex items-center justify-between gap-4">
+              <span>{faq.question}</span>
+              <span class="text-xs text-[color:var(--muted)] group-open:rotate-180 transition-transform">▼</span>
+            </summary>
+            <p class="mt-3 text-xs sm:text-sm leading-relaxed text-[color:var(--muted)]">
+              {faq.answer}
+            </p>
+          </details>
+        ))}
+      </div>
+    </section>
+  </article>
+
+  <script is:inline>
+    (function () {
+      const root = document.querySelector('[data-qs-parser-app]');
+      if (!root) return;
+
+      const input = root.querySelector('#qs-in');
+      const output = root.querySelector('#qs-out');
+      const sampleBtn = root.querySelector('[data-sample-btn]');
+      const clearBtn = root.querySelector('[data-clear-btn]');
+      const copyBtn = root.querySelector('[data-copy-btn]');
+
+      function parse() {
+        let raw = input.value.trim();
+        if (!raw) { output.value = ''; return; }
+
+        if (raw.includes('?')) {
+          raw = raw.split('?')[1];
+        }
+
+        try {
+          const params = new URLSearchParams(raw);
+          const obj = {};
+
+          params.forEach((val, key) => {
+            const decKey = decodeURIComponent(key);
+            const decVal = decodeURIComponent(val.replace(/\+/g, ' '));
+
+            if (obj[decKey] !== undefined) {
+              if (!Array.isArray(obj[decKey])) {
+                obj[decKey] = [obj[decKey]];
+              }
+              obj[decKey].push(decVal);
+            } else {
+              obj[decKey] = decVal;
+            }
+          });
+
+          output.value = JSON.stringify(obj, null, 2);
+        } catch (e) {
+          output.value = 'Error parsing query string: ' + e.message;
+        }
+      }
+
+      input.addEventListener('input', parse);
+
+      sampleBtn.addEventListener('click', () => {
+        input.value = '?user=alex_smith&roles=admin&roles=developer&active=true&timestamp=1725360000';
+        parse();
+      });
+
+      clearBtn.addEventListener('click', () => {
+        input.value = '';
+        output.value = '';
+      });
+
+      copyBtn.addEventListener('click', () => {
+        if (!output.value) return;
+        navigator.clipboard.writeText(output.value);
+        const span = copyBtn.querySelector('span');
+        const orig = span.textContent;
+        span.textContent = 'Copied!';
+        setTimeout(() => span.textContent = orig, 1800);
+      });
+
+      parse();
+    })();
+  </script>
+</SiteLayout>

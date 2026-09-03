@@ -1,0 +1,220 @@
+---
+import Icon from './Icon.astro';
+import { allToolsIndex } from '../data/allToolsIndex';
+---
+
+<!-- Global / Mobile Quick Search Modal -->
+<div
+  id="global-search-modal"
+  class="fixed inset-0 z-50 flex items-start justify-center p-3 sm:p-6 bg-black/60 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-200"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="search-modal-title"
+>
+  <div
+    class="relative w-full max-w-xl rounded-3xl border border-[color:var(--border)] bg-[color:var(--bg)] shadow-2xl transition-transform duration-200 scale-95 flex flex-col max-h-[85vh] overflow-hidden"
+    data-search-dialog
+  >
+    <!-- Modal Header / Search Bar -->
+    <div class="flex items-center gap-3 border-b border-[color:var(--border)] p-4 sm:p-5">
+      <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-[color:var(--surface-strong)] text-[color:var(--muted)]">
+        <Icon name="search" class="w-5 h-5" />
+      </div>
+      <div class="flex-1 min-w-0">
+        <h2 id="search-modal-title" class="sr-only">Search Tools &amp; Calculators</h2>
+        <input
+          id="modal-search-input"
+          type="search"
+          placeholder="Search 186+ tools (e.g. JSON, PDF, GPA, Tax, BMI, QR)..."
+          class="w-full bg-transparent text-sm sm:text-base font-semibold text-[color:var(--fg)] placeholder:text-[color:var(--muted)] outline-none"
+          autocomplete="off"
+        />
+      </div>
+      <button
+        type="button"
+        id="close-search-modal"
+        class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] text-[color:var(--muted)] hover:text-[color:var(--fg)] hover:border-[color:var(--border-strong)] transition"
+        aria-label="Close search"
+      >
+        <Icon name="close" class="w-4 h-4" />
+      </button>
+    </div>
+
+    <!-- Quick Category Filter Pills -->
+    <div class="flex items-center gap-1.5 overflow-x-auto p-3 border-b border-[color:var(--border)] bg-[color:var(--surface)] text-xs no-scrollbar">
+      <button type="button" data-modal-filter="" class="search-filter-chip active shrink-0 rounded-lg px-2.5 py-1 font-semibold transition">All (186)</button>
+      <button type="button" data-modal-filter="Developer" class="search-filter-chip shrink-0 rounded-lg px-2.5 py-1 font-semibold transition">Dev Tools</button>
+      <button type="button" data-modal-filter="PDF" class="search-filter-chip shrink-0 rounded-lg px-2.5 py-1 font-semibold transition">PDF</button>
+      <button type="button" data-modal-filter="Image" class="search-filter-chip shrink-0 rounded-lg px-2.5 py-1 font-semibold transition">Images</button>
+      <button type="button" data-modal-filter="Text" class="search-filter-chip shrink-0 rounded-lg px-2.5 py-1 font-semibold transition">Text</button>
+      <button type="button" data-modal-filter="Finance" class="search-filter-chip shrink-0 rounded-lg px-2.5 py-1 font-semibold transition">Finance</button>
+      <button type="button" data-modal-filter="Tax" class="search-filter-chip shrink-0 rounded-lg px-2.5 py-1 font-semibold transition">Tax</button>
+      <button type="button" data-modal-filter="Career" class="search-filter-chip shrink-0 rounded-lg px-2.5 py-1 font-semibold transition">Career</button>
+      <button type="button" data-modal-filter="Generators" class="search-filter-chip shrink-0 rounded-lg px-2.5 py-1 font-semibold transition">Generators</button>
+    </div>
+
+    <!-- Search Results Container -->
+    <div id="modal-results-container" class="flex-1 overflow-y-auto p-3 space-y-2 divide-y divide-[color:var(--border)]">
+      <!-- Dynamic Search Items Injected by Client Script -->
+    </div>
+
+    <!-- Modal Footer -->
+    <div class="flex items-center justify-between border-t border-[color:var(--border)] bg-[color:var(--surface)] px-4 py-2.5 text-[11px] text-[color:var(--muted)]">
+      <span><strong id="modal-result-count" class="text-[color:var(--fg)]">186</strong> tools found</span>
+      <div class="flex items-center gap-2">
+        <span>Press <kbd class="rounded bg-[color:var(--surface-strong)] px-1.5 py-0.5 font-mono text-[color:var(--fg)] border border-[color:var(--border)]">ESC</kbd> to close</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .search-filter-chip {
+    color: var(--muted);
+    background-color: var(--bg);
+    border: 1px solid var(--border);
+  }
+  .search-filter-chip.active {
+    color: var(--bg);
+    background-color: var(--fg);
+    border-color: var(--fg);
+  }
+</style>
+
+<script is:inline define:vars={{ allToolsIndex }}>
+  (function () {
+    const modal = document.getElementById('global-search-modal');
+    if (!modal) return;
+
+    const dialog = modal.querySelector('[data-search-dialog]');
+    const input = document.getElementById('modal-search-input');
+    const closeBtn = document.getElementById('close-search-modal');
+    const resultsContainer = document.getElementById('modal-results-container');
+    const countLabel = document.getElementById('modal-result-count');
+    const filterChips = Array.from(modal.querySelectorAll('[data-modal-filter]'));
+
+    let activeFilter = '';
+    let currentQuery = '';
+
+    function openSearch(initialQuery = '') {
+      modal.classList.remove('opacity-0', 'pointer-events-none');
+      modal.classList.add('opacity-100', 'pointer-events-auto');
+      if (dialog) {
+        dialog.classList.remove('scale-95');
+        dialog.classList.add('scale-100');
+      }
+      document.body.style.overflow = 'hidden';
+      if (input) {
+        input.value = initialQuery;
+        currentQuery = initialQuery;
+        setTimeout(() => {
+          input.focus();
+          input.select();
+        }, 50);
+      }
+      renderResults();
+    }
+
+    function closeSearch() {
+      modal.classList.remove('opacity-100', 'pointer-events-auto');
+      modal.classList.add('opacity-0', 'pointer-events-none');
+      if (dialog) {
+        dialog.classList.remove('scale-100');
+        dialog.classList.add('scale-95');
+      }
+      document.body.style.overflow = '';
+    }
+
+    function renderResults() {
+      if (!resultsContainer) return;
+      const q = (currentQuery || '').trim().toLowerCase();
+      
+      const filtered = (allToolsIndex || []).filter((tool) => {
+        const matchesCategory = !activeFilter || tool.category.toLowerCase().includes(activeFilter.toLowerCase());
+        const matchesText = !q || tool.title.toLowerCase().includes(q) || tool.desc.toLowerCase().includes(q) || tool.category.toLowerCase().includes(q) || tool.url.toLowerCase().includes(q);
+        return matchesCategory && matchesText;
+      });
+
+      if (countLabel) countLabel.textContent = String(filtered.length);
+
+      if (filtered.length === 0) {
+        resultsContainer.innerHTML = `
+          <div class="py-10 text-center space-y-2">
+            <p class="font-bold text-sm text-[color:var(--fg)]">No matching tools found</p>
+            <p class="text-xs text-[color:var(--muted)]">Try searching for keywords like "json", "pdf", "mortgage", "color", "gpa", or "vat".</p>
+          </div>
+        `;
+        return;
+      }
+
+      resultsContainer.innerHTML = filtered.slice(0, 40).map((tool) => `
+        <a
+          href="${tool.url}"
+          class="flex items-center justify-between gap-3 p-3 rounded-2xl hover:bg-[color:var(--surface-strong)] transition group"
+        >
+          <div class="min-w-0 space-y-1">
+            <div class="flex items-center gap-2">
+              <span class="rounded-md bg-[color:var(--surface-strong)] px-2 py-0.5 text-[10px] font-bold text-[color:var(--muted)] border border-[color:var(--border)]">
+                ${tool.category}
+              </span>
+              <h3 class="text-xs sm:text-sm font-bold text-[color:var(--fg)] truncate group-hover:text-[color:var(--accent)] transition-colors">
+                ${tool.title}
+              </h3>
+            </div>
+            <p class="text-xs text-[color:var(--muted)] line-clamp-1">
+              ${tool.desc}
+            </p>
+          </div>
+          <span class="shrink-0 text-xs font-bold text-[color:var(--muted)] group-hover:text-[color:var(--fg)] transition">
+            Open →
+          </span>
+        </a>
+      `).join('');
+    }
+
+    // Event listeners
+    if (input) {
+      input.addEventListener('input', (e) => {
+        currentQuery = e.target.value;
+        renderResults();
+      });
+    }
+
+    filterChips.forEach((chip) => {
+      chip.addEventListener('click', () => {
+        filterChips.forEach((c) => c.classList.remove('active'));
+        chip.classList.add('active');
+        activeFilter = chip.dataset.modalFilter || '';
+        renderResults();
+      });
+    });
+
+    closeBtn?.addEventListener('click', closeSearch);
+
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) closeSearch();
+    });
+
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && !modal.classList.contains('pointer-events-none')) {
+        closeSearch();
+      }
+      if (e.key === '/' && !['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement?.tagName)) {
+        e.preventDefault();
+        openSearch();
+      }
+    });
+
+    // Expose globally for header / bottom nav triggers
+    window.openGlobalSearch = openSearch;
+    window.closeGlobalSearch = closeSearch;
+
+    // Attach trigger listeners
+    document.querySelectorAll('[data-trigger-search]').forEach((el) => {
+      el.addEventListener('click', (e) => {
+        e.preventDefault();
+        openSearch();
+      });
+    });
+  })();
+</script>

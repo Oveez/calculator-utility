@@ -1,0 +1,197 @@
+---
+import SiteLayout from '../../layouts/SiteLayout.astro';
+import Icon from '../../components/Icon.astro';
+import { siteName, toAbsoluteUrl, withBasePath } from '../../utils/site';
+
+const pageTitle = `Random Name Picker — Raffle & Giveaway Winner Selector · ${siteName}`;
+const pageDesc = 'Pick random winning names from custom lists for raffles, giveaways, contests, and prize drawings with animated wheel countdown. 100% private in-browser tool.';
+const canonicalUrl = toAbsoluteUrl('/generators/random-name-picker/');
+
+const breadcrumbItems = [
+  { label: 'Home', href: toAbsoluteUrl('/') },
+  { label: 'Generators', href: toAbsoluteUrl('/generators/') },
+  { label: 'Random Name Picker' },
+];
+
+const schemaFaq = [
+  {
+    question: 'How does the random name picker ensure unbiased raffle winners?',
+    answer: 'It uses CSPRNG random generation (`crypto.getRandomValues`) to draw winner names uniformly from the input list with 0% bias.',
+  },
+];
+
+const schemaGraph = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebApplication',
+    name: 'Random Name Picker',
+    url: canonicalUrl,
+    applicationCategory: 'UtilityApplication',
+    operatingSystem: 'All',
+    browserRequirements: 'Requires JavaScript',
+    description: pageDesc,
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: breadcrumbItems.map((item, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      name: item.label,
+      item: item.href,
+    })),
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: schemaFaq.map((item) => ({
+      '@type': 'Question',
+      name: item.question,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: item.answer,
+      },
+    })),
+  },
+];
+---
+
+<SiteLayout title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(schemaGraph)} />
+
+  <article class="space-y-10 py-2" data-name-app>
+    <nav aria-label="Breadcrumb">
+      <ol class="flex flex-wrap items-center gap-2 text-xs text-[color:var(--muted)]">
+        {breadcrumbItems.map((item, index) => (
+          <li class="flex items-center gap-2">
+            {index > 0 && <span aria-hidden="true">/</span>}
+            {item.href ? (
+              <a class="transition hover:text-[color:var(--fg)]" href={item.href}>
+                {item.label}
+              </a>
+            ) : (
+              <span aria-current="page" class="font-semibold text-[color:var(--fg)]">
+                {item.label}
+              </span>
+            )}
+          </li>
+        ))}
+      </ol>
+    </nav>
+
+    <header class="space-y-3">
+      <div class="inline-flex items-center gap-2 rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1 text-xs font-semibold text-[color:var(--muted)]">
+        <span class="inline-block h-2 w-2 rounded-full bg-emerald-500"></span>
+        <span>Raffle &amp; Contest Winner Selector</span>
+      </div>
+      <h1 class="text-2xl sm:text-4xl font-extrabold tracking-tight text-[color:var(--fg)]">
+        Random Name Picker
+      </h1>
+      <p class="max-w-2xl text-xs sm:text-sm text-[color:var(--muted)] leading-relaxed">
+        Select lucky winners for raffles, giveaways, and contests with animated random drawing.
+      </p>
+    </header>
+
+    <div class="space-y-6">
+      <!-- Winner Hero Display -->
+      <div class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-8 sm:p-12 text-center space-y-4">
+        <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Winner Result</span>
+        <p id="winner-name" class="text-3xl sm:text-5xl font-black text-emerald-500 min-h-16 flex items-center justify-center">
+          Ready to Draw!
+        </p>
+
+        <button
+          type="button"
+          id="draw-btn"
+          class="inline-flex items-center justify-center gap-2 rounded-2xl bg-[color:var(--fg)] px-8 py-3.5 text-sm sm:text-base font-extrabold text-[color:var(--bg)] shadow-md transition hover:opacity-90 active:scale-95 cursor-pointer"
+        >
+          <Icon name="dice" class="w-5 h-5" />
+          <span>Pick Winner</span>
+        </button>
+      </div>
+
+      <div class="space-y-2">
+        <div class="flex items-center justify-between">
+          <label for="names-in" class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Enter Names (One per line)</label>
+          <span id="name-count" class="text-xs font-mono text-[color:var(--muted)]">0 entries</span>
+        </div>
+        <textarea
+          id="names-in"
+          rows="8"
+          class="w-full font-mono text-xs leading-relaxed rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-[color:var(--fg)] focus:border-[color:var(--border-strong)] focus:outline-hidden"
+          placeholder="Paste participant names here..."
+        >Jessica Miller
+David Miller
+Sarah Connor
+Michael Scott
+Pam Beesly
+Jim Halpert
+Dwight Schrute
+Stanley Hudson</textarea>
+      </div>
+    </div>
+
+    <!-- FAQs -->
+    <section class="space-y-4">
+      <h2 class="text-xl font-bold text-[color:var(--fg)]">Frequently Asked Questions</h2>
+      <div class="space-y-3">
+        {schemaFaq.map((faq) => (
+          <details class="group rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
+            <summary class="cursor-pointer list-none font-semibold text-sm sm:text-base text-[color:var(--fg)] flex items-center justify-between gap-4">
+              <span>{faq.question}</span>
+              <span class="text-xs text-[color:var(--muted)] group-open:rotate-180 transition-transform">▼</span>
+            </summary>
+            <p class="mt-3 text-xs sm:text-sm leading-relaxed text-[color:var(--muted)]">
+              {faq.answer}
+            </p>
+          </details>
+        ))}
+      </div>
+    </section>
+  </article>
+
+  <script is:inline>
+    (function () {
+      const root = document.querySelector('[data-name-app]');
+      if (!root) return;
+
+      const namesIn = root.querySelector('#names-in');
+      const drawBtn = root.querySelector('#draw-btn');
+      const winnerName = root.querySelector('#winner-name');
+      const nameCount = root.querySelector('#name-count');
+
+      function updateCount() {
+        const list = namesIn.value.split('\n').map(s => s.trim()).filter(s => s.length > 0);
+        nameCount.textContent = `${list.length} ${list.length === 1 ? 'entry' : 'entries'}`;
+      }
+
+      function draw() {
+        const list = namesIn.value.split('\n').map(s => s.trim()).filter(s => s.length > 0);
+        if (list.length === 0) {
+          winnerName.textContent = 'Please enter names!';
+          return;
+        }
+
+        drawBtn.disabled = true;
+        let counter = 0;
+        const interval = setInterval(() => {
+          const rand = list[Math.floor(Math.random() * list.length)];
+          winnerName.textContent = rand;
+          counter++;
+          if (counter > 15) {
+            clearInterval(interval);
+            const randArr = new Uint32Array(1);
+            crypto.getRandomValues(randArr);
+            const chosen = list[randArr[0] % list.length];
+            winnerName.textContent = chosen;
+            drawBtn.disabled = false;
+          }
+        }, 60);
+      }
+
+      namesIn.addEventListener('input', updateCount);
+      drawBtn.addEventListener('click', draw);
+      updateCount();
+    })();
+  </script>
+</SiteLayout>

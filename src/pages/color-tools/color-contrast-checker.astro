@@ -1,0 +1,231 @@
+---
+import SiteLayout from '../../layouts/SiteLayout.astro';
+import Icon from '../../components/Icon.astro';
+import { siteName, toAbsoluteUrl, withBasePath } from '../../utils/site';
+
+const pageTitle = `WCAG Color Contrast Checker — Test AA & AAA Compliance · ${siteName}`;
+const pageDesc = 'Check color contrast ratio between foreground text and background colors according to WCAG 2.1 AA and AAA accessibility standards. Real-time preview and compliance badges.';
+const canonicalUrl = toAbsoluteUrl('/color-tools/color-contrast-checker/');
+
+const breadcrumbItems = [
+  { label: 'Home', href: toAbsoluteUrl('/') },
+  { label: 'Color Tools', href: toAbsoluteUrl('/color-tools/') },
+  { label: 'Color Contrast Checker' },
+];
+
+const schemaFaq = [
+  {
+    question: 'What are the WCAG 2.1 contrast ratio requirements?',
+    answer: 'Level AA requires at least 4.5:1 for normal text and 3:1 for large text (18pt+ or 14pt bold). Level AAA requires at least 7:1 for normal text and 4.5:1 for large text.',
+  },
+];
+
+const schemaGraph = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebApplication',
+    name: 'WCAG Color Contrast Checker',
+    url: canonicalUrl,
+    applicationCategory: 'DesignApplication',
+    operatingSystem: 'All',
+    browserRequirements: 'Requires JavaScript',
+    description: pageDesc,
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: breadcrumbItems.map((item, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      name: item.label,
+      item: item.href,
+    })),
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: schemaFaq.map((item) => ({
+      '@type': 'Question',
+      name: item.question,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: item.answer,
+      },
+    })),
+  },
+];
+---
+
+<SiteLayout title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(schemaGraph)} />
+
+  <article class="space-y-10 py-2" data-contrast-app>
+    <nav aria-label="Breadcrumb">
+      <ol class="flex flex-wrap items-center gap-2 text-xs text-[color:var(--muted)]">
+        {breadcrumbItems.map((item, index) => (
+          <li class="flex items-center gap-2">
+            {index > 0 && <span aria-hidden="true">/</span>}
+            {item.href ? (
+              <a class="transition hover:text-[color:var(--fg)]" href={item.href}>
+                {item.label}
+              </a>
+            ) : (
+              <span aria-current="page" class="font-semibold text-[color:var(--fg)]">
+                {item.label}
+              </span>
+            )}
+          </li>
+        ))}
+      </ol>
+    </nav>
+
+    <header class="space-y-3">
+      <div class="inline-flex items-center gap-2 rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1 text-xs font-semibold text-[color:var(--muted)]">
+        <span class="inline-block h-2 w-2 rounded-full bg-emerald-500"></span>
+        <span>WCAG 2.1 Compliance Engine</span>
+      </div>
+      <h1 class="text-2xl sm:text-4xl font-extrabold tracking-tight text-[color:var(--fg)]">
+        WCAG Color Contrast Checker
+      </h1>
+      <p class="max-w-2xl text-xs sm:text-sm text-[color:var(--muted)] leading-relaxed">
+        Test color combinations against Web Content Accessibility Guidelines (WCAG 2.1) Level AA &amp; AAA.
+      </p>
+    </header>
+
+    <div class="space-y-6">
+      <div class="grid gap-4 sm:grid-cols-2 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 text-xs">
+        <div>
+          <label for="fg-color" class="font-bold text-[color:var(--fg)] block mb-1">Text / Foreground Color:</label>
+          <div class="flex items-center gap-2">
+            <input type="color" id="fg-picker" value="#111827" class="h-9 w-12 rounded-xl border border-[color:var(--border)] cursor-pointer bg-transparent" />
+            <input type="text" id="fg-hex" value="#111827" class="flex-1 rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-[color:var(--fg)] uppercase" />
+          </div>
+        </div>
+
+        <div>
+          <label for="bg-color" class="font-bold text-[color:var(--fg)] block mb-1">Background Color:</label>
+          <div class="flex items-center gap-2">
+            <input type="color" id="bg-picker" value="#FFFFFF" class="h-9 w-12 rounded-xl border border-[color:var(--border)] cursor-pointer bg-transparent" />
+            <input type="text" id="bg-hex" value="#FFFFFF" class="flex-1 rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-[color:var(--fg)] uppercase" />
+          </div>
+        </div>
+      </div>
+
+      <!-- Live Visual Preview Box -->
+      <div id="preview-box" class="rounded-3xl border border-[color:var(--border)] p-6 sm:p-10 text-center space-y-3 transition-colors">
+        <p class="text-3xl sm:text-4xl font-black">Contrast Ratio: <span id="ratio-num">16.1:1</span></p>
+        <p class="text-base sm:text-lg font-bold">The quick brown fox jumps over the lazy dog.</p>
+        <p class="text-xs max-w-lg mx-auto opacity-90">Sample regular paragraph copy text to verify legibility and readability across different screen calibrations.</p>
+      </div>
+
+      <!-- WCAG Badge Grid -->
+      <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 text-center">
+        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 space-y-1">
+          <span class="text-xs text-[color:var(--muted)] font-medium">Normal Text (AA)</span>
+          <p id="badge-aa-norm" class="text-lg font-extrabold text-emerald-500">PASS</p>
+          <p class="text-[10px] text-[color:var(--muted)]">Required: 4.5:1</p>
+        </div>
+        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 space-y-1">
+          <span class="text-xs text-[color:var(--muted)] font-medium">Large Text (AA)</span>
+          <p id="badge-aa-lg" class="text-lg font-extrabold text-emerald-500">PASS</p>
+          <p class="text-[10px] text-[color:var(--muted)]">Required: 3.0:1</p>
+        </div>
+        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 space-y-1">
+          <span class="text-xs text-[color:var(--muted)] font-medium">Normal Text (AAA)</span>
+          <p id="badge-aaa-norm" class="text-lg font-extrabold text-emerald-500">PASS</p>
+          <p class="text-[10px] text-[color:var(--muted)]">Required: 7.0:1</p>
+        </div>
+        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 space-y-1">
+          <span class="text-xs text-[color:var(--muted)] font-medium">Large Text (AAA)</span>
+          <p id="badge-aaa-lg" class="text-lg font-extrabold text-emerald-500">PASS</p>
+          <p class="text-[10px] text-[color:var(--muted)]">Required: 4.5:1</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- FAQs -->
+    <section class="space-y-4">
+      <h2 class="text-xl font-bold text-[color:var(--fg)]">Frequently Asked Questions</h2>
+      <div class="space-y-3">
+        {schemaFaq.map((faq) => (
+          <details class="group rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
+            <summary class="cursor-pointer list-none font-semibold text-sm sm:text-base text-[color:var(--fg)] flex items-center justify-between gap-4">
+              <span>{faq.question}</span>
+              <span class="text-xs text-[color:var(--muted)] group-open:rotate-180 transition-transform">▼</span>
+            </summary>
+            <p class="mt-3 text-xs sm:text-sm leading-relaxed text-[color:var(--muted)]">
+              {faq.answer}
+            </p>
+          </details>
+        ))}
+      </div>
+    </section>
+  </article>
+
+  <script is:inline>
+    (function () {
+      const root = document.querySelector('[data-contrast-app]');
+      if (!root) return;
+
+      const fgPicker = root.querySelector('#fg-picker');
+      const fgHex = root.querySelector('#fg-hex');
+      const bgPicker = root.querySelector('#bg-picker');
+      const bgHex = root.querySelector('#bg-hex');
+      const preview = root.querySelector('#preview-box');
+      const ratioNum = root.querySelector('#ratio-num');
+
+      const bAaNorm = root.querySelector('#badge-aa-norm');
+      const bAaLg = root.querySelector('#badge-aa-lg');
+      const bAaaNorm = root.querySelector('#badge-aaa-norm');
+      const bAaaLg = root.querySelector('#badge-aaa-lg');
+
+      function hexToRgb(hex) {
+        hex = hex.replace(/^#/, '');
+        if (hex.length === 3) hex = hex.split('').map(c => c + c).join('');
+        const num = parseInt(hex, 16);
+        return isNaN(num) ? null : { r: (num >> 16) & 255, g: (num >> 8) & 255, b: num & 255 };
+      }
+
+      function getLuminance({ r, g, b }) {
+        const [rs, gs, bs] = [r, g, b].map(c => {
+          c /= 255;
+          return c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
+        });
+        return 0.2126 * rs + 0.7152 * gs + 0.0722 * bs;
+      }
+
+      function update() {
+        const fg = hexToRgb(fgHex.value) || { r: 0, g: 0, b: 0 };
+        const bg = hexToRgb(bgHex.value) || { r: 255, g: 255, b: 255 };
+
+        const l1 = getLuminance(fg);
+        const l2 = getLuminance(bg);
+        const lighter = Math.max(l1, l2);
+        const darker = Math.min(l1, l2);
+        const ratio = (lighter + 0.05) / (darker + 0.05);
+
+        ratioNum.textContent = `${ratio.toFixed(2)}:1`;
+
+        preview.style.color = fgHex.value;
+        preview.style.backgroundColor = bgHex.value;
+
+        function setBadge(el, pass) {
+          el.textContent = pass ? 'PASS' : 'FAIL';
+          el.className = `text-lg font-extrabold ${pass ? 'text-emerald-500' : 'text-red-500'}`;
+        }
+
+        setBadge(bAaNorm, ratio >= 4.5);
+        setBadge(bAaLg, ratio >= 3.0);
+        setBadge(bAaaNorm, ratio >= 7.0);
+        setBadge(bAaaLg, ratio >= 4.5);
+      }
+
+      fgPicker.addEventListener('input', (e) => { fgHex.value = e.target.value.toUpperCase(); update(); });
+      bgPicker.addEventListener('input', (e) => { bgHex.value = e.target.value.toUpperCase(); update(); });
+      fgHex.addEventListener('input', (e) => { if (/^#[0-9A-F]{6}$/i.test(e.target.value)) fgPicker.value = e.target.value; update(); });
+      bgHex.addEventListener('input', (e) => { if (/^#[0-9A-F]{6}$/i.test(e.target.value)) bgPicker.value = e.target.value; update(); });
+
+      update();
+    })();
+  </script>
+</SiteLayout>

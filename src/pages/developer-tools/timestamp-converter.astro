@@ -1,0 +1,316 @@
+---
+import SiteLayout from '../../layouts/SiteLayout.astro';
+import Icon from '../../components/Icon.astro';
+import { siteName, toAbsoluteUrl, withBasePath } from '../../utils/site';
+
+const pageTitle = `Unix Timestamp Converter — Epoch Time & Date Tool · ${siteName}`;
+const pageDesc = 'Convert Unix timestamps in seconds and milliseconds to human-readable dates, UTC, ISO 8601, and local timezones. Convert dates to Unix epoch timestamps in real time.';
+const canonicalUrl = toAbsoluteUrl('/developer-tools/timestamp-converter/');
+
+const breadcrumbItems = [
+  { label: 'Home', href: toAbsoluteUrl('/') },
+  { label: 'Developer Tools', href: toAbsoluteUrl('/developer-tools/') },
+  { label: 'Unix Timestamp Converter' },
+];
+
+const schemaFaq = [
+  {
+    question: 'What is a Unix timestamp (Epoch time)?',
+    answer: 'The Unix timestamp represents the number of seconds (or milliseconds) that have elapsed since midnight Coordinated Universal Time (UTC) on January 1, 1970, not counting leap seconds.',
+  },
+  {
+    question: 'How do I know if a timestamp is in seconds or milliseconds?',
+    answer: 'Timestamps in seconds currently have 10 digits (e.g., 1725360000). Timestamps in milliseconds have 13 digits (e.g., 1725360000000). This converter auto-detects standard formats.',
+  },
+];
+
+const schemaGraph = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebApplication',
+    name: 'Unix Timestamp Converter',
+    url: canonicalUrl,
+    applicationCategory: 'DeveloperApplication',
+    operatingSystem: 'All',
+    browserRequirements: 'Requires JavaScript',
+    description: pageDesc,
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: breadcrumbItems.map((item, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      name: item.label,
+      item: item.href,
+    })),
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: schemaFaq.map((item) => ({
+      '@type': 'Question',
+      name: item.question,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: item.answer,
+      },
+    })),
+  },
+];
+---
+
+<SiteLayout title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(schemaGraph)} />
+
+  <article class="space-y-10 py-2" data-ts-app>
+    <nav aria-label="Breadcrumb">
+      <ol class="flex flex-wrap items-center gap-2 text-xs text-[color:var(--muted)]">
+        {breadcrumbItems.map((item, index) => (
+          <li class="flex items-center gap-2">
+            {index > 0 && <span aria-hidden="true">/</span>}
+            {item.href ? (
+              <a class="transition hover:text-[color:var(--fg)]" href={item.href}>
+                {item.label}
+              </a>
+            ) : (
+              <span aria-current="page" class="font-semibold text-[color:var(--fg)]">
+                {item.label}
+              </span>
+            )}
+          </li>
+        ))}
+      </ol>
+    </nav>
+
+    <header class="space-y-3">
+      <div class="inline-flex items-center gap-2 rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1 text-xs font-semibold text-[color:var(--muted)]">
+        <span class="inline-block h-2 w-2 rounded-full bg-emerald-500"></span>
+        <span>Live Epoch Clock</span>
+      </div>
+      <h1 class="text-2xl sm:text-4xl font-extrabold tracking-tight text-[color:var(--fg)]">
+        Unix Timestamp Converter
+      </h1>
+      <p class="max-w-2xl text-xs sm:text-sm text-[color:var(--muted)] leading-relaxed">
+        Convert between Unix epoch timestamps and human-readable UTC/local date formats in seconds and milliseconds.
+      </p>
+    </header>
+
+    <!-- Live Current Epoch Hero -->
+    <div class="space-y-3 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 sm:p-6">
+      <div class="flex items-center justify-between">
+        <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Current Unix Epoch Time</span>
+        <span class="text-xs text-emerald-500 font-bold flex items-center gap-1">
+          <span class="h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span> Ticking
+        </span>
+      </div>
+      <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+        <input
+          type="text"
+          id="current-epoch"
+          readonly
+          class="flex-1 rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] px-4 py-2.5 font-mono text-xl sm:text-2xl font-extrabold text-[color:var(--fg)] focus:outline-hidden"
+        />
+        <button
+          type="button"
+          data-copy-current
+          class="inline-flex items-center justify-center gap-1.5 rounded-xl bg-[color:var(--fg)] px-5 py-2.5 text-xs font-bold text-[color:var(--bg)] shadow-xs transition hover:opacity-90"
+        >
+          <Icon name="copy" class="w-3.5 h-3.5" />
+          <span>Copy Epoch</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Conversion Grid -->
+    <div class="grid gap-6 lg:grid-cols-2">
+      <!-- Timestamp to Date -->
+      <div class="space-y-4 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5">
+        <h2 class="font-bold text-sm text-[color:var(--fg)]">Convert Timestamp → Human Date</h2>
+
+        <div class="space-y-2">
+          <label for="ts-input" class="text-xs font-medium text-[color:var(--muted)]">Unix Timestamp (sec or ms):</label>
+          <div class="flex gap-2">
+            <input
+              type="text"
+              id="ts-input"
+              class="flex-1 rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-xs text-[color:var(--fg)]"
+              placeholder="e.g. 1725360000"
+            />
+            <button type="button" data-now-btn class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] px-3 py-1.5 text-xs font-bold text-[color:var(--fg)]">
+              Now
+            </button>
+          </div>
+        </div>
+
+        <div class="space-y-2.5 pt-2 text-xs">
+          <div class="flex justify-between border-b border-[color:var(--border)] pb-2">
+            <span class="text-[color:var(--muted)]">GMT / UTC Date:</span>
+            <span id="res-utc" class="font-mono font-bold text-[color:var(--fg)]">-</span>
+          </div>
+          <div class="flex justify-between border-b border-[color:var(--border)] pb-2">
+            <span class="text-[color:var(--muted)]">Local Timezone:</span>
+            <span id="res-local" class="font-mono font-bold text-[color:var(--fg)]">-</span>
+          </div>
+          <div class="flex justify-between border-b border-[color:var(--border)] pb-2">
+            <span class="text-[color:var(--muted)]">ISO 8601:</span>
+            <span id="res-iso" class="font-mono font-bold text-[color:var(--fg)]">-</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-[color:var(--muted)]">Relative Time:</span>
+            <span id="res-rel" class="font-bold text-emerald-500">-</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Date to Timestamp -->
+      <div class="space-y-4 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5">
+        <h2 class="font-bold text-sm text-[color:var(--fg)]">Convert Date → Unix Timestamp</h2>
+
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label for="date-val" class="text-xs font-medium text-[color:var(--muted)] block mb-1">Date:</label>
+            <input
+              type="date"
+              id="date-val"
+              class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs text-[color:var(--fg)]"
+            />
+          </div>
+          <div>
+            <label for="time-val" class="text-xs font-medium text-[color:var(--muted)] block mb-1">Time:</label>
+            <input
+              type="time"
+              id="time-val"
+              step="1"
+              value="00:00:00"
+              class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs text-[color:var(--fg)]"
+            />
+          </div>
+        </div>
+
+        <div class="space-y-2.5 pt-4 text-xs">
+          <div class="flex justify-between border-b border-[color:var(--border)] pb-2">
+            <span class="text-[color:var(--muted)]">Timestamp (Seconds):</span>
+            <span id="res-sec" class="font-mono font-bold text-lg text-[color:var(--fg)]">-</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-[color:var(--muted)]">Timestamp (Milliseconds):</span>
+            <span id="res-ms" class="font-mono font-bold text-[color:var(--fg)]">-</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FAQs -->
+    <section class="space-y-4">
+      <h2 class="text-xl font-bold text-[color:var(--fg)]">Frequently Asked Questions</h2>
+      <div class="space-y-3">
+        {schemaFaq.map((faq) => (
+          <details class="group rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
+            <summary class="cursor-pointer list-none font-semibold text-sm sm:text-base text-[color:var(--fg)] flex items-center justify-between gap-4">
+              <span>{faq.question}</span>
+              <span class="text-xs text-[color:var(--muted)] group-open:rotate-180 transition-transform">▼</span>
+            </summary>
+            <p class="mt-3 text-xs sm:text-sm leading-relaxed text-[color:var(--muted)]">
+              {faq.answer}
+            </p>
+          </details>
+        ))}
+      </div>
+    </section>
+  </article>
+
+  <script is:inline>
+    (function () {
+      const root = document.querySelector('[data-ts-app]');
+      if (!root) return;
+
+      const currentEpoch = root.querySelector('#current-epoch');
+      const copyCurrent = root.querySelector('[data-copy-current]');
+      const tsInput = root.querySelector('#ts-input');
+      const nowBtn = root.querySelector('[data-now-btn]');
+      const resUtc = root.querySelector('#res-utc');
+      const resLocal = root.querySelector('#res-local');
+      const resIso = root.querySelector('#res-iso');
+      const resRel = root.querySelector('#res-rel');
+      const dateVal = root.querySelector('#date-val');
+      const timeVal = root.querySelector('#time-val');
+      const resSec = root.querySelector('#res-sec');
+      const resMs = root.querySelector('#res-ms');
+
+      // Live tick
+      setInterval(() => {
+        currentEpoch.value = Math.floor(Date.now() / 1000);
+      }, 1000);
+      currentEpoch.value = Math.floor(Date.now() / 1000);
+
+      copyCurrent.addEventListener('click', () => {
+        navigator.clipboard.writeText(currentEpoch.value);
+        const span = copyCurrent.querySelector('span');
+        const orig = span.textContent;
+        span.textContent = 'Copied!';
+        setTimeout(() => span.textContent = orig, 1800);
+      });
+
+      function updateTsToDate() {
+        const raw = tsInput.value.trim();
+        if (!raw) {
+          resUtc.textContent = '-';
+          resLocal.textContent = '-';
+          resIso.textContent = '-';
+          resRel.textContent = '-';
+          return;
+        }
+
+        const num = parseFloat(raw);
+        if (isNaN(num)) {
+          resUtc.textContent = 'Invalid Number';
+          return;
+        }
+
+        // Detect milliseconds if > 30000000000 (roughly year 2920 in seconds)
+        const isMs = num > 30000000000;
+        const d = new Date(isMs ? num : num * 1000);
+
+        if (isNaN(d.getTime())) {
+          resUtc.textContent = 'Invalid Date';
+          return;
+        }
+
+        resUtc.textContent = d.toUTCString();
+        resLocal.textContent = d.toLocaleString();
+        resIso.textContent = d.toISOString();
+
+        const diffSec = Math.floor((d.getTime() - Date.now()) / 1000);
+        if (Math.abs(diffSec) < 60) resRel.textContent = 'Just now';
+        else if (diffSec > 0) resRel.textContent = `In ${Math.round(diffSec / 3600)} hours`;
+        else resRel.textContent = `${Math.abs(Math.round(diffSec / 3600))} hours ago`;
+      }
+
+      tsInput.addEventListener('input', updateTsToDate);
+      nowBtn.addEventListener('click', () => {
+        tsInput.value = Math.floor(Date.now() / 1000);
+        updateTsToDate();
+      });
+
+      function updateDateToTs() {
+        if (!dateVal.value) return;
+        const timeStr = timeVal.value || '00:00:00';
+        const d = new Date(`${dateVal.value}T${timeStr}`);
+        if (isNaN(d.getTime())) return;
+
+        resSec.textContent = Math.floor(d.getTime() / 1000);
+        resMs.textContent = d.getTime();
+      }
+
+      dateVal.addEventListener('input', updateDateToTs);
+      timeVal.addEventListener('input', updateDateToTs);
+
+      // Set defaults
+      const today = new Date();
+      dateVal.value = today.toISOString().split('T')[0];
+      nowBtn.click();
+      updateDateToTs();
+    })();
+  </script>
+</SiteLayout>

@@ -1,0 +1,263 @@
+---
+import SiteLayout from '../../layouts/SiteLayout.astro';
+import Icon from '../../components/Icon.astro';
+import { siteName, toAbsoluteUrl, withBasePath } from '../../utils/site';
+
+const pageTitle = `YouTube RPM Calculator | Creator Earnings & AdSense Revenue · ${siteName}`;
+const pageDesc = 'Calculate estimated YouTube creator earnings from video views and RPM (Revenue Per Mille) across long-form videos, Shorts, and niche CPM benchmarks.';
+const canonicalUrl = toAbsoluteUrl('/business-tools/youtube-rpm-calculator/');
+
+const breadcrumbItems = [
+  { label: 'Home', href: toAbsoluteUrl('/') },
+  { label: 'Business Tools', href: toAbsoluteUrl('/business-tools/') },
+  { label: 'YouTube RPM Calculator' },
+];
+
+const faqs = [
+  {
+    question: 'What is YouTube RPM and how does it differ from CPM?',
+    answer: 'RPM (Revenue Per Mille) is the exact revenue a creator takes home per 1,000 total video views, including YouTube’s 45% revenue cut, channel memberships, and Super Chats. CPM (Cost Per Mille) is the total advertiser cost per 1,000 ad impressions before YouTube takes its cut.',
+  },
+  {
+    question: 'What is a typical YouTube RPM in 2026?',
+    answer: 'Typical RPMs vary significantly by niche and geography: Personal Finance and SaaS ($8.00–$22.00), Technology & Business ($5.00–$14.00), Lifestyle/Vlogs ($2.00–$5.00), Gaming ($1.50–$3.50), and YouTube Shorts ($0.03–$0.15 per 1,000 views).',
+  },
+];
+
+const schemaGraph = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebApplication',
+    name: 'YouTube RPM Calculator',
+    url: canonicalUrl,
+    description: pageDesc,
+    applicationCategory: 'BusinessApplication',
+    operatingSystem: 'All',
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: breadcrumbItems.map((item, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      name: item.label,
+      item: item.href,
+    })),
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faqs.map((f) => ({
+      '@type': 'Question',
+      name: f.question,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: f.answer,
+      },
+    })),
+  },
+];
+---
+
+<SiteLayout title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(schemaGraph)} />
+
+  <article class="space-y-10 py-2">
+    <nav aria-label="Breadcrumb">
+      <ol class="flex flex-wrap items-center gap-2 text-xs text-[color:var(--muted)]">
+        {breadcrumbItems.map((item, index) => (
+          <li class="flex items-center gap-2">
+            {index > 0 && <span aria-hidden="true">/</span>}
+            {item.href ? (
+              <a class="transition hover:text-[color:var(--fg)]" href={item.href}>
+                {item.label}
+              </a>
+            ) : (
+              <span aria-current="page" class="font-semibold text-[color:var(--fg)]">
+                {item.label}
+              </span>
+            )}
+          </li>
+        ))}
+      </ol>
+    </nav>
+
+    <header class="space-y-3">
+      <div class="inline-flex items-center gap-2 rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3.5 py-1 text-xs font-semibold text-[color:var(--fg)]">
+        <span>Content Creator Monetization</span>
+      </div>
+      <h1 class="text-3xl font-extrabold tracking-tight text-[color:var(--fg)] sm:text-4xl">
+        YouTube RPM &amp; Earnings Calculator
+      </h1>
+      <p class="max-w-3xl text-sm leading-relaxed text-[color:var(--muted)] sm:text-base">
+        Estimate your channel's monthly and annual AdSense revenue. Model expected earnings across long-form video, YouTube Shorts, and industry niche RPM benchmarks.
+      </p>
+    </header>
+
+    <div
+      class="rounded-[2.5rem] border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-6 shadow-[var(--shadow)] sm:p-10"
+      data-youtube-app
+    >
+      <div class="grid gap-8 lg:grid-cols-[1.15fr_0.85fr]">
+        <form class="space-y-5" onsubmit="return false;">
+          <div class="flex items-center justify-between">
+            <h2 class="text-lg font-bold text-[color:var(--fg)]">Channel Traffic &amp; Niche</h2>
+            <button type="button" class="cursor-pointer text-xs font-semibold text-[color:var(--muted)] hover:text-[color:var(--fg)]" data-reset-btn>
+              ↺ Reset
+            </button>
+          </div>
+
+          <div class="space-y-1.5">
+            <label for="monthly-views" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">
+              Estimated Monthly Views
+            </label>
+            <input
+              id="monthly-views"
+              type="number"
+              min="1000"
+              step="5000"
+              value="150000"
+              class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none"
+              data-monthly-views
+            />
+          </div>
+
+          <div class="space-y-1.5">
+            <label for="niche-select" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">
+              Channel Content Niche Preset
+            </label>
+            <select
+              id="niche-select"
+              class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-sm font-semibold text-[color:var(--fg)] outline-none"
+              data-niche-select
+            >
+              <option value="4.50" selected>General / Entertainment ($4.50 RPM)</option>
+              <option value="12.00">Finance, Real Estate &amp; Crypto ($12.00 RPM)</option>
+              <option value="7.50">Tech, Software &amp; Coding ($7.50 RPM)</option>
+              <option value="3.50">Lifestyle, Travel &amp; Food ($3.50 RPM)</option>
+              <option value="2.20">Gaming &amp; Streaming ($2.20 RPM)</option>
+              <option value="0.08">YouTube Shorts ($0.08 RPM)</option>
+              <option value="custom">Custom RPM</option>
+            </select>
+          </div>
+
+          <div class="space-y-1.5">
+            <label for="rpm-custom" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">
+              Custom RPM ($ / 1,000 Views)
+            </label>
+            <input
+              id="rpm-custom"
+              type="number"
+              min="0.01"
+              max="50"
+              step="0.1"
+              value="4.50"
+              class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none"
+              data-rpm-input
+            />
+          </div>
+        </form>
+
+        <div class="flex flex-col justify-between space-y-6 rounded-3xl border border-[color:var(--border)] bg-[color:var(--bg)] p-6 sm:p-8">
+          <div class="space-y-5">
+            <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Estimated AdSense Payout</span>
+
+            <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 text-center">
+              <p class="text-xs font-semibold text-[color:var(--muted)]">Estimated Monthly Revenue</p>
+              <p class="mt-1 text-5xl font-black tracking-tight text-[color:var(--fg)]" data-res-monthly>
+                $675.00
+              </p>
+              <p class="mt-2 text-xs font-medium text-[color:var(--muted)]" data-res-annual>
+                Annual Projection: $8,100 / year
+              </p>
+            </div>
+
+            <div class="space-y-2 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-xs">
+              <div class="flex justify-between">
+                <span class="text-[color:var(--muted)]">Daily Estimated Earnings:</span>
+                <span class="font-bold text-[color:var(--fg)]" data-res-daily>$22.18 / day</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-[color:var(--muted)]">Equivalent Advertiser CPM:</span>
+                <span class="font-mono font-bold text-[color:var(--fg)]" data-res-cpm>~$8.18 CPM</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FAQs -->
+    <section class="space-y-4">
+      <h2 class="text-xl font-bold text-[color:var(--fg)]">Frequently Asked Questions</h2>
+      <div class="space-y-3">
+        {faqs.map((faq) => (
+          <details class="group rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
+            <summary class="cursor-pointer list-none font-semibold text-sm sm:text-base text-[color:var(--fg)] flex items-center justify-between gap-4">
+              <span>{faq.question}</span>
+              <span class="text-xs text-[color:var(--muted)] group-open:rotate-180 transition-transform">▼</span>
+            </summary>
+            <p class="mt-3 text-xs sm:text-sm leading-relaxed text-[color:var(--muted)]">
+              {faq.answer}
+            </p>
+          </details>
+        ))}
+      </div>
+    </section>
+  </article>
+
+  <script is:inline>
+    (function () {
+      const root = document.querySelector('[data-youtube-app]');
+      if (!root) return;
+
+      const inViews = root.querySelector('[data-monthly-views]');
+      const inNiche = root.querySelector('[data-niche-select]');
+      const inRpm = root.querySelector('[data-rpm-input]');
+      const outMonthly = root.querySelector('[data-res-monthly]');
+      const outAnnual = root.querySelector('[data-res-annual]');
+      const outDaily = root.querySelector('[data-res-daily]');
+      const outCpm = root.querySelector('[data-res-cpm]');
+      const resetBtn = root.querySelector('[data-reset-btn]');
+
+      function update() {
+        const views = Math.max(0, parseFloat(inViews.value || '0'));
+        const rpm = Math.max(0, parseFloat(inRpm.value || '0'));
+
+        const monthly = (views / 1000) * rpm;
+        const annual = monthly * 12;
+        const daily = monthly / 30.4167;
+        const cpm = inNiche.value === '0.08' ? rpm / 0.45 : rpm / 0.55;
+
+        if (outMonthly) outMonthly.textContent = `$${monthly.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+        if (outAnnual) outAnnual.textContent = `Annual Projection: $${Math.round(annual).toLocaleString()} / year`;
+        if (outDaily) outDaily.textContent = `$${daily.toFixed(2)} / day`;
+        if (outCpm) outCpm.textContent = `~$${cpm.toFixed(2)} CPM`;
+      }
+
+      inNiche.addEventListener('change', () => {
+        if (inNiche.value !== 'custom') {
+          inRpm.value = inNiche.value;
+        }
+        update();
+      });
+
+      inViews.addEventListener('input', update);
+      inRpm.addEventListener('input', () => {
+        inNiche.value = 'custom';
+        update();
+      });
+
+      if (resetBtn) {
+        resetBtn.addEventListener('click', () => {
+          inViews.value = '150000';
+          inNiche.value = '4.50';
+          inRpm.value = '4.50';
+          update();
+        });
+      }
+
+      update();
+    })();
+  </script>
+</SiteLayout>

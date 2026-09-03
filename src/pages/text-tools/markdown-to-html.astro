@@ -1,0 +1,252 @@
+---
+import SiteLayout from '../../layouts/SiteLayout.astro';
+import Icon from '../../components/Icon.astro';
+import { siteName, toAbsoluteUrl, withBasePath } from '../../utils/site';
+
+const pageTitle = `Markdown to HTML Converter — Free Online Parser & Preview · ${siteName}`;
+const pageDesc = 'Convert Markdown syntax to clean HTML markup online with live rendered preview, raw HTML code output, and instant copy. 100% private in-browser tool.';
+const canonicalUrl = toAbsoluteUrl('/text-tools/markdown-to-html/');
+
+const breadcrumbItems = [
+  { label: 'Home', href: toAbsoluteUrl('/') },
+  { label: 'Text Tools', href: toAbsoluteUrl('/text-tools/') },
+  { label: 'Markdown to HTML' },
+];
+
+const schemaFaq = [
+  {
+    question: 'Which Markdown elements are supported?',
+    answer: 'Headings (# to ######), Bold (**text**), Italic (*text*), Links, Lists, Code blocks, Inline code (`code`), Blockquotes (>), and Horizontal rules (---).',
+  },
+];
+
+const schemaGraph = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebApplication',
+    name: 'Markdown to HTML Converter',
+    url: canonicalUrl,
+    applicationCategory: 'TextApplication',
+    operatingSystem: 'All',
+    browserRequirements: 'Requires JavaScript',
+    description: pageDesc,
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: breadcrumbItems.map((item, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      name: item.label,
+      item: item.href,
+    })),
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: schemaFaq.map((item) => ({
+      '@type': 'Question',
+      name: item.question,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: item.answer,
+      },
+    })),
+  },
+];
+---
+
+<SiteLayout title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(schemaGraph)} />
+
+  <article class="space-y-10 py-2" data-md-html-app>
+    <nav aria-label="Breadcrumb">
+      <ol class="flex flex-wrap items-center gap-2 text-xs text-[color:var(--muted)]">
+        {breadcrumbItems.map((item, index) => (
+          <li class="flex items-center gap-2">
+            {index > 0 && <span aria-hidden="true">/</span>}
+            {item.href ? (
+              <a class="transition hover:text-[color:var(--fg)]" href={item.href}>
+                {item.label}
+              </a>
+            ) : (
+              <span aria-current="page" class="font-semibold text-[color:var(--fg)]">
+                {item.label}
+              </span>
+            )}
+          </li>
+        ))}
+      </ol>
+    </nav>
+
+    <header class="space-y-3">
+      <div class="inline-flex items-center gap-2 rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1 text-xs font-semibold text-[color:var(--muted)]">
+        <span class="inline-block h-2 w-2 rounded-full bg-emerald-500"></span>
+        <span>Live Dual-Mode Rendering</span>
+      </div>
+      <h1 class="text-2xl sm:text-4xl font-extrabold tracking-tight text-[color:var(--fg)]">
+        Markdown to HTML Converter
+      </h1>
+      <p class="max-w-2xl text-xs sm:text-sm text-[color:var(--muted)] leading-relaxed">
+        Write or paste Markdown documents and instantly generate clean HTML with a live rendered preview.
+      </p>
+    </header>
+
+    <div class="grid gap-6 lg:grid-cols-2">
+      <!-- Input -->
+      <div class="space-y-3">
+        <div class="flex items-center justify-between">
+          <label for="md-in" class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Markdown Input</label>
+          <div class="flex items-center gap-2 text-xs">
+            <button type="button" data-sample-btn class="text-[color:var(--primary)] hover:underline font-semibold">Load Sample</button>
+            <span class="text-[color:var(--border)]">|</span>
+            <button type="button" data-clear-btn class="text-[color:var(--muted)] hover:text-[color:var(--fg)]">Clear</button>
+          </div>
+        </div>
+        <textarea
+          id="md-in"
+          rows="16"
+          class="w-full font-mono text-xs leading-relaxed rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-[color:var(--fg)] focus:border-[color:var(--border-strong)] focus:outline-hidden"
+          placeholder="# Hello World&#10;&#10;This is a **Markdown** paragraph with a [link](https://example.com)."
+        ></textarea>
+      </div>
+
+      <!-- Output / Preview Tabs -->
+      <div class="space-y-3">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-1 rounded-xl bg-[color:var(--surface-strong)] p-1 text-xs">
+            <button type="button" id="tab-html" class="rounded-lg bg-[color:var(--surface)] px-3 py-1 font-bold text-[color:var(--fg)] shadow-xs">Raw HTML</button>
+            <button type="button" id="tab-preview" class="rounded-lg px-3 py-1 font-semibold text-[color:var(--muted)] hover:text-[color:var(--fg)]">Live Preview</button>
+          </div>
+          <button type="button" data-copy-btn class="inline-flex items-center gap-1 text-xs font-bold text-[color:var(--fg)] hover:underline">
+            <Icon name="copy" class="w-3.5 h-3.5" />
+            <span>Copy HTML</span>
+          </button>
+        </div>
+
+        <textarea
+          id="html-out"
+          rows="16"
+          readonly
+          class="w-full font-mono text-xs leading-relaxed rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-4 text-[color:var(--fg)] focus:outline-hidden"
+          placeholder="Generated HTML code will appear here..."
+        ></textarea>
+
+        <div
+          id="preview-out"
+          class="hidden min-h-64 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 text-xs text-[color:var(--fg)] leading-relaxed space-y-3 overflow-y-auto"
+        ></div>
+      </div>
+    </div>
+
+    <!-- FAQs -->
+    <section class="space-y-4">
+      <h2 class="text-xl font-bold text-[color:var(--fg)]">Frequently Asked Questions</h2>
+      <div class="space-y-3">
+        {schemaFaq.map((faq) => (
+          <details class="group rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
+            <summary class="cursor-pointer list-none font-semibold text-sm sm:text-base text-[color:var(--fg)] flex items-center justify-between gap-4">
+              <span>{faq.question}</span>
+              <span class="text-xs text-[color:var(--muted)] group-open:rotate-180 transition-transform">▼</span>
+            </summary>
+            <p class="mt-3 text-xs sm:text-sm leading-relaxed text-[color:var(--muted)]">
+              {faq.answer}
+            </p>
+          </details>
+        ))}
+      </div>
+    </section>
+  </article>
+
+  <script is:inline>
+    (function () {
+      const root = document.querySelector('[data-md-html-app]');
+      if (!root) return;
+
+      const input = root.querySelector('#md-in');
+      const htmlOut = root.querySelector('#html-out');
+      const previewOut = root.querySelector('#preview-out');
+      const tabHtml = root.querySelector('#tab-html');
+      const tabPreview = root.querySelector('#tab-preview');
+      const sampleBtn = root.querySelector('[data-sample-btn]');
+      const clearBtn = root.querySelector('[data-clear-btn]');
+      const copyBtn = root.querySelector('[data-copy-btn]');
+
+      function parseMarkdown(md) {
+        let html = md
+          .replace(/^### (.*$)/gim, '<h3>$1</h3>')
+          .replace(/^## (.*$)/gim, '<h2>$1</h2>')
+          .replace(/^# (.*$)/gim, '<h1>$1</h1>')
+          .replace(/^\> (.*$)/gim, '<blockquote>$1</blockquote>')
+          .replace(/\*\*(.*)\*\*/gim, '<strong>$1</strong>')
+          .replace(/\*(.*)\*/gim, '<em>$1</em>')
+          .replace(/!\[(.*?)\]\((.*?)\)/gim, "<img alt='$1' src='$2' />")
+          .replace(/\[(.*?)\]\((.*?)\)/gim, "<a href='$2' target='_blank'>$1</a>")
+          .replace(/`([^`]+)`/gim, '<code>$1</code>')
+          .replace(/\n$/gim, '<br />');
+
+        // Simple paragraph wrapping
+        const lines = html.split('\n\n');
+        html = lines.map(line => {
+          if (/^<(h1|h2|h3|blockquote|ul|ol|li|img)/.test(line.trim())) {
+            return line;
+          }
+          return `<p>${line.trim()}</p>`;
+        }).join('\n');
+
+        return html;
+      }
+
+      function update() {
+        const md = input.value.trim();
+        if (!md) {
+          htmlOut.value = '';
+          previewOut.innerHTML = '';
+          return;
+        }
+
+        const html = parseMarkdown(md);
+        htmlOut.value = html;
+        previewOut.innerHTML = html;
+      }
+
+      input.addEventListener('input', update);
+
+      tabHtml.addEventListener('click', () => {
+        htmlOut.classList.remove('hidden');
+        previewOut.classList.add('hidden');
+        tabHtml.classList.add('bg-[color:var(--surface)]', 'font-bold', 'text-[color:var(--fg)]');
+        tabPreview.classList.remove('bg-[color:var(--surface)]', 'font-bold', 'text-[color:var(--fg)]');
+      });
+
+      tabPreview.addEventListener('click', () => {
+        htmlOut.classList.add('hidden');
+        previewOut.classList.remove('hidden');
+        tabPreview.classList.add('bg-[color:var(--surface)]', 'font-bold', 'text-[color:var(--fg)]');
+        tabHtml.classList.remove('bg-[color:var(--surface)]', 'font-bold', 'text-[color:var(--fg)]');
+      });
+
+      sampleBtn.addEventListener('click', () => {
+        input.value = `# Welcome to Calculator Utility\n\nThis is a **Markdown to HTML** demo with *emphasis*, inline \`code\`, and a [website link](https://calculatorutility.tech/).\n\n## Features Included:\n> 100% Client-side and private.\n\nEnjoy fast formatting!`;
+        update();
+      });
+
+      clearBtn.addEventListener('click', () => {
+        input.value = '';
+        output.value = '';
+        update();
+      });
+
+      copyBtn.addEventListener('click', () => {
+        if (!htmlOut.value) return;
+        navigator.clipboard.writeText(htmlOut.value);
+        const span = copyBtn.querySelector('span');
+        const orig = span.textContent;
+        span.textContent = 'Copied!';
+        setTimeout(() => span.textContent = orig, 1800);
+      });
+
+      sampleBtn.click();
+    })();
+  </script>
+</SiteLayout>

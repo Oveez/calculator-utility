@@ -1,0 +1,286 @@
+---
+import SiteLayout from '../../layouts/SiteLayout.astro';
+import Icon from '../../components/Icon.astro';
+import { siteName, toAbsoluteUrl, withBasePath } from '../../utils/site';
+
+const pageTitle = `Chargeable Weight Calculator | Freight Billable Weight & Cost · ${siteName}`;
+const pageDesc = 'Calculate chargeable freight weight comparing actual gross weight against volumetric weight for air freight, express couriers, and sea LCL shipping.';
+const canonicalUrl = toAbsoluteUrl('/shipping-calculators/chargeable-weight-calculator/');
+
+const breadcrumbItems = [
+  { label: 'Home', href: toAbsoluteUrl('/') },
+  { label: 'Shipping Calculators', href: toAbsoluteUrl('/shipping-calculators/') },
+  { label: 'Chargeable Weight Calculator' },
+];
+
+const faqs = [
+  {
+    question: 'How is chargeable weight determined in freight shipping?',
+    answer: 'Chargeable weight is always the greater value between the cargo’s Actual Gross Weight (scale weight) and its Volumetric / Dimensional Weight. For air freight, volumetric weight is (L × W × H in cm) ÷ 6000. For express couriers, it is ÷ 5000.',
+  },
+  {
+    question: 'How does sea freight LCL chargeable weight work?',
+    answer: 'In ocean LCL shipping, the “Revenue Ton” or W/M rule applies: 1 CBM (cubic meter) is equivalent to 1,000 kg (1 metric ton). Carriers charge whichever is greater between total CBM and total metric tons.',
+  },
+];
+
+const schemaGraph = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebApplication',
+    name: 'Chargeable Weight Calculator',
+    url: canonicalUrl,
+    description: pageDesc,
+    applicationCategory: 'BusinessApplication',
+    operatingSystem: 'All',
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: breadcrumbItems.map((item, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      name: item.label,
+      item: item.href,
+    })),
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faqs.map((f) => ({
+      '@type': 'Question',
+      name: f.question,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: f.answer,
+      },
+    })),
+  },
+];
+---
+
+<SiteLayout title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(schemaGraph)} />
+
+  <article class="space-y-10 py-2">
+    <nav aria-label="Breadcrumb">
+      <ol class="flex flex-wrap items-center gap-2 text-xs text-[color:var(--muted)]">
+        {breadcrumbItems.map((item, index) => (
+          <li class="flex items-center gap-2">
+            {index > 0 && <span aria-hidden="true">/</span>}
+            {item.href ? (
+              <a class="transition hover:text-[color:var(--fg)]" href={item.href}>
+                {item.label}
+              </a>
+            ) : (
+              <span aria-current="page" class="font-semibold text-[color:var(--fg)]">
+                {item.label}
+              </span>
+            )}
+          </li>
+        ))}
+      </ol>
+    </nav>
+
+    <header class="space-y-3">
+      <div class="inline-flex items-center gap-2 rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3.5 py-1 text-xs font-semibold text-[color:var(--fg)]">
+        <span>Freight Quotation &amp; Logistics</span>
+      </div>
+      <h1 class="text-3xl font-extrabold tracking-tight text-[color:var(--fg)] sm:text-4xl">
+        Chargeable Weight Calculator
+      </h1>
+      <p class="max-w-3xl text-sm leading-relaxed text-[color:var(--muted)] sm:text-base">
+        Determine the exact billable weight for your shipment and calculate total shipping costs across air freight, express couriers, and sea freight LCL.
+      </p>
+    </header>
+
+    <div
+      class="rounded-[2.5rem] border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-6 shadow-[var(--shadow)] sm:p-10"
+      data-chargeable-app
+    >
+      <div class="grid gap-8 lg:grid-cols-[1.15fr_0.85fr]">
+        <form class="space-y-5" onsubmit="return false;">
+          <div class="flex items-center justify-between">
+            <h2 class="text-lg font-bold text-[color:var(--fg)]">Shipment Information</h2>
+            <button type="button" class="cursor-pointer text-xs font-semibold text-[color:var(--muted)] hover:text-[color:var(--fg)]" data-reset-btn>
+              ↺ Reset
+            </button>
+          </div>
+
+          <div class="space-y-1.5">
+            <label for="freight-mode" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Transport Mode</label>
+            <select id="freight-mode" class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-sm font-semibold text-[color:var(--fg)] outline-none" data-freight-mode>
+              <option value="air_6000" selected>Standard Air Freight (1:6000 / Divisor 6000)</option>
+              <option value="express_5000">Express Courier (DHL/FedEx/UPS 1:5000)</option>
+              <option value="sea_lcl">Sea Freight LCL (1 CBM = 1,000 kg)</option>
+            </select>
+          </div>
+
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label for="act-gross-wt" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Actual Gross Weight (kg)</label>
+              <input id="act-gross-wt" type="number" min="0" step="any" value="85" class="mt-1 w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none" data-act-gross-wt />
+            </div>
+            <div>
+              <label for="pkg-qty" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Quantity of Cartons</label>
+              <input id="pkg-qty" type="number" min="1" step="1" value="4" class="mt-1 w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none" data-pkg-qty />
+            </div>
+          </div>
+
+          <div class="grid grid-cols-3 gap-3">
+            <div>
+              <label for="c-l" class="block text-xs font-medium text-[color:var(--muted)]">Length (cm)</label>
+              <input id="c-l" type="number" min="0" step="any" value="65" class="mt-1 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-c-l />
+            </div>
+            <div>
+              <label for="c-w" class="block text-xs font-medium text-[color:var(--muted)]">Width (cm)</label>
+              <input id="c-w" type="number" min="0" step="any" value="50" class="mt-1 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-c-w />
+            </div>
+            <div>
+              <label for="c-h" class="block text-xs font-medium text-[color:var(--muted)]">Height (cm)</label>
+              <input id="c-h" type="number" min="0" step="any" value="45" class="mt-1 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-c-h />
+            </div>
+          </div>
+
+          <div class="space-y-1.5 pt-1">
+            <label for="freight-rate" class="block text-xs font-medium text-[color:var(--muted)]">Freight Rate ($ / kg or $ / CBM Optional)</label>
+            <input id="freight-rate" type="number" min="0" step="0.5" value="4.80" class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-freight-rate />
+          </div>
+        </form>
+
+        <div class="flex flex-col justify-between space-y-6 rounded-3xl border border-[color:var(--border)] bg-[color:var(--bg)] p-6 sm:p-8">
+          <div class="space-y-5">
+            <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Chargeable Weight</span>
+
+            <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 text-center">
+              <p class="text-xs font-semibold text-[color:var(--muted)]">Billable Chargeable Weight</p>
+              <p class="mt-1 text-5xl font-black tracking-tight text-[color:var(--fg)]" data-res-chargeable>
+                97.50 kg
+              </p>
+              <p class="mt-2 text-xs font-medium text-red-500" data-reason-summary>
+                Volumetric weight (97.50 kg) exceeds actual weight (85.00 kg).
+              </p>
+            </div>
+
+            <div class="space-y-2 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-xs">
+              <div class="flex justify-between">
+                <span class="text-[color:var(--muted)]">Total Cargo Volume:</span>
+                <span class="font-bold text-[color:var(--fg)]" data-cargo-vol>0.5850 CBM (20.66 CFT)</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-[color:var(--muted)]">Actual Scale Weight:</span>
+                <span class="font-bold text-[color:var(--fg)]" data-scale-wt>85.00 kg</span>
+              </div>
+              <div class="flex justify-between border-t border-[color:var(--border)] pt-2">
+                <span class="font-bold text-[color:var(--fg)]">Estimated Freight Cost:</span>
+                <span class="font-bold text-[color:var(--accent)] text-sm" data-freight-cost>$468.00</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FAQs -->
+    <section class="space-y-4">
+      <h2 class="text-xl font-bold text-[color:var(--fg)]">Frequently Asked Questions</h2>
+      <div class="space-y-3">
+        {faqs.map((faq) => (
+          <details class="group rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
+            <summary class="cursor-pointer list-none font-semibold text-sm sm:text-base text-[color:var(--fg)] flex items-center justify-between gap-4">
+              <span>{faq.question}</span>
+              <span class="text-xs text-[color:var(--muted)] group-open:rotate-180 transition-transform">▼</span>
+            </summary>
+            <p class="mt-3 text-xs sm:text-sm leading-relaxed text-[color:var(--muted)]">
+              {faq.answer}
+            </p>
+          </details>
+        ))}
+      </div>
+    </section>
+  </article>
+
+  <script is:inline>
+    (function () {
+      const root = document.querySelector('[data-chargeable-app]');
+      if (!root) return;
+
+      const inMode = root.querySelector('[data-freight-mode]');
+      const inGross = root.querySelector('[data-act-gross-wt]');
+      const inQty = root.querySelector('[data-pkg-qty]');
+      const inL = root.querySelector('[data-c-l]');
+      const inW = root.querySelector('[data-c-w]');
+      const inH = root.querySelector('[data-c-h]');
+      const inRate = root.querySelector('[data-freight-rate]');
+      const outCharge = root.querySelector('[data-res-chargeable]');
+      const outReason = root.querySelector('[data-reason-summary]');
+      const outVol = root.querySelector('[data-cargo-vol]');
+      const outScale = root.querySelector('[data-scale-wt]');
+      const outCost = root.querySelector('[data-freight-cost]');
+      const resetBtn = root.querySelector('[data-reset-btn]');
+
+      function update() {
+        const mode = inMode.value;
+        const gross = Math.max(0, parseFloat(inGross.value || '0'));
+        const qty = Math.max(1, parseInt(inQty.value || '1', 10));
+        const l = Math.max(0, parseFloat(inL.value || '0'));
+        const w = Math.max(0, parseFloat(inW.value || '0'));
+        const h = Math.max(0, parseFloat(inH.value || '0'));
+        const rate = parseFloat(inRate.value || '0');
+
+        const cbm = (l / 100) * (w / 100) * (h / 100) * qty;
+        const cft = cbm * 35.3147;
+
+        let volKg = 0;
+        if (mode === 'express_5000') {
+          volKg = ((l * w * h) / 5000) * qty;
+        } else if (mode === 'sea_lcl') {
+          volKg = cbm * 1000;
+        } else {
+          volKg = ((l * w * h) / 6000) * qty;
+        }
+
+        const chargeable = Math.max(gross, volKg);
+        const cost = rate > 0 ? chargeable * rate : 0;
+
+        if (outCharge) outCharge.textContent = `${chargeable.toFixed(2)} kg (${(chargeable * 2.20462).toFixed(2)} lbs)`;
+        if (outVol) outVol.textContent = `${cbm.toFixed(4)} CBM (${cft.toFixed(2)} CFT)`;
+        if (outScale) outScale.textContent = `${gross.toFixed(2)} kg`;
+        if (outCost) outCost.textContent = `$${cost.toFixed(2)}`;
+
+        if (outReason) {
+          if (volKg > gross) {
+            outReason.textContent = `Volumetric weight (${volKg.toFixed(2)} kg) exceeds actual weight (${gross.toFixed(2)} kg).`;
+            outReason.className = 'mt-2 text-xs font-medium text-red-500';
+          } else {
+            outReason.textContent = `Actual gross scale weight (${gross.toFixed(2)} kg) exceeds volumetric weight (${volKg.toFixed(2)} kg).`;
+            outReason.className = 'mt-2 text-xs font-medium text-green-600';
+          }
+        }
+      }
+
+      inMode.addEventListener('change', update);
+      inGross.addEventListener('input', update);
+      inQty.addEventListener('input', update);
+      inL.addEventListener('input', update);
+      inW.addEventListener('input', update);
+      inH.addEventListener('input', update);
+      inRate.addEventListener('input', update);
+
+      if (resetBtn) {
+        resetBtn.addEventListener('click', () => {
+          inMode.value = 'air_6000';
+          inGross.value = '85';
+          inQty.value = '4';
+          inL.value = '65';
+          inW.value = '50';
+          inH.value = '45';
+          inRate.value = '4.80';
+          update();
+        });
+      }
+
+      update();
+    })();
+  </script>
+</SiteLayout>

@@ -1,0 +1,223 @@
+---
+import SiteLayout from '../../layouts/SiteLayout.astro';
+import Icon from '../../components/Icon.astro';
+import { siteName, toAbsoluteUrl, withBasePath } from '../../utils/site';
+
+const pageTitle = `PDF Utilities | Page Counter, Metadata Remover, Merger & Converter · ${siteName}`;
+const pageDesc = 'Free client-side PDF inspection and document manipulation tools. Count PDF pages, view and strip metadata, split and merge documents, convert images to PDF, and rotate pages locally.';
+const canonicalUrl = toAbsoluteUrl('/pdf-tools/');
+
+const breadcrumbItems = [
+  { label: 'Home', href: toAbsoluteUrl('/') },
+  { label: 'PDF Tools' },
+];
+
+const pdfToolsList = [
+  {
+    slug: 'pdf-page-counter',
+    title: 'PDF Page Counter',
+    badge: 'Popular',
+    metaDescription: 'Count total pages and inspect document structure across single or multiple PDF documents instantly.',
+    href: withBasePath('/pdf-tools/pdf-page-counter/'),
+    icon: 'document',
+  },
+  {
+    slug: 'pdf-metadata-viewer',
+    title: 'PDF Metadata Viewer',
+    badge: 'Inspection',
+    metaDescription: 'Inspect PDF Title, Author, Subject, Keywords, Creator tool, PDF version, and creation date.',
+    href: withBasePath('/pdf-tools/pdf-metadata-viewer/'),
+    icon: 'document',
+  },
+  {
+    slug: 'pdf-metadata-remover',
+    title: 'PDF Metadata & Author Remover',
+    badge: 'Privacy',
+    metaDescription: 'Strip sensitive author names, software footprints, and creation timestamps from PDF documents.',
+    href: withBasePath('/pdf-tools/pdf-metadata-remover/'),
+    icon: 'document',
+  },
+  {
+    slug: 'pdf-page-extractor',
+    title: 'PDF Page Extractor',
+    badge: 'Editing',
+    metaDescription: 'Specify page ranges to extract specific pages into a brand new standalone PDF file.',
+    href: withBasePath('/pdf-tools/pdf-page-extractor/'),
+    icon: 'document',
+  },
+  {
+    slug: 'pdf-page-reorderer',
+    title: 'PDF Page Reorderer & Organizer',
+    badge: 'Editing',
+    metaDescription: 'Reorder, shuffle, and customize the sequence of pages in your PDF document.',
+    href: withBasePath('/pdf-tools/pdf-page-reorderer/'),
+    icon: 'document',
+  },
+  {
+    slug: 'pdf-splitter',
+    title: 'PDF Splitter',
+    badge: 'Transform',
+    metaDescription: 'Split large multi-page PDF documents into individual single-page files or custom page ranges.',
+    href: withBasePath('/pdf-tools/pdf-splitter/'),
+    icon: 'document',
+  },
+  {
+    slug: 'pdf-merger',
+    title: 'PDF Merger & Combiner',
+    badge: 'Transform',
+    metaDescription: 'Merge multiple PDF files into one single, organized PDF document in your browser.',
+    href: withBasePath('/pdf-tools/pdf-merger/'),
+    icon: 'document',
+  },
+  {
+    slug: 'images-to-pdf',
+    title: 'Images to PDF Converter',
+    badge: 'Converter',
+    metaDescription: 'Combine JPG, PNG, and WebP images into a clean, printable PDF document.',
+    href: withBasePath('/pdf-tools/images-to-pdf/'),
+    icon: 'document',
+  },
+  {
+    slug: 'pdf-to-images',
+    title: 'PDF to Image Converter',
+    badge: 'Converter',
+    metaDescription: 'Render and convert PDF document pages into high-resolution JPG or PNG images.',
+    href: withBasePath('/pdf-tools/pdf-to-images/'),
+    icon: 'document',
+  },
+  {
+    slug: 'pdf-rotate',
+    title: 'PDF Page Rotator',
+    badge: 'Orientation',
+    metaDescription: 'Rotate PDF pages permanently by 90, 180, or 270 degrees and download clean files.',
+    href: withBasePath('/pdf-tools/pdf-rotate/'),
+    icon: 'document',
+  },
+];
+
+const schemaFaq = [
+  {
+    question: 'Are my confidential PDF documents uploaded to an external server?',
+    answer: 'No. All PDF inspection, metadata stripping, page counting, and canvas conversions execute 100% locally in your browser memory using HTML5 FileReader and Web APIs.',
+  },
+];
+
+const schemaGraph = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: breadcrumbItems.map((item, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      name: item.label,
+      item: item.href,
+    })),
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: schemaFaq.map((item) => ({
+      '@type': 'Question',
+      name: item.question,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: item.answer,
+      },
+    })),
+  },
+];
+---
+
+<SiteLayout title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(schemaGraph)} />
+
+  <article class="space-y-10 py-2">
+    <nav aria-label="Breadcrumb">
+      <ol class="flex flex-wrap items-center gap-2 text-xs text-[color:var(--muted)]">
+        {breadcrumbItems.map((item, index) => (
+          <li class="flex items-center gap-2">
+            {index > 0 && <span aria-hidden="true">/</span>}
+            {item.href ? (
+              <a class="transition hover:text-[color:var(--fg)]" href={item.href}>
+                {item.label}
+              </a>
+            ) : (
+              <span aria-current="page" class="font-semibold text-[color:var(--fg)]">
+                {item.label}
+              </span>
+            )}
+          </li>
+        ))}
+      </ol>
+    </nav>
+
+    <header class="space-y-4 rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-6 sm:p-10">
+      <div class="inline-flex items-center gap-2 rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3.5 py-1 text-xs font-bold text-[color:var(--fg)]">
+        <span>100% Private Client-Side PDF Suite</span>
+      </div>
+      <h1 class="text-3xl font-extrabold tracking-tight text-[color:var(--fg)] sm:text-4xl">
+        PDF Utilities &amp; Document Tools
+      </h1>
+      <p class="max-w-3xl text-sm leading-relaxed text-[color:var(--muted)] sm:text-base">
+        Count pages, inspect metadata, strip author tracking, split, merge, and convert PDF documents locally in your web browser.
+      </p>
+    </header>
+
+    <section class="space-y-4">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Tool Directory</p>
+          <h2 class="text-xl font-bold tracking-tight text-[color:var(--fg)]">10 In-Browser PDF Engines</h2>
+        </div>
+        <span class="rounded-lg bg-[color:var(--surface)] border border-[color:var(--border)] px-2.5 py-1 text-xs font-bold text-[color:var(--fg)]">
+          10 Tools
+        </span>
+      </div>
+
+      <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {pdfToolsList.map((tool) => (
+          <a
+            href={tool.href}
+            class="group flex flex-col justify-between rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 transition hover:border-[color:var(--border-strong)] hover:bg-[color:var(--surface-strong)]"
+          >
+            <div class="space-y-2.5">
+              <div class="flex items-center justify-between">
+                <span class="rounded-md bg-[color:var(--surface-strong)] border border-[color:var(--border)] px-2 py-0.5 text-[10px] font-bold text-[color:var(--muted)]">
+                  {tool.badge}
+                </span>
+              </div>
+              <h3 class="text-base font-bold text-[color:var(--fg)] transition-colors">
+                {tool.title}
+              </h3>
+              <p class="text-xs leading-relaxed text-[color:var(--muted)]">
+                {tool.metaDescription}
+              </p>
+            </div>
+            <div class="mt-5 flex items-center gap-1.5 text-xs font-bold text-[color:var(--fg)]">
+              <span>Open Tool</span>
+              <Icon name="arrow-right" class="w-3.5 h-3.5" />
+            </div>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <!-- FAQs -->
+    <section class="space-y-4">
+      <h2 class="text-xl font-bold text-[color:var(--fg)]">Frequently Asked Questions</h2>
+      <div class="space-y-3">
+        {schemaFaq.map((faq) => (
+          <details class="group rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
+            <summary class="cursor-pointer list-none font-semibold text-sm sm:text-base text-[color:var(--fg)] flex items-center justify-between gap-4">
+              <span>{faq.question}</span>
+              <span class="text-xs text-[color:var(--muted)] group-open:rotate-180 transition-transform">▼</span>
+            </summary>
+            <p class="mt-3 text-xs sm:text-sm leading-relaxed text-[color:var(--muted)]">
+              {faq.answer}
+            </p>
+          </details>
+        ))}
+      </div>
+    </section>
+  </article>
+</SiteLayout>

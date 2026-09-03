@@ -1,0 +1,236 @@
+---
+import SiteLayout from '../../layouts/SiteLayout.astro';
+import Icon from '../../components/Icon.astro';
+import { siteName, toAbsoluteUrl, withBasePath } from '../../utils/site';
+
+const pageTitle = `Resume Keyword Checker — ATS Keyword & Action Verb Scanner · ${siteName}`;
+const pageDesc = 'Analyze your resume text for high-impact action verbs, technical keywords, leadership terms, and ATS readability scores. 100% private in-browser tool.';
+const canonicalUrl = toAbsoluteUrl('/career-tools/resume-keyword-checker/');
+
+const breadcrumbItems = [
+  { label: 'Home', href: toAbsoluteUrl('/') },
+  { label: 'Career Tools', href: toAbsoluteUrl('/career-tools/') },
+  { label: 'Resume Keyword Checker' },
+];
+
+const schemaFaq = [
+  {
+    question: 'How do Applicant Tracking Systems (ATS) scan resume keywords?',
+    answer: 'ATS parsers scan incoming resume texts for exact keyword matches against job requirements, filtering candidates based on technical skill frequencies, certifications, and strong action verbs.',
+  },
+];
+
+const schemaGraph = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebApplication',
+    name: 'Resume Keyword Checker',
+    url: canonicalUrl,
+    applicationCategory: 'BusinessApplication',
+    operatingSystem: 'All',
+    browserRequirements: 'Requires JavaScript',
+    description: pageDesc,
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: breadcrumbItems.map((item, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      name: item.label,
+      item: item.href,
+    })),
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: schemaFaq.map((item) => ({
+      '@type': 'Question',
+      name: item.question,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: item.answer,
+      },
+    })),
+  },
+];
+---
+
+<SiteLayout title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(schemaGraph)} />
+
+  <article class="space-y-10 py-2" data-kw-app>
+    <nav aria-label="Breadcrumb">
+      <ol class="flex flex-wrap items-center gap-2 text-xs text-[color:var(--muted)]">
+        {breadcrumbItems.map((item, index) => (
+          <li class="flex items-center gap-2">
+            {index > 0 && <span aria-hidden="true">/</span>}
+            {item.href ? (
+              <a class="transition hover:text-[color:var(--fg)]" href={item.href}>
+                {item.label}
+              </a>
+            ) : (
+              <span aria-current="page" class="font-semibold text-[color:var(--fg)]">
+                {item.label}
+              </span>
+            )}
+          </li>
+        ))}
+      </ol>
+    </nav>
+
+    <header class="space-y-3">
+      <div class="inline-flex items-center gap-2 rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1 text-xs font-semibold text-[color:var(--muted)]">
+        <span class="inline-block h-2 w-2 rounded-full bg-emerald-500"></span>
+        <span>ATS Resume Optimizer</span>
+      </div>
+      <h1 class="text-2xl sm:text-4xl font-extrabold tracking-tight text-[color:var(--fg)]">
+        Resume Keyword Checker
+      </h1>
+      <p class="max-w-2xl text-xs sm:text-sm text-[color:var(--muted)] leading-relaxed">
+        Scan your resume text for powerful action verbs, technical keywords, and measurable impact metrics.
+      </p>
+    </header>
+
+    <div class="space-y-6">
+      <div class="space-y-2">
+        <div class="flex items-center justify-between">
+          <label for="resume-text" class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Paste Resume Text</label>
+          <button type="button" data-sample-btn class="text-xs font-semibold text-[color:var(--primary)] hover:underline">Load Sample Resume</button>
+        </div>
+        <textarea
+          id="resume-text"
+          rows="10"
+          class="w-full font-mono text-xs leading-relaxed rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-[color:var(--fg)] focus:border-[color:var(--border-strong)] focus:outline-hidden"
+          placeholder="Paste your resume content here..."
+        >Engineered scalable microservices architecture using Node.js, TypeScript, and AWS Lambda, improving throughput by 42%. Spearheaded automated CI/CD pipeline deployments with Docker and GitHub Actions. Collaborated with cross-functional product teams to deliver responsive React applications. Optimized PostgreSQL database queries reducing API latency by 180ms.</textarea>
+      </div>
+
+      <!-- Stats Grid -->
+      <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 text-center">
+        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 space-y-1">
+          <span class="text-xs font-bold text-[color:var(--muted)] uppercase">Action Verbs</span>
+          <p id="verb-count" class="text-3xl font-extrabold text-emerald-500">0</p>
+          <p class="text-[10px] text-[color:var(--muted)]">Strong Power Verbs</p>
+        </div>
+
+        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 space-y-1">
+          <span class="text-xs font-bold text-[color:var(--muted)] uppercase">Metric Quantifiers</span>
+          <p id="metric-count" class="text-3xl font-extrabold text-blue-500">0</p>
+          <p class="text-[10px] text-[color:var(--muted)]">%, $, Numbers Detected</p>
+        </div>
+
+        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 space-y-1">
+          <span class="text-xs font-bold text-[color:var(--muted)] uppercase">Total Words</span>
+          <p id="word-count" class="text-3xl font-extrabold text-[color:var(--fg)]">0</p>
+          <p class="text-[10px] text-[color:var(--muted)]">Resume Body Words</p>
+        </div>
+
+        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 space-y-1">
+          <span class="text-xs font-bold text-[color:var(--muted)] uppercase">Power Density</span>
+          <p id="density-val" class="text-3xl font-extrabold text-purple-500">0%</p>
+          <p class="text-[10px] text-[color:var(--muted)]">Verb to Word Ratio</p>
+        </div>
+      </div>
+
+      <!-- Identified Action Verbs Card -->
+      <div class="space-y-3 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 sm:p-6">
+        <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Detected Action Verbs &amp; Leadership Terms</span>
+        <div id="verbs-tags" class="flex flex-wrap gap-2 pt-1 font-mono text-xs"></div>
+      </div>
+    </div>
+
+    <!-- FAQs -->
+    <section class="space-y-4">
+      <h2 class="text-xl font-bold text-[color:var(--fg)]">Frequently Asked Questions</h2>
+      <div class="space-y-3">
+        {schemaFaq.map((faq) => (
+          <details class="group rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
+            <summary class="cursor-pointer list-none font-semibold text-sm sm:text-base text-[color:var(--fg)] flex items-center justify-between gap-4">
+              <span>{faq.question}</span>
+              <span class="text-xs text-[color:var(--muted)] group-open:rotate-180 transition-transform">▼</span>
+            </summary>
+            <p class="mt-3 text-xs sm:text-sm leading-relaxed text-[color:var(--muted)]">
+              {faq.answer}
+            </p>
+          </details>
+        ))}
+      </div>
+    </section>
+  </article>
+
+  <script is:inline>
+    (function () {
+      const root = document.querySelector('[data-kw-app]');
+      if (!root) return;
+
+      const resumeIn = root.querySelector('#resume-text');
+      const verbCount = root.querySelector('#verb-count');
+      const metricCount = root.querySelector('#metric-count');
+      const wordCount = root.querySelector('#word-count');
+      const densityVal = root.querySelector('#density-val');
+      const verbsTags = root.querySelector('#verbs-tags');
+      const sampleBtn = root.querySelector('[data-sample-btn]');
+
+      const ACTION_VERBS = new Set([
+        'accelerated', 'achieved', 'administered', 'analyzed', 'architected', 'automated',
+        'boosted', 'budgeted', 'built', 'championed', 'coached', 'collaborated',
+        'compiled', 'composed', 'conceived', 'conducted', 'configured', 'constructed',
+        'converted', 'coordinated', 'created', 'customized', 'decreased', 'delivered',
+        'designed', 'developed', 'devised', 'directed', 'distributed', 'documented',
+        'doubled', 'drafted', 'engineered', 'enhanced', 'established', 'evaluated',
+        'executed', 'expanded', 'expedited', 'facilitated', 'formulated', 'generated',
+        'guided', 'implemented', 'improved', 'increased', 'initiated', 'inspected',
+        'installed', 'integrated', 'invented', 'launched', 'lead', 'led', 'managed',
+        'maximized', 'mentored', 'minimized', 'modernized', 'negotiated', 'optimized',
+        'orchestrated', 'organized', 'overhauled', 'oversaw', 'performed', 'pioneered',
+        'planned', 'produced', 'programmed', 'promoted', 'published', 'rebuilt',
+        'recruited', 'redesigned', 'reduced', 'reengineered', 'reorganized', 'resolved',
+        'restructured', 'revitalized', 'saved', 'scaled', 'scheduled', 'secured',
+        'simplified', 'spearheaded', 'standardized', 'streamlined', 'strengthened',
+        'supervised', 'trained', 'transformed', 'upgraded', 'validated', 'yielded'
+      ]);
+
+      function analyze() {
+        const text = resumeIn.value;
+        const words = text.toLowerCase().match(/\b[a-z]{3,}\b/g) || [];
+        const totalWords = (text.match(/\S+/g) || []).length;
+
+        const metrics = (text.match(/(\d+[\d,.]*|\$\d+|\d+%)(\s*(k|m|b|percent|ms|s|x))?/gi) || []);
+
+        const foundVerbs = new Map();
+        words.forEach(w => {
+          if (ACTION_VERBS.has(w)) {
+            foundVerbs.set(w, (foundVerbs.get(w) || 0) + 1);
+          }
+        });
+
+        const totalVerbs = Array.from(foundVerbs.values()).reduce((a, b) => a + b, 0);
+
+        verbCount.textContent = totalVerbs;
+        metricCount.textContent = metrics.length;
+        wordCount.textContent = totalWords;
+        densityVal.textContent = totalWords > 0 ? `${((totalVerbs / totalWords) * 100).toFixed(1)}%` : '0%';
+
+        if (foundVerbs.size === 0) {
+          verbsTags.innerHTML = '<span class="text-xs text-[color:var(--muted)] italic">No strong action verbs detected yet. Try adding verbs like "Engineered", "Spearheaded", "Optimized".</span>';
+        } else {
+          verbsTags.innerHTML = Array.from(foundVerbs.entries()).map(([v, count]) => `
+            <span class="rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-3 py-1 font-semibold text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5">
+              <span>${v}</span>
+              ${count > 1 ? `<span class="rounded-full bg-emerald-500 text-white text-[9px] px-1.5 py-0.2">${count}x</span>` : ''}
+            </span>
+          `).join('');
+        }
+      }
+
+      resumeIn.addEventListener('input', analyze);
+      sampleBtn.addEventListener('click', () => {
+        resumeIn.value = `Spearheaded software development of cloud microservices architecture using Golang and AWS ECS.\nAutomated integration testing pipelines reducing release cycle latency by 35%.\nCollaborated with product designers and mentored 4 junior software engineers.\nOptimized MySQL indexing schemes, reducing database memory usage by 2.4 GB.`;
+        analyze();
+      });
+
+      analyze();
+    })();
+  </script>
+</SiteLayout>

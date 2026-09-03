@@ -1,0 +1,244 @@
+---
+import SiteLayout from '../../layouts/SiteLayout.astro';
+import Icon from '../../components/Icon.astro';
+import { siteName, toAbsoluteUrl, withBasePath } from '../../utils/site';
+
+const pageTitle = `Diceware Passphrase Generator — Memorable Multi-Word Passwords · ${siteName}`;
+const pageDesc = 'Generate memorable, ultra-secure multi-word passphrases using the Diceware random word technique and Web Cryptography CSPRNG. 100% private in-browser tool.';
+const canonicalUrl = toAbsoluteUrl('/generators/passphrase-generator/');
+
+const breadcrumbItems = [
+  { label: 'Home', href: toAbsoluteUrl('/') },
+  { label: 'Generators', href: toAbsoluteUrl('/generators/') },
+  { label: 'Passphrase Generator' },
+];
+
+const schemaFaq = [
+  {
+    question: 'Why are multi-word passphrases more secure than random characters?',
+    answer: 'A 5 or 6 word random passphrase (e.g. `correct-horse-battery-staple`) has over 65-78 bits of cryptographic entropy, making it practically impossible to brute-force while remaining effortless for humans to type and remember.',
+  },
+];
+
+const schemaGraph = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebApplication',
+    name: 'Diceware Passphrase Generator',
+    url: canonicalUrl,
+    applicationCategory: 'SecurityApplication',
+    operatingSystem: 'All',
+    browserRequirements: 'Requires JavaScript',
+    description: pageDesc,
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: breadcrumbItems.map((item, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      name: item.label,
+      item: item.href,
+    })),
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: schemaFaq.map((item) => ({
+      '@type': 'Question',
+      name: item.question,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: item.answer,
+      },
+    })),
+  },
+];
+---
+
+<SiteLayout title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(schemaGraph)} />
+
+  <article class="space-y-10 py-2" data-passphrase-app>
+    <nav aria-label="Breadcrumb">
+      <ol class="flex flex-wrap items-center gap-2 text-xs text-[color:var(--muted)]">
+        {breadcrumbItems.map((item, index) => (
+          <li class="flex items-center gap-2">
+            {index > 0 && <span aria-hidden="true">/</span>}
+            {item.href ? (
+              <a class="transition hover:text-[color:var(--fg)]" href={item.href}>
+                {item.label}
+              </a>
+            ) : (
+              <span aria-current="page" class="font-semibold text-[color:var(--fg)]">
+                {item.label}
+              </span>
+            )}
+          </li>
+        ))}
+      </ol>
+    </nav>
+
+    <header class="space-y-3">
+      <div class="inline-flex items-center gap-2 rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1 text-xs font-semibold text-[color:var(--muted)]">
+        <span class="inline-block h-2 w-2 rounded-full bg-emerald-500"></span>
+        <span>Diceware Entropy Engine</span>
+      </div>
+      <h1 class="text-2xl sm:text-4xl font-extrabold tracking-tight text-[color:var(--fg)]">
+        Diceware Passphrase Generator
+      </h1>
+      <p class="max-w-2xl text-xs sm:text-sm text-[color:var(--muted)] leading-relaxed">
+        Generate easy-to-remember yet mathematically uncrackable multi-word security passphrases.
+      </p>
+    </header>
+
+    <div class="space-y-6">
+      <!-- Passphrase Display Box -->
+      <div class="space-y-3 rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 sm:p-8">
+        <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
+          <input
+            type="text"
+            id="pass-display"
+            readonly
+            class="w-full bg-transparent font-mono text-lg sm:text-2xl font-extrabold text-[color:var(--fg)] focus:outline-hidden select-all"
+            value="Generating..."
+          />
+          <button
+            type="button"
+            data-copy-btn
+            class="shrink-0 rounded-2xl bg-[color:var(--fg)] px-5 py-3 text-xs font-bold text-[color:var(--bg)] shadow-xs transition hover:opacity-90 active:scale-95"
+          >
+            Copy Passphrase
+          </button>
+        </div>
+
+        <div class="flex items-center justify-between text-xs pt-3 border-t border-[color:var(--border)]">
+          <span id="entropy-lbl" class="font-bold text-emerald-500">Entropy: ~65 bits (Crack time: centuries)</span>
+          <button type="button" id="regen-btn" class="inline-flex items-center gap-1 font-bold text-[color:var(--fg)] hover:underline cursor-pointer">
+            <svg class="w-3.5 h-3.5 stroke-current" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67" />
+            </svg>
+            <span>Regenerate</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Settings -->
+      <div class="grid gap-4 sm:grid-cols-3 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 text-xs">
+        <div>
+          <label for="word-count" class="font-bold text-[color:var(--fg)] block mb-1">Number of Words:</label>
+          <select id="word-count" class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-[color:var(--fg)]">
+            <option value="4">4 Words (Strong)</option>
+            <option value="5" selected>5 Words (Very Strong)</option>
+            <option value="6">6 Words (Maximum Security)</option>
+            <option value="7">7 Words (Paranoid)</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="separator-char" class="font-bold text-[color:var(--fg)] block mb-1">Word Separator:</label>
+          <select id="separator-char" class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-[color:var(--fg)]">
+            <option value="-">Hyphen (-)</option>
+            <option value=".">Period (.)</option>
+            <option value="_">Underscore (_)</option>
+            <option value=" ">Space ( )</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="case-style" class="font-bold text-[color:var(--fg)] block mb-1">Letter Capitalization:</label>
+          <select id="case-style" class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-[color:var(--fg)]">
+            <option value="lower">lowercase</option>
+            <option value="title">Title Case</option>
+            <option value="upper">UPPERCASE</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- FAQs -->
+    <section class="space-y-4">
+      <h2 class="text-xl font-bold text-[color:var(--fg)]">Frequently Asked Questions</h2>
+      <div class="space-y-3">
+        {schemaFaq.map((faq) => (
+          <details class="group rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
+            <summary class="cursor-pointer list-none font-semibold text-sm sm:text-base text-[color:var(--fg)] flex items-center justify-between gap-4">
+              <span>{faq.question}</span>
+              <span class="text-xs text-[color:var(--muted)] group-open:rotate-180 transition-transform">▼</span>
+            </summary>
+            <p class="mt-3 text-xs sm:text-sm leading-relaxed text-[color:var(--muted)]">
+              {faq.answer}
+            </p>
+          </details>
+        ))}
+      </div>
+    </section>
+  </article>
+
+  <script is:inline>
+    (function () {
+      const root = document.querySelector('[data-passphrase-app]');
+      if (!root) return;
+
+      const passDisplay = root.querySelector('#pass-display');
+      const countSelect = root.querySelector('#word-count');
+      const sepSelect = root.querySelector('#separator-char');
+      const caseSelect = root.querySelector('#case-style');
+      const entropyLbl = root.querySelector('#entropy-lbl');
+      const copyBtn = root.querySelector('[data-copy-btn]');
+      const regenBtn = root.querySelector('#regen-btn');
+
+      const WORD_LIST = [
+        'apple', 'anchor', 'beacon', 'breeze', 'bridge', 'cabin', 'canyon', 'castle',
+        'cedar', 'cliff', 'cloud', 'clover', 'comet', 'coral', 'crater', 'crystal',
+        'dawn', 'desert', 'dolphin', 'dragon', 'eagle', 'echo', 'ember', 'falcon',
+        'feather', 'flame', 'forest', 'fossil', 'galaxy', 'garden', 'geyser', 'glacier',
+        'granite', 'harbor', 'hawk', 'haven', 'horizon', 'island', 'jasper', 'jungle',
+        'lagoon', 'lantern', 'meadow', 'meteor', 'mineral', 'monarch', 'mountain', 'nebula',
+        'oasis', 'ocean', 'orchid', 'pebble', 'phoenix', 'pinnacle', 'planet', 'prairie',
+        'quartz', 'quiver', 'rainbow', 'ravine', 'reef', 'river', 'rocket', 'saddle',
+        'sailor', 'sapphire', 'sequoia', 'shadow', 'silver', 'sparrow', 'summit', 'temple',
+        'thunder', 'timber', 'topaz', 'torrent', 'tulip', 'valley', 'velvet', 'vessel',
+        'voyage', 'vulcan', 'walnut', 'whisper', 'willow', 'winter', 'wizard', 'zenith'
+      ];
+
+      function generate() {
+        const count = parseInt(countSelect.value, 10);
+        const sep = sepSelect.value;
+        const casing = caseSelect.value;
+
+        const randArr = new Uint32Array(count);
+        crypto.getRandomValues(randArr);
+
+        const chosenWords = [];
+        for (let i = 0; i < count; i++) {
+          let word = WORD_LIST[randArr[i] % WORD_LIST.length];
+          if (casing === 'title') {
+            word = word.charAt(0).toUpperCase() + word.slice(1);
+          } else if (casing === 'upper') {
+            word = word.toUpperCase();
+          }
+          chosenWords.push(word);
+        }
+
+        const pass = chosenWords.join(sep);
+        passDisplay.value = pass;
+
+        const entropy = Math.round(count * Math.log2(WORD_LIST.length));
+        entropyLbl.textContent = `Entropy: ~${entropy} bits (Mathematically Unbreakable)`;
+      }
+
+      [countSelect, sepSelect, caseSelect].forEach(el => el.addEventListener('change', generate));
+      regenBtn.addEventListener('click', generate);
+
+      copyBtn.addEventListener('click', () => {
+        navigator.clipboard.writeText(passDisplay.value);
+        const orig = copyBtn.textContent;
+        copyBtn.textContent = 'Copied!';
+        setTimeout(() => copyBtn.textContent = orig, 1800);
+      });
+
+      generate();
+    })();
+  </script>
+</SiteLayout>

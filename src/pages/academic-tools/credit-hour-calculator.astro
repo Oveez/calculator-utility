@@ -1,0 +1,277 @@
+---
+import SiteLayout from '../../layouts/SiteLayout.astro';
+import Icon from '../../components/Icon.astro';
+import { siteName, toAbsoluteUrl, withBasePath } from '../../utils/site';
+
+const pageTitle = `Credit Hour Calculator | College Workload & Study Time · ${siteName}`;
+const pageDesc = 'Convert college semester credit hours into weekly lecture hours, lab commitments, estimated outside study time, and graduation timelines.';
+const canonicalUrl = toAbsoluteUrl('/academic-tools/credit-hour-calculator/');
+
+const breadcrumbItems = [
+  { label: 'Home', href: toAbsoluteUrl('/') },
+  { label: 'Academic Tools', href: toAbsoluteUrl('/academic-tools/') },
+  { label: 'Credit Hour Calculator' },
+];
+
+const faqs = [
+  {
+    question: 'How much time does 1 college credit hour require?',
+    answer: 'Under the standard federal Carnegie definition, 1 credit hour requires 1 hour of direct classroom lecture plus 2 to 3 hours of independent study per week over a 15-week semester (a total of 3 to 4 hours of academic commitment per credit each week).',
+  },
+  {
+    question: 'What is considered a full-time college course load?',
+    answer: 'In US and international higher education, 12 credit hours is the legal minimum for full-time undergraduate status, while 15 to 16 credits per semester is the standard benchmark to graduate with a 120-credit Bachelor’s degree in 4 years.',
+  },
+];
+
+const schemaGraph = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebApplication',
+    name: 'College Credit Hour Calculator',
+    url: canonicalUrl,
+    description: pageDesc,
+    applicationCategory: 'EducationalApplication',
+    operatingSystem: 'All',
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: breadcrumbItems.map((item, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      name: item.label,
+      item: item.href,
+    })),
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faqs.map((f) => ({
+      '@type': 'Question',
+      name: f.question,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: f.answer,
+      },
+    })),
+  },
+];
+---
+
+<SiteLayout title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(schemaGraph)} />
+
+  <article class="space-y-10 py-2">
+    <!-- Breadcrumbs -->
+    <nav aria-label="Breadcrumb">
+      <ol class="flex flex-wrap items-center gap-2 text-xs text-[color:var(--muted)]">
+        {breadcrumbItems.map((item, index) => (
+          <li class="flex items-center gap-2">
+            {index > 0 && <span aria-hidden="true">/</span>}
+            {item.href ? (
+              <a class="transition hover:text-[color:var(--fg)]" href={item.href}>
+                {item.label}
+              </a>
+            ) : (
+              <span aria-current="page" class="font-semibold text-[color:var(--fg)]">
+                {item.label}
+              </span>
+            )}
+          </li>
+        ))}
+      </ol>
+    </nav>
+
+    <!-- Header -->
+    <header class="space-y-3">
+      <div class="inline-flex items-center gap-2 rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3.5 py-1 text-xs font-semibold text-[color:var(--fg)]">
+        <span>College Degree &amp; Workload Planning</span>
+      </div>
+      <h1 class="text-3xl font-extrabold tracking-tight text-[color:var(--fg)] sm:text-4xl">
+        College Credit Hour Calculator
+      </h1>
+      <p class="max-w-3xl text-sm leading-relaxed text-[color:var(--muted)] sm:text-base">
+        Plan your semester schedule with confidence. Calculate weekly class time, lab contact hours, recommended outside study time, and estimate your progress toward degree completion.
+      </p>
+    </header>
+
+    <!-- App Card -->
+    <div
+      class="rounded-[2.5rem] border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-6 shadow-[var(--shadow)] sm:p-10"
+      data-credit-hour-app
+    >
+      <div class="grid gap-8 lg:grid-cols-[1.1fr_0.9fr]">
+        <form class="space-y-5" onsubmit="return false;">
+          <div class="flex items-center justify-between">
+            <h2 class="text-lg font-bold text-[color:var(--fg)]">Course Enrolment</h2>
+            <button type="button" class="cursor-pointer text-xs font-semibold text-[color:var(--muted)] hover:text-[color:var(--fg)]" data-reset-btn>
+              ↺ Reset
+            </button>
+          </div>
+
+          <div class="space-y-1.5">
+            <label for="lecture-credits" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">
+              Lecture Course Credits
+            </label>
+            <input
+              id="lecture-credits"
+              type="number"
+              min="0"
+              max="24"
+              step="1"
+              value="12"
+              class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none transition focus:border-[color:var(--accent)]"
+              data-lecture-credits
+            />
+          </div>
+
+          <div class="space-y-1.5">
+            <label for="lab-credits" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">
+              Laboratory / Studio Credits
+            </label>
+            <input
+              id="lab-credits"
+              type="number"
+              min="0"
+              max="12"
+              step="1"
+              value="3"
+              class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none transition focus:border-[color:var(--accent)]"
+              data-lab-credits
+            />
+          </div>
+
+          <div class="grid grid-cols-2 gap-3 pt-1">
+            <div>
+              <label for="deg-total" class="block text-xs font-medium text-[color:var(--muted)]">Degree Total Credits</label>
+              <input
+                id="deg-total"
+                type="number"
+                value="120"
+                class="mt-1 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none"
+                data-deg-total
+              />
+            </div>
+            <div>
+              <label for="deg-completed" class="block text-xs font-medium text-[color:var(--muted)]">Completed Credits</label>
+              <input
+                id="deg-completed"
+                type="number"
+                value="45"
+                class="mt-1 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none"
+                data-deg-completed
+              />
+            </div>
+          </div>
+        </form>
+
+        <!-- Result Box -->
+        <div class="flex flex-col justify-between space-y-6 rounded-3xl border border-[color:var(--border)] bg-[color:var(--bg)] p-6 sm:p-8">
+          <div class="space-y-5">
+            <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Weekly Time Budget</span>
+
+            <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 text-center">
+              <p class="text-xs font-semibold text-[color:var(--muted)]">Total Weekly Academic Commitment</p>
+              <p class="mt-1 text-5xl font-black tracking-tight text-[color:var(--fg)]" data-total-weekly-hours>
+                49.5 hrs
+              </p>
+              <p class="mt-2 text-xs font-medium text-[color:var(--muted)]">
+                Equivalent to a rigorous full-time academic schedule.
+              </p>
+            </div>
+
+            <div class="space-y-2 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-xs">
+              <div class="flex justify-between">
+                <span class="text-[color:var(--muted)]">In-Class Contact Hours:</span>
+                <span class="font-bold text-[color:var(--fg)]" data-contact-hours>19.5 hrs/wk</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-[color:var(--muted)]">Recommended Outside Study:</span>
+                <span class="font-bold text-[color:var(--fg)]" data-study-hours>30.0 hrs/wk</span>
+              </div>
+              <div class="flex justify-between border-t border-[color:var(--border)] pt-2">
+                <span class="font-bold text-[color:var(--fg)]">Degree Progress:</span>
+                <span class="font-bold text-[color:var(--accent)]" data-deg-pct>37.5% (5 Semesters Left)</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FAQs -->
+    <section class="space-y-4">
+      <h2 class="text-xl font-bold text-[color:var(--fg)]">Frequently Asked Questions</h2>
+      <div class="space-y-3">
+        {faqs.map((faq) => (
+          <details class="group rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
+            <summary class="cursor-pointer list-none font-semibold text-sm sm:text-base text-[color:var(--fg)] flex items-center justify-between gap-4">
+              <span>{faq.question}</span>
+              <span class="text-xs text-[color:var(--muted)] group-open:rotate-180 transition-transform">▼</span>
+            </summary>
+            <p class="mt-3 text-xs sm:text-sm leading-relaxed text-[color:var(--muted)]">
+              {faq.answer}
+            </p>
+          </details>
+        ))}
+      </div>
+    </section>
+  </article>
+
+  <script is:inline>
+    (function () {
+      const root = document.querySelector('[data-credit-hour-app]');
+      if (!root) return;
+
+      const inLec = root.querySelector('[data-lecture-credits]');
+      const inLab = root.querySelector('[data-lab-credits]');
+      const inTot = root.querySelector('[data-deg-total]');
+      const inComp = root.querySelector('[data-deg-completed]');
+      const outTotal = root.querySelector('[data-total-weekly-hours]');
+      const outContact = root.querySelector('[data-contact-hours]');
+      const outStudy = root.querySelector('[data-study-hours]');
+      const outDeg = root.querySelector('[data-deg-pct]');
+      const resetBtn = root.querySelector('[data-reset-btn]');
+
+      function update() {
+        const lec = Math.max(0, parseFloat(inLec.value || '0'));
+        const lab = Math.max(0, parseFloat(inLab.value || '0'));
+        const degTot = Math.max(1, parseFloat(inTot.value || '120'));
+        const degComp = Math.max(0, parseFloat(inComp.value || '0'));
+
+        const totalCredits = lec + lab;
+        const contactHrs = lec + (lab * 2.5);
+        const studyHrs = lec * 2.5;
+        const totalHrs = contactHrs + studyHrs;
+
+        const remainingCredits = Math.max(0, degTot - degComp);
+        const semPace = Math.max(1, totalCredits || 15);
+        const semsLeft = Math.ceil(remainingCredits / semPace);
+        const pct = (degComp / degTot) * 100;
+
+        if (outTotal) outTotal.textContent = `${totalHrs.toFixed(1)} hrs`;
+        if (outContact) outContact.textContent = `${contactHrs.toFixed(1)} hrs/wk`;
+        if (outStudy) outStudy.textContent = `${studyHrs.toFixed(1)} hrs/wk`;
+        if (outDeg) outDeg.textContent = `${pct.toFixed(1)}% (${semsLeft} Sems Left)`;
+      }
+
+      inLec.addEventListener('input', update);
+      inLab.addEventListener('input', update);
+      inTot.addEventListener('input', update);
+      inComp.addEventListener('input', update);
+
+      if (resetBtn) {
+        resetBtn.addEventListener('click', () => {
+          inLec.value = '12';
+          inLab.value = '3';
+          inTot.value = '120';
+          inComp.value = '45';
+          update();
+        });
+      }
+
+      update();
+    })();
+  </script>
+</SiteLayout>

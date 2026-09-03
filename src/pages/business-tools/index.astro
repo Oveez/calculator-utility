@@ -1,0 +1,205 @@
+---
+import SiteLayout from '../../layouts/SiteLayout.astro';
+import Icon from '../../components/Icon.astro';
+import { siteName, toAbsoluteUrl, withBasePath } from '../../utils/site';
+
+const pageTitle = `Freelance, Creator & Business Calculators | Rates, Etsy & Shopify Profit · ${siteName}`;
+const pageDesc = 'Free business calculators for freelancers, creators, and ecommerce sellers. Calculate freelance hourly/day rates, YouTube RPM earnings, Etsy & Shopify net profits, and sales commissions.';
+const canonicalUrl = toAbsoluteUrl('/business-tools/');
+
+const breadcrumbItems = [
+  { label: 'Home', href: toAbsoluteUrl('/') },
+  { label: 'Business & Freelance' },
+];
+
+const businessCalculators = [
+  {
+    slug: 'freelance-rate-calculator',
+    title: 'Freelance Rate Calculator',
+    badge: 'Top Choice',
+    metaDescription: 'Calculate what you should charge per hour and day based on target take-home income, business expenses, taxes, non-billable hours, and paid time off.',
+    href: withBasePath('/business-tools/freelance-rate-calculator/'),
+    icon: 'career',
+  },
+  {
+    slug: 'youtube-rpm-calculator',
+    title: 'YouTube RPM Calculator',
+    badge: 'Creators',
+    metaDescription: 'Estimate your YouTube creator earnings from video views and RPM (Revenue Per Mille) across long-form content, YouTube Shorts, and niche CPMs.',
+    href: withBasePath('/business-tools/youtube-rpm-calculator/'),
+    icon: 'converter',
+  },
+  {
+    slug: 'etsy-profit-calculator',
+    title: 'Etsy Profit Calculator',
+    badge: 'Ecommerce',
+    metaDescription: 'Compute your true Etsy profit margins after listing fees ($0.20), 6.5% transaction fees, payment processing, offsite ads, and shipping costs.',
+    href: withBasePath('/business-tools/etsy-profit-calculator/'),
+    icon: 'finance',
+  },
+  {
+    slug: 'shopify-profit-calculator',
+    title: 'Shopify Profit Calculator',
+    badge: 'DTC Brands',
+    metaDescription: 'Calculate per-order and monthly net profit margins for Shopify stores factoring in payment gateway fees, ad spend (CAC), COGS, and return allowances.',
+    href: withBasePath('/business-tools/shopify-profit-calculator/'),
+    icon: 'finance',
+  },
+  {
+    slug: 'commission-calculator',
+    title: 'Sales Commission Calculator',
+    badge: 'Sales Reps',
+    metaDescription: 'Calculate sales rep commission compensation across flat percentage structures, tiered accelerators, and base salary plus commission.',
+    href: withBasePath('/business-tools/commission-calculator/'),
+    icon: 'finance',
+  },
+  {
+    slug: 'real-estate-commission-calculator',
+    title: 'Real Estate Commission Calculator',
+    badge: 'Realtors & Sellers',
+    metaDescription: 'Calculate total Realtor commissions, listing vs buyer agent splits, brokerage shares, and estimated net seller cash proceeds at closing.',
+    href: withBasePath('/business-tools/real-estate-commission-calculator/'),
+    icon: 'finance',
+  },
+];
+
+const schemaFaq = [
+  {
+    question: 'How should freelancers calculate their hourly rate?',
+    answer: 'Freelancers must account for non-billable administrative time, self-employment taxes (typically 25%–35%), overhead business expenses, and unpaid vacation/sick leave. Our formula computes: Required Gross = [Target Net ÷ (1 - Tax Rate)] + Expenses, then divides by total annual billable hours (e.g., 48 weeks × 25 billable hours = 1,200 billable hours).',
+  },
+  {
+    question: 'What is the difference between YouTube RPM and CPM?',
+    answer: 'CPM (Cost Per Mille) is what advertisers pay per 1,000 ad impressions before YouTube takes its 45% revenue cut. RPM (Revenue Per Mille) is what the creator actually earns per 1,000 total video views after YouTube’s revenue share and including channel memberships/Super Chats.',
+  },
+  {
+    question: 'What fees does Etsy charge sellers in 2026?',
+    answer: 'Standard Etsy fees include a $0.20 listing fee (renews every 4 months or per multi-quantity sale), a 6.5% transaction fee on the total item price including shipping, and a payment processing fee (in the US: 3.0% + $0.25). Optional offsite ads charge 12% to 15% on attributed sales.',
+  },
+];
+
+const schemaGraph = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: breadcrumbItems.map((item, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      name: item.label,
+      item: item.href,
+    })),
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: schemaFaq.map((item) => ({
+      '@type': 'Question',
+      name: item.question,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: item.answer,
+      },
+    })),
+  },
+];
+---
+
+<SiteLayout title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(schemaGraph)} />
+
+  <article class="space-y-10 py-2">
+    <!-- Breadcrumbs -->
+    <nav aria-label="Breadcrumb">
+      <ol class="flex flex-wrap items-center gap-2 text-xs text-[color:var(--muted)]">
+        {breadcrumbItems.map((item, index) => (
+          <li class="flex items-center gap-2">
+            {index > 0 && <span aria-hidden="true">/</span>}
+            {item.href ? (
+              <a class="transition hover:text-[color:var(--fg)]" href={item.href}>
+                {item.label}
+              </a>
+            ) : (
+              <span aria-current="page" class="font-semibold text-[color:var(--fg)]">
+                {item.label}
+              </span>
+            )}
+          </li>
+        ))}
+      </ol>
+    </nav>
+
+    <!-- Header -->
+    <header class="space-y-4 rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-6 sm:p-10">
+      <div class="inline-flex items-center gap-2 rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3.5 py-1 text-xs font-bold text-[color:var(--fg)]">
+        <span>Freelancer &amp; Creator Commerce Suite</span>
+      </div>
+      <h1 class="text-3xl font-extrabold tracking-tight text-[color:var(--fg)] sm:text-4xl">
+        Freelance &amp; Online Business Calculators
+      </h1>
+      <p class="max-w-3xl text-sm leading-relaxed text-[color:var(--muted)] sm:text-base">
+        A financial suite built for self-employed professionals, content creators, digital agencies, and ecommerce sellers. Price your services profitably, model marketplace transaction fees, and calculate commission splits with total transparency.
+      </p>
+    </header>
+
+    <!-- Calculators Grid -->
+    <section class="space-y-4">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Commerce &amp; Rate Engines</p>
+          <h2 class="text-xl font-bold tracking-tight text-[color:var(--fg)]">6 Specialized Business Tools</h2>
+        </div>
+        <span class="rounded-lg bg-[color:var(--surface)] border border-[color:var(--border)] px-2.5 py-1 text-xs font-bold text-[color:var(--fg)]">
+          6 Calculators
+        </span>
+      </div>
+
+      <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {businessCalculators.map((tool) => (
+          <a
+            href={tool.href}
+            class="group flex flex-col justify-between rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 transition hover:border-[color:var(--border-strong)] hover:bg-[color:var(--surface-strong)]"
+          >
+            <div class="space-y-2.5">
+              <div class="flex items-center justify-between">
+                <div class="flex h-9 w-9 items-center justify-center rounded-xl bg-[color:var(--surface-strong)] border border-[color:var(--border)] text-[color:var(--fg)]">
+                  <Icon name={tool.icon as any} class="w-4 h-4" />
+                </div>
+                <span class="rounded-md bg-[color:var(--surface-strong)] border border-[color:var(--border)] px-2 py-0.5 text-[10px] font-bold text-[color:var(--muted)]">
+                  {tool.badge}
+                </span>
+              </div>
+              <h3 class="text-base font-bold text-[color:var(--fg)] transition-colors">
+                {tool.title}
+              </h3>
+              <p class="text-xs leading-relaxed text-[color:var(--muted)]">
+                {tool.metaDescription}
+              </p>
+            </div>
+            <div class="mt-5 flex items-center gap-1.5 text-xs font-bold text-[color:var(--fg)]">
+              <span>Open Tool</span>
+              <Icon name="arrow-right" class="w-3.5 h-3.5 transition group-hover:translate-x-1" />
+            </div>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <!-- FAQs -->
+    <section class="space-y-4">
+      <h2 class="text-xl font-bold text-[color:var(--fg)]">Frequently Asked Questions</h2>
+      <div class="space-y-3">
+        {schemaFaq.map((faq) => (
+          <details class="group rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
+            <summary class="cursor-pointer list-none font-semibold text-sm sm:text-base text-[color:var(--fg)] flex items-center justify-between gap-4">
+              <span>{faq.question}</span>
+              <span class="text-xs text-[color:var(--muted)] group-open:rotate-180 transition-transform">▼</span>
+            </summary>
+            <p class="mt-3 text-xs sm:text-sm leading-relaxed text-[color:var(--muted)]">
+              {faq.answer}
+            </p>
+          </details>
+        ))}
+      </div>
+    </section>
+  </article>
+</SiteLayout>

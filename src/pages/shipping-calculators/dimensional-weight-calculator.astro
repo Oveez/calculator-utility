@@ -1,0 +1,253 @@
+---
+import SiteLayout from '../../layouts/SiteLayout.astro';
+import Icon from '../../components/Icon.astro';
+import { siteName, toAbsoluteUrl, withBasePath } from '../../utils/site';
+
+const pageTitle = `Dimensional Weight Calculator | FedEx, UPS & USPS DIM Weight · ${siteName}`;
+const pageDesc = 'Calculate domestic and international dimensional weight for FedEx (139/166), UPS, and USPS Priority Mail packages in inches and pounds.';
+const canonicalUrl = toAbsoluteUrl('/shipping-calculators/dimensional-weight-calculator/');
+
+const breadcrumbItems = [
+  { label: 'Home', href: toAbsoluteUrl('/') },
+  { label: 'Shipping Calculators', href: toAbsoluteUrl('/shipping-calculators/') },
+  { label: 'Dimensional Weight Calculator' },
+];
+
+const faqs = [
+  {
+    question: 'How do FedEx and UPS calculate DIM weight in the US?',
+    answer: 'FedEx and UPS calculate dimensional weight in pounds as: DIM Weight (lbs) = (Length × Width × Height in inches) ÷ 139 for daily commercial contract rates, or ÷ 166 for retail counter rates. Carriers round up to the next whole pound.',
+  },
+  {
+    question: 'When does USPS apply dimensional weight pricing?',
+    answer: 'USPS Priority Mail applies dimensional weight (divisor 166) only to parcels larger than 1 cubic foot (1,728 cubic inches) shipping to Zones 1 through 9. Packages under 1 cubic foot are billed strictly by actual scale weight.',
+  },
+];
+
+const schemaGraph = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebApplication',
+    name: 'Dimensional Weight Calculator',
+    url: canonicalUrl,
+    description: pageDesc,
+    applicationCategory: 'BusinessApplication',
+    operatingSystem: 'All',
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: breadcrumbItems.map((item, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      name: item.label,
+      item: item.href,
+    })),
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faqs.map((f) => ({
+      '@type': 'Question',
+      name: f.question,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: f.answer,
+      },
+    })),
+  },
+];
+---
+
+<SiteLayout title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(schemaGraph)} />
+
+  <article class="space-y-10 py-2">
+    <nav aria-label="Breadcrumb">
+      <ol class="flex flex-wrap items-center gap-2 text-xs text-[color:var(--muted)]">
+        {breadcrumbItems.map((item, index) => (
+          <li class="flex items-center gap-2">
+            {index > 0 && <span aria-hidden="true">/</span>}
+            {item.href ? (
+              <a class="transition hover:text-[color:var(--fg)]" href={item.href}>
+                {item.label}
+              </a>
+            ) : (
+              <span aria-current="page" class="font-semibold text-[color:var(--fg)]">
+                {item.label}
+              </span>
+            )}
+          </li>
+        ))}
+      </ol>
+    </nav>
+
+    <header class="space-y-3">
+      <div class="inline-flex items-center gap-2 rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3.5 py-1 text-xs font-semibold text-[color:var(--fg)]">
+        <span>Courier Packaging &amp; DIM Rules</span>
+      </div>
+      <h1 class="text-3xl font-extrabold tracking-tight text-[color:var(--fg)] sm:text-4xl">
+        Dimensional Weight Calculator (DIM)
+      </h1>
+      <p class="max-w-3xl text-sm leading-relaxed text-[color:var(--muted)] sm:text-base">
+        Check if your parcel will be billed by dimensional weight or actual weight. Pre-configured with official FedEx, UPS, and USPS 139 / 166 divisors.
+      </p>
+    </header>
+
+    <div
+      class="rounded-[2.5rem] border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-6 shadow-[var(--shadow)] sm:p-10"
+      data-dim-app
+    >
+      <div class="grid gap-8 lg:grid-cols-[1.15fr_0.85fr]">
+        <form class="space-y-5" onsubmit="return false;">
+          <div class="flex items-center justify-between">
+            <h2 class="text-lg font-bold text-[color:var(--fg)]">Box Specs (Inches &amp; Lbs)</h2>
+            <button type="button" class="cursor-pointer text-xs font-semibold text-[color:var(--muted)] hover:text-[color:var(--fg)]" data-reset-btn>
+              ↺ Reset
+            </button>
+          </div>
+
+          <div class="space-y-1.5">
+            <label for="carrier-preset" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Carrier Pricing Rule</label>
+            <select id="carrier-preset" class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-sm font-semibold text-[color:var(--fg)] outline-none" data-carrier-preset>
+              <option value="139" selected>FedEx &amp; UPS Daily Commercial Rates (Divisor 139)</option>
+              <option value="166">FedEx / UPS Retail &amp; USPS Standard (Divisor 166)</option>
+            </select>
+          </div>
+
+          <div class="grid grid-cols-3 gap-3">
+            <div>
+              <label for="dim-l" class="block text-xs font-medium text-[color:var(--muted)]">Length (in)</label>
+              <input id="dim-l" type="number" min="0" step="0.5" value="18" class="mt-1 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-dim-l />
+            </div>
+            <div>
+              <label for="dim-w" class="block text-xs font-medium text-[color:var(--muted)]">Width (in)</label>
+              <input id="dim-w" type="number" min="0" step="0.5" value="14" class="mt-1 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-dim-w />
+            </div>
+            <div>
+              <label for="dim-h" class="block text-xs font-medium text-[color:var(--muted)]">Height (in)</label>
+              <input id="dim-h" type="number" min="0" step="0.5" value="12" class="mt-1 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-dim-h />
+            </div>
+          </div>
+
+          <div class="space-y-1.5 pt-1">
+            <label for="actual-wt" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Actual Scale Weight (lbs)</label>
+            <input id="actual-wt" type="number" min="0" step="0.1" value="8.0" class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none" data-actual-wt />
+          </div>
+        </form>
+
+        <div class="flex flex-col justify-between space-y-6 rounded-3xl border border-[color:var(--border)] bg-[color:var(--bg)] p-6 sm:p-8">
+          <div class="space-y-5">
+            <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Billable Weight</span>
+
+            <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 text-center">
+              <p class="text-xs font-semibold text-[color:var(--muted)]">Billed Shipping Weight</p>
+              <p class="mt-1 text-5xl font-black tracking-tight text-[color:var(--fg)]" data-res-billed>
+                22 lbs
+              </p>
+              <p class="mt-2 text-xs font-medium text-red-500" data-billed-summary>
+                Subject to Dimensional Weight pricing (Billed at 22 lbs vs 8 lbs scale weight).
+              </p>
+            </div>
+
+            <div class="space-y-2 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-xs">
+              <div class="flex justify-between">
+                <span class="text-[color:var(--muted)]">Cubic Volume:</span>
+                <span class="font-bold text-[color:var(--fg)]" data-cu-vol>3,024 cu in (1.75 cu ft)</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-[color:var(--muted)]">Calculated DIM Weight:</span>
+                <span class="font-bold text-[color:var(--fg)]" data-dim-exact>21.76 lbs</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FAQs -->
+    <section class="space-y-4">
+      <h2 class="text-xl font-bold text-[color:var(--fg)]">Frequently Asked Questions</h2>
+      <div class="space-y-3">
+        {faqs.map((faq) => (
+          <details class="group rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
+            <summary class="cursor-pointer list-none font-semibold text-sm sm:text-base text-[color:var(--fg)] flex items-center justify-between gap-4">
+              <span>{faq.question}</span>
+              <span class="text-xs text-[color:var(--muted)] group-open:rotate-180 transition-transform">▼</span>
+            </summary>
+            <p class="mt-3 text-xs sm:text-sm leading-relaxed text-[color:var(--muted)]">
+              {faq.answer}
+            </p>
+          </details>
+        ))}
+      </div>
+    </section>
+  </article>
+
+  <script is:inline>
+    (function () {
+      const root = document.querySelector('[data-dim-app]');
+      if (!root) return;
+
+      const inPreset = root.querySelector('[data-carrier-preset]');
+      const inL = root.querySelector('[data-dim-l]');
+      const inW = root.querySelector('[data-dim-w]');
+      const inH = root.querySelector('[data-dim-h]');
+      const inAct = root.querySelector('[data-actual-wt]');
+      const outBilled = root.querySelector('[data-res-billed]');
+      const outSummary = root.querySelector('[data-billed-summary]');
+      const outCuVol = root.querySelector('[data-cu-vol]');
+      const outDimExact = root.querySelector('[data-dim-exact]');
+      const resetBtn = root.querySelector('[data-reset-btn]');
+
+      function update() {
+        const divisor = parseFloat(inPreset.value || '139');
+        const l = Math.max(0, parseFloat(inL.value || '0'));
+        const w = Math.max(0, parseFloat(inW.value || '0'));
+        const h = Math.max(0, parseFloat(inH.value || '0'));
+        const act = Math.max(0, parseFloat(inAct.value || '0'));
+
+        const cuIn = l * w * h;
+        const cuFt = cuIn / 1728;
+        const dimExact = cuIn / divisor;
+
+        const billedDim = Math.ceil(dimExact);
+        const billedAct = Math.ceil(act);
+        const finalBilled = Math.max(billedAct, billedDim);
+
+        if (outBilled) outBilled.textContent = `${finalBilled} lbs`;
+        if (outCuVol) outCuVol.textContent = `${cuIn.toLocaleString()} cu in (${cuFt.toFixed(2)} cu ft)`;
+        if (outDimExact) outDimExact.textContent = `${dimExact.toFixed(2)} lbs`;
+
+        if (outSummary) {
+          if (billedDim > billedAct) {
+            outSummary.textContent = `Subject to Dimensional Weight (Billed at ${finalBilled} lbs vs ${billedAct} lbs scale weight).`;
+            outSummary.className = 'mt-2 text-xs font-medium text-red-500';
+          } else {
+            outSummary.textContent = `Actual scale weight applies (Billed at ${finalBilled} lbs).`;
+            outSummary.className = 'mt-2 text-xs font-medium text-green-600';
+          }
+        }
+      }
+
+      inPreset.addEventListener('change', update);
+      inL.addEventListener('input', update);
+      inW.addEventListener('input', update);
+      inH.addEventListener('input', update);
+      inAct.addEventListener('input', update);
+
+      if (resetBtn) {
+        resetBtn.addEventListener('click', () => {
+          inPreset.value = '139';
+          inL.value = '18';
+          inW.value = '14';
+          inH.value = '12';
+          inAct.value = '8.0';
+          update();
+        });
+      }
+
+      update();
+    })();
+  </script>
+</SiteLayout>

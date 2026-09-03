@@ -1,0 +1,220 @@
+---
+import SiteLayout from '../../layouts/SiteLayout.astro';
+import Icon from '../../components/Icon.astro';
+import { siteName, toAbsoluteUrl, withBasePath } from '../../utils/site';
+
+const pageTitle = `CSV to Markdown Table Converter — Free Online Table Formatter · ${siteName}`;
+const pageDesc = 'Convert CSV spreadsheet tables to GitHub-flavored Markdown tables online. Perfect for README.md docs, PR descriptions, and static site content. 100% private in-browser tool.';
+const canonicalUrl = toAbsoluteUrl('/data-tools/csv-to-markdown/');
+
+const breadcrumbItems = [
+  { label: 'Home', href: toAbsoluteUrl('/') },
+  { label: 'Data Tools', href: toAbsoluteUrl('/data-tools/') },
+  { label: 'CSV to Markdown' },
+];
+
+const schemaFaq = [
+  {
+    question: 'How are Markdown tables formatted from CSV?',
+    answer: 'The first row forms the header line wrapped in pipe symbols `| Header |`, followed by the Markdown separator row `| --- |`, and subsequent rows formatted into data table rows.',
+  },
+];
+
+const schemaGraph = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebApplication',
+    name: 'CSV to Markdown Table Converter',
+    url: canonicalUrl,
+    applicationCategory: 'DataApplication',
+    operatingSystem: 'All',
+    browserRequirements: 'Requires JavaScript',
+    description: pageDesc,
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: breadcrumbItems.map((item, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      name: item.label,
+      item: item.href,
+    })),
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: schemaFaq.map((item) => ({
+      '@type': 'Question',
+      name: item.question,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: item.answer,
+      },
+    })),
+  },
+];
+---
+
+<SiteLayout title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(schemaGraph)} />
+
+  <article class="space-y-10 py-2" data-csv-md-app>
+    <nav aria-label="Breadcrumb">
+      <ol class="flex flex-wrap items-center gap-2 text-xs text-[color:var(--muted)]">
+        {breadcrumbItems.map((item, index) => (
+          <li class="flex items-center gap-2">
+            {index > 0 && <span aria-hidden="true">/</span>}
+            {item.href ? (
+              <a class="transition hover:text-[color:var(--fg)]" href={item.href}>
+                {item.label}
+              </a>
+            ) : (
+              <span aria-current="page" class="font-semibold text-[color:var(--fg)]">
+                {item.label}
+              </span>
+            )}
+          </li>
+        ))}
+      </ol>
+    </nav>
+
+    <header class="space-y-3">
+      <div class="inline-flex items-center gap-2 rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1 text-xs font-semibold text-[color:var(--muted)]">
+        <span class="inline-block h-2 w-2 rounded-full bg-emerald-500"></span>
+        <span>GitHub-Flavored Markdown (GFM)</span>
+      </div>
+      <h1 class="text-2xl sm:text-4xl font-extrabold tracking-tight text-[color:var(--fg)]">
+        CSV to Markdown Table Converter
+      </h1>
+      <p class="max-w-2xl text-xs sm:text-sm text-[color:var(--muted)] leading-relaxed">
+        Convert CSV spreadsheets and Excel data into formatted Markdown tables for GitHub READMEs, docs, and static websites.
+      </p>
+    </header>
+
+    <div class="grid gap-6 lg:grid-cols-2">
+      <!-- Input -->
+      <div class="space-y-3">
+        <div class="flex items-center justify-between">
+          <label for="csv-in" class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Source CSV</label>
+          <div class="flex items-center gap-2 text-xs">
+            <button type="button" data-sample-btn class="text-[color:var(--primary)] hover:underline font-semibold">Load Sample</button>
+            <span class="text-[color:var(--border)]">|</span>
+            <button type="button" data-clear-btn class="text-[color:var(--muted)] hover:text-[color:var(--fg)]">Clear</button>
+          </div>
+        </div>
+        <textarea
+          id="csv-in"
+          rows="16"
+          class="w-full font-mono text-xs leading-relaxed rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-[color:var(--fg)] focus:border-[color:var(--border-strong)] focus:outline-hidden"
+          placeholder="Feature,Supported,Notes&#10;Dark Mode,Yes,Built-in system theme&#10;Offline,Yes,Client-side service worker"
+        ></textarea>
+        <button
+          type="button"
+          data-convert-btn
+          class="w-full rounded-xl bg-[color:var(--fg)] py-2.5 text-xs font-bold text-[color:var(--bg)] shadow-xs transition hover:opacity-90"
+        >
+          Convert to Markdown Table
+        </button>
+      </div>
+
+      <!-- Output -->
+      <div class="space-y-3">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Markdown Table Output</span>
+          <button type="button" data-copy-btn class="inline-flex items-center gap-1 text-xs font-bold text-[color:var(--fg)] hover:underline">
+            <Icon name="copy" class="w-3.5 h-3.5" />
+            <span>Copy Markdown</span>
+          </button>
+        </div>
+        <textarea
+          id="md-out"
+          rows="16"
+          readonly
+          class="w-full font-mono text-xs leading-relaxed rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-4 text-[color:var(--fg)] focus:outline-hidden"
+          placeholder="| Header 1 | Header 2 |&#10;| --- | --- |"
+        ></textarea>
+      </div>
+    </div>
+
+    <!-- FAQs -->
+    <section class="space-y-4">
+      <h2 class="text-xl font-bold text-[color:var(--fg)]">Frequently Asked Questions</h2>
+      <div class="space-y-3">
+        {schemaFaq.map((faq) => (
+          <details class="group rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
+            <summary class="cursor-pointer list-none font-semibold text-sm sm:text-base text-[color:var(--fg)] flex items-center justify-between gap-4">
+              <span>{faq.question}</span>
+              <span class="text-xs text-[color:var(--muted)] group-open:rotate-180 transition-transform">▼</span>
+            </summary>
+            <p class="mt-3 text-xs sm:text-sm leading-relaxed text-[color:var(--muted)]">
+              {faq.answer}
+            </p>
+          </details>
+        ))}
+      </div>
+    </section>
+  </article>
+
+  <script is:inline>
+    (function () {
+      const root = document.querySelector('[data-csv-md-app]');
+      if (!root) return;
+
+      const input = root.querySelector('#csv-in');
+      const output = root.querySelector('#md-out');
+      const convertBtn = root.querySelector('[data-convert-btn]');
+      const sampleBtn = root.querySelector('[data-sample-btn]');
+      const clearBtn = root.querySelector('[data-clear-btn]');
+      const copyBtn = root.querySelector('[data-copy-btn]');
+
+      function convert() {
+        const text = input.value.trim();
+        if (!text) {
+          output.value = '';
+          return;
+        }
+
+        const lines = text.split('\n').filter(l => l.trim().length > 0);
+        if (lines.length === 0) return;
+
+        const rows = lines.map(line => {
+          return line.split(',').map(c => c.trim().replace(/\|/g, '\\|'));
+        });
+
+        const headers = rows[0];
+        const dataRows = rows.slice(1);
+
+        const headLine = `| ${headers.join(' | ')} |`;
+        const sepLine = `| ${headers.map(() => '---').join(' | ')} |`;
+        const bodyLines = dataRows.map(r => `| ${r.join(' | ')} |`);
+
+        output.value = [headLine, sepLine, ...bodyLines].join('\n');
+      }
+
+      convertBtn.addEventListener('click', convert);
+      input.addEventListener('input', convert);
+
+      sampleBtn.addEventListener('click', () => {
+        input.value = `Feature,Status,Platform,Notes\nCalculators,Live,Web,29 academic and financial engines\nDeveloper Tools,Live,Web,JSON and Regex validators\nOffline Support,Active,PWA,Zero server dependencies`;
+        convert();
+      });
+
+      clearBtn.addEventListener('click', () => {
+        input.value = '';
+        output.value = '';
+      });
+
+      copyBtn.addEventListener('click', () => {
+        if (!output.value) return;
+        navigator.clipboard.writeText(output.value);
+        const span = copyBtn.querySelector('span');
+        const orig = span.textContent;
+        span.textContent = 'Copied!';
+        setTimeout(() => span.textContent = orig, 1800);
+      });
+
+      sampleBtn.click();
+    })();
+  </script>
+</SiteLayout>

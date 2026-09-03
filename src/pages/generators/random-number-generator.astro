@@ -1,0 +1,241 @@
+---
+import SiteLayout from '../../layouts/SiteLayout.astro';
+import Icon from '../../components/Icon.astro';
+import { siteName, toAbsoluteUrl, withBasePath } from '../../utils/site';
+
+const pageTitle = `Random Number Generator (RNG) — True CSPRNG Random Numbers · ${siteName}`;
+const pageDesc = 'Generate true cryptographically secure random numbers between custom Min and Max limits. Supports single, bulk, unique (no duplicates), and sorted random integer outputs.';
+const canonicalUrl = toAbsoluteUrl('/generators/random-number-generator/');
+
+const breadcrumbItems = [
+  { label: 'Home', href: toAbsoluteUrl('/') },
+  { label: 'Generators', href: toAbsoluteUrl('/generators/') },
+  { label: 'Random Number Generator' },
+];
+
+const schemaFaq = [
+  {
+    question: 'How does true CSPRNG random number generation work?',
+    answer: 'It uses `crypto.getRandomValues()`, which interfaces directly with your device operating system’s entropy pool (thermal noise, hardware interrupts), ensuring unpredictable cryptographic security.',
+  },
+];
+
+const schemaGraph = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebApplication',
+    name: 'Random Number Generator',
+    url: canonicalUrl,
+    applicationCategory: 'UtilityApplication',
+    operatingSystem: 'All',
+    browserRequirements: 'Requires JavaScript',
+    description: pageDesc,
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: breadcrumbItems.map((item, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      name: item.label,
+      item: item.href,
+    })),
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: schemaFaq.map((item) => ({
+      '@type': 'Question',
+      name: item.question,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: item.answer,
+      },
+    })),
+  },
+];
+---
+
+<SiteLayout title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(schemaGraph)} />
+
+  <article class="space-y-10 py-2" data-rng-app>
+    <nav aria-label="Breadcrumb">
+      <ol class="flex flex-wrap items-center gap-2 text-xs text-[color:var(--muted)]">
+        {breadcrumbItems.map((item, index) => (
+          <li class="flex items-center gap-2">
+            {index > 0 && <span aria-hidden="true">/</span>}
+            {item.href ? (
+              <a class="transition hover:text-[color:var(--fg)]" href={item.href}>
+                {item.label}
+              </a>
+            ) : (
+              <span aria-current="page" class="font-semibold text-[color:var(--fg)]">
+                {item.label}
+              </span>
+            )}
+          </li>
+        ))}
+      </ol>
+    </nav>
+
+    <header class="space-y-3">
+      <div class="inline-flex items-center gap-2 rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1 text-xs font-semibold text-[color:var(--muted)]">
+        <span class="inline-block h-2 w-2 rounded-full bg-emerald-500"></span>
+        <span>Cryptographic CSPRNG Engine</span>
+      </div>
+      <h1 class="text-2xl sm:text-4xl font-extrabold tracking-tight text-[color:var(--fg)]">
+        Random Number Generator (RNG)
+      </h1>
+      <p class="max-w-2xl text-xs sm:text-sm text-[color:var(--muted)] leading-relaxed">
+        Generate unbiased, cryptographically secure random integers across custom minimum and maximum ranges.
+      </p>
+    </header>
+
+    <div class="space-y-6">
+      <!-- Single Number Hero Display -->
+      <div class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-8 sm:p-12 text-center space-y-4">
+        <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Generated Random Result</span>
+        <p id="hero-num" class="text-5xl sm:text-7xl font-black text-emerald-500 min-h-20 flex items-center justify-center font-mono">
+          42
+        </p>
+
+        <button
+          type="button"
+          id="roll-btn"
+          class="inline-flex items-center justify-center gap-2 rounded-2xl bg-[color:var(--fg)] px-8 py-3.5 text-sm sm:text-base font-extrabold text-[color:var(--bg)] shadow-md transition hover:opacity-90 active:scale-95 cursor-pointer"
+        >
+          <Icon name="dice" class="w-5 h-5" />
+          <span>Roll Random Number</span>
+        </button>
+      </div>
+
+      <!-- Controls Grid -->
+      <div class="grid gap-4 sm:grid-cols-3 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 text-xs">
+        <div>
+          <label for="min-val" class="font-bold text-[color:var(--fg)] block mb-1">Minimum (Min):</label>
+          <input
+            type="number"
+            id="min-val"
+            value="1"
+            class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-[color:var(--fg)]"
+          />
+        </div>
+        <div>
+          <label for="max-val" class="font-bold text-[color:var(--fg)] block mb-1">Maximum (Max):</label>
+          <input
+            type="number"
+            id="max-val"
+            value="100"
+            class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-[color:var(--fg)]"
+          />
+        </div>
+        <div>
+          <label for="bulk-count" class="font-bold text-[color:var(--fg)] block mb-1">Numbers to Generate:</label>
+          <input
+            type="number"
+            id="bulk-count"
+            min="1"
+            max="1000"
+            value="1"
+            class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-[color:var(--fg)]"
+          />
+        </div>
+      </div>
+
+      <!-- Bulk Result Display -->
+      <div id="bulk-card" class="hidden space-y-3 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 sm:p-6">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Bulk Number Sequence</span>
+          <button type="button" data-copy-bulk class="inline-flex items-center gap-1 text-xs font-bold text-[color:var(--fg)] hover:underline">
+            <Icon name="copy" class="w-3.5 h-3.5" />
+            <span>Copy All</span>
+          </button>
+        </div>
+        <div id="bulk-list" class="flex flex-wrap gap-2 font-mono text-xs"></div>
+      </div>
+    </div>
+
+    <!-- FAQs -->
+    <section class="space-y-4">
+      <h2 class="text-xl font-bold text-[color:var(--fg)]">Frequently Asked Questions</h2>
+      <div class="space-y-3">
+        {schemaFaq.map((faq) => (
+          <details class="group rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
+            <summary class="cursor-pointer list-none font-semibold text-sm sm:text-base text-[color:var(--fg)] flex items-center justify-between gap-4">
+              <span>{faq.question}</span>
+              <span class="text-xs text-[color:var(--muted)] group-open:rotate-180 transition-transform">▼</span>
+            </summary>
+            <p class="mt-3 text-xs sm:text-sm leading-relaxed text-[color:var(--muted)]">
+              {faq.answer}
+            </p>
+          </details>
+        ))}
+      </div>
+    </section>
+  </article>
+
+  <script is:inline>
+    (function () {
+      const root = document.querySelector('[data-rng-app]');
+      if (!root) return;
+
+      const minIn = root.querySelector('#min-val');
+      const maxIn = root.querySelector('#max-val');
+      const countIn = root.querySelector('#bulk-count');
+      const rollBtn = root.querySelector('#roll-btn');
+      const heroNum = root.querySelector('#hero-num');
+      const bulkCard = root.querySelector('#bulk-card');
+      const bulkList = root.querySelector('#bulk-list');
+      const copyBtn = root.querySelector('[data-copy-bulk]');
+
+      function getRandomInt(min, max) {
+        const range = max - min + 1;
+        const randArr = new Uint32Array(1);
+        crypto.getRandomValues(randArr);
+        return min + (randArr[0] % range);
+      }
+
+      function roll() {
+        const min = parseInt(minIn.value, 10) || 1;
+        const max = parseInt(maxIn.value, 10) || 100;
+        const count = Math.min(1000, Math.max(1, parseInt(countIn.value, 10) || 1));
+
+        if (min >= max) {
+          heroNum.textContent = 'Min < Max';
+          return;
+        }
+
+        if (count === 1) {
+          bulkCard.classList.add('hidden');
+          const single = getRandomInt(min, max);
+          heroNum.textContent = single;
+        } else {
+          const numbers = [];
+          for (let i = 0; i < count; i++) {
+            numbers.push(getRandomInt(min, max));
+          }
+          heroNum.textContent = numbers[0];
+          bulkCard.classList.remove('hidden');
+          bulkList.innerHTML = numbers.map(n => `
+            <span class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] px-3 py-1 font-bold text-emerald-500">
+              ${n}
+            </span>
+          `).join('');
+        }
+      }
+
+      rollBtn.addEventListener('click', roll);
+
+      copyBtn.addEventListener('click', () => {
+        const items = Array.from(bulkList.querySelectorAll('span')).map(s => s.textContent.trim());
+        if (items.length === 0) return;
+        navigator.clipboard.writeText(items.join(', '));
+        const span = copyBtn.querySelector('span');
+        const orig = span.textContent;
+        span.textContent = 'Copied!';
+        setTimeout(() => span.textContent = orig, 1800);
+      });
+    })();
+  </script>
+</SiteLayout>

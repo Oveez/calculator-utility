@@ -1,0 +1,231 @@
+---
+import SiteLayout from '../../layouts/SiteLayout.astro';
+import Icon from '../../components/Icon.astro';
+import { siteName, toAbsoluteUrl, withBasePath } from '../../utils/site';
+
+const pageTitle = `Text Utilities | Text Diff, Line Sorter, Cleaners & Converters · ${siteName}`;
+const pageDesc = 'Free client-side text manipulation utilities. Compare texts with diff checker, deduplicate lines, sort alphabetically, clean whitespaces, strip HTML, convert Markdown, and generate slugs.';
+const canonicalUrl = toAbsoluteUrl('/text-tools/');
+
+const breadcrumbItems = [
+  { label: 'Home', href: toAbsoluteUrl('/') },
+  { label: 'Text Tools' },
+];
+
+const textToolsList = [
+  {
+    slug: 'text-diff-checker',
+    title: 'Text Diff Checker',
+    badge: 'Popular',
+    metaDescription: 'Compare two text blocks side-by-side or inline with character, word, and line addition/deletion highlights.',
+    href: withBasePath('/text-tools/text-diff-checker/'),
+    icon: 'text',
+  },
+  {
+    slug: 'duplicate-line-remover',
+    title: 'Duplicate Line Remover',
+    badge: 'Cleaning',
+    metaDescription: 'Strip duplicate and repeated lines from lists with case sensitivity and first/last occurrence options.',
+    href: withBasePath('/text-tools/duplicate-line-remover/'),
+    icon: 'text',
+  },
+  {
+    slug: 'empty-line-remover',
+    title: 'Empty Line Remover',
+    badge: 'Formatting',
+    metaDescription: 'Remove empty, blank, and whitespace-only lines from text documents and code snippets.',
+    href: withBasePath('/text-tools/empty-line-remover/'),
+    icon: 'text',
+  },
+  {
+    slug: 'line-sorter',
+    title: 'Text Line Sorter',
+    badge: 'Sorting',
+    metaDescription: 'Sort lines alphabetically (A-Z, Z-A), numerically, by line length, or randomize order.',
+    href: withBasePath('/text-tools/line-sorter/'),
+    icon: 'text',
+  },
+  {
+    slug: 'whitespace-remover',
+    title: 'Whitespace Remover',
+    badge: 'Cleaning',
+    metaDescription: 'Collapse consecutive spaces, strip tabs, and remove leading and trailing whitespace from lines.',
+    href: withBasePath('/text-tools/whitespace-remover/'),
+    icon: 'text',
+  },
+  {
+    slug: 'find-and-replace',
+    title: 'Find and Replace Tool',
+    badge: 'Editing',
+    metaDescription: 'Bulk find and replace strings or regular expressions across multi-line text with match counters.',
+    href: withBasePath('/text-tools/find-and-replace/'),
+    icon: 'text',
+  },
+  {
+    slug: 'text-cleaner',
+    title: 'Text Cleaner & Sanitizer',
+    badge: 'Multi-Tool',
+    metaDescription: 'Multi-transformation text sanitizer to trim, normalize line endings, and strip punctuation or emojis.',
+    href: withBasePath('/text-tools/text-cleaner/'),
+    icon: 'text',
+  },
+  {
+    slug: 'html-to-text',
+    title: 'HTML to Plain Text',
+    badge: 'Parser',
+    metaDescription: 'Strip HTML tags, scripts, and styles, converting web markup into clean, readable plain text.',
+    href: withBasePath('/text-tools/html-to-text/'),
+    icon: 'text',
+  },
+  {
+    slug: 'markdown-to-html',
+    title: 'Markdown to HTML Converter',
+    badge: 'Converter',
+    metaDescription: 'Convert Markdown syntax into clean HTML markup with live preview and code export.',
+    href: withBasePath('/text-tools/markdown-to-html/'),
+    icon: 'text',
+  },
+  {
+    slug: 'lorem-ipsum-generator',
+    title: 'Lorem Ipsum Generator',
+    badge: 'Generator',
+    metaDescription: 'Generate customizable dummy placeholder text by paragraphs, sentences, or word count.',
+    href: withBasePath('/text-tools/lorem-ipsum-generator/'),
+    icon: 'text',
+  },
+  {
+    slug: 'slug-generator',
+    title: 'URL Slug Generator',
+    badge: 'SEO',
+    metaDescription: 'Convert article titles and strings into SEO-friendly, clean URL slugs with hyphen separation.',
+    href: withBasePath('/text-tools/slug-generator/'),
+    icon: 'text',
+  },
+];
+
+const schemaFaq = [
+  {
+    question: 'Are my confidential text documents processed securely?',
+    answer: 'Yes. All text utilities on Calculator Utility run 100% locally within your browser memory. No text, confidential documents, or credentials are ever sent to an external server.',
+  },
+];
+
+const schemaGraph = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: breadcrumbItems.map((item, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      name: item.label,
+      item: item.href,
+    })),
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: schemaFaq.map((item) => ({
+      '@type': 'Question',
+      name: item.question,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: item.answer,
+      },
+    })),
+  },
+];
+---
+
+<SiteLayout title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(schemaGraph)} />
+
+  <article class="space-y-10 py-2">
+    <nav aria-label="Breadcrumb">
+      <ol class="flex flex-wrap items-center gap-2 text-xs text-[color:var(--muted)]">
+        {breadcrumbItems.map((item, index) => (
+          <li class="flex items-center gap-2">
+            {index > 0 && <span aria-hidden="true">/</span>}
+            {item.href ? (
+              <a class="transition hover:text-[color:var(--fg)]" href={item.href}>
+                {item.label}
+              </a>
+            ) : (
+              <span aria-current="page" class="font-semibold text-[color:var(--fg)]">
+                {item.label}
+              </span>
+            )}
+          </li>
+        ))}
+      </ol>
+    </nav>
+
+    <header class="space-y-4 rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-6 sm:p-10">
+      <div class="inline-flex items-center gap-2 rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3.5 py-1 text-xs font-bold text-[color:var(--fg)]">
+        <span>Client-Side Text Suite</span>
+      </div>
+      <h1 class="text-3xl font-extrabold tracking-tight text-[color:var(--fg)] sm:text-4xl">
+        Text Utilities &amp; Formatters
+      </h1>
+      <p class="max-w-3xl text-sm leading-relaxed text-[color:var(--muted)] sm:text-base">
+        Fast, privacy-focused text formatting, diff comparison, line sorting, sanitization, and Markdown converters running locally in your browser.
+      </p>
+    </header>
+
+    <section class="space-y-4">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Tool Directory</p>
+          <h2 class="text-xl font-bold tracking-tight text-[color:var(--fg)]">11 In-Browser Text Engines</h2>
+        </div>
+        <span class="rounded-lg bg-[color:var(--surface)] border border-[color:var(--border)] px-2.5 py-1 text-xs font-bold text-[color:var(--fg)]">
+          11 Tools
+        </span>
+      </div>
+
+      <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {textToolsList.map((tool) => (
+          <a
+            href={tool.href}
+            class="group flex flex-col justify-between rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 transition hover:border-[color:var(--border-strong)] hover:bg-[color:var(--surface-strong)]"
+          >
+            <div class="space-y-2.5">
+              <div class="flex items-center justify-between">
+                <span class="rounded-md bg-[color:var(--surface-strong)] border border-[color:var(--border)] px-2 py-0.5 text-[10px] font-bold text-[color:var(--muted)]">
+                  {tool.badge}
+                </span>
+              </div>
+              <h3 class="text-base font-bold text-[color:var(--fg)] transition-colors">
+                {tool.title}
+              </h3>
+              <p class="text-xs leading-relaxed text-[color:var(--muted)]">
+                {tool.metaDescription}
+              </p>
+            </div>
+            <div class="mt-5 flex items-center gap-1.5 text-xs font-bold text-[color:var(--fg)]">
+              <span>Open Tool</span>
+              <Icon name="arrow-right" class="w-3.5 h-3.5 transition group-hover:translate-x-1" />
+            </div>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <!-- FAQs -->
+    <section class="space-y-4">
+      <h2 class="text-xl font-bold text-[color:var(--fg)]">Frequently Asked Questions</h2>
+      <div class="space-y-3">
+        {schemaFaq.map((faq) => (
+          <details class="group rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
+            <summary class="cursor-pointer list-none font-semibold text-sm sm:text-base text-[color:var(--fg)] flex items-center justify-between gap-4">
+              <span>{faq.question}</span>
+              <span class="text-xs text-[color:var(--muted)] group-open:rotate-180 transition-transform">▼</span>
+            </summary>
+            <p class="mt-3 text-xs sm:text-sm leading-relaxed text-[color:var(--muted)]">
+              {faq.answer}
+            </p>
+          </details>
+        ))}
+      </div>
+    </section>
+  </article>
+</SiteLayout>
