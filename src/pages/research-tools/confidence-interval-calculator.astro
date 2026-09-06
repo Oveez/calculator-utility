@@ -108,7 +108,7 @@ const schemaGraph = [
           </div>
 
           <div class="grid grid-cols-2 gap-2 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-1 text-xs font-semibold">
-            <button type="button" class="cursor-pointer rounded-xl bg-[color:var(--accent)] px-3 py-2 text-white shadow-xs" data-mode-btn="mean">
+            <button type="button" class="cursor-pointer rounded-xl bg-[color:var(--accent)] px-3 py-2 text-[color:var(--bg)] shadow-xs" data-mode-btn="mean">
               Sample Mean (x̄)
             </button>
             <button type="button" class="cursor-pointer rounded-xl px-3 py-2 text-[color:var(--muted)] hover:text-[color:var(--fg)]" data-mode-btn="proportion">
@@ -273,7 +273,7 @@ const schemaGraph = [
           currentMode = btn.dataset.modeBtn || 'mean';
           modeBtns.forEach((b) => {
             if (b === btn) {
-              b.className = 'cursor-pointer rounded-xl bg-[color:var(--accent)] px-3 py-2 text-white shadow-xs';
+              b.className = 'cursor-pointer rounded-xl bg-[color:var(--accent)] px-3 py-2 text-[color:var(--bg)] shadow-xs';
             } else {
               b.className = 'cursor-pointer rounded-xl px-3 py-2 text-[color:var(--muted)] hover:text-[color:var(--fg)]';
             }

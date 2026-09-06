@@ -59,7 +59,7 @@ const countryVatOptions = allCountryTaxProfiles.map((c) => {
             <div class="mt-2 grid grid-cols-2 gap-2 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-1 text-xs font-semibold">
               <button
                 type="button"
-                class="cursor-pointer rounded-xl bg-[color:var(--accent)] px-3 py-2 text-white shadow-sm transition"
+                class="cursor-pointer rounded-xl bg-[color:var(--accent)] px-3 py-2 text-[color:var(--bg)] shadow-sm transition"
                 data-vat-mode="add_tax"
               >
                 + Add Tax (Net → Gross)
@@ -246,7 +246,7 @@ const countryVatOptions = allCountryTaxProfiles.map((c) => {
           modeButtons.forEach((b) => {
             const isActive = b.dataset.vatMode === mode;
             if (isActive) {
-              b.className = 'cursor-pointer rounded-xl bg-[color:var(--accent)] px-3 py-2 text-white shadow-sm transition';
+              b.className = 'cursor-pointer rounded-xl bg-[color:var(--accent)] px-3 py-2 text-[color:var(--bg)] shadow-sm transition';
             } else {
               b.className = 'cursor-pointer rounded-xl px-3 py-2 text-[color:var(--muted)] transition hover:text-[color:var(--fg)]';
             }

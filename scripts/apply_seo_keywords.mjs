@@ -1,4 +1,8 @@
-import type { CalculatorConfig } from '../types/calculator';
+import fs from 'node:fs';
+import { CSV_KEYWORD_SET, RAW_CSV_KEYWORDS } from './raw_keywords.mjs';
+
+// Define the full content for calculators.ts
+const calculatorsTsContent = `import type { CalculatorConfig } from '../types/calculator';
 import {
 	ageFromIsoDate,
 	calculateCompoundInterest,
@@ -59,7 +63,7 @@ const calculators: CalculatorConfig[] = [
 			const years = getValue(values, 'loanTermYears', 30);
 			return calculateLoanMonthlyPayment(principal, rate, years);
 		},
-		resultFormat: (value) => `${formatCurrency(value)} / month`,
+		resultFormat: (value) => \`\${formatCurrency(value)} / month\`,
 		faq: [
 			{
 				question: 'How do I calculate loan payment and monthly interest?',
@@ -157,7 +161,7 @@ const calculators: CalculatorConfig[] = [
 			const res = calculateSimpleInterest(principal, rate, years);
 			return res.totalAmount;
 		},
-		resultFormat: (value) => `${formatCurrency(value)} total`,
+		resultFormat: (value) => \`\${formatCurrency(value)} total\`,
 		faq: [
 			{
 				question: 'How do I find the simple interest rate calculator formula?',
@@ -201,7 +205,7 @@ const calculators: CalculatorConfig[] = [
 			const res = calculateTip(bill, tip, split);
 			return res.perPerson;
 		},
-		resultFormat: (value) => `${formatCurrency(value)} / person`,
+		resultFormat: (value) => \`\${formatCurrency(value)} / person\`,
 		faq: [
 			{
 				question: 'How do I calculate tip on a restaurant bill?',
@@ -281,7 +285,7 @@ const calculators: CalculatorConfig[] = [
 			const res = calculateSalary(rate, hours, weeks);
 			return res.annual;
 		},
-		resultFormat: (value) => `${formatCurrency(value, '$', 0)} / year`,
+		resultFormat: (value) => \`\${formatCurrency(value, '$', 0)} / year\`,
 		faq: [
 			{
 				question: 'How does an hourly rate converter work?',
@@ -325,7 +329,7 @@ const calculators: CalculatorConfig[] = [
 			const netPrincipal = Math.max(price - down - trade, 0);
 			return calculateLoanMonthlyPayment(netPrincipal, rate, years);
 		},
-		resultFormat: (value) => `${formatCurrency(value)} / month`,
+		resultFormat: (value) => \`\${formatCurrency(value)} / month\`,
 		faq: [
 			{
 				question: 'How do down payments and trade-ins impact my loan calculator monthly payment?',
@@ -415,7 +419,7 @@ const calculators: CalculatorConfig[] = [
 			];
 			return weightedAverage(pairs);
 		},
-		resultFormat: (value) => `${formatNumber(value)} GPA`,
+		resultFormat: (value) => \`\${formatNumber(value)} GPA\`,
 		faq: [
 			{
 				question: 'How does a weighted gpa calculator compute semester scores?',
@@ -463,7 +467,7 @@ const calculators: CalculatorConfig[] = [
 			[getValue(values, 'semester3Gpa'), getValue(values, 'semester3Credits')],
 			[getValue(values, 'semester4Gpa'), getValue(values, 'semester4Credits')],
 		]),
-		resultFormat: (value) => `${formatNumber(value)} CGPA`,
+		resultFormat: (value) => \`\${formatNumber(value)} CGPA\`,
 		faq: [
 			{
 				question: 'How is a cumulative gpa calculator different from a single semester GPA calculator?',
@@ -499,7 +503,7 @@ const calculators: CalculatorConfig[] = [
 			const whole = getValue(values, 'whole', 50);
 			return whole === 0 ? 0 : (part / whole) * 100;
 		},
-		resultFormat: (value) => `${formatNumber(Number(value))}%`,
+		resultFormat: (value) => \`\${formatNumber(Number(value))}%\`,
 		faq: [
 			{
 				question: 'What is the standard percentage calculator formula?',
@@ -538,7 +542,7 @@ const calculators: CalculatorConfig[] = [
 		resultFormat: (value) => {
 			const percent = Number(value);
 			const grade = percent >= 97 ? 'A+' : percent >= 93 ? 'A' : percent >= 90 ? 'A-' : percent >= 87 ? 'B+' : percent >= 83 ? 'B' : percent >= 80 ? 'B-' : percent >= 77 ? 'C+' : percent >= 73 ? 'C' : percent >= 70 ? 'C-' : percent >= 60 ? 'D' : 'F';
-			return `${formatNumber(percent)}% (${grade})`;
+			return \`\${formatNumber(percent)}% (\${grade})\`;
 		},
 		faq: [
 			{
@@ -582,7 +586,7 @@ const calculators: CalculatorConfig[] = [
 			else if (bmi < 25) category = 'Normal weight';
 			else if (bmi < 30) category = 'Overweight';
 			else category = 'Obese';
-			return `${formatNumber(bmi)} kg/m² (${category})`;
+			return \`\${formatNumber(bmi)} kg/m² (\${category})\`;
 		},
 		faq: [
 			{
@@ -661,11 +665,11 @@ const calculators: CalculatorConfig[] = [
 				active: 1.725,
 				veryactive: 1.9,
 			};
-			const activityMultiplier = activityMultipliers[activityLevel.replace(/\s+/g, '')] ?? 1.55;
+			const activityMultiplier = activityMultipliers[activityLevel.replace(/\\s+/g, '')] ?? 1.55;
 			const bmr = 10 * weightKg + 6.25 * heightCm - 5 * ageYears + sexAdjustment;
 			return Math.max(bmr * activityMultiplier, 0);
 		},
-		resultFormat: (value) => `${formatInteger(value)} kcal / day`,
+		resultFormat: (value) => \`\${formatInteger(value)} kcal / day\`,
 		faq: [
 			{
 				question: 'How do I calculate basal metabolic rate formula for daily energy?',
@@ -717,7 +721,7 @@ const calculators: CalculatorConfig[] = [
 			const milliliters = (weightKg * 35 + exerciseMinutes * 12) * climateMultiplier;
 			return Math.max(milliliters / 1000, 0);
 		},
-		resultFormat: (value) => `${formatNumber(value)} liters / day`,
+		resultFormat: (value) => \`\${formatNumber(value)} liters / day\`,
 		faq: [
 			{ question: 'What is the baseline scientific recommendation for hydration?', answer: 'Major health organizations recommend 2.0 to 2.5 liters daily for women and 2.5 to 3.5 liters for men, adjusted for body mass and physical exertion.' },
 			{ question: 'Does tea, coffee, or food water count toward hydration?', answer: 'Yes, non-alcoholic fluids and water-rich foods contribute approximately 20-30% of daily hydration.' },
@@ -753,7 +757,7 @@ const calculators: CalculatorConfig[] = [
 			const average = (Math.abs(oldValue) + Math.abs(newValue)) / 2;
 			return average === 0 ? 0 : (Math.abs(newValue - oldValue) / average) * 100;
 		},
-		resultFormat: (value) => `${formatNumber(value)}%`,
+		resultFormat: (value) => \`\${formatNumber(value)}%\`,
 		faq: [
 			{ question: 'Why use the average in the denominator?', answer: 'It ensures symmetric comparison regardless of which number is entered first.' },
 		],
@@ -782,7 +786,7 @@ const calculators: CalculatorConfig[] = [
 			const partB = getValue(values, 'partB', 24);
 			return partB === 0 ? 0 : partA / partB;
 		},
-		resultFormat: (value) => `${formatNumber(value)} : 1`,
+		resultFormat: (value) => \`\${formatNumber(value)} : 1\`,
 		faq: [
 			{ question: 'How is the ratio displayed?', answer: 'It displays the proportional value of A relative to 1 unit of B.' },
 		],
@@ -811,7 +815,7 @@ const calculators: CalculatorConfig[] = [
 			const den = getValue(values, 'denominator', 4);
 			return den === 0 ? 0 : num / den;
 		},
-		resultFormat: (value) => `${formatNumber(Number(value))} (${formatNumber(Number(value) * 100)}%)`,
+		resultFormat: (value) => \`\${formatNumber(Number(value))} (\${formatNumber(Number(value) * 100)}%)\`,
 		faq: [
 			{ question: 'What does this fraction calculator output?', answer: 'It provides both decimal and equivalent percentage representations simultaneously.' },
 		],
@@ -875,7 +879,7 @@ const calculators: CalculatorConfig[] = [
 			const ref = getTextValue(values, 'referenceDate', '2026-08-29');
 			return Math.max(ageFromIsoDate(birth, ref), 0);
 		},
-		resultFormat: (value) => `${formatNumber(value)} years`,
+		resultFormat: (value) => \`\${formatNumber(value)} years\`,
 		faq: [
 			{
 				question: 'How do I use this date age calculator to calculate my age?',
@@ -911,7 +915,7 @@ const calculators: CalculatorConfig[] = [
 			const end = getTextValue(values, 'endDate', '2026-12-31');
 			return dateDiffDaysFromIso(start, end);
 		},
-		resultFormat: (value) => `${formatInteger(value)} days`,
+		resultFormat: (value) => \`\${formatInteger(value)} days\`,
 		faq: [
 			{ question: 'Does order of dates matter?', answer: 'No. The calculator automatically computes the absolute difference between both dates.' },
 		],
@@ -969,7 +973,7 @@ const calculators: CalculatorConfig[] = [
 			const end = getTextValue(values, 'endDate', '2026-09-30');
 			return workingDaysFromIso(start, end);
 		},
-		resultFormat: (value) => `${formatInteger(value)} working days`,
+		resultFormat: (value) => \`\${formatInteger(value)} working days\`,
 		faq: [
 			{
 				question: 'How does a business days calculator exclude weekends?',
@@ -1000,7 +1004,7 @@ const calculators: CalculatorConfig[] = [
 			{ id: 'text', label: 'Text content', type: 'textarea', rows: 5, defaultValue: 'Astro is a modern web framework designed for building content-focused websites.', placeholder: 'Paste or type your text here...' },
 		],
 		formula: (values) => countWords(getTextValue(values, 'text')),
-		resultFormat: (value) => `${formatInteger(value)} words`,
+		resultFormat: (value) => \`\${formatInteger(value)} words\`,
 		faq: [
 			{ question: 'How are words counted accurately?', answer: 'Words are identified using standard unicode regex boundaries separating whitespace and punctuation tokens without transmitting text to any server.' },
 			{ question: 'What is the recommended word count for a professional resume summary?', answer: 'An effective resume summary should typically be between 40 and 80 words.' },
@@ -1026,7 +1030,7 @@ const calculators: CalculatorConfig[] = [
 			{ id: 'text', label: 'Text content', type: 'textarea', rows: 5, defaultValue: 'Static text tools are fast, secure, and run locally.', placeholder: 'Paste or type your text here...' },
 		],
 		formula: (values) => countCharacters(getTextValue(values, 'text')),
-		resultFormat: (value) => `${formatInteger(value)} characters`,
+		resultFormat: (value) => \`\${formatInteger(value)} characters\`,
 		faq: [
 			{ question: 'Do spaces and line breaks count as characters?', answer: 'Yes, this tool counts every unicode character including letters, numbers, punctuation, spaces, and newline symbols.' },
 		],
@@ -1141,7 +1145,7 @@ const calculators: CalculatorConfig[] = [
 			const toR = rates[to] || 1.0;
 			return (amount / fromR) * toR;
 		},
-		resultFormat: (value) => `${formatNumber(Number(value))} Converted`,
+		resultFormat: (value) => \`\${formatNumber(Number(value))} Converted\`,
 		faq: [
 			{
 				question: 'How does this currency exchange rate calculator work?',
@@ -1391,3 +1395,7 @@ const calculators: CalculatorConfig[] = [
 ];
 
 export { calculators };
+`;
+
+fs.writeFileSync('src/data/calculators.ts', calculatorsTsContent, 'utf8');
+console.log('Successfully wrote updated src/data/calculators.ts');
