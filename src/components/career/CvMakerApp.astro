@@ -8,9 +8,6 @@ interface Props {
 const { initialTemplate = 'professional' } = Astro.props as Props;
 ---
 
-<!-- Include local high-performance html2pdf bundle for instantaneous direct PDF generation -->
-<script is:inline src={withBasePath('/js/html2pdf.bundle.min.js')}></script>
-
 <div id="cv-maker-root" class="space-y-6 sm:space-y-8 w-full max-w-full min-w-0 overflow-x-hidden" data-default-template={initialTemplate}>
   <!-- Top Control Bar -->
   <div class="flex flex-col gap-4 sm:gap-5 rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-4 sm:p-7 shadow-sm lg:flex-row lg:items-center lg:justify-between w-full max-w-full min-w-0">
@@ -710,6 +707,7 @@ const { initialTemplate = 'professional' } = Astro.props as Props;
 
 <script>
   import { generateProfessionalSummary } from '../../utils/ai/summary-service';
+  import { generateCvPdf } from '../../utils/career/cv-pdf-exporter';
 
   interface EducationItem {
     id: string;
@@ -1862,36 +1860,8 @@ const { initialTemplate = 'professional' } = Astro.props as Props;
       }
     });
 
-    // Helper: Ensure html2pdf is loaded with multiple fallbacks
-    function loadHtml2PdfEngine(): Promise<any> {
-      if ((window as any).html2pdf) {
-        return Promise.resolve((window as any).html2pdf);
-      }
-
-      return new Promise((resolve, reject) => {
-        const script = document.createElement('script');
-        script.src = '/js/html2pdf.bundle.min.js';
-        script.onload = () => {
-          if ((window as any).html2pdf) resolve((window as any).html2pdf);
-          else reject(new Error('html2pdf global not defined'));
-        };
-        script.onerror = () => {
-          // CDN Fallback
-          const cdnScript = document.createElement('script');
-          cdnScript.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js';
-          cdnScript.onload = () => {
-            if ((window as any).html2pdf) resolve((window as any).html2pdf);
-            else reject(new Error('html2pdf global not defined from CDN'));
-          };
-          cdnScript.onerror = () => reject(new Error('Could not load html2pdf from CDN'));
-          document.head.appendChild(cdnScript);
-        };
-        document.head.appendChild(script);
-      });
-    }
-
     // =========================================================================
-    // DIRECT CLIENT-SIDE PDF DOWNLOAD (NO PRINT DIALOG, NO DATE/URL HEADERS)
+    // DIRECT CLIENT-SIDE VECTOR TEXT-BASED PDF DOWNLOAD
     // =========================================================================
     async function downloadPdfDirect() {
       if (!state.name.trim()) {
@@ -1900,9 +1870,6 @@ const { initialTemplate = 'professional' } = Astro.props as Props;
         inpName?.focus();
         return;
       }
-
-      const cvElement = document.getElementById('cv-preview-doc');
-      if (!cvElement) return;
 
       const btn = document.getElementById('cv-download-pdf') as HTMLButtonElement;
       const btnLabel = document.getElementById('cv-btn-label');
@@ -1913,132 +1880,9 @@ const { initialTemplate = 'professional' } = Astro.props as Props;
       if (btnIcon) btnIcon.style.opacity = '0.5';
 
       try {
-        const html2pdf = await loadHtml2PdfEngine();
         const safeFileName = (state.name.trim() || 'Resume').replace(/[^a-zA-Z0-9_-]/g, '_');
-
-        // Create an isolated container for crisp vector/canvas conversion with strictly bounded dimensions
-        const clone = cvElement.cloneNode(true) as HTMLElement;
-        clone.style.boxSizing = 'border-box';
-        clone.style.boxShadow = 'none';
-        clone.style.margin = '0';
-        clone.style.width = '210mm';
-        clone.style.maxWidth = '210mm';
-        clone.style.minWidth = '210mm';
-        clone.style.height = 'auto';
-        clone.style.minHeight = 'auto';
-        clone.style.maxHeight = 'none';
-        clone.style.padding = '12mm 14mm';
-        clone.style.background = '#ffffff';
-        clone.style.transform = 'none';
-
-        // Ensure all nested children obey border-box sizing
-        const nestedNodes = clone.querySelectorAll<HTMLElement>('*');
-        nestedNodes.forEach((node) => {
-          node.style.boxSizing = 'border-box';
-        });
-
-        // Ensure last child element has no trailing bottom margin that causes overflow
-        const lastChild = clone.lastElementChild as HTMLElement;
-        if (lastChild) {
-          lastChild.style.marginBottom = '0';
-          lastChild.style.paddingBottom = '0';
-        }
-
-        const wrapper = document.createElement('div');
-        wrapper.style.position = 'fixed';
-        wrapper.style.left = '-9999px';
-        wrapper.style.top = '0';
-        wrapper.style.zIndex = '-1000';
-        wrapper.style.boxSizing = 'border-box';
-        wrapper.appendChild(clone);
-        document.body.appendChild(wrapper);
-
-        const opt = {
-          margin: 0,
-          filename: `${safeFileName}_CV.pdf`,
-          image: { type: 'jpeg', quality: 0.98 },
-          html2canvas: {
-            scale: 2,
-            useCORS: true,
-            letterRendering: true,
-            backgroundColor: '#ffffff',
-            scrollY: 0,
-            scrollX: 0,
-            logging: false,
-          },
-          jsPDF: {
-            unit: 'mm',
-            format: 'a4',
-            orientation: 'portrait',
-          },
-          pagebreak: { mode: ['css', 'legacy'] },
-        };
-
-        const worker = html2pdf().set(opt).from(clone);
-        await worker.toPdf();
-        const pdf = worker.prop?.pdf;
-
-        if (pdf) {
-          const canvas = worker.prop?.canvas as HTMLCanvasElement;
-          if (canvas) {
-            const pxPageHeight = Math.floor(canvas.width * (297 / 210));
-            let totalPages = typeof pdf.getNumberOfPages === 'function'
-              ? pdf.getNumberOfPages()
-              : (pdf.internal?.getNumberOfPages ? pdf.internal.getNumberOfPages() : 1);
-
-            while (totalPages > 1) {
-              const pageIndex = totalPages - 1;
-              const startY = pageIndex * pxPageHeight;
-              const sliceHeight = Math.min(canvas.height - startY, pxPageHeight);
-
-              // If slice height is tiny sub-pixel remainder (<= 25px out of ~2244px), trim it
-              if (sliceHeight <= 25) {
-                pdf.deletePage(totalPages);
-                totalPages--;
-                continue;
-              }
-
-              // Check if slice is completely blank/white
-              const tempCanvas = document.createElement('canvas');
-              tempCanvas.width = canvas.width;
-              tempCanvas.height = sliceHeight;
-              const tempCtx = tempCanvas.getContext('2d');
-              if (tempCtx) {
-                tempCtx.fillStyle = '#ffffff';
-                tempCtx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
-                tempCtx.drawImage(canvas, 0, startY, canvas.width, sliceHeight, 0, 0, canvas.width, sliceHeight);
-
-                const imgData = tempCtx.getImageData(0, 0, tempCanvas.width, tempCanvas.height).data;
-                let isBlank = true;
-                for (let i = 0; i < imgData.length; i += 16) {
-                  const r = imgData[i];
-                  const g = imgData[i + 1];
-                  const b = imgData[i + 2];
-                  const a = imgData[i + 3];
-                  if (a > 20 && (r < 240 || g < 240 || b < 240)) {
-                    isBlank = false;
-                    break;
-                  }
-                }
-
-                if (isBlank) {
-                  pdf.deletePage(totalPages);
-                  totalPages--;
-                } else {
-                  break;
-                }
-              } else {
-                break;
-              }
-            }
-          }
-
-          pdf.save(`${safeFileName}_CV.pdf`);
-        } else {
-          await worker.save();
-        }
-
-        wrapper.remove();
+        const doc = generateCvPdf(state);
+        doc.save(`${safeFileName}_CV.pdf`);
       } catch (err) {
         console.error('Direct PDF export error:', err);
         // Fallback: Isolated printable window with zero headers/footers
