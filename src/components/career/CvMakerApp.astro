@@ -1923,16 +1923,26 @@ const { initialTemplate = 'professional' } = Astro.props as Props;
         clone.style.margin = '0';
         clone.style.width = '210mm';
         clone.style.maxWidth = '210mm';
+        clone.style.minWidth = '210mm';
         clone.style.height = 'auto';
         clone.style.minHeight = 'auto';
+        clone.style.maxHeight = 'none';
         clone.style.padding = '12mm 14mm';
         clone.style.background = '#ffffff';
+        clone.style.transform = 'none';
 
         // Ensure all nested children obey border-box sizing
         const nestedNodes = clone.querySelectorAll<HTMLElement>('*');
         nestedNodes.forEach((node) => {
           node.style.boxSizing = 'border-box';
         });
+
+        // Ensure last child element has no trailing bottom margin that causes overflow
+        const lastChild = clone.lastElementChild as HTMLElement;
+        if (lastChild) {
+          lastChild.style.marginBottom = '0';
+          lastChild.style.paddingBottom = '0';
+        }
 
         const wrapper = document.createElement('div');
         wrapper.style.position = 'fixed';
@@ -1961,10 +1971,73 @@ const { initialTemplate = 'professional' } = Astro.props as Props;
             format: 'a4',
             orientation: 'portrait',
           },
-          pagebreak: { mode: ['avoid-all', 'css', 'legacy'] },
+          pagebreak: { mode: ['css', 'legacy'] },
         };
 
-        await html2pdf().set(opt).from(clone).save();
+        const worker = html2pdf().set(opt).from(clone);
+        await worker.toPdf();
+        const pdf = worker.prop?.pdf;
+
+        if (pdf) {
+          const canvas = worker.prop?.canvas as HTMLCanvasElement;
+          if (canvas) {
+            const pxPageHeight = Math.floor(canvas.width * (297 / 210));
+            let totalPages = typeof pdf.getNumberOfPages === 'function'
+              ? pdf.getNumberOfPages()
+              : (pdf.internal?.getNumberOfPages ? pdf.internal.getNumberOfPages() : 1);
+
+            while (totalPages > 1) {
+              const pageIndex = totalPages - 1;
+              const startY = pageIndex * pxPageHeight;
+              const sliceHeight = Math.min(canvas.height - startY, pxPageHeight);
+
+              // If slice height is tiny sub-pixel remainder (<= 25px out of ~2244px), trim it
+              if (sliceHeight <= 25) {
+                pdf.deletePage(totalPages);
+                totalPages--;
+                continue;
+              }
+
+              // Check if slice is completely blank/white
+              const tempCanvas = document.createElement('canvas');
+              tempCanvas.width = canvas.width;
+              tempCanvas.height = sliceHeight;
+              const tempCtx = tempCanvas.getContext('2d');
+              if (tempCtx) {
+                tempCtx.fillStyle = '#ffffff';
+                tempCtx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
+                tempCtx.drawImage(canvas, 0, startY, canvas.width, sliceHeight, 0, 0, canvas.width, sliceHeight);
+
+                const imgData = tempCtx.getImageData(0, 0, tempCanvas.width, tempCanvas.height).data;
+                let isBlank = true;
+                for (let i = 0; i < imgData.length; i += 16) {
+                  const r = imgData[i];
+                  const g = imgData[i + 1];
+                  const b = imgData[i + 2];
+                  const a = imgData[i + 3];
+                  if (a > 20 && (r < 240 || g < 240 || b < 240)) {
+                    isBlank = false;
+                    break;
+                  }
+                }
+
+                if (isBlank) {
+                  pdf.deletePage(totalPages);
+                  totalPages--;
+                } else {
+                  break;
+                }
+              } else {
+                break;
+              }
+            }
+          }
+
+          pdf.save(`${safeFileName}_CV.pdf`);
+        } else {
+          await worker.save();
+        }
+
         wrapper.remove();
       } catch (err) {
         console.error('Direct PDF export error:', err);
@@ -2003,11 +2076,24 @@ const { initialTemplate = 'professional' } = Astro.props as Props;
               }
               body {
                 margin: 0;
-                padding: 12mm 15mm;
+                padding: 12mm 14mm;
                 background: #ffffff;
                 color: #111827;
                 -webkit-print-color-adjust: exact;
                 print-color-adjust: exact;
+              }
+              .cv-sheet-paper {
+                width: 100% !important;
+                max-width: 100% !important;
+                min-width: 100% !important;
+                height: auto !important;
+                min-height: auto !important;
+                max-height: none !important;
+                box-shadow: none !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                page-break-after: avoid !important;
+                break-after: avoid !important;
               }
             </style>
           </head>
