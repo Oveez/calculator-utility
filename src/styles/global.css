@@ -34,6 +34,23 @@
   --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px -1px rgba(0, 0, 0, 0.05);
   --shadow-glass: 0 8px 32px 0 rgba(31, 38, 135, 0.06), 0 1px 2px 0 rgba(0, 0, 0, 0.04);
   --shadow-neon: 0 0 15px rgba(79, 70, 229, 0.22);
+
+  /* Blue Neon Glass Design Tokens for All Website Tabs */
+  --tab-surface: rgba(240, 249, 255, 0.75);
+  --tab-surface-hover: rgba(224, 242, 254, 0.90);
+  --tab-surface-active: rgba(2, 132, 199, 0.12);
+  --tab-surface-active-hover: rgba(2, 132, 199, 0.16);
+  --tab-border: rgba(2, 132, 199, 0.22);
+  --tab-border-hover: rgba(2, 132, 199, 0.50);
+  --tab-border-active: #0284c7;
+  --tab-text: #334155;
+  --tab-text-hover: #0f172a;
+  --tab-text-active: #0369a1;
+  --tab-glow-hover: 0 0 12px rgba(2, 132, 199, 0.24);
+  --tab-glow-active: 0 0 16px rgba(2, 132, 199, 0.30), inset 0 0 8px rgba(2, 132, 199, 0.08);
+  --tab-glow-active-hover: 0 0 20px rgba(2, 132, 199, 0.38), inset 0 0 8px rgba(2, 132, 199, 0.12);
+  --tab-badge-active-bg: rgba(2, 132, 199, 0.18);
+  --tab-badge-active-text: #0369a1;
 }
 
 html[data-theme='dark'] {
@@ -66,6 +83,23 @@ html[data-theme='dark'] {
   --shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.5);
   --shadow-glass: 0 8px 32px 0 rgba(0, 0, 0, 0.45), inset 0 0 0 1px rgba(255, 255, 255, 0.06);
   --shadow-neon: 0 0 20px rgba(99, 102, 241, 0.35);
+
+  /* Blue Neon Glass Design Tokens for All Website Tabs */
+  --tab-surface: rgba(14, 165, 233, 0.06);
+  --tab-surface-hover: rgba(14, 165, 233, 0.14);
+  --tab-surface-active: rgba(14, 165, 233, 0.20);
+  --tab-surface-active-hover: rgba(14, 165, 233, 0.26);
+  --tab-border: rgba(56, 189, 248, 0.24);
+  --tab-border-hover: rgba(56, 189, 248, 0.52);
+  --tab-border-active: #38bdf8;
+  --tab-text: #94a3b8;
+  --tab-text-hover: #f1f5f9;
+  --tab-text-active: #ffffff;
+  --tab-glow-hover: 0 0 14px rgba(56, 189, 248, 0.32);
+  --tab-glow-active: 0 0 18px rgba(56, 189, 248, 0.42), inset 0 0 10px rgba(56, 189, 248, 0.14);
+  --tab-glow-active-hover: 0 0 22px rgba(56, 189, 248, 0.52), inset 0 0 10px rgba(56, 189, 248, 0.20);
+  --tab-badge-active-bg: rgba(56, 189, 248, 0.26);
+  --tab-badge-active-text: #ffffff;
 }
 
 html {
@@ -168,25 +202,181 @@ a {
   box-shadow: inset 0 0 0 1px var(--glass-border);
 }
 
-/* Active & Interactive Glass Tab */
-.glass-tab-active {
-  background: var(--glass-surface) !important;
+/* ==========================================================================
+   UNIFIED BLUE NEON GLASS TAB DESIGN SYSTEM
+   Applies automatically to all tabs across the website from this single global source.
+   ========================================================================== */
+
+/* 1. Base / Inactive Tab Styling across all components */
+[role="tab"]:not([aria-selected="true"]):not([aria-pressed="true"]),
+[data-category-tab]:not([aria-selected="true"]):not([aria-pressed="true"]),
+.filter-tab:not(.active):not([aria-selected="true"]):not([aria-pressed="true"]),
+.mode-tab:not(.active):not([aria-selected="true"]),
+.export-tab:not(.active):not([aria-selected="true"]),
+.cat-btn:not(.active):not([aria-selected="true"]),
+.tab-btn:not(.active):not([aria-selected="true"]):not([class*="accent"]):not([class*="--fg"]),
+[data-engine-tab]:not(.active):not([aria-selected="true"]):not([class*="accent"]),
+.cv-tab-btn:not(.active):not([aria-selected="true"]),
+.search-filter-chip:not(.active):not([aria-selected="true"]),
+.glass-tab:not(.active):not([aria-selected="true"]):not(.glass-tab-active) {
+  background-color: var(--tab-surface) !important;
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
-  border-color: var(--accent) !important;
-  box-shadow: 0 0 14px var(--accent-glow), 0 1px 3px rgba(0, 0, 0, 0.05);
-  color: var(--fg) !important;
+  border-color: var(--tab-border) !important;
+  color: var(--tab-text) !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04) !important;
+  transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Universal Edge Neon Hover Effect on Tabs & Navigation */
-.tab-btn:hover,
-.cv-tab-btn:not(.active):hover,
-.filter-tab:not(.active):hover,
-[data-category-tab]:not([aria-selected="true"]):hover,
-[data-engine-tab]:not(.active):hover,
-[role="tab"]:not([aria-selected="true"]):hover {
-  border-color: var(--accent) !important;
-  box-shadow: 0 0 12px var(--accent-glow) !important;
+/* 2. Inactive Tab & Nav Hover State with Refined Blue Neon Accent Glow */
+[role="tab"]:not([aria-selected="true"]):not([aria-pressed="true"]):hover,
+[data-category-tab]:not([aria-selected="true"]):not([aria-pressed="true"]):hover,
+.filter-tab:not(.active):not([aria-selected="true"]):not([aria-pressed="true"]):hover,
+.mode-tab:not(.active):not([aria-selected="true"]):hover,
+.export-tab:not(.active):not([aria-selected="true"]):hover,
+.cat-btn:not(.active):not([aria-selected="true"]):hover,
+.tab-btn:not(.active):not([aria-selected="true"]):not([class*="accent"]):not([class*="--fg"]):hover,
+[data-engine-tab]:not(.active):not([aria-selected="true"]):not([class*="accent"]):hover,
+.cv-tab-btn:not(.active):not([aria-selected="true"]):hover,
+.search-filter-chip:not(.active):not([aria-selected="true"]):hover,
+.glass-tab:not(.active):not([aria-selected="true"]):not(.glass-tab-active):hover,
+nav[aria-label="Primary"] a:hover {
+  background-color: var(--tab-surface-hover) !important;
+  border-color: var(--tab-border-hover) !important;
+  box-shadow: var(--tab-glow-hover) !important;
+  color: var(--tab-text-hover) !important;
+  transform: translateY(-0.5px);
+}
+
+/* 3. Active Tab: Prominent Blue Neon Glass Treatment */
+[role="tab"][aria-selected="true"],
+[role="tab"][aria-pressed="true"],
+[data-category-tab][aria-selected="true"],
+[data-category-tab][aria-pressed="true"],
+.filter-tab.active,
+.filter-tab[aria-selected="true"],
+.filter-tab[aria-pressed="true"],
+.mode-tab.active,
+.mode-tab[aria-selected="true"],
+.export-tab.active,
+.export-tab[aria-selected="true"],
+.cat-btn.active,
+.cat-btn[aria-selected="true"],
+.tab-btn.active,
+.tab-btn[aria-selected="true"],
+.tab-btn[class*="accent"],
+.tab-btn[class*="--fg"],
+[data-engine-tab].active,
+[data-engine-tab][aria-selected="true"],
+[data-engine-tab][class*="accent"],
+.cv-tab-btn.active,
+.cv-tab-btn[aria-selected="true"],
+.search-filter-chip.active,
+.glass-tab.active,
+.glass-tab[aria-selected="true"],
+.glass-tab-active,
+nav[aria-label="Primary"] a.active,
+nav[aria-label="Primary"] a[aria-current="page"] {
+  background-color: var(--tab-surface-active) !important;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-color: var(--tab-border-active) !important;
+  color: var(--tab-text-active) !important;
+  box-shadow: var(--tab-glow-active) !important;
+  font-weight: 700 !important;
+  transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* 4. Active Tab Hover State (Subtle luminance increase, keeps active status) */
+[role="tab"][aria-selected="true"]:hover,
+[role="tab"][aria-pressed="true"]:hover,
+[data-category-tab][aria-selected="true"]:hover,
+[data-category-tab][aria-pressed="true"]:hover,
+.filter-tab.active:hover,
+.filter-tab[aria-selected="true"]:hover,
+.filter-tab[aria-pressed="true"]:hover,
+.mode-tab.active:hover,
+.export-tab.active:hover,
+.cat-btn.active:hover,
+.tab-btn.active:hover,
+.tab-btn[aria-selected="true"]:hover,
+.tab-btn[class*="accent"]:hover,
+.tab-btn[class*="--fg"]:hover,
+[data-engine-tab].active:hover,
+[data-engine-tab][class*="accent"]:hover,
+.cv-tab-btn.active:hover,
+.search-filter-chip.active:hover,
+.glass-tab.active:hover,
+.glass-tab-active:hover,
+nav[aria-label="Primary"] a.active:hover,
+nav[aria-label="Primary"] a[aria-current="page"]:hover {
+  background-color: var(--tab-surface-active-hover) !important;
+  border-color: var(--tab-border-active) !important;
+  box-shadow: var(--tab-glow-active-hover) !important;
+  color: var(--tab-text-active) !important;
+  transform: translateY(-0.5px);
+}
+
+/* 5. Icons inside Active and Inactive Tabs */
+[role="tab"] svg,
+[data-category-tab] svg,
+.filter-tab svg,
+.mode-tab svg,
+.export-tab svg,
+.cat-btn svg,
+.tab-btn svg,
+[data-engine-tab] svg,
+.cv-tab-btn svg,
+.search-filter-chip svg,
+.glass-tab svg {
+  color: currentColor;
+  transition: color 200ms ease;
+}
+
+/* 6. Count Badges inside Category & Filter Tabs */
+[role="tab"][aria-selected="true"] span:last-child,
+[role="tab"][aria-pressed="true"] span:last-child,
+[data-category-tab][aria-selected="true"] span:last-child,
+[data-category-tab][aria-pressed="true"] span:last-child {
+  background-color: var(--tab-badge-active-bg) !important;
+  color: var(--tab-badge-active-text) !important;
+  transition: background-color 200ms ease, color 200ms ease;
+}
+
+/* 7. Accessible Keyboard Focus State */
+[role="tab"]:focus-visible,
+[data-category-tab]:focus-visible,
+.filter-tab:focus-visible,
+.mode-tab:focus-visible,
+.export-tab:focus-visible,
+.cat-btn:focus-visible,
+.tab-btn:focus-visible,
+[data-engine-tab]:focus-visible,
+.cv-tab-btn:focus-visible,
+.search-filter-chip:focus-visible,
+.glass-tab:focus-visible,
+nav[aria-label="Primary"] a:focus-visible {
+  outline: none !important;
+  box-shadow: 0 0 0 2px var(--bg), 0 0 0 4px var(--tab-border-active), var(--tab-glow-active) !important;
+}
+
+/* 8. Accessibility: Respect prefers-reduced-motion */
+@media (prefers-reduced-motion: reduce) {
+  [role="tab"],
+  [data-category-tab],
+  .filter-tab,
+  .mode-tab,
+  .export-tab,
+  .cat-btn,
+  .tab-btn,
+  [data-engine-tab],
+  .cv-tab-btn,
+  .search-filter-chip,
+  .glass-tab,
+  nav[aria-label="Primary"] a {
+    transition: none !important;
+    transform: none !important;
+  }
 }
 
 /* Refined Button Micro-Interactions */
