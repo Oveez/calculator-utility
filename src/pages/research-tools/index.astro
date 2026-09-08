@@ -279,19 +279,19 @@ const schemaGraph = [
     <!-- Category Filter Controls -->
     <div class="flex flex-wrap items-center justify-between gap-3 border-b border-[color:var(--border)] pb-2 text-xs">
       <div class="flex flex-wrap gap-1.5" id="category-filter-bar">
-        <button type="button" class="filter-tab active rounded-xl bg-[color:var(--fg)] px-3.5 py-1.5 font-bold text-[color:var(--bg)] transition cursor-pointer" data-filter="all">
+        <button type="button" class="filter-tab active rounded-xl border border-[color:var(--accent)] bg-[color:var(--accent)] px-3.5 py-1.5 font-bold text-[color:var(--accent-fg)] shadow-[0_0_12px_var(--accent-glow)] transition cursor-pointer" data-filter="all">
           All 16 Calculators
         </button>
-        <button type="button" class="filter-tab rounded-xl bg-[color:var(--surface)] border border-[color:var(--border)] px-3.5 py-1.5 font-bold text-[color:var(--muted)] hover:text-[color:var(--fg)] transition cursor-pointer" data-filter="sampling">
+        <button type="button" class="filter-tab rounded-xl bg-[color:var(--surface)] border border-[color:var(--border)] px-3.5 py-1.5 font-bold text-[color:var(--muted)] hover:text-[color:var(--fg)] hover:border-[color:var(--accent)] hover:shadow-[0_0_12px_var(--accent-glow)] transition cursor-pointer" data-filter="sampling">
           Sampling &amp; Sizing (5)
         </button>
-        <button type="button" class="filter-tab rounded-xl bg-[color:var(--surface)] border border-[color:var(--border)] px-3.5 py-1.5 font-bold text-[color:var(--muted)] hover:text-[color:var(--fg)] transition cursor-pointer" data-filter="inferential">
+        <button type="button" class="filter-tab rounded-xl bg-[color:var(--surface)] border border-[color:var(--border)] px-3.5 py-1.5 font-bold text-[color:var(--muted)] hover:text-[color:var(--fg)] hover:border-[color:var(--accent)] hover:shadow-[0_0_12px_var(--accent-glow)] transition cursor-pointer" data-filter="inferential">
           Inferential Testing (4)
         </button>
-        <button type="button" class="filter-tab rounded-xl bg-[color:var(--surface)] border border-[color:var(--border)] px-3.5 py-1.5 font-bold text-[color:var(--muted)] hover:text-[color:var(--fg)] transition cursor-pointer" data-filter="descriptive">
+        <button type="button" class="filter-tab rounded-xl bg-[color:var(--surface)] border border-[color:var(--border)] px-3.5 py-1.5 font-bold text-[color:var(--muted)] hover:text-[color:var(--fg)] hover:border-[color:var(--accent)] hover:shadow-[0_0_12px_var(--accent-glow)] transition cursor-pointer" data-filter="descriptive">
           Descriptive &amp; Regression (3)
         </button>
-        <button type="button" class="filter-tab rounded-xl bg-[color:var(--surface)] border border-[color:var(--border)] px-3.5 py-1.5 font-bold text-[color:var(--muted)] hover:text-[color:var(--fg)] transition cursor-pointer" data-filter="methodology">
+        <button type="button" class="filter-tab rounded-xl bg-[color:var(--surface)] border border-[color:var(--border)] px-3.5 py-1.5 font-bold text-[color:var(--muted)] hover:text-[color:var(--fg)] hover:border-[color:var(--accent)] hover:shadow-[0_0_12px_var(--accent-glow)] transition cursor-pointer" data-filter="methodology">
           Methodology &amp; Citations (4)
         </button>
       </div>
@@ -425,10 +425,10 @@ const schemaGraph = [
       filterTabs.forEach(tab => {
         tab.addEventListener('click', () => {
           filterTabs.forEach(t => {
-            t.classList.remove('bg-[color:var(--fg)]', 'text-[color:var(--bg)]');
-            t.classList.add('bg-[color:var(--surface)]', 'border', 'border-[color:var(--border)]', 'text-[color:var(--muted)]');
+            t.classList.remove('bg-[color:var(--accent)]', 'text-[color:var(--accent-fg)]', 'shadow-[0_0_12px_var(--accent-glow)]', 'border-[color:var(--accent)]');
+            t.classList.add('bg-[color:var(--surface)]', 'border-[color:var(--border)]', 'text-[color:var(--muted)]');
           });
-          tab.classList.add('bg-[color:var(--fg)]', 'text-[color:var(--bg)]');
+          tab.classList.add('bg-[color:var(--accent)]', 'text-[color:var(--accent-fg)]', 'shadow-[0_0_12px_var(--accent-glow)]', 'border-[color:var(--accent)]');
           tab.classList.remove('bg-[color:var(--surface)]', 'border-[color:var(--border)]', 'text-[color:var(--muted)]');
 
           activeCategory = tab.dataset.filter || 'all';
