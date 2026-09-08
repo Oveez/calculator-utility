@@ -1,7 +1,8 @@
 ---
-import SiteLayout from '../../layouts/SiteLayout.astro';
 import Icon from '../../components/Icon.astro';
-import { siteName, toAbsoluteUrl, withBasePath } from '../../utils/site';
+import SiteLayout from '../../layouts/SiteLayout.astro';
+import CalculatorParameterGuide from '../../components/calculator/CalculatorParameterGuide.astro';
+import { siteName, toAbsoluteUrl } from '../../utils/site';
 
 const pageTitle = `Markdown to HTML Converter — Free Online Parser & Preview · ${siteName}`;
 const pageDesc = 'Convert Markdown syntax to clean HTML markup online with live rendered preview, raw HTML code output, and instant copy. 100% private in-browser tool.';
@@ -15,8 +16,16 @@ const breadcrumbItems = [
 
 const schemaFaq = [
   {
-    question: 'Which Markdown elements are supported?',
-    answer: 'Headings (# to ######), Bold (**text**), Italic (*text*), Links, Lists, Code blocks, Inline code (`code`), Blockquotes (>), and Horizontal rules (---).',
+    question: 'Which Markdown elements are supported by this converter?',
+    answer: 'It supports full GitHub Flavored Markdown (GFM) specs: Headings (H1–H6), multi-line fenced code blocks with language indicators, task lists, tables with column alignment, blockquotes, strikethrough, highlights, images, links, and horizontal rules.',
+  },
+  {
+    question: 'Can I generate a standalone complete HTML file?',
+    answer: 'Yes. Switch the Document Output format to "Full HTML Document" to wrap the generated elements in standard HTML5 boilerplate with UTF-8 charset, responsive viewport metadata, and embedded typography styles.',
+  },
+  {
+    question: 'Is my text uploaded to a remote server?',
+    answer: 'No. The entire Markdown AST parsing and HTML serialization executes 100% locally in your browser via client-side JavaScript. No data ever leaves your device.',
   },
 ];
 
@@ -54,12 +63,54 @@ const schemaGraph = [
     })),
   },
 ];
+
+const parameterGuideData = [
+  {
+    name: 'Document Wrapper',
+    type: 'Body Fragment | Full HTML5 Document',
+    description: 'Body Fragment generates clean, embeddable semantic HTML snippet tags. Full HTML5 Document produces a standalone valid webpage with DOCTYPE, meta tags, and reset styles.',
+  },
+  {
+    name: 'Link Security Attributes',
+    type: 'Boolean (Default: True)',
+    description: 'Automatically injects target="_blank" and rel="noopener noreferrer" on external anchor hyperlinks to prevent reverse tabnabbing vulnerabilities.',
+  },
+  {
+    name: 'GFM Tables & Task Lists',
+    type: 'Boolean (Default: True)',
+    description: 'Parses pipe tables with alignment colons and interactive task checklists ([ ] and [x]) into semantic HTML table and checkbox tags.',
+  },
+  {
+    name: 'Header ID Anchors',
+    type: 'Boolean (Default: True)',
+    description: 'Generates URL-friendly slug IDs on heading tags (H1-H6) for deep linking, table of contents linking, and fragment routing.',
+  },
+];
+
+const workedExampleData = {
+  title: 'Worked Example: Parsing GFM Document Blocks',
+  description: 'Converting structured Markdown containing headings, task checklists, and tables.',
+  formula: 'GFM AST Parser: Lines → Lexical Blocks → Inline Spans → HTML Serializer',
+  steps: [
+    {
+      step: 'Step 1: Ingest Markdown Source',
+      calculation: 'Input: "# Quick Start\\n- [x] Install CLI\\n| Name | Price |\\n|---|---|\\n| Pro | $19 |"',
+      result: 'AST identifies heading, task list, and 2x2 table',
+    },
+    {
+      step: 'Step 2: Generate Semantic HTML',
+      calculation: 'Heading converted to <h1>; task list converted to <ul><input type="checkbox">; table wrapped in overflow <table>.',
+      result: 'Clean semantic HTML snippet generated with 0 KB network egress',
+    },
+  ],
+};
 ---
 
 <SiteLayout title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
   <script is:inline type="application/ld+json" set:html={JSON.stringify(schemaGraph)} />
 
   <article class="space-y-10 py-2" data-md-html-app>
+    <!-- Breadcrumb -->
     <nav aria-label="Breadcrumb">
       <ol class="flex flex-wrap items-center gap-2 text-xs text-[color:var(--muted)]">
         {breadcrumbItems.map((item, index) => (
@@ -79,65 +130,187 @@ const schemaGraph = [
       </ol>
     </nav>
 
+    <!-- Header -->
     <header class="space-y-3">
       <div class="inline-flex items-center gap-2 rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1 text-xs font-semibold text-[color:var(--muted)]">
         <span class="inline-block h-2 w-2 rounded-full bg-emerald-500"></span>
-        <span>Live Dual-Mode Rendering</span>
+        <span>GFM Spec Parser • Tables • Fenced Code • Live Preview</span>
       </div>
       <h1 class="text-2xl sm:text-4xl font-extrabold tracking-tight text-[color:var(--fg)]">
         Markdown to HTML Converter
       </h1>
-      <p class="max-w-2xl text-xs sm:text-sm text-[color:var(--muted)] leading-relaxed">
-        Write or paste Markdown documents and instantly generate clean HTML with a live rendered preview.
+      <p class="max-w-3xl text-xs sm:text-sm text-[color:var(--muted)] leading-relaxed">
+        Write or paste Markdown documents and instantly generate clean HTML with a live rendered preview, GFM tables, syntax-ready code blocks, and standalone HTML file downloads.
       </p>
     </header>
 
+    <!-- Options Bar -->
+    <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5 space-y-4">
+      <div class="flex flex-wrap items-center justify-between gap-4">
+        <div class="flex flex-wrap items-center gap-3">
+          <div>
+            <label for="opt-doc-wrapper" class="block text-[11px] font-bold uppercase tracking-wider text-[color:var(--muted)] mb-1">Output Structure</label>
+            <select id="opt-doc-wrapper" class="rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-1.5 text-xs text-[color:var(--fg)] font-semibold">
+              <option value="fragment">HTML Body Fragment (Snippet)</option>
+              <option value="full">Full HTML5 Document (&lt;!DOCTYPE&gt;)</option>
+            </select>
+          </div>
+
+          <div>
+            <label for="opt-heading-ids" class="block text-[11px] font-bold uppercase tracking-wider text-[color:var(--muted)] mb-1">Heading IDs</label>
+            <select id="opt-heading-ids" class="rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-1.5 text-xs text-[color:var(--fg)] font-semibold">
+              <option value="auto">Auto Generate Slugs (id="...")</option>
+              <option value="none">Plain Headings (&lt;h1&gt;)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-2">
+          <button
+            type="button"
+            id="btn-sample-doc"
+            class="rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-1.5 text-xs font-semibold text-[color:var(--accent)] hover:underline cursor-pointer"
+          >
+            Sample Docs
+          </button>
+          <button
+            type="button"
+            id="btn-sample-tables"
+            class="rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-1.5 text-xs font-semibold text-[color:var(--accent)] hover:underline cursor-pointer"
+          >
+            Sample Tables
+          </button>
+          <button
+            type="button"
+            id="btn-clear"
+            class="rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-1.5 text-xs font-semibold text-rose-600 dark:text-rose-400 hover:underline cursor-pointer"
+          >
+            Clear All
+          </button>
+        </div>
+      </div>
+
+      <div class="grid gap-3 sm:grid-cols-3 pt-2 border-t border-[color:var(--border)] text-xs">
+        <label class="flex items-center gap-2 font-medium text-[color:var(--fg)] cursor-pointer">
+          <input type="checkbox" id="opt-safe-links" checked class="rounded accent-[color:var(--accent)]" />
+          <span>External Links in New Tab (target="_blank")</span>
+        </label>
+        <label class="flex items-center gap-2 font-medium text-[color:var(--fg)] cursor-pointer">
+          <input type="checkbox" id="opt-task-lists" checked class="rounded accent-[color:var(--accent)]" />
+          <span>Interactive Task Checklists</span>
+        </label>
+        <label class="flex items-center gap-2 font-medium text-[color:var(--fg)] cursor-pointer">
+          <input type="checkbox" id="opt-minify-html" class="rounded accent-[color:var(--accent)]" />
+          <span>Minify HTML (Strip excess whitespace)</span>
+        </label>
+      </div>
+    </div>
+
+    <!-- Live Statistics Bar -->
+    <div class="grid grid-cols-2 gap-3 sm:grid-cols-4 text-center">
+      <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3">
+        <div class="text-[11px] font-bold uppercase tracking-wider text-[color:var(--muted)]">Markdown Words</div>
+        <div id="stat-words" class="text-xl font-extrabold text-[color:var(--fg)] mt-1">0</div>
+      </div>
+      <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3">
+        <div class="text-[11px] font-bold uppercase tracking-wider text-[color:var(--muted)]">Input Characters</div>
+        <div id="stat-chars" class="text-xl font-extrabold text-[color:var(--fg)] mt-1">0</div>
+      </div>
+      <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3">
+        <div class="text-[11px] font-bold uppercase tracking-wider text-[color:var(--muted)]">HTML Tags Produced</div>
+        <div id="stat-tags" class="text-xl font-extrabold text-[color:var(--accent)] mt-1">0</div>
+      </div>
+      <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3">
+        <div class="text-[11px] font-bold uppercase tracking-wider text-[color:var(--muted)]">Reading Time</div>
+        <div id="stat-reading" class="text-xl font-extrabold text-[color:var(--fg)] mt-1">&lt; 1 min</div>
+      </div>
+    </div>
+
+    <!-- Main Workspace -->
     <div class="grid gap-6 lg:grid-cols-2">
-      <!-- Input -->
-      <div class="space-y-3">
+      <!-- Left: Markdown Input -->
+      <div class="space-y-2">
         <div class="flex items-center justify-between">
-          <label for="md-in" class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Markdown Input</label>
+          <label for="md-in" class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Markdown Source</label>
           <div class="flex items-center gap-2 text-xs">
-            <button type="button" data-sample-btn class="text-[color:var(--primary)] hover:underline font-semibold">Load Sample</button>
-            <span class="text-[color:var(--border)]">|</span>
-            <button type="button" data-clear-btn class="text-[color:var(--muted)] hover:text-[color:var(--fg)]">Clear</button>
+            <label for="file-upload" class="cursor-pointer text-[color:var(--accent)] hover:underline font-semibold flex items-center gap-1">
+              <span>Import .md</span>
+              <input type="file" id="file-upload" accept=".md,.markdown,.txt" class="hidden" />
+            </label>
           </div>
         </div>
         <textarea
           id="md-in"
-          rows="16"
-          class="w-full font-mono text-xs leading-relaxed rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-[color:var(--fg)] focus:border-[color:var(--border-strong)] focus:outline-hidden"
-          placeholder="# Hello World&#10;&#10;This is a **Markdown** paragraph with a [link](https://example.com)."
+          rows="18"
+          class="w-full font-mono text-xs leading-relaxed rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-[color:var(--fg)] focus:border-[color:var(--accent)] focus:outline-hidden transition shadow-inner"
+          placeholder="# Enter your Markdown document here..."
         ></textarea>
       </div>
 
-      <!-- Output / Preview Tabs -->
-      <div class="space-y-3">
+      <!-- Right: Output / Preview Tabs -->
+      <div class="space-y-2">
         <div class="flex items-center justify-between">
           <div class="flex items-center gap-1 rounded-xl bg-[color:var(--surface-strong)] p-1 text-xs">
-            <button type="button" id="tab-html" class="rounded-lg bg-[color:var(--surface)] px-3 py-1 font-bold text-[color:var(--fg)] shadow-xs">Raw HTML</button>
-            <button type="button" id="tab-preview" class="rounded-lg px-3 py-1 font-semibold text-[color:var(--muted)] hover:text-[color:var(--fg)]">Live Preview</button>
+            <button
+              type="button"
+              id="tab-preview"
+              class="rounded-lg px-3 py-1 font-bold bg-[color:var(--surface)] text-[color:var(--fg)] shadow-xs transition cursor-pointer"
+            >
+              👁 Live Preview
+            </button>
+            <button
+              type="button"
+              id="tab-html"
+              class="rounded-lg px-3 py-1 font-semibold text-[color:var(--muted)] hover:text-[color:var(--fg)] transition cursor-pointer"
+            >
+              &lt;/&gt; Raw HTML
+            </button>
           </div>
-          <button type="button" data-copy-btn class="inline-flex items-center gap-1 text-xs font-bold text-[color:var(--fg)] hover:underline">
-            <Icon name="copy" class="w-3.5 h-3.5" />
-            <span>Copy HTML</span>
-          </button>
+
+          <div class="flex items-center gap-2">
+            <button
+              type="button"
+              id="btn-copy-html"
+              class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1 text-xs font-bold text-[color:var(--fg)] hover:border-[color:var(--accent)] transition cursor-pointer"
+            >
+              📋 Copy HTML
+            </button>
+            <button
+              type="button"
+              id="btn-download-html"
+              class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1 text-xs font-bold text-[color:var(--fg)] hover:border-[color:var(--accent)] transition cursor-pointer"
+            >
+              💾 Download .html
+            </button>
+          </div>
         </div>
 
-        <textarea
-          id="html-out"
-          rows="16"
-          readonly
-          class="w-full font-mono text-xs leading-relaxed rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-4 text-[color:var(--fg)] focus:outline-hidden"
-          placeholder="Generated HTML code will appear here..."
-        ></textarea>
-
+        <!-- Rendered Live Preview -->
         <div
           id="preview-out"
-          class="hidden min-h-64 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 text-xs text-[color:var(--fg)] leading-relaxed space-y-3 overflow-y-auto"
-        ></div>
+          class="min-h-[432px] max-h-[560px] overflow-y-auto rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 text-sm text-[color:var(--fg)] leading-relaxed space-y-4 prose-preview"
+        >
+          <p class="text-[color:var(--muted)] italic">Preview will appear here once you enter Markdown.</p>
+        </div>
+
+        <!-- Raw HTML Output -->
+        <textarea
+          id="html-out"
+          rows="18"
+          readonly
+          class="hidden w-full font-mono text-xs leading-relaxed rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-4 text-[color:var(--fg)] focus:outline-hidden"
+          placeholder="Generated HTML code will appear here..."
+        ></textarea>
       </div>
     </div>
+
+    <!-- Parameter Guide & Worked Example -->
+    <CalculatorParameterGuide
+      title="Markdown to HTML Parsing & Rendering Guide"
+      description="Learn about Markdown lexical tokens, GFM extensions (pipe tables, task lists, code fences), and output serialization strategies."
+      parameters={parameterGuideData}
+      workedExample={workedExampleData}
+    />
 
     <!-- FAQs -->
     <section class="space-y-4">
@@ -158,6 +331,29 @@ const schemaGraph = [
     </section>
   </article>
 
+  <style>
+    /* Clean Styling for the Live Preview Container */
+    .prose-preview h1 { font-size: 1.65rem; font-weight: 800; margin-top: 1rem; margin-bottom: 0.5rem; border-bottom: 1px solid var(--border); padding-bottom: 0.3rem; }
+    .prose-preview h2 { font-size: 1.35rem; font-weight: 700; margin-top: 0.8rem; margin-bottom: 0.4rem; border-bottom: 1px solid var(--border); padding-bottom: 0.2rem; }
+    .prose-preview h3 { font-size: 1.15rem; font-weight: 700; margin-top: 0.6rem; margin-bottom: 0.3rem; }
+    .prose-preview h4, .prose-preview h5, .prose-preview h6 { font-size: 1rem; font-weight: 600; margin-top: 0.5rem; margin-bottom: 0.2rem; }
+    .prose-preview p { margin-bottom: 0.75rem; }
+    .prose-preview ul { list-style-type: disc; padding-left: 1.5rem; margin-bottom: 0.75rem; }
+    .prose-preview ol { list-style-type: decimal; padding-left: 1.5rem; margin-bottom: 0.75rem; }
+    .prose-preview li { margin-bottom: 0.25rem; }
+    .prose-preview blockquote { border-left: 4px solid var(--accent); padding-left: 1rem; margin: 0.75rem 0; font-style: italic; color: var(--muted); }
+    .prose-preview pre { background: var(--surface-strong); border: 1px solid var(--border); border-radius: 0.75rem; padding: 1rem; overflow-x: auto; font-family: monospace; font-size: 0.8rem; margin-bottom: 0.75rem; }
+    .prose-preview code { font-family: monospace; background: var(--surface-strong); padding: 0.15rem 0.35rem; border-radius: 0.3rem; font-size: 0.85em; }
+    .prose-preview pre code { background: transparent; padding: 0; }
+    .prose-preview table { width: 100%; border-collapse: collapse; margin-bottom: 1rem; font-size: 0.85rem; }
+    .prose-preview th, .prose-preview td { border: 1px solid var(--border); padding: 0.5rem 0.75rem; text-align: left; }
+    .prose-preview th { background: var(--surface-strong); font-weight: 700; }
+    .prose-preview a { color: var(--accent); text-decoration: underline; }
+    .prose-preview hr { border: none; border-top: 1px solid var(--border); margin: 1.5rem 0; }
+    .prose-preview del { text-decoration: line-through; opacity: 0.7; }
+    .prose-preview mark { background: #fef08a; color: #1e293b; padding: 0.1rem 0.3rem; border-radius: 0.2rem; }
+  </style>
+
   <script is:inline>
     (function () {
       const root = document.querySelector('[data-md-html-app]');
@@ -166,87 +362,414 @@ const schemaGraph = [
       const input = root.querySelector('#md-in');
       const htmlOut = root.querySelector('#html-out');
       const previewOut = root.querySelector('#preview-out');
-      const tabHtml = root.querySelector('#tab-html');
+
       const tabPreview = root.querySelector('#tab-preview');
-      const sampleBtn = root.querySelector('[data-sample-btn]');
-      const clearBtn = root.querySelector('[data-clear-btn]');
-      const copyBtn = root.querySelector('[data-copy-btn]');
+      const tabHtml = root.querySelector('#tab-html');
 
+      const optDocWrapper = root.querySelector('#opt-doc-wrapper');
+      const optHeadingIds = root.querySelector('#opt-heading-ids');
+      const optSafeLinks = root.querySelector('#opt-safe-links');
+      const optTaskLists = root.querySelector('#opt-task-lists');
+      const optMinifyHtml = root.querySelector('#opt-minify-html');
+
+      const btnSampleDoc = root.querySelector('#btn-sample-doc');
+      const btnSampleTables = root.querySelector('#btn-sample-tables');
+      const btnClear = root.querySelector('#btn-clear');
+      const btnCopyHtml = root.querySelector('#btn-copy-html');
+      const btnDownloadHtml = root.querySelector('#btn-download-html');
+      const fileUpload = root.querySelector('#file-upload');
+
+      const statWords = root.querySelector('#stat-words');
+      const statChars = root.querySelector('#stat-chars');
+      const statTags = root.querySelector('#stat-tags');
+      const statReading = root.querySelector('#stat-reading');
+
+      function slugify(text) {
+        return text
+          .toLowerCase()
+          .replace(/[^\w\s-]/g, '')
+          .trim()
+          .replace(/[-\s]+/g, '-');
+      }
+
+      function escapeHtml(str) {
+        return str
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;');
+      }
+
+      // Inline span parsing
+      function parseInline(text) {
+        let res = text;
+
+        // Inline Code `...`
+        res = res.replace(/`([^`]+)`/g, (m, p1) => `<code>${escapeHtml(p1)}</code>`);
+
+        // Images ![alt](src "title")
+        res = res.replace(/!\[(.*?)\]\((.*?)(?:\s+"(.*?)")?\)/g, (m, alt, src, title) => {
+          const t = title ? ` title="${escapeHtml(title)}"` : '';
+          return `<img src="${src}" alt="${escapeHtml(alt)}"${t} class="max-w-full rounded-lg my-2" />`;
+        });
+
+        // Links [text](href "title")
+        res = res.replace(/\[(.*?)\]\((.*?)(?:\s+"(.*?)")?\)/g, (m, txt, href, title) => {
+          const t = title ? ` title="${escapeHtml(title)}"` : '';
+          const target = optSafeLinks.checked ? ' target="_blank" rel="noopener noreferrer"' : '';
+          return `<a href="${href}"${target}${t}>${txt}</a>`;
+        });
+
+        // Bold & Italic
+        res = res.replace(/\*\*\*(.*?)\*\*\*/g, '<strong><em>$1</em></strong>');
+        res = res.replace(/___(.*?)___/g, '<strong><em>$1</em></strong>');
+        res = res.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+        res = res.replace(/__(.*?)__/g, '<strong>$1</strong>');
+        res = res.replace(/\*(.*?)\*/g, '<em>$1</em>');
+        res = res.replace(/_(.*?)_/g, '<em>$1</em>');
+
+        // Strikethrough ~~...~~
+        res = res.replace(/~~(.*?)~~/g, '<del>$1</del>');
+
+        // Highlight ==...==
+        res = res.replace(/==(.*?)==/g, '<mark>$1</mark>');
+
+        return res;
+      }
+
+      // Full GFM Block Parser
       function parseMarkdown(md) {
-        let html = md
-          .replace(/^### (.*$)/gim, '<h3>$1</h3>')
-          .replace(/^## (.*$)/gim, '<h2>$1</h2>')
-          .replace(/^# (.*$)/gim, '<h1>$1</h1>')
-          .replace(/^\> (.*$)/gim, '<blockquote>$1</blockquote>')
-          .replace(/\*\*(.*)\*\*/gim, '<strong>$1</strong>')
-          .replace(/\*(.*)\*/gim, '<em>$1</em>')
-          .replace(/!\[(.*?)\]\((.*?)\)/gim, "<img alt='$1' src='$2' />")
-          .replace(/\[(.*?)\]\((.*?)\)/gim, "<a href='$2' target='_blank'>$1</a>")
-          .replace(/`([^`]+)`/gim, '<code>$1</code>')
-          .replace(/\n$/gim, '<br />');
+        const lines = md.split(/\r?\n/);
+        const output = [];
+        let i = 0;
 
-        // Simple paragraph wrapping
-        const lines = html.split('\n\n');
-        html = lines.map(line => {
-          if (/^<(h1|h2|h3|blockquote|ul|ol|li|img)/.test(line.trim())) {
-            return line;
+        while (i < lines.length) {
+          const line = lines[i];
+
+          // 1. Fenced Code Blocks ```lang ... ```
+          const codeFenceMatch = line.match(/^```(\w*)/);
+          if (codeFenceMatch) {
+            const lang = codeFenceMatch[1] || '';
+            const codeLines = [];
+            i++;
+            while (i < lines.length && !lines[i].startsWith('```')) {
+              codeLines.push(escapeHtml(lines[i]));
+              i++;
+            }
+            const langClass = lang ? ` class="language-${lang}"` : '';
+            output.push(`<pre><code${langClass}>${codeLines.join('\n')}</code></pre>`);
+            i++;
+            continue;
           }
-          return `<p>${line.trim()}</p>`;
-        }).join('\n');
 
-        return html;
+          // 2. Headings (# to ######)
+          const headingMatch = line.match(/^(#{1,6})\s+(.*)$/);
+          if (headingMatch) {
+            const level = headingMatch[1].length;
+            const text = headingMatch[2].trim();
+            const idAttr = optHeadingIds.value === 'auto' ? ` id="${slugify(text)}"` : '';
+            output.push(`<h${level}${idAttr}>${parseInline(text)}</h${level}>`);
+            i++;
+            continue;
+          }
+
+          // 3. Blockquotes (> ...)
+          if (line.startsWith('>')) {
+            const bqLines = [];
+            while (i < lines.length && lines[i].startsWith('>')) {
+              bqLines.push(lines[i].replace(/^>\s?/, ''));
+              i++;
+            }
+            output.push(`<blockquote><p>${bqLines.map(parseInline).join('<br />')}</p></blockquote>`);
+            continue;
+          }
+
+          // 4. Horizontal Rules (---, ***, ___)
+          if (/^(\*{3,}|-{3,}|_{3,})\s*$/.test(line)) {
+            output.push('<hr />');
+            i++;
+            continue;
+          }
+
+          // 5. GFM Tables (| col 1 | col 2 |)
+          if (line.trim().startsWith('|') && line.trim().endsWith('|')) {
+            const tableLines = [];
+            while (i < lines.length && lines[i].trim().startsWith('|') && lines[i].trim().endsWith('|')) {
+              tableLines.push(lines[i].trim());
+              i++;
+            }
+
+            if (tableLines.length >= 2) {
+              const headers = tableLines[0].split('|').slice(1, -1).map(c => c.trim());
+              const aligns = tableLines[1].split('|').slice(1, -1).map(c => {
+                const s = c.trim();
+                if (s.startsWith(':') && s.endsWith(':')) return 'center';
+                if (s.endsWith(':')) return 'right';
+                if (s.startsWith(':')) return 'left';
+                return 'left';
+              });
+
+              let tableHtml = '<div class="overflow-x-auto my-4"><table><thead><tr>';
+              headers.forEach((h, idx) => {
+                const alignStyle = aligns[idx] ? ` style="text-align: ${aligns[idx]}"` : '';
+                tableHtml += `<th${alignStyle}>${parseInline(h)}</th>`;
+              });
+              tableHtml += '</tr></thead><tbody>';
+
+              for (let r = 2; r < tableLines.length; r++) {
+                const cells = tableLines[r].split('|').slice(1, -1).map(c => c.trim());
+                tableHtml += '<tr>';
+                cells.forEach((cell, idx) => {
+                  const alignStyle = aligns[idx] ? ` style="text-align: ${aligns[idx]}"` : '';
+                  tableHtml += `<td${alignStyle}>${parseInline(cell)}</td>`;
+                });
+                tableHtml += '</tr>';
+              }
+              tableHtml += '</tbody></table></div>';
+              output.push(tableHtml);
+              continue;
+            }
+          }
+
+          // 6. Lists (Unordered & Ordered & Task Lists)
+          const ulMatch = line.match(/^(\s*)([-*+])\s+(.*)$/);
+          const olMatch = line.match(/^(\s*)(\d+)\.\s+(.*)$/);
+          if (ulMatch || olMatch) {
+            const isOrdered = !!olMatch;
+            const listTag = isOrdered ? 'ol' : 'ul';
+            const listItems = [];
+
+            while (i < lines.length) {
+              const curUl = lines[i].match(/^(\s*)([-*+])\s+(.*)$/);
+              const curOl = lines[i].match(/^(\s*)(\d+)\.\s+(.*)$/);
+              const currentMatch = isOrdered ? curOl : curUl;
+              if (!currentMatch) break;
+
+              let itemText = currentMatch[3];
+
+              // Check for Task List [ ] or [x]
+              if (optTaskLists.checked && !isOrdered) {
+                if (itemText.startsWith('[ ] ')) {
+                  itemText = `<input type="checkbox" disabled class="mr-2 rounded" /> ${itemText.slice(4)}`;
+                } else if (itemText.startsWith('[x] ') || itemText.startsWith('[X] ')) {
+                  itemText = `<input type="checkbox" checked disabled class="mr-2 rounded text-cyan-500 dark:text-cyan-400" /> <del>${itemText.slice(4)}</del>`;
+                }
+              }
+
+              listItems.push(`<li>${parseInline(itemText)}</li>`);
+              i++;
+            }
+            output.push(`<${listTag}>${listItems.join('\n')}</${listTag}>`);
+            continue;
+          }
+
+          // 7. Blank lines
+          if (!line.trim()) {
+            i++;
+            continue;
+          }
+
+          // 8. Paragraphs
+          const pLines = [];
+          while (i < lines.length && lines[i].trim() && !lines[i].startsWith('#') && !lines[i].startsWith('```') && !lines[i].startsWith('>') && !lines[i].startsWith('|')) {
+            pLines.push(lines[i]);
+            i++;
+          }
+          if (pLines.length > 0) {
+            output.push(`<p>${pLines.map(parseInline).join(' ')}</p>`);
+          }
+        }
+
+        let result = output.join('\n');
+
+        if (optMinifyHtml.checked) {
+          result = result.replace(/>\s+</g, '><').trim();
+        }
+
+        if (optDocWrapper.value === 'full') {
+          result = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Converted Document</title>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; line-height: 1.6; max-width: 800px; margin: 2rem auto; padding: 0 1rem; color: #1e293b; }
+    h1, h2, h3 { line-height: 1.25; margin-top: 1.5em; margin-bottom: 0.5em; }
+    pre { background: #f1f5f9; padding: 1rem; border-radius: 8px; overflow-x: auto; }
+    code { font-family: monospace; background: #f1f5f9; padding: 2px 4px; border-radius: 4px; }
+    table { width: 100%; border-collapse: collapse; margin: 1em 0; }
+    th, td { border: 1px solid #cbd5e1; padding: 8px 12px; }
+    th { background: #f8fafc; }
+    blockquote { border-left: 4px solid #3b82f6; margin: 1em 0; padding-left: 1em; color: #64748b; }
+  </style>
+</head>
+<body>
+${result}
+</body>
+</html>`;
+        }
+
+        return result;
       }
 
       function update() {
-        const md = input.value.trim();
-        if (!md) {
+        const md = input.value;
+        const chars = md.length;
+        const words = md.trim() ? md.trim().split(/\s+/).length : 0;
+        const readMins = Math.max(1, Math.ceil(words / 200));
+
+        statChars.textContent = chars.toLocaleString();
+        statWords.textContent = words.toLocaleString();
+        statReading.textContent = words > 0 ? `~${readMins} min` : '< 1 min';
+
+        if (!md.trim()) {
           htmlOut.value = '';
-          previewOut.innerHTML = '';
+          previewOut.innerHTML = '<p class="text-[color:var(--muted)] italic">Preview will appear here once you enter Markdown.</p>';
+          statTags.textContent = '0';
           return;
         }
 
         const html = parseMarkdown(md);
         htmlOut.value = html;
-        previewOut.innerHTML = html;
+
+        // Render preview (if full doc, extract body)
+        let previewHtml = html;
+        if (optDocWrapper.value === 'full') {
+          const bodyMatch = html.match(/<body>([\s\S]*?)<\/body>/);
+          if (bodyMatch) previewHtml = bodyMatch[1];
+        }
+        previewOut.innerHTML = previewHtml;
+
+        const tagMatches = html.match(/<([a-z1-6]+)(?:\s+[^>]*>|>)/gi) || [];
+        statTags.textContent = tagMatches.length.toLocaleString();
       }
 
-      input.addEventListener('input', update);
+      // Tab switching
+      tabPreview.addEventListener('click', () => {
+        previewOut.classList.remove('hidden');
+        htmlOut.classList.add('hidden');
+        tabPreview.className = 'rounded-lg px-3 py-1 font-bold bg-[color:var(--surface)] text-[color:var(--fg)] shadow-xs transition cursor-pointer';
+        tabHtml.className = 'rounded-lg px-3 py-1 font-semibold text-[color:var(--muted)] hover:text-[color:var(--fg)] transition cursor-pointer';
+      });
 
       tabHtml.addEventListener('click', () => {
         htmlOut.classList.remove('hidden');
         previewOut.classList.add('hidden');
-        tabHtml.classList.add('bg-[color:var(--surface)]', 'font-bold', 'text-[color:var(--fg)]');
-        tabPreview.classList.remove('bg-[color:var(--surface)]', 'font-bold', 'text-[color:var(--fg)]');
+        tabHtml.className = 'rounded-lg px-3 py-1 font-bold bg-[color:var(--surface)] text-[color:var(--fg)] shadow-xs transition cursor-pointer';
+        tabPreview.className = 'rounded-lg px-3 py-1 font-semibold text-[color:var(--muted)] hover:text-[color:var(--fg)] transition cursor-pointer';
       });
 
-      tabPreview.addEventListener('click', () => {
-        htmlOut.classList.add('hidden');
-        previewOut.classList.remove('hidden');
-        tabPreview.classList.add('bg-[color:var(--surface)]', 'font-bold', 'text-[color:var(--fg)]');
-        tabHtml.classList.remove('bg-[color:var(--surface)]', 'font-bold', 'text-[color:var(--fg)]');
-      });
+      // Event listeners
+      input.addEventListener('input', update);
+      optDocWrapper.addEventListener('change', update);
+      optHeadingIds.addEventListener('change', update);
+      optSafeLinks.addEventListener('change', update);
+      optTaskLists.addEventListener('change', update);
+      optMinifyHtml.addEventListener('change', update);
 
-      sampleBtn.addEventListener('click', () => {
-        input.value = `# Welcome to Calculator Utility\n\nThis is a **Markdown to HTML** demo with *emphasis*, inline \`code\`, and a [website link](https://calculatorutility.tech/).\n\n## Features Included:\n> 100% Client-side and private.\n\nEnjoy fast formatting!`;
-        update();
-      });
-
-      clearBtn.addEventListener('click', () => {
+      btnClear.addEventListener('click', () => {
         input.value = '';
-        output.value = '';
         update();
       });
 
-      copyBtn.addEventListener('click', () => {
-        if (!htmlOut.value) return;
-        navigator.clipboard.writeText(htmlOut.value);
-        const span = copyBtn.querySelector('span');
-        const orig = span.textContent;
-        span.textContent = 'Copied!';
-        setTimeout(() => span.textContent = orig, 1800);
+      // File upload
+      fileUpload.addEventListener('change', (e) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+          input.value = ev.target?.result || '';
+          update();
+        };
+        reader.readAsText(file);
+        fileUpload.value = '';
       });
 
-      sampleBtn.click();
+      // Sample documents
+      btnSampleDoc.addEventListener('click', () => {
+        input.value = `# Technical Specification: Core API Gateway
+
+Welcome to the **Calculator Utility** API engine. This service provides sub-millisecond utility computation with *zero remote telemetry*.
+
+## Key Architecture Principles
+1. **100% Client-Side Evaluation**: No payloads sent across untrusted networks.
+2. **Deterministic Processing**: All calculations follow standard IEEE-754 arithmetic.
+3. **High Accessibility**: Semantic HTML5 tags and WCAG compliant interfaces.
+
+### Quick Setup Example
+
+\`\`\`javascript
+// Initialize Client Worker
+import { CalculatorWorker } from './worker.js';
+
+const engine = new CalculatorWorker({ precision: 12 });
+const result = await engine.compute('integral(sin(x), 0, pi)');
+console.log('Result:', result.value); // 2.000000000000
+\`\`\`
+
+> "Simplicity and privacy are the core pillars of web utilities."
+
+### Project Roadmap Checklist
+- [x] Integrate GFM markdown syntax parser
+- [x] Real-time side-by-side live rendering preview
+- [x] Full HTML5 standalone document export
+- [ ] Offline PWA Service Worker caching
+
+For more details, visit our official documentation at [CalculatorUtility.tech](https://calculatorutility.tech/).`;
+        update();
+      });
+
+      btnSampleTables.addEventListener('click', () => {
+        input.value = `# Performance & Compatibility Benchmark
+
+Below is the comparative execution latency across different browser environments:
+
+| Engine | Browser Family | Latency (ms) | Memory Used | Status |
+|:---|:---:|---:|---:|:---:|
+| V8 | Google Chrome | 1.24 ms | 14.2 MB | ==Active== |
+| SpiderMonkey | Mozilla Firefox | 1.38 ms | 16.1 MB | ==Active== |
+| JavaScriptCore | Apple Safari | 1.15 ms | 12.8 MB | ==Active== |
+| Blink | MS Edge | 1.22 ms | 14.0 MB | ==Active== |
+
+### Pricing Comparison Matrix
+
+| Tier Name | Max Lines | Cloud Storage | API Access | Monthly Price |
+|:---|:---:|:---:|:---:|---:|
+| Free | 50,000 | No (Local) | Standard | $0 / mo |
+| Pro Dev | 1,000,000 | No (Local) | Unlimited | $12 / mo |
+| Enterprise | Unlimited | Custom On-Prem | Priority SLA | $49 / mo |`;
+        update();
+      });
+
+      // Copy & Download
+      btnCopyHtml.addEventListener('click', async () => {
+        if (!htmlOut.value) return;
+        try {
+          await navigator.clipboard.writeText(htmlOut.value);
+          const orig = btnCopyHtml.textContent;
+          btnCopyHtml.textContent = '✓ Copied HTML!';
+          setTimeout(() => { btnCopyHtml.textContent = orig; }, 1800);
+        } catch (e) {
+          console.error(e);
+        }
+      });
+
+      btnDownloadHtml.addEventListener('click', () => {
+        if (!htmlOut.value) return;
+        const blob = new Blob([htmlOut.value], { type: 'text/html;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `document-${Date.now()}.html`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      });
+
+      // Initial run
+      btnSampleDoc.click();
     })();
   </script>
 </SiteLayout>

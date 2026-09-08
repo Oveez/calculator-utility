@@ -1,10 +1,11 @@
 ---
 import SiteLayout from '../../layouts/SiteLayout.astro';
 import Icon from '../../components/Icon.astro';
+import CalculatorParameterGuide from '../../components/calculator/CalculatorParameterGuide.astro';
 import { siteName, toAbsoluteUrl, withBasePath } from '../../utils/site';
 
-const pageTitle = `JSON Diff & Compare Tool — Free Online Structural Comparator · ${siteName}`;
-const pageDesc = 'Compare two JSON objects side-by-side or unified. Highlights added, deleted, and modified keys and values. 100% private in-browser comparison.';
+const pageTitle = `JSON Diff & Comparator — Compare JSON Files Online · ${siteName}`;
+const pageDesc = 'Compare two JSON objects or files online. Highlights added keys, removed properties, and modified values with semantic key normalization and side-by-side diffing. 100% private in-browser tool.';
 const canonicalUrl = toAbsoluteUrl('/developer-tools/json-diff/');
 
 const breadcrumbItems = [
@@ -15,12 +16,16 @@ const breadcrumbItems = [
 
 const schemaFaq = [
   {
-    question: 'How does JSON Diff differ from plain text diff?',
-    answer: 'Plain text diffs compare raw line strings, which fail when object keys are reordered. A JSON diff parses both objects semantically, comparing keys and deep values regardless of indentation or formatting differences.',
+    question: 'How does semantic JSON diffing work?',
+    answer: 'Unlike line-by-line text diffing tools, this engine parses both inputs into structural objects, normalizes key order, and performs deep recursive equality checks across arrays and nested keys.',
   },
   {
-    question: 'Can this tool compare deeply nested objects and arrays?',
-    answer: 'Yes. It recursively traverses nested objects and arrays, flagging added, removed, and modified values at each depth.',
+    question: 'Does changing the order of keys trigger a diff error?',
+    answer: 'No. With Semantic Key Normalization enabled, properties appearing in different orders within the same object are recognized as identical, preventing false positives.',
+  },
+  {
+    question: 'Are my JSON files uploaded to a remote server?',
+    answer: 'No. Both JSON payloads are parsed and diffed entirely inside your local browser memory using JavaScript.',
   },
 ];
 
@@ -28,7 +33,7 @@ const schemaGraph = [
   {
     '@context': 'https://schema.org',
     '@type': 'WebApplication',
-    name: 'JSON Diff Tool',
+    name: 'JSON Diff & Comparator',
     url: canonicalUrl,
     applicationCategory: 'DeveloperApplication',
     operatingSystem: 'All',
@@ -56,6 +61,51 @@ const schemaGraph = [
         text: item.answer,
       },
     })),
+  },
+];
+
+const parameterGuide = [
+  {
+    id: 'semantic_diff',
+    name: 'Semantic Object Comparison',
+    description: 'Compares data structures rather than raw line characters.',
+    whyItMatters: 'Prevents whitespace, indentation differences, or key ordering from obscuring genuine data modifications.',
+    typicalRange: 'Deep recursive inspection',
+  },
+  {
+    id: 'added_keys',
+    name: 'Added Properties (+)',
+    description: 'Fields present in the modified JSON that did not exist in the original payload.',
+    whyItMatters: 'Identifies new API features, schema additions, or newly created database columns.',
+    typicalRange: 'Highlighted in green',
+  },
+  {
+    id: 'removed_keys',
+    name: 'Removed Properties (-)',
+    description: 'Fields that existed in the original payload but are missing in the modified version.',
+    whyItMatters: 'Critical for catching breaking API changes or unintended data deletions.',
+    typicalRange: 'Highlighted in red',
+  },
+  {
+    id: 'modified_values',
+    name: 'Modified Values (~)',
+    description: 'Keys that exist in both payloads but have altered values or altered types.',
+    whyItMatters: 'Shows exact before-and-after values (e.g. status: "pending" -> "completed").',
+    typicalRange: 'Highlighted in amber',
+  },
+  {
+    id: 'view_modes',
+    name: 'View Modes',
+    description: 'Toggle between a categorized delta report and side-by-side pretty-printed JSON code.',
+    whyItMatters: 'Enables quick high-level reviews as well as detailed side-by-side code inspection.',
+    typicalRange: 'Delta View vs Side-by-Side',
+  },
+  {
+    id: 'privacy',
+    name: 'Client-Side Privacy',
+    description: 'All object comparisons execute entirely in browser memory.',
+    whyItMatters: 'Enables safe diffing of production database dumps, environment configs, and API tokens.',
+    typicalRange: '100% In-Browser',
   },
 ];
 ---
@@ -86,30 +136,53 @@ const schemaGraph = [
     <header class="space-y-3">
       <div class="inline-flex items-center gap-2 rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1 text-xs font-semibold text-[color:var(--muted)]">
         <span class="inline-block h-2 w-2 rounded-full bg-emerald-500"></span>
-        <span>Semantic Tree Comparison</span>
+        <span>100% Client-Side In-Memory Diffing</span>
       </div>
       <h1 class="text-2xl sm:text-4xl font-extrabold tracking-tight text-[color:var(--fg)]">
         JSON Diff &amp; Comparator
       </h1>
-      <p class="max-w-2xl text-xs sm:text-sm text-[color:var(--muted)] leading-relaxed">
-        Compare two JSON files to find differences, added keys, removed properties, and changed values.
+      <p class="max-w-3xl text-xs sm:text-sm text-[color:var(--muted)] leading-relaxed">
+        Compare two JSON documents to pinpoint added keys, removed properties, and modified values with semantic key normalization and side-by-side inspection.
       </p>
     </header>
 
+    <!-- Metrics Bar -->
+    <div id="stats-bar" class="grid grid-cols-2 gap-3 sm:grid-cols-4 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-center">
+      <div>
+        <span class="block text-[11px] uppercase tracking-wider text-[color:var(--muted)]">Added Keys</span>
+        <span id="stat-added" class="font-mono text-lg font-bold text-cyan-600 dark:text-cyan-400 dark:text-cyan-400">0</span>
+      </div>
+      <div>
+        <span class="block text-[11px] uppercase tracking-wider text-[color:var(--muted)]">Removed Keys</span>
+        <span id="stat-removed" class="font-mono text-lg font-bold text-rose-600 dark:text-rose-400">0</span>
+      </div>
+      <div>
+        <span class="block text-[11px] uppercase tracking-wider text-[color:var(--muted)]">Modified Values</span>
+        <span id="stat-modified" class="font-mono text-lg font-bold text-amber-600 dark:text-amber-400">0</span>
+      </div>
+      <div>
+        <span class="block text-[11px] uppercase tracking-wider text-[color:var(--muted)]">Identical Keys</span>
+        <span id="stat-identical" class="font-mono text-lg font-bold text-[color:var(--fg)]">0</span>
+      </div>
+    </div>
+
+    <!-- Main Workspace -->
     <div class="space-y-4">
       <div class="grid gap-4 lg:grid-cols-2">
         <!-- JSON 1 -->
         <div class="space-y-2">
           <div class="flex items-center justify-between">
             <label for="json1-input" class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">
-              Original JSON (Left)
+              Original JSON (Left / Base)
             </label>
-            <button type="button" data-sample-btn class="text-xs font-semibold text-[color:var(--primary)] hover:underline">Load Sample Diff</button>
+            <div class="flex items-center gap-2 text-xs">
+              <button type="button" data-sample-btn class="font-semibold text-[color:var(--primary)] hover:underline cursor-pointer">Load Sample Diff</button>
+            </div>
           </div>
           <textarea
             id="json1-input"
-            rows="10"
-            class="w-full font-mono text-xs leading-relaxed rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3 text-[color:var(--fg)] focus:border-[color:var(--border-strong)] focus:outline-hidden"
+            rows="12"
+            class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3 font-mono text-xs leading-relaxed text-[color:var(--fg)] focus:border-[color:var(--border-strong)] focus:outline-hidden"
             placeholder="Paste original JSON..."
           ></textarea>
         </div>
@@ -118,45 +191,92 @@ const schemaGraph = [
         <div class="space-y-2">
           <div class="flex items-center justify-between">
             <label for="json2-input" class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">
-              Modified JSON (Right)
+              Modified JSON (Right / Comparison)
             </label>
-            <button type="button" data-clear-btn class="text-xs text-[color:var(--muted)] hover:text-[color:var(--fg)]">Clear All</button>
+            <div class="flex items-center gap-2 text-xs">
+              <button type="button" data-clear-btn class="text-[color:var(--muted)] hover:text-[color:var(--fg)] cursor-pointer">Clear All</button>
+            </div>
           </div>
           <textarea
             id="json2-input"
-            rows="10"
-            class="w-full font-mono text-xs leading-relaxed rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3 text-[color:var(--fg)] focus:border-[color:var(--border-strong)] focus:outline-hidden"
+            rows="12"
+            class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3 font-mono text-xs leading-relaxed text-[color:var(--fg)] focus:border-[color:var(--border-strong)] focus:outline-hidden"
             placeholder="Paste modified JSON..."
           ></textarea>
         </div>
       </div>
 
-      <button
-        type="button"
-        data-compare-btn
-        class="w-full rounded-xl bg-[color:var(--fg)] py-2.5 text-xs font-bold text-[color:var(--bg)] shadow-xs transition hover:opacity-90"
-      >
-        Compare JSON Objects
-      </button>
+      <div class="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3">
+        <label class="flex items-center gap-2 text-xs cursor-pointer">
+          <input type="checkbox" id="normalize-keys" checked class="rounded border-[color:var(--border)] accent-[color:var(--fg)]" />
+          <span class="font-semibold text-[color:var(--fg)]">Semantic Normalization (Ignore Key Order)</span>
+        </label>
+        <button
+          type="button"
+          data-compare-btn
+          class="rounded-xl bg-[color:var(--fg)] px-6 py-2 text-xs font-bold text-[color:var(--bg)] shadow-xs transition hover:opacity-90 cursor-pointer"
+        >
+          ⚡ Compare JSON Objects
+        </button>
+      </div>
 
       <!-- Diff Output -->
       <div class="space-y-3">
         <div class="flex items-center justify-between">
-          <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Diff Results</span>
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Diff Breakdown</span>
+            <span id="diff-badge" class="rounded-md bg-cyan-500/15 px-2 py-0.5 text-[10px] font-bold text-cyan-600 dark:text-cyan-400 dark:text-cyan-400">Ready</span>
+          </div>
           <div class="flex items-center gap-3 text-xs">
-            <span class="flex items-center gap-1"><span class="h-2.5 w-2.5 rounded-full bg-emerald-500"></span> Added</span>
-            <span class="flex items-center gap-1"><span class="h-2.5 w-2.5 rounded-full bg-red-500"></span> Removed</span>
-            <span class="flex items-center gap-1"><span class="h-2.5 w-2.5 rounded-full bg-amber-500"></span> Modified</span>
+            <span class="flex items-center gap-1 text-[11px]"><span class="h-2 w-2 rounded-full bg-emerald-500"></span> Added</span>
+            <span class="flex items-center gap-1 text-[11px]"><span class="h-2 w-2 rounded-full bg-rose-500"></span> Removed</span>
+            <span class="flex items-center gap-1 text-[11px]"><span class="h-2 w-2 rounded-full bg-amber-500"></span> Modified</span>
           </div>
         </div>
+
         <div
           id="diff-result"
-          class="min-h-32 font-mono text-xs leading-relaxed rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-4 space-y-1 text-[color:var(--fg)] overflow-x-auto"
+          class="min-h-36 max-h-[480px] overflow-y-auto rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-4 font-mono text-xs leading-relaxed text-[color:var(--fg)] space-y-1.5"
         >
-          <p class="text-[color:var(--muted)] italic">Enter two JSON objects above and click Compare.</p>
+          <p class="italic text-[color:var(--muted)]">Enter two JSON objects above and click Compare.</p>
         </div>
       </div>
     </div>
+
+    <!-- Step-by-Step Worked Example -->
+    <section class="space-y-4 rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 sm:p-8 text-xs sm:text-sm text-[color:var(--muted)] leading-relaxed">
+      <div class="flex items-center gap-2">
+        <span class="rounded-md bg-[color:var(--accent)]/15 px-2.5 py-1 text-xs font-bold text-[color:var(--accent)]">Worked Example</span>
+        <h2 class="text-base sm:text-lg font-bold text-[color:var(--fg)]">Auditing Configuration Changes Between Staging and Prod</h2>
+      </div>
+      <p>
+        Suppose an application deployment modifies timeouts, adds a new cache replica, and deprecates an old feature flag:
+      </p>
+      <div class="grid gap-4 sm:grid-cols-2">
+        <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] p-4 font-mono text-xs">
+          <span class="text-[color:var(--muted)] block mb-1 font-bold font-sans">Base Staging:</span>
+          &#123;<br/>
+          &nbsp;&nbsp;&quot;timeout&quot;: 3000,<br/>
+          &nbsp;&nbsp;&quot;legacyFlag&quot;: true,<br/>
+          &nbsp;&nbsp;&quot;replicas&quot;: 2<br/>
+          &#125;
+        </div>
+        <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] p-4 font-mono text-xs">
+          <span class="text-[color:var(--muted)] block mb-1 font-bold font-sans">Modified Production:</span>
+          &#123;<br/>
+          &nbsp;&nbsp;&quot;timeout&quot;: 5000,<br/>
+          &nbsp;&nbsp;&quot;replicas&quot;: 4,<br/>
+          &nbsp;&nbsp;&quot;cacheZone&quot;: &quot;us-east&quot;<br/>
+          &#125;
+        </div>
+      </div>
+      <p class="text-xs text-[color:var(--muted)]">
+        The diff engine detects 1 added property (<code>cacheZone: "us-east"</code>), 1 removed property (<code>legacyFlag: true</code>), and 2 modified values (<code>timeout: 3000 &rarr; 5000</code>, <code>replicas: 2 &rarr; 4</code>).
+      </p>
+    </section>
+
+    <!-- Parameter Guide -->
+    <CalculatorParameterGuide parameters={parameterGuide} />
 
     <!-- FAQs -->
     <section class="space-y-4">
@@ -184,17 +304,33 @@ const schemaGraph = [
 
       const j1 = root.querySelector('#json1-input');
       const j2 = root.querySelector('#json2-input');
+      const normalizeKeys = root.querySelector('#normalize-keys');
       const compareBtn = root.querySelector('[data-compare-btn]');
       const diffResult = root.querySelector('#diff-result');
+      const diffBadge = root.querySelector('#diff-badge');
       const sampleBtn = root.querySelector('[data-sample-btn]');
       const clearBtn = root.querySelector('[data-clear-btn]');
+
+      const statAdded = root.querySelector('#stat-added');
+      const statRemoved = root.querySelector('#stat-removed');
+      const statModified = root.querySelector('#stat-modified');
+      const statIdentical = root.querySelector('#stat-identical');
+
+      function escapeHtml(s) {
+        return String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+      }
 
       function compare() {
         const v1 = j1.value.trim();
         const v2 = j2.value.trim();
 
         if (!v1 || !v2) {
-          diffResult.innerHTML = '<p class="text-[color:var(--muted)] italic">Please provide both JSON inputs.</p>';
+          diffResult.innerHTML = '<p class="italic text-[color:var(--muted)]">Please provide both JSON inputs to compare.</p>';
+          diffBadge.textContent = 'Awaiting Input';
+          statAdded.textContent = '0';
+          statRemoved.textContent = '0';
+          statModified.textContent = '0';
+          statIdentical.textContent = '0';
           return;
         }
 
@@ -202,60 +338,164 @@ const schemaGraph = [
           const o1 = JSON.parse(v1);
           const o2 = JSON.parse(v2);
 
-          const lines = [];
+          let addedCount = 0;
+          let removedCount = 0;
+          let modifiedCount = 0;
+          let identicalCount = 0;
 
-          function diffObjects(obj1, obj2, path = '') {
-            const allKeys = Array.from(new Set([...Object.keys(obj1 || {}), ...Object.keys(obj2 || {})]));
-            
+          const diffItems = [];
+
+          function deepDiff(obj1, obj2, path = '') {
+            const isObj1 = obj1 !== null && typeof obj1 === 'object';
+            const isObj2 = obj2 !== null && typeof obj2 === 'object';
+
+            if (!isObj1 || !isObj2 || Array.isArray(obj1) || Array.isArray(obj2)) {
+              if (JSON.stringify(obj1) === JSON.stringify(obj2)) {
+                identicalCount++;
+              } else {
+                modifiedCount++;
+                diffItems.push(`
+                  <div class="flex items-start gap-2 rounded-xl border border-amber-500/20 bg-amber-500/10 p-2.5 text-amber-700 dark:text-amber-300">
+                    <span class="rounded bg-amber-500/20 px-1.5 py-0.5 font-bold text-[10px]">~ MODIFIED</span>
+                    <div class="flex-1 overflow-x-auto">
+                      <strong class="text-[color:var(--fg)]">${escapeHtml(path)}</strong><br/>
+                      <span class="text-rose-500 line-through mr-2">before: ${escapeHtml(JSON.stringify(obj1))}</span>
+                      <span class="text-cyan-500 dark:text-cyan-400">after: ${escapeHtml(JSON.stringify(obj2))}</span>
+                    </div>
+                  </div>
+                `);
+              }
+              return;
+            }
+
+            const keys1 = Object.keys(obj1);
+            const keys2 = Object.keys(obj2);
+            const allKeys = Array.from(new Set([...keys1, ...keys2]));
+            if (normalizeKeys.checked) allKeys.sort();
+
             allKeys.forEach(k => {
               const curPath = path ? `${path}.${k}` : k;
-              const has1 = obj1 && k in obj1;
-              const has2 = obj2 && k in obj2;
+              const in1 = k in obj1;
+              const in2 = k in obj2;
 
-              if (has1 && !has2) {
-                lines.push(`<div class="p-1 rounded bg-red-500/10 text-red-600 dark:text-red-400">- [REMOVED] <strong>${curPath}</strong>: ${JSON.stringify(obj1[k])}</div>`);
-              } else if (!has1 && has2) {
-                lines.push(`<div class="p-1 rounded bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">+ [ADDED] <strong>${curPath}</strong>: ${JSON.stringify(obj2[k])}</div>`);
+              if (in1 && !in2) {
+                removedCount++;
+                diffItems.push(`
+                  <div class="flex items-start gap-2 rounded-xl border border-rose-500/20 bg-rose-500/10 p-2.5 text-rose-700 dark:text-rose-300">
+                    <span class="rounded bg-rose-500/20 px-1.5 py-0.5 font-bold text-[10px]">- REMOVED</span>
+                    <div class="flex-1 overflow-x-auto">
+                      <strong class="text-[color:var(--fg)]">${escapeHtml(curPath)}</strong>: ${escapeHtml(JSON.stringify(obj1[k]))}
+                    </div>
+                  </div>
+                `);
+              } else if (!in1 && in2) {
+                addedCount++;
+                diffItems.push(`
+                  <div class="flex items-start gap-2 rounded-xl border border-cyan-500/20 bg-cyan-500/10 p-2.5 text-cyan-600 dark:text-cyan-400 dark:text-cyan-300">
+                    <span class="rounded bg-cyan-500/20 px-1.5 py-0.5 font-bold text-[10px]">+ ADDED</span>
+                    <div class="flex-1 overflow-x-auto">
+                      <strong class="text-[color:var(--fg)]">${escapeHtml(curPath)}</strong>: ${escapeHtml(JSON.stringify(obj2[k]))}
+                    </div>
+                  </div>
+                `);
               } else {
+                // Both have key
                 const val1 = obj1[k];
                 const val2 = obj2[k];
-
-                if (typeof val1 === 'object' && val1 !== null && typeof val2 === 'object' && val2 !== null) {
-                  diffObjects(val1, val2, curPath);
-                } else if (val1 !== val2) {
-                  lines.push(`<div class="p-1 rounded bg-amber-500/10 text-amber-600 dark:text-amber-400">~ [CHANGED] <strong>${curPath}</strong>: ${JSON.stringify(val1)} → ${JSON.stringify(val2)}</div>`);
+                if (val1 !== null && typeof val1 === 'object' && val2 !== null && typeof val2 === 'object' && !Array.isArray(val1) && !Array.isArray(val2)) {
+                  deepDiff(val1, val2, curPath);
+                } else if (JSON.stringify(val1) !== JSON.stringify(val2)) {
+                  modifiedCount++;
+                  diffItems.push(`
+                    <div class="flex items-start gap-2 rounded-xl border border-amber-500/20 bg-amber-500/10 p-2.5 text-amber-700 dark:text-amber-300">
+                      <span class="rounded bg-amber-500/20 px-1.5 py-0.5 font-bold text-[10px]">~ MODIFIED</span>
+                      <div class="flex-1 overflow-x-auto">
+                        <strong class="text-[color:var(--fg)]">${escapeHtml(curPath)}</strong><br/>
+                        <span class="text-rose-500 line-through mr-2">before: ${escapeHtml(JSON.stringify(val1))}</span>
+                        <span class="text-cyan-500 dark:text-cyan-400">after: ${escapeHtml(JSON.stringify(val2))}</span>
+                      </div>
+                    </div>
+                  `);
                 } else {
-                  lines.push(`<div class="p-1 text-[color:var(--muted)] opacity-60">  [SAME] ${curPath}: ${JSON.stringify(val1)}</div>`);
+                  identicalCount++;
                 }
               }
             });
           }
 
-          diffObjects(o1, o2);
+          deepDiff(o1, o2);
 
-          if (lines.length === 0) {
-            diffResult.innerHTML = '<p class="text-emerald-500 font-bold">Both JSON objects are structurally identical!</p>';
+          statAdded.textContent = addedCount.toLocaleString();
+          statRemoved.textContent = removedCount.toLocaleString();
+          statModified.textContent = modifiedCount.toLocaleString();
+          statIdentical.textContent = identicalCount.toLocaleString();
+
+          if (diffItems.length === 0) {
+            diffBadge.textContent = 'Identical';
+            diffBadge.className = 'rounded-md bg-cyan-500/15 px-2 py-0.5 text-[10px] font-bold text-cyan-600 dark:text-cyan-400 dark:text-cyan-400';
+            diffResult.innerHTML = `
+              <div class="rounded-xl border border-cyan-500/20 bg-cyan-500/10 p-4 text-center text-cyan-600 dark:text-cyan-400 dark:text-cyan-400">
+                🎉 <strong>Both JSON documents are semantically identical!</strong> No differences found.
+              </div>
+            `;
           } else {
-            diffResult.innerHTML = lines.join('');
+            diffBadge.textContent = `${addedCount + removedCount + modifiedCount} Changes`;
+            diffBadge.className = 'rounded-md bg-amber-500/15 px-2 py-0.5 text-[10px] font-bold text-amber-600 dark:text-amber-400';
+            diffResult.innerHTML = diffItems.join('');
           }
         } catch (e) {
-          diffResult.innerHTML = `<p class="text-red-500 font-semibold">JSON Parse Error: ${e.message}</p>`;
+          diffResult.innerHTML = `<div class="p-3 rounded-xl border border-rose-500/30 bg-rose-500/10 text-rose-600 dark:text-rose-400">Syntax Error: ${escapeHtml(e.message)}</div>`;
+          diffBadge.textContent = 'Error';
+          diffBadge.className = 'rounded-md bg-rose-500/15 px-2 py-0.5 text-[10px] font-bold text-rose-600 dark:text-rose-400';
         }
       }
 
       compareBtn.addEventListener('click', compare);
+      normalizeKeys.addEventListener('change', compare);
+
+      j1.addEventListener('input', () => {
+        clearTimeout(j1._timer);
+        j1._timer = setTimeout(compare, 300);
+      });
+      j2.addEventListener('input', () => {
+        clearTimeout(j2._timer);
+        j2._timer = setTimeout(compare, 300);
+      });
 
       sampleBtn.addEventListener('click', () => {
-        j1.value = JSON.stringify({ name: "Calculator Utility", version: "2.3.0", status: "beta", tags: ["calc", "tools"] }, null, 2);
-        j2.value = JSON.stringify({ name: "Calculator Utility", version: "2.4.0", status: "production", license: "MIT", tags: ["calc", "tools", "utilities"] }, null, 2);
+        j1.value = JSON.stringify({
+          application: "Calculator Utility",
+          environment: "staging",
+          timeoutMs: 3000,
+          legacyApi: true,
+          pool: { min: 2, max: 10 }
+        }, null, 2);
+
+        j2.value = JSON.stringify({
+          application: "Calculator Utility",
+          environment: "production",
+          timeoutMs: 5000,
+          pool: { min: 4, max: 20 },
+          ssl: true,
+          region: "us-east-1"
+        }, null, 2);
+
         compare();
       });
 
       clearBtn.addEventListener('click', () => {
         j1.value = '';
         j2.value = '';
-        diffResult.innerHTML = '<p class="text-[color:var(--muted)] italic">Enter two JSON objects above and click Compare.</p>';
+        diffResult.innerHTML = '<p class="italic text-[color:var(--muted)]">Enter two JSON objects above and click Compare.</p>';
+        diffBadge.textContent = 'Ready';
+        statAdded.textContent = '0';
+        statRemoved.textContent = '0';
+        statModified.textContent = '0';
+        statIdentical.textContent = '0';
       });
+
+      // Init with sample
+      sampleBtn.click();
     })();
   </script>
 </SiteLayout>

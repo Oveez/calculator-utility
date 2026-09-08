@@ -1,10 +1,12 @@
 ---
 import SiteLayout from '../../layouts/SiteLayout.astro';
 import Icon from '../../components/Icon.astro';
+import CalculatorParameterGuide from '../../components/calculator/CalculatorParameterGuide.astro';
+import type { CalculatorParameterInfo } from '../../types/calculator';
 import { siteName, toAbsoluteUrl, withBasePath } from '../../utils/site';
 
-const pageTitle = `Image File Metadata Viewer — Check File Specs Online · ${siteName}`;
-const pageDesc = 'Inspect image file properties including exact pixel dimensions, aspect ratio, file byte size, MIME format, color space, and megapixels. 100% private in-browser tool.';
+const pageTitle = `Image Metadata & File Specs Inspector — Resolution, Memory & SHA-256 · ${siteName}`;
+const pageDesc = 'Deep technical inspection of image files: exact pixel dimensions, raw uncompressed RAM footprint, compression ratio, aspect ratio, display standard, and SHA-256 cryptographic hash. 100% private.';
 const canonicalUrl = toAbsoluteUrl('/image-tools/image-metadata-viewer/');
 
 const breadcrumbItems = [
@@ -13,10 +15,53 @@ const breadcrumbItems = [
   { label: 'Image Metadata Viewer' },
 ];
 
+const parameterGuideData: CalculatorParameterInfo[] = [
+  {
+    name: 'Resolution & Megapixel Density',
+    description: 'Digital dimensions represented as horizontal width by vertical height in pixels. Megapixels equal (Width × Height) ÷ 1,000,000, denoting total discrete sensor picture elements.',
+    type: 'Pixels & MP',
+    defaultValue: '3840 × 2160 px (8.29 MP)',
+    whyItMatters: 'A 4K UHD video frame has 8,294,400 total pixels, classified as 8.29 Megapixels.',
+  },
+  {
+    name: 'Uncompressed RAM Footprint',
+    description: 'When decoded by a web browser or graphics software, compressed image formats (JPEG, PNG, WebP) are expanded into an uncompressed RGBA pixel buffer in computer memory (4 bytes per pixel: Red, Green, Blue, Alpha).',
+    type: 'Memory (MB)',
+    defaultValue: 'Width × Height × 4 Bytes',
+    whyItMatters: 'A 12 MP smartphone photo consumes ~48 MB of active RAM memory when decoded on screen.',
+  },
+  {
+    name: 'Compression Efficiency Ratio',
+    description: 'The mathematical reduction factor comparing the raw uncompressed 32-bit RGBA bitmap memory size against the compressed file size on disk.',
+    type: 'Ratio (X:1)',
+    defaultValue: 'Raw Bitmap Size ÷ File Size',
+    whyItMatters: 'A 48 MB raw bitmap compressed into a 2.4 MB JPEG achieves a 20:1 (95%) compression efficiency ratio.',
+  },
+  {
+    name: 'SHA-256 Cryptographic Hash',
+    description: 'A 256-bit unique digital fingerprint computed across every byte of the file using the Web Crypto API. Verifies image integrity and detects any file tampering or bitrot.',
+    type: '64-character Hex Hash',
+    defaultValue: 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855',
+    whyItMatters: 'Used by forensic analysts and cloud storage providers for cryptographic deduplication and authenticity verification.',
+  },
+];
+
 const schemaFaq = [
   {
-    question: 'How are image file specifications measured?',
-    answer: 'The browser reads the file size from the File API and decodes pixel properties using the HTMLImageElement layout engine in real time without sending anything to a server.',
+    question: 'How does this tool inspect image file specifications?',
+    answer: 'The browser reads the raw file bytes through the local File API and HTMLImageElement layout engine. File size, dimensions, aspect ratio, raw RAM consumption, and SHA-256 hash are computed 100% locally on your machine with zero server upload.',
+  },
+  {
+    question: 'What is the uncompressed RAM memory calculation?',
+    answer: 'Computers render images as uncompressed 32-bit RGBA bitmaps, where each pixel requires 4 bytes of memory (1 byte each for Red, Green, Blue, and Alpha channel). Raw RAM = Width × Height × 4 bytes.',
+  },
+  {
+    question: 'Why does an image file on disk weigh less than its RAM size?',
+    answer: 'File formats like JPEG, WebP, and AVIF use lossy or lossless compression algorithms (discrete cosine transform, entropy coding) to reduce file sizes by 10x to 30x on disk. However, the graphics card must unpack them into full memory bitmaps to render them.',
+  },
+  {
+    question: 'What can I use the SHA-256 checksum for?',
+    answer: 'SHA-256 generates an immutable 64-character hexadecimal signature. If even one pixel or byte of the file is altered, the hash changes completely. It is ideal for verifying file authenticity and digital copyright timestamping.',
   },
 ];
 
@@ -24,7 +69,7 @@ const schemaGraph = [
   {
     '@context': 'https://schema.org',
     '@type': 'WebApplication',
-    name: 'Image Metadata Viewer',
+    name: 'Image Metadata & File Specs Inspector',
     url: canonicalUrl,
     applicationCategory: 'ImageApplication',
     operatingSystem: 'All',
@@ -82,25 +127,26 @@ const schemaGraph = [
     <header class="space-y-3">
       <div class="inline-flex items-center gap-2 rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1 text-xs font-semibold text-[color:var(--muted)]">
         <span class="inline-block h-2 w-2 rounded-full bg-emerald-500"></span>
-        <span>Local Image Analysis</span>
+        <span>Deep Image Telemetry &amp; Cryptographic Hash</span>
       </div>
       <h1 class="text-2xl sm:text-4xl font-extrabold tracking-tight text-[color:var(--fg)]">
-        Image File Metadata Viewer
+        Image File Metadata &amp; Technical Specs Inspector
       </h1>
-      <p class="max-w-2xl text-xs sm:text-sm text-[color:var(--muted)] leading-relaxed">
-        Inspect image resolution, aspect ratio, exact file weight, and MIME formats locally in your browser.
+      <p class="max-w-3xl text-xs sm:text-sm text-[color:var(--muted)] leading-relaxed">
+        Inspect exact pixel dimensions, display standards, memory footprint in RAM, compression ratio, and compute cryptographic SHA-256 checksums locally in your browser.
       </p>
     </header>
 
     <div class="space-y-6">
+      <!-- Upload Dropzone -->
       <div id="dropzone-box" class="space-y-3 rounded-3xl border-2 border-dashed border-[color:var(--border)] bg-[color:var(--surface)] p-6 sm:p-8 text-center transition hover:border-[color:var(--border-strong)]">
         <input type="file" id="img-file" accept="image/*" class="hidden" />
         <label for="img-file" id="upload-prompt" class="cursor-pointer space-y-2 block">
           <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-[color:var(--surface-strong)] text-[color:var(--fg)]">
             <Icon name="image" class="w-6 h-6 text-[color:var(--accent)]" />
           </div>
-          <p class="text-sm font-bold text-[color:var(--fg)]">Choose an image to inspect specs</p>
-          <p class="text-xs text-[color:var(--muted)]">Instant local analysis (100% private in browser)</p>
+          <p class="text-sm font-bold text-[color:var(--fg)]">Choose an image to inspect complete technical specifications</p>
+          <p class="text-xs text-[color:var(--muted)]">Supports JPG, PNG, WebP, GIF, SVG, AVIF, BMP &bull; 100% private in-browser analysis</p>
         </label>
 
         <!-- Visual Upload Preview Box -->
@@ -114,32 +160,138 @@ const schemaGraph = [
               <p id="thumb-info" class="text-[11px] text-[color:var(--muted)]">0 KB</p>
             </div>
           </div>
-          <label for="img-file" class="cursor-pointer shrink-0 rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1.5 text-xs font-semibold text-[color:var(--muted)] hover:text-[color:var(--fg)] transition">
-            Change Image
-          </label>
+          <div class="flex items-center gap-2 shrink-0">
+            <label for="img-file" class="cursor-pointer rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1.5 text-xs font-semibold text-[color:var(--muted)] hover:text-[color:var(--fg)] transition">
+              Change Image
+            </label>
+          </div>
         </div>
       </div>
 
-      <!-- Specs Cards Grid -->
-      <div id="specs-grid" class="hidden grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 space-y-1">
-          <span class="text-[10px] font-bold text-[color:var(--muted)] uppercase">Dimensions</span>
-          <p id="res-dim" class="font-mono text-base font-bold text-emerald-500">-</p>
+      <!-- Main Results Container -->
+      <div id="results-container" class="hidden space-y-6">
+        <!-- Top Telemetry Summary Cards -->
+        <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 space-y-1">
+            <span class="text-[10px] font-bold text-[color:var(--muted)] uppercase">Resolution</span>
+            <p id="card-dim" class="font-mono text-xl font-extrabold text-emerald-500">-</p>
+            <p id="card-display-std" class="text-[11px] text-[color:var(--muted)] font-mono">Standard: -</p>
+          </div>
+          <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 space-y-1">
+            <span class="text-[10px] font-bold text-[color:var(--muted)] uppercase">File Size on Disk</span>
+            <p id="card-size" class="font-mono text-xl font-extrabold text-[color:var(--fg)]">-</p>
+            <p id="card-bytes" class="text-[11px] text-[color:var(--muted)] font-mono">0 Bytes</p>
+          </div>
+          <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 space-y-1">
+            <span class="text-[10px] font-bold text-[color:var(--muted)] uppercase">Megapixels</span>
+            <p id="card-mp" class="font-mono text-xl font-extrabold text-[color:var(--fg)]">-</p>
+            <p id="card-total-px" class="text-[11px] text-[color:var(--muted)] font-mono">0 Pixels</p>
+          </div>
+          <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 space-y-1">
+            <span class="text-[10px] font-bold text-[color:var(--muted)] uppercase">Aspect Ratio</span>
+            <p id="card-ratio" class="font-mono text-xl font-extrabold text-[color:var(--fg)]">-</p>
+            <p id="card-ratio-dec" class="text-[11px] text-[color:var(--muted)] font-mono">1.00:1</p>
+          </div>
         </div>
-        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 space-y-1">
-          <span class="text-[10px] font-bold text-[color:var(--muted)] uppercase">File Size</span>
-          <p id="res-size" class="font-mono text-base font-bold text-[color:var(--fg)]">-</p>
+
+        <!-- SHA-256 Hash Box -->
+        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 space-y-2">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">SHA-256 Cryptographic Hash Checksum</span>
+              <span class="rounded-md bg-emerald-500/10 px-2 py-0.5 text-[10px] font-mono text-emerald-500 font-bold">Web Crypto API</span>
+            </div>
+            <button
+              type="button"
+              id="copy-hash-btn"
+              class="rounded-lg border border-[color:var(--border)] bg-[color:var(--surface-strong)] px-3 py-1 text-xs font-bold text-[color:var(--fg)] hover:border-emerald-500 transition cursor-pointer"
+            >
+              Copy Hash
+            </button>
+          </div>
+          <p id="sha-hash" class="font-mono text-xs sm:text-sm text-emerald-400 break-all bg-[color:var(--bg)] p-3 rounded-xl border border-[color:var(--border)]">
+            Computing cryptographic hash...
+          </p>
         </div>
-        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 space-y-1">
-          <span class="text-[10px] font-bold text-[color:var(--muted)] uppercase">Megapixels</span>
-          <p id="res-mp" class="font-mono text-base font-bold text-[color:var(--fg)]">-</p>
-        </div>
-        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 space-y-1">
-          <span class="text-[10px] font-bold text-[color:var(--muted)] uppercase">Aspect Ratio</span>
-          <p id="res-ratio" class="font-mono text-base font-bold text-[color:var(--fg)]">-</p>
+
+        <!-- Technical Registry & Preview Grid -->
+        <div class="grid gap-6 lg:grid-cols-3">
+          <!-- Image Preview -->
+          <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 space-y-3">
+            <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Visual Layout</span>
+            <div class="aspect-4/3 rounded-xl overflow-hidden bg-[color:var(--surface-strong)] flex items-center justify-center border border-[color:var(--border)]">
+              <img id="main-preview" alt="Preview" class="max-h-full max-w-full object-contain" />
+            </div>
+            <div class="flex items-center justify-between gap-2 pt-1">
+              <button
+                type="button"
+                id="copy-json-btn"
+                class="w-1/2 rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] py-2 text-xs font-bold text-[color:var(--fg)] hover:border-emerald-500 transition cursor-pointer"
+              >
+                Copy JSON Specs
+              </button>
+              <button
+                type="button"
+                id="dl-spec-btn"
+                class="w-1/2 rounded-xl bg-[color:var(--fg)] py-2 text-xs font-bold text-[color:var(--bg)] hover:opacity-90 transition cursor-pointer"
+              >
+                Download Report
+              </button>
+            </div>
+          </div>
+
+          <!-- Comprehensive Specs Table -->
+          <div class="lg:col-span-2 space-y-3">
+            <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Complete Technical Parameter Registry</span>
+            <div class="overflow-x-auto rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)]">
+              <table class="w-full text-left text-xs">
+                <thead class="bg-[color:var(--surface-strong)] text-[color:var(--muted)] border-b border-[color:var(--border)]">
+                  <tr>
+                    <th class="p-3 font-bold w-2/5">Technical Property</th>
+                    <th class="p-3 font-bold w-3/5">Measured Telemetry Value</th>
+                  </tr>
+                </thead>
+                <tbody id="specs-tbody" class="divide-y divide-[color:var(--border)] font-mono text-[color:var(--fg)]">
+                  <!-- Dynamic rows -->
+                </tbody>
+              </table>
+            </div>
+          </div>
         </div>
       </div>
     </div>
+
+    <!-- Parameter Guide Component -->
+    <CalculatorParameterGuide
+      parameters={parameterGuideData}
+      workedExample={{
+        title: 'Image Memory & Compression Audit',
+        description: 'Analysis of raw memory buffer allocation versus compressed storage size on disk.',
+        formula: 'Raw RAM Memory = (Width × Height × 4 bytes) | Compression Ratio = Raw Memory ÷ Compressed Disk File Size',
+        steps: [
+          {
+            step: 'Ingest Dimensions',
+            calculation: '4K UHD resolution: 3840 × 2160 pixels',
+            result: '8,294,400 Total Pixels (8.29 MP)',
+          },
+          {
+            step: '32-bit RGBA RAM Allocation',
+            calculation: '3840 × 2160 × 4 bytes',
+            result: '33,177,600 Bytes (~31.64 MB)',
+          },
+          {
+            step: 'Compare Compressed WebP File',
+            calculation: '31.64 MB raw ÷ 1.10 MB on disk',
+            result: '28.76:1 Compression Ratio (96.5% reduction)',
+          },
+          {
+            step: 'Cryptographic SHA-256 Checksum',
+            calculation: 'Web Crypto API SHA-256 digest computation',
+            result: 'Verified immutable 64-character hash',
+          },
+        ],
+      }}
+    />
 
     <!-- FAQs -->
     <section class="space-y-4">
@@ -149,7 +301,7 @@ const schemaGraph = [
           <details class="group rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
             <summary class="cursor-pointer list-none font-semibold text-sm sm:text-base text-[color:var(--fg)] flex items-center justify-between gap-4">
               <span>{faq.question}</span>
-              <span class="text-xs text-[color:var(--muted)] group-open:rotate-180 transition-transform">▼</span>
+              <span class="text-xs text-[color:var(--muted)] group-open:rotate-180 transition-transform">&blacktriangledown;</span>
             </summary>
             <p class="mt-3 text-xs sm:text-sm leading-relaxed text-[color:var(--muted)]">
               {faq.answer}
@@ -171,11 +323,31 @@ const schemaGraph = [
       const thumbPreview = root.querySelector('#thumb-preview');
       const thumbName = root.querySelector('#thumb-name');
       const thumbInfo = root.querySelector('#thumb-info');
-      const grid = root.querySelector('#specs-grid');
-      const resDim = root.querySelector('#res-dim');
-      const resSize = root.querySelector('#res-size');
-      const resMp = root.querySelector('#res-mp');
-      const resRatio = root.querySelector('#res-ratio');
+
+      const resultsContainer = root.querySelector('#results-container');
+      const cardDim = root.querySelector('#card-dim');
+      const cardDisplayStd = root.querySelector('#card-display-std');
+      const cardSize = root.querySelector('#card-size');
+      const cardBytes = root.querySelector('#card-bytes');
+      const cardMp = root.querySelector('#card-mp');
+      const cardTotalPx = root.querySelector('#card-total-px');
+      const cardRatio = root.querySelector('#card-ratio');
+      const cardRatioDec = root.querySelector('#card-ratio-dec');
+
+      const shaHash = root.querySelector('#sha-hash');
+      const copyHashBtn = root.querySelector('#copy-hash-btn');
+      const mainPreview = root.querySelector('#main-preview');
+      const specsTbody = root.querySelector('#specs-tbody');
+      const copyJsonBtn = root.querySelector('#copy-json-btn');
+      const dlSpecBtn = root.querySelector('#dl-spec-btn');
+
+      let currentSpecs = [];
+      let currentSha = '';
+      let currentFileName = 'image.png';
+
+      function gcd(a, b) {
+        return b === 0 ? a : gcd(b, a % b);
+      }
 
       function formatBytes(bytes) {
         if (bytes < 1024) return bytes + ' B';
@@ -183,35 +355,148 @@ const schemaGraph = [
         return (bytes / 1048576).toFixed(2) + ' MB';
       }
 
-      function gcd(a, b) { return b === 0 ? a : gcd(b, a % b); }
+      function classifyDisplayStandard(w, h) {
+        const maxDim = Math.max(w, h);
+        const minDim = Math.min(w, h);
 
-      fileIn.addEventListener('change', (e) => {
-        const file = e.target.files[0];
+        if (maxDim >= 7680 && minDim >= 4320) return '8K UHD (4320p)';
+        if (maxDim >= 5120 && minDim >= 2880) return '5K Display';
+        if (maxDim >= 3840 && minDim >= 2160) return '4K UHD (2160p)';
+        if (maxDim >= 2560 && minDim >= 1440) return '2K QHD (1440p)';
+        if (maxDim >= 1920 && minDim >= 1080) return 'Full HD (1080p)';
+        if (maxDim >= 1280 && minDim >= 720) return 'HD Ready (720p)';
+        if (maxDim >= 800 && minDim >= 600) return 'SVGA Standard';
+        return 'Standard Web Asset';
+      }
+
+      async function computeSha256(file) {
+        const buffer = await file.arrayBuffer();
+        const hashBuffer = await crypto.subtle.digest('SHA-256', buffer);
+        const hashArray = Array.from(new Uint8Array(hashBuffer));
+        return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+      }
+
+      fileIn?.addEventListener('change', async (e) => {
+        const file = e.target.files?.[0];
         if (!file) return;
+
+        currentFileName = file.name;
+        resultsContainer.classList.remove('hidden');
 
         const url = URL.createObjectURL(file);
         thumbPreview.src = url;
+        mainPreview.src = url;
         thumbName.textContent = file.name;
         thumbInfo.textContent = `${formatBytes(file.size)} • ${file.type || 'image'}`;
 
         uploadPrompt.classList.add('hidden');
         uploadPreviewBox.classList.remove('hidden');
 
-        grid.classList.remove('hidden');
-        resSize.textContent = formatBytes(file.size);
+        // Start SHA-256 computation in background
+        shaHash.textContent = 'Computing SHA-256 checksum...';
+        computeSha256(file).then(hash => {
+          currentSha = hash;
+          shaHash.textContent = hash;
+        }).catch(() => {
+          shaHash.textContent = 'SHA-256 calculation unsupported on this browser.';
+        });
 
         const img = new Image();
         img.onload = () => {
           const w = img.naturalWidth;
           const h = img.naturalHeight;
-          thumbInfo.textContent = `${w}×${h} px • ${formatBytes(file.size)}`;
-          resDim.textContent = `${w} × ${h} px`;
-          resMp.textContent = `${((w * h) / 1000000).toFixed(2)} MP`;
+          const totalPixels = w * h;
+          const mp = (totalPixels / 1000000).toFixed(2);
+          const rawBytes = totalPixels * 4; // 32-bit RGBA
+          const compRatio = (rawBytes / Math.max(file.size, 1)).toFixed(1);
 
           const g = gcd(w, h);
-          resRatio.textContent = `${w / g}:${h / g}`;
+          const ratioW = w / g;
+          const ratioH = h / g;
+          const ratioDec = (w / h).toFixed(2);
+          const displayStd = classifyDisplayStandard(w, h);
+
+          // Top Cards
+          cardDim.textContent = `${w} × ${h} px`;
+          cardDisplayStd.textContent = `Classification: ${displayStd}`;
+          cardSize.textContent = formatBytes(file.size);
+          cardBytes.textContent = `${file.size.toLocaleString()} Bytes`;
+          cardMp.textContent = `${mp} MP`;
+          cardTotalPx.textContent = `${totalPixels.toLocaleString()} Total Pixels`;
+          cardRatio.textContent = `${ratioW}:${ratioH}`;
+          cardRatioDec.textContent = `${ratioDec}:1 Aspect Ratio`;
+          thumbInfo.textContent = `${w}×${h} px • ${formatBytes(file.size)}`;
+
+          // Print Sizes
+          const print300W = (w / 300).toFixed(2);
+          const print300H = (h / 300).toFixed(2);
+          const print150W = (w / 150).toFixed(2);
+          const print150H = (h / 150).toFixed(2);
+
+          currentSpecs = [
+            { key: 'File Name', val: file.name },
+            { key: 'File Size on Disk', val: `${formatBytes(file.size)} (${file.size.toLocaleString()} bytes)` },
+            { key: 'MIME Type', val: file.type || 'image/jpeg' },
+            { key: 'Pixel Dimensions', val: `${w} × ${h} pixels` },
+            { key: 'Total Pixel Count', val: `${totalPixels.toLocaleString()} pixels` },
+            { key: 'Megapixels', val: `${mp} MP` },
+            { key: 'Simplified Aspect Ratio', val: `${ratioW}:${ratioH}` },
+            { key: 'Decimal Aspect Ratio', val: `${ratioDec}:1` },
+            { key: 'Display Standard Category', val: displayStd },
+            { key: 'Decoded RAM Memory', val: `${formatBytes(rawBytes)} (32-bit RGBA buffer)` },
+            { key: 'Storage Compression Ratio', val: `${compRatio}:1 (${((1 - (file.size / rawBytes)) * 100).toFixed(1)}% savings)` },
+            { key: 'Max Print Size @ 300 DPI', val: `${print300W}" × ${print300H}" (${(print300W * 2.54).toFixed(1)} × ${(print300H * 2.54).toFixed(1)} cm)` },
+            { key: 'Max Print Size @ 150 DPI', val: `${print150W}" × ${print150H}" (${(print150W * 2.54).toFixed(1)} × ${(print150H * 2.54).toFixed(1)} cm)` },
+            { key: 'File Last Modified', val: new Date(file.lastModified).toLocaleString() }
+          ];
+
+          specsTbody.innerHTML = currentSpecs.map(s => `
+            <tr class="hover:bg-[color:var(--surface-strong)] transition">
+              <td class="p-3 font-bold text-emerald-500">${s.key}</td>
+              <td class="p-3">${s.val}</td>
+            </tr>
+          `).join('');
         };
         img.src = url;
+      });
+
+      // Copy Hash
+      copyHashBtn?.addEventListener('click', () => {
+        if (!currentSha) return;
+        navigator.clipboard.writeText(currentSha).then(() => {
+          const orig = copyHashBtn.textContent;
+          copyHashBtn.textContent = 'Copied!';
+          setTimeout(() => { copyHashBtn.textContent = orig; }, 1800);
+        });
+      });
+
+      // Copy JSON
+      copyJsonBtn?.addEventListener('click', () => {
+        const obj = { sha256: currentSha };
+        currentSpecs.forEach(s => { obj[s.key] = s.val; });
+        navigator.clipboard.writeText(JSON.stringify(obj, null, 2)).then(() => {
+          const orig = copyJsonBtn.textContent;
+          copyJsonBtn.textContent = 'Copied JSON!';
+          setTimeout(() => { copyJsonBtn.textContent = orig; }, 1800);
+        });
+      });
+
+      // Download Report
+      dlSpecBtn?.addEventListener('click', () => {
+        const lines = [
+          '=== IMAGE TECHNICAL SPECIFICATION REPORT ===',
+          `Generated: ${new Date().toISOString()}`,
+          `SHA-256 Checksum: ${currentSha}`,
+          '============================================\n',
+          ...currentSpecs.map(s => `${s.key}: ${s.val}`)
+        ];
+        const blob = new Blob([lines.join('\n')], { type: 'text/plain' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        const dotIdx = currentFileName.lastIndexOf('.');
+        const base = dotIdx !== -1 ? currentFileName.substring(0, dotIdx) : currentFileName;
+        a.download = `${base}_specs_report.txt`;
+        a.click();
       });
     })();
   </script>

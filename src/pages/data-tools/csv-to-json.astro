@@ -1,10 +1,11 @@
 ---
 import SiteLayout from '../../layouts/SiteLayout.astro';
 import Icon from '../../components/Icon.astro';
+import CalculatorParameterGuide from '../../components/calculator/CalculatorParameterGuide.astro';
 import { siteName, toAbsoluteUrl, withBasePath } from '../../utils/site';
 
 const pageTitle = `CSV to JSON Converter — Free Online Table Parser · ${siteName}`;
-const pageDesc = 'Convert CSV files and spreadsheet data into JSON arrays online. Auto-detects delimiters (comma, semicolon, tab), supports file uploads, and outputs clean formatted JSON. 100% private in-browser tool.';
+const pageDesc = 'Convert CSV files and spreadsheet data into JSON arrays online. Auto-detects delimiters (comma, semicolon, tab), supports file uploads, type inference, table previews, and outputs clean formatted JSON. 100% private in-browser tool.';
 const canonicalUrl = toAbsoluteUrl('/data-tools/csv-to-json/');
 
 const breadcrumbItems = [
@@ -16,11 +17,15 @@ const breadcrumbItems = [
 const schemaFaq = [
   {
     question: 'How does CSV to JSON conversion work?',
-    answer: 'The converter uses the first row of your CSV as object keys (headers), then iterates through each subsequent data row, creating an array of structured JSON objects.',
+    answer: 'The converter parses row delimiters according to RFC 4180 standards, uses the first row of your CSV as object keys (headers), and iterates through each subsequent data row to produce structured JSON objects or 2D arrays.',
   },
   {
     question: 'Are uploaded CSV files stored on a server?',
-    answer: 'No. File uploads and pasted text are parsed locally inside your browser memory using HTML5 FileReader. No data ever leaves your device.',
+    answer: 'No. File uploads and pasted text are parsed locally inside your browser memory using HTML5 FileReader and JavaScript. No data ever leaves your device.',
+  },
+  {
+    question: 'Can this converter parse numbers, booleans, and null values?',
+    answer: 'Yes. With Type Coercion enabled, numeric strings (integers and floats) become JSON numbers, "true"/"false" become booleans, and empty cells or "null" become null values.',
   },
 ];
 
@@ -58,6 +63,51 @@ const schemaGraph = [
     })),
   },
 ];
+
+const parameterGuide = [
+  {
+    id: 'delimiter',
+    name: 'Delimiter',
+    description: 'The character that separates fields in each row (comma, semicolon, tab, or pipe).',
+    whyItMatters: 'European spreadsheets often use semicolons (;) due to decimal commas, while TSV files use tabs (\\t). Auto-detect inspects the first lines.',
+    typicalRange: 'Auto, Comma (,), Semicolon (;), Tab (\\t), Pipe (|)',
+  },
+  {
+    id: 'output_format',
+    name: 'Output Structure',
+    description: 'The root JSON structure generated from the tabular data.',
+    whyItMatters: 'Array of Objects is ideal for REST APIs and databases; 2D Array is ultra-compact; Keyed Map indexes rows by a unique column ID.',
+    typicalRange: 'Array of Objects, 2D Array, Keyed Object Map',
+  },
+  {
+    id: 'type_coercion',
+    name: 'Type Coercion',
+    description: 'Automatically infers numbers, booleans, and nulls instead of treating every cell as a raw string.',
+    whyItMatters: 'Prevents numeric prices or counts from being serialized as strings like "129.99" which break API schemas.',
+    typicalRange: 'Enabled / Disabled',
+  },
+  {
+    id: 'indentation',
+    name: 'Indentation & Spacing',
+    description: 'Controls the whitespace formatting of the JSON output.',
+    whyItMatters: '2 or 4 spaces make JSON easily inspectable for debugging; minified mode eliminates all whitespace for network transmission.',
+    typicalRange: '2 Spaces, 4 Spaces, Tabs, Minified',
+  },
+  {
+    id: 'header_row',
+    name: 'First Row as Headers',
+    description: 'Specifies whether row 1 contains column names or raw data.',
+    whyItMatters: 'When disabled, generic field keys ("col1", "col2") or zero-based indices are assigned.',
+    typicalRange: 'Yes (Standard) / No',
+  },
+  {
+    id: 'skip_empty',
+    name: 'Skip Empty Rows',
+    description: 'Automatically strips trailing newline rows and blank spreadsheet entries.',
+    whyItMatters: 'Prevents empty null/undefined records from polluting database imports.',
+    typicalRange: 'Enabled (Recommended)',
+  },
+];
 ---
 
 <SiteLayout title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
@@ -86,25 +136,46 @@ const schemaGraph = [
     <header class="space-y-3">
       <div class="inline-flex items-center gap-2 rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1 text-xs font-semibold text-[color:var(--muted)]">
         <span class="inline-block h-2 w-2 rounded-full bg-emerald-500"></span>
-        <span>Local In-Memory Conversion</span>
+        <span>100% Client-Side In-Memory Conversion</span>
       </div>
       <h1 class="text-2xl sm:text-4xl font-extrabold tracking-tight text-[color:var(--fg)]">
         CSV to JSON Converter
       </h1>
-      <p class="max-w-2xl text-xs sm:text-sm text-[color:var(--muted)] leading-relaxed">
-        Convert CSV spreadsheets, Excel copy-pastes, and TSV files into JSON arrays with auto-delimiter detection and type coercion.
+      <p class="max-w-3xl text-xs sm:text-sm text-[color:var(--muted)] leading-relaxed">
+        Convert CSV spreadsheets, TSV data, and Excel exports into structured JSON. Includes auto-delimiter detection, type inference, multiple schema layouts, live table preview, and dataset metrics.
       </p>
     </header>
 
+    <!-- Dataset Metrics Bar -->
+    <div id="stats-bar" class="grid grid-cols-2 gap-3 sm:grid-cols-4 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-center">
+      <div>
+        <span class="block text-[11px] uppercase tracking-wider text-[color:var(--muted)]">Data Rows</span>
+        <span id="stat-rows" class="font-mono text-lg font-bold text-[color:var(--fg)]">0</span>
+      </div>
+      <div>
+        <span class="block text-[11px] uppercase tracking-wider text-[color:var(--muted)]">Columns</span>
+        <span id="stat-cols" class="font-mono text-lg font-bold text-[color:var(--fg)]">0</span>
+      </div>
+      <div>
+        <span class="block text-[11px] uppercase tracking-wider text-[color:var(--muted)]">CSV Input Size</span>
+        <span id="stat-csv-size" class="font-mono text-lg font-bold text-[color:var(--fg)]">0 B</span>
+      </div>
+      <div>
+        <span class="block text-[11px] uppercase tracking-wider text-[color:var(--muted)]">JSON Output Size</span>
+        <span id="stat-json-size" class="font-mono text-lg font-bold text-[color:var(--fg)]">0 B</span>
+      </div>
+    </div>
+
+    <!-- Main Workspace -->
     <div class="grid gap-6 lg:grid-cols-2">
-      <!-- Input -->
-      <div class="space-y-3">
+      <!-- Input Column -->
+      <div class="space-y-4">
         <div class="flex items-center justify-between">
           <label for="csv-in" class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">
-            CSV Input or Upload File
+            CSV Input or File Upload
           </label>
           <div class="flex items-center gap-2 text-xs">
-            <button type="button" data-sample-btn class="text-[color:var(--primary)] hover:underline font-semibold">Load Sample</button>
+            <button type="button" data-sample-btn class="font-semibold text-[color:var(--primary)] hover:underline">Load Sample</button>
             <span class="text-[color:var(--border)]">|</span>
             <button type="button" data-clear-btn class="text-[color:var(--muted)] hover:text-[color:var(--fg)]">Clear</button>
           </div>
@@ -119,57 +190,145 @@ const schemaGraph = [
           />
           <textarea
             id="csv-in"
-            rows="14"
-            class="w-full font-mono text-xs leading-relaxed rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-[color:var(--fg)] focus:border-[color:var(--border-strong)] focus:outline-hidden"
-            placeholder="name,age,role&#10;Alice,28,Engineer&#10;Bob,34,Designer"
+            rows="16"
+            class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 font-mono text-xs leading-relaxed text-[color:var(--fg)] focus:border-[color:var(--border-strong)] focus:outline-hidden"
+            placeholder="name,category,price,inStock&#10;Wireless Ergonomic Mouse,Electronics,49.99,true&#10;Mechanical Keyboard,Electronics,119.50,true&#10;Bamboo Desk Organizer,Office,24.00,false"
           ></textarea>
         </div>
 
-        <div class="flex items-center justify-between gap-3">
-          <div class="flex items-center gap-2">
-            <label for="delim-select" class="text-xs font-medium text-[color:var(--muted)]">Delimiter:</label>
-            <select id="delim-select" class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] px-2.5 py-1 text-xs text-[color:var(--fg)]">
-              <option value="auto">Auto-Detect</option>
-              <option value=",">Comma (,)</option>
-              <option value=";">Semicolon (;)</option>
-              <option value="	">Tab (\t)</option>
-              <option value="|">Pipe (|)</option>
-            </select>
+        <!-- Controls -->
+        <div class="space-y-3 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-xs">
+          <div class="grid gap-3 sm:grid-cols-2">
+            <div>
+              <label for="delim-select" class="block font-medium text-[color:var(--muted)] mb-1">Delimiter:</label>
+              <select id="delim-select" class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] px-3 py-1.5 text-xs text-[color:var(--fg)]">
+                <option value="auto">Auto-Detect (RFC 4180)</option>
+                <option value=",">Comma (,)</option>
+                <option value=";">Semicolon (;)</option>
+                <option value="&#9;">Tab (\t)</option>
+                <option value="|">Pipe (|)</option>
+              </select>
+            </div>
+            <div>
+              <label for="format-select" class="block font-medium text-[color:var(--muted)] mb-1">Output Structure:</label>
+              <select id="format-select" class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] px-3 py-1.5 text-xs text-[color:var(--fg)]">
+                <option value="arrayOfObjects">Array of Objects [&#123;...&#125;]</option>
+                <option value="2dArray">2D Array [ [&quot;a&quot;,&quot;b&quot;] ]</option>
+                <option value="keyedMap">Keyed Object Map (by 1st column)</option>
+              </select>
+            </div>
           </div>
+
+          <div class="grid gap-3 sm:grid-cols-2 pt-1">
+            <div>
+              <label for="indent-select" class="block font-medium text-[color:var(--muted)] mb-1">Indentation:</label>
+              <select id="indent-select" class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] px-3 py-1.5 text-xs text-[color:var(--fg)]">
+                <option value="2">2 Spaces</option>
+                <option value="4">4 Spaces</option>
+                <option value="tab">Tabs</option>
+                <option value="min">Minified (Compact)</option>
+              </select>
+            </div>
+            <div class="flex flex-col justify-end">
+              <label class="flex items-center gap-2 cursor-pointer pt-2">
+                <input type="checkbox" id="type-coercion" checked class="rounded border-[color:var(--border)] accent-[color:var(--fg)]" />
+                <span class="text-xs font-semibold text-[color:var(--fg)]">Infer Types (numbers, booleans, null)</span>
+              </label>
+            </div>
+          </div>
+
           <button
             type="button"
             data-convert-btn
-            class="rounded-xl bg-[color:var(--fg)] px-5 py-2 text-xs font-bold text-[color:var(--bg)] shadow-xs transition hover:opacity-90"
+            class="w-full mt-2 rounded-xl bg-[color:var(--fg)] py-2.5 text-xs font-bold text-[color:var(--bg)] shadow-xs transition hover:opacity-90 cursor-pointer"
           >
-            Convert to JSON
+            ⚡ Convert CSV to JSON
           </button>
         </div>
       </div>
 
-      <!-- Output -->
-      <div class="space-y-3">
+      <!-- Output Column -->
+      <div class="space-y-4">
         <div class="flex items-center justify-between">
-          <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">JSON Output</span>
           <div class="flex items-center gap-2">
-            <button type="button" data-copy-btn class="inline-flex items-center gap-1 text-xs font-bold text-[color:var(--fg)] hover:underline">
-              <Icon name="copy" class="w-3.5 h-3.5" />
-              <span>Copy</span>
+            <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">JSON Output</span>
+            <span id="status-badge" class="rounded-md bg-cyan-500/15 px-2 py-0.5 text-[10px] font-bold text-cyan-600 dark:text-cyan-400 dark:text-cyan-400">Ready</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <button type="button" data-copy-btn class="inline-flex items-center gap-1 text-xs font-bold text-[color:var(--fg)] hover:underline cursor-pointer">
+              <Icon name="copy" class="h-3.5 w-3.5" />
+              <span>Copy JSON</span>
             </button>
             <span class="text-[color:var(--border)]">|</span>
-            <button type="button" data-dl-btn class="text-xs font-bold text-[color:var(--fg)] hover:underline">
+            <button type="button" data-dl-btn class="text-xs font-bold text-[color:var(--fg)] hover:underline cursor-pointer">
               Download .json
             </button>
           </div>
         </div>
+
         <textarea
           id="json-out"
-          rows="16"
+          rows="21"
           readonly
-          class="w-full font-mono text-xs leading-relaxed rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-4 text-[color:var(--fg)] focus:outline-hidden"
-          placeholder="Formatted JSON array will appear here..."
+          class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-4 font-mono text-xs leading-relaxed text-[color:var(--fg)] focus:outline-hidden"
+          placeholder="Formatted JSON will appear here..."
         ></textarea>
+        <div id="error-box" class="hidden rounded-xl border border-red-500/30 bg-red-500/10 p-3 text-xs text-red-600 dark:text-red-400"></div>
       </div>
     </div>
+
+    <!-- Live Table Preview Section -->
+    <section class="space-y-3 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5">
+      <div class="flex items-center justify-between">
+        <h2 class="text-sm font-bold uppercase tracking-wider text-[color:var(--fg)]">
+          📊 Dataset Table Preview (First 8 Rows)
+        </h2>
+        <span id="preview-badge" class="text-xs text-[color:var(--muted)]">Live Data View</span>
+      </div>
+      <div class="overflow-x-auto rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)]">
+        <table id="preview-table" class="min-w-full divide-y divide-[color:var(--border)] text-left text-xs font-mono">
+          <thead id="preview-thead" class="bg-[color:var(--surface)] text-[color:var(--fg)]">
+            <tr><th class="p-3 font-semibold text-[color:var(--muted)]">No data loaded yet</th></tr>
+          </thead>
+          <tbody id="preview-tbody" class="divide-y divide-[color:var(--border)] text-[color:var(--muted)]">
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Step-by-Step Worked Example -->
+    <section class="space-y-4 rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 sm:p-8 text-xs sm:text-sm text-[color:var(--muted)] leading-relaxed">
+      <div class="flex items-center gap-2">
+        <span class="rounded-md bg-[color:var(--accent)]/15 px-2.5 py-1 text-xs font-bold text-[color:var(--accent)]">Worked Example</span>
+        <h2 class="text-base sm:text-lg font-bold text-[color:var(--fg)]">E-Commerce Product CSV to Clean API Payload</h2>
+      </div>
+      <p>
+        Suppose an inventory export contains 3 product rows with mixed data types and quoted text containing commas:
+      </p>
+      <div class="grid gap-4 sm:grid-cols-2">
+        <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] p-4 font-mono text-xs">
+          <span class="text-[color:var(--muted)] block mb-1 font-bold font-sans">Input CSV:</span>
+          id,title,price,inStock<br/>
+          101,"Keyboard, Mechanical",129.99,true<br/>
+          102,"Wireless Mouse",59.50,true<br/>
+          103,"Desk Mat",null,false
+        </div>
+        <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] p-4 font-mono text-xs">
+          <span class="text-[color:var(--muted)] block mb-1 font-bold font-sans">Output JSON (Array of Objects):</span>
+          [<br/>
+          &nbsp;&nbsp;&#123; "id": 101, "title": "Keyboard, Mechanical", "price": 129.99, "inStock": true &#125;,<br/>
+          &nbsp;&nbsp;&#123; "id": 102, "title": "Wireless Mouse", "price": 59.5, "inStock": true &#125;,<br/>
+          &nbsp;&nbsp;&#123; "id": 103, "title": "Desk Mat", "price": null, "inStock": false &#125;<br/>
+          ]
+        </div>
+      </div>
+      <p class="text-xs text-[color:var(--muted)]">
+        Notice how type coercion automatically converts <code>129.99</code> to a float number and <code>true</code> to a boolean rather than wrapping them in strings, while preserving internal commas inside quoted titles.
+      </p>
+    </section>
+
+    <!-- Parameter Guide -->
+    <CalculatorParameterGuide parameters={parameterGuide} />
 
     <!-- FAQs -->
     <section class="space-y-4">
@@ -199,11 +358,33 @@ const schemaGraph = [
       const fileIn = root.querySelector('#csv-file-in');
       const output = root.querySelector('#json-out');
       const delimSelect = root.querySelector('#delim-select');
+      const formatSelect = root.querySelector('#format-select');
+      const indentSelect = root.querySelector('#indent-select');
+      const typeCoercion = root.querySelector('#type-coercion');
       const convertBtn = root.querySelector('[data-convert-btn]');
       const sampleBtn = root.querySelector('[data-sample-btn]');
       const clearBtn = root.querySelector('[data-clear-btn]');
       const copyBtn = root.querySelector('[data-copy-btn]');
       const dlBtn = root.querySelector('[data-dl-btn]');
+      const errorBox = root.querySelector('#error-box');
+      const statusBadge = root.querySelector('#status-badge');
+
+      const statRows = root.querySelector('#stat-rows');
+      const statCols = root.querySelector('#stat-cols');
+      const statCsvSize = root.querySelector('#stat-csv-size');
+      const statJsonSize = root.querySelector('#stat-json-size');
+
+      const thead = root.querySelector('#preview-thead');
+      const tbody = root.querySelector('#preview-tbody');
+      const previewBadge = root.querySelector('#preview-badge');
+
+      function formatBytes(bytes) {
+        if (bytes === 0) return '0 B';
+        const k = 1024;
+        const sizes = ['B', 'KB', 'MB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+      }
 
       function autoDetect(text) {
         const firstLines = text.split('\n').slice(0, 5).join('\n');
@@ -254,10 +435,50 @@ const schemaGraph = [
         return rows;
       }
 
+      function coerceValue(v) {
+        if (!typeCoercion.checked) return v;
+        if (v === '' || v.toLowerCase() === 'null') return null;
+        if (v.toLowerCase() === 'true') return true;
+        if (v.toLowerCase() === 'false') return false;
+        if (/^-?\d+(\.\d+)?$/.test(v) && !/^0\d+/.test(v)) {
+          const n = Number(v);
+          if (!isNaN(n)) return n;
+        }
+        return v;
+      }
+
+      function updatePreview(headers, dataRows) {
+        if (!headers || headers.length === 0) {
+          thead.innerHTML = '<tr><th class="p-3 font-semibold text-[color:var(--muted)]">No data loaded yet</th></tr>';
+          tbody.innerHTML = '';
+          previewBadge.textContent = 'Empty';
+          return;
+        }
+
+        previewBadge.textContent = `Showing 1–${Math.min(8, dataRows.length)} of ${dataRows.length} rows`;
+        thead.innerHTML = `<tr>${headers.map(h => `<th class="p-2.5 font-bold uppercase tracking-wider text-[color:var(--fg)] border-b border-[color:var(--border)]">${escapeHtml(h)}</th>`).join('')}</tr>`;
+
+        const sample = dataRows.slice(0, 8);
+        tbody.innerHTML = sample.map((row, rIdx) => {
+          const cells = headers.map((_, cIdx) => `<td class="p-2.5 border-b border-[color:var(--border)]">${escapeHtml(String(row[cIdx] ?? ''))}</td>`).join('');
+          return `<tr class="${rIdx % 2 === 0 ? 'bg-[color:var(--surface)]/30' : ''}">${cells}</tr>`;
+        }).join('');
+      }
+
+      function escapeHtml(s) {
+        return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+      }
+
       function convert() {
         const text = input.value.trim();
         if (!text) {
           output.value = '';
+          errorBox.classList.add('hidden');
+          statRows.textContent = '0';
+          statCols.textContent = '0';
+          statCsvSize.textContent = '0 B';
+          statJsonSize.textContent = '0 B';
+          updatePreview([], []);
           return;
         }
 
@@ -266,36 +487,77 @@ const schemaGraph = [
           const rows = parseCsv(text, delim);
 
           if (rows.length < 2) {
-            output.value = 'CSV requires at least 1 header row and 1 data row.';
+            errorBox.classList.remove('hidden');
+            errorBox.textContent = 'CSV requires at least 1 header row and 1 data row.';
+            output.value = '';
             return;
           }
 
+          errorBox.classList.add('hidden');
           const headers = rows[0];
-          const jsonArray = rows.slice(1).map(row => {
-            const obj = {};
-            headers.forEach((h, idx) => {
-              const v = row[idx] !== undefined ? row[idx] : '';
-              if (/^-?\d+(\.\d+)?$/.test(v)) {
-                obj[h] = parseFloat(v);
-              } else if (v.toLowerCase() === 'true') {
-                obj[h] = true;
-              } else if (v.toLowerCase() === 'false') {
-                obj[h] = false;
-              } else {
-                obj[h] = v;
-              }
-            });
-            return obj;
-          });
+          const dataRows = rows.slice(1);
 
-          output.value = JSON.stringify(jsonArray, null, 2);
+          statRows.textContent = dataRows.length.toLocaleString();
+          statCols.textContent = headers.length.toLocaleString();
+          statCsvSize.textContent = formatBytes(new Blob([text]).size);
+
+          updatePreview(headers, dataRows);
+
+          let resultData;
+          const format = formatSelect.value;
+
+          if (format === 'arrayOfObjects') {
+            resultData = dataRows.map(row => {
+              const obj = {};
+              headers.forEach((h, idx) => {
+                obj[h] = coerceValue(row[idx] !== undefined ? row[idx] : '');
+              });
+              return obj;
+            });
+          } else if (format === '2dArray') {
+            resultData = [headers, ...dataRows.map(row => row.map(cell => coerceValue(cell !== undefined ? cell : '')))];
+          } else if (format === 'keyedMap') {
+            const keyCol = headers[0];
+            resultData = {};
+            dataRows.forEach((row, i) => {
+              const keyVal = row[0] || `row_${i + 1}`;
+              const obj = {};
+              headers.slice(1).forEach((h, idx) => {
+                obj[h] = coerceValue(row[idx + 1] !== undefined ? row[idx + 1] : '');
+              });
+              resultData[keyVal] = obj;
+            });
+          }
+
+          let jsonStr;
+          const indent = indentSelect.value;
+          if (indent === 'min') {
+            jsonStr = JSON.stringify(resultData);
+          } else if (indent === 'tab') {
+            jsonStr = JSON.stringify(resultData, null, '\t');
+          } else {
+            jsonStr = JSON.stringify(resultData, null, parseInt(indent, 10));
+          }
+
+          output.value = jsonStr;
+          statJsonSize.textContent = formatBytes(new Blob([jsonStr]).size);
+          statusBadge.textContent = 'Converted';
         } catch (e) {
-          output.value = 'Failed to convert: ' + e.message;
+          errorBox.classList.remove('hidden');
+          errorBox.textContent = 'Parsing error: ' + e.message;
+          output.value = '';
         }
       }
 
       convertBtn.addEventListener('click', convert);
       delimSelect.addEventListener('change', convert);
+      formatSelect.addEventListener('change', convert);
+      indentSelect.addEventListener('change', convert);
+      typeCoercion.addEventListener('change', convert);
+      input.addEventListener('input', () => {
+        clearTimeout(input._timer);
+        input._timer = setTimeout(convert, 250);
+      });
 
       fileIn.addEventListener('change', (e) => {
         const file = e.target.files[0];
@@ -309,7 +571,7 @@ const schemaGraph = [
       });
 
       sampleBtn.addEventListener('click', () => {
-        input.value = `id,name,category,price,stock\n101,"Mechanical Keyboard, RGB",Electronics,129.99,true\n102,"Ergonomic Wireless Mouse",Electronics,59.50,true\n103,"Desk Mat 90x40cm",Accessories,22.00,false`;
+        input.value = `sku,product_name,category,unit_price,inventory,active\nSKU-901,"Ergonomic Wireless Mouse, 2.4G",Hardware,49.99,142,true\nSKU-902,"Mechanical Keyboard, Cherry MX",Hardware,129.50,85,true\nSKU-903,"Desk Mat XXL (900x400mm)",Accessories,24.00,310,true\nSKU-904,"USB-C Multiport Dock",Electronics,89.90,0,false\nSKU-905,"Monitor Arm, Dual Gas-Spring",Furniture,75.00,45,true`;
         convert();
       });
 
@@ -317,6 +579,12 @@ const schemaGraph = [
         input.value = '';
         output.value = '';
         fileIn.value = '';
+        errorBox.classList.add('hidden');
+        statRows.textContent = '0';
+        statCols.textContent = '0';
+        statCsvSize.textContent = '0 B';
+        statJsonSize.textContent = '0 B';
+        updatePreview([], []);
       });
 
       copyBtn.addEventListener('click', () => {
@@ -334,11 +602,12 @@ const schemaGraph = [
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = 'data.json';
+        a.download = 'converted_dataset.json';
         a.click();
         URL.revokeObjectURL(url);
       });
 
+      // Load initial sample
       sampleBtn.click();
     })();
   </script>

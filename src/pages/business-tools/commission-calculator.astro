@@ -1,7 +1,16 @@
 ---
 import SiteLayout from '../../layouts/SiteLayout.astro';
 import Icon from '../../components/Icon.astro';
+import CalculatorParameterGuide from '../../components/calculator/CalculatorParameterGuide.astro';
 import { siteName, toAbsoluteUrl, withBasePath } from '../../utils/site';
+
+const parameterGuide = [
+  { id: 'totalSales', name: 'Total Closed Sales Revenue', description: 'Gross revenue, contract value, or closed deals generated during the commission payout period.', whyItMatters: 'The underlying volume foundation upon which commission percentages and accelerators are calculated.', typicalRange: '$5,000 to $500,000+', unit: '$' },
+  { id: 'commStructure', name: 'Commission Plan Structure', description: 'Flat percentage rate vs graduated quota accelerators (5% on first $10k, 8% on next $15k, 12% over $25k).', whyItMatters: 'Tiered accelerators dramatically incentivize sales reps to surpass quotas and close enterprise deals.', typicalRange: 'Flat or Tiered Accelerators', unit: 'model' },
+  { id: 'flatRate', name: 'Flat Commission Rate', description: 'Fixed percentage paid out across all eligible revenue generated from the first dollar.', whyItMatters: 'Standard in direct sales, independent broker agencies, and simple B2B product sales.', typicalRange: '3.0% to 20.0%', unit: '%' },
+  { id: 'basePay', name: 'Monthly Base Salary', description: 'Guaranteed base pay received regardless of sales quotas achieved in that billing month.', whyItMatters: 'Provides essential living security, creating an On-Target Earnings (OTE) compensation structure.', typicalRange: '$0 to $12,000+', unit: '$' },
+  { id: 'effectiveRate', name: 'Effective Commission Rate', description: 'The true blended percentage of commission earned across all tier brackets (Commission ÷ Sales × 100).', whyItMatters: 'Reveals the real yield per dollar sold under multi-tier graduated compensation plans.', typicalRange: '5.0% to 15.0%', unit: '%' },
+];
 
 const pageTitle = `Commission Calculator | Sales Percentages & Tiered Accelerators · ${siteName}`;
 const pageDesc = 'Calculate sales rep commission earnings across flat percentage rates, tiered performance accelerator brackets, and base salary plus commission.';
@@ -168,9 +177,19 @@ const schemaGraph = [
           </div>
         </form>
 
-        <div class="flex flex-col justify-between space-y-6 rounded-3xl border border-[color:var(--border)] bg-[color:var(--bg)] p-6 sm:p-8">
+        <div class="flex flex-col justify-between space-y-6 rounded-3xl border border-[color:var(--accent)]/30 bg-gradient-to-br from-[color:var(--accent-soft)] via-[color:var(--surface)] to-transparent p-6 sm:p-8 shadow-sm">
           <div class="space-y-5">
-            <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Earnings Breakdown</span>
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Earnings Breakdown</span>
+              <button
+                type="button"
+                class="inline-flex items-center gap-1.5 rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1.5 text-xs font-bold text-[color:var(--fg)] hover:bg-[color:var(--surface-strong)] transition cursor-pointer"
+                data-copy-btn
+              >
+                <Icon name="copy" class="w-3.5 h-3.5" />
+                <span>Copy Summary</span>
+              </button>
+            </div>
 
             <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 text-center">
               <p class="text-xs font-semibold text-[color:var(--muted)]">Total Commission Earned</p>
@@ -196,6 +215,69 @@ const schemaGraph = [
         </div>
       </div>
     </div>
+
+    <!-- Mathematical Formula & Compensation Mechanics -->
+    <section class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 sm:p-8 space-y-4">
+      <div>
+        <p class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Sales Compensation Math</p>
+        <h2 class="text-xl font-bold text-[color:var(--fg)]">How Commission &amp; Accelerators Are Computed</h2>
+      </div>
+
+      <div class="grid gap-4 sm:grid-cols-2 text-xs sm:text-sm">
+        <div class="rounded-2xl bg-[color:var(--bg)] p-4 border border-[color:var(--border)] space-y-2">
+          <p class="font-bold text-[color:var(--fg)]">1. Flat Rate Model</p>
+          <div class="rounded-xl bg-[color:var(--surface)] p-3 font-mono text-xs text-[color:var(--fg)] overflow-x-auto">
+            Commission = Closed Sales × (Rate ÷ 100)
+          </div>
+          <p class="text-xs text-[color:var(--muted)]">
+            Applies a uniform percentage from dollar one across all generated revenue.
+          </p>
+        </div>
+
+        <div class="rounded-2xl bg-[color:var(--bg)] p-4 border border-[color:var(--border)] space-y-2">
+          <p class="font-bold text-[color:var(--fg)]">2. Tiered Accelerator Model</p>
+          <div class="rounded-xl bg-[color:var(--surface)] p-3 font-mono text-xs text-[color:var(--fg)] overflow-x-auto">
+            Commission = (Tier 1 × 5%) + (Tier 2 × 8%) + (Tier 3 × 12%)
+          </div>
+          <p class="text-xs text-[color:var(--muted)]">
+            Graduated bracket structure (Tier 1: $0–$10k, Tier 2: $10k–$25k, Tier 3: &gt;$25k) rewarding top performance.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Step-by-Step Worked Example -->
+    <section class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 sm:p-8 space-y-4">
+      <div>
+        <p class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Step-By-Step Walkthrough</p>
+        <h2 class="text-xl font-bold text-[color:var(--fg)] flex items-center gap-2"><Icon name="document" class="w-4 h-4 text-[color:var(--accent)]" /><span>Worked Example: $65,000 Sales with $3,000 Base Salary</span></h2>
+      </div>
+
+      <div class="grid gap-4 sm:grid-cols-3 text-xs sm:text-sm">
+        <div class="rounded-2xl bg-[color:var(--bg)] p-4 border border-[color:var(--border)] space-y-1.5">
+          <p class="font-bold text-[color:var(--fg)]">1. Flat Rate (8.5%)</p>
+          <p class="text-[color:var(--muted)]">Closed sales = $65,000.</p>
+          <p class="text-[color:var(--muted)]">Commission = $65,000 × 0.085 = <strong>$5,525.00</strong>.</p>
+          <p class="text-[color:var(--muted)]">Total Pay = $3,000 + $5,525 = <strong>$8,525.00</strong>.</p>
+        </div>
+        <div class="rounded-2xl bg-[color:var(--bg)] p-4 border border-[color:var(--border)] space-y-1.5">
+          <p class="font-bold text-[color:var(--fg)]">2. Tiered Accelerator</p>
+          <p class="text-[color:var(--muted)]">Tier 1 ($10k @ 5%) = $500.</p>
+          <p class="text-[color:var(--muted)]">Tier 2 ($15k @ 8%) = $1,200.</p>
+          <p class="text-[color:var(--muted)]">Tier 3 ($40k @ 12%) = $4,800.</p>
+          <p class="text-[color:var(--muted)]">Tiered Commission = <strong>$6,500.00</strong>.</p>
+        </div>
+        <div class="rounded-2xl bg-[color:var(--bg)] p-4 border border-[color:var(--border)] space-y-1.5">
+          <p class="font-bold text-[color:var(--fg)]">3. Comparison &amp; Yield</p>
+          <p class="text-[color:var(--muted)]">Flat Effective Rate = 8.50%.</p>
+          <p class="text-[color:var(--muted)]">Tiered Effective Rate = 10.00%.</p>
+          <p class="text-[color:var(--muted)]">Tiered Accelerator adds <strong>+$975.00</strong> in incentive pay.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Parameter Guide -->
+    <CalculatorParameterGuide parameters={parameterGuide} />
 
     <!-- FAQs -->
     <section class="space-y-4">
@@ -272,6 +354,23 @@ const schemaGraph = [
           inRate.value = '8.5';
           inBase.value = '3000';
           update();
+        });
+      }
+
+      const copyBtn = root.querySelector('[data-copy-btn]');
+      if (copyBtn) {
+        copyBtn.addEventListener('click', async () => {
+          const text = `Commission Earnings Breakdown:\n• Commission: ${outComm?.textContent || ''}\n• ${outEff?.textContent || ''}\n• Base Salary: ${outBase?.textContent || ''}\n• Total Payout: ${outTotal?.textContent || ''}`;
+          try {
+            await navigator.clipboard.writeText(text);
+            const originalText = copyBtn.innerHTML;
+            copyBtn.innerHTML = '<span>Copied!</span>';
+            setTimeout(() => {
+              copyBtn.innerHTML = originalText;
+            }, 2000);
+          } catch (e) {
+            console.error('Clipboard copy failed', e);
+          }
         });
       }
 

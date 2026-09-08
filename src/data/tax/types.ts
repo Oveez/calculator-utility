@@ -45,6 +45,18 @@ export interface VatGstRate {
   name: string; // "VAT", "GST", "Sales Tax", "IVA", "MwSt."
 }
 
+export type FilingStatus = 'single' | 'married_joint' | 'married_separate' | 'head_of_household' | 'qualifying_widow';
+
+export interface FilingStatusConfig {
+  id: FilingStatus;
+  label: string;
+  standardDeduction: number;
+  seniorAdditionalDeduction?: number;
+  blindAdditionalDeduction?: number;
+  brackets?: TaxBracket[];
+  capitalGainsBrackets?: TaxBracket[];
+}
+
 export interface TaxYearData {
   taxYear: string; // e.g. "2025" or "2025/26"
   currency: string; // "USD", "EUR", "GBP", etc.
@@ -54,12 +66,94 @@ export interface TaxYearData {
   personalAllowance?: number;
   socialContributions: SocialContributionRule[];
   regions?: RegionTaxConfig[];
+  filingStatuses?: Partial<Record<FilingStatus, FilingStatusConfig>>;
+  capitalGainsBrackets?: TaxBracket[];
   vatConfig: VatGstRate;
   officialSourceName: string;
   officialSourceUrl: string;
   lastVerifiedDate: string; // YYYY-MM-DD
   assumptions: string[];
   notes?: string;
+}
+
+export interface AdvancedTaxInputs {
+  taxYear?: string;
+  filingStatus?: FilingStatus;
+  regionCode?: string;
+  primaryW2Income: number;
+  spouseW2Income?: number;
+  businessNetIncome?: number;
+  taxableInterest?: number;
+  ordinaryDividends?: number;
+  qualifiedDividends?: number;
+  longTermCapitalGains?: number;
+  otherIncome?: number;
+  numChildrenUnder17?: number;
+  numOtherDependents?: number;
+  taxpayerAge65OrOver?: boolean;
+  spouseAge65OrOver?: boolean;
+  taxpayerBlind?: boolean;
+  spouseBlind?: boolean;
+  preTaxRetirement401k?: number;
+  traditionalIraDeduction?: number;
+  hsaDeduction?: number;
+  studentLoanInterest?: number;
+  deductionMode?: 'auto' | 'standard' | 'itemized';
+  itemizedSaltStateLocalTax?: number;
+  itemizedPropertyTax?: number;
+  itemizedMortgageInterest?: number;
+  itemizedCharitableDonations?: number;
+  itemizedMedicalDentalExpenses?: number;
+  federalTaxWithheld?: number;
+  stateTaxWithheld?: number;
+}
+
+export interface AdvancedTaxResult {
+  totalGrossIncome: number;
+  earnedIncome: number;
+  investmentIncome: number;
+  selfEmploymentTax: number;
+  deductibleSelfEmploymentTax: number;
+  totalAdjustmentsToIncome: number;
+  adjustedGrossIncome: number;
+  standardDeductionAmount: number;
+  itemizedDeductionsTotal: number;
+  itemizedSaltAllowed: number;
+  itemizedMedicalAllowed: number;
+  deductionUsed: 'standard' | 'itemized';
+  deductionAmount: number;
+  itemizedAdvantage: number;
+  taxableIncome: number;
+  ordinaryTaxableIncome: number;
+  preferentialTaxableIncome: number;
+  regularIncomeTax: number;
+  preferentialCapitalGainsTax: number;
+  additionalMedicareTax: number;
+  netInvestmentIncomeTax: number;
+  grossFederalTax: number;
+  childTaxCredit: number;
+  otherDependentCredit: number;
+  totalTaxCredits: number;
+  netFederalIncomeTax: number;
+  ficaSocialSecurity: number;
+  ficaMedicare: number;
+  totalFicaTax: number;
+  totalFederalTaxes: number;
+  stateIncomeTax: number;
+  stateTaxName: string;
+  totalAllTaxes: number;
+  totalPaymentsAndWithholdings: number;
+  federalRefundOrOwed: number;
+  stateRefundOrOwed: number;
+  combinedRefundOrOwed: number;
+  netAnnualTakeHome: number;
+  netMonthlyTakeHome: number;
+  netBiweeklyTakeHome: number;
+  netWeeklyTakeHome: number;
+  netHourlyTakeHome: number;
+  effectiveFederalRate: number;
+  effectiveTotalTaxRate: number;
+  marginalFederalRate: number;
 }
 
 export interface CountryTaxProfile {

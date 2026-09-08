@@ -394,8 +394,8 @@ const homeDescription = "Free online calculator suite with 186+ fast tools and c
             class:list={[
               'inline-flex cursor-pointer items-center gap-2 rounded-xl border px-3.5 py-1.5 text-xs font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--accent)]',
               index === 0
-                ? 'border-[color:var(--fg)] bg-[color:var(--fg)] text-[color:var(--bg)] shadow-xs'
-                : 'border-[color:var(--border)] bg-[color:var(--surface)] text-[color:var(--fg)] hover:border-[color:var(--border-strong)] hover:bg-[color:var(--surface-strong)]',
+                ? 'border-[color:var(--accent)] bg-[color:var(--accent)] text-[color:var(--accent-fg)] shadow-[0_0_14px_var(--accent-glow)]'
+                : 'border-[color:var(--border)] bg-[color:var(--surface)] text-[color:var(--fg)] hover:border-[color:var(--glass-border-strong)] hover:bg-[color:var(--surface-strong)]',
             ]}
             type="button"
             role="tab"
@@ -560,11 +560,17 @@ const homeDescription = "Free online calculator suite with 186+ fast tools and c
           tab.setAttribute('aria-selected', String(isSelected));
 
           if (isSelected) {
-            tab.className = 'inline-flex cursor-pointer items-center gap-2 rounded-xl border px-3.5 py-1.5 text-xs font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--accent)] border-[color:var(--fg)] bg-[color:var(--fg)] text-[color:var(--bg)] shadow-xs';
+            tab.className = 'inline-flex cursor-pointer items-center gap-2 rounded-xl border px-3.5 py-1.5 text-xs font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--accent)] border-[color:var(--accent)] bg-[color:var(--accent)] text-[color:var(--accent-fg)] shadow-[0_0_14px_var(--accent-glow)]';
           } else {
-            tab.className = 'inline-flex cursor-pointer items-center gap-2 rounded-xl border px-3.5 py-1.5 text-xs font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--accent)] border-[color:var(--border)] bg-[color:var(--surface)] text-[color:var(--fg)] hover:border-[color:var(--border-strong)] hover:bg-[color:var(--surface-strong)]';
+            tab.className = 'inline-flex cursor-pointer items-center gap-2 rounded-xl border px-3.5 py-1.5 text-xs font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--accent)] border-[color:var(--border)] bg-[color:var(--surface)] text-[color:var(--fg)] hover:border-[color:var(--glass-border-strong)] hover:bg-[color:var(--surface-strong)]';
           }
         });
+
+        if (grid) {
+          grid.classList.remove('tab-content-enter');
+          void grid.offsetWidth;
+          grid.classList.add('tab-content-enter');
+        }
 
         updateResults();
 

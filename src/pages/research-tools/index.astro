@@ -4,7 +4,7 @@ import Icon from '../../components/Icon.astro';
 import { siteName, toAbsoluteUrl, withBasePath } from '../../utils/site';
 
 const pageTitle = `Research & Statistics Calculators | Sample Size, Z-Score & P-Value · ${siteName}`;
-const pageDesc = 'Free online statistics and research calculators. Cochran sample size, margin of error, confidence intervals, Z-score, Student t-score, p-value significance, and A/B test power analysis.';
+const pageDesc = 'Free online research and statistics calculators. Cochran sample size, margin of error, confidence intervals, Z-score, Student t-score, p-value significance, correlation, standard deviation, and citations.';
 const canonicalUrl = toAbsoluteUrl('/research-tools/');
 
 const breadcrumbItems = [
@@ -12,70 +12,184 @@ const breadcrumbItems = [
   { label: 'Research & Statistics' },
 ];
 
-const statsCalculators = [
+interface ToolItem {
+  slug: string;
+  title: string;
+  badge: string;
+  category: 'sampling' | 'inferential' | 'descriptive' | 'methodology';
+  categoryLabel: string;
+  metaDescription: string;
+  href: string;
+  icon: string;
+}
+
+const statsCalculators: ToolItem[] = [
+  // 1. Core Sampling & Survey Sizing
   {
     slug: 'sample-size-calculator',
     title: 'Sample Size Calculator',
-    badge: 'Research Standard',
-    metaDescription: 'Calculate minimum required sample size for surveys, thesis dissertations, and clinical studies using Cochran’s formula and finite population correction.',
+    badge: 'Cochran & Means',
+    category: 'sampling',
+    categoryLabel: 'Sampling & Sizing',
+    metaDescription: 'Calculate minimum required sample size for surveys and clinical trials using Cochran’s formula, means estimation, and finite population correction.',
     href: withBasePath('/research-tools/sample-size-calculator/'),
     icon: 'math',
   },
   {
     slug: 'margin-of-error-calculator',
     title: 'Margin of Error Calculator',
-    badge: 'Survey Quality',
-    metaDescription: 'Determine the precision margin (±%) of your survey results based on sample size, confidence level (90%, 95%, 99%), and population size.',
+    badge: 'Precision (±%)',
+    category: 'sampling',
+    categoryLabel: 'Sampling & Sizing',
+    metaDescription: 'Determine the precision margin (±%) of survey results for proportions and means across 90%, 95%, and 99% confidence intervals.',
     href: withBasePath('/research-tools/margin-of-error-calculator/'),
     icon: 'math',
   },
   {
     slug: 'confidence-interval-calculator',
     title: 'Confidence Interval Calculator',
-    badge: 'Inferential Stats',
-    metaDescription: 'Compute 90%, 95%, or 99% confidence interval bounds for sample means (Z or t-distribution) and sample proportions.',
+    badge: 'Z & t Bounds',
+    category: 'sampling',
+    categoryLabel: 'Sampling & Sizing',
+    metaDescription: 'Compute exact lower and upper confidence interval bounds for sample means (Z or t-distribution) and proportions with visual interval plots.',
     href: withBasePath('/research-tools/confidence-interval-calculator/'),
-    icon: 'math',
-  },
-  {
-    slug: 'z-score-calculator',
-    title: 'Z-Score & Percentile Calculator',
-    badge: 'Normal Dist',
-    metaDescription: 'Convert raw test scores to standard normal Z-scores, calculate percentile rankings, and determine left, right, and two-tailed probabilities.',
-    href: withBasePath('/research-tools/z-score-calculator/'),
-    icon: 'math',
-  },
-  {
-    slug: 't-score-calculator',
-    title: 'T-Score Calculator',
-    badge: 'Student-t',
-    metaDescription: 'Compute one-sample Student-t test statistics, degrees of freedom, and standardized psychometric T-scores (T = 50 + 10Z).',
-    href: withBasePath('/research-tools/t-score-calculator/'),
-    icon: 'math',
-  },
-  {
-    slug: 'p-value-calculator',
-    title: 'P-Value Calculator',
-    badge: 'Hypothesis Test',
-    metaDescription: 'Calculate exact one-tailed and two-tailed p-values from Z-scores and t-scores with statistical significance test conclusions (α = 0.05).',
-    href: withBasePath('/research-tools/p-value-calculator/'),
-    icon: 'math',
-  },
-  {
-    slug: 'standard-error-calculator',
-    title: 'Standard Error Calculator (SEM)',
-    badge: 'Measurement',
-    metaDescription: 'Calculate standard error of the mean (SEM) and standard error of proportions with finite population correction factors.',
-    href: withBasePath('/research-tools/standard-error-calculator/'),
     icon: 'math',
   },
   {
     slug: 'ab-test-sample-size-calculator',
     title: 'A/B Test Sample Size Calculator',
-    badge: 'CRO & Growth',
+    badge: 'CRO & Split Test',
+    category: 'sampling',
+    categoryLabel: 'Sampling & Sizing',
     metaDescription: 'Determine traffic and sample size requirements per variant for split tests based on baseline conversion, MDE, statistical power, and test duration.',
     href: withBasePath('/research-tools/ab-test-sample-size-calculator/'),
     icon: 'career',
+  },
+  {
+    slug: 'random-sample-generator',
+    title: 'Random Sample Generator (SRS)',
+    badge: 'CSPRNG Sampler',
+    category: 'sampling',
+    categoryLabel: 'Sampling & Sizing',
+    metaDescription: 'Extract unbiased random samples from numeric ranges or custom participant rosters using Fisher-Yates cryptographically secure sampling.',
+    href: withBasePath('/research-tools/random-sample-generator/'),
+    icon: 'math',
+  },
+
+  // 2. Inferential Testing & Probability
+  {
+    slug: 'z-score-calculator',
+    title: 'Z-Score & Normal Distribution',
+    badge: 'Standard Normal',
+    category: 'inferential',
+    categoryLabel: 'Inferential Testing',
+    metaDescription: 'Convert raw test scores to standard normal Z-scores, calculate percentile rankings, and shade probabilities on interactive SVG bell curves.',
+    href: withBasePath('/research-tools/z-score-calculator/'),
+    icon: 'math',
+  },
+  {
+    slug: 't-score-calculator',
+    title: 'T-Score Calculator (Student & Psychometric)',
+    badge: 'Student-t & MMPI',
+    category: 'inferential',
+    categoryLabel: 'Inferential Testing',
+    metaDescription: 'Compute one-sample Student-t test statistics, degrees of freedom, critical t-tables, and standardized psychometric T-scores (T = 50 + 10Z).',
+    href: withBasePath('/research-tools/t-score-calculator/'),
+    icon: 'math',
+  },
+  {
+    slug: 'p-value-calculator',
+    title: 'P-Value Significance Calculator',
+    badge: 'Z, t, χ², F-Tests',
+    category: 'inferential',
+    categoryLabel: 'Inferential Testing',
+    metaDescription: 'Calculate exact one-tailed and two-tailed p-values for Z-tests, Student t-tests, Chi-Square, and ANOVA F-tests with hypothesis test verdicts.',
+    href: withBasePath('/research-tools/p-value-calculator/'),
+    icon: 'math',
+  },
+  {
+    slug: 'standard-error-calculator',
+    title: 'Standard Error Calculator (SEM & SEP)',
+    badge: 'Sample Error',
+    category: 'inferential',
+    categoryLabel: 'Inferential Testing',
+    metaDescription: 'Calculate standard error of the mean (SEM), standard error of proportions, and difference between two independent sample means.',
+    href: withBasePath('/research-tools/standard-error-calculator/'),
+    icon: 'math',
+  },
+
+  // 3. Descriptive Statistics & Bivariate Analysis
+  {
+    slug: 'standard-deviation-calculator',
+    title: 'Standard Deviation & Variance Suite',
+    badge: 'Full Descriptive',
+    category: 'descriptive',
+    categoryLabel: 'Descriptive Statistics',
+    metaDescription: 'Compute sample and population standard deviation, variance, mean, median, IQR, Tukey outlier detection, and step-by-step deviation tables.',
+    href: withBasePath('/research-tools/standard-deviation-calculator/'),
+    icon: 'math',
+  },
+  {
+    slug: 'correlation-calculator',
+    title: 'Correlation & Regression Calculator',
+    badge: 'Pearson & Spearman',
+    category: 'descriptive',
+    categoryLabel: 'Descriptive Statistics',
+    metaDescription: 'Compute Pearson r, Spearman rank ρ, R² coefficient of determination, OLS linear regression line, and interactive scatter plot visualization.',
+    href: withBasePath('/research-tools/correlation-calculator/'),
+    icon: 'math',
+  },
+  {
+    slug: 'coefficient-of-variation-calculator',
+    title: 'Coefficient of Variation (CV % / RSD)',
+    badge: 'Relative Dispersion',
+    category: 'descriptive',
+    categoryLabel: 'Descriptive Statistics',
+    metaDescription: 'Calculate Relative Standard Deviation (RSD %) from raw data or summary metrics with laboratory precision tier benchmarks and multi-group comparison.',
+    href: withBasePath('/research-tools/coefficient-of-variation-calculator/'),
+    icon: 'math',
+  },
+
+  // 4. Academic Methodology & Citation Utilities
+  {
+    slug: 'doi-to-citation',
+    title: 'DOI to Citation Generator',
+    badge: 'CrossRef API & APA',
+    category: 'methodology',
+    categoryLabel: 'Academic Methodology',
+    metaDescription: 'Format academic journal citations into APA 7th, MLA 9th, Chicago, Harvard, IEEE, and BibTeX with live CrossRef metadata lookup.',
+    href: withBasePath('/research-tools/doi-to-citation/'),
+    icon: 'academic',
+  },
+  {
+    slug: 'isbn-citation-generator',
+    title: 'ISBN Book Citation Generator',
+    badge: 'OpenLibrary & BibTeX',
+    category: 'methodology',
+    categoryLabel: 'Academic Methodology',
+    metaDescription: 'Format book references into APA 7th, MLA 9th, Chicago, and BibTeX entries with ISBN checksum validation and Open Library metadata lookup.',
+    href: withBasePath('/research-tools/isbn-citation-generator/'),
+    icon: 'academic',
+  },
+  {
+    slug: 'likert-scale-generator',
+    title: 'Likert Scale Survey Question Generator',
+    badge: 'Psychometrics',
+    category: 'methodology',
+    categoryLabel: 'Academic Methodology',
+    metaDescription: 'Design standardized 3, 4, 5, and 7-point Likert scale survey questions across 8 psychometric dimensions with Markdown, HTML, and CSV export.',
+    href: withBasePath('/research-tools/likert-scale-generator/'),
+    icon: 'academic',
+  },
+  {
+    slug: 'participant-id-generator',
+    title: 'Participant ID & Arm Randomizer',
+    badge: 'IRB & Clinical',
+    category: 'methodology',
+    categoryLabel: 'Academic Methodology',
+    metaDescription: 'Generate randomized, collision-free participant codes (PID-XXXX) and balanced study arm assignments (Control vs Treatment) for clinical trials.',
+    href: withBasePath('/research-tools/participant-id-generator/'),
+    icon: 'academic',
   },
 ];
 
@@ -91,6 +205,10 @@ const schemaFaq = [
   {
     question: 'How do statistical power and significance level affect A/B test sample size?',
     answer: 'Higher statistical power (e.g., 80% or 90%) reduces the risk of Type II errors (false negatives), while lower significance level α (e.g., 5% or 1%) reduces Type I errors (false positives). Both increase the required sample size per variant.',
+  },
+  {
+    question: 'What is the difference between Pearson r and Spearman rho correlation?',
+    answer: 'Pearson r measures the strength and direction of a linear relationship between two continuous variables. Spearman rho (ρ) is a non-parametric measure assessing monotonic relationships based on ranked values, making it robust against non-normal distributions and outliers.',
   },
 ];
 
@@ -123,7 +241,7 @@ const schemaGraph = [
 <SiteLayout title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
   <script is:inline type="application/ld+json" set:html={JSON.stringify(schemaGraph)} />
 
-  <article class="space-y-10 py-2">
+  <article class="space-y-10 py-2" data-research-hub>
     <!-- Breadcrumbs -->
     <nav aria-label="Breadcrumb">
       <ol class="flex flex-wrap items-center gap-2 text-xs text-[color:var(--muted)]">
@@ -147,38 +265,62 @@ const schemaGraph = [
     <!-- Header Banner -->
     <header class="space-y-4 rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-6 sm:p-10">
       <div class="inline-flex items-center gap-2 rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3.5 py-1 text-xs font-bold text-[color:var(--fg)]">
-        <span>Research Methodology &amp; Inferential Statistics</span>
+        <span class="inline-block h-2 w-2 rounded-full bg-emerald-500"></span>
+        <span>Research Methodology &amp; Statistical Suite</span>
       </div>
       <h1 class="text-3xl font-extrabold tracking-tight text-[color:var(--fg)] sm:text-4xl">
         Research &amp; Statistics Calculators
       </h1>
       <p class="max-w-3xl text-sm leading-relaxed text-[color:var(--muted)] sm:text-base">
-        A rigorous collection of statistical calculation engines for academic researchers, survey designers, data analysts, and CRO growth teams. High-precision calculations for sample sizing, hypothesis testing, confidence intervals, and standard errors.
+        A rigorous collection of 16 statistical calculation engines for academic researchers, survey designers, clinical statisticians, and CRO growth teams. High-precision algorithms for sample sizing, hypothesis testing, regression, descriptive moments, and publication citations.
       </p>
     </header>
 
-    <!-- Grid of 8 Statistics Calculators -->
-    <section class="space-y-4">
-      <div class="flex items-center justify-between">
-        <div>
-          <p class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Statistical Engine</p>
-          <h2 class="text-xl font-bold tracking-tight text-[color:var(--fg)]">8 Specialized Research Tools</h2>
-        </div>
-        <span class="rounded-lg bg-[color:var(--surface)] border border-[color:var(--border)] px-2.5 py-1 text-xs font-bold text-[color:var(--fg)]">
-          8 Calculators
-        </span>
+    <!-- Category Filter Controls -->
+    <div class="flex flex-wrap items-center justify-between gap-3 border-b border-[color:var(--border)] pb-2 text-xs">
+      <div class="flex flex-wrap gap-1.5" id="category-filter-bar">
+        <button type="button" class="filter-tab active rounded-xl bg-[color:var(--fg)] px-3.5 py-1.5 font-bold text-[color:var(--bg)] transition cursor-pointer" data-filter="all">
+          All 16 Calculators
+        </button>
+        <button type="button" class="filter-tab rounded-xl bg-[color:var(--surface)] border border-[color:var(--border)] px-3.5 py-1.5 font-bold text-[color:var(--muted)] hover:text-[color:var(--fg)] transition cursor-pointer" data-filter="sampling">
+          Sampling &amp; Sizing (5)
+        </button>
+        <button type="button" class="filter-tab rounded-xl bg-[color:var(--surface)] border border-[color:var(--border)] px-3.5 py-1.5 font-bold text-[color:var(--muted)] hover:text-[color:var(--fg)] transition cursor-pointer" data-filter="inferential">
+          Inferential Testing (4)
+        </button>
+        <button type="button" class="filter-tab rounded-xl bg-[color:var(--surface)] border border-[color:var(--border)] px-3.5 py-1.5 font-bold text-[color:var(--muted)] hover:text-[color:var(--fg)] transition cursor-pointer" data-filter="descriptive">
+          Descriptive &amp; Regression (3)
+        </button>
+        <button type="button" class="filter-tab rounded-xl bg-[color:var(--surface)] border border-[color:var(--border)] px-3.5 py-1.5 font-bold text-[color:var(--muted)] hover:text-[color:var(--fg)] transition cursor-pointer" data-filter="methodology">
+          Methodology &amp; Citations (4)
+        </button>
       </div>
 
-      <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div class="relative min-w-[200px]">
+        <input
+          type="text"
+          id="tool-search"
+          placeholder="Search research tools..."
+          class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1.5 text-xs text-[color:var(--fg)] outline-none focus:border-emerald-500"
+        />
+      </div>
+    </div>
+
+    <!-- Grid of 16 Statistics Calculators -->
+    <section class="space-y-4">
+      <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4" id="tools-grid">
         {statsCalculators.map((tool) => (
           <a
             href={tool.href}
-            class="group flex flex-col justify-between rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 transition hover:border-[color:var(--border-strong)] hover:bg-[color:var(--surface-strong)]"
+            data-category={tool.category}
+            data-title={tool.title.toLowerCase()}
+            data-desc={tool.metaDescription.toLowerCase()}
+            class="tool-card group flex flex-col justify-between rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 transition hover:border-[color:var(--accent)]/40 hover:shadow-[0_0_14px_var(--accent-glow)] shadow-xs"
           >
             <div class="space-y-2.5">
               <div class="flex items-center justify-between">
                 <div class="flex h-9 w-9 items-center justify-center rounded-xl bg-[color:var(--surface-strong)] border border-[color:var(--border)] text-[color:var(--fg)]">
-                  <Icon name={tool.icon as any} class="w-4 h-4" />
+                  <Icon name={tool.icon as any} class="w-4 h-4 text-[color:var(--accent)]" />
                 </div>
                 <span class="rounded-md bg-[color:var(--surface-strong)] border border-[color:var(--border)] px-2 py-0.5 text-[10px] font-bold text-[color:var(--muted)]">
                   {tool.badge}
@@ -191,13 +333,18 @@ const schemaGraph = [
                 {tool.metaDescription}
               </p>
             </div>
-            <div class="mt-5 flex items-center gap-1.5 text-xs font-bold text-[color:var(--fg)]">
-              <span>Open Calculator</span>
-              <Icon name="arrow-right" class="w-3.5 h-3.5 transition group-hover:translate-x-1" />
+            <div class="mt-5 flex items-center justify-between pt-2 border-t border-[color:var(--border)]/50 text-xs font-bold text-[color:var(--fg)]">
+              <span class="text-[10px] font-semibold text-[color:var(--muted)] uppercase tracking-wider">{tool.categoryLabel}</span>
+              <span class="inline-flex items-center gap-1 text-[color:var(--accent)]">
+                Launch <Icon name="arrow-right" class="w-3.5 h-3.5 transition group-hover:translate-x-1" />
+              </span>
             </div>
           </a>
         ))}
       </div>
+      <p id="no-tools-match" class="hidden py-12 text-center text-sm font-semibold text-[color:var(--muted)]">
+        No research calculators matched your search criteria.
+      </p>
     </section>
 
     <!-- Value Props -->
@@ -205,19 +352,19 @@ const schemaGraph = [
       <div class="space-y-1.5">
         <h3 class="font-bold text-sm text-[color:var(--fg)]">Methodological Transparency</h3>
         <p class="text-xs text-[color:var(--muted)] leading-relaxed">
-          Every tool exposes its complete underlying statistical formula, critical value lookup, and finite population adjustments.
+          Every tool exposes its complete underlying statistical formula, critical value lookups, degrees of freedom, and finite population adjustments.
         </p>
       </div>
       <div class="space-y-1.5">
-        <h3 class="font-bold text-sm text-[color:var(--fg)]">Zero Data Logging</h3>
+        <h3 class="font-bold text-sm text-[color:var(--fg)]">Zero Data Logging &amp; Complete Privacy</h3>
         <p class="text-xs text-[color:var(--muted)] leading-relaxed">
-          Proprietary experiment data and clinical research parameters are processed strictly in browser memory without external API calls.
+          Proprietary experiment data, raw clinical patient values, and sensitive survey rosters are processed strictly in local browser memory.
         </p>
       </div>
       <div class="space-y-1.5">
         <h3 class="font-bold text-sm text-[color:var(--fg)]">Academic &amp; Business Utility</h3>
         <p class="text-xs text-[color:var(--muted)] leading-relaxed">
-          Equally suited for undergraduate dissertations, peer-reviewed clinical studies, market research polls, and product split tests.
+          Equally calibrated for doctoral dissertations, peer-reviewed clinical trials, market research polling, and CRO digital product experiments.
         </p>
       </div>
     </section>
@@ -230,7 +377,7 @@ const schemaGraph = [
           <details class="group rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
             <summary class="cursor-pointer list-none font-semibold text-sm sm:text-base text-[color:var(--fg)] flex items-center justify-between gap-4">
               <span>{faq.question}</span>
-              <span class="text-xs text-[color:var(--muted)] group-open:rotate-180 transition-transform">▼</span>
+              <span class="text-xs text-[color:var(--muted)] group-open:rotate-180 transition-transform">&blacktriangledown;</span>
             </summary>
             <p class="mt-3 text-xs sm:text-sm leading-relaxed text-[color:var(--muted)]">
               {faq.answer}
@@ -240,4 +387,59 @@ const schemaGraph = [
       </div>
     </section>
   </article>
+
+  <script is:inline>
+    (function () {
+      const root = document.querySelector('[data-research-hub]');
+      if (!root) return;
+
+      const filterTabs = root.querySelectorAll('.filter-tab');
+      const searchInput = root.querySelector('#tool-search');
+      const cards = root.querySelectorAll('.tool-card');
+      const noMatch = root.querySelector('#no-tools-match');
+
+      let activeCategory = 'all';
+      let searchQuery = '';
+
+      function filterTools() {
+        let visibleCount = 0;
+        cards.forEach(card => {
+          const cat = card.dataset.category;
+          const title = card.dataset.title || '';
+          const desc = card.dataset.desc || '';
+
+          const matchesCat = activeCategory === 'all' || cat === activeCategory;
+          const matchesSearch = !searchQuery || title.includes(searchQuery) || desc.includes(searchQuery);
+
+          if (matchesCat && matchesSearch) {
+            card.classList.remove('hidden');
+            visibleCount++;
+          } else {
+            card.classList.add('hidden');
+          }
+        });
+
+        noMatch?.classList.toggle('hidden', visibleCount > 0);
+      }
+
+      filterTabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+          filterTabs.forEach(t => {
+            t.classList.remove('bg-[color:var(--fg)]', 'text-[color:var(--bg)]');
+            t.classList.add('bg-[color:var(--surface)]', 'border', 'border-[color:var(--border)]', 'text-[color:var(--muted)]');
+          });
+          tab.classList.add('bg-[color:var(--fg)]', 'text-[color:var(--bg)]');
+          tab.classList.remove('bg-[color:var(--surface)]', 'border-[color:var(--border)]', 'text-[color:var(--muted)]');
+
+          activeCategory = tab.dataset.filter || 'all';
+          filterTools();
+        });
+      });
+
+      searchInput?.addEventListener('input', (e) => {
+        searchQuery = e.target.value.toLowerCase().trim();
+        filterTools();
+      });
+    })();
+  </script>
 </SiteLayout>

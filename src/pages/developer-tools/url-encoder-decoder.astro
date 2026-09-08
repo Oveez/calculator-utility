@@ -1,26 +1,31 @@
 ---
 import SiteLayout from '../../layouts/SiteLayout.astro';
 import Icon from '../../components/Icon.astro';
+import CalculatorParameterGuide from '../../components/calculator/CalculatorParameterGuide.astro';
 import { siteName, toAbsoluteUrl, withBasePath } from '../../utils/site';
 
-const pageTitle = `URL Percent Encoder & Decoder — Free Online Tool · ${siteName}`;
-const pageDesc = 'Encode and decode URL parameters and query strings online. Converts special characters to percent-encoded hex codes (%20, %26) and decodes URLs back to readable text. 100% private in-browser tool.';
+const pageTitle = `URL Percent Encoder & Decoder — Query String Parser · ${siteName}`;
+const pageDesc = 'Encode and decode URLs, paths, and query string parameters using RFC 3986 percent-encoding. Includes interactive query parameter table editor and URL component parser.';
 const canonicalUrl = toAbsoluteUrl('/developer-tools/url-encoder-decoder/');
 
 const breadcrumbItems = [
   { label: 'Home', href: toAbsoluteUrl('/') },
   { label: 'Developer Tools', href: toAbsoluteUrl('/developer-tools/') },
-  { label: 'URL Encoder / Decoder' },
+  { label: 'URL Encoder & Decoder' },
 ];
 
 const schemaFaq = [
   {
     question: 'What is the difference between encodeURI and encodeURIComponent?',
-    answer: '`encodeURI` encodes a full URL while preserving reserved protocol and domain characters like ":", "/", "?", and "#". `encodeURIComponent` encodes all special characters, making it suitable for query parameter values.',
+    answer: 'encodeURI() is designed to encode a complete URI, preserving protocol and path delimiters like `:`, `/`, `?`, and `#`. encodeURIComponent() encodes every reserved character including `:`, `/`, `?`, and `&`, making it mandatory for encoding individual query string keys and values.',
   },
   {
-    question: 'Why do URLs need percent-encoding?',
-    answer: 'Standard URLs only permit a subset of US-ASCII characters. Non-ASCII characters (spaces, ampersands, punctuation, emojis) must be percent-encoded so web servers can parse them unambiguously.',
+    question: 'Should spaces be encoded as %20 or + (plus)?',
+    answer: 'RFC 3986 mandates `%20` for URI path and query segments. However, HTML form submissions using application/x-www-form-urlencoded historically encode spaces as `+`. This tool allows you to toggle between both standards.',
+  },
+  {
+    question: 'Can I edit individual query parameters in a table?',
+    answer: 'Yes. Paste any full URL with query parameters into the tool, and the interactive Query Table will break down every key-value pair, allowing you to add, edit, or delete parameters and regenerate the URL instantly.',
   },
 ];
 
@@ -28,7 +33,7 @@ const schemaGraph = [
   {
     '@context': 'https://schema.org',
     '@type': 'WebApplication',
-    name: 'URL Encoder & Decoder',
+    name: 'URL Percent Encoder & Decoder',
     url: canonicalUrl,
     applicationCategory: 'DeveloperApplication',
     operatingSystem: 'All',
@@ -86,69 +91,272 @@ const schemaGraph = [
     <header class="space-y-3">
       <div class="inline-flex items-center gap-2 rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1 text-xs font-semibold text-[color:var(--muted)]">
         <span class="inline-block h-2 w-2 rounded-full bg-emerald-500"></span>
-        <span>RFC 3986 URL Percent Encoding</span>
+        <span>RFC 3986 URI Percent Encoding &bull; Interactive Query Parser</span>
       </div>
       <h1 class="text-2xl sm:text-4xl font-extrabold tracking-tight text-[color:var(--fg)]">
         URL Percent Encoder &amp; Decoder
       </h1>
       <p class="max-w-2xl text-xs sm:text-sm text-[color:var(--muted)] leading-relaxed">
-        Encode query strings into percent-encoded ASCII or decode URL parameters back into human-readable text.
+        Encode and decode query strings, path parameters, and complete URIs. Parse URLs into interactive query parameter tables, customize space encoding (%20 vs +), and inspect URI components.
       </p>
     </header>
 
+    <!-- Telemetry Bar -->
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+      <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3 text-center">
+        <p class="text-[10px] font-bold uppercase tracking-wider text-[color:var(--muted)]">Raw Length</p>
+        <p id="stat-raw-len" class="mt-1 font-mono text-base font-bold text-[color:var(--fg)]">0 chars</p>
+      </div>
+      <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3 text-center">
+        <p class="text-[10px] font-bold uppercase tracking-wider text-[color:var(--muted)]">Processed Length</p>
+        <p id="stat-out-len" class="mt-1 font-mono text-base font-bold text-cyan-500 dark:text-cyan-400">0 chars</p>
+      </div>
+      <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3 text-center">
+        <p class="text-[10px] font-bold uppercase tracking-wider text-[color:var(--muted)]">Query Parameters</p>
+        <p id="stat-param-count" class="mt-1 font-mono text-base font-bold text-[color:var(--fg)]">0</p>
+      </div>
+      <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3 text-center">
+        <p class="text-[10px] font-bold uppercase tracking-wider text-[color:var(--muted)]">Protocol / Host</p>
+        <p id="stat-host" class="mt-1 font-mono text-base font-bold text-[color:var(--fg)] truncate">None</p>
+      </div>
+    </div>
+
+    <!-- Main Workspace -->
     <div class="grid gap-6 lg:grid-cols-2">
+      <!-- Input Panel -->
       <div class="space-y-3">
         <div class="flex items-center justify-between">
-          <label for="url-in" class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Input Text or URL</label>
+          <label for="url-in" class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">
+            Input Text or Complete URL
+          </label>
           <div class="flex items-center gap-2 text-xs">
-            <button type="button" data-sample-btn class="text-[color:var(--primary)] hover:underline font-semibold">Sample</button>
+            <button type="button" data-sample-btn class="text-[color:var(--primary)] hover:underline font-semibold">Load Sample</button>
             <span class="text-[color:var(--border)]">|</span>
             <button type="button" data-clear-btn class="text-[color:var(--muted)] hover:text-[color:var(--fg)]">Clear</button>
           </div>
         </div>
+
         <textarea
           id="url-in"
-          rows="14"
+          rows="11"
           class="w-full font-mono text-xs leading-relaxed rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-[color:var(--fg)] focus:border-[color:var(--border-strong)] focus:outline-hidden"
           placeholder="Enter text or URL to encode or decode..."
         ></textarea>
 
-        <div class="flex flex-wrap items-center justify-between gap-3">
-          <div class="flex items-center gap-2">
-            <label for="mode-select" class="text-xs font-medium text-[color:var(--muted)]">Encode Type:</label>
-            <select id="mode-select" class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] px-2.5 py-1 text-xs text-[color:var(--fg)]">
-              <option value="component">Component (encodeURIComponent)</option>
-              <option value="full">Full URL (encodeURI)</option>
-            </select>
+        <!-- Mode & Space Options -->
+        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 space-y-3">
+          <div class="flex flex-wrap items-center justify-between gap-3">
+            <div class="flex items-center gap-2">
+              <label for="mode-select" class="text-xs font-medium text-[color:var(--muted)]">Encode Type:</label>
+              <select id="mode-select" class="rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-1.5 text-xs text-[color:var(--fg)] font-semibold">
+                <option value="component">Component (encodeURIComponent - Keys &amp; Values)</option>
+                <option value="full">Full URI (encodeURI - Preserves :, /, ?)</option>
+              </select>
+            </div>
+
+            <div class="flex items-center gap-2">
+              <label for="space-mode" class="text-xs font-medium text-[color:var(--muted)]">Space Encoding:</label>
+              <select id="space-mode" class="rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-1.5 text-xs text-[color:var(--fg)]">
+                <option value="%20">%20 (RFC 3986 Standard)</option>
+                <option value="+">+ (application/x-www-form-urlencoded)</option>
+              </select>
+            </div>
           </div>
-          <div class="flex gap-2">
-            <button type="button" data-enc-btn class="rounded-xl bg-[color:var(--fg)] px-4 py-2 text-xs font-bold text-[color:var(--bg)] shadow-xs transition hover:opacity-90">
+
+          <div class="flex gap-2 pt-2 border-t border-[color:var(--border)]">
+            <button
+              type="button"
+              data-enc-btn
+              class="flex-1 rounded-xl bg-[color:var(--fg)] py-2.5 text-xs font-bold text-[color:var(--bg)] shadow-xs transition hover:opacity-90"
+            >
               Encode URL
             </button>
-            <button type="button" data-dec-btn class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] px-4 py-2 text-xs font-bold text-[color:var(--fg)] transition hover:bg-[color:var(--surface-strong)]">
+            <button
+              type="button"
+              data-dec-btn
+              class="flex-1 rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] py-2.5 text-xs font-bold text-[color:var(--fg)] transition hover:bg-[color:var(--surface-strong)]"
+            >
               Decode URL
             </button>
           </div>
         </div>
       </div>
 
+      <!-- Output Panel -->
       <div class="space-y-3">
         <div class="flex items-center justify-between">
-          <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Result Output</span>
-          <button type="button" data-copy-btn class="inline-flex items-center gap-1 text-xs font-bold text-[color:var(--fg)] hover:underline">
-            <Icon name="copy" class="w-3.5 h-3.5" />
-            <span>Copy</span>
-          </button>
+          <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Processed Output</span>
+          <div class="flex items-center gap-2">
+            <button type="button" data-copy-btn class="inline-flex items-center gap-1 text-xs font-bold text-[color:var(--fg)] hover:underline">
+              <Icon name="copy" class="w-3.5 h-3.5" />
+              <span>Copy</span>
+            </button>
+          </div>
         </div>
+
         <textarea
           id="url-out"
-          rows="14"
+          rows="11"
           readonly
           class="w-full font-mono text-xs leading-relaxed rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-4 text-[color:var(--fg)] focus:outline-hidden"
-          placeholder="Encoded or decoded result will appear here..."
+          placeholder="Processed URL will appear here..."
         ></textarea>
+
+        <!-- URI Component Inspector -->
+        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 space-y-2 text-xs">
+          <p class="font-bold text-[color:var(--fg)]">Parsed URL Components:</p>
+          <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 font-mono text-[11px]">
+            <div class="rounded-lg bg-[color:var(--bg)] p-2">
+              <span class="text-[color:var(--muted)] block text-[10px]">Protocol:</span>
+              <span id="comp-protocol" class="text-[color:var(--fg)] font-semibold truncate block">n/a</span>
+            </div>
+            <div class="rounded-lg bg-[color:var(--bg)] p-2">
+              <span class="text-[color:var(--muted)] block text-[10px]">Host:</span>
+              <span id="comp-host" class="text-[color:var(--fg)] font-semibold truncate block">n/a</span>
+            </div>
+            <div class="rounded-lg bg-[color:var(--bg)] p-2">
+              <span class="text-[color:var(--muted)] block text-[10px]">Pathname:</span>
+              <span id="comp-path" class="text-[color:var(--fg)] font-semibold truncate block">n/a</span>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
+
+    <!-- Interactive Query Parameter Editor Table -->
+    <div class="space-y-4 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
+      <div class="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h2 class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Interactive Query Parameter Editor</h2>
+          <p class="text-xs text-[color:var(--muted)] mt-0.5">Modify, add, or remove parameters to update the reconstructed URL above automatically.</p>
+        </div>
+        <button
+          type="button"
+          id="add-param-btn"
+          class="inline-flex items-center gap-1 rounded-xl bg-[color:var(--fg)] px-3 py-1.5 text-xs font-bold text-[color:var(--bg)] shadow-xs transition hover:opacity-90"
+        >
+          <span>+ Add Parameter</span>
+        </button>
+      </div>
+
+      <div class="overflow-x-auto">
+        <table class="w-full text-left text-xs">
+          <thead>
+            <tr class="border-b border-[color:var(--border)] text-[10px] uppercase tracking-wider text-[color:var(--muted)]">
+              <th class="pb-2 font-bold w-12">#</th>
+              <th class="pb-2 font-bold w-1/3">Parameter Key</th>
+              <th class="pb-2 font-bold">Decoded Value</th>
+              <th class="pb-2 font-bold w-16 text-right">Action</th>
+            </tr>
+          </thead>
+          <tbody id="param-tbody" class="divide-y divide-[color:var(--border)] font-mono">
+            <tr>
+              <td colspan="4" class="py-4 text-center text-[color:var(--muted)] italic">
+                Enter a URL with query parameters above or click "+ Add Parameter" to start editing.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Character Reference Card -->
+    <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5 space-y-3">
+      <h2 class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Common Percent-Encoding Hex Codes (RFC 3986)</h2>
+      <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-2 text-center text-xs font-mono">
+        <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] p-2">
+          <span class="text-[color:var(--muted)] text-[10px] block">Space</span>
+          <strong class="text-cyan-500 dark:text-cyan-400 text-sm">%20</strong>
+        </div>
+        <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] p-2">
+          <span class="text-[color:var(--muted)] text-[10px] block">Forward Slash</span>
+          <strong class="text-[color:var(--fg)] text-sm">%2F</strong>
+        </div>
+        <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] p-2">
+          <span class="text-[color:var(--muted)] text-[10px] block">Question Mark</span>
+          <strong class="text-[color:var(--fg)] text-sm">%3F</strong>
+        </div>
+        <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] p-2">
+          <span class="text-[color:var(--muted)] text-[10px] block">Ampersand</span>
+          <strong class="text-[color:var(--fg)] text-sm">%26</strong>
+        </div>
+        <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] p-2">
+          <span class="text-[color:var(--muted)] text-[10px] block">Equals</span>
+          <strong class="text-[color:var(--fg)] text-sm">%3D</strong>
+        </div>
+        <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] p-2">
+          <span class="text-[color:var(--muted)] text-[10px] block">Hash (#)</span>
+          <strong class="text-[color:var(--fg)] text-sm">%23</strong>
+        </div>
+        <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] p-2">
+          <span class="text-[color:var(--muted)] text-[10px] block">At Sign (@)</span>
+          <strong class="text-[color:var(--fg)] text-sm">%40</strong>
+        </div>
+        <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] p-2">
+          <span class="text-[color:var(--muted)] text-[10px] block">Plus (+)</span>
+          <strong class="text-[color:var(--fg)] text-sm">%2B</strong>
+        </div>
+      </div>
+    </div>
+
+    <!-- Parameter Guide & Worked Example -->
+    <CalculatorParameterGuide
+      title="URL Percent Encoding Parameters & RFC Specifications"
+      description="Guidelines for safe URL parameter handling, character safety categories, and RFC 3986 compliant encoding."
+      parameters={[
+        {
+          name: "Component Mode (encodeURIComponent)",
+          type: "Function",
+          defaultValue: "Recommended",
+          description: "Encodes all reserved punctuation characters including ':', '/', '?', '&', '=', and '#'. Essential for parameter values so they do not break URL structure.",
+        },
+        {
+          name: "Full URI Mode (encodeURI)",
+          type: "Function",
+          defaultValue: "Alternative",
+          description: "Encodes characters not permitted in generic URIs while preserving reserved protocol and delimiter characters like 'https://' and '?'.",
+        },
+        {
+          name: "Space Encoding (%20 vs +)",
+          type: "Format Option",
+          defaultValue: "%20",
+          description: "%20 is strictly required in URL paths and modern REST APIs according to RFC 3986. The '+' character represents spaces only in legacy form submissions.",
+        },
+        {
+          name: "Unreserved Characters",
+          type: "Character Class",
+          defaultValue: "A-Z a-z 0-9 - _ . ~",
+          description: "Characters that are never percent-encoded by RFC 3986 compliant encoders.",
+        },
+      ]}
+      workedExample={{
+        title: "Encoding Search Query Parameters Containing Spaces and Symbols",
+        description: "Encode a query parameter 'search=apple & banana / citrus' into a safe HTTP query component.",
+        formula: "encodeURIComponent('apple & banana / citrus')",
+        steps: [
+          {
+            step: "Identify Unreserved Characters",
+            calculation: "Letters 'a'-'z' are unreserved and remain literal.",
+            result: "Preserve 'apple', 'banana', 'citrus'",
+          },
+          {
+            step: "Encode Spaces",
+            calculation: "Convert 3 whitespace characters to '%20'.",
+            result: "Replaced with %20",
+          },
+          {
+            step: "Encode Reserved Punctuation",
+            calculation: "'&' (ASCII 38) -> %26, '/' (ASCII 47) -> %2F.",
+            result: "& -> %26, / -> %2F",
+          },
+          {
+            step: "Final Parameter Output",
+            calculation: "Combine into valid query parameter: 'apple%20%26%20banana%20%2F%20citrus'",
+            result: "Ready for query string attachment",
+          },
+        ],
+      }}
+    />
 
     <!-- FAQs -->
     <section class="space-y-4">
@@ -158,7 +366,7 @@ const schemaGraph = [
           <details class="group rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
             <summary class="cursor-pointer list-none font-semibold text-sm sm:text-base text-[color:var(--fg)] flex items-center justify-between gap-4">
               <span>{faq.question}</span>
-              <span class="text-xs text-[color:var(--muted)] group-open:rotate-180 transition-transform">▼</span>
+              <span class="text-xs text-[color:var(--muted)] group-open:rotate-180 transition-transform">&#9660;</span>
             </summary>
             <p class="mt-3 text-xs sm:text-sm leading-relaxed text-[color:var(--muted)]">
               {faq.answer}
@@ -177,39 +385,242 @@ const schemaGraph = [
       const input = root.querySelector('#url-in');
       const output = root.querySelector('#url-out');
       const modeSelect = root.querySelector('#mode-select');
+      const spaceMode = root.querySelector('#space-mode');
       const encBtn = root.querySelector('[data-enc-btn]');
       const decBtn = root.querySelector('[data-dec-btn]');
       const copyBtn = root.querySelector('[data-copy-btn]');
       const clearBtn = root.querySelector('[data-clear-btn]');
       const sampleBtn = root.querySelector('[data-sample-btn]');
 
-      function encode() {
-        const text = input.value;
-        if (!text) { output.value = ''; return; }
-        output.value = modeSelect.value === 'full' ? encodeURI(text) : encodeURIComponent(text);
-      }
+      const statRawLen = root.querySelector('#stat-raw-len');
+      const statOutLen = root.querySelector('#stat-out-len');
+      const statParamCount = root.querySelector('#stat-param-count');
+      const statHost = root.querySelector('#stat-host');
 
-      function decode() {
-        const text = input.value;
-        if (!text) { output.value = ''; return; }
+      const compProtocol = root.querySelector('#comp-protocol');
+      const compHost = root.querySelector('#comp-host');
+      const compPath = root.querySelector('#comp-path');
+
+      const paramTbody = root.querySelector('#param-tbody');
+      const addParamBtn = root.querySelector('#add-param-btn');
+
+      let queryParams = [];
+      let baseUriPrefix = '';
+
+      function parseUrlComponents(str) {
         try {
-          output.value = decodeURIComponent(text.replace(/\+/g, ' '));
-        } catch (e) {
-          output.value = 'Failed to decode: ' + e.message;
+          // Check if looks like a full URL
+          const url = new URL(str);
+          compProtocol.textContent = url.protocol;
+          compHost.textContent = url.host;
+          compPath.textContent = url.pathname || '/';
+          statHost.textContent = url.host;
+          baseUriPrefix = `${url.protocol}//${url.host}${url.pathname}`;
+
+          // Parse params
+          const params = [];
+          url.searchParams.forEach((val, key) => {
+            params.push({ key, val });
+          });
+          return params;
+        } catch {
+          compProtocol.textContent = 'n/a';
+          compHost.textContent = 'n/a';
+          compPath.textContent = 'n/a';
+          statHost.textContent = 'Custom String';
+
+          // Try parsing query string if it has ? or &
+          if (str.includes('?') || str.includes('&') || str.includes('=')) {
+            const qStr = str.includes('?') ? str.substring(str.indexOf('?') + 1) : str;
+            baseUriPrefix = str.includes('?') ? str.substring(0, str.indexOf('?')) : '';
+            const searchParams = new URLSearchParams(qStr);
+            const params = [];
+            searchParams.forEach((val, key) => {
+              params.push({ key, val });
+            });
+            return params;
+          }
+          baseUriPrefix = '';
+          return [];
         }
       }
 
-      encBtn.addEventListener('click', encode);
-      decBtn.addEventListener('click', decode);
+      function renderParamTable() {
+        statParamCount.textContent = String(queryParams.length);
+        if (queryParams.length === 0) {
+          paramTbody.innerHTML = `
+            <tr>
+              <td colspan="4" class="py-4 text-center text-[color:var(--muted)] italic">
+                No query parameters detected. Click "+ Add Parameter" to add one.
+              </td>
+            </tr>
+          `;
+          return;
+        }
+
+        paramTbody.innerHTML = queryParams.map((p, idx) => `
+          <tr class="hover:bg-[color:var(--surface-strong)] transition-colors">
+            <td class="py-2 text-[color:var(--muted)]">${idx + 1}</td>
+            <td class="py-2 pr-2">
+              <input
+                type="text"
+                data-idx="${idx}"
+                data-field="key"
+                class="w-full rounded-lg border border-[color:var(--border)] bg-[color:var(--bg)] px-2 py-1 text-xs text-[color:var(--fg)] focus:outline-hidden"
+                value="${escapeHtml(p.key)}"
+              />
+            </td>
+            <td class="py-2 pr-2">
+              <input
+                type="text"
+                data-idx="${idx}"
+                data-field="val"
+                class="w-full rounded-lg border border-[color:var(--border)] bg-[color:var(--bg)] px-2 py-1 text-xs text-[color:var(--fg)] focus:outline-hidden"
+                value="${escapeHtml(p.val)}"
+              />
+            </td>
+            <td class="py-2 text-right">
+              <button
+                type="button"
+                data-del-param="${idx}"
+                class="text-xs text-red-500 hover:text-red-700 font-bold px-2 py-1 rounded"
+              >
+                &times;
+              </button>
+            </td>
+          </tr>
+        `).join('');
+
+        // Attach event listeners to parameter inputs
+        paramTbody.querySelectorAll('input').forEach(inp => {
+          inp.addEventListener('input', (e) => {
+            const idx = parseInt(e.target.dataset.idx, 10);
+            const field = e.target.dataset.field;
+            queryParams[idx][field] = e.target.value;
+            reconstructUrlFromParams();
+          });
+        });
+
+        paramTbody.querySelectorAll('[data-del-param]').forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            const idx = parseInt(e.target.dataset.delParam, 10);
+            queryParams.splice(idx, 1);
+            renderParamTable();
+            reconstructUrlFromParams();
+          });
+        });
+      }
+
+      function reconstructUrlFromParams() {
+        if (queryParams.length === 0 && !baseUriPrefix) return;
+        const sp = new URLSearchParams();
+        queryParams.forEach(p => {
+          if (p.key) sp.append(p.key, p.val);
+        });
+
+        let qString = sp.toString();
+        if (spaceMode.value === '%20') {
+          qString = qString.replace(/\+/g, '%20');
+        }
+
+        let full = baseUriPrefix ? `${baseUriPrefix}?${qString}` : qString;
+        output.value = full;
+        statOutLen.textContent = `${full.length} chars`;
+      }
+
+      function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+      }
+
+      function encodeUrl() {
+        const text = input.value;
+        statRawLen.textContent = `${text.length} chars`;
+        if (!text) {
+          output.value = '';
+          statOutLen.textContent = '0 chars';
+          return;
+        }
+
+        let encoded = '';
+        if (modeSelect.value === 'component') {
+          encoded = encodeURIComponent(text);
+        } else {
+          encoded = encodeURI(text);
+        }
+
+        if (spaceMode.value === '+') {
+          encoded = encoded.replace(/%20/g, '+');
+        }
+
+        output.value = encoded;
+        statOutLen.textContent = `${encoded.length} chars`;
+
+        queryParams = parseUrlComponents(text);
+        renderParamTable();
+      }
+
+      function decodeUrl() {
+        let text = input.value;
+        statRawLen.textContent = `${text.length} chars`;
+        if (!text) {
+          output.value = '';
+          statOutLen.textContent = '0 chars';
+          return;
+        }
+
+        try {
+          // Normalize '+' to space before decoding
+          let normalized = text.replace(/\+/g, ' ');
+          let decoded = decodeURIComponent(normalized);
+          output.value = decoded;
+          statOutLen.textContent = `${decoded.length} chars`;
+
+          queryParams = parseUrlComponents(decoded);
+          renderParamTable();
+        } catch {
+          try {
+            let decoded = decodeURI(text);
+            output.value = decoded;
+            statOutLen.textContent = `${decoded.length} chars`;
+            queryParams = parseUrlComponents(decoded);
+            renderParamTable();
+          } catch (e) {
+            output.value = 'Failed to decode URL: ' + e.message;
+          }
+        }
+      }
+
+      encBtn.addEventListener('click', encodeUrl);
+      decBtn.addEventListener('click', decodeUrl);
+      input.addEventListener('input', () => {
+        statRawLen.textContent = `${input.value.length} chars`;
+      });
+
+      modeSelect.addEventListener('change', encodeUrl);
+      spaceMode.addEventListener('change', encodeUrl);
+
+      addParamBtn.addEventListener('click', () => {
+        queryParams.push({ key: 'new_param', val: 'value' });
+        renderParamTable();
+        reconstructUrlFromParams();
+      });
 
       sampleBtn.addEventListener('click', () => {
-        input.value = 'https://example.com/search?query=hello world & categories=tools&calc=100%';
-        encode();
+        input.value = 'https://calculatorutility.tech/search?query=tax%20calculator&country=united%20states&year=2026&sort=desc';
+        modeSelect.value = 'full';
+        decodeUrl();
       });
 
       clearBtn.addEventListener('click', () => {
         input.value = '';
         output.value = '';
+        statRawLen.textContent = '0 chars';
+        statOutLen.textContent = '0 chars';
+        statHost.textContent = 'None';
+        queryParams = [];
+        renderParamTable();
       });
 
       copyBtn.addEventListener('click', () => {

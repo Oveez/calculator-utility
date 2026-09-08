@@ -1,7 +1,8 @@
 ---
 import SiteLayout from '../../layouts/SiteLayout.astro';
 import Icon from '../../components/Icon.astro';
-import { siteName, toAbsoluteUrl, withBasePath } from '../../utils/site';
+import CalculatorParameterGuide from '../../components/calculator/CalculatorParameterGuide.astro';
+import { siteName, toAbsoluteUrl } from '../../utils/site';
 
 const pageTitle = `PDF Metadata Remover — Strip Author & Creator Info Online · ${siteName}`;
 const pageDesc = 'Remove sensitive metadata, author names, creation software footprints, and timestamps from PDF documents online. 100% private in-browser tool.';
@@ -16,7 +17,19 @@ const breadcrumbItems = [
 const schemaFaq = [
   {
     question: 'How does in-browser PDF metadata sanitization work?',
-    answer: 'It parses the PDF binary byte stream, nullifies and strips `/Author`, `/Title`, `/Creator`, and `/Producer` metadata objects inside the document dictionary, and exports a sanitized binary file.',
+    answer: 'It parses the PDF binary object tree into memory using pdf-lib, nullifies `/Author`, `/Title`, `/Subject`, `/Keywords`, `/Creator`, and `/Producer` dictionary entries, resets creation timestamps, and rebuilds the cross-reference table without re-encoding or corrupting content streams.',
+  },
+  {
+    question: 'Will stripping metadata affect the visual layout or text fonts?',
+    answer: 'No. Sanitizing metadata only removes document identification properties and software signatures. Vector fonts, page layouts, form fields, and imagery remain 100% intact.',
+  },
+  {
+    question: 'Can I see which metadata values were removed before downloading?',
+    answer: 'Yes! The before-and-after audit inspection table displays every detected property and confirms its cleared state.',
+  },
+  {
+    question: 'Is any document data uploaded to a server?',
+    answer: 'No. All PDF binary parsing and sanitization execute 100% locally in your web browser memory. No files or information ever leave your computer.',
   },
 ];
 
@@ -54,12 +67,49 @@ const schemaGraph = [
     })),
   },
 ];
+
+const parameterGuideData = [
+  {
+    name: 'Author & Organization Scrubbing',
+    type: 'Identity Sanitization',
+    description: 'Purges user account names, operating system usernames, and corporate identities embedded by office suites.',
+  },
+  {
+    name: 'Software Footprints & Producer Signatures',
+    type: 'Application Sanitization',
+    description: 'Erases compiler signatures (e.g. "Canva", "Adobe Acrobat Pro 24", "macOS Quartz") that reveal your internal tooling stack.',
+  },
+  {
+    name: 'Revision Timestamps',
+    type: 'Chronology Sanitization',
+    description: 'Resets creation and last modification date records to prevent leaking document draft timelines and work hour patterns.',
+  },
+];
+
+const workedExampleData = {
+  title: 'Worked Example & Step-by-Step Walkthrough',
+  description: 'A practical demonstration of sanitizing corporate metadata before public distribution.',
+  formula: 'Source Catalog → Set Properties To Null / Empty → Rebuild Cross-Reference Table',
+  steps: [
+    {
+      step: 'Step 1: Inspect Pre-Existing Metadata',
+      calculation: 'Detected Author: "Jane Doe (Acme Corp)", Producer: "Microsoft Word 365", ModDate: "2026-04-12".',
+      result: 'Cataloged 6 identifiable metadata tokens.',
+    },
+    {
+      step: 'Step 2: Execute In-Memory Nullification',
+      calculation: 'Applied empty string overwrite on all Info keys; reset timestamps to Unix epoch zero.',
+      result: 'Clean, anonymized PDF ready for safe public distribution.',
+    },
+  ],
+};
 ---
 
 <SiteLayout title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
   <script is:inline type="application/ld+json" set:html={JSON.stringify(schemaGraph)} />
 
   <article class="space-y-10 py-2" data-pdf-clean-app>
+    <!-- Breadcrumb -->
     <nav aria-label="Breadcrumb">
       <ol class="flex flex-wrap items-center gap-2 text-xs text-[color:var(--muted)]">
         {breadcrumbItems.map((item, index) => (
@@ -79,28 +129,35 @@ const schemaGraph = [
       </ol>
     </nav>
 
+    <!-- Header -->
     <header class="space-y-3">
       <div class="inline-flex items-center gap-2 rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1 text-xs font-semibold text-[color:var(--muted)]">
         <span class="inline-block h-2 w-2 rounded-full bg-emerald-500"></span>
-        <span>Local Binary PDF Sanitizer</span>
+        <span>Binary Stream Sanitizer • Before/After Audit • Zero Server Uploads</span>
       </div>
       <h1 class="text-2xl sm:text-4xl font-extrabold tracking-tight text-[color:var(--fg)]">
         PDF Metadata &amp; Author Remover
       </h1>
-      <p class="max-w-2xl text-xs sm:text-sm text-[color:var(--muted)] leading-relaxed">
-        Strip author names, software footprints, and creation history from PDF documents before distributing files.
+      <p class="max-w-3xl text-xs sm:text-sm text-[color:var(--muted)] leading-relaxed">
+        Strip author names, software footprints, corporate signatures, and revision timestamps from PDF documents before distributing files. 100% private in-browser tool.
       </p>
     </header>
 
     <div class="space-y-6">
-      <div id="dropzone-box" class="space-y-3 rounded-3xl border-2 border-dashed border-[color:var(--border)] bg-[color:var(--surface)] p-6 sm:p-8 text-center transition hover:border-[color:var(--border-strong)]">
+      <!-- Dropzone -->
+      <div id="dropzone-box" class="space-y-3 rounded-3xl border-2 border-dashed border-[color:var(--border)] bg-[color:var(--surface)] p-6 sm:p-10 text-center transition hover:border-[color:var(--accent)]">
         <input type="file" id="pdf-file" accept="application/pdf" class="hidden" />
-        <label for="pdf-file" id="upload-prompt" class="cursor-pointer space-y-2 block">
-          <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-[color:var(--surface-strong)] text-[color:var(--fg)]">
-            <Icon name="document" class="w-6 h-6 text-[color:var(--accent)]" />
+        <label for="pdf-file" id="upload-prompt" class="cursor-pointer space-y-3 block">
+          <div class="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-[color:var(--surface-strong)] text-[color:var(--fg)] shadow-xs">
+            <Icon name="document" class="w-7 h-7 text-[color:var(--accent)]" />
           </div>
-          <p class="text-sm font-bold text-[color:var(--fg)]">Choose a PDF document to sanitize</p>
-          <p class="text-xs text-[color:var(--muted)]">Strips author, title &amp; producer tags (100% private in browser)</p>
+          <div>
+            <p class="text-base font-bold text-[color:var(--fg)]">Choose a PDF or drag &amp; drop to sanitize</p>
+            <p class="text-xs text-[color:var(--muted)] mt-1">Strips author, title, software producer &amp; timestamps (100% private in browser)</p>
+          </div>
+          <span class="inline-flex items-center gap-2 rounded-xl bg-[color:var(--fg)] px-5 py-2 text-xs font-bold text-[color:var(--bg)] shadow-xs">
+            Select PDF File
+          </span>
         </label>
 
         <!-- Visual Upload Preview Box -->
@@ -120,34 +177,65 @@ const schemaGraph = [
         </div>
       </div>
 
-      <!-- Action Card -->
-      <div id="clean-card" class="hidden space-y-4 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6">
-        <div class="flex items-center justify-between">
+      <!-- Sanitization Workspace Card -->
+      <div id="clean-card" class="hidden space-y-6 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 sm:p-6">
+        <div class="flex flex-wrap items-center justify-between gap-3">
           <div class="flex items-center gap-2">
-            <span class="h-2.5 w-2.5 rounded-full bg-emerald-500"></span>
-            <span class="text-xs font-bold text-[color:var(--fg)]">Metadata Successfully Cleaned</span>
+            <span class="inline-block h-2.5 w-2.5 rounded-full bg-emerald-500"></span>
+            <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--fg)]">Metadata Audit &amp; Sanitization Table:</span>
           </div>
+          <span id="sanitized-badge" class="rounded-full bg-emerald-500/10 px-2.5 py-0.5 text-[11px] font-semibold text-emerald-600 dark:text-emerald-400">
+            Cleaned &amp; Ready
+          </span>
+        </div>
+
+        <!-- Before vs After Audit Table -->
+        <div class="overflow-x-auto rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)]">
+          <table class="w-full text-left text-xs">
+            <thead class="border-b border-[color:var(--border)] bg-[color:var(--surface)] text-[11px] font-bold uppercase tracking-wider text-[color:var(--muted)]">
+              <tr>
+                <th class="p-3.5 w-1/4">Metadata Field</th>
+                <th class="p-3.5 w-5/12 text-rose-600 dark:text-rose-400">Original Value (Before)</th>
+                <th class="p-3.5 w-1/3 text-emerald-600 dark:text-emerald-400">Sanitized Value (After)</th>
+              </tr>
+            </thead>
+            <tbody id="audit-tbody" class="divide-y divide-[color:var(--border)] font-mono text-[color:var(--fg)]"></tbody>
+          </table>
+        </div>
+
+        <!-- Output Filename & Download Button -->
+        <div class="grid gap-4 sm:grid-cols-2 pt-2 border-t border-[color:var(--border)] text-xs">
+          <div>
+            <label for="clean-filename" class="font-bold text-[color:var(--fg)] block mb-1">Output Filename</label>
+            <input
+              type="text"
+              id="clean-filename"
+              class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-[color:var(--fg)] font-mono"
+              value="document-sanitized.pdf"
+            />
+          </div>
+        </div>
+
+        <div class="space-y-2 pt-2 border-t border-[color:var(--border)]">
           <button
             type="button"
             id="dl-clean-btn"
-            class="rounded-xl bg-[color:var(--fg)] px-5 py-2 text-xs font-bold text-[color:var(--bg)] shadow-xs transition hover:opacity-90 active:scale-95 cursor-pointer"
+            class="w-full rounded-xl bg-[color:var(--fg)] py-3 text-xs font-bold text-[color:var(--bg)] shadow-xs transition hover:opacity-90 active:scale-95 cursor-pointer flex items-center justify-center gap-2"
           >
-            Download Cleaned PDF
+            <span>💾 Download Sanitized PDF</span>
           </button>
-        </div>
-
-        <div class="grid gap-4 sm:grid-cols-2 text-xs text-[color:var(--muted)] rounded-xl bg-[color:var(--surface-strong)] p-4">
-          <div>
-            <p>Original File: <strong id="orig-name" class="text-[color:var(--fg)]">-</strong></p>
-            <p>Original Size: <strong id="orig-size" class="text-[color:var(--fg)]">-</strong></p>
-          </div>
-          <div>
-            <p>Author &amp; Title Tags: <strong class="text-emerald-500 font-bold">Sanitized</strong></p>
-            <p>Producer Footprints: <strong class="text-emerald-500 font-bold">Stripped</strong></p>
-          </div>
+          <p id="clean-status" class="text-center text-xs text-[color:var(--muted)]"></p>
         </div>
       </div>
     </div>
+
+    <!-- Parameter Guide & Worked Example -->
+    <CalculatorParameterGuide
+      title="PDF Privacy & Metadata Sanitization Architecture"
+      description="Understand in-memory vector object dictionaries, producer signature scrubbing, and forensic digital fingerprint removal."
+      parameters={parameterGuideData}
+      workedExample={workedExampleData}
+    />
 
     <!-- FAQs -->
     <section class="space-y-4">
@@ -168,22 +256,26 @@ const schemaGraph = [
     </section>
   </article>
 
+  <script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js" is:inline></script>
   <script is:inline>
     (function () {
       const root = document.querySelector('[data-pdf-clean-app]');
       if (!root) return;
 
       const fileIn = root.querySelector('#pdf-file');
+      const dropzone = root.querySelector('#dropzone-box');
       const uploadPrompt = root.querySelector('#upload-prompt');
       const uploadPreviewBox = root.querySelector('#upload-preview-box');
       const thumbName = root.querySelector('#thumb-name');
       const thumbInfo = root.querySelector('#thumb-info');
       const cleanCard = root.querySelector('#clean-card');
+      const auditTbody = root.querySelector('#audit-tbody');
+      const cleanFilenameInput = root.querySelector('#clean-filename');
       const dlBtn = root.querySelector('#dl-clean-btn');
-      const origName = root.querySelector('#orig-name');
-      const origSize = root.querySelector('#orig-size');
+      const cleanStatus = root.querySelector('#clean-status');
 
-      let cleanBlobUrl = null;
+      let originalBuffer = null;
+      let sanitizedBuffer = null;
       let origFileName = 'document.pdf';
 
       function formatBytes(bytes) {
@@ -192,53 +284,126 @@ const schemaGraph = [
         return (bytes / 1048576).toFixed(2) + ' MB';
       }
 
-      fileIn.addEventListener('change', async (e) => {
-        const file = e.target.files[0];
-        if (!file) return;
+      function extractPdfTag(text, tag) {
+        const regex = new RegExp(`\\/${tag}\\s*\\(([^)]+)\\)`);
+        const match = text.match(regex);
+        return match ? match[1] : 'None (Empty)';
+      }
 
+      async function handleFile(file) {
         origFileName = file.name;
-        origName.textContent = file.name;
-        origSize.textContent = formatBytes(file.size);
-
         thumbName.textContent = file.name;
-        thumbInfo.textContent = formatBytes(file.size);
+        thumbInfo.textContent = `${formatBytes(file.size)} • Sanitizing document...`;
 
         uploadPrompt.classList.add('hidden');
         uploadPreviewBox.classList.remove('hidden');
 
-        const buffer = await file.arrayBuffer();
-        let text = new TextDecoder('latin1').decode(buffer);
+        originalBuffer = await file.arrayBuffer();
+        const base = origFileName.substring(0, origFileName.lastIndexOf('.')) || origFileName;
+        cleanFilenameInput.value = `${base}-sanitized.pdf`;
 
-        // Sanitize standard metadata string tags by blanking them
-        text = text
-          .replace(/\/Title\s*\([^)]*\)/g, '/Title ()')
-          .replace(/\/Author\s*\([^)]*\)/g, '/Author ()')
-          .replace(/\/Subject\s*\([^)]*\)/g, '/Subject ()')
-          .replace(/\/Keywords\s*\([^)]*\)/g, '/Keywords ()')
-          .replace(/\/Creator\s*\([^)]*\)/g, '/Creator ()')
-          .replace(/\/Producer\s*\([^)]*\)/g, '/Producer ()')
-          .replace(/\/CreationDate\s*\([^)]*\)/g, '/CreationDate ()')
-          .replace(/\/ModDate\s*\([^)]*\)/g, '/ModDate ()');
+        try {
+          if (!window.PDFLib) {
+            alert('PDF engine is initializing, please wait a moment.');
+            return;
+          }
 
-        const uint8Array = new Uint8Array(text.length);
-        for (let i = 0; i < text.length; i++) {
-          uint8Array[i] = text.charCodeAt(i) & 0xff;
+          const pdfDoc = await PDFLib.PDFDocument.load(originalBuffer, { ignoreEncryption: true });
+
+          // Extract original metadata
+          const origTitle = pdfDoc.getTitle() || 'None (Empty)';
+          const origAuthor = pdfDoc.getAuthor() || 'None (Empty)';
+          const origSubject = pdfDoc.getSubject() || 'None (Empty)';
+          const origKeywords = (pdfDoc.getKeywords() || []).join(', ') || 'None (Empty)';
+          const origCreator = pdfDoc.getCreator() || 'None (Empty)';
+          const origProducer = pdfDoc.getProducer() || 'None (Empty)';
+          const origCreation = pdfDoc.getCreationDate() ? pdfDoc.getCreationDate().toISOString() : 'None (Empty)';
+          const origMod = pdfDoc.getModificationDate() ? pdfDoc.getModificationDate().toISOString() : 'None (Empty)';
+
+          // Clear all metadata in PDF-Lib
+          pdfDoc.setTitle('');
+          pdfDoc.setAuthor('');
+          pdfDoc.setSubject('');
+          pdfDoc.setKeywords([]);
+          pdfDoc.setProducer('');
+          pdfDoc.setCreator('');
+          pdfDoc.setCreationDate(new Date(0));
+          pdfDoc.setModificationDate(new Date(0));
+
+          sanitizedBuffer = await pdfDoc.save();
+
+          thumbInfo.textContent = `${formatBytes(file.size)} • Cleaned (${formatBytes(sanitizedBuffer.byteLength)})`;
+
+          const auditFields = [
+            { field: 'Title', before: origTitle, after: 'Cleared (Empty)' },
+            { field: 'Author / Owner', before: origAuthor, after: 'Cleared (Empty)' },
+            { field: 'Subject', before: origSubject, after: 'Cleared (Empty)' },
+            { field: 'Keywords / Tags', before: origKeywords, after: 'Cleared (Empty)' },
+            { field: 'Creator Tool', before: origCreator, after: 'Cleared (Empty)' },
+            { field: 'PDF Producer Software', before: origProducer, after: 'Cleared (Empty)' },
+            { field: 'Creation Date', before: origCreation, after: '1970-01-01T00:00:00.000Z (Epoch 0)' },
+            { field: 'Modification Date', before: origMod, after: '1970-01-01T00:00:00.000Z (Epoch 0)' },
+          ];
+
+          auditTbody.innerHTML = auditFields.map(f => `
+            <tr class="hover:bg-[color:var(--surface)]">
+              <td class="p-3.5 font-bold text-[color:var(--fg)]">${f.field}</td>
+              <td class="p-3.5 text-xs text-[color:var(--muted)] select-all truncate max-w-xs">${f.before}</td>
+              <td class="p-3.5 text-xs font-semibold text-emerald-600 dark:text-emerald-400 select-all">${f.after}</td>
+            </tr>
+          `).join('');
+
+          cleanCard.classList.remove('hidden');
+          cleanStatus.textContent = `✓ Document successfully sanitized! All identifying metadata and footprints scrubbed.`;
+        } catch (err) {
+          console.error('Sanitization error:', err);
+          cleanStatus.textContent = `Error during sanitization: ${err.message || err}`;
         }
+      }
 
-        const blob = new Blob([uint8Array], { type: 'application/pdf' });
-        if (cleanBlobUrl) URL.revokeObjectURL(cleanBlobUrl);
-        cleanBlobUrl = URL.createObjectURL(blob);
+      // Drag and drop
+      ['dragenter', 'dragover'].forEach(name => {
+        dropzone.addEventListener(name, (e) => {
+          e.preventDefault();
+          dropzone.classList.add('border-[color:var(--accent)]');
+        });
+      });
 
-        cleanCard.classList.remove('hidden');
+      ['dragleave', 'drop'].forEach(name => {
+        dropzone.addEventListener(name, (e) => {
+          e.preventDefault();
+          dropzone.classList.remove('border-[color:var(--accent)]');
+        });
+      });
+
+      dropzone.addEventListener('drop', (e) => {
+        const file = e.dataTransfer?.files?.[0];
+        if (file && (file.type === 'application/pdf' || file.name.endsWith('.pdf'))) {
+          handleFile(file);
+        }
+      });
+
+      fileIn.addEventListener('change', (e) => {
+        const file = e.target.files?.[0];
+        if (file) handleFile(file);
+        fileIn.value = '';
       });
 
       dlBtn.addEventListener('click', () => {
-        if (!cleanBlobUrl) return;
+        if (!sanitizedBuffer) return;
+        const blob = new Blob([sanitizedBuffer], { type: 'application/pdf' });
+        const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
-        a.href = cleanBlobUrl;
-        const base = origFileName.substring(0, origFileName.lastIndexOf('.')) || origFileName;
-        a.download = `${base}_sanitized.pdf`;
+        a.href = url;
+
+        let filename = cleanFilenameInput.value.trim() || 'document-sanitized.pdf';
+        if (!filename.toLowerCase().endsWith('.pdf')) filename += '.pdf';
+        a.download = filename;
+
+        document.body.appendChild(a);
         a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
       });
     })();
   </script>

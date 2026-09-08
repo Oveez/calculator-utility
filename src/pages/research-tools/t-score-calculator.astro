@@ -1,10 +1,11 @@
 ---
 import SiteLayout from '../../layouts/SiteLayout.astro';
 import Icon from '../../components/Icon.astro';
-import { siteName, toAbsoluteUrl, withBasePath } from '../../utils/site';
+import CalculatorParameterGuide from '../../components/calculator/CalculatorParameterGuide.astro';
+import { siteName, toAbsoluteUrl } from '../../utils/site';
 
 const pageTitle = `T-Score Calculator | Student's t-Statistic & Psychometric T-Score · ${siteName}`;
-const pageDesc = 'Calculate Student’s t-statistic, degrees of freedom, p-value, and standardized psychological test T-score (T = 50 + 10Z) from sample data.';
+const pageDesc = 'Calculate Student’s one-sample t-statistic, degrees of freedom, exact p-value, critical t thresholds, and standardized psychometric T-scores (T = 50 + 10Z).';
 const canonicalUrl = toAbsoluteUrl('/research-tools/t-score-calculator/');
 
 const breadcrumbItems = [
@@ -13,14 +14,86 @@ const breadcrumbItems = [
   { label: 'T-Score Calculator' },
 ];
 
+const parameterGuide = [
+  {
+    name: 'Calculation Mode',
+    description: 'Toggle between inferential hypothesis testing (Student’s one-sample t-test) and clinical psychometrics (Standardized T-Score T = 50 + 10Z).',
+    whyItMatters: 'Disambiguates statistical significance testing from psychometric assessment scales (e.g. MMPI, BASC).',
+    typicalRange: 'Student’s t-Test vs Psychometric T-Score',
+    unit: 'mode',
+  },
+  {
+    name: 'Sample Mean (x̄)',
+    description: 'The measured average value calculated from your collected empirical sample data.',
+    whyItMatters: 'Compared against the hypothesized null baseline to evaluate treatment effect magnitude.',
+    typicalRange: 'Any real number',
+    unit: 'data units',
+  },
+  {
+    name: 'Hypothesized Mean (μ₀)',
+    description: 'The baseline population average or null hypothesis reference value (H₀: μ = μ₀).',
+    whyItMatters: 'Represents expected performance under the assumption of no treatment effect.',
+    typicalRange: 'Any real number',
+    unit: 'data units',
+  },
+  {
+    name: 'Sample Standard Deviation (s)',
+    description: 'The observed dispersion in sample data, calculated using Bessel’s correction divisor (n - 1).',
+    whyItMatters: 'Substitutes for unknown population standard deviation σ to compute the sample standard error.',
+    typicalRange: 's > 0',
+    unit: 'data units',
+  },
+  {
+    name: 'Student’s t-Statistic',
+    description: 'The standardized difference between sample mean and hypothesized mean in units of standard error: t = (x̄ - μ₀) ÷ (s / √n).',
+    whyItMatters: 'Determines whether the observed difference is statistically significant or attributable to chance.',
+    typicalRange: '-6.00 to +6.00',
+    unit: 't-value',
+  },
+  {
+    name: 'Psychometric T-Score',
+    description: 'A standardized test metric with Mean = 50 and SD = 10: T = 50 + 10 × Z. T ≥ 65 typically denotes clinical elevation.',
+    whyItMatters: 'Standardizes psychological and behavioral test reporting across multiple clinical subscales.',
+    typicalRange: '20 to 80 (50 is exact average)',
+    unit: 'T-score',
+  },
+];
+
+const workedExample = {
+  title: 'Worked Example: Treatment Efficacy Test (n = 16, x̄ = 24.8, μ₀ = 20.0, s = 5.2)',
+  description: 'Step-by-step hypothesis testing with Student’s one-sample t-statistic and degrees of freedom.',
+  formula: 't = (x̄ - μ₀) ÷ (s ÷ √n); df = n - 1',
+  steps: [
+    {
+      step: '1. Standard Error & Degrees of Freedom',
+      calculation: 'df = 16 - 1 = 15; SE = 5.2 ÷ √16 = 5.2 ÷ 4 = 1.300',
+      result: 'SE = 1.300, df = 15',
+    },
+    {
+      step: '2. Compute Student’s t-Statistic',
+      calculation: 't = (24.8 - 20.0) ÷ 1.300 = +4.8 ÷ 1.300 = +3.692',
+      result: 't = +3.692',
+    },
+    {
+      step: '3. Significance & Hypothesis Decision',
+      calculation: 'Critical two-tailed t*(15, α=0.05) = 2.131; Since |3.692| > 2.131, p = 0.0022',
+      result: 'Reject H₀ (Statistically Significant at p < 0.01)',
+    },
+  ],
+};
+
 const faqs = [
   {
     question: 'What is the difference between a statistical t-test and a standardized T-score?',
-    answer: 'In hypothesis testing, the t-statistic t = (x̄ - μ₀) ÷ (s / √n) measures sample variance from a hypothesized mean. In psychometric testing and behavioral assessments, a T-score is a standardized metric with a fixed mean of 50 and standard deviation of 10: T = 50 + 10Z.',
+    answer: 'In inferential statistics, Student’s t-statistic t = (x̄ - μ₀) ÷ (s / √n) measures sample deviations from a null hypothesis mean. In psychometric testing and behavioral assessments, a T-score is a standardized score with a fixed mean of 50 and standard deviation of 10: T = 50 + 10Z.',
   },
   {
     question: 'How do degrees of freedom affect Student’s t-distribution?',
-    answer: 'For a one-sample t-test, degrees of freedom df = n - 1. As df increases beyond 30 to 100, the t-distribution becomes virtually identical to the standard normal bell curve.',
+    answer: 'For a one-sample t-test, degrees of freedom df = n - 1. With smaller df, the t-distribution has fatter tails than the normal curve to account for estimation uncertainty in s. As sample size grows (df > 30 to 100), the t-distribution converges to the standard normal bell curve.',
+  },
+  {
+    question: 'What do clinical T-scores mean in psychological assessments (e.g., MMPI)?',
+    answer: 'In clinical assessments like the MMPI or BASC, a T-score of 50 represents average functioning. T-scores from 60 to 64 are considered borderline, while T ≥ 65 (1.5 standard deviations above the mean) typically demarcates clinically significant distress or symptoms.',
   },
 ];
 
@@ -90,7 +163,7 @@ const schemaGraph = [
         T-Score &amp; t-Statistic Calculator
       </h1>
       <p class="max-w-3xl text-sm leading-relaxed text-[color:var(--muted)] sm:text-base">
-        Compute Student's one-sample t-statistic, degrees of freedom, and standardized test T-scores for clinical psychological and educational evaluations.
+        Compute Student’s one-sample t-statistic, exact two-tailed and one-tailed p-values, critical thresholds, and standardized psychometric T-scores (T = 50 + 10Z).
       </p>
     </header>
 
@@ -98,44 +171,85 @@ const schemaGraph = [
       class="rounded-[2.5rem] border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-6 shadow-[var(--shadow)] sm:p-10"
       data-tscore-app
     >
-      <div class="grid gap-8 lg:grid-cols-[1.15fr_0.85fr]">
+      <div class="grid gap-8 lg:grid-cols-[1.1fr_0.9fr]">
         <form class="space-y-5" onsubmit="return false;">
           <div class="flex items-center justify-between">
-            <h2 class="text-lg font-bold text-[color:var(--fg)]">Sample Inputs</h2>
+            <h2 class="text-lg font-bold text-[color:var(--fg)]">Calculation Mode</h2>
             <button type="button" class="cursor-pointer text-xs font-semibold text-[color:var(--muted)] hover:text-[color:var(--fg)]" data-reset-btn>
               ↺ Reset
             </button>
           </div>
 
-          <div class="space-y-1.5">
-            <label for="sample-mean-t" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Sample Mean (x̄)</label>
-            <input id="sample-mean-t" type="number" step="any" value="24.8" class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none" data-sample-mean />
+          <div class="grid grid-cols-2 gap-2 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-1 text-xs font-semibold">
+            <button type="button" class="cursor-pointer rounded-xl bg-[color:var(--accent)] px-3 py-2 text-[color:var(--bg)] shadow-xs transition" data-mode-btn="ttest">
+              Student’s t-Test (Sample)
+            </button>
+            <button type="button" class="cursor-pointer rounded-xl px-3 py-2 text-[color:var(--muted)] hover:text-[color:var(--fg)] transition" data-mode-btn="psych">
+              Psychometric T-Score (50+10Z)
+            </button>
           </div>
 
-          <div class="space-y-1.5">
-            <label for="hypo-mean-t" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Hypothesized Population Mean (μ₀)</label>
-            <input id="hypo-mean-t" type="number" step="any" value="20.0" class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none" data-hypo-mean />
-          </div>
-
-          <div class="grid grid-cols-2 gap-3">
-            <div>
-              <label for="sample-sd-t" class="block text-xs font-medium text-[color:var(--muted)]">Sample SD (s)</label>
-              <input id="sample-sd-t" type="number" min="0.001" step="any" value="5.2" class="mt-1 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-sample-sd />
+          <!-- Student's t-Test Inputs -->
+          <div class="space-y-4" data-ttest-fields>
+            <div class="space-y-1.5">
+              <label for="sample-mean-t" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Sample Mean (x̄)</label>
+              <input id="sample-mean-t" type="number" step="any" value="24.8" class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none" data-sample-mean />
             </div>
-            <div>
-              <label for="sample-n-t" class="block text-xs font-medium text-[color:var(--muted)]">Sample Size (n)</label>
-              <input id="sample-n-t" type="number" min="2" step="1" value="16" class="mt-1 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-sample-n />
+
+            <div class="space-y-1.5">
+              <label for="hypo-mean-t" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Hypothesized Population Mean (μ₀)</label>
+              <input id="hypo-mean-t" type="number" step="any" value="20.0" class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none" data-hypo-mean />
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label for="sample-sd-t" class="block text-xs font-medium text-[color:var(--muted)]">Sample SD (s)</label>
+                <input id="sample-sd-t" type="number" min="0.0001" step="any" value="5.2" class="mt-1 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-sample-sd />
+              </div>
+              <div>
+                <label for="sample-n-t" class="block text-xs font-medium text-[color:var(--muted)]">Sample Size (n)</label>
+                <input id="sample-n-t" type="number" min="2" step="1" value="16" class="mt-1 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-sample-n />
+              </div>
+            </div>
+          </div>
+
+          <!-- Psychometric T-Score Inputs (Hidden by default) -->
+          <div class="space-y-4" data-psych-fields hidden>
+            <div class="space-y-1.5">
+              <label for="psych-raw-score" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Raw Individual Score (X)</label>
+              <input id="psych-raw-score" type="number" step="any" value="78" class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none" data-psych-raw />
+            </div>
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label for="psych-norm-mean" class="block text-xs font-medium text-[color:var(--muted)]">Normative Mean (μ)</label>
+                <input id="psych-norm-mean" type="number" step="any" value="50" class="mt-1 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-psych-mean />
+              </div>
+              <div>
+                <label for="psych-norm-sd" class="block text-xs font-medium text-[color:var(--muted)]">Normative SD (σ)</label>
+                <input id="psych-norm-sd" type="number" min="0.0001" step="any" value="12" class="mt-1 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-psych-sd />
+              </div>
             </div>
           </div>
         </form>
 
-        <div class="flex flex-col justify-between space-y-6 rounded-3xl border border-[color:var(--border)] bg-[color:var(--bg)] p-6 sm:p-8">
+        <!-- Result Box -->
+        <div class="flex flex-col justify-between space-y-6 rounded-3xl border border-[color:var(--accent)]/30 bg-gradient-to-br from-[color:var(--accent-soft)] via-[color:var(--surface)] to-transparent p-6 sm:p-8 shadow-sm">
           <div class="space-y-5">
-            <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Test Statistic</span>
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]" data-res-header-label>Test Statistic</span>
+              <button
+                type="button"
+                class="inline-flex items-center gap-1.5 rounded-lg border border-[color:var(--border)] bg-[color:var(--surface)] px-2.5 py-1 text-xs font-semibold text-[color:var(--fg)] hover:bg-[color:var(--bg)] transition cursor-pointer"
+                data-copy-btn
+              >
+                <Icon name="copy" class="w-3.5 h-3.5" />
+                <span>Copy Summary</span>
+              </button>
+            </div>
 
             <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 text-center">
-              <p class="text-xs font-semibold text-[color:var(--muted)]">Student's t-Statistic</p>
-              <p class="mt-1 text-5xl font-black tracking-tight text-[color:var(--fg)]" data-res-t>
+              <p class="text-xs font-semibold text-[color:var(--muted)]" data-primary-metric-label>Student's t-Statistic</p>
+              <p class="mt-1 text-4xl sm:text-5xl font-black tracking-tight text-[color:var(--fg)] font-mono" data-res-t>
                 +3.692
               </p>
               <p class="mt-2 text-xs font-medium text-[color:var(--muted)]" data-df-display>
@@ -143,24 +257,85 @@ const schemaGraph = [
               </p>
             </div>
 
-            <div class="space-y-2 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-xs">
+            <div class="space-y-2 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-xs font-mono">
               <div class="flex justify-between">
-                <span class="text-[color:var(--muted)]">Standard Error (SE):</span>
-                <span class="font-mono font-bold text-[color:var(--fg)]" data-se-val>1.300</span>
+                <span class="text-[color:var(--muted)] font-sans">Standard Error (SE):</span>
+                <span class="font-bold text-[color:var(--fg)]" data-se-val>1.3000</span>
               </div>
               <div class="flex justify-between">
-                <span class="text-[color:var(--muted)]">Two-Tailed p-value:</span>
-                <span class="font-mono font-bold text-[color:var(--accent)]" data-p-val>p = 0.0022</span>
+                <span class="text-[color:var(--muted)] font-sans">Two-Tailed p-value:</span>
+                <span class="font-bold text-cyan-500 dark:text-cyan-400" data-p-val>p = 0.0022</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-[color:var(--muted)] font-sans">One-Tailed p-value:</span>
+                <span class="font-bold text-[color:var(--fg)]" data-p-one>p = 0.0011</span>
               </div>
               <div class="flex justify-between border-t border-[color:var(--border)] pt-2">
-                <span class="text-[color:var(--muted)]">Psychometric T-Score:</span>
-                <span class="font-mono font-bold text-[color:var(--fg)]" data-psych-t>T = 86.92</span>
+                <span class="text-[color:var(--muted)] font-sans">Hypothesis Verdict (α = 0.05):</span>
+                <span class="font-bold text-cyan-500 dark:text-cyan-400" data-verdict>Reject H₀ (Significant)</span>
               </div>
             </div>
           </div>
         </div>
       </div>
     </div>
+
+    <!-- Critical Values Lookup Reference Table -->
+    <section class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 sm:p-8 space-y-4">
+      <div>
+        <p class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Thresholds Lookup</p>
+        <h2 class="text-xl font-bold text-[color:var(--fg)]">Student’s Critical t* Cutoffs (for current df)</h2>
+      </div>
+
+      <div class="overflow-x-auto">
+        <table class="w-full text-left text-xs sm:text-sm font-mono">
+          <thead>
+            <tr class="border-b border-[color:var(--border)] text-[color:var(--muted)] font-sans font-semibold">
+              <th class="py-2.5 px-3">Significance Level (α)</th>
+              <th class="py-2.5 px-3">Two-Tailed Critical t*</th>
+              <th class="py-2.5 px-3">One-Tailed Critical t*</th>
+              <th class="py-2.5 px-3">Sample Result Comparison</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-[color:var(--border)]" data-crit-table-body>
+            <!-- Populated dynamically by script -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Mathematical Formulas & Hypothesis Testing -->
+    <section class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 sm:p-8 space-y-4">
+      <div>
+        <p class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Inferential Theory</p>
+        <h2 class="text-xl font-bold text-[color:var(--fg)]">Student’s t-Distribution &amp; Psychometric T-Scores</h2>
+      </div>
+
+      <div class="grid gap-4 sm:grid-cols-2 text-xs sm:text-sm">
+        <div class="rounded-2xl bg-[color:var(--bg)] p-4 border border-[color:var(--border)] space-y-2">
+          <p class="font-bold text-[color:var(--fg)]">1. One-Sample Student's t-Statistic</p>
+          <div class="rounded-xl bg-[color:var(--surface)] p-3 font-mono text-xs text-[color:var(--fg)] overflow-x-auto">
+            t = (x̄ - μ₀) ÷ (s ÷ √n) &emsp; [df = n - 1]
+          </div>
+          <p class="text-xs text-[color:var(--muted)]">
+            Measures the number of standard errors separating the observed sample mean <strong>x̄</strong> from hypothesized null population mean <strong>μ₀</strong>.
+          </p>
+        </div>
+
+        <div class="rounded-2xl bg-[color:var(--bg)] p-4 border border-[color:var(--border)] space-y-2">
+          <p class="font-bold text-[color:var(--fg)]">2. Standardized Psychometric T-Score</p>
+          <div class="rounded-xl bg-[color:var(--surface)] p-3 font-mono text-xs text-[color:var(--fg)] overflow-x-auto">
+            T = 50 + (10 × Z) = 50 + [10 × ((X - μ) ÷ σ)]
+          </div>
+          <p class="text-xs text-[color:var(--muted)]">
+            Used widely in clinical psychometrics (MMPI, BASC) to standardize clinical subscales onto a scale with <strong>μ = 50</strong> and <strong>σ = 10</strong>.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Parameter Guide & Worked Example -->
+    <CalculatorParameterGuide parameters={parameterGuide} workedExample={workedExample} />
 
     <!-- FAQs -->
     <section class="space-y-4">
@@ -186,50 +361,176 @@ const schemaGraph = [
       const root = document.querySelector('[data-tscore-app]');
       if (!root) return;
 
+      const modeBtns = root.querySelectorAll('[data-mode-btn]');
+      const ttestFields = root.querySelector('[data-ttest-fields]');
+      const psychFields = root.querySelector('[data-psych-fields]');
       const inMean = root.querySelector('[data-sample-mean]');
       const inHypo = root.querySelector('[data-hypo-mean]');
       const inSd = root.querySelector('[data-sample-sd]');
       const inN = root.querySelector('[data-sample-n]');
+
+      const inPsychRaw = root.querySelector('[data-psych-raw]');
+      const inPsychMean = root.querySelector('[data-psych-mean]');
+      const inPsychSd = root.querySelector('[data-psych-sd]');
+
+      const outHeaderLabel = root.querySelector('[data-res-header-label]');
+      const outPrimaryMetricLabel = root.querySelector('[data-primary-metric-label]');
       const outT = root.querySelector('[data-res-t]');
       const outDf = root.querySelector('[data-df-display]');
       const outSe = root.querySelector('[data-se-val]');
       const outP = root.querySelector('[data-p-val]');
-      const outPsych = root.querySelector('[data-psych-t]');
+      const outPOne = root.querySelector('[data-p-one]');
+      const outVerdict = root.querySelector('[data-verdict]');
+      const critTableBody = document.querySelector('[data-crit-table-body]');
+
       const resetBtn = root.querySelector('[data-reset-btn]');
+      const copyBtn = root.querySelector('[data-copy-btn]');
+
+      let currentMode = 'ttest';
+
+      function getTCrit(z, df) {
+        if (df > 500) return z;
+        const g1 = (z * z * z + z) / (4 * df);
+        const g2 = (5 * Math.pow(z, 5) + 16 * Math.pow(z, 3) + 3 * z) / (96 * df * df);
+        return z + g1 + g2;
+      }
 
       function update() {
-        const x = parseFloat(inMean.value || '0');
-        const mu = parseFloat(inHypo.value || '0');
-        const s = Math.max(0.0001, parseFloat(inSd.value || '1'));
-        const n = Math.max(2, parseInt(inN.value || '10', 10));
-        const df = n - 1;
+        if (currentMode === 'ttest') {
+          const x = parseFloat(inMean.value || '0');
+          const mu = parseFloat(inHypo.value || '0');
+          const s = Math.max(0.0001, parseFloat(inSd.value || '1'));
+          const n = Math.max(2, parseInt(inN.value || '10', 10));
+          const df = n - 1;
 
-        const se = s / Math.sqrt(n);
-        const t = (x - mu) / se;
+          const se = s / Math.sqrt(n);
+          const t = (x - mu) / se;
 
-        // Approximate two-tailed p-value for Student t
-        // Using approximation for t-distribution tail
-        const zApprox = Math.abs(t) * Math.sqrt(1 - 1 / (4 * df));
-        const erfVal = 0.5 * (1 + (function(x){
-          const sign = x >= 0 ? 1 : -1; const a = Math.abs(x);
-          const t1 = 1 / (1 + 0.3275911 * a);
-          return sign * (1 - (((((1.061405429*t1 - 1.453152027)*t1 + 1.421413741)*t1 - 0.284496736)*t1 + 0.254829592)*t1*Math.exp(-a*a)));
-        })(zApprox / Math.SQRT2));
-        const pTwo = Math.max(0.0001, Math.min(1.0, 2 * (1 - erfVal)));
+          // Two-tailed p-value approximation
+          const absT = Math.abs(t);
+          const zApprox = absT * Math.sqrt(1 - 1 / (4 * df));
+          const erfVal = 0.5 * (1 + (function (val) {
+            const sign = val >= 0 ? 1 : -1;
+            const a = Math.abs(val);
+            const t1 = 1 / (1 + 0.3275911 * a);
+            return sign * (1 - (((((1.061405429 * t1 - 1.453152027) * t1 + 1.421413741) * t1 - 0.284496736) * t1 + 0.254829592) * t1 * Math.exp(-a * a)));
+          })(zApprox / Math.SQRT2));
 
-        const psychT = 50 + (10 * t);
+          const pTwo = Math.max(0.0001, Math.min(1.0, 2 * (1 - erfVal)));
+          const pOne = pTwo / 2;
 
-        if (outT) outT.textContent = t >= 0 ? `+${t.toFixed(3)}` : t.toFixed(3);
-        if (outDf) outDf.textContent = `Degrees of Freedom (df) = ${df}`;
-        if (outSe) outSe.textContent = se.toFixed(3);
-        if (outP) outP.textContent = `p = ${pTwo.toFixed(4)}`;
-        if (outPsych) outPsych.textContent = `T = ${psychT.toFixed(2)}`;
+          if (outHeaderLabel) outHeaderLabel.textContent = 'Hypothesis Test Statistic';
+          if (outPrimaryMetricLabel) outPrimaryMetricLabel.textContent = "Student's t-Statistic";
+          if (outT) outT.textContent = t >= 0 ? `+${t.toFixed(3)}` : t.toFixed(3);
+          if (outDf) outDf.textContent = `Degrees of Freedom (df) = ${df}`;
+          if (outSe) outSe.textContent = se.toFixed(4);
+          if (outP) outP.textContent = pTwo < 0.001 ? 'p < 0.001' : `p = ${pTwo.toFixed(4)}`;
+          if (outPOne) outPOne.textContent = pOne < 0.001 ? 'p < 0.001' : `p = ${pOne.toFixed(4)}`;
+
+          const isSignificant = pTwo < 0.05;
+          if (outVerdict) {
+            outVerdict.className = isSignificant ? 'font-bold text-cyan-500 dark:text-cyan-400' : 'font-bold text-amber-500';
+            outVerdict.textContent = isSignificant ? 'Reject H₀ (Significant)' : 'Fail to Reject H₀ (Not Sig.)';
+          }
+
+          renderCritTable(df, absT);
+        } else {
+          // Psychometric T-score mode
+          const x = parseFloat(inPsychRaw.value || '0');
+          const m = parseFloat(inPsychMean.value || '50');
+          const s = Math.max(0.0001, parseFloat(inPsychSd.value || '10'));
+
+          const z = (x - m) / s;
+          const psychT = 50 + 10 * z;
+
+          if (outHeaderLabel) outHeaderLabel.textContent = 'Psychometric Standardization';
+          if (outPrimaryMetricLabel) outPrimaryMetricLabel.textContent = 'Standardized T-Score';
+          if (outT) outT.textContent = psychT.toFixed(1);
+          if (outDf) outDf.textContent = `Equivalent Z-Score: ${z >= 0 ? '+' : ''}${z.toFixed(2)}`;
+          if (outSe) outSe.textContent = `Scale: μ = 50, σ = 10`;
+
+          // Elevation tier
+          let tier = 'Within Normal Limits (T < 60)';
+          let tierClass = 'text-cyan-500 dark:text-cyan-400';
+          if (psychT >= 70) {
+            tier = 'Clinically Significant Elevation (T ≥ 70)';
+            tierClass = 'text-rose-500';
+          } else if (psychT >= 65) {
+            tier = 'Moderate Clinical Elevation (T = 65–69)';
+            tierClass = 'text-amber-500';
+          } else if (psychT >= 60) {
+            tier = 'Mild / Borderline Elevation (T = 60–64)';
+            tierClass = 'text-amber-400';
+          }
+
+          if (outP) outP.textContent = `T = ${psychT.toFixed(1)}`;
+          if (outPOne) outPOne.textContent = `Percentile: ~${(0.5 * (1 + Math.tanh(z * 0.797885)) * 100).toFixed(1)}%`;
+          if (outVerdict) {
+            outVerdict.className = `font-bold ${tierClass}`;
+            outVerdict.textContent = tier;
+          }
+        }
       }
+
+      function renderCritTable(df, absT) {
+        if (!critTableBody) return;
+        const alphas = [
+          { label: 'α = 0.10 (90% Conf)', zTwo: 1.645, zOne: 1.282 },
+          { label: 'α = 0.05 (95% Conf - Standard)', zTwo: 1.960, zOne: 1.645 },
+          { label: 'α = 0.01 (99% Conf - High Rigor)', zTwo: 2.576, zOne: 2.326 },
+          { label: 'α = 0.001 (99.9% Conf)', zTwo: 3.291, zOne: 3.090 },
+        ];
+
+        const rows = alphas.map(function (item) {
+          const tTwo = getTCrit(item.zTwo, df);
+          const tOne = getTCrit(item.zOne, df);
+          const passesTwo = absT >= tTwo;
+          const status = passesTwo
+            ? '<span class="text-cyan-500 dark:text-cyan-400 font-bold">✓ Significant (|t| ≥ t*)</span>'
+            : '<span class="text-[color:var(--muted)]">Not Significant</span>';
+
+          return `
+            <tr class="hover:bg-[color:var(--surface)] transition">
+              <td class="py-2 px-3 font-semibold text-[color:var(--fg)] font-sans">${item.label}</td>
+              <td class="py-2 px-3">±${tTwo.toFixed(3)}</td>
+              <td class="py-2 px-3">+${tOne.toFixed(3)}</td>
+              <td class="py-2 px-3 text-xs">${status}</td>
+            </tr>
+          `;
+        });
+
+        critTableBody.innerHTML = rows.join('');
+      }
+
+      modeBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          currentMode = btn.dataset.modeBtn || 'ttest';
+          modeBtns.forEach(b => {
+            if (b === btn) {
+              b.className = 'cursor-pointer rounded-xl bg-[color:var(--accent)] px-3 py-2 text-[color:var(--bg)] shadow-xs transition';
+            } else {
+              b.className = 'cursor-pointer rounded-xl px-3 py-2 text-[color:var(--muted)] hover:text-[color:var(--fg)] transition';
+            }
+          });
+
+          if (currentMode === 'ttest') {
+            ttestFields?.removeAttribute('hidden');
+            psychFields?.setAttribute('hidden', '');
+          } else {
+            ttestFields?.setAttribute('hidden', '');
+            psychFields?.removeAttribute('hidden');
+          }
+          update();
+        });
+      });
 
       inMean.addEventListener('input', update);
       inHypo.addEventListener('input', update);
       inSd.addEventListener('input', update);
       inN.addEventListener('input', update);
+      inPsychRaw.addEventListener('input', update);
+      inPsychMean.addEventListener('input', update);
+      inPsychSd.addEventListener('input', update);
 
       if (resetBtn) {
         resetBtn.addEventListener('click', () => {
@@ -237,7 +538,35 @@ const schemaGraph = [
           inHypo.value = '20.0';
           inSd.value = '5.2';
           inN.value = '16';
+          inPsychRaw.value = '78';
+          inPsychMean.value = '50';
+          inPsychSd.value = '12';
+          currentMode = 'ttest';
+          modeBtns[0].click();
           update();
+        });
+      }
+
+      if (copyBtn) {
+        copyBtn.addEventListener('click', async () => {
+          const text = [
+            '--- T-Score & Student t-Test Summary ---',
+            `Mode: ${currentMode === 'ttest' ? "Student's One-Sample t-Test" : 'Psychometric T-Score (50+10Z)'}`,
+            `Primary Result: ${outT?.textContent || ''}`,
+            `Degrees of Freedom / Scale: ${outDf?.textContent || ''}`,
+            `Standard Error: ${outSe?.textContent || ''}`,
+            `Significance p-value: ${outP?.textContent || ''}`,
+            `Hypothesis Decision: ${outVerdict?.textContent || ''}`,
+          ].join('\n');
+
+          try {
+            await navigator.clipboard.writeText(text);
+            const orig = copyBtn.innerHTML;
+            copyBtn.innerHTML = '<span>✓ Copied!</span>';
+            setTimeout(() => { copyBtn.innerHTML = orig; }, 2000);
+          } catch {
+            alert('Failed to copy to clipboard');
+          }
         });
       }
 

@@ -1,7 +1,8 @@
 ---
 import SiteLayout from '../../layouts/SiteLayout.astro';
 import Icon from '../../components/Icon.astro';
-import { siteName, toAbsoluteUrl, withBasePath } from '../../utils/site';
+import CalculatorParameterGuide from '../../components/calculator/CalculatorParameterGuide.astro';
+import { siteName, toAbsoluteUrl } from '../../utils/site';
 
 const pageTitle = `PDF Page Reorderer — Reorganize & Rearrange PDF Pages · ${siteName}`;
 const pageDesc = 'Reorder, rearrange, and customize the sequence of pages in your PDF document online. 100% private in-browser tool.';
@@ -16,7 +17,19 @@ const breadcrumbItems = [
 const schemaFaq = [
   {
     question: 'How does PDF page reordering work?',
-    answer: 'You specify your desired page sequence (for example `3, 1, 2, 4`), and the tool reorganizes the internal document page index structure in memory.',
+    answer: 'You can rearrange pages either visually by shifting cards left/right or by specifying a custom page sequence (e.g. 3, 1, 2, 4). The tool reorganizes the internal document page index structure in memory using pdf-lib.',
+  },
+  {
+    question: 'Can I reverse the entire document with one click?',
+    answer: 'Yes! The "Reverse Page Order" button instantly flips the entire page catalog from last to first, which is ideal for scanned documents loaded upside down or back-to-front.',
+  },
+  {
+    question: 'Can I rotate or delete individual pages while reordering?',
+    answer: 'Yes. Each page tile has independent rotate (90° clockwise) and remove controls, allowing you to clean up orientation defects while organizing page sequence.',
+  },
+  {
+    question: 'Is my document uploaded to any external server?',
+    answer: 'No. All PDF binary manipulations execute 100% locally in your web browser memory. No data ever leaves your computer.',
   },
 ];
 
@@ -54,12 +67,49 @@ const schemaGraph = [
     })),
   },
 ];
+
+const parameterGuideData = [
+  {
+    name: 'Page Sequence Order',
+    type: 'Visual Tile Grid & Comma-Separated List',
+    description: 'Specifies the target page arrangement (e.g. 3, 1, 2, 4). Both the interactive visual cards and the manual text input synchronize seamlessly.',
+  },
+  {
+    name: 'Rotation Angle',
+    type: '0° | 90° | 180° | 270°',
+    description: 'Rotates selected individual pages independently to fix inverted or landscape orientation issues.',
+  },
+  {
+    name: 'Bulk Operations',
+    type: 'Reverse All | Reset to Original',
+    description: 'Quick presets for flipping duplex scans or restoring the original document structure.',
+  },
+];
+
+const workedExampleData = {
+  title: 'Worked Example & Step-by-Step Walkthrough',
+  description: 'A practical demonstration of rearranging pages in a 4-page PDF.',
+  formula: 'Target Order = [3, 1, 2, 4] → OutputDocument.addPages(SourcePages[order])',
+  steps: [
+    {
+      step: 'Step 1: Parse Document Catalog',
+      calculation: 'Source PDF loaded into memory; 4 pages indexed (Original indices: 1, 2, 3, 4).',
+      result: 'Catalog parsed into 4 discrete vector page streams.',
+    },
+    {
+      step: 'Step 2: Apply Custom Page Order & Rotation',
+      calculation: 'Page 3 moved to position 1; Page 2 rotated 90° CW. New sequence: [3, 1, 2, 4].',
+      result: 'New PDF compiled and downloaded with reordered page dictionary.',
+    },
+  ],
+};
 ---
 
 <SiteLayout title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
   <script is:inline type="application/ld+json" set:html={JSON.stringify(schemaGraph)} />
 
   <article class="space-y-10 py-2" data-pdf-reorder-app>
+    <!-- Breadcrumb -->
     <nav aria-label="Breadcrumb">
       <ol class="flex flex-wrap items-center gap-2 text-xs text-[color:var(--muted)]">
         {breadcrumbItems.map((item, index) => (
@@ -79,28 +129,35 @@ const schemaGraph = [
       </ol>
     </nav>
 
+    <!-- Header -->
     <header class="space-y-3">
       <div class="inline-flex items-center gap-2 rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1 text-xs font-semibold text-[color:var(--muted)]">
         <span class="inline-block h-2 w-2 rounded-full bg-emerald-500"></span>
-        <span>Local Page Tree Sequencing</span>
+        <span>Local Page Tree Sequencing • Bulk Reverse • Page Rotator</span>
       </div>
       <h1 class="text-2xl sm:text-4xl font-extrabold tracking-tight text-[color:var(--fg)]">
         PDF Page Reorderer &amp; Organizer
       </h1>
-      <p class="max-w-2xl text-xs sm:text-sm text-[color:var(--muted)] leading-relaxed">
-        Reorganize and customize the page sequence in your PDF documents instantly without uploading them.
+      <p class="max-w-3xl text-xs sm:text-sm text-[color:var(--muted)] leading-relaxed">
+        Reorganize, rearrange, rotate, and customize the page sequence of your PDF documents instantly with an interactive visual tile manager. 100% private in-browser tool.
       </p>
     </header>
 
     <div class="space-y-6">
-      <div id="dropzone-box" class="space-y-3 rounded-3xl border-2 border-dashed border-[color:var(--border)] bg-[color:var(--surface)] p-6 sm:p-8 text-center transition hover:border-[color:var(--border-strong)]">
+      <!-- Dropzone -->
+      <div id="dropzone-box" class="space-y-3 rounded-3xl border-2 border-dashed border-[color:var(--border)] bg-[color:var(--surface)] p-6 sm:p-10 text-center transition hover:border-[color:var(--accent)]">
         <input type="file" id="pdf-file" accept="application/pdf" class="hidden" />
-        <label for="pdf-file" id="upload-prompt" class="cursor-pointer space-y-2 block">
-          <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-[color:var(--surface-strong)] text-[color:var(--fg)]">
-            <Icon name="document" class="w-6 h-6 text-[color:var(--accent)]" />
+        <label for="pdf-file" id="upload-prompt" class="cursor-pointer space-y-3 block">
+          <div class="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-[color:var(--surface-strong)] text-[color:var(--fg)] shadow-xs">
+            <Icon name="document" class="w-7 h-7 text-[color:var(--accent)]" />
           </div>
-          <p class="text-sm font-bold text-[color:var(--fg)]">Choose a PDF document to reorder pages</p>
-          <p class="text-xs text-[color:var(--muted)]">100% private in-browser page reordering</p>
+          <div>
+            <p class="text-base font-bold text-[color:var(--fg)]">Choose a PDF or drag &amp; drop to reorder</p>
+            <p class="text-xs text-[color:var(--muted)] mt-1">100% private in-browser page reordering &amp; rotation</p>
+          </div>
+          <span class="inline-flex items-center gap-2 rounded-xl bg-[color:var(--fg)] px-5 py-2 text-xs font-bold text-[color:var(--bg)] shadow-xs">
+            Select PDF File
+          </span>
         </label>
 
         <!-- Visual Upload Preview Box -->
@@ -111,7 +168,7 @@ const schemaGraph = [
             </div>
             <div class="min-w-0 space-y-0.5">
               <p id="thumb-name" class="text-xs sm:text-sm font-bold text-[color:var(--fg)] truncate">document.pdf</p>
-              <p id="thumb-info" class="text-[11px] text-[color:var(--muted)]">0 KB</p>
+              <p id="thumb-info" class="text-[11px] text-[color:var(--muted)]">0 KB • 0 pages</p>
             </div>
           </div>
           <label for="pdf-file" class="cursor-pointer shrink-0 rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1.5 text-xs font-semibold text-[color:var(--muted)] hover:text-[color:var(--fg)] transition">
@@ -120,28 +177,73 @@ const schemaGraph = [
         </div>
       </div>
 
-      <div id="reorder-card" class="hidden space-y-4 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6">
-        <p class="text-xs text-[color:var(--muted)]">Loaded Document: <strong id="doc-name" class="text-[color:var(--fg)]">-</strong> (<span id="total-pgs">0</span> total pages)</p>
+      <!-- Reordering Workspace Card -->
+      <div id="reorder-card" class="hidden space-y-6 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 sm:p-6">
+        <!-- Sequence Text Input & Quick Actions -->
+        <div class="space-y-4">
+          <div class="flex flex-wrap items-center justify-between gap-3">
+            <div class="space-y-1">
+              <label for="order-seq" class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">New Page Order Sequence:</label>
+              <p class="text-[11px] text-[color:var(--muted)]">Edit sequence manually or click arrows on tiles below.</p>
+            </div>
+            <div class="flex items-center gap-2 text-xs">
+              <button type="button" id="btn-reverse-all" class="rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-1.5 font-semibold text-[color:var(--accent)] hover:underline cursor-pointer">
+                ⇄ Reverse All Pages
+              </button>
+              <button type="button" id="btn-reset-order" class="rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-1.5 font-semibold text-[color:var(--muted)] hover:text-[color:var(--fg)] cursor-pointer">
+                ↺ Reset Order
+              </button>
+            </div>
+          </div>
 
-        <div class="space-y-2 text-xs">
-          <label for="order-seq" class="font-bold text-[color:var(--fg)] block">New Page Order Sequence (comma separated):</label>
           <input
             type="text"
             id="order-seq"
-            class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-[color:var(--fg)]"
+            class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3.5 py-2.5 font-mono text-xs text-[color:var(--fg)] font-bold tracking-wide"
             placeholder="e.g. 3, 1, 2, 4"
           />
         </div>
 
-        <button
-          type="button"
-          id="reorder-btn"
-          class="w-full rounded-xl bg-[color:var(--fg)] py-2.5 text-xs font-bold text-[color:var(--bg)] shadow-xs transition hover:opacity-90 active:scale-95 cursor-pointer"
-        >
-          Reorder &amp; Download PDF
-        </button>
+        <!-- Interactive Visual Tile Grid -->
+        <div class="space-y-2">
+          <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Visual Page Catalog (Click arrows to reorder):</span>
+          <div id="reorder-tile-grid" class="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 max-h-96 overflow-y-auto rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] p-3"></div>
+        </div>
+
+        <!-- Output Filename & Actions -->
+        <div class="grid gap-4 sm:grid-cols-2 pt-2 border-t border-[color:var(--border)] text-xs">
+          <div>
+            <label for="out-filename" class="font-bold text-[color:var(--fg)] block mb-1">Output Filename</label>
+            <input
+              type="text"
+              id="out-filename"
+              class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-[color:var(--fg)] font-mono"
+              value="reordered-document.pdf"
+            />
+          </div>
+        </div>
+
+        <!-- Submit Button & Status -->
+        <div class="space-y-2 pt-2 border-t border-[color:var(--border)]">
+          <button
+            type="button"
+            id="reorder-btn"
+            class="w-full rounded-xl bg-[color:var(--fg)] py-3 text-xs font-bold text-[color:var(--bg)] shadow-xs transition hover:opacity-90 active:scale-95 cursor-pointer flex items-center justify-center gap-2"
+          >
+            <span>⚡ Reorder &amp; Download PDF</span>
+          </button>
+          <p id="reorder-status" class="text-center text-xs text-[color:var(--muted)]"></p>
+        </div>
       </div>
     </div>
+
+    <!-- Parameter Guide & Worked Example -->
+    <CalculatorParameterGuide
+      title="PDF Page Tree Reordering & Indexing Guide"
+      description="Understand in-memory page tree node re-indexing, vector coordinate transformations, and rotation angle dictionaries."
+      parameters={parameterGuideData}
+      workedExample={workedExampleData}
+    />
 
     <!-- FAQs -->
     <section class="space-y-4">
@@ -169,19 +271,27 @@ const schemaGraph = [
       if (!root) return;
 
       const fileIn = root.querySelector('#pdf-file');
+      const dropzone = root.querySelector('#dropzone-box');
       const uploadPrompt = root.querySelector('#upload-prompt');
       const uploadPreviewBox = root.querySelector('#upload-preview-box');
       const thumbName = root.querySelector('#thumb-name');
       const thumbInfo = root.querySelector('#thumb-info');
       const card = root.querySelector('#reorder-card');
-      const docName = root.querySelector('#doc-name');
-      const totalPgs = root.querySelector('#total-pgs');
-      const orderSeq = root.querySelector('#order-seq');
+
+      const orderSeqInput = root.querySelector('#order-seq');
+      const btnReverseAll = root.querySelector('#btn-reverse-all');
+      const btnResetOrder = root.querySelector('#btn-reset-order');
+      const reorderTileGrid = root.querySelector('#reorder-tile-grid');
+      const outFilenameInput = root.querySelector('#out-filename');
+
       const reorderBtn = root.querySelector('#reorder-btn');
+      const reorderStatus = root.querySelector('#reorder-status');
 
       let currentBytes = null;
-      let totalPageCount = 0;
+      let totalPages = 0;
       let originalFilename = 'document.pdf';
+      // State: Array of { originalPageNum: 1, rotation: 0 }
+      let currentOrder = [];
 
       function formatBytes(bytes) {
         if (bytes < 1024) return bytes + ' B';
@@ -189,81 +299,217 @@ const schemaGraph = [
         return (bytes / 1048576).toFixed(2) + ' MB';
       }
 
-      fileIn.addEventListener('change', async (e) => {
-        const file = e.target.files[0];
-        if (!file) return;
+      function updateInputFromOrder() {
+        orderSeqInput.value = currentOrder.map(item => item.originalPageNum).join(', ');
+      }
 
+      function renderTiles() {
+        reorderTileGrid.innerHTML = '';
+
+        currentOrder.forEach((item, idx) => {
+          const isFirst = idx === 0;
+          const isLast = idx === currentOrder.length - 1;
+
+          const tile = document.createElement('div');
+          tile.className = 'group relative flex flex-col items-center justify-between rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] p-2.5 shadow-xs transition hover:border-[color:var(--accent)]';
+          tile.innerHTML = `
+            <div class="flex w-full items-center justify-between text-[11px] font-bold text-[color:var(--muted)]">
+              <span>Pos ${idx + 1}</span>
+              ${item.rotation ? `<span class="rounded bg-amber-500/15 text-amber-600 dark:text-amber-400 px-1 py-0.5 text-[9px]">${item.rotation}°</span>` : ''}
+            </div>
+            <div class="my-3 flex h-14 w-12 items-center justify-center rounded-lg border-2 border-dashed border-[color:var(--border)] bg-[color:var(--bg)] font-bold text-[color:var(--fg)] text-base shadow-xs" style="transform: rotate(${item.rotation}deg);">
+              ${item.originalPageNum}
+            </div>
+            <div class="flex w-full items-center justify-between border-t border-[color:var(--border)] pt-1.5 text-xs">
+              <div class="flex items-center gap-1">
+                <button type="button" data-left="${idx}" class="rounded p-1 hover:bg-[color:var(--surface-strong)] ${isFirst ? 'opacity-30 cursor-not-allowed' : 'cursor-pointer'}" title="Move Left" ${isFirst ? 'disabled' : ''}>
+                  ←
+                </button>
+                <button type="button" data-right="${idx}" class="rounded p-1 hover:bg-[color:var(--surface-strong)] ${isLast ? 'opacity-30 cursor-not-allowed' : 'cursor-pointer'}" title="Move Right" ${isLast ? 'disabled' : ''}>
+                  →
+                </button>
+                <button type="button" data-rot="${idx}" class="rounded p-1 text-[color:var(--accent)] hover:bg-[color:var(--surface-strong)] cursor-pointer" title="Rotate 90°">
+                  ↻
+                </button>
+              </div>
+              <button type="button" data-del="${idx}" class="rounded p-1 text-rose-500 hover:bg-rose-500/10 cursor-pointer" title="Exclude Page">
+                ✕
+              </button>
+            </div>
+          `;
+
+          // Handlers
+          tile.querySelector('[data-left]').addEventListener('click', () => {
+            if (idx > 0) {
+              const temp = currentOrder[idx];
+              currentOrder[idx] = currentOrder[idx - 1];
+              currentOrder[idx - 1] = temp;
+              updateInputFromOrder();
+              renderTiles();
+            }
+          });
+
+          tile.querySelector('[data-right]').addEventListener('click', () => {
+            if (idx < currentOrder.length - 1) {
+              const temp = currentOrder[idx];
+              currentOrder[idx] = currentOrder[idx + 1];
+              currentOrder[idx + 1] = temp;
+              updateInputFromOrder();
+              renderTiles();
+            }
+          });
+
+          tile.querySelector('[data-rot]').addEventListener('click', () => {
+            item.rotation = (item.rotation + 90) % 360;
+            renderTiles();
+          });
+
+          tile.querySelector('[data-del]').addEventListener('click', () => {
+            currentOrder.splice(idx, 1);
+            updateInputFromOrder();
+            renderTiles();
+          });
+
+          reorderTileGrid.appendChild(tile);
+        });
+      }
+
+      async function handleFile(file) {
         originalFilename = file.name;
-        docName.textContent = file.name;
         thumbName.textContent = file.name;
-        thumbInfo.textContent = formatBytes(file.size);
+        thumbInfo.textContent = `${formatBytes(file.size)} • Reading structure...`;
 
         uploadPrompt.classList.add('hidden');
         uploadPreviewBox.classList.remove('hidden');
 
         currentBytes = await file.arrayBuffer();
-        if (window.PDFLib) {
-          try {
-            const pdfDoc = await PDFLib.PDFDocument.load(currentBytes);
-            totalPageCount = pdfDoc.getPageCount();
-          } catch(err) {
-            totalPageCount = 1;
+
+        try {
+          if (window.PDFLib) {
+            const pdfDoc = await PDFLib.PDFDocument.load(currentBytes, { ignoreEncryption: true });
+            totalPages = pdfDoc.getPageCount();
+          } else {
+            totalPages = 1;
           }
-        } else {
-          totalPageCount = 1;
+        } catch (err) {
+          totalPages = 1;
         }
 
-        totalPgs.textContent = totalPageCount;
-        thumbInfo.textContent = `${formatBytes(file.size)} • ${totalPageCount} page(s)`;
-        const defaultSeq = Array.from({ length: totalPageCount }, (_, i) => i + 1).reverse().join(', ');
-        orderSeq.value = defaultSeq;
+        thumbInfo.textContent = `${formatBytes(file.size)} • ${totalPages} pages`;
+
+        // Initialize 1..N order
+        currentOrder = [];
+        for (let i = 1; i <= totalPages; i++) {
+          currentOrder.push({ originalPageNum: i, rotation: 0 });
+        }
+
+        updateInputFromOrder();
+        renderTiles();
         card.classList.remove('hidden');
+      }
+
+      // Drag and drop
+      ['dragenter', 'dragover'].forEach(name => {
+        dropzone.addEventListener(name, (e) => {
+          e.preventDefault();
+          dropzone.classList.add('border-[color:var(--accent)]');
+        });
       });
 
+      ['dragleave', 'drop'].forEach(name => {
+        dropzone.addEventListener(name, (e) => {
+          e.preventDefault();
+          dropzone.classList.remove('border-[color:var(--accent)]');
+        });
+      });
+
+      dropzone.addEventListener('drop', (e) => {
+        const file = e.dataTransfer?.files?.[0];
+        if (file && (file.type === 'application/pdf' || file.name.endsWith('.pdf'))) {
+          handleFile(file);
+        }
+      });
+
+      fileIn.addEventListener('change', (e) => {
+        const file = e.target.files?.[0];
+        if (file) handleFile(file);
+        fileIn.value = '';
+      });
+
+      btnReverseAll.addEventListener('click', () => {
+        currentOrder.reverse();
+        updateInputFromOrder();
+        renderTiles();
+      });
+
+      btnResetOrder.addEventListener('click', () => {
+        currentOrder = [];
+        for (let i = 1; i <= totalPages; i++) {
+          currentOrder.push({ originalPageNum: i, rotation: 0 });
+        }
+        updateInputFromOrder();
+        renderTiles();
+      });
+
+      orderSeqInput.addEventListener('change', () => {
+        const parts = orderSeqInput.value.split(',').map(s => parseInt(s.trim(), 10)).filter(n => !isNaN(n) && n >= 1 && n <= totalPages);
+        if (parts.length > 0) {
+          currentOrder = parts.map(p => ({ originalPageNum: p, rotation: 0 }));
+          renderTiles();
+        }
+      });
+
+      // Compile & download
       reorderBtn.addEventListener('click', async () => {
-        if (!currentBytes) return;
-
-        if (window.PDFLib) {
-          try {
-            const srcDoc = await PDFLib.PDFDocument.load(currentBytes);
-            const total = srcDoc.getPageCount();
-            const indices = orderSeq.value
-              .split(',')
-              .map(s => parseInt(s.trim(), 10) - 1)
-              .filter(n => !isNaN(n) && n >= 0 && n < total);
-
-            if (indices.length === 0) {
-              alert('Please enter valid page numbers.');
-              return;
-            }
-
-            const newDoc = await PDFLib.PDFDocument.create();
-            const copiedPages = await newDoc.copyPages(srcDoc, indices);
-            copiedPages.forEach(p => newDoc.addPage(p));
-
-            const pdfData = await newDoc.save();
-            const blob = new Blob([pdfData], { type: 'application/pdf' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            const base = originalFilename.substring(0, originalFilename.lastIndexOf('.')) || originalFilename;
-            a.download = `${base}_reordered.pdf`;
-            a.click();
-            URL.revokeObjectURL(url);
-            return;
-          } catch(err) {
-            console.error(err);
-          }
+        if (!currentBytes || currentOrder.length === 0) return;
+        if (!window.PDFLib) {
+          alert('PDF-Lib engine is still loading. Please wait a moment.');
+          return;
         }
 
-        const blob = new Blob([currentBytes], { type: 'application/pdf' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        const base = originalFilename.substring(0, originalFilename.lastIndexOf('.')) || originalFilename;
-        a.download = `${base}_reordered.pdf`;
-        a.click();
-        URL.revokeObjectURL(url);
+        reorderBtn.disabled = true;
+        reorderBtn.classList.add('opacity-70');
+        reorderStatus.textContent = 'Reordering page objects and applying rotation matrix...';
+
+        try {
+          const srcDoc = await PDFLib.PDFDocument.load(currentBytes, { ignoreEncryption: true });
+          const newDoc = await PDFLib.PDFDocument.create();
+
+          for (const item of currentOrder) {
+            const pageIndex = item.originalPageNum - 1;
+            const [copiedPage] = await newDoc.copyPages(srcDoc, [pageIndex]);
+
+            if (item.rotation) {
+              const currentAngle = copiedPage.getRotation().angle;
+              copiedPage.setRotation(PDFLib.degrees(currentAngle + item.rotation));
+            }
+
+            newDoc.addPage(copiedPage);
+          }
+
+          const pdfBytes = await newDoc.save();
+          const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+
+          let filename = outFilenameInput.value.trim() || 'reordered-document.pdf';
+          if (!filename.toLowerCase().endsWith('.pdf')) filename += '.pdf';
+          a.download = filename;
+
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+
+          reorderStatus.textContent = `✓ Successfully reorganized ${currentOrder.length} pages into ${filename}!`;
+        } catch (err) {
+          console.error('Reorder error:', err);
+          reorderStatus.textContent = `Error during reorder: ${err.message || err}`;
+        } finally {
+          reorderBtn.disabled = false;
+          reorderBtn.classList.remove('opacity-70');
+        }
       });
     })();
   </script>

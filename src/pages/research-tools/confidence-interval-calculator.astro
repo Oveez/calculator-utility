@@ -1,10 +1,11 @@
 ---
 import SiteLayout from '../../layouts/SiteLayout.astro';
 import Icon from '../../components/Icon.astro';
-import { siteName, toAbsoluteUrl, withBasePath } from '../../utils/site';
+import CalculatorParameterGuide from '../../components/calculator/CalculatorParameterGuide.astro';
+import { siteName, toAbsoluteUrl } from '../../utils/site';
 
 const pageTitle = `Confidence Interval Calculator | Mean & Proportion (90%, 95%, 99%) · ${siteName}`;
-const pageDesc = 'Calculate exact confidence interval bounds for sample means and sample proportions. Supports Z-distribution and Student t-distribution with margin of error.';
+const pageDesc = 'Calculate exact confidence interval bounds for sample means and sample proportions. Supports Z-distribution, Student t-distribution, Wilson score interval, raw data input, and interactive distribution plot.';
 const canonicalUrl = toAbsoluteUrl('/research-tools/confidence-interval-calculator/');
 
 const breadcrumbItems = [
@@ -13,14 +14,86 @@ const breadcrumbItems = [
   { label: 'Confidence Interval Calculator' },
 ];
 
-const faqs = [
+const parameterGuide = [
   {
-    question: 'How do you calculate a confidence interval for a mean?',
-    answer: 'The confidence interval for a sample mean x̄ is: CI = x̄ ± (Z* or t*) × (s ÷ √n), where s is standard deviation and n is sample size. If the population standard deviation is unknown and sample size is small (n < 30), the Student t-distribution with df = n - 1 is used.',
+    name: 'Estimation Mode',
+    description: 'Choose whether you are estimating a continuous average (sample mean x̄ with standard deviation s), pasting raw numeric data points, or estimating a binary categorical percentage (sample proportion p̂).',
+    whyItMatters: 'Dictates the underlying sampling distribution (Student t-distribution vs Standard Normal Z-distribution vs Wilson Score formulation).',
+    typicalRange: 'Sample Mean vs Raw Data vs Proportion',
+    unit: 'mode',
   },
   {
-    question: 'How do you calculate a confidence interval for a proportion?',
-    answer: 'For a sample proportion p̂ = x / n, the confidence interval is: CI = p̂ ± Z* × √[(p̂ × (1 - p̂)) ÷ n]. At a 95% confidence level, Z* = 1.960.',
+    name: 'Point Estimate (x̄ or p̂)',
+    description: 'The observed center of your sample data, serving as the single best unbiased estimate of the unknown true population parameter.',
+    whyItMatters: 'Serves as the visual and algebraic midpoint of symmetric confidence intervals.',
+    typicalRange: 'Continuous mean value or 0% to 100%',
+    unit: 'units or %',
+  },
+  {
+    name: 'Sample Size (n)',
+    description: 'Total number of independent observations, test subjects, or respondents in the study sample.',
+    whyItMatters: 'Controls the standard error divisor (√n) and degrees of freedom (df = n - 1). Larger samples produce narrower intervals.',
+    typicalRange: '2 to 100,000+ observations',
+    unit: 'observations',
+  },
+  {
+    name: 'Sample Standard Deviation (s)',
+    description: 'The measured dispersion or spread among data points in your sample for continuous mean estimations.',
+    whyItMatters: 'Directly scales the standard error (SE = s / √n). Higher population variability widens the interval.',
+    typicalRange: '0.001 to 100,000+',
+    unit: 'data units',
+  },
+  {
+    name: 'Confidence Level (%)',
+    description: 'The long-run proportion of repeated identical experiments whose constructed intervals would successfully cover the true population parameter.',
+    whyItMatters: 'Directly dictates the critical value multiplier (Z* or t*). 95% is the universal gold standard.',
+    typicalRange: '80%, 90%, 95%, 98%, 99%, or 99.9%',
+    unit: '%',
+  },
+  {
+    name: 'Margin of Error (E)',
+    description: 'The half-width of the confidence interval: E = Critical Multiplier × Standard Error.',
+    whyItMatters: 'Defines the upper and lower bounds: [Point Estimate - E, Point Estimate + E].',
+    typicalRange: 'Calculated dynamically',
+    unit: 'units or %',
+  },
+];
+
+const workedExample = {
+  title: 'Worked Example: Blood Pressure Study (n = 45, x̄ = 105.4, s = 14.2)',
+  description: 'Step-by-step computation of a two-sided 95% Student t confidence interval when population variance is unknown.',
+  formula: 'CI = x̄ ± t*(df, α/2) × (s ÷ √n)',
+  steps: [
+    {
+      step: '1. Standard Error & Degrees of Freedom',
+      calculation: 'df = 45 - 1 = 44; SE = 14.2 ÷ √45 = 14.2 ÷ 6.7082 = 2.1168 mmHg',
+      result: 'SE = 2.1168, df = 44',
+    },
+    {
+      step: '2. Student t Critical Multiplier',
+      calculation: 'For two-tailed α = 0.05 and df = 44: t*(44, 0.025) ≈ 2.0154',
+      result: 't* = 2.0154',
+    },
+    {
+      step: '3. Margin of Error & Confidence Limits',
+      calculation: 'E = 2.0154 × 2.1168 = 4.266 mmHg; Lower = 105.40 - 4.27 = 101.13; Upper = 105.40 + 4.27 = 109.67',
+      result: '[101.13 mmHg, 109.67 mmHg] (95% CI)',
+    },
+  ],
+};
+
+const faqs = [
+  {
+    question: 'What is the difference between Z-distribution and Student t-distribution for confidence intervals?',
+    answer: 'The standard normal Z-distribution is mathematically valid when the true population standard deviation (σ) is known or when sample size is large (n ≥ 30) with known distribution. When σ is unknown and estimated from sample standard deviation (s), the Student t-distribution with df = n - 1 accounts for extra estimation variance and yields slightly wider, more robust confidence intervals.',
+  },
+  {
+    question: 'Why should I use the Wilson Score interval instead of the Wald formula for proportions?',
+    answer: 'The traditional Wald interval (p̂ ± Z*√[p̂(1-p̂)/n]) frequently fails when sample sizes are small (n < 40) or when proportions are extreme (near 0% or 100%), sometimes generating bounds below 0% or above 100%. The Wilson score interval inverts the score test, guarantees bounds within [0, 1], and maintains accurate coverage probability across all sample sizes.',
+  },
+  {
+    question: 'Does a 95% confidence interval mean there is a 95% probability that the true mean is inside this interval?',
+    answer: 'Technically no in frequentist statistics: the true population parameter is fixed, not random. A 95% confidence interval means that if we repeated the experiment 100 times with new random samples and calculated 100 intervals, approximately 95 of those intervals would successfully enclose the true parameter.',
   },
 ];
 
@@ -90,7 +163,7 @@ const schemaGraph = [
         Confidence Interval Calculator
       </h1>
       <p class="max-w-3xl text-sm leading-relaxed text-[color:var(--muted)] sm:text-base">
-        Compute reliable lower and upper confidence limits for sample means and proportions across 90%, 95%, and 99% confidence levels.
+        Compute reliable two-sided confidence intervals for sample means, raw continuous data, and binary proportions with Student t-distribution, Z-scores, Wilson score intervals, and live distribution plots.
       </p>
     </header>
 
@@ -98,7 +171,7 @@ const schemaGraph = [
       class="rounded-[2.5rem] border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-6 shadow-[var(--shadow)] sm:p-10"
       data-ci-app
     >
-      <div class="grid gap-8 lg:grid-cols-[1.15fr_0.85fr]">
+      <div class="grid gap-8 lg:grid-cols-[1.1fr_0.9fr]">
         <form class="space-y-5" onsubmit="return false;">
           <div class="flex items-center justify-between">
             <h2 class="text-lg font-bold text-[color:var(--fg)]">Estimation Mode</h2>
@@ -107,16 +180,19 @@ const schemaGraph = [
             </button>
           </div>
 
-          <div class="grid grid-cols-2 gap-2 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-1 text-xs font-semibold">
-            <button type="button" class="cursor-pointer rounded-xl bg-[color:var(--accent)] px-3 py-2 text-[color:var(--bg)] shadow-xs" data-mode-btn="mean">
-              Sample Mean (x̄)
+          <div class="grid grid-cols-3 gap-1.5 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-1 text-xs font-semibold">
+            <button type="button" class="cursor-pointer rounded-xl bg-[color:var(--accent)] px-2.5 py-2 text-[color:var(--bg)] shadow-xs transition" data-mode-btn="mean">
+              Mean (Summary)
             </button>
-            <button type="button" class="cursor-pointer rounded-xl px-3 py-2 text-[color:var(--muted)] hover:text-[color:var(--fg)]" data-mode-btn="proportion">
+            <button type="button" class="cursor-pointer rounded-xl px-2.5 py-2 text-[color:var(--muted)] hover:text-[color:var(--fg)] transition" data-mode-btn="raw">
+              Raw Data Paste
+            </button>
+            <button type="button" class="cursor-pointer rounded-xl px-2.5 py-2 text-[color:var(--muted)] hover:text-[color:var(--fg)] transition" data-mode-btn="proportion">
               Proportion (%)
             </button>
           </div>
 
-          <!-- Mean Inputs -->
+          <!-- Mean Summary Inputs -->
           <div class="space-y-4" data-mean-fields>
             <div class="space-y-1.5">
               <label for="sample-mean" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Sample Mean (x̄)</label>
@@ -125,11 +201,36 @@ const schemaGraph = [
             <div class="grid grid-cols-2 gap-3">
               <div>
                 <label for="sample-sd" class="block text-xs font-medium text-[color:var(--muted)]">Standard Deviation (s)</label>
-                <input id="sample-sd" type="number" min="0.001" step="any" value="14.2" class="mt-1 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-sample-sd />
+                <input id="sample-sd" type="number" min="0.0001" step="any" value="14.2" class="mt-1 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-sample-sd />
               </div>
               <div>
                 <label for="sample-n-mean" class="block text-xs font-medium text-[color:var(--muted)]">Sample Size (n)</label>
                 <input id="sample-n-mean" type="number" min="2" step="1" value="45" class="mt-1 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-sample-n-mean />
+              </div>
+            </div>
+            <div>
+              <label for="dist-type" class="block text-xs font-medium text-[color:var(--muted)]">Distribution Engine</label>
+              <select id="dist-type" class="mt-1 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-dist-type>
+                <option value="t" selected>Student t-Distribution (Recommended: σ unknown)</option>
+                <option value="z">Standard Normal Z-Distribution (Known population σ or n &gt; 100)</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Raw Data Input (Hidden by default) -->
+          <div class="space-y-4" data-raw-fields hidden>
+            <div class="space-y-1.5">
+              <label for="raw-data-input" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Paste Raw Numbers (comma, space, or newline separated)</label>
+              <textarea
+                id="raw-data-input"
+                rows="4"
+                class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] p-3 text-xs font-mono font-semibold text-[color:var(--fg)] outline-none"
+                placeholder="e.g. 102.5, 98.4, 105.1, 110.3, 99.8, 104.2, 108.9, 103.7, 106.0, 101.4"
+                data-raw-data
+              >102.5, 98.4, 105.1, 110.3, 99.8, 104.2, 108.9, 103.7, 106.0, 101.4, 107.2, 100.5</textarea>
+              <div class="flex items-center justify-between text-[11px] text-[color:var(--muted)]">
+                <span data-raw-stats-hint>Detected: 12 valid numeric observations</span>
+                <button type="button" class="text-[color:var(--accent)] hover:underline cursor-pointer" data-load-sample-raw>Load Sample</button>
               </div>
             </div>
           </div>
@@ -137,12 +238,19 @@ const schemaGraph = [
           <!-- Proportion Inputs (Hidden by default) -->
           <div class="space-y-4" data-prop-fields hidden>
             <div class="space-y-1.5">
-              <label for="success-count" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Observed Successes (x)</label>
+              <label for="success-count" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Observed Successes / Events (x)</label>
               <input id="success-count" type="number" min="0" value="65" class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none" data-success-count />
             </div>
             <div class="space-y-1.5">
-              <label for="prop-n" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Total Sample Size (n)</label>
+              <label for="prop-n" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Total Sample Trials (n)</label>
               <input id="prop-n" type="number" min="1" value="100" class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none" data-prop-n />
+            </div>
+            <div>
+              <label for="prop-method" class="block text-xs font-medium text-[color:var(--muted)]">Proportion Interval Method</label>
+              <select id="prop-method" class="mt-1 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-prop-method>
+                <option value="wilson" selected>Wilson Score Interval (Recommended: Robust, no boundary clipping)</option>
+                <option value="wald">Wald Normal Approximation (Standard textbook: p̂ ± Z*SE)</option>
+              </select>
             </div>
           </div>
 
@@ -150,21 +258,43 @@ const schemaGraph = [
           <div class="space-y-1.5">
             <label for="ci-conf" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Confidence Level</label>
             <select id="ci-conf" class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-sm font-semibold text-[color:var(--fg)] outline-none" data-ci-conf>
-              <option value="90">90% Confidence</option>
-              <option value="95" selected>95% Confidence (Standard)</option>
-              <option value="99">99% Confidence (High Precision)</option>
+              <option value="80">80% Confidence Level (Z* = 1.282)</option>
+              <option value="90">90% Confidence Level (Z* = 1.645)</option>
+              <option value="95" selected>95% Confidence Level (Z* = 1.960 - Gold Standard)</option>
+              <option value="98">98% Confidence Level (Z* = 2.326)</option>
+              <option value="99">99% Confidence Level (Z* = 2.576 - High Rigor)</option>
+              <option value="99.9">99.9% Confidence Level (Z* = 3.291)</option>
             </select>
           </div>
         </form>
 
-        <!-- Result Box -->
-        <div class="flex flex-col justify-between space-y-6 rounded-3xl border border-[color:var(--border)] bg-[color:var(--bg)] p-6 sm:p-8">
+        <!-- Result Box & Visualizer -->
+        <div class="flex flex-col justify-between space-y-6 rounded-3xl border border-[color:var(--accent)]/30 bg-gradient-to-br from-[color:var(--accent-soft)] via-[color:var(--surface)] to-transparent p-6 sm:p-8 shadow-sm">
           <div class="space-y-5">
-            <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Confidence Range</span>
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Confidence Range</span>
+              <div class="flex items-center gap-1.5">
+                <button
+                  type="button"
+                  class="inline-flex items-center gap-1 rounded-lg border border-[color:var(--border)] bg-[color:var(--surface)] px-2.5 py-1 text-xs font-semibold text-[color:var(--fg)] hover:bg-[color:var(--bg)] transition cursor-pointer"
+                  data-copy-btn
+                >
+                  <Icon name="copy" class="w-3.5 h-3.5" />
+                  <span>Copy</span>
+                </button>
+                <button
+                  type="button"
+                  class="inline-flex items-center gap-1 rounded-lg border border-[color:var(--border)] bg-[color:var(--surface)] px-2.5 py-1 text-xs font-semibold text-[color:var(--fg)] hover:bg-[color:var(--bg)] transition cursor-pointer"
+                  data-export-csv-btn
+                >
+                  <span>CSV</span>
+                </button>
+              </div>
+            </div>
 
             <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 text-center">
               <p class="text-xs font-semibold text-[color:var(--muted)]">Calculated Confidence Interval</p>
-              <p class="mt-1 text-3xl sm:text-4xl font-black tracking-tight text-[color:var(--fg)]" data-res-range>
+              <p class="mt-1 text-3xl sm:text-4xl font-black tracking-tight text-[color:var(--fg)] font-mono" data-res-range>
                 [ 101.14 , 109.66 ]
               </p>
               <p class="mt-2 text-xs font-medium text-[color:var(--muted)]" data-res-point>
@@ -172,20 +302,123 @@ const schemaGraph = [
               </p>
             </div>
 
+            <!-- SVG Error Bar Visualizer -->
+            <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 space-y-2">
+              <div class="flex justify-between text-xs font-semibold">
+                <span class="text-[color:var(--muted)]">Interval Forest Plot</span>
+                <span class="text-[color:var(--fg)]" data-plot-conf-label>95% Coverage</span>
+              </div>
+              <svg viewBox="0 0 400 90" class="w-full h-20 text-[color:var(--fg)]" data-ci-svg>
+                <!-- Background Axis -->
+                <line x1="20" y1="50" x2="380" y2="50" stroke="currentColor" stroke-opacity="0.2" stroke-width="2" stroke-dasharray="3 3" />
+                <!-- Shaded CI Area -->
+                <rect x="60" y="32" width="280" height="36" rx="6" fill="var(--accent)" fill-opacity="0.15" data-svg-rect />
+                <!-- Whiskers -->
+                <line x1="60" y1="36" x2="60" y2="64" stroke="currentColor" stroke-width="2" data-svg-whisker-left />
+                <line x1="340" y1="36" x2="340" y2="64" stroke="currentColor" stroke-width="2" data-svg-whisker-right />
+                <line x1="60" y1="50" x2="340" y2="50" stroke="currentColor" stroke-width="3" data-svg-bar />
+                <!-- Point Estimate Center Marker -->
+                <circle cx="200" cy="50" r="7" fill="var(--accent)" stroke="var(--bg)" stroke-width="2" data-svg-center />
+                <!-- Value Labels -->
+                <text x="60" y="80" font-size="11" text-anchor="middle" fill="currentColor" fill-opacity="0.75" font-family="monospace" data-svg-text-low>101.14</text>
+                <text x="200" y="24" font-size="11" font-weight="bold" text-anchor="middle" fill="currentColor" font-family="monospace" data-svg-text-center>105.40</text>
+                <text x="340" y="80" font-size="11" text-anchor="middle" fill="currentColor" fill-opacity="0.75" font-family="monospace" data-svg-text-high>109.66</text>
+              </svg>
+            </div>
+
+            <!-- Key Parameters Summary -->
             <div class="space-y-2 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-xs">
               <div class="flex justify-between">
                 <span class="text-[color:var(--muted)]">Margin of Error (E):</span>
                 <span class="font-mono font-bold text-[color:var(--fg)]" data-res-moe>±4.26</span>
               </div>
               <div class="flex justify-between">
+                <span class="text-[color:var(--muted)]">Standard Error (SE):</span>
+                <span class="font-mono font-bold text-[color:var(--fg)]" data-res-se>2.1168</span>
+              </div>
+              <div class="flex justify-between">
                 <span class="text-[color:var(--muted)]">Critical Multiplier:</span>
                 <span class="font-mono font-bold text-[color:var(--fg)]" data-res-crit>t* = 2.015 (df = 44)</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-[color:var(--muted)]">Total Interval Width:</span>
+                <span class="font-mono font-bold text-[color:var(--fg)]" data-res-width>8.52 units</span>
               </div>
             </div>
           </div>
         </div>
       </div>
     </div>
+
+    <!-- Sensitivity Table Across Confidence Levels -->
+    <section class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 sm:p-8 space-y-4">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Sensitivity Matrix</p>
+          <h2 class="text-xl font-bold text-[color:var(--fg)]">Confidence Levels Comparison (80% to 99.9%)</h2>
+        </div>
+      </div>
+      <div class="overflow-x-auto">
+        <table class="w-full text-left text-xs sm:text-sm">
+          <thead>
+            <tr class="border-b border-[color:var(--border)] text-[color:var(--muted)] font-semibold">
+              <th class="py-2.5 px-3">Confidence Level</th>
+              <th class="py-2.5 px-3">Critical Value (Z*/t*)</th>
+              <th class="py-2.5 px-3">Margin of Error</th>
+              <th class="py-2.5 px-3">Lower Bound</th>
+              <th class="py-2.5 px-3">Upper Bound</th>
+              <th class="py-2.5 px-3">Interval Width</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-[color:var(--border)] font-mono" data-sensitivity-tbody>
+            <!-- Generated dynamically by script -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Mathematical Formulas & Distribution Theory -->
+    <section class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 sm:p-8 space-y-4">
+      <div>
+        <p class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Statistical Foundations</p>
+        <h2 class="text-xl font-bold text-[color:var(--fg)] flex items-center gap-2"><Icon name="math" class="w-4 h-4 text-[color:var(--accent)]" /><span>Confidence Interval Formulas</span></h2>
+      </div>
+
+      <div class="grid gap-4 sm:grid-cols-3 text-xs sm:text-sm">
+        <div class="rounded-2xl bg-[color:var(--bg)] p-4 border border-[color:var(--border)] space-y-2">
+          <p class="font-bold text-[color:var(--fg)]">1. Continuous Mean (t-Distribution)</p>
+          <div class="rounded-xl bg-[color:var(--surface)] p-3 font-mono text-xs text-[color:var(--fg)] overflow-x-auto">
+            CI = x̄ ± t*(df, α/2) × (s ÷ √n)
+          </div>
+          <p class="text-xs text-[color:var(--muted)]">
+            When population standard deviation is unknown, the Student t-distribution with <strong>df = n - 1</strong> captures estimation variance.
+          </p>
+        </div>
+
+        <div class="rounded-2xl bg-[color:var(--bg)] p-4 border border-[color:var(--border)] space-y-2">
+          <p class="font-bold text-[color:var(--fg)]">2. Wilson Score Interval (Proportion)</p>
+          <div class="rounded-xl bg-[color:var(--surface)] p-3 font-mono text-xs text-[color:var(--fg)] overflow-x-auto">
+            (p̂ + Z²/(2n) ± Z√[p̂(1-p̂)/n + Z²/(4n²)]) ÷ (1 + Z²/n)
+          </div>
+          <p class="text-xs text-[color:var(--muted)]">
+            Accurate across all sample sizes; prevents negative percentages or overshoot above 100% when proportions are close to boundaries.
+          </p>
+        </div>
+
+        <div class="rounded-2xl bg-[color:var(--bg)] p-4 border border-[color:var(--border)] space-y-2">
+          <p class="font-bold text-[color:var(--fg)]">3. Wald Normal Approximation</p>
+          <div class="rounded-xl bg-[color:var(--surface)] p-3 font-mono text-xs text-[color:var(--fg)] overflow-x-auto">
+            CI = p̂ ± Z*(α/2) × √[(p̂(1 - p̂)) ÷ n]
+          </div>
+          <p class="text-xs text-[color:var(--muted)]">
+            The traditional asymptotic formula. Requires <strong>np ≥ 5</strong> and <strong>n(1 - p) ≥ 5</strong> for normal approximation validity.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Parameter Guide & Worked Example -->
+    <CalculatorParameterGuide parameters={parameterGuide} workedExample={workedExample} />
 
     <!-- FAQs -->
     <section class="space-y-4">
@@ -213,59 +446,295 @@ const schemaGraph = [
 
       const modeBtns = root.querySelectorAll('[data-mode-btn]');
       const meanFields = root.querySelector('[data-mean-fields]');
+      const rawFields = root.querySelector('[data-raw-fields]');
       const propFields = root.querySelector('[data-prop-fields]');
       const inMean = root.querySelector('[data-sample-mean]');
       const inSd = root.querySelector('[data-sample-sd]');
       const inNMean = root.querySelector('[data-sample-n-mean]');
+      const inDistType = root.querySelector('[data-dist-type]');
+      const inRawData = root.querySelector('[data-raw-data]');
+      const rawStatsHint = root.querySelector('[data-raw-stats-hint]');
+      const loadSampleRawBtn = root.querySelector('[data-load-sample-raw]');
       const inSuccess = root.querySelector('[data-success-count]');
       const inNProp = root.querySelector('[data-prop-n]');
+      const inPropMethod = root.querySelector('[data-prop-method]');
       const inConf = root.querySelector('[data-ci-conf]');
+      
       const outRange = root.querySelector('[data-res-range]');
       const outPoint = root.querySelector('[data-res-point]');
       const outMoe = root.querySelector('[data-res-moe]');
+      const outSe = root.querySelector('[data-res-se]');
       const outCrit = root.querySelector('[data-res-crit]');
+      const outWidth = root.querySelector('[data-res-width]');
+      
       const resetBtn = root.querySelector('[data-reset-btn]');
+      const copyBtn = root.querySelector('[data-copy-btn]');
+      const exportCsvBtn = root.querySelector('[data-export-csv-btn]');
+      const sensTbody = document.querySelector('[data-sensitivity-tbody]');
+
+      // SVG visualizer elements
+      const plotConfLabel = root.querySelector('[data-plot-conf-label]');
+      const svgWhiskerLeft = root.querySelector('[data-svg-whisker-left]');
+      const svgWhiskerRight = root.querySelector('[data-svg-whisker-right]');
+      const svgBar = root.querySelector('[data-svg-bar]');
+      const svgRect = root.querySelector('[data-svg-rect]');
+      const svgCenter = root.querySelector('[data-svg-center]');
+      const svgTextLow = root.querySelector('[data-svg-text-low]');
+      const svgTextCenter = root.querySelector('[data-svg-text-center]');
+      const svgTextHigh = root.querySelector('[data-svg-text-high]');
 
       let currentMode = 'mean';
-      const zMap = { '90': 1.644853, '95': 1.959964, '99': 2.575829 };
+      const zValues = {
+        '80': 1.281552,
+        '90': 1.644853,
+        '95': 1.959964,
+        '98': 2.326348,
+        '99': 2.575829,
+        '99.9': 3.290527
+      };
+
+      // Cornish-Fisher expansion for Student t critical value given Z and df
+      function getTCrit(z, df) {
+        if (df > 500) return z;
+        const g1 = (z * z * z + z) / (4 * df);
+        const g2 = (5 * Math.pow(z, 5) + 16 * Math.pow(z, 3) + 3 * z) / (96 * df * df);
+        return z + g1 + g2;
+      }
+
+      function parseRawNumbers(text) {
+        return text
+          .split(/[\s,;\n\t]+/)
+          .map(function (v) { return parseFloat(v.trim()); })
+          .filter(function (v) { return !isNaN(v) && isFinite(v); });
+      }
+
+      function getRawStatistics(numbers) {
+        const n = numbers.length;
+        if (n < 2) return null;
+        const mean = numbers.reduce(function (a, b) { return a + b; }, 0) / n;
+        const variance = numbers.reduce(function (a, b) { return a + Math.pow(b - mean, 2); }, 0) / (n - 1);
+        const sd = Math.sqrt(variance);
+        return { n: n, mean: mean, sd: sd };
+      }
+
+      let lastCalculation = null;
 
       function update() {
-        const conf = inConf.value || '95';
-        const z = zMap[conf] || 1.96;
+        const confStr = inConf.value || '95';
+        const z = zValues[confStr] || 1.96;
+        let mean = 0;
+        let sd = 1;
+        let n = 30;
+        let isProportion = false;
+        let isRaw = (currentMode === 'raw');
+        let critVal = z;
+        let critLabel = `Z* = ${z.toFixed(3)}`;
+        let se = 0;
+        let moe = 0;
+        let low = 0;
+        let high = 0;
+        let p = 0;
 
-        if (currentMode === 'mean') {
-          const mean = parseFloat(inMean.value || '0');
-          const sd = Math.max(0.0001, parseFloat(inSd.value || '1'));
-          const n = Math.max(2, parseInt(inNMean.value || '30', 10));
+        if (currentMode === 'mean' || currentMode === 'raw') {
+          if (currentMode === 'raw') {
+            const numbers = parseRawNumbers(inRawData.value || '');
+            if (rawStatsHint) {
+              rawStatsHint.textContent = `Detected: ${numbers.length} valid numeric observations`;
+            }
+            if (numbers.length < 2) {
+              if (outRange) outRange.textContent = 'Need ≥ 2 numbers';
+              return;
+            }
+            const stats = getRawStatistics(numbers);
+            mean = stats.mean;
+            sd = stats.sd;
+            n = stats.n;
+          } else {
+            mean = parseFloat(inMean.value || '0');
+            sd = Math.max(0.0001, parseFloat(inSd.value || '1'));
+            n = Math.max(2, parseInt(inNMean.value || '30', 10));
+          }
+
+          const useT = (currentMode === 'raw') ? true : (inDistType.value === 't');
           const df = n - 1;
-
-          // Student t critical approximation: t ≈ z + (z³ + z)/(4*df)
-          const tCrit = z + (z * z * z + z) / (4 * df);
-          const se = sd / Math.sqrt(n);
-          const moe = tCrit * se;
-
-          const low = mean - moe;
-          const high = mean + moe;
+          critVal = useT ? getTCrit(z, df) : z;
+          critLabel = useT ? `t* = ${critVal.toFixed(3)} (df = ${df})` : `Z* = ${critVal.toFixed(3)}`;
+          se = sd / Math.sqrt(n);
+          moe = critVal * se;
+          low = mean - moe;
+          high = mean + moe;
 
           if (outRange) outRange.textContent = `[ ${low.toFixed(2)} , ${high.toFixed(2)} ]`;
-          if (outPoint) outPoint.textContent = `Point Estimate: ${mean.toFixed(2)} ± ${moe.toFixed(2)}`;
+          if (outPoint) outPoint.textContent = `Sample Mean: ${mean.toFixed(2)} ± ${moe.toFixed(2)}`;
           if (outMoe) outMoe.textContent = `±${moe.toFixed(2)}`;
-          if (outCrit) outCrit.textContent = `t* = ${tCrit.toFixed(3)} (df = ${df})`;
+          if (outSe) outSe.textContent = se.toFixed(4);
+          if (outCrit) outCrit.textContent = critLabel;
+          if (outWidth) outWidth.textContent = `${(high - low).toFixed(2)} units`;
         } else {
+          isProportion = true;
           const x = Math.max(0, parseInt(inSuccess.value || '0', 10));
-          const n = Math.max(1, parseInt(inNProp.value || '100', 10));
-          const p = Math.min(1, x / n);
+          n = Math.max(1, parseInt(inNProp.value || '100', 10));
+          p = Math.min(1, x / n);
+          const method = inPropMethod.value || 'wilson';
 
-          const se = Math.sqrt((p * (1 - p)) / n);
-          const moe = z * se;
-          const low = Math.max(0, p - moe) * 100;
-          const high = Math.min(1, p + moe) * 100;
+          if (method === 'wilson') {
+            const z2 = z * z;
+            const denom = 1 + z2 / n;
+            const center = (p + z2 / (2 * n)) / denom;
+            const term = (z / denom) * Math.sqrt((p * (1 - p)) / n + z2 / (4 * n * n));
+            low = Math.max(0, center - term) * 100;
+            high = Math.min(1, center + term) * 100;
+            moe = ((high - low) / 2);
+            se = Math.sqrt((p * (1 - p)) / n);
+            critLabel = `Wilson Z* = ${z.toFixed(3)}`;
 
-          if (outRange) outRange.textContent = `[ ${low.toFixed(2)}% , ${high.toFixed(2)}% ]`;
-          if (outPoint) outPoint.textContent = `Sample Proportion: ${(p * 100).toFixed(2)}% ± ${(moe * 100).toFixed(2)}%`;
-          if (outMoe) outMoe.textContent = `±${(moe * 100).toFixed(2)}%`;
-          if (outCrit) outCrit.textContent = `Z* = ${z.toFixed(3)}`;
+            if (outRange) outRange.textContent = `[ ${low.toFixed(2)}% , ${high.toFixed(2)}% ]`;
+            if (outPoint) outPoint.textContent = `Sample Proportion: ${(p * 100).toFixed(2)}% (Center: ${(center * 100).toFixed(2)}%)`;
+            if (outMoe) outMoe.textContent = `±${moe.toFixed(2)}% (Half-width)`;
+            if (outSe) outSe.textContent = se.toFixed(4);
+            if (outCrit) outCrit.textContent = critLabel;
+            if (outWidth) outWidth.textContent = `${(high - low).toFixed(2)}%`;
+          } else {
+            se = Math.sqrt((p * (1 - p)) / n);
+            moe = z * se;
+            low = Math.max(0, p - moe) * 100;
+            high = Math.min(1, p + moe) * 100;
+            critLabel = `Wald Z* = ${z.toFixed(3)}`;
+
+            if (outRange) outRange.textContent = `[ ${low.toFixed(2)}% , ${high.toFixed(2)}% ]`;
+            if (outPoint) outPoint.textContent = `Sample Proportion: ${(p * 100).toFixed(2)}% ± ${(moe * 100).toFixed(2)}%`;
+            if (outMoe) outMoe.textContent = `±${(moe * 100).toFixed(2)}%`;
+            if (outSe) outSe.textContent = se.toFixed(4);
+            if (outCrit) outCrit.textContent = critLabel;
+            if (outWidth) outWidth.textContent = `${(high - low).toFixed(2)}%`;
+          }
         }
+
+        lastCalculation = {
+          mode: currentMode,
+          confidence: confStr,
+          mean: mean,
+          sd: sd,
+          n: n,
+          p: p,
+          critLabel: critLabel,
+          se: se,
+          moe: moe,
+          low: low,
+          high: high,
+          isProportion: isProportion
+        };
+
+        // Update SVG Forest Plot
+        if (plotConfLabel) plotConfLabel.textContent = `${confStr}% Coverage`;
+        const centerVal = isProportion ? (p * 100) : mean;
+        const lowVal = low;
+        const highVal = high;
+        const span = Math.max(0.001, (highVal - lowVal) * 1.5);
+        const minScale = centerVal - span;
+        const maxScale = centerVal + span;
+
+        function valToSvgX(v) {
+          const clamped = Math.max(minScale, Math.min(maxScale, v));
+          return 20 + ((clamped - minScale) / (maxScale - minScale)) * 360;
+        }
+
+        const xLow = valToSvgX(lowVal);
+        const xCenter = valToSvgX(centerVal);
+        const xHigh = valToSvgX(highVal);
+
+        if (svgWhiskerLeft) {
+          svgWhiskerLeft.setAttribute('x1', xLow.toString());
+          svgWhiskerLeft.setAttribute('x2', xLow.toString());
+        }
+        if (svgWhiskerRight) {
+          svgWhiskerRight.setAttribute('x1', xHigh.toString());
+          svgWhiskerRight.setAttribute('x2', xHigh.toString());
+        }
+        if (svgBar) {
+          svgBar.setAttribute('x1', xLow.toString());
+          svgBar.setAttribute('x2', xHigh.toString());
+        }
+        if (svgRect) {
+          svgRect.setAttribute('x', xLow.toString());
+          svgRect.setAttribute('width', Math.max(4, xHigh - xLow).toString());
+        }
+        if (svgCenter) {
+          svgCenter.setAttribute('cx', xCenter.toString());
+        }
+        if (svgTextLow) {
+          svgTextLow.setAttribute('x', xLow.toString());
+          svgTextLow.textContent = isProportion ? `${lowVal.toFixed(1)}%` : lowVal.toFixed(2);
+        }
+        if (svgTextCenter) {
+          svgTextCenter.setAttribute('x', xCenter.toString());
+          svgTextCenter.textContent = isProportion ? `${centerVal.toFixed(1)}%` : centerVal.toFixed(2);
+        }
+        if (svgTextHigh) {
+          svgTextHigh.setAttribute('x', xHigh.toString());
+          svgTextHigh.textContent = isProportion ? `${highVal.toFixed(1)}%` : highVal.toFixed(2);
+        }
+
+        // Render Sensitivity Matrix
+        renderSensitivityTable(currentMode, mean, sd, n, p, isProportion);
+      }
+
+      function renderSensitivityTable(mode, mean, sd, n, p, isProportion) {
+        if (!sensTbody) return;
+        const levels = ['80', '90', '95', '98', '99', '99.9'];
+        const rows = levels.map(function (c) {
+          const z = zValues[c];
+          let crit = z;
+          let lowBound = 0;
+          let highBound = 0;
+          let moeBound = 0;
+
+          if (!isProportion) {
+            const useT = (mode === 'raw') ? true : (inDistType.value === 't');
+            crit = useT ? getTCrit(z, n - 1) : z;
+            const se = sd / Math.sqrt(n);
+            moeBound = crit * se;
+            lowBound = mean - moeBound;
+            highBound = mean + moeBound;
+            return `
+              <tr class="hover:bg-[color:var(--surface)] transition">
+                <td class="py-2 px-3 font-semibold text-[color:var(--fg)]">${c}%</td>
+                <td class="py-2 px-3">${crit.toFixed(3)}</td>
+                <td class="py-2 px-3">±${moeBound.toFixed(2)}</td>
+                <td class="py-2 px-3 text-[color:var(--accent)]">${lowBound.toFixed(2)}</td>
+                <td class="py-2 px-3 text-[color:var(--accent)]">${highBound.toFixed(2)}</td>
+                <td class="py-2 px-3 text-[color:var(--muted)]">${(highBound - lowBound).toFixed(2)}</td>
+              </tr>
+            `;
+          } else {
+            const method = inPropMethod.value || 'wilson';
+            if (method === 'wilson') {
+              const z2 = z * z;
+              const denom = 1 + z2 / n;
+              const center = (p + z2 / (2 * n)) / denom;
+              const term = (z / denom) * Math.sqrt((p * (1 - p)) / n + z2 / (4 * n * n));
+              lowBound = Math.max(0, center - term) * 100;
+              highBound = Math.min(1, center + term) * 100;
+              moeBound = (highBound - lowBound) / 2;
+            } else {
+              const se = Math.sqrt((p * (1 - p)) / n);
+              moeBound = z * se * 100;
+              lowBound = Math.max(0, p * 100 - moeBound);
+              highBound = Math.min(100, p * 100 + moeBound);
+            }
+            return `
+              <tr class="hover:bg-[color:var(--surface)] transition">
+                <td class="py-2 px-3 font-semibold text-[color:var(--fg)]">${c}%</td>
+                <td class="py-2 px-3">${z.toFixed(3)}</td>
+                <td class="py-2 px-3">±${moeBound.toFixed(2)}%</td>
+                <td class="py-2 px-3 text-[color:var(--accent)]">${lowBound.toFixed(2)}%</td>
+                <td class="py-2 px-3 text-[color:var(--accent)]">${highBound.toFixed(2)}%</td>
+                <td class="py-2 px-3 text-[color:var(--muted)]">${(highBound - lowBound).toFixed(2)}%</td>
+              </tr>
+            `;
+          }
+        });
+        sensTbody.innerHTML = rows.join('');
       }
 
       modeBtns.forEach((btn) => {
@@ -273,17 +742,23 @@ const schemaGraph = [
           currentMode = btn.dataset.modeBtn || 'mean';
           modeBtns.forEach((b) => {
             if (b === btn) {
-              b.className = 'cursor-pointer rounded-xl bg-[color:var(--accent)] px-3 py-2 text-[color:var(--bg)] shadow-xs';
+              b.className = 'cursor-pointer rounded-xl bg-[color:var(--accent)] px-2.5 py-2 text-[color:var(--bg)] shadow-xs transition';
             } else {
-              b.className = 'cursor-pointer rounded-xl px-3 py-2 text-[color:var(--muted)] hover:text-[color:var(--fg)]';
+              b.className = 'cursor-pointer rounded-xl px-2.5 py-2 text-[color:var(--muted)] hover:text-[color:var(--fg)] transition';
             }
           });
 
           if (currentMode === 'mean') {
             meanFields?.removeAttribute('hidden');
+            rawFields?.setAttribute('hidden', '');
+            propFields?.setAttribute('hidden', '');
+          } else if (currentMode === 'raw') {
+            meanFields?.setAttribute('hidden', '');
+            rawFields?.removeAttribute('hidden');
             propFields?.setAttribute('hidden', '');
           } else {
             meanFields?.setAttribute('hidden', '');
+            rawFields?.setAttribute('hidden', '');
             propFields?.removeAttribute('hidden');
           }
           update();
@@ -293,19 +768,95 @@ const schemaGraph = [
       inMean.addEventListener('input', update);
       inSd.addEventListener('input', update);
       inNMean.addEventListener('input', update);
+      inDistType.addEventListener('change', update);
+      inRawData.addEventListener('input', update);
       inSuccess.addEventListener('input', update);
       inNProp.addEventListener('input', update);
+      inPropMethod.addEventListener('change', update);
       inConf.addEventListener('change', update);
+
+      if (loadSampleRawBtn) {
+        loadSampleRawBtn.addEventListener('click', () => {
+          inRawData.value = '105.2, 98.4, 112.1, 104.7, 101.9, 108.3, 106.5, 99.1, 107.8, 103.4, 109.2, 102.8, 104.9, 105.6';
+          update();
+        });
+      }
 
       if (resetBtn) {
         resetBtn.addEventListener('click', () => {
           inMean.value = '105.4';
           inSd.value = '14.2';
           inNMean.value = '45';
+          inDistType.value = 't';
           inSuccess.value = '65';
           inNProp.value = '100';
+          inPropMethod.value = 'wilson';
           inConf.value = '95';
           update();
+        });
+      }
+
+      if (copyBtn) {
+        copyBtn.addEventListener('click', async () => {
+          if (!lastCalculation) return;
+          const text = [
+            '--- Confidence Interval Summary ---',
+            `Mode: ${lastCalculation.mode}`,
+            `Confidence Level: ${lastCalculation.confidence}%`,
+            `Point Estimate: ${outPoint?.textContent || ''}`,
+            `Confidence Interval: ${outRange?.textContent || ''}`,
+            `Margin of Error: ${outMoe?.textContent || ''}`,
+            `Critical Value: ${lastCalculation.critLabel}`,
+            `Standard Error: ${outSe?.textContent || ''}`,
+          ].join('\n');
+
+          try {
+            await navigator.clipboard.writeText(text);
+            const orig = copyBtn.innerHTML;
+            copyBtn.innerHTML = '<span>✓ Copied!</span>';
+            setTimeout(() => { copyBtn.innerHTML = orig; }, 2000);
+          } catch {
+            alert('Failed to copy to clipboard');
+          }
+        });
+      }
+
+      if (exportCsvBtn) {
+        exportCsvBtn.addEventListener('click', () => {
+          if (!lastCalculation) return;
+          const csvLines = [
+            'Confidence Level,Critical Value,Margin of Error,Lower Limit,Upper Limit',
+          ];
+          const levels = ['80', '90', '95', '98', '99', '99.9'];
+          levels.forEach(function (c) {
+            const z = zValues[c];
+            if (!lastCalculation.isProportion) {
+              const useT = (lastCalculation.mode === 'raw') ? true : (inDistType.value === 't');
+              const crit = useT ? getTCrit(z, lastCalculation.n - 1) : z;
+              const moe = crit * (lastCalculation.sd / Math.sqrt(lastCalculation.n));
+              csvLines.push(`${c}%,${crit.toFixed(4)},${moe.toFixed(4)},${(lastCalculation.mean - moe).toFixed(4)},${(lastCalculation.mean + moe).toFixed(4)}`);
+            } else {
+              const p = lastCalculation.p;
+              const n = lastCalculation.n;
+              const z2 = z * z;
+              const denom = 1 + z2 / n;
+              const center = (p + z2 / (2 * n)) / denom;
+              const term = (z / denom) * Math.sqrt((p * (1 - p)) / n + z2 / (4 * n * n));
+              const low = Math.max(0, center - term) * 100;
+              const high = Math.min(1, center + term) * 100;
+              csvLines.push(`${c}%,${z.toFixed(4)},${((high - low) / 2).toFixed(4)}%,${low.toFixed(4)}%,${high.toFixed(4)}%`);
+            }
+          });
+
+          const blob = new Blob([csvLines.join('\n')], { type: 'text/csv;charset=utf-8;' });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `confidence_intervals_${lastCalculation.confidence}pct.csv`;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
         });
       }
 

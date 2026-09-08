@@ -1,7 +1,15 @@
 ---
 import SiteLayout from '../../layouts/SiteLayout.astro';
 import Icon from '../../components/Icon.astro';
+import CalculatorParameterGuide from '../../components/calculator/CalculatorParameterGuide.astro';
 import { siteName, toAbsoluteUrl, withBasePath } from '../../utils/site';
+
+const parameterGuide = [
+  { id: 'enrolledCredits', name: 'Enrolled Credit Hours', description: 'Total academic units taken across all enrolled courses this term.', whyItMatters: 'Base metric for the 2-to-1 or 3-to-1 Carnegie study hour rule.', typicalRange: '12 to 19 credits', unit: 'credits' },
+  { id: 'courseDifficulty', name: 'Coursework Rigor / Field', description: 'The academic demands of your courses (STEM vs Humanities vs Mixed).', whyItMatters: 'Heavy STEM, engineering, and premed classes require 3+ outside study hours per credit.', typicalRange: '1.5x to 3.0x multiplier' },
+  { id: 'targetStanding', name: 'Academic Ambition Level', description: 'Target GPA goal (Passing 2.0 vs Solid 3.0 vs Dean\'s List 3.7+).', whyItMatters: 'Achieving honors grades requires consistent weekly revision and practice problem sets.', typicalRange: 'Passing to Honors' },
+  { id: 'workSleepCommitment', name: 'Work & Sleep Time Budget', description: 'Weekly hours dedicated to employment and essential nightly sleep.', whyItMatters: 'Prevents overcommitting study schedules that cause academic burnout or sleep deprivation.', typicalRange: '40 to 80 hrs/wk', unit: 'hrs/wk' },
+];
 
 const pageTitle = `Study Hours Calculator | College Time Budget & Weekly Schedule · ${siteName}`;
 const pageDesc = 'Calculate recommended weekly study hours based on course difficulty (STEM, humanities), enrolled credits, target GPA, and 168-hour weekly life balance.';
@@ -182,11 +190,11 @@ const schemaGraph = [
         </form>
 
         <!-- Result Box -->
-        <div class="flex flex-col justify-between space-y-6 rounded-3xl border border-[color:var(--border)] bg-[color:var(--bg)] p-6 sm:p-8">
+        <div class="flex flex-col justify-between space-y-6 rounded-3xl border border-[color:var(--accent)]/30 bg-gradient-to-br from-[color:var(--accent-soft)] via-[color:var(--surface)] to-transparent p-6 sm:p-8 shadow-sm">
           <div class="space-y-5">
             <div class="flex items-center justify-between">
               <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Recommended Plan</span>
-              <span class="rounded-full px-3 py-0.5 text-xs font-bold bg-green-500/10 text-green-600 dark:text-green-400 border border-green-500/20" data-feasibility-badge>
+              <span class="rounded-full px-3 py-0.5 text-xs font-bold bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 dark:text-cyan-400 border border-cyan-500/20" data-feasibility-badge>
                 Balanced
               </span>
             </div>
@@ -219,6 +227,9 @@ const schemaGraph = [
         </div>
       </div>
     </div>
+
+    <!-- Parameter Guide -->
+    <CalculatorParameterGuide parameters={parameterGuide} />
 
     <!-- FAQs -->
     <section class="space-y-4">
@@ -295,7 +306,7 @@ const schemaGraph = [
             badge.className = 'rounded-full px-3 py-0.5 text-xs font-bold bg-orange-500/10 text-orange-600 dark:text-orange-400 border border-orange-500/20';
             badge.textContent = 'Heavy Workload';
           } else {
-            badge.className = 'rounded-full px-3 py-0.5 text-xs font-bold bg-green-500/10 text-green-600 dark:text-green-400 border border-green-500/20';
+            badge.className = 'rounded-full px-3 py-0.5 text-xs font-bold bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 dark:text-cyan-400 border border-cyan-500/20';
             badge.textContent = 'Balanced Schedule';
           }
         }

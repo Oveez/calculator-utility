@@ -291,6 +291,106 @@ export const calculateSalary = (
 	return { annual, monthly, biweekly, weekly };
 };
 
+export const generateAmortizationSchedule = (
+	principal: number,
+	annualRatePercent: number,
+	years: number,
+	extraMonthlyPayment = 0,
+): { headers: string[]; rows: Array<Array<string | number>>; totalInterest: number; totalMonths: number } => {
+	const P = Math.max(principal, 0);
+	const r = Math.max(annualRatePercent, 0) / 100 / 12;
+	const n = Math.max(years, 1) * 12;
+	const baseMonthly = calculateLoanMonthlyPayment(P, annualRatePercent, years);
+	const totalMonthly = baseMonthly + Math.max(extraMonthlyPayment, 0);
+
+	let balance = P;
+	let totalInterest = 0;
+	let monthCount = 0;
+	const yearlyRows: Array<Array<string | number>> = [];
+
+	let currentYearPrincipal = 0;
+	let currentYearInterest = 0;
+
+	for (let m = 1; m <= n && balance > 0.01; m++) {
+		monthCount++;
+		const interestPayment = balance * r;
+		let principalPayment = totalMonthly - interestPayment;
+
+		if (principalPayment > balance) {
+			principalPayment = balance;
+		}
+
+		balance -= principalPayment;
+		totalInterest += interestPayment;
+		currentYearPrincipal += principalPayment;
+		currentYearInterest += interestPayment;
+
+		if (m % 12 === 0 || balance <= 0.01 || m === n) {
+			const yearNum = Math.ceil(m / 12);
+			yearlyRows.push([
+				`Year ${yearNum}`,
+				formatCurrency(currentYearPrincipal),
+				formatCurrency(currentYearInterest),
+				formatCurrency(currentYearPrincipal + currentYearInterest),
+				formatCurrency(Math.max(balance, 0)),
+			]);
+			currentYearPrincipal = 0;
+			currentYearInterest = 0;
+		}
+	}
+
+	return {
+		headers: ['Period', 'Principal Paid', 'Interest Paid', 'Total Annual', 'Remaining Balance'],
+		rows: yearlyRows,
+		totalInterest,
+		totalMonths: monthCount,
+	};
+};
+
+export const generateCompoundGrowthSchedule = (
+	principal: number,
+	annualRatePercent: number,
+	years: number,
+	compoundsPerYear = 12,
+	monthlyContribution = 0,
+): { headers: string[]; rows: Array<Array<string | number>> } => {
+	const t = Math.max(years, 1);
+	const PMT = Math.max(monthlyContribution, 0);
+	const r = Math.max(annualRatePercent, 0) / 100;
+	const n = compoundsPerYear > 0 ? compoundsPerYear : 12;
+	const monthlyRate = r > 0 ? Math.pow(1 + r / n, n / 12) - 1 : 0;
+
+	let balance = Math.max(principal, 0);
+	const rows: Array<Array<string | number>> = [];
+
+	for (let y = 1; y <= t; y++) {
+		const startBal = balance;
+		let yearInterest = 0;
+		let yearDeposits = 0;
+
+		for (let m = 1; m <= 12; m++) {
+			const interest = balance * monthlyRate;
+			balance += interest + PMT;
+			yearInterest += interest;
+			yearDeposits += PMT;
+		}
+
+		rows.push([
+			`Year ${y}`,
+			formatCurrency(startBal),
+			formatCurrency(yearDeposits),
+			formatCurrency(yearInterest),
+			formatCurrency(balance),
+		]);
+	}
+
+	return {
+		headers: ['Year', 'Starting Balance', 'Annual Deposits', 'Interest Earned', 'Ending Balance'],
+		rows,
+	};
+};
+
+
 export const parseIsoDate = (dateStr: string): Date | null => {
 	if (!dateStr || typeof dateStr !== 'string') return null;
 	const parts = dateStr.trim().split(/[-T :]/);

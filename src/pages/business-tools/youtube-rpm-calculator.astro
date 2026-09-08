@@ -1,7 +1,16 @@
 ---
 import SiteLayout from '../../layouts/SiteLayout.astro';
 import Icon from '../../components/Icon.astro';
+import CalculatorParameterGuide from '../../components/calculator/CalculatorParameterGuide.astro';
 import { siteName, toAbsoluteUrl, withBasePath } from '../../utils/site';
+
+const parameterGuide = [
+  { id: 'monthlyViews', name: 'Monthly Video Views', description: 'Total cumulative video views across all public long-form uploads or Shorts in a 30-day window.', whyItMatters: 'Directly determines your Monetized Playback volume and scaling capacity.', typicalRange: '10,000 to 5,000,000+', unit: 'views' },
+  { id: 'nicheSelect', name: 'Channel Content Niche', description: 'Content category determining advertiser bidding competition and audience purchase intent.', whyItMatters: 'Finance, business, and software channels earn 4x to 10x higher RPM than gaming or comedy.', typicalRange: '$0.08 (Shorts) to $22.00+ (Finance)', unit: 'niche' },
+  { id: 'rpmInput', name: 'Custom RPM ($ / 1k Views)', description: 'Revenue Per Mille: exact dollars paid to the creator per 1,000 views after YouTube takes its 45% revenue cut.', whyItMatters: 'The single most critical unit metric representing creator take-home pay per thousand views.', typicalRange: '$1.00 to $18.00', unit: '$/1k views' },
+  { id: 'cpmEquiv', name: 'Equivalent Gross CPM', description: 'What advertisers paid per 1,000 ad impressions before platform revenue sharing.', whyItMatters: 'Allows comparing your channel pricing against commercial ad networks and brand deals.', typicalRange: '$2.50 to $35.00', unit: 'CPM' },
+  { id: 'annualRevenue', name: 'Annual Projected Revenue', description: '12-month annualized projection assuming consistent monthly view volume and seasonality.', whyItMatters: 'Crucial for financial budgeting, hiring editors, and full-time content career planning.', typicalRange: '$1,000 to $250,000+', unit: '$/yr' },
+];
 
 const pageTitle = `YouTube RPM Calculator | Creator Earnings & AdSense Revenue · ${siteName}`;
 const pageDesc = 'Calculate estimated YouTube creator earnings from video views and RPM (Revenue Per Mille) across long-form videos, Shorts, and niche CPM benchmarks.';
@@ -158,9 +167,19 @@ const schemaGraph = [
           </div>
         </form>
 
-        <div class="flex flex-col justify-between space-y-6 rounded-3xl border border-[color:var(--border)] bg-[color:var(--bg)] p-6 sm:p-8">
+        <div class="flex flex-col justify-between space-y-6 rounded-3xl border border-[color:var(--accent)]/30 bg-gradient-to-br from-[color:var(--accent-soft)] via-[color:var(--surface)] to-transparent p-6 sm:p-8 shadow-sm">
           <div class="space-y-5">
-            <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Estimated AdSense Payout</span>
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Estimated AdSense Payout</span>
+              <button
+                type="button"
+                class="inline-flex items-center gap-1.5 rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1.5 text-xs font-bold text-[color:var(--fg)] hover:bg-[color:var(--surface-strong)] transition cursor-pointer"
+                data-copy-btn
+              >
+                <Icon name="copy" class="w-3.5 h-3.5" />
+                <span>Copy Summary</span>
+              </button>
+            </div>
 
             <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 text-center">
               <p class="text-xs font-semibold text-[color:var(--muted)]">Estimated Monthly Revenue</p>
@@ -186,6 +205,68 @@ const schemaGraph = [
         </div>
       </div>
     </div>
+
+    <!-- Mathematical Formula & Revenue Splits -->
+    <section class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 sm:p-8 space-y-4">
+      <div>
+        <p class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Monetization Mathematics</p>
+        <h2 class="text-xl font-bold text-[color:var(--fg)]">How YouTube Creator Revenue Is Computed</h2>
+      </div>
+
+      <div class="grid gap-4 sm:grid-cols-2 text-xs sm:text-sm">
+        <div class="rounded-2xl bg-[color:var(--bg)] p-4 border border-[color:var(--border)] space-y-2">
+          <p class="font-bold text-[color:var(--fg)]">1. Monthly Take-Home AdSense (RPM)</p>
+          <div class="rounded-xl bg-[color:var(--surface)] p-3 font-mono text-xs text-[color:var(--fg)] overflow-x-auto">
+            Monthly Revenue = (Monthly Views ÷ 1,000) × RPM
+          </div>
+          <p class="text-xs text-[color:var(--muted)]">
+            RPM reflects creator net earnings after YouTube's 45% platform split has already been deducted.
+          </p>
+        </div>
+
+        <div class="rounded-2xl bg-[color:var(--bg)] p-4 border border-[color:var(--border)] space-y-2">
+          <p class="font-bold text-[color:var(--fg)]">2. Gross Advertiser CPM Equivalent</p>
+          <div class="rounded-xl bg-[color:var(--surface)] p-3 font-mono text-xs text-[color:var(--fg)] overflow-x-auto">
+            Gross CPM = RPM ÷ 0.55 (Long-Form) or RPM ÷ 0.45 (Shorts)
+          </div>
+          <p class="text-xs text-[color:var(--muted)]">
+            Reverses the YouTube revenue share to show what advertisers spent per 1,000 commercial impressions.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Step-by-Step Worked Example -->
+    <section class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 sm:p-8 space-y-4">
+      <div>
+        <p class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Step-By-Step Walkthrough</p>
+        <h2 class="text-xl font-bold text-[color:var(--fg)] flex items-center gap-2"><Icon name="document" class="w-4 h-4 text-[color:var(--accent)]" /><span>Worked Example: Tech Channel (150k Views @ $7.50 RPM)</span></h2>
+      </div>
+
+      <div class="grid gap-4 sm:grid-cols-3 text-xs sm:text-sm">
+        <div class="rounded-2xl bg-[color:var(--bg)] p-4 border border-[color:var(--border)] space-y-1.5">
+          <p class="font-bold text-[color:var(--fg)]">1. View Volume</p>
+          <p class="text-[color:var(--muted)]">Monthly Views = 150,000.</p>
+          <p class="text-[color:var(--muted)]">Mille Units (Thousands) = 150,000 ÷ 1,000 = 150.</p>
+          <p class="text-[color:var(--muted)]">Niche RPM = $7.50.</p>
+        </div>
+        <div class="rounded-2xl bg-[color:var(--bg)] p-4 border border-[color:var(--border)] space-y-1.5">
+          <p class="font-bold text-[color:var(--fg)]">2. Monthly &amp; Annual Revenue</p>
+          <p class="text-[color:var(--muted)]">Monthly = 150 × $7.50 = <strong>$1,125.00</strong>.</p>
+          <p class="text-[color:var(--muted)]">Daily = $1,125 ÷ 30.42 = <strong>$36.99/day</strong>.</p>
+          <p class="text-[color:var(--muted)]">Annual = $1,125 × 12 = <strong>$13,500/yr</strong>.</p>
+        </div>
+        <div class="rounded-2xl bg-[color:var(--bg)] p-4 border border-[color:var(--border)] space-y-1.5">
+          <p class="font-bold text-[color:var(--fg)]">3. Advertiser Value (CPM)</p>
+          <p class="text-[color:var(--muted)]">Long-form creator share = 55%.</p>
+          <p class="text-[color:var(--muted)]">CPM = $7.50 ÷ 0.55 = <strong>~$13.64 CPM</strong>.</p>
+          <p class="text-[color:var(--muted)]">YouTube platform cut (45%) = $6.14 per 1k views.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Parameter Guide -->
+    <CalculatorParameterGuide parameters={parameterGuide} />
 
     <!-- FAQs -->
     <section class="space-y-4">
@@ -254,6 +335,23 @@ const schemaGraph = [
           inNiche.value = '4.50';
           inRpm.value = '4.50';
           update();
+        });
+      }
+
+      const copyBtn = root.querySelector('[data-copy-btn]');
+      if (copyBtn) {
+        copyBtn.addEventListener('click', async () => {
+          const text = `YouTube Earnings Projection:\n• Monthly Revenue: ${outMonthly?.textContent || ''}\n• ${outAnnual?.textContent || ''}\n• Daily Earnings: ${outDaily?.textContent || ''}\n• Advertiser CPM Equivalent: ${outCpm?.textContent || ''}`;
+          try {
+            await navigator.clipboard.writeText(text);
+            const originalText = copyBtn.innerHTML;
+            copyBtn.innerHTML = '<span>Copied!</span>';
+            setTimeout(() => {
+              copyBtn.innerHTML = originalText;
+            }, 2000);
+          } catch (e) {
+            console.error('Clipboard copy failed', e);
+          }
         });
       }
 

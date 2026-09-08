@@ -1,10 +1,12 @@
 ---
 import SiteLayout from '../../layouts/SiteLayout.astro';
 import Icon from '../../components/Icon.astro';
+import CalculatorParameterGuide from '../../components/calculator/CalculatorParameterGuide.astro';
+import type { CalculatorParameterInfo } from '../../types/calculator';
 import { siteName, toAbsoluteUrl, withBasePath } from '../../utils/site';
 
-const pageTitle = `Likert Scale Question Generator — 5 & 7 Point Survey Scales · ${siteName}`;
-const pageDesc = 'Create standardized 5-point and 7-point Likert scale survey questions (Agreement, Satisfaction, Frequency, Quality, Importance) with live matrix preview and export.';
+const pageTitle = `Likert Scale Question Generator — 3, 4, 5 & 7-Point Psychometric Scales · ${siteName}`;
+const pageDesc = 'Design psychometric Likert survey questions across 8 dimensions (Agreement, Satisfaction, Frequency, Importance, Quality) with 3, 4, 5, or 7-point anchors. Export to CSV, HTML, and Markdown.';
 const canonicalUrl = toAbsoluteUrl('/research-tools/likert-scale-generator/');
 
 const breadcrumbItems = [
@@ -13,10 +15,49 @@ const breadcrumbItems = [
   { label: 'Likert Scale Generator' },
 ];
 
+const parameterGuideData: CalculatorParameterInfo[] = [
+  {
+    name: 'Psychometric Dimension & Latent Construct',
+    description: 'The underlying psychological or affective trait being measured (e.g., cognitive agreement, customer satisfaction, frequency of behavior, or perceived importance).',
+    type: 'Categorical Construct',
+    defaultValue: 'Agreement (Strongly Disagree &rarr; Strongly Agree)',
+    whyItMatters: 'Using validated, bipolar anchors prevents acquiescence bias and linguistic ambiguity in questionnaire items.',
+  },
+  {
+    name: 'Scale Granularity (Point Count: 3, 4, 5, or 7)',
+    description: 'Number of discrete response choices offered. Odd-numbered scales (5 and 7) include a neutral midpoint ("Neither agree nor disagree"); 4-point scales force a directional choice.',
+    type: 'Point Options',
+    defaultValue: '5-Point (Standard Academic)',
+    whyItMatters: '7-point scales capture subtle variance and higher statistical reliability for parametric factor analysis and structural equation modeling (SEM).',
+  },
+  {
+    name: 'Scoring Index (Unipolar vs Bipolar)',
+    description: 'The numerical codes assigned to response choices: unipolar ordinal integers (1, 2, 3, 4, 5) versus centered bipolar integers (-2, -1, 0, +1, +2).',
+    type: 'Numerical Encoding',
+    defaultValue: '1 to 5 (Unipolar)',
+    whyItMatters: 'Centered bipolar scoring simplifies computing net sentiment indices and divergence from neutrality.',
+  },
+  {
+    name: 'Forced-Choice Design (No Midpoint)',
+    description: 'A 4-point scale that intentionally omits a neutral middle category, forcing respondents to lean positively or negatively.',
+    type: 'Binary Bias Mitigator',
+    defaultValue: '4-Point (Disallow Neutrality)',
+    whyItMatters: 'Prevents social desirability bias and lazy "neutral" answering on polarized organizational or political items.',
+  },
+];
+
 const schemaFaq = [
   {
-    question: 'What is a 5-point vs 7-point Likert scale?',
-    answer: 'A 5-point scale measures sentiment symmetrically with 5 choices (Strongly Disagree, Disagree, Neutral, Agree, Strongly Agree). A 7-point scale provides higher statistical granularity with subtle gradations (e.g. Somewhat Agree/Disagree).',
+    question: 'When should I use a 5-point vs 7-point Likert scale?',
+    answer: 'Use a 5-point scale for general public surveys, customer satisfaction questionnaires, and mobile interfaces where fast completion is critical. Use a 7-point scale for academic dissertations, psychological research, and scientific studies where maximizing variance and sensitivity is required.',
+  },
+  {
+    question: 'What is a forced-choice 4-point Likert scale?',
+    answer: 'A forced-choice (even-numbered) 4-point scale excludes the neutral "Neither agree nor disagree" midpoint. It forces respondents to declare a positive or negative stance, eliminating fence-sitting and satisficing bias.',
+  },
+  {
+    question: 'Can Likert scale data be analyzed as interval data?',
+    answer: 'While individual Likert items are strictly ordinal, multi-item composite Likert scales (summated rating scales with 4 or more items measuring a single construct) frequently approximate continuous interval distributions, allowing computation of means, standard deviations, and Pearson correlation coefficients.',
   },
 ];
 
@@ -24,7 +65,7 @@ const schemaGraph = [
   {
     '@context': 'https://schema.org',
     '@type': 'WebApplication',
-    name: 'Likert Scale Question Generator',
+    name: 'Likert Scale Survey Question Generator',
     url: canonicalUrl,
     applicationCategory: 'AcademicApplication',
     operatingSystem: 'All',
@@ -80,58 +121,163 @@ const schemaGraph = [
     </nav>
 
     <header class="space-y-3">
-      <div class="inline-flex items-center gap-2 rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1 text-xs font-semibold text-[color:var(--muted)]">
+      <div class="inline-flex items-center gap-2 rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3.5 py-1 text-xs font-semibold text-[color:var(--muted)]">
         <span class="inline-block h-2 w-2 rounded-full bg-emerald-500"></span>
-        <span>Psychometric Survey Designer</span>
+        <span>Psychometric Survey Instrument Builder</span>
       </div>
       <h1 class="text-2xl sm:text-4xl font-extrabold tracking-tight text-[color:var(--fg)]">
         Likert Scale Question Generator
       </h1>
-      <p class="max-w-2xl text-xs sm:text-sm text-[color:var(--muted)] leading-relaxed">
-        Design psychometric Likert survey questions with standardized anchors (Agreement, Satisfaction, Frequency).
+      <p class="max-w-3xl text-xs sm:text-sm text-[color:var(--muted)] leading-relaxed">
+        Design validated psychometric Likert survey questions across 8 dimensions (Agreement, Satisfaction, Frequency, Importance, Quality, Likelihood, Familiarity, Performance) with 3, 4, 5, or 7-point anchors. Export directly to HTML form, CSV, or Markdown.
       </p>
     </header>
 
     <div class="space-y-6">
-      <div class="grid gap-4 sm:grid-cols-3 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 text-xs">
+      <!-- Controls Bar -->
+      <div class="grid gap-4 sm:grid-cols-3 rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-5 sm:p-6 text-xs">
         <div>
-          <label for="likert-dimension" class="font-bold text-[color:var(--fg)] block mb-1">Dimension:</label>
-          <select id="likert-dimension" class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-[color:var(--fg)]">
-            <option value="agreement">Agreement (Agree - Disagree)</option>
-            <option value="satisfaction">Satisfaction (Satisfied - Dissatisfied)</option>
-            <option value="frequency">Frequency (Always - Never)</option>
-            <option value="importance">Importance (Important - Unimportant)</option>
-            <option value="quality">Quality (Excellent - Poor)</option>
+          <label for="likert-dimension" class="font-bold text-[color:var(--fg)] block mb-1">Construct Dimension:</label>
+          <select id="likert-dimension" class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)]">
+            <option value="agreement">Agreement (Agree &harr; Disagree)</option>
+            <option value="satisfaction">Satisfaction (Satisfied &harr; Dissatisfied)</option>
+            <option value="frequency">Frequency (Always &harr; Never)</option>
+            <option value="importance">Importance (Extremely &harr; Not at all)</option>
+            <option value="likelihood">Likelihood (Extremely Likely &harr; Unlikely)</option>
+            <option value="quality">Quality (Excellent &harr; Poor)</option>
+            <option value="familiarity">Familiarity (Extremely &harr; Not Familiar)</option>
+            <option value="performance">Effectiveness (Highly &harr; Ineffective)</option>
           </select>
         </div>
+
         <div>
-          <label for="likert-points" class="font-bold text-[color:var(--fg)] block mb-1">Scale Points:</label>
-          <select id="likert-points" class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-[color:var(--fg)]">
-            <option value="5">5-Point Scale</option>
-            <option value="7">7-Point Scale</option>
+          <label for="likert-points" class="font-bold text-[color:var(--fg)] block mb-1">Scale Granularity:</label>
+          <select id="likert-points" class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)]">
+            <option value="5" selected>5-Point Scale (Standard Academic &amp; Research)</option>
+            <option value="7">7-Point Scale (High Precision / Psychometrics)</option>
+            <option value="4">4-Point Scale (Forced Choice — No Neutral Midpoint)</option>
+            <option value="3">3-Point Scale (Simplified Trinary: Low / Med / High)</option>
           </select>
         </div>
+
         <div>
-          <label for="prompt-text" class="font-bold text-[color:var(--fg)] block mb-1">Question Prompt:</label>
-          <input
-            type="text"
-            id="prompt-text"
-            class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-[color:var(--fg)]"
-            value="The user interface was easy and intuitive to navigate."
-          />
+          <label for="likert-coding" class="font-bold text-[color:var(--fg)] block mb-1">Numerical Scoring Scheme:</label>
+          <select id="likert-coding" class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)]">
+            <option value="unipolar" selected>Unipolar Integers (1, 2, 3, 4, 5...)</option>
+            <option value="bipolar">Centered Bipolar (-2, -1, 0, +1, +2)</option>
+          </select>
         </div>
       </div>
 
-      <!-- Live Survey Preview Card -->
-      <div class="space-y-4 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6">
-        <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Survey Matrix Preview</span>
+      <!-- Question Prompt Input -->
+      <div class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 sm:p-6 space-y-3">
+        <div class="flex items-center justify-between">
+          <label for="question-prompt" class="text-xs font-bold uppercase tracking-wider text-[color:var(--fg)]">
+            Survey Question / Statement Prompt:
+          </label>
+          <span class="text-[11px] text-[color:var(--muted)]">Supports multiple questions (one statement per line)</span>
+        </div>
+        <textarea
+          id="question-prompt"
+          rows="3"
+          class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] p-3 font-sans text-xs sm:text-sm text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)]"
+        >The platform provides clear and actionable research insights.
+I found the user interface intuitive and easy to navigate.
+I would recommend this statistical tool to colleagues in academia.</textarea>
+      </div>
 
-        <div class="space-y-3">
-          <p id="preview-prompt" class="text-sm font-bold text-[color:var(--fg)]">-</p>
-          <div id="options-matrix" class="grid gap-2 text-xs text-center font-medium"></div>
+      <!-- Interactive Survey Preview Matrix -->
+      <div class="space-y-4">
+        <div class="flex items-center justify-between">
+          <div>
+            <h2 class="text-lg font-bold text-[color:var(--fg)]">Interactive Survey Matrix Preview</h2>
+            <p class="text-xs text-[color:var(--muted)]">Test respondent experience directly in this live preview</p>
+          </div>
+          <span id="preview-badge" class="rounded-md bg-cyan-500/10 border border-emerald-500/30 px-2.5 py-1 text-xs font-mono text-cyan-500 dark:text-cyan-400 font-bold">
+            5-Point Agreement Matrix
+          </span>
+        </div>
+
+        <div class="overflow-x-auto rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)]">
+          <table class="w-full text-left text-xs" id="preview-table">
+            <!-- Populated dynamically by JavaScript -->
+          </table>
+        </div>
+      </div>
+
+      <!-- Export Formats Section -->
+      <div class="space-y-4">
+        <div class="flex flex-wrap items-center justify-between gap-3 border-b border-[color:var(--border)] pb-2 text-xs">
+          <div class="flex flex-wrap gap-1.5" id="export-tabs">
+            <button type="button" class="export-tab active rounded-lg bg-[color:var(--fg)] px-3 py-1 font-bold text-[color:var(--bg)] transition cursor-pointer" data-target="panel-csv">
+              CSV Questionnaire Template
+            </button>
+            <button type="button" class="export-tab rounded-lg bg-[color:var(--surface)] border border-[color:var(--border)] px-3 py-1 font-bold text-[color:var(--muted)] hover:text-[color:var(--fg)] transition cursor-pointer" data-target="panel-html">
+              HTML &lt;form&gt; Snippet
+            </button>
+            <button type="button" class="export-tab rounded-lg bg-[color:var(--surface)] border border-[color:var(--border)] px-3 py-1 font-bold text-[color:var(--muted)] hover:text-[color:var(--fg)] transition cursor-pointer" data-target="panel-md">
+              Markdown Table
+            </button>
+            <button type="button" class="export-tab rounded-lg bg-[color:var(--surface)] border border-[color:var(--border)] px-3 py-1 font-bold text-[color:var(--muted)] hover:text-[color:var(--fg)] transition cursor-pointer" data-target="panel-json">
+              JSON Survey Schema
+            </button>
+          </div>
+
+          <div class="flex items-center gap-2">
+            <button
+              type="button"
+              id="copy-export-btn"
+              class="rounded-xl bg-[color:var(--fg)] px-3.5 py-1.5 text-xs font-bold text-[color:var(--bg)] hover:opacity-90 transition cursor-pointer"
+            >
+              Copy Export
+            </button>
+            <button
+              type="button"
+              id="dl-csv-btn"
+              class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1.5 text-xs font-bold text-[color:var(--fg)] hover:border-emerald-500 transition cursor-pointer"
+            >
+              Download .csv
+            </button>
+          </div>
+        </div>
+
+        <div class="relative">
+          <pre id="export-code" class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-4 font-mono text-xs text-[color:var(--fg)] overflow-x-auto whitespace-pre-wrap select-all max-h-72"></pre>
         </div>
       </div>
     </div>
+
+    <!-- Parameter Guide Component -->
+    <CalculatorParameterGuide
+      parameters={parameterGuideData}
+      workedExample={{
+        title: '5-Point Likert Scale Survey Design',
+        description: 'Constructing a validated customer satisfaction battery with symmetric bipolar anchors.',
+        formula: '1 = Strongly Disagree | 2 = Disagree | 3 = Neutral | 4 = Agree | 5 = Strongly Agree',
+        steps: [
+          {
+            step: 'Select Construct & Anchors',
+            calculation: 'Agreement dimension with 5 balanced rating categories',
+            result: 'Mean = 3.0 represents exact psychological neutrality',
+          },
+          {
+            step: 'Input Battery Statements',
+            calculation: '"The software interface is reliable and robust."',
+            result: 'Positive framing without double negatives',
+          },
+          {
+            step: 'Assign Numerical Codes',
+            calculation: 'Assign ordinal ranks from 1 (lowest) to 5 (highest)',
+            result: 'Scores: [1, 2, 3, 4, 5]',
+          },
+          {
+            step: 'Export Survey Instrument',
+            calculation: 'Generate formatted HTML and CSV survey matrix',
+            result: 'Ready for Qualtrics, SurveyMonkey, or Google Forms',
+          },
+        ],
+      }}
+    />
 
     <!-- FAQs -->
     <section class="space-y-4">
@@ -141,7 +287,7 @@ const schemaGraph = [
           <details class="group rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
             <summary class="cursor-pointer list-none font-semibold text-sm sm:text-base text-[color:var(--fg)] flex items-center justify-between gap-4">
               <span>{faq.question}</span>
-              <span class="text-xs text-[color:var(--muted)] group-open:rotate-180 transition-transform">▼</span>
+              <span class="text-xs text-[color:var(--muted)] group-open:rotate-180 transition-transform">&blacktriangledown;</span>
             </summary>
             <p class="mt-3 text-xs sm:text-sm leading-relaxed text-[color:var(--muted)]">
               {faq.answer}
@@ -157,52 +303,212 @@ const schemaGraph = [
       const root = document.querySelector('[data-likert-app]');
       if (!root) return;
 
-      const dim = root.querySelector('#likert-dimension');
-      const pts = root.querySelector('#likert-points');
-      const promptIn = root.querySelector('#prompt-text');
-      const previewPrompt = root.querySelector('#preview-prompt');
-      const matrix = root.querySelector('#options-matrix');
+      const dimSelect = root.querySelector('#likert-dimension');
+      const pointsSelect = root.querySelector('#likert-points');
+      const codingSelect = root.querySelector('#likert-coding');
+      const promptText = root.querySelector('#question-prompt');
+      const previewTable = root.querySelector('#preview-table');
+      const previewBadge = root.querySelector('#preview-badge');
+      const exportCode = root.querySelector('#export-code');
+      const exportTabs = root.querySelectorAll('.export-tab');
+      const copyBtn = root.querySelector('#copy-export-btn');
+      const dlCsvBtn = root.querySelector('#dl-csv-btn');
 
-      const SCALES = {
+      let currentExportMode = 'panel-csv';
+
+      const scaleLibrary = {
         agreement: {
-          5: ['Strongly Disagree', 'Disagree', 'Neutral', 'Agree', 'Strongly Agree'],
+          3: ['Disagree', 'Neutral', 'Agree'],
+          4: ['Strongly Disagree', 'Disagree', 'Agree', 'Strongly Agree'],
+          5: ['Strongly Disagree', 'Disagree', 'Neither Agree nor Disagree', 'Agree', 'Strongly Agree'],
           7: ['Strongly Disagree', 'Disagree', 'Somewhat Disagree', 'Neutral', 'Somewhat Agree', 'Agree', 'Strongly Agree']
         },
         satisfaction: {
+          3: ['Dissatisfied', 'Neutral', 'Satisfied'],
+          4: ['Very Dissatisfied', 'Dissatisfied', 'Satisfied', 'Very Satisfied'],
           5: ['Very Dissatisfied', 'Dissatisfied', 'Neutral', 'Satisfied', 'Very Satisfied'],
           7: ['Completely Dissatisfied', 'Mostly Dissatisfied', 'Somewhat Dissatisfied', 'Neutral', 'Somewhat Satisfied', 'Mostly Satisfied', 'Completely Satisfied']
         },
         frequency: {
+          3: ['Rarely / Never', 'Sometimes', 'Often / Always'],
+          4: ['Never', 'Rarely', 'Often', 'Always'],
           5: ['Never', 'Rarely', 'Sometimes', 'Often', 'Always'],
-          7: ['Never', 'Very Rarely', 'Rarely', 'Occasionally', 'Frequently', 'Very Frequently', 'Always']
+          7: ['Never', 'Almost Never', 'Rarely', 'Sometimes', 'Often', 'Very Often', 'Always']
         },
         importance: {
-          5: ['Not at all Important', 'Slightly Important', 'Moderately Important', 'Important', 'Very Important'],
+          3: ['Not Important', 'Somewhat Important', 'Very Important'],
+          4: ['Not at all Important', 'Slightly Important', 'Important', 'Very Important'],
+          5: ['Not at all Important', 'Slightly Important', 'Moderately Important', 'Very Important', 'Extremely Important'],
           7: ['Not at all Important', 'Low Importance', 'Slightly Important', 'Neutral', 'Moderately Important', 'Very Important', 'Extremely Important']
         },
+        likelihood: {
+          3: ['Unlikely', 'Neutral', 'Likely'],
+          4: ['Very Unlikely', 'Unlikely', 'Likely', 'Very Likely'],
+          5: ['Extremely Unlikely', 'Unlikely', 'Neutral', 'Likely', 'Extremely Likely'],
+          7: ['Extremely Unlikely', 'Moderately Unlikely', 'Slightly Unlikely', 'Neutral', 'Slightly Likely', 'Moderately Likely', 'Extremely Likely']
+        },
         quality: {
+          3: ['Poor', 'Average', 'Good'],
+          4: ['Poor', 'Fair', 'Good', 'Excellent'],
           5: ['Poor', 'Fair', 'Good', 'Very Good', 'Excellent'],
-          7: ['Very Poor', 'Poor', 'Fair', 'Acceptable', 'Good', 'Very Good', 'Exceptional']
+          7: ['Very Poor', 'Poor', 'Fair', 'Average', 'Good', 'Very Good', 'Exceptional']
+        },
+        familiarity: {
+          3: ['Not Familiar', 'Somewhat Familiar', 'Very Familiar'],
+          4: ['Not at all Familiar', 'Slightly Familiar', 'Moderately Familiar', 'Extremely Familiar'],
+          5: ['Not at all Familiar', 'Slightly Familiar', 'Moderately Familiar', 'Very Familiar', 'Extremely Familiar'],
+          7: ['Not at all Familiar', 'Unfamiliar', 'Slightly Familiar', 'Neutral', 'Moderately Familiar', 'Very Familiar', 'Extremely Familiar']
+        },
+        performance: {
+          3: ['Ineffective', 'Neutral', 'Effective'],
+          4: ['Very Ineffective', 'Ineffective', 'Effective', 'Very Effective'],
+          5: ['Extremely Ineffective', 'Ineffective', 'Adequate', 'Effective', 'Extremely Effective'],
+          7: ['Extremely Ineffective', 'Very Ineffective', 'Slightly Ineffective', 'Neutral', 'Slightly Effective', 'Very Effective', 'Extremely Effective']
         }
       };
 
-      function update() {
-        const dimension = dim.value;
-        const count = parseInt(pts.value, 10);
-        previewPrompt.textContent = promptIn.value.trim() || 'Prompt question goes here';
-
-        const labels = SCALES[dimension][count];
-        matrix.style.gridTemplateColumns = `repeat(${count}, minmax(0, 1fr))`;
-
-        matrix.innerHTML = labels.map((lbl, idx) => `
-          <label class="flex flex-col items-center gap-2 rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-3 cursor-pointer hover:border-emerald-500">
-            <input type="radio" name="likert-choice" value="${idx + 1}" class="accent-[color:var(--fg)]" />
-            <span class="text-[11px] leading-tight text-[color:var(--fg)]">${lbl}</span>
-          </label>
-        `).join('');
+      function getCodes(count, coding) {
+        if (coding === 'bipolar') {
+          if (count === 3) return [-1, 0, +1];
+          if (count === 4) return [-2, -1, +1, +2];
+          if (count === 5) return [-2, -1, 0, +1, +2];
+          if (count === 7) return [-3, -2, -1, 0, +1, +2, +3];
+        }
+        // Unipolar
+        return Array.from({ length: count }, (_, i) => i + 1);
       }
 
-      [dim, pts, promptIn].forEach(el => el.addEventListener('input', update));
+      function update() {
+        const dim = dimSelect.value;
+        const pts = parseInt(pointsSelect.value, 10);
+        const coding = codingSelect.value;
+        const labels = scaleLibrary[dim]?.[pts] || scaleLibrary.agreement[5];
+        const codes = getCodes(pts, coding);
+
+        previewBadge.textContent = `${pts}-Point ${dim.charAt(0).toUpperCase() + dim.slice(1)} Matrix`;
+
+        const rawQuestions = promptText.value.split('\n').map(q => q.trim()).filter(Boolean);
+        const questions = rawQuestions.length > 0 ? rawQuestions : ['The platform provides clear and actionable research insights.'];
+
+        // Render Table Header
+        let html = `
+          <thead class="bg-[color:var(--surface-strong)] text-[color:var(--muted)] border-b border-[color:var(--border)]">
+            <tr>
+              <th class="p-3.5 font-bold w-1/3">Survey Question / Statement</th>
+              ${labels.map((lbl, idx) => `
+                <th class="p-3 font-bold text-center">
+                  <span class="block text-[color:var(--fg)]">${lbl}</span>
+                  <span class="text-[10px] text-[color:var(--muted)] font-mono">(${codes[idx]})</span>
+                </th>
+              `).join('')}
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-[color:var(--border)]">
+        `;
+
+        // Render Rows
+        questions.forEach((q, qIdx) => {
+          html += `
+            <tr class="hover:bg-[color:var(--surface-strong)] transition">
+              <td class="p-3.5 font-medium text-[color:var(--fg)]">${q}</td>
+              ${labels.map((_, lIdx) => `
+                <td class="p-3 text-center">
+                  <input
+                    type="radio"
+                    name="q_${qIdx}"
+                    value="${codes[lIdx]}"
+                    class="accent-emerald-500 cursor-pointer h-4 w-4"
+                  />
+                </td>
+              `).join('')}
+            </tr>
+          `;
+        });
+
+        html += `</tbody>`;
+        previewTable.innerHTML = html;
+
+        // Render Export Codes
+        if (currentExportMode === 'panel-csv') {
+          const headerRow = ['"QuestionID"', '"QuestionText"', ...labels.map(l => `"${l}"`)].join(',');
+          const dataRows = questions.map((q, idx) => {
+            return [`"Q${idx + 1}"`, `"${q.replace(/"/g, '""')}"`, ...codes].join(',');
+          });
+          exportCode.textContent = [headerRow, ...dataRows].join('\n');
+        } else if (currentExportMode === 'panel-html') {
+          let formHtml = `<form class="survey-form">\n`;
+          questions.forEach((q, qIdx) => {
+            formHtml += `  <fieldset class="survey-item mb-4">\n    <legend class="font-bold">${q}</legend>\n    <div class="scale-options flex gap-4">\n`;
+            labels.forEach((lbl, lIdx) => {
+              formHtml += `      <label><input type="radio" name="q${qIdx + 1}" value="${codes[lIdx]}"> ${lbl} (${codes[lIdx]})</label>\n`;
+            });
+            formHtml += `    </div>\n  </fieldset>\n`;
+          });
+          formHtml += `</form>`;
+          exportCode.textContent = formHtml;
+        } else if (currentExportMode === 'panel-md') {
+          const mdHeader = `| Statement | ${labels.join(' | ')} |\n| :--- | ${labels.map(() => ':---:').join(' | ')} |`;
+          const mdRows = questions.map(q => `| ${q} | ${labels.map((_, i) => `(${codes[i]})`).join(' | ')} |`).join('\n');
+          exportCode.textContent = `${mdHeader}\n${mdRows}`;
+        } else if (currentExportMode === 'panel-json') {
+          const schema = {
+            scale: {
+              dimension: dim,
+              points: pts,
+              scoring: coding,
+              options: labels.map((l, idx) => ({ label: l, score: codes[idx] }))
+            },
+            questions: questions.map((q, idx) => ({ id: `Q${idx + 1}`, statement: q }))
+          };
+          exportCode.textContent = JSON.stringify(schema, null, 2);
+        }
+      }
+
+      exportTabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+          exportTabs.forEach(t => {
+            t.classList.remove('bg-[color:var(--fg)]', 'text-[color:var(--bg)]');
+            t.classList.add('bg-[color:var(--surface)]', 'border', 'border-[color:var(--border)]', 'text-[color:var(--muted)]');
+          });
+          tab.classList.add('bg-[color:var(--fg)]', 'text-[color:var(--bg)]');
+          tab.classList.remove('bg-[color:var(--surface)]', 'border-[color:var(--border)]', 'text-[color:var(--muted)]');
+
+          currentExportMode = tab.dataset.target;
+          update();
+        });
+      });
+
+      copyBtn?.addEventListener('click', () => {
+        navigator.clipboard.writeText(exportCode.textContent).then(() => {
+          const orig = copyBtn.textContent;
+          copyBtn.textContent = 'Copied!';
+          setTimeout(() => { copyBtn.textContent = orig; }, 1800);
+        });
+      });
+
+      dlCsvBtn?.addEventListener('click', () => {
+        const dim = dimSelect.value;
+        const pts = parseInt(pointsSelect.value, 10);
+        const labels = scaleLibrary[dim]?.[pts] || scaleLibrary.agreement[5];
+        const codes = getCodes(pts, codingSelect.value);
+        const rawQuestions = promptText.value.split('\n').map(q => q.trim()).filter(Boolean);
+
+        const headerRow = ['"QuestionID"', '"QuestionText"', ...labels.map(l => `"${l}"`)].join(',');
+        const dataRows = rawQuestions.map((q, idx) => {
+          return [`"Q${idx + 1}"`, `"${q.replace(/"/g, '""')}"`, ...codes].join(',');
+        });
+
+        const blob = new Blob([[headerRow, ...dataRows].join('\n')], { type: 'text/csv' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = `likert_${dim}_${pts}pt.csv`;
+        a.click();
+      });
+
+      [dimSelect, pointsSelect, codingSelect, promptText].forEach(el => {
+        el?.addEventListener('input', update);
+      });
+
       update();
     })();
   </script>

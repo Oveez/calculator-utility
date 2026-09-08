@@ -1,7 +1,8 @@
 ---
 import SiteLayout from '../../layouts/SiteLayout.astro';
 import Icon from '../../components/Icon.astro';
-import { siteName, toAbsoluteUrl, withBasePath } from '../../utils/site';
+import CalculatorParameterGuide from '../../components/calculator/CalculatorParameterGuide.astro';
+import { siteName, toAbsoluteUrl } from '../../utils/site';
 
 const pageTitle = `Volumetric Weight Calculator | Air Freight & Courier Divisors · ${siteName}`;
 const pageDesc = 'Calculate dimensional volumetric weight for express couriers (DHL, FedEx, UPS divisor 5000) and IATA air freight (divisor 6000) in kg and lbs.';
@@ -21,6 +22,63 @@ const faqs = [
   {
     question: 'Why do shipping carriers charge by volumetric weight?',
     answer: 'Air cargo holds are limited by physical volume as well as payload weight. Lightweight, bulky goods (like pillows or styrofoam) consume large space without adding weight, so airlines charge for the equivalent volumetric weight.',
+  },
+];
+
+const parameterGuide = [
+  {
+    id: 'carrierDivisor',
+    name: 'Carrier Divisor Standard',
+    description:
+      'Dimensional factor determined by mode of transport. Express couriers (DHL, FedEx, UPS) standardly use divisor 5000 (1 CBM = 200 kg). IATA standard air freight cargo uses divisor 6000 (1 CBM = 167 kg).',
+    whyItMatters: 'Divisor 5000 produces 20% higher billable weight than Divisor 6000.',
+    typicalRange: '5000 (Courier) vs 6000 (IATA Air)',
+    unit: 'divisor',
+  },
+  {
+    id: 'packageDimensions',
+    name: 'Package Dimensions (cm)',
+    description:
+      'The length, width, and height of each carton or crate measured at its outermost points (including bulges, handles, and pallet overhang).',
+    whyItMatters: 'Multiplied together to determine cubic centimeters (cm³) volume.',
+    typicalRange: '10 to 200 cm',
+    unit: 'cm',
+  },
+  {
+    id: 'packageQuantity',
+    name: 'Package Quantity (Units)',
+    description:
+      'Total number of identical pieces in the consignment. Volume and weight calculate per unit and scale across the entire shipment batch.',
+    whyItMatters: 'Scales unit volumetric weight up to the total consignment weight.',
+    typicalRange: '1 to 500+ units',
+    unit: 'units',
+  },
+  {
+    id: 'volumetricWeight',
+    name: 'Calculated Volumetric Weight (kg)',
+    description:
+      'The dimensional equivalent weight computed as (Length × Width × Height in cm) ÷ Divisor × Quantity. Expressed in kg and lbs.',
+    whyItMatters: 'The minimum air weight billed for low-density or bulky cargo.',
+    typicalRange: '1 to 5,000+ kg',
+    unit: 'kg',
+  },
+  {
+    id: 'actualWeight',
+    name: 'Actual Gross Weight (kg)',
+    description:
+      'The physical gross weight of the packages placed on a certified scale, including carton boxes, internal packing, dunnage, and strapping.',
+    whyItMatters: 'Compared directly with volumetric weight to find final billing basis.',
+    typicalRange: '0.1 to 10,000 kg',
+    unit: 'kg',
+  },
+  {
+    id: 'chargeableBasis',
+    name: 'Chargeable Weight Basis',
+    description:
+      'The final weight basis invoiced by carriers. By universal freight convention, carriers charge the greater of actual gross weight vs. volumetric weight.',
+    whyItMatters: 'Directly determines freight invoicing cost per kg.',
+    typicalRange: 'Max of Actual vs Volumetric',
+    unit: 'basis',
   },
 ];
 
@@ -143,9 +201,19 @@ const schemaGraph = [
           </div>
         </form>
 
-        <div class="flex flex-col justify-between space-y-6 rounded-3xl border border-[color:var(--border)] bg-[color:var(--bg)] p-6 sm:p-8">
+        <div class="flex flex-col justify-between space-y-6 rounded-3xl border border-[color:var(--accent)]/30 bg-gradient-to-br from-[color:var(--accent-soft)] via-[color:var(--surface)] to-transparent p-6 sm:p-8 shadow-sm">
           <div class="space-y-5">
-            <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Chargeable Estimate</span>
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Chargeable Estimate</span>
+              <button
+                type="button"
+                class="inline-flex items-center gap-1.5 rounded-lg border border-[color:var(--border)] bg-[color:var(--surface)] px-2.5 py-1 text-xs font-semibold text-[color:var(--fg)] hover:bg-[color:var(--bg)] transition cursor-pointer"
+                data-copy-btn
+              >
+                <Icon name="copy" class="w-3.5 h-3.5" />
+                <span>Copy Summary</span>
+              </button>
+            </div>
 
             <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 text-center">
               <p class="text-xs font-semibold text-[color:var(--muted)]">Total Volumetric Weight</p>
@@ -171,6 +239,68 @@ const schemaGraph = [
         </div>
       </div>
     </div>
+
+    <!-- Mathematical Formula & Volumetric Divisors -->
+    <section class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 sm:p-8 space-y-4">
+      <div>
+        <p class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Air Freight &amp; Courier Mathematics</p>
+        <h2 class="text-xl font-bold text-[color:var(--fg)] flex items-center gap-2"><Icon name="math" class="w-4 h-4 text-[color:var(--accent)]" /><span>How Volumetric Weight is Calculated</span></h2>
+      </div>
+
+      <div class="grid gap-4 sm:grid-cols-2 text-xs sm:text-sm">
+        <div class="rounded-2xl bg-[color:var(--bg)] p-4 border border-[color:var(--border)] space-y-2">
+          <p class="font-bold text-[color:var(--fg)]">1. Metric Centimeter Divisors</p>
+          <div class="rounded-xl bg-[color:var(--surface)] p-3 font-mono text-xs text-[color:var(--fg)] overflow-x-auto">
+            Volumetric Wt (kg) = (Length × Width × Height in cm) ÷ Divisor × Qty
+          </div>
+          <p class="text-xs text-[color:var(--muted)]">
+            Express Couriers (DHL, FedEx Express, UPS): Divisor <strong>5000</strong> (1 CBM = 200 kg). IATA Standard Air Freight: Divisor <strong>6000</strong> (1 CBM = 167 kg).
+          </p>
+        </div>
+
+        <div class="rounded-2xl bg-[color:var(--bg)] p-4 border border-[color:var(--border)] space-y-2">
+          <p class="font-bold text-[color:var(--fg)]">2. Chargeable Rule</p>
+          <div class="rounded-xl bg-[color:var(--surface)] p-3 font-mono text-xs text-[color:var(--fg)] overflow-x-auto">
+            Chargeable Wt = max(Actual Gross Scale Weight, Volumetric Weight)
+          </div>
+          <p class="text-xs text-[color:var(--muted)]">
+            If volumetric weight exceeds actual weight, the shipment is considered "light/bulky" cargo and charged on dimensional weight.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Step-by-Step Worked Example -->
+    <section class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 sm:p-8 space-y-4">
+      <div>
+        <p class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Step-By-Step Walkthrough</p>
+        <h2 class="text-xl font-bold text-[color:var(--fg)] flex items-center gap-2"><Icon name="document" class="w-4 h-4 text-[color:var(--accent)]" /><span>Worked Example: 5 Cartons (60 × 40 × 40 cm, 12 kg each)</span></h2>
+      </div>
+
+      <div class="grid gap-4 sm:grid-cols-3 text-xs sm:text-sm">
+        <div class="rounded-2xl bg-[color:var(--bg)] p-4 border border-[color:var(--border)] space-y-1.5">
+          <p class="font-bold text-[color:var(--fg)]">1. Single Unit Volumetric Weight</p>
+          <p class="text-[color:var(--muted)]">Volume = 60 × 40 × 40 = <strong>96,000 cm³</strong>.</p>
+          <p class="text-[color:var(--muted)]">Express Divisor = 5000.</p>
+          <p class="text-[color:var(--muted)]">Unit Vol Wt = 96,000 ÷ 5000 = <strong>19.20 kg</strong>.</p>
+        </div>
+        <div class="rounded-2xl bg-[color:var(--bg)] p-4 border border-[color:var(--border)] space-y-1.5">
+          <p class="font-bold text-[color:var(--fg)]">2. Consignment Totals (5 Pcs)</p>
+          <p class="text-[color:var(--muted)]">Total Vol Wt = 19.20 × 5 = <strong>96.00 kg (211.64 lbs)</strong>.</p>
+          <p class="text-[color:var(--muted)]">Total Actual Wt = 12 × 5 = <strong>60.00 kg (132.28 lbs)</strong>.</p>
+          <p class="text-[color:var(--muted)]">At IATA Div 6000: Vol Wt = 80.00 kg.</p>
+        </div>
+        <div class="rounded-2xl bg-[color:var(--bg)] p-4 border border-[color:var(--border)] space-y-1.5">
+          <p class="font-bold text-[color:var(--fg)]">3. Invoiced Billing Basis</p>
+          <p class="text-[color:var(--muted)]">96.00 kg volumetric &gt; 60.00 kg actual.</p>
+          <p class="text-[color:var(--muted)]">Billed on <strong>Volumetric Weight (96.00 kg)</strong>.</p>
+          <p class="text-[color:var(--muted)]">Carrier bills for an additional <strong>36.00 kg</strong>.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Parameter Guide -->
+    <CalculatorParameterGuide parameters={parameterGuide} />
 
     <!-- FAQs -->
     <section class="space-y-4">
@@ -207,6 +337,7 @@ const schemaGraph = [
       const outAct = root.querySelector('[data-disp-act]');
       const outBasis = root.querySelector('[data-disp-basis]');
       const resetBtn = root.querySelector('[data-reset-btn]');
+      const copyBtn = root.querySelector('[data-copy-btn]');
 
       function update() {
         const div = parseFloat(inDiv.value || '5000');
@@ -233,7 +364,7 @@ const schemaGraph = [
             outBasis.className = 'font-bold text-red-500 font-mono';
           } else {
             outBasis.textContent = `Actual Gross Weight (${totalActKg.toFixed(2)} kg)`;
-            outBasis.className = 'font-bold text-green-600 font-mono';
+            outBasis.className = 'font-bold text-cyan-600 dark:text-cyan-400 font-mono';
           }
         }
       }
@@ -254,6 +385,31 @@ const schemaGraph = [
           inQty.value = '5';
           inAct.value = '12';
           update();
+        });
+      }
+
+      if (copyBtn) {
+        copyBtn.addEventListener('click', async () => {
+          const text = [
+            '--- Volumetric Weight Summary ---',
+            `Divisor: ${inDiv.value === '5000' ? 'Express Courier 5000' : inDiv.value === '6000' ? 'IATA Air Freight 6000' : 'Custom'}`,
+            `Dimensions: ${inL.value} × ${inW.value} × ${inH.value} cm`,
+            `Quantity: ${inQty.value} units`,
+            `Total Volumetric Weight: ${outKg?.textContent || ''} (${outLbs?.textContent || ''})`,
+            `Total Actual Weight: ${outAct?.textContent || ''}`,
+            `Chargeable Basis: ${outBasis?.textContent || ''}`,
+          ].join('\n');
+
+          try {
+            await navigator.clipboard.writeText(text);
+            const orig = copyBtn.innerHTML;
+            copyBtn.innerHTML = '<span>✓ Copied!</span>';
+            setTimeout(() => {
+              copyBtn.innerHTML = orig;
+            }, 2000);
+          } catch {
+            alert('Failed to copy to clipboard');
+          }
         });
       }
 

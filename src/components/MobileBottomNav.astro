@@ -12,7 +12,7 @@ const isCv = currentPath.includes('/career-tools/cv-maker');
 <!-- Fixed App-Style Bottom Navigation Bar (Mobile only) -->
 <nav
   id="mobile-bottom-nav"
-  class="fixed bottom-0 left-0 right-0 z-40 md:hidden border-t border-[color:var(--border)] bg-[color:var(--bg)]/95 backdrop-blur-lg shadow-lg transition-colors"
+  class="fixed bottom-0 left-0 right-0 z-40 md:hidden border-t border-[color:var(--border)] bg-[color:var(--bg)]/90 backdrop-blur-xl shadow-lg transition-colors"
   aria-label="Mobile Bottom Navigation"
   style="padding-bottom: env(safe-area-inset-bottom, 0px);"
 >
@@ -22,11 +22,11 @@ const isCv = currentPath.includes('/career-tools/cv-maker');
       href={withBasePath('/')}
       class:list={[
         'flex flex-col items-center justify-center gap-0.5 py-1 text-center transition',
-        isHome ? 'text-[color:var(--fg)] font-bold' : 'text-[color:var(--muted)] hover:text-[color:var(--fg)]',
+        isHome ? 'text-[color:var(--accent)] font-bold' : 'text-[color:var(--muted)] hover:text-[color:var(--fg)]',
       ]}
       aria-label="Home"
     >
-      <Icon name="calculator" class="w-5 h-5" />
+      <Icon name="calculator" class:list={['w-5 h-5', isHome ? 'drop-shadow-[0_0_8px_var(--accent-glow)]' : '']} />
       <span class="text-[10px] tracking-tight">Home</span>
     </a>
 
@@ -35,11 +35,11 @@ const isCv = currentPath.includes('/career-tools/cv-maker');
       href={withBasePath('/tax-calculators/')}
       class:list={[
         'flex flex-col items-center justify-center gap-0.5 py-1 text-center transition',
-        isTax ? 'text-[color:var(--fg)] font-bold' : 'text-[color:var(--muted)] hover:text-[color:var(--fg)]',
+        isTax ? 'text-[color:var(--accent)] font-bold' : 'text-[color:var(--muted)] hover:text-[color:var(--fg)]',
       ]}
       aria-label="Tax & Salary Suite"
     >
-      <Icon name="finance" class="w-5 h-5" />
+      <Icon name="finance" class:list={['w-5 h-5', isTax ? 'drop-shadow-[0_0_8px_var(--accent-glow)]' : '']} />
       <span class="text-[10px] tracking-tight">Tax Hub</span>
     </a>
 
@@ -47,10 +47,10 @@ const isCv = currentPath.includes('/career-tools/cv-maker');
     <button
       type="button"
       data-trigger-search
-      class="flex flex-col items-center justify-center gap-0.5 py-1 text-center text-[color:var(--muted)] hover:text-[color:var(--fg)] cursor-pointer transition"
+      class="flex flex-col items-center justify-center gap-0.5 py-1 text-center text-[color:var(--muted)] hover:text-[color:var(--fg)] cursor-pointer transition group"
       aria-label="Search 186 Tools"
     >
-      <div class="flex h-7 w-7 items-center justify-center rounded-xl bg-[color:var(--surface-strong)] border border-[color:var(--border)] text-[color:var(--fg)] shadow-xs">
+      <div class="flex h-7 w-7 items-center justify-center rounded-xl bg-[color:var(--surface-strong)] border border-[color:var(--border)] text-[color:var(--fg)] shadow-xs transition group-hover:border-[color:var(--accent)] group-hover:shadow-[0_0_12px_var(--accent-glow)]">
         <Icon name="search" class="w-3.5 h-3.5" />
       </div>
       <span class="text-[9px] font-semibold text-[color:var(--fg)]">Search</span>
@@ -61,11 +61,11 @@ const isCv = currentPath.includes('/career-tools/cv-maker');
       href={withBasePath('/developer-tools/')}
       class:list={[
         'flex flex-col items-center justify-center gap-0.5 py-1 text-center transition',
-        isDev ? 'text-[color:var(--fg)] font-bold' : 'text-[color:var(--muted)] hover:text-[color:var(--fg)]',
+        isDev ? 'text-[color:var(--accent)] font-bold' : 'text-[color:var(--muted)] hover:text-[color:var(--fg)]',
       ]}
       aria-label="Developer Tools"
     >
-      <Icon name="code" class="w-5 h-5" />
+      <Icon name="code" class:list={['w-5 h-5', isDev ? 'drop-shadow-[0_0_8px_var(--accent-glow)]' : '']} />
       <span class="text-[10px] tracking-tight">Dev Tools</span>
     </a>
 
@@ -74,11 +74,11 @@ const isCv = currentPath.includes('/career-tools/cv-maker');
       href={withBasePath('/career-tools/cv-maker/')}
       class:list={[
         'flex flex-col items-center justify-center gap-0.5 py-1 text-center transition',
-        isCv ? 'text-[color:var(--fg)] font-bold' : 'text-[color:var(--muted)] hover:text-[color:var(--fg)]',
+        isCv ? 'text-[color:var(--accent)] font-bold' : 'text-[color:var(--muted)] hover:text-[color:var(--fg)]',
       ]}
       aria-label="CV Maker"
     >
-      <Icon name="career" class="w-5 h-5" />
+      <Icon name="career" class:list={['w-5 h-5', isCv ? 'drop-shadow-[0_0_8px_var(--accent-glow)]' : '']} />
       <span class="text-[10px] tracking-tight">CV Maker</span>
     </a>
   </div>

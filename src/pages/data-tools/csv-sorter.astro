@@ -1,10 +1,11 @@
 ---
 import SiteLayout from '../../layouts/SiteLayout.astro';
 import Icon from '../../components/Icon.astro';
+import CalculatorParameterGuide from '../../components/calculator/CalculatorParameterGuide.astro';
 import { siteName, toAbsoluteUrl, withBasePath } from '../../utils/site';
 
-const pageTitle = `CSV Sorter — Sort CSV by Column Online · ${siteName}`;
-const pageDesc = 'Sort CSV datasets alphabetically, numerically, ascending (A-Z, 0-9) or descending (Z-A, 9-0) by any column online. 100% private in-browser tool.';
+const pageTitle = `CSV Sorter — Sort CSV Datasets by Multiple Columns · ${siteName}`;
+const pageDesc = 'Sort CSV datasets alphabetically, numerically, and by multiple columns online. Supports primary & secondary sort keys, natural sorting, custom blank placement, and real-time preview. 100% private in-browser tool.';
 const canonicalUrl = toAbsoluteUrl('/data-tools/csv-sorter/');
 
 const breadcrumbItems = [
@@ -15,8 +16,16 @@ const breadcrumbItems = [
 
 const schemaFaq = [
   {
-    question: 'Does this tool preserve the header row when sorting?',
-    answer: 'Yes. The first row is treated as the column header and stays locked at the top, while all subsequent data rows are sorted according to your chosen column and order.',
+    question: 'How does CSV sorting work?',
+    answer: 'The sorter parses your CSV table, preserves the header row, and sorts data rows based on your chosen primary column and optional secondary tie-breaker column using natural collation algorithms.',
+  },
+  {
+    question: 'Does this tool support natural alphanumeric sorting?',
+    answer: 'Yes. Natural sorting ensures numbers within text sort logically (e.g. "Chapter 2" comes before "Chapter 10" rather than after it).',
+  },
+  {
+    question: 'Can I sort by more than one column?',
+    answer: 'Yes. You can select a Primary Sort Key (e.g., Department) and a Secondary Sort Key (e.g., Salary or Last Name) to break ties cleanly.',
   },
 ];
 
@@ -54,6 +63,51 @@ const schemaGraph = [
     })),
   },
 ];
+
+const parameterGuide = [
+  {
+    id: 'primary_key',
+    name: 'Primary Sort Key',
+    description: 'The main column used to determine row order (e.g., Last Name, Date, or Price).',
+    whyItMatters: 'Governs the fundamental hierarchy of the sorted dataset.',
+    typicalRange: 'Any detected CSV column',
+  },
+  {
+    id: 'secondary_key',
+    name: 'Secondary Sort Key (Tie-Breaker)',
+    description: 'A fallback column evaluated whenever two rows have identical values in the primary column.',
+    whyItMatters: 'Essential for grouping: e.g. sort first by Department (A-Z), then sort employees within each department by Salary (high to low).',
+    typicalRange: 'None, or any secondary column',
+  },
+  {
+    id: 'natural_sorting',
+    name: 'Natural Alphanumeric Sort',
+    description: 'Human-friendly sorting that treats multi-digit numbers embedded in text as numbers rather than individual ASCII characters.',
+    whyItMatters: 'Prevents "item10" from appearing before "item2".',
+    typicalRange: 'Natural Collation vs Lexicographical',
+  },
+  {
+    id: 'empty_handling',
+    name: 'Blank Cell Placement',
+    description: 'Controls whether rows with missing/null values appear at the bottom or top of the sorted table.',
+    whyItMatters: 'Prevents incomplete data records from burying important results at the start of your spreadsheet.',
+    typicalRange: 'Push to Bottom (Standard) vs Push to Top',
+  },
+  {
+    id: 'case_handling',
+    name: 'Case Sensitivity',
+    description: 'Determines whether lowercase and uppercase letters are ranked together or separately.',
+    whyItMatters: 'Case-insensitive sorting keeps "apple" and "Apple" grouped together rather than dividing words by capitalization.',
+    typicalRange: 'Case-Insensitive / Case-Sensitive',
+  },
+  {
+    id: 'in_browser',
+    name: 'In-Memory Privacy',
+    description: 'All sorting operations execute directly in the browser memory using native JavaScript V8 sorting.',
+    whyItMatters: 'Guarantees zero network latency and maximum privacy for sensitive company records.',
+    typicalRange: '100% Client-Side',
+  },
+];
 ---
 
 <SiteLayout title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
@@ -82,75 +136,211 @@ const schemaGraph = [
     <header class="space-y-3">
       <div class="inline-flex items-center gap-2 rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1 text-xs font-semibold text-[color:var(--muted)]">
         <span class="inline-block h-2 w-2 rounded-full bg-emerald-500"></span>
-        <span>Alphabetical &amp; Numerical Sorting</span>
+        <span>100% Client-Side In-Memory Sorting</span>
       </div>
       <h1 class="text-2xl sm:text-4xl font-extrabold tracking-tight text-[color:var(--fg)]">
-        CSV Sorter &amp; Order Tool
+        CSV Sorter &amp; Multi-Key Orderer
       </h1>
-      <p class="max-w-2xl text-xs sm:text-sm text-[color:var(--muted)] leading-relaxed">
-        Sort CSV tables by any column in ascending (A-Z, 0-9) or descending (Z-A, 9-0) order with type-aware numeric handling.
+      <p class="max-w-3xl text-xs sm:text-sm text-[color:var(--muted)] leading-relaxed">
+        Sort CSV spreadsheets by single or multiple columns with natural number handling, date awareness, tie-breakers, and instant table preview.
       </p>
     </header>
 
-    <div class="space-y-6">
-      <div class="grid gap-6 lg:grid-cols-2">
-        <!-- Input -->
-        <div class="space-y-3">
-          <div class="flex items-center justify-between">
-            <label for="csv-in" class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Source CSV Data</label>
-            <div class="flex items-center gap-2 text-xs">
-              <button type="button" data-sample-btn class="text-[color:var(--primary)] hover:underline font-semibold">Load Sample</button>
-              <span class="text-[color:var(--border)]">|</span>
-              <button type="button" data-clear-btn class="text-[color:var(--muted)] hover:text-[color:var(--fg)]">Clear</button>
-            </div>
+    <!-- Metrics Bar -->
+    <div id="stats-bar" class="grid grid-cols-2 gap-3 sm:grid-cols-4 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-center">
+      <div>
+        <span class="block text-[11px] uppercase tracking-wider text-[color:var(--muted)]">Data Rows</span>
+        <span id="stat-rows" class="font-mono text-lg font-bold text-[color:var(--fg)]">0</span>
+      </div>
+      <div>
+        <span class="block text-[11px] uppercase tracking-wider text-[color:var(--muted)]">Columns</span>
+        <span id="stat-cols" class="font-mono text-lg font-bold text-[color:var(--fg)]">0</span>
+      </div>
+      <div>
+        <span class="block text-[11px] uppercase tracking-wider text-[color:var(--muted)]">Primary Sort</span>
+        <span id="stat-primary" class="font-mono text-xs font-bold text-cyan-600 dark:text-cyan-400 dark:text-cyan-400 truncate block px-2">-</span>
+      </div>
+      <div>
+        <span class="block text-[11px] uppercase tracking-wider text-[color:var(--muted)]">Secondary Sort</span>
+        <span id="stat-secondary" class="font-mono text-xs font-bold text-[color:var(--muted)] truncate block px-2">None</span>
+      </div>
+    </div>
+
+    <!-- Main Workspace -->
+    <div class="grid gap-6 lg:grid-cols-2">
+      <!-- Input Column -->
+      <div class="space-y-4">
+        <div class="flex items-center justify-between">
+          <label for="csv-in" class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Source CSV Data</label>
+          <div class="flex items-center gap-2 text-xs">
+            <button type="button" data-sample-btn class="font-semibold text-[color:var(--primary)] hover:underline cursor-pointer">Load Sample</button>
+            <span class="text-[color:var(--border)]">|</span>
+            <button type="button" data-clear-btn class="text-[color:var(--muted)] hover:text-[color:var(--fg)] cursor-pointer">Clear</button>
           </div>
+        </div>
+
+        <div class="space-y-2">
+          <input
+            type="file"
+            id="csv-file-in"
+            accept=".csv,.tsv,.txt"
+            class="w-full text-xs text-[color:var(--muted)] file:mr-3 file:rounded-xl file:border file:border-[color:var(--border)] file:bg-[color:var(--surface)] file:px-3 file:py-1.5 file:text-xs file:font-semibold file:text-[color:var(--fg)] hover:file:bg-[color:var(--surface-strong)]"
+          />
           <textarea
             id="csv-in"
-            rows="14"
-            class="w-full font-mono text-xs leading-relaxed rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-[color:var(--fg)] focus:border-[color:var(--border-strong)] focus:outline-hidden"
-            placeholder="Paste CSV here..."
+            rows="12"
+            class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 font-mono text-xs leading-relaxed text-[color:var(--fg)] focus:border-[color:var(--border-strong)] focus:outline-hidden"
+            placeholder="name,department,salary,join_date&#10;Alice,Engineering,115000,2023-01-15&#10;Bob,Sales,85000,2022-11-01"
           ></textarea>
+        </div>
 
-          <div class="flex flex-wrap items-center gap-3">
-            <div class="flex items-center gap-2 flex-1">
-              <label for="sort-col" class="text-xs font-medium text-[color:var(--muted)]">Sort By:</label>
-              <select id="sort-col" class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] px-2.5 py-1.5 text-xs text-[color:var(--fg)]">
+        <!-- Sort Controls -->
+        <div class="space-y-3 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-xs">
+          <!-- Primary Key -->
+          <div class="grid grid-cols-12 gap-2 items-center">
+            <div class="col-span-4">
+              <label for="sort-col" class="block font-medium text-[color:var(--muted)] mb-1">Primary Sort Column:</label>
+              <select id="sort-col" class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] px-2.5 py-1.5 text-xs text-[color:var(--fg)]">
                 <option value="0">Column 1</option>
               </select>
             </div>
-            <div class="flex items-center gap-2">
-              <label for="sort-dir" class="text-xs font-medium text-[color:var(--muted)]">Order:</label>
-              <select id="sort-dir" class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] px-2.5 py-1.5 text-xs text-[color:var(--fg)]">
-                <option value="asc">Ascending (A-Z, 0-9)</option>
-                <option value="desc">Descending (Z-A, 9-0)</option>
+            <div class="col-span-4">
+              <label for="sort-dir" class="block font-medium text-[color:var(--muted)] mb-1">Direction:</label>
+              <select id="sort-dir" class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] px-2.5 py-1.5 text-xs text-[color:var(--fg)]">
+                <option value="asc">Ascending (A–Z, 0–9)</option>
+                <option value="desc">Descending (Z–A, 9–0)</option>
+              </select>
+            </div>
+            <div class="col-span-4">
+              <label for="sort-type" class="block font-medium text-[color:var(--muted)] mb-1">Type:</label>
+              <select id="sort-type" class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] px-2.5 py-1.5 text-xs text-[color:var(--fg)]">
+                <option value="auto">Auto / Natural</option>
+                <option value="num">Numeric</option>
+                <option value="text">Text (Alphabetical)</option>
+                <option value="date">Date</option>
               </select>
             </div>
           </div>
-        </div>
 
-        <!-- Output -->
-        <div class="space-y-3">
-          <div class="flex items-center justify-between">
-            <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Sorted CSV Output</span>
-            <div class="flex items-center gap-2">
-              <button type="button" data-copy-btn class="inline-flex items-center gap-1 text-xs font-bold text-[color:var(--fg)] hover:underline">
-                <Icon name="copy" class="w-3.5 h-3.5" />
-                <span>Copy</span>
-              </button>
-              <span class="text-[color:var(--border)]">|</span>
-              <button type="button" data-dl-btn class="text-xs font-bold text-[color:var(--fg)] hover:underline">Download CSV</button>
+          <!-- Secondary Key -->
+          <div class="grid grid-cols-12 gap-2 items-center pt-2 border-t border-[color:var(--border)]">
+            <div class="col-span-6">
+              <label for="sec-col" class="block font-medium text-[color:var(--muted)] mb-1">Secondary Tie-Breaker:</label>
+              <select id="sec-col" class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] px-2.5 py-1.5 text-xs text-[color:var(--fg)]">
+                <option value="none">None (Single Column)</option>
+              </select>
+            </div>
+            <div class="col-span-6">
+              <label for="sec-dir" class="block font-medium text-[color:var(--muted)] mb-1">Secondary Direction:</label>
+              <select id="sec-dir" class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] px-2.5 py-1.5 text-xs text-[color:var(--fg)]">
+                <option value="asc">Ascending (A–Z, 0–9)</option>
+                <option value="desc">Descending (Z–A, 9–0)</option>
+              </select>
             </div>
           </div>
-          <textarea
-            id="csv-out"
-            rows="16"
-            readonly
-            class="w-full font-mono text-xs leading-relaxed rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-4 text-[color:var(--fg)] focus:outline-hidden"
-            placeholder="Sorted CSV table will appear here..."
-          ></textarea>
+
+          <!-- Options -->
+          <div class="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-[color:var(--border)]">
+            <label class="flex items-center gap-1.5 cursor-pointer">
+              <input type="checkbox" id="blanks-bottom" checked class="rounded border-[color:var(--border)] accent-[color:var(--fg)]" />
+              <span class="text-[11px] text-[color:var(--fg)]">Push Blanks to Bottom</span>
+            </label>
+            <label class="flex items-center gap-1.5 cursor-pointer">
+              <input type="checkbox" id="case-sensitive" class="rounded border-[color:var(--border)] accent-[color:var(--fg)]" />
+              <span class="text-[11px] text-[color:var(--muted)]">Case-Sensitive</span>
+            </label>
+          </div>
+
+          <button
+            type="button"
+            data-sort-btn
+            class="w-full mt-2 rounded-xl bg-[color:var(--fg)] py-2.5 text-xs font-bold text-[color:var(--bg)] shadow-xs transition hover:opacity-90 cursor-pointer"
+          >
+            ⚡ Sort CSV Dataset
+          </button>
         </div>
       </div>
+
+      <!-- Output Column -->
+      <div class="space-y-4">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Sorted CSV Output</span>
+            <span id="status-badge" class="rounded-md bg-cyan-500/15 px-2 py-0.5 text-[10px] font-bold text-cyan-600 dark:text-cyan-400 dark:text-cyan-400">Ready</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <button type="button" data-copy-btn class="inline-flex items-center gap-1 text-xs font-bold text-[color:var(--fg)] hover:underline cursor-pointer">
+              <Icon name="copy" class="h-3.5 w-3.5" />
+              <span>Copy CSV</span>
+            </button>
+            <span class="text-[color:var(--border)]">|</span>
+            <button type="button" data-dl-btn class="text-xs font-bold text-[color:var(--fg)] hover:underline cursor-pointer">Download .csv</button>
+          </div>
+        </div>
+
+        <textarea
+          id="csv-out"
+          rows="18"
+          readonly
+          class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-4 font-mono text-xs leading-relaxed text-[color:var(--fg)] focus:outline-hidden"
+          placeholder="Sorted CSV table will appear here..."
+        ></textarea>
+      </div>
     </div>
+
+    <!-- Live Table Preview Section -->
+    <section class="space-y-3 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5">
+      <div class="flex items-center justify-between">
+        <h2 class="text-sm font-bold uppercase tracking-wider text-[color:var(--fg)]">
+          📊 Sorted Table Preview (First 8 Rows)
+        </h2>
+        <span id="preview-badge" class="text-xs text-[color:var(--muted)]">Live Data View</span>
+      </div>
+      <div class="overflow-x-auto rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)]">
+        <table id="preview-table" class="min-w-full divide-y divide-[color:var(--border)] text-left text-xs font-mono">
+          <thead id="preview-thead" class="bg-[color:var(--surface)] text-[color:var(--fg)]">
+            <tr><th class="p-3 font-semibold text-[color:var(--muted)]">No data loaded yet</th></tr>
+          </thead>
+          <tbody id="preview-tbody" class="divide-y divide-[color:var(--border)] text-[color:var(--muted)]">
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Step-by-Step Worked Example -->
+    <section class="space-y-4 rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 sm:p-8 text-xs sm:text-sm text-[color:var(--muted)] leading-relaxed">
+      <div class="flex items-center gap-2">
+        <span class="rounded-md bg-[color:var(--accent)]/15 px-2.5 py-1 text-xs font-bold text-[color:var(--accent)]">Worked Example</span>
+        <h2 class="text-base sm:text-lg font-bold text-[color:var(--fg)]">Multi-Level Sorting: Department + Descending Salary</h2>
+      </div>
+      <p>
+        An organization needs to organize staff by department alphabetically, then rank employees by salary from highest to lowest:
+      </p>
+      <div class="grid gap-4 sm:grid-cols-2">
+        <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] p-4 font-mono text-xs">
+          <span class="text-[color:var(--muted)] block mb-1 font-bold font-sans">Source Staff Table:</span>
+          name,department,salary<br/>
+          David,Sales,72000<br/>
+          Alice,Engineering,115000<br/>
+          Bob,Engineering,130000<br/>
+          Carol,Sales,91000
+        </div>
+        <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] p-4 font-mono text-xs">
+          <span class="text-[color:var(--muted)] block mb-1 font-bold font-sans">Sorted (Dept ASC, Salary DESC):</span>
+          name,department,salary<br/>
+          Bob,Engineering,130000<br/>
+          Alice,Engineering,115000<br/>
+          Carol,Sales,91000<br/>
+          David,Sales,72000
+        </div>
+      </div>
+      <p class="text-xs text-[color:var(--muted)]">
+        Engineering rows are grouped first with Bob ($130k) ahead of Alice ($115k), followed by Sales with Carol ($91k) ahead of David ($72k).
+      </p>
+    </section>
+
+    <!-- Parameter Guide -->
+    <CalculatorParameterGuide parameters={parameterGuide} />
 
     <!-- FAQs -->
     <section class="space-y-4">
@@ -177,79 +367,259 @@ const schemaGraph = [
       if (!root) return;
 
       const input = root.querySelector('#csv-in');
+      const fileIn = root.querySelector('#csv-file-in');
       const output = root.querySelector('#csv-out');
       const sortCol = root.querySelector('#sort-col');
       const sortDir = root.querySelector('#sort-dir');
+      const sortType = root.querySelector('#sort-type');
+      const secCol = root.querySelector('#sec-col');
+      const secDir = root.querySelector('#sec-dir');
+      const blanksBottom = root.querySelector('#blanks-bottom');
+      const caseSensitive = root.querySelector('#case-sensitive');
+      const sortBtn = root.querySelector('[data-sort-btn]');
       const sampleBtn = root.querySelector('[data-sample-btn]');
       const clearBtn = root.querySelector('[data-clear-btn]');
       const copyBtn = root.querySelector('[data-copy-btn]');
       const dlBtn = root.querySelector('[data-dl-btn]');
 
-      let parsedRows = [];
+      const statRows = root.querySelector('#stat-rows');
+      const statCols = root.querySelector('#stat-cols');
+      const statPrimary = root.querySelector('#stat-primary');
+      const statSecondary = root.querySelector('#stat-secondary');
 
-      function parseCsvLines(text) {
-        return text.split('\n').filter(l => l.trim().length > 0).map(l => l.split(',').map(c => c.trim()));
+      const thead = root.querySelector('#preview-thead');
+      const tbody = root.querySelector('#preview-tbody');
+      const previewBadge = root.querySelector('#preview-badge');
+
+      let parsedHeaders = [];
+      let parsedDataRows = [];
+      let detectedDelim = ',';
+
+      function autoDetect(text) {
+        const firstLines = text.split('\n').slice(0, 5).join('\n');
+        const c = (firstLines.match(/,/g) || []).length;
+        const s = (firstLines.match(/;/g) || []).length;
+        const t = (firstLines.match(/\t/g) || []).length;
+        const p = (firstLines.match(/\|/g) || []).length;
+        if (s > c && s > t && s > p) return ';';
+        if (t > c && t > s && t > p) return '\t';
+        if (p > c && p > s && p > t) return '|';
+        return ',';
+      }
+
+      function parseCsv(text, delim) {
+        const rows = [];
+        let cur = [];
+        let val = '';
+        let inQuotes = false;
+
+        for (let i = 0; i < text.length; i++) {
+          const ch = text[i];
+          const nxt = text[i + 1];
+
+          if (ch === '"') {
+            if (inQuotes && nxt === '"') {
+              val += '"';
+              i++;
+            } else {
+              inQuotes = !inQuotes;
+            }
+          } else if (ch === delim && !inQuotes) {
+            cur.push(val.trim());
+            val = '';
+          } else if ((ch === '\r' || ch === '\n') && !inQuotes) {
+            if (ch === '\r' && nxt === '\n') i++;
+            cur.push(val.trim());
+            if (cur.some(x => x.length > 0)) rows.push(cur);
+            cur = [];
+            val = '';
+          } else {
+            val += ch;
+          }
+        }
+        if (val.length > 0 || cur.length > 0) {
+          cur.push(val.trim());
+          if (cur.some(x => x.length > 0)) rows.push(cur);
+        }
+        return rows;
+      }
+
+      function escapeCsvCell(cell, delim) {
+        const s = String(cell ?? '');
+        if (s.includes('"') || s.includes(delim) || s.includes('\n') || s.includes('\r')) {
+          return `"${s.replace(/"/g, '""')}"`;
+        }
+        return s;
+      }
+
+      function escapeHtml(s) {
+        return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
       }
 
       function updateColsAndSort() {
         const text = input.value.trim();
         if (!text) {
-          sortCol.innerHTML = '<option value="0">Column 1</option>';
-          parsedRows = [];
+          parsedHeaders = [];
+          parsedDataRows = [];
           output.value = '';
+          statRows.textContent = '0';
+          statCols.textContent = '0';
+          statPrimary.textContent = '-';
+          statSecondary.textContent = 'None';
+          updatePreview([], []);
           return;
         }
 
-        parsedRows = parseCsvLines(text);
-        if (parsedRows.length === 0) return;
+        detectedDelim = autoDetect(text);
+        const rows = parseCsv(text, detectedDelim);
+        if (rows.length < 2) return;
 
-        const headers = parsedRows[0];
-        const currentSelected = sortCol.value;
-        sortCol.innerHTML = headers.map((h, i) => `<option value="${i}">${h} (Col ${i + 1})</option>`).join('');
-        if (currentSelected < headers.length) sortCol.value = currentSelected;
+        parsedHeaders = rows[0];
+        parsedDataRows = rows.slice(1);
+
+        statRows.textContent = parsedDataRows.length.toLocaleString();
+        statCols.textContent = parsedHeaders.length.toLocaleString();
+
+        const curPrimary = sortCol.value;
+        const curSec = secCol.value;
+
+        sortCol.innerHTML = parsedHeaders.map((h, i) => `<option value="${i}">${escapeHtml(h || `Column ${i + 1}`)}</option>`).join('');
+        if (curPrimary < parsedHeaders.length) sortCol.value = curPrimary;
+
+        secCol.innerHTML = `<option value="none">None (Single Column)</option>` +
+          parsedHeaders.map((h, i) => `<option value="${i}">${escapeHtml(h || `Column ${i + 1}`)}</option>`).join('');
+        if (curSec !== 'none' && curSec < parsedHeaders.length) secCol.value = curSec;
 
         sortData();
       }
 
-      function sortData() {
-        if (parsedRows.length < 2) return;
-        const colIdx = parseInt(sortCol.value, 10) || 0;
-        const isDesc = sortDir.value === 'desc';
+      function compareCells(aRaw, bRaw, type, isDesc, pushBlanksToBottom, isCaseSensitive) {
+        const aEmpty = aRaw === undefined || aRaw === null || aRaw === '';
+        const bEmpty = bRaw === undefined || bRaw === null || bRaw === '';
 
-        const header = parsedRows[0];
-        const dataRows = [...parsedRows.slice(1)];
+        if (aEmpty && bEmpty) return 0;
+        if (aEmpty) return pushBlanksToBottom ? 1 : -1;
+        if (bEmpty) return pushBlanksToBottom ? -1 : 1;
 
-        dataRows.sort((a, b) => {
-          const vA = a[colIdx] || '';
-          const vB = b[colIdx] || '';
-          const nA = parseFloat(vA);
-          const nB = parseFloat(vB);
+        let res = 0;
+        let a = String(aRaw);
+        let b = String(bRaw);
 
-          let cmp = 0;
-          if (!isNaN(nA) && !isNaN(nB)) {
-            cmp = nA - nB;
+        if (type === 'num' || (type === 'auto' && /^-?\d+(\.\d+)?$/.test(a.trim()) && /^-?\d+(\.\d+)?$/.test(b.trim()))) {
+          const numA = parseFloat(a);
+          const numB = parseFloat(b);
+          res = numA - numB;
+        } else if (type === 'date') {
+          const dateA = new Date(a).getTime();
+          const dateB = new Date(b).getTime();
+          if (!isNaN(dateA) && !isNaN(dateB)) {
+            res = dateA - dateB;
           } else {
-            cmp = vA.localeCompare(vB);
+            res = a.localeCompare(b, undefined, { sensitivity: isCaseSensitive ? 'case' : 'base' });
           }
-          return isDesc ? -cmp : cmp;
-        });
+        } else {
+          // Natural text sort
+          res = a.localeCompare(b, undefined, {
+            numeric: true,
+            sensitivity: isCaseSensitive ? 'case' : 'base',
+          });
+        }
 
-        output.value = [header.join(','), ...dataRows.map(r => r.join(','))].join('\n');
+        return isDesc ? -res : res;
       }
 
-      input.addEventListener('input', updateColsAndSort);
+      function updatePreview(headers, dataRows) {
+        if (!headers || headers.length === 0) {
+          thead.innerHTML = '<tr><th class="p-3 font-semibold text-[color:var(--muted)]">No data loaded yet</th></tr>';
+          tbody.innerHTML = '';
+          previewBadge.textContent = 'Empty';
+          return;
+        }
+
+        previewBadge.textContent = `Showing 1–${Math.min(8, dataRows.length)} of ${dataRows.length} sorted rows`;
+        thead.innerHTML = `<tr>${headers.map(h => `<th class="p-2.5 font-bold uppercase tracking-wider text-[color:var(--fg)] border-b border-[color:var(--border)]">${escapeHtml(h)}</th>`).join('')}</tr>`;
+
+        const sample = dataRows.slice(0, 8);
+        tbody.innerHTML = sample.map((row, rIdx) => {
+          const cells = headers.map((_, cIdx) => `<td class="p-2.5 border-b border-[color:var(--border)]">${escapeHtml(String(row[cIdx] ?? ''))}</td>`).join('');
+          return `<tr class="${rIdx % 2 === 0 ? 'bg-[color:var(--surface)]/30' : ''}">${cells}</tr>`;
+        }).join('');
+      }
+
+      function sortData() {
+        if (parsedDataRows.length === 0) return;
+
+        const pIdx = parseInt(sortCol.value, 10) || 0;
+        const pDesc = sortDir.value === 'desc';
+        const type = sortType.value;
+
+        const sVal = secCol.value;
+        const hasSec = sVal !== 'none';
+        const sIdx = hasSec ? parseInt(sVal, 10) : -1;
+        const sDesc = secDir.value === 'desc';
+
+        const pushBlanks = blanksBottom.checked;
+        const isCase = caseSensitive.checked;
+
+        statPrimary.textContent = `${parsedHeaders[pIdx]} (${pDesc ? 'DESC' : 'ASC'})`;
+        statSecondary.textContent = hasSec ? `${parsedHeaders[sIdx]} (${sDesc ? 'DESC' : 'ASC'})` : 'None';
+
+        const sorted = [...parsedDataRows].sort((rowA, rowB) => {
+          const cmp = compareCells(rowA[pIdx], rowB[pIdx], type, pDesc, pushBlanks, isCase);
+          if (cmp !== 0 || !hasSec) return cmp;
+          return compareCells(rowA[sIdx], rowB[sIdx], 'auto', sDesc, pushBlanks, isCase);
+        });
+
+        const outText = [parsedHeaders, ...sorted].map(r => r.map(c => escapeCsvCell(c, detectedDelim)).join(detectedDelim)).join('\n');
+        output.value = outText;
+
+        updatePreview(parsedHeaders, sorted);
+      }
+
       sortCol.addEventListener('change', sortData);
       sortDir.addEventListener('change', sortData);
+      sortType.addEventListener('change', sortData);
+      secCol.addEventListener('change', sortData);
+      secDir.addEventListener('change', sortData);
+      blanksBottom.addEventListener('change', sortData);
+      caseSensitive.addEventListener('change', sortData);
+      sortBtn.addEventListener('click', sortData);
+
+      input.addEventListener('input', () => {
+        clearTimeout(input._timer);
+        input._timer = setTimeout(updateColsAndSort, 250);
+      });
+
+      fileIn.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (evt) => {
+          input.value = evt.target.result;
+          updateColsAndSort();
+        };
+        reader.readAsText(file);
+      });
 
       sampleBtn.addEventListener('click', () => {
-        input.value = `product,price,rating,sales\nWireless Headphones,89.99,4.8,1450\nBluetooth Speaker,45.50,4.2,2800\nGaming Keyboard,119.00,4.9,920\nUSB-C Cable,9.99,4.5,5400\n4K Monitor,299.99,4.7,410`;
+        input.value = `employee,department,salary,join_date\nDavid Miller,Sales,72000,2021-04-12\nAlice Johnson,Engineering,115000,2020-03-15\nBob Smith,Engineering,130000,2019-08-01\nCarol White,Sales,91000,2022-06-10\nEvan Brown,Engineering,115000,2023-01-20\nFrank Green,Marketing,82000,2021-11-18`;
         updateColsAndSort();
+        sortCol.value = "1"; // department
+        sortDir.value = "asc";
+        secCol.value = "2"; // salary
+        secDir.value = "desc";
+        sortData();
       });
 
       clearBtn.addEventListener('click', () => {
         input.value = '';
         output.value = '';
-        updateColsAndSort();
+        fileIn.value = '';
+        statRows.textContent = '0';
+        statCols.textContent = '0';
+        statPrimary.textContent = '-';
+        statSecondary.textContent = 'None';
+        updatePreview([], []);
       });
 
       copyBtn.addEventListener('click', () => {
@@ -263,11 +633,11 @@ const schemaGraph = [
 
       dlBtn.addEventListener('click', () => {
         if (!output.value) return;
-        const blob = new Blob([output.value], { type: 'text/csv' });
+        const blob = new Blob([output.value], { type: 'text/csv;charset=utf-8;' });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = 'sorted.csv';
+        a.download = 'sorted_dataset.csv';
         a.click();
         URL.revokeObjectURL(url);
       });

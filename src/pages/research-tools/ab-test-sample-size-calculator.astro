@@ -1,7 +1,8 @@
 ---
 import SiteLayout from '../../layouts/SiteLayout.astro';
 import Icon from '../../components/Icon.astro';
-import { siteName, toAbsoluteUrl, withBasePath } from '../../utils/site';
+import CalculatorParameterGuide from '../../components/calculator/CalculatorParameterGuide.astro';
+import { siteName, toAbsoluteUrl } from '../../utils/site';
 
 const pageTitle = `A/B Test Sample Size Calculator | Split Test Statistical Power · ${siteName}`;
 const pageDesc = 'Calculate required traffic and sample size per variant for A/B split testing based on baseline conversion rate, Minimum Detectable Effect (MDE), statistical power, and daily visitors.';
@@ -13,18 +14,86 @@ const breadcrumbItems = [
   { label: 'A/B Test Sample Size Calculator' },
 ];
 
+const parameterGuide = [
+  {
+    name: 'Baseline Conversion Rate (%)',
+    description: 'The current historical conversion rate of your control page or feature before launching the split test.',
+    whyItMatters: 'Lower baseline conversion rates require significantly more visitors to detect small relative improvements.',
+    typicalRange: '0.5% to 25%',
+    unit: '%',
+  },
+  {
+    name: 'Minimum Detectable Effect (MDE)',
+    description: 'The smallest percentage change in conversion rate your experiment is powered to reliably detect. Can be specified relatively (+10% on 5% baseline = 5.5%) or absolutely (+1.0 percentage point on 5% baseline = 6.0%).',
+    whyItMatters: 'Halving your target MDE quadruples the traffic and duration needed to conclude the experiment.',
+    typicalRange: '2% to 30%',
+    unit: '%',
+  },
+  {
+    name: 'Statistical Power (1 - β)',
+    description: 'The probability of detecting a real conversion difference when one truly exists. 80% power accepts a 20% Type II false negative risk; 90% is used for mission-critical revenue flows.',
+    whyItMatters: 'Prevents discarding winning variations due to premature test termination.',
+    typicalRange: '80% or 90%',
+    unit: '%',
+  },
+  {
+    name: 'Significance Level (α)',
+    description: 'The maximum acceptable risk of a false positive (Type I error). 95% confidence (two-sided α = 0.05) is the industry gold standard in growth experimentation.',
+    whyItMatters: 'Guarantees that declared wins have less than a 5% chance of being random noise.',
+    typicalRange: '90%, 95%, or 99%',
+    unit: '% (α)',
+  },
+  {
+    name: 'Traffic Allocation Split',
+    description: 'Ratio of traffic directed to Control (A) vs Treatment (B). While 50/50 yields the highest statistical power per total visitor, asymmetric splits like 80/20 or 90/10 protect baseline revenue during risky rollouts.',
+    whyItMatters: 'Asymmetric traffic splits require higher total aggregate traffic to achieve identical power.',
+    typicalRange: '50/50, 80/20, 90/10',
+    unit: 'ratio',
+  },
+  {
+    name: 'Estimated Test Duration',
+    description: 'The calendar days required to collect the necessary traffic based on your daily visitor run-rate across all variants.',
+    whyItMatters: 'Experiments should run for at least 1–2 full 7-day business cycles (minimum 14 days) to eliminate weekend/weekday seasonality bias.',
+    typicalRange: '7 to 45 days',
+    unit: 'days',
+  },
+];
+
+const workedExample = {
+  title: 'Worked Example: E-Commerce Checkout Test (5.0% Baseline, +10% Relative MDE)',
+  description: 'Step-by-step sample size determination for a two-tailed split test at 95% confidence (α = 0.05) and 80% power (β = 0.20).',
+  formula: 'n = [Z_(α/2)√(2p̄(1 - p̄)) + Z_β√(p₁(1 - p₁) + p₂(1 - p₂))]² ÷ δ²',
+  steps: [
+    {
+      step: '1. Conversion Targets & Lift',
+      calculation: 'p₁ = 0.050; Relative MDE = 0.10; δ = 0.05 × 0.10 = 0.005 (0.5% abs); p₂ = 0.055; Pooled p̄ = (0.05 + 0.055) ÷ 2 = 0.0525',
+      result: 'p₁ = 5.00%, p₂ = 5.50%, δ = 0.50%',
+    },
+    {
+      step: '2. Critical Multipliers',
+      calculation: 'Two-sided α = 0.05 → Z_(α/2) = 1.960; Power = 80% → Z_β = 0.8416',
+      result: 'Z_α = 1.960, Z_β = 0.842',
+    },
+    {
+      step: '3. Required Sample Size per Variation',
+      calculation: 'n = [1.960√(2 × 0.0525 × 0.9475) + 0.8416√(0.05×0.95 + 0.055×0.945)]² ÷ 0.005² = 30,378',
+      result: '30,378 visitors/variant (60,756 total visitors)',
+    },
+  ],
+};
+
 const faqs = [
   {
-    question: 'What is Minimum Detectable Effect (MDE)?',
-    answer: 'The Minimum Detectable Effect (MDE) is the smallest percentage change in conversion rate that your experiment is statistically powered to detect. Smaller MDE targets require exponentially larger traffic and sample sizes.',
+    question: 'What is the difference between relative MDE and absolute MDE?',
+    answer: 'Relative MDE expresses the required lift as a percentage of your baseline. For example, a +10% relative MDE on a 5% baseline means detecting an increase from 5.0% to 5.5% (a 0.5 percentage point lift). Absolute MDE specifies the change in raw percentage points: a +1.0% absolute MDE on a 5% baseline detects an increase from 5.0% to 6.0%.',
   },
   {
-    question: 'Why is 80% statistical power standard in A/B testing?',
-    answer: 'Statistical power (1 - β) is the probability that your test will detect a true lift when one exists. A power of 80% balances test speed with a 20% risk of Type II false negative errors.',
+    question: 'Why is running an A/B test for at least 14 days recommended even if sample size is reached early?',
+    answer: 'User behavior fluctuates dramatically between weekdays and weekends, morning and night, and across pay-cycle periods. Even if high-traffic websites satisfy the statistical sample threshold in 2 days, stopping early causes false positive inflation due to short-term temporal anomalies and novelty effects.',
   },
   {
-    question: 'How does daily traffic affect split test duration?',
-    answer: 'Test duration in days equals required sample size per variant divided by your daily visitor traffic per variant. We recommend running experiments for at least 1 to 2 full 7-day business cycles to normalize day-of-week seasonality.',
+    question: 'How do asymmetric traffic splits (e.g. 80% Control / 20% Treatment) affect required sample size?',
+    answer: 'A 50/50 traffic split is statistically optimal and minimizes the total number of visitors required. In an 80/20 split, the smaller treatment group becomes the bottleneck, increasing the total overall visitor requirement by approximately 56% to achieve the same statistical power.',
   },
 ];
 
@@ -94,7 +163,7 @@ const schemaGraph = [
         A/B Test Sample Size Calculator
       </h1>
       <p class="max-w-3xl text-sm leading-relaxed text-[color:var(--muted)] sm:text-base">
-        Determine how much traffic and sample size you need per variation to reach statistical significance before launching your experiment.
+        Determine exact visitor traffic and calendar days required per variant to reach statistical significance. Supports relative vs absolute MDE, asymmetric traffic splits, one/two-tailed tests, and duration forecasting.
       </p>
     </header>
 
@@ -102,7 +171,7 @@ const schemaGraph = [
       class="rounded-[2.5rem] border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-6 shadow-[var(--shadow)] sm:p-10"
       data-abtest-app
     >
-      <div class="grid gap-8 lg:grid-cols-[1.15fr_0.85fr]">
+      <div class="grid gap-8 lg:grid-cols-[1.1fr_0.9fr]">
         <form class="space-y-5" onsubmit="return false;">
           <div class="flex items-center justify-between">
             <h2 class="text-lg font-bold text-[color:var(--fg)]">Experiment Parameters</h2>
@@ -118,7 +187,7 @@ const schemaGraph = [
             <input
               id="base-cvr"
               type="number"
-              min="0.1"
+              min="0.01"
               max="99"
               step="0.1"
               value="5.0"
@@ -127,60 +196,108 @@ const schemaGraph = [
             />
           </div>
 
-          <div class="space-y-1.5">
-            <label for="mde-input" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">
-              Minimum Detectable Effect (Relative MDE %)
-            </label>
+          <!-- MDE Type Selector & Input -->
+          <div class="space-y-2">
+            <div class="flex items-center justify-between">
+              <label for="mde-input" class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">
+                Minimum Detectable Effect (MDE)
+              </label>
+              <div class="flex gap-1 rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] p-0.5 text-[11px] font-semibold">
+                <button type="button" class="rounded-lg bg-[color:var(--accent)] px-2 py-0.5 text-[color:var(--bg)]" data-mde-type-btn="rel">Relative %</button>
+                <button type="button" class="rounded-lg px-2 py-0.5 text-[color:var(--muted)] hover:text-[color:var(--fg)]" data-mde-type-btn="abs">Absolute pp</button>
+              </div>
+            </div>
             <input
               id="mde-input"
               type="number"
-              min="1"
+              min="0.01"
               max="100"
-              step="1"
-              value="10"
+              step="0.1"
+              value="10.0"
               class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none"
               data-mde-input
             />
-            <p class="text-[11px] text-[color:var(--muted)]">A 10% relative lift on a 5.0% baseline detects changes up to 5.5%.</p>
+            <p class="text-[11px] text-[color:var(--muted)]" data-mde-explanation>
+              A 10.0% relative lift on a 5.00% baseline detects changes up to 5.50% (+0.50% absolute lift).
+            </p>
           </div>
 
           <div class="grid grid-cols-2 gap-3">
             <div>
-              <label for="ab-power" class="block text-xs font-medium text-[color:var(--muted)]">Statistical Power</label>
+              <label for="ab-power" class="block text-xs font-medium text-[color:var(--muted)]">Statistical Power (1 - β)</label>
               <select id="ab-power" class="mt-1 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-ab-power>
-                <option value="80" selected>80% Power (Standard)</option>
-                <option value="90">90% Power (High Rigor)</option>
+                <option value="80" selected>80% Power (Standard β = 0.20)</option>
+                <option value="85">85% Power (β = 0.15)</option>
+                <option value="90">90% Power (High Rigor β = 0.10)</option>
+                <option value="95">95% Power (Critical β = 0.05)</option>
               </select>
             </div>
             <div>
               <label for="ab-conf" class="block text-xs font-medium text-[color:var(--muted)]">Significance Level (α)</label>
               <select id="ab-conf" class="mt-1 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-ab-conf>
-                <option value="95" selected>95% (α = 0.05)</option>
-                <option value="90">90% (α = 0.10)</option>
-                <option value="99">99% (α = 0.01)</option>
+                <option value="95" selected>95% Confidence (α = 0.05)</option>
+                <option value="90">90% Confidence (α = 0.10)</option>
+                <option value="99">99% Confidence (α = 0.01)</option>
               </select>
             </div>
           </div>
 
           <div class="grid grid-cols-2 gap-3 pt-1">
             <div>
-              <label for="ab-variants" class="block text-xs font-medium text-[color:var(--muted)]">Variants Count</label>
+              <label for="ab-split" class="block text-xs font-medium text-[color:var(--muted)]">Traffic Allocation Split</label>
+              <select id="ab-split" class="mt-1 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-ab-split>
+                <option value="50-50" selected>50% Control / 50% Treatment (Optimal)</option>
+                <option value="80-20">80% Control / 20% Treatment</option>
+                <option value="90-10">90% Control / 10% Treatment</option>
+              </select>
+            </div>
+            <div>
+              <label for="ab-tails" class="block text-xs font-medium text-[color:var(--muted)]">Hypothesis Sidedness</label>
+              <select id="ab-tails" class="mt-1 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-ab-tails>
+                <option value="2" selected>Two-Tailed (Detects Lift or Drop)</option>
+                <option value="1">One-Tailed (Directional Lift Only)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-3 pt-1">
+            <div>
+              <label for="ab-variants" class="block text-xs font-medium text-[color:var(--muted)]">Variants Count (incl. Control)</label>
               <input id="ab-variants" type="number" min="2" max="6" value="2" class="mt-1 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-ab-variants />
             </div>
             <div>
               <label for="daily-traffic" class="block text-xs font-medium text-[color:var(--muted)]">Daily Total Visitors (Opt)</label>
-              <input id="daily-traffic" type="number" min="10" placeholder="e.g. 2000" class="mt-1 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-daily-traffic />
+              <input id="daily-traffic" type="number" min="1" value="2000" class="mt-1 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-daily-traffic />
             </div>
           </div>
         </form>
 
-        <div class="flex flex-col justify-between space-y-6 rounded-3xl border border-[color:var(--border)] bg-[color:var(--bg)] p-6 sm:p-8">
+        <div class="flex flex-col justify-between space-y-6 rounded-3xl border border-[color:var(--accent)]/30 bg-gradient-to-br from-[color:var(--accent-soft)] via-[color:var(--surface)] to-transparent p-6 sm:p-8 shadow-sm">
           <div class="space-y-5">
-            <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Sample Size Requirement</span>
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Sample Size Requirement</span>
+              <div class="flex items-center gap-1.5">
+                <button
+                  type="button"
+                  class="inline-flex items-center gap-1 rounded-lg border border-[color:var(--border)] bg-[color:var(--surface)] px-2.5 py-1 text-xs font-semibold text-[color:var(--fg)] hover:bg-[color:var(--bg)] transition cursor-pointer"
+                  data-copy-btn
+                >
+                  <Icon name="copy" class="w-3.5 h-3.5" />
+                  <span>Copy</span>
+                </button>
+                <button
+                  type="button"
+                  class="inline-flex items-center gap-1 rounded-lg border border-[color:var(--border)] bg-[color:var(--surface)] px-2.5 py-1 text-xs font-semibold text-[color:var(--fg)] hover:bg-[color:var(--bg)] transition cursor-pointer"
+                  data-export-csv-btn
+                >
+                  <span>CSV</span>
+                </button>
+              </div>
+            </div>
 
             <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 text-center">
-              <p class="text-xs font-semibold text-[color:var(--muted)]">Sample Size Per Variant</p>
-              <p class="mt-1 text-5xl font-black tracking-tight text-[color:var(--fg)]" data-res-per-variant>
+              <p class="text-xs font-semibold text-[color:var(--muted)]" data-res-label>Sample Size Per Variant</p>
+              <p class="mt-1 text-4xl sm:text-5xl font-black tracking-tight text-[color:var(--fg)] font-mono" data-res-per-variant>
                 30,378
               </p>
               <p class="mt-2 text-xs font-medium text-[color:var(--muted)]" data-res-total>
@@ -190,18 +307,84 @@ const schemaGraph = [
 
             <div class="space-y-2 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-xs">
               <div class="flex justify-between">
-                <span class="text-[color:var(--muted)]">Detectable Conversion Target:</span>
-                <span class="font-mono font-bold text-[color:var(--fg)]" data-target-cvr>5.50% (+0.50% absolute)</span>
+                <span class="text-[color:var(--muted)]">Target Conversion Rate:</span>
+                <span class="font-mono font-bold text-[color:var(--fg)]" data-target-cvr>5.50% (+0.50% lift)</span>
               </div>
-              <div class="flex justify-between" data-duration-row>
+              <div class="flex justify-between">
                 <span class="text-[color:var(--muted)]">Estimated Test Duration:</span>
                 <span class="font-mono font-bold text-[color:var(--accent)]" data-duration-days>31 Days</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-[color:var(--muted)]">Recommended Minimum Run:</span>
+                <span class="font-mono font-bold text-[color:var(--fg)]" data-duration-recom>14 Days (2 full cycles)</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-[color:var(--muted)]">Traffic Breakdown:</span>
+                <span class="font-mono font-bold text-[color:var(--fg)]" data-traffic-split-detail>50% Control / 50% Treatment</span>
               </div>
             </div>
           </div>
         </div>
       </div>
     </div>
+
+    <!-- Sensitivity Matrix Table Across Various MDE Targets -->
+    <section class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 sm:p-8 space-y-4">
+      <div>
+        <p class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Lift Sensitivity Matrix</p>
+        <h2 class="text-xl font-bold text-[color:var(--fg)]">Sample Size &amp; Duration by Minimum Detectable Effect</h2>
+      </div>
+      <div class="overflow-x-auto">
+        <table class="w-full text-left text-xs sm:text-sm">
+          <thead>
+            <tr class="border-b border-[color:var(--border)] text-[color:var(--muted)] font-semibold">
+              <th class="py-2.5 px-3">Relative MDE</th>
+              <th class="py-2.5 px-3">Target Conversion</th>
+              <th class="py-2.5 px-3">Sample / Variant</th>
+              <th class="py-2.5 px-3">Total Traffic</th>
+              <th class="py-2.5 px-3">Days (at Daily Traffic)</th>
+              <th class="py-2.5 px-3">Feasibility Status</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-[color:var(--border)] font-mono" data-sensitivity-tbody>
+            <!-- Generated dynamically by script -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Mathematical Formulas & Statistical Power Theory -->
+    <section class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 sm:p-8 space-y-4">
+      <div>
+        <p class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Controlled Experimentation</p>
+        <h2 class="text-xl font-bold text-[color:var(--fg)]">A/B Testing Sample Sizing Math</h2>
+      </div>
+
+      <div class="grid gap-4 sm:grid-cols-2 text-xs sm:text-sm">
+        <div class="rounded-2xl bg-[color:var(--bg)] p-4 border border-[color:var(--border)] space-y-2">
+          <p class="font-bold text-[color:var(--fg)]">1. Two-Proportion Hypothesis Test Formula</p>
+          <div class="rounded-xl bg-[color:var(--surface)] p-3 font-mono text-xs text-[color:var(--fg)] overflow-x-auto">
+            n = [Z_(α/2)√(2p̄(1 - p̄)) + Z_β√(p₁(1 - p₁) + p₂(1 - p₂))]² ÷ δ²
+          </div>
+          <p class="text-xs text-[color:var(--muted)]">
+            Where <strong>p₁</strong> is baseline conversion rate, <strong>δ = p₁ × MDE</strong> is the absolute detectable difference, and <strong>p̄ = (p₁ + p₂) ÷ 2</strong> is the pooled proportion.
+          </p>
+        </div>
+
+        <div class="rounded-2xl bg-[color:var(--bg)] p-4 border border-[color:var(--border)] space-y-2">
+          <p class="font-bold text-[color:var(--fg)]">2. Power &amp; Significance Trade-offs</p>
+          <div class="rounded-xl bg-[color:var(--surface)] p-3 font-mono text-xs text-[color:var(--fg)] overflow-x-auto">
+            Power (1 - β) = 80% (Z_β = 0.842) | 90% (Z_β = 1.282)
+          </div>
+          <p class="text-xs text-[color:var(--muted)]">
+            Higher power reduces Type II false negatives (failing to detect a winning variation), while α = 0.05 caps Type I false positives (declaring an accidental fluke as a winner) at 5%.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Parameter Guide & Worked Example -->
+    <CalculatorParameterGuide parameters={parameterGuide} workedExample={workedExample} />
 
     <!-- FAQs -->
     <section class="space-y-4">
@@ -229,66 +412,266 @@ const schemaGraph = [
 
       const inBase = root.querySelector('[data-base-cvr]');
       const inMde = root.querySelector('[data-mde-input]');
+      const mdeTypeBtns = root.querySelectorAll('[data-mde-type-btn]');
+      const mdeExplanation = root.querySelector('[data-mde-explanation]');
       const inPower = root.querySelector('[data-ab-power]');
       const inConf = root.querySelector('[data-ab-conf]');
+      const inSplit = root.querySelector('[data-ab-split]');
+      const inTails = root.querySelector('[data-ab-tails]');
       const inVariants = root.querySelector('[data-ab-variants]');
-      const inDaily = root.querySelector('[data-daily-traffic]');
+      const dailyInput = root.querySelector('[data-daily-traffic]');
+
+      const outLabel = root.querySelector('[data-res-label]');
       const outPerVar = root.querySelector('[data-res-per-variant]');
       const outTotal = root.querySelector('[data-res-total]');
       const outTargetCvr = root.querySelector('[data-target-cvr]');
       const outDuration = root.querySelector('[data-duration-days]');
-      const resetBtn = root.querySelector('[data-reset-btn]');
+      const outDurationRecom = root.querySelector('[data-duration-recom]');
+      const outTrafficSplit = root.querySelector('[data-traffic-split-detail]');
 
-      const zMap = { '90': 1.644853, '95': 1.959964, '99': 2.575829 };
-      const powerZMap = { '80': 0.841621, '90': 1.281552 };
+      const resetBtn = root.querySelector('[data-reset-btn]');
+      const copyBtn = root.querySelector('[data-copy-btn]');
+      const exportCsvBtn = root.querySelector('[data-export-csv-btn]');
+      const sensTbody = document.querySelector('[data-sensitivity-tbody]');
+
+      let mdeType = 'rel'; // 'rel' or 'abs'
+
+      const zMapTwoSided = { '90': 1.644853, '95': 1.959964, '99': 2.575829 };
+      const zMapOneSided = { '90': 1.281552, '95': 1.644853, '99': 2.326348 };
+      const powerZMap = { '80': 0.841621, '85': 1.036433, '90': 1.281552, '95': 1.644853 };
+
+      let lastCalculation = null;
+
+      function calcSampleSize(p1, delta, zAlpha, zBeta, k) {
+        const p2 = p1 + delta;
+        if (p2 <= 0 || p2 >= 1 || Math.abs(delta) < 1e-7) return { n1: 0, n2: 0, total: 0 };
+        // Unequal allocation ratio k = n2 / n1
+        // Pooled pBar = (p1 + k*p2) / (1 + k)
+        const pBar = (p1 + k * p2) / (1 + k);
+        const term1 = zAlpha * Math.sqrt((1 + 1 / k) * pBar * (1 - pBar));
+        const term2 = zBeta * Math.sqrt(p1 * (1 - p1) + (p2 * (1 - p2)) / k);
+        const n1 = Math.ceil(Math.pow(term1 + term2, 2) / Math.pow(delta, 2));
+        const n2 = Math.ceil(n1 * k);
+        return { n1: n1, n2: n2, total: n1 + n2, p2: p2 };
+      }
 
       function update() {
-        const p1 = Math.max(0.001, parseFloat(inBase.value || '5.0') / 100);
-        const mde = Math.max(0.1, parseFloat(inMde.value || '10') / 100);
-        const zAlpha = zMap[inConf.value] || 1.96;
-        const zBeta = powerZMap[inPower.value] || 0.8416;
-        const variants = Math.max(2, parseInt(inVariants.value || '2', 10));
-        const daily = inDaily.value ? parseInt(inDaily.value, 10) : undefined;
-
-        const delta = p1 * mde;
+        const p1 = Math.max(0.0001, parseFloat(inBase.value || '5.0') / 100);
+        const mdeVal = Math.max(0.01, parseFloat(inMde.value || '10'));
+        const delta = (mdeType === 'rel') ? (p1 * (mdeVal / 100)) : (mdeVal / 100);
         const p2 = p1 + delta;
-        const pBar = (p1 + p2) / 2;
 
-        const term1 = zAlpha * Math.sqrt(2 * pBar * (1 - pBar));
-        const term2 = zBeta * Math.sqrt(p1 * (1 - p1) + p2 * (1 - p2));
-        const nPer = Math.ceil(Math.pow(term1 + term2, 2) / Math.pow(delta, 2));
-        const total = nPer * variants;
-
-        if (outPerVar) outPerVar.textContent = nPer.toLocaleString();
-        if (outTotal) outTotal.textContent = `Total Experiment Traffic: ${total.toLocaleString()} visitors (${variants} variants)`;
-        if (outTargetCvr) outTargetCvr.textContent = `${(p2 * 100).toFixed(2)}% (+${(delta * 100).toFixed(2)}% absolute lift)`;
-
-        if (outDuration) {
-          if (daily && daily > 0) {
-            const days = Math.ceil(total / daily);
-            outDuration.textContent = `${days} Days (${(daily / variants).toFixed(0)} visitors/day per variant)`;
+        if (mdeExplanation) {
+          if (mdeType === 'rel') {
+            mdeExplanation.textContent = `A ${mdeVal.toFixed(1)}% relative lift on a ${(p1 * 100).toFixed(2)}% baseline detects changes up to ${(p2 * 100).toFixed(2)}% (+${(delta * 100).toFixed(2)}% absolute lift).`;
           } else {
-            outDuration.textContent = 'Enter daily traffic above to calculate days';
+            const relLift = (delta / p1) * 100;
+            mdeExplanation.textContent = `A ${mdeVal.toFixed(2)}% absolute lift on a ${(p1 * 100).toFixed(2)}% baseline corresponds to a ${relLift.toFixed(1)}% relative lift (target ${(p2 * 100).toFixed(2)}%).`;
           }
         }
+
+        const isTwoTailed = (inTails.value === '2');
+        const zAlpha = (isTwoTailed ? zMapTwoSided : zMapOneSided)[inConf.value] || 1.96;
+        const zBeta = powerZMap[inPower.value] || 0.8416;
+        const variants = Math.max(2, parseInt(inVariants.value || '2', 10));
+        const splitVal = inSplit.value || '50-50';
+        const daily = dailyInput.value ? Math.max(1, parseInt(dailyInput.value, 10)) : 0;
+
+        let k = 1.0; // Treatment / Control ratio
+        let splitLabel = '50% Control / 50% Treatment';
+        if (splitVal === '80-20') {
+          k = 0.25; // 20 / 80
+          splitLabel = '80% Control / 20% Treatment';
+        } else if (splitVal === '90-10') {
+          k = 1 / 9; // 10 / 90
+          splitLabel = '90% Control / 10% Treatment';
+        }
+
+        const res = calcSampleSize(p1, delta, zAlpha, zBeta, k);
+        const totalTraffic = (variants === 2) ? res.total : (res.n1 + res.n2 * (variants - 1));
+
+        if (splitVal === '50-50') {
+          if (outLabel) outLabel.textContent = 'Sample Size Per Variant';
+          if (outPerVar) outPerVar.textContent = res.n1.toLocaleString();
+        } else {
+          if (outLabel) outLabel.textContent = 'Required Variation Sizes';
+          if (outPerVar) outPerVar.textContent = `A: ${res.n1.toLocaleString()} | B: ${res.n2.toLocaleString()}`;
+        }
+
+        if (outTotal) outTotal.textContent = `Total Experiment Traffic: ${totalTraffic.toLocaleString()} visitors (${variants} variants)`;
+        if (outTargetCvr) outTargetCvr.textContent = `${(p2 * 100).toFixed(2)}% (+${(delta * 100).toFixed(2)}% absolute lift)`;
+        if (outTrafficSplit) outTrafficSplit.textContent = splitLabel;
+
+        if (outDuration) {
+          if (daily > 0) {
+            const days = Math.ceil(totalTraffic / daily);
+            outDuration.textContent = `${days} Days (${(daily / variants).toFixed(0)} visitors/day per variant)`;
+            if (days < 14) {
+              if (outDurationRecom) outDurationRecom.textContent = `14 Days (Minimum 2 business cycles to avoid day-of-week bias)`;
+            } else {
+              const weeks = (days / 7).toFixed(1);
+              if (outDurationRecom) outDurationRecom.textContent = `${weeks} Weeks (Excellent cycle coverage)`;
+            }
+          } else {
+            outDuration.textContent = 'Enter daily traffic to calculate days';
+            if (outDurationRecom) outDurationRecom.textContent = 'Minimum 14 days recommended';
+          }
+        }
+
+        lastCalculation = {
+          p1: p1,
+          p2: p2,
+          delta: delta,
+          mdeVal: mdeVal,
+          mdeType: mdeType,
+          power: inPower.value,
+          conf: inConf.value,
+          tails: inTails.value,
+          splitVal: splitVal,
+          variants: variants,
+          res: res,
+          totalTraffic: totalTraffic,
+          daily: daily
+        };
+
+        renderSensitivityTable(p1, zAlpha, zBeta, k, variants, daily);
       }
+
+      function renderSensitivityTable(p1, zAlpha, zBeta, k, variants, daily) {
+        if (!sensTbody) return;
+        const relativeMdes = [3, 5, 8, 10, 15, 20, 25];
+        const rows = relativeMdes.map(function (mdePct) {
+          const d = p1 * (mdePct / 100);
+          const r = calcSampleSize(p1, d, zAlpha, zBeta, k);
+          const total = (variants === 2) ? r.total : (r.n1 + r.n2 * (variants - 1));
+          const days = (daily > 0) ? Math.ceil(total / daily) : '-';
+          const target = (p1 + d) * 100;
+          let statusBadge = '';
+          if (days !== '-') {
+            if (days <= 14) statusBadge = '<span class="text-cyan-500 dark:text-cyan-400 font-bold">Fast (≤2 wks)</span>';
+            else if (days <= 35) statusBadge = '<span class="text-[color:var(--accent)] font-bold">Optimal (2-5 wks)</span>';
+            else statusBadge = '<span class="text-amber-500 font-bold">High traffic needed</span>';
+          } else {
+            statusBadge = '<span class="text-[color:var(--muted)]">Calculated</span>';
+          }
+
+          return `
+            <tr class="hover:bg-[color:var(--surface)] transition">
+              <td class="py-2 px-3 font-semibold text-[color:var(--fg)]">±${mdePct}%</td>
+              <td class="py-2 px-3">${target.toFixed(2)}%</td>
+              <td class="py-2 px-3">${r.n1.toLocaleString()}</td>
+              <td class="py-2 px-3 font-bold text-[color:var(--accent)]">${total.toLocaleString()}</td>
+              <td class="py-2 px-3">${days} days</td>
+              <td class="py-2 px-3 text-xs">${statusBadge}</td>
+            </tr>
+          `;
+        });
+        sensTbody.innerHTML = rows.join('');
+      }
+
+      mdeTypeBtns.forEach((btn) => {
+        btn.addEventListener('click', () => {
+          mdeType = btn.dataset.mdeTypeBtn || 'rel';
+          mdeTypeBtns.forEach((b) => {
+            if (b === btn) {
+              b.className = 'rounded-lg bg-[color:var(--accent)] px-2 py-0.5 text-[color:var(--bg)]';
+            } else {
+              b.className = 'rounded-lg px-2 py-0.5 text-[color:var(--muted)] hover:text-[color:var(--fg)]';
+            }
+          });
+          if (mdeType === 'abs' && parseFloat(inMde.value) > 20) {
+            inMde.value = '1.0';
+          } else if (mdeType === 'rel' && parseFloat(inMde.value) < 2) {
+            inMde.value = '10.0';
+          }
+          update();
+        });
+      });
 
       inBase.addEventListener('input', update);
       inMde.addEventListener('input', update);
       inPower.addEventListener('change', update);
       inConf.addEventListener('change', update);
+      inSplit.addEventListener('change', update);
+      inTails.addEventListener('change', update);
       inVariants.addEventListener('input', update);
-      inDaily.addEventListener('input', update);
+      dailyInput.addEventListener('input', update);
 
       if (resetBtn) {
         resetBtn.addEventListener('click', () => {
           inBase.value = '5.0';
-          inMde.value = '10';
+          inMde.value = '10.0';
           inPower.value = '80';
           inConf.value = '95';
+          inSplit.value = '50-50';
+          inTails.value = '2';
           inVariants.value = '2';
-          inDaily.value = '2000';
+          dailyInput.value = '2000';
+          mdeType = 'rel';
+          mdeTypeBtns[0].click();
           update();
+        });
+      }
+
+      if (copyBtn) {
+        copyBtn.addEventListener('click', async () => {
+          if (!lastCalculation) return;
+          const text = [
+            '--- A/B Test Sample Size Summary ---',
+            `Baseline Conversion Rate: ${(lastCalculation.p1 * 100).toFixed(2)}%`,
+            `Target Conversion Rate: ${(lastCalculation.p2 * 100).toFixed(2)}%`,
+            `MDE: ${lastCalculation.mdeVal}% (${lastCalculation.mdeType === 'rel' ? 'relative lift' : 'absolute percentage points'})`,
+            `Statistical Power: ${lastCalculation.power}%`,
+            `Confidence Level: ${lastCalculation.conf}% (${lastCalculation.tails}-tailed)`,
+            `Allocation Split: ${lastCalculation.splitVal}`,
+            `Variants: ${lastCalculation.variants}`,
+            `Traffic / Variant: ${outPerVar?.textContent || ''}`,
+            `Total Traffic Needed: ${lastCalculation.totalTraffic.toLocaleString()} visitors`,
+            `Estimated Duration: ${outDuration?.textContent || ''}`,
+          ].join('\n');
+
+          try {
+            await navigator.clipboard.writeText(text);
+            const orig = copyBtn.innerHTML;
+            copyBtn.innerHTML = '<span>✓ Copied!</span>';
+            setTimeout(() => { copyBtn.innerHTML = orig; }, 2000);
+          } catch {
+            alert('Failed to copy to clipboard');
+          }
+        });
+      }
+
+      if (exportCsvBtn) {
+        exportCsvBtn.addEventListener('click', () => {
+          if (!lastCalculation) return;
+          const csvLines = [
+            'Relative MDE,Target CVR (%),Sample Size Per Variant,Total Traffic,Estimated Days',
+          ];
+          const relativeMdes = [3, 5, 8, 10, 15, 20, 25];
+          const isTwoTailed = (lastCalculation.tails === '2');
+          const zAlpha = (isTwoTailed ? zMapTwoSided : zMapOneSided)[lastCalculation.conf] || 1.96;
+          const zBeta = powerZMap[lastCalculation.power] || 0.8416;
+          let k = 1.0;
+          if (lastCalculation.splitVal === '80-20') k = 0.25;
+          else if (lastCalculation.splitVal === '90-10') k = 1 / 9;
+
+          relativeMdes.forEach(function (mdePct) {
+            const d = lastCalculation.p1 * (mdePct / 100);
+            const r = calcSampleSize(lastCalculation.p1, d, zAlpha, zBeta, k);
+            const total = (lastCalculation.variants === 2) ? r.total : (r.n1 + r.n2 * (lastCalculation.variants - 1));
+            const days = (lastCalculation.daily > 0) ? Math.ceil(total / lastCalculation.daily) : 'N/A';
+            csvLines.push(`±${mdePct}%,${((lastCalculation.p1 + d) * 100).toFixed(2)}%,${r.n1},${total},${days}`);
+          });
+
+          const blob = new Blob([csvLines.join('\n')], { type: 'text/csv;charset=utf-8;' });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `ab_test_sample_size_${lastCalculation.mdeVal}mde.csv`;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
         });
       }
 

@@ -1,10 +1,11 @@
 ---
 import SiteLayout from '../../layouts/SiteLayout.astro';
 import Icon from '../../components/Icon.astro';
+import CalculatorParameterGuide from '../../components/calculator/CalculatorParameterGuide.astro';
 import { siteName, toAbsoluteUrl, withBasePath } from '../../utils/site';
 
 const pageTitle = `Regex Tester & Debugger — Free Online Regular Expression Matcher · ${siteName}`;
-const pageDesc = 'Live regular expression tester with real-time match highlighting, capture groups breakdown, flag selectors (g, i, m, s), and quick regex cheat sheets. 100% private in-browser tool.';
+const pageDesc = 'Live regular expression tester with real-time match highlighting, capture groups breakdown, substitution preview, flag selectors (g, i, m, s, u, y), and regex cheatsheet.';
 const canonicalUrl = toAbsoluteUrl('/developer-tools/regex-tester/');
 
 const breadcrumbItems = [
@@ -16,11 +17,15 @@ const breadcrumbItems = [
 const schemaFaq = [
   {
     question: 'What regular expression flags are supported?',
-    answer: 'This tester supports standard ECMAScript regex flags: Global (g) for all matches, Case-Insensitive (i), Multiline (m) where ^ and $ match line starts/ends, DotAll (s) allowing . to match newlines, and Unicode (u).',
+    answer: 'This tester supports standard ECMAScript regex flags: Global (g) for all matches, Case-Insensitive (i), Multiline (m) where ^ and $ match line boundaries, DotAll (s) allowing . to match newlines, Unicode (u) for full UTF-16 surrogate pairs, and Sticky (y) for matching strictly at the lastIndex position.',
   },
   {
     question: 'How do capture groups work in this tester?',
-    answer: 'Any parentheses (e.g. `(\\w+)@(\\w+\\.\\w+)`) create numbered capture groups. The tool automatically lists each capture group and its extracted substring for every match found in the test string.',
+    answer: 'Any unescaped parentheses (e.g. `(\\w+)@(\\w+\\.\\w+)`) create numbered capture groups ($1, $2). Named capture groups `(?<name>...)` are also parsed. The tool automatically lists each capture group and its extracted substring for every match found.',
+  },
+  {
+    question: 'Can I test regex string replacement and substitutions?',
+    answer: 'Yes. Enter a replacement string in the Substitution panel using tokens like $1, $2, or $& (entire match) to see an instant real-time preview of the substituted output text.',
   },
 ];
 
@@ -86,34 +91,37 @@ const schemaGraph = [
     <header class="space-y-3">
       <div class="inline-flex items-center gap-2 rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1 text-xs font-semibold text-[color:var(--muted)]">
         <span class="inline-block h-2 w-2 rounded-full bg-emerald-500"></span>
-        <span>Interactive JavaScript RegExp Matcher</span>
+        <span>ECMAScript RegExp Engine &bull; Real-Time Execution</span>
       </div>
       <h1 class="text-2xl sm:text-4xl font-extrabold tracking-tight text-[color:var(--fg)]">
         Regex Tester &amp; Debugger
       </h1>
       <p class="max-w-2xl text-xs sm:text-sm text-[color:var(--muted)] leading-relaxed">
-        Test regular expressions in real-time. Highlights match ranges, breaks down capture groups, and catches syntax errors instantly.
+        Test JavaScript regular expressions in real-time. Highlights matched boundaries, inspects capture groups, previews string replacements, and diagnoses pattern syntax errors instantly.
       </p>
     </header>
 
     <div class="space-y-6">
       <!-- Regex Input Bar -->
-      <div class="space-y-2 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
-        <div class="flex items-center justify-between">
+      <div class="space-y-3 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
+        <div class="flex flex-wrap items-center justify-between gap-2">
           <label for="pattern-in" class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">
-            Regular Expression
+            Regular Expression Pattern
           </label>
-          <div class="flex items-center gap-2 text-xs">
-            <span class="text-[color:var(--muted)]">Presets:</span>
-            <button type="button" data-preset="email" class="text-[color:var(--primary)] hover:underline font-semibold">Email</button>
-            <button type="button" data-preset="url" class="text-[color:var(--primary)] hover:underline font-semibold">URL</button>
-            <button type="button" data-preset="phone" class="text-[color:var(--primary)] hover:underline font-semibold">Phone</button>
-            <button type="button" data-preset="date" class="text-[color:var(--primary)] hover:underline font-semibold">Date</button>
+          <div class="flex flex-wrap items-center gap-1.5 text-xs">
+            <span class="text-[color:var(--muted)] font-medium">Presets:</span>
+            <button type="button" data-preset="email" class="rounded-lg border border-[color:var(--border)] bg-[color:var(--bg)] px-2 py-0.5 font-medium hover:border-[color:var(--border-strong)]">Email</button>
+            <button type="button" data-preset="url" class="rounded-lg border border-[color:var(--border)] bg-[color:var(--bg)] px-2 py-0.5 font-medium hover:border-[color:var(--border-strong)]">URL</button>
+            <button type="button" data-preset="phone" class="rounded-lg border border-[color:var(--border)] bg-[color:var(--bg)] px-2 py-0.5 font-medium hover:border-[color:var(--border-strong)]">Phone</button>
+            <button type="button" data-preset="isoDate" class="rounded-lg border border-[color:var(--border)] bg-[color:var(--bg)] px-2 py-0.5 font-medium hover:border-[color:var(--border-strong)]">ISO Date</button>
+            <button type="button" data-preset="ipv4" class="rounded-lg border border-[color:var(--border)] bg-[color:var(--bg)] px-2 py-0.5 font-medium hover:border-[color:var(--border-strong)]">IPv4</button>
+            <button type="button" data-preset="hexColor" class="rounded-lg border border-[color:var(--border)] bg-[color:var(--bg)] px-2 py-0.5 font-medium hover:border-[color:var(--border-strong)]">Hex Color</button>
+            <button type="button" data-preset="uuid" class="rounded-lg border border-[color:var(--border)] bg-[color:var(--bg)] px-2 py-0.5 font-medium hover:border-[color:var(--border-strong)]">UUID</button>
           </div>
         </div>
 
         <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
-          <div class="flex flex-1 items-center rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-1.5 focus-within:border-[color:var(--border-strong)]">
+          <div class="flex flex-1 items-center rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 focus-within:border-[color:var(--border-strong)]">
             <span class="font-mono text-sm text-[color:var(--muted)] select-none">/</span>
             <input
               type="text"
@@ -126,64 +134,259 @@ const schemaGraph = [
           </div>
 
           <!-- Flags -->
-          <div class="flex items-center gap-2 rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-mono">
-            <label class="flex items-center gap-1 cursor-pointer">
+          <div class="flex items-center gap-3 rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-mono select-none">
+            <label class="flex items-center gap-1 cursor-pointer" title="Global match">
               <input type="checkbox" id="flag-g" checked class="rounded accent-[color:var(--fg)]" />
               <span>g</span>
             </label>
-            <label class="flex items-center gap-1 cursor-pointer">
+            <label class="flex items-center gap-1 cursor-pointer" title="Case-insensitive">
               <input type="checkbox" id="flag-i" checked class="rounded accent-[color:var(--fg)]" />
               <span>i</span>
             </label>
-            <label class="flex items-center gap-1 cursor-pointer">
+            <label class="flex items-center gap-1 cursor-pointer" title="Multiline (^ and $ match line start/end)">
               <input type="checkbox" id="flag-m" class="rounded accent-[color:var(--fg)]" />
               <span>m</span>
             </label>
-            <label class="flex items-center gap-1 cursor-pointer">
+            <label class="flex items-center gap-1 cursor-pointer" title="DotAll (. matches newline)">
               <input type="checkbox" id="flag-s" class="rounded accent-[color:var(--fg)]" />
               <span>s</span>
             </label>
+            <label class="flex items-center gap-1 cursor-pointer" title="Unicode">
+              <input type="checkbox" id="flag-u" class="rounded accent-[color:var(--fg)]" />
+              <span>u</span>
+            </label>
+            <label class="flex items-center gap-1 cursor-pointer" title="Sticky">
+              <input type="checkbox" id="flag-y" class="rounded accent-[color:var(--fg)]" />
+              <span>y</span>
+            </label>
           </div>
         </div>
-        <div id="regex-error" class="hidden rounded-xl border border-red-500/30 bg-red-500/10 p-2 text-xs text-red-600 dark:text-red-400"></div>
+        <div id="regex-error" class="hidden rounded-xl border border-red-500/30 bg-red-500/10 p-3 text-xs text-red-600 dark:text-red-400"></div>
+      </div>
+
+      <!-- Telemetry Bar -->
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3 text-center">
+          <p class="text-[10px] font-bold uppercase tracking-wider text-[color:var(--muted)]">Total Matches</p>
+          <p id="stat-matches" class="mt-1 font-mono text-base font-bold text-cyan-500 dark:text-cyan-400">0</p>
+        </div>
+        <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3 text-center">
+          <p class="text-[10px] font-bold uppercase tracking-wider text-[color:var(--muted)]">Capture Groups</p>
+          <p id="stat-groups" class="mt-1 font-mono text-base font-bold text-[color:var(--fg)]">0</p>
+        </div>
+        <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3 text-center">
+          <p class="text-[10px] font-bold uppercase tracking-wider text-[color:var(--muted)]">Text Length</p>
+          <p id="stat-length" class="mt-1 font-mono text-base font-bold text-[color:var(--fg)]">0 chars</p>
+        </div>
+        <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3 text-center">
+          <p class="text-[10px] font-bold uppercase tracking-wider text-[color:var(--muted)]">Execution Time</p>
+          <p id="stat-time" class="mt-1 font-mono text-base font-bold text-[color:var(--fg)]">&lt; 1 ms</p>
+        </div>
       </div>
 
       <!-- Test String & Highlight Output -->
       <div class="grid gap-6 lg:grid-cols-2">
         <!-- Test String Input -->
         <div class="space-y-2">
-          <label for="test-str" class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">
-            Test String
-          </label>
+          <div class="flex items-center justify-between">
+            <label for="test-str" class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">
+              Test String
+            </label>
+            <div class="flex items-center gap-2 text-xs">
+              <button type="button" data-clear-test class="text-[color:var(--muted)] hover:text-[color:var(--fg)]">Clear</button>
+            </div>
+          </div>
           <textarea
             id="test-str"
-            rows="10"
+            rows="12"
             class="w-full font-mono text-xs leading-relaxed rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-[color:var(--fg)] focus:border-[color:var(--border-strong)] focus:outline-hidden"
             placeholder="Enter sample text to match against regex..."
-          >Contact our support team at support@calculatorutility.tech or reach out to sales@company.org for licensing.</textarea>
+          >Contact our support team at support@calculatorutility.tech or reach out to sales@enterprise-apps.org for bulk licensing inquiries. Customer care hotline: support-team@calculatorutility.tech.</textarea>
         </div>
 
         <!-- Highlighted Result -->
         <div class="space-y-2">
           <div class="flex items-center justify-between">
             <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Live Match Highlights</span>
-            <span id="match-count" class="rounded-md bg-[color:var(--surface-strong)] border border-[color:var(--border)] px-2 py-0.5 text-[10px] font-bold text-[color:var(--fg)]">
-              0 Matches
-            </span>
+            <div class="flex items-center gap-2">
+              <button type="button" data-copy-matches class="inline-flex items-center gap-1 text-xs font-bold text-[color:var(--fg)] hover:underline">
+                <Icon name="copy" class="w-3.5 h-3.5" />
+                <span>Copy Matches</span>
+              </button>
+            </div>
           </div>
           <div
             id="highlight-box"
-            class="min-h-40 font-mono text-xs leading-relaxed rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-4 text-[color:var(--fg)] whitespace-pre-wrap break-words"
+            class="min-h-48 h-64 overflow-y-auto font-mono text-xs leading-relaxed rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-4 text-[color:var(--fg)] whitespace-pre-wrap break-words"
           ></div>
+        </div>
+      </div>
+
+      <!-- Substitution / Replacement Section -->
+      <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5 space-y-4">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <input type="checkbox" id="enable-replace" class="rounded accent-[color:var(--fg)]" />
+            <label for="enable-replace" class="text-xs font-bold uppercase tracking-wider text-[color:var(--fg)] cursor-pointer">
+              Enable Substitution / String Replacement
+            </label>
+          </div>
+          <span class="text-[11px] text-[color:var(--muted)]">Tokens: $&amp; (match), $1 (group 1), $` (before), $' (after)</span>
+        </div>
+
+        <div id="replace-controls" class="hidden space-y-3">
+          <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+            <input
+              type="text"
+              id="replace-pattern"
+              class="flex-1 rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-xs text-[color:var(--fg)] focus:border-[color:var(--border-strong)] focus:outline-hidden"
+              placeholder="Replacement pattern, e.g. masked-$1@domain.com or [$1]"
+              value="[$1@$2]"
+            />
+            <button
+              type="button"
+              data-copy-replaced
+              class="inline-flex items-center justify-center gap-1.5 rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] px-4 py-2 text-xs font-bold text-[color:var(--fg)] transition hover:bg-[color:var(--surface-strong)]"
+            >
+              <Icon name="copy" class="w-3.5 h-3.5" />
+              <span>Copy Replaced Text</span>
+            </button>
+          </div>
+          <div>
+            <label class="text-[11px] font-bold text-[color:var(--muted)]">Substituted Output Result:</label>
+            <div
+              id="replaced-box"
+              class="mt-1 min-h-24 max-h-48 overflow-y-auto font-mono text-xs leading-relaxed rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] p-3 text-[color:var(--fg)] whitespace-pre-wrap break-words"
+            ></div>
+          </div>
         </div>
       </div>
 
       <!-- Match Breakdown List -->
       <div class="space-y-3">
-        <h2 class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Match Breakdown &amp; Capture Groups</h2>
+        <div class="flex items-center justify-between">
+          <h2 class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Match Breakdown &amp; Capture Groups</h2>
+          <span class="text-[11px] text-[color:var(--muted)]">Zero-indexed match offsets</span>
+        </div>
         <div id="group-list" class="space-y-2 text-xs"></div>
       </div>
+
+      <!-- Quick Regex Cheat Sheet -->
+      <details class="group rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
+        <summary class="cursor-pointer list-none font-semibold text-sm text-[color:var(--fg)] flex items-center justify-between gap-4">
+          <span class="flex items-center gap-2">
+            <span>Regex Syntax Quick Reference &amp; Cheat Sheet</span>
+            <span class="text-xs font-normal text-[color:var(--muted)]">(Tokens, Anchors, Quantifiers, Lookarounds)</span>
+          </span>
+          <span class="text-xs text-[color:var(--muted)] group-open:rotate-180 transition-transform">&#9660;</span>
+        </summary>
+        <div class="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-4 text-xs">
+          <div class="space-y-1.5 rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] p-3">
+            <p class="font-bold text-[color:var(--fg)]">Character Classes</p>
+            <p class="font-mono text-[11px]"><strong class="text-[color:var(--fg)]">.</strong> Any char (except newline)</p>
+            <p class="font-mono text-[11px]"><strong class="text-[color:var(--fg)]">\d</strong> Digit [0-9]</p>
+            <p class="font-mono text-[11px]"><strong class="text-[color:var(--fg)]">\D</strong> Not digit [^0-9]</p>
+            <p class="font-mono text-[11px]"><strong class="text-[color:var(--fg)]">\w</strong> Word char [a-zA-Z0-9_]</p>
+            <p class="font-mono text-[11px]"><strong class="text-[color:var(--fg)]">\s</strong> Whitespace (space, tab, cr)</p>
+          </div>
+          <div class="space-y-1.5 rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] p-3">
+            <p class="font-bold text-[color:var(--fg)]">Quantifiers</p>
+            <p class="font-mono text-[11px]"><strong class="text-[color:var(--fg)]">*</strong> 0 or more occurrences</p>
+            <p class="font-mono text-[11px]"><strong class="text-[color:var(--fg)]">+</strong> 1 or more occurrences</p>
+            <p class="font-mono text-[11px]"><strong class="text-[color:var(--fg)]">?</strong> 0 or 1 occurrence</p>
+            <p class="font-mono text-[11px]"><strong class="text-[color:var(--fg)]">&#123;3&#125;</strong> Exactly 3 times</p>
+            <p class="font-mono text-[11px]"><strong class="text-[color:var(--fg)]">&#123;2,5&#125;</strong> Between 2 and 5 times</p>
+          </div>
+          <div class="space-y-1.5 rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] p-3">
+            <p class="font-bold text-[color:var(--fg)]">Anchors &amp; Boundaries</p>
+            <p class="font-mono text-[11px]"><strong class="text-[color:var(--fg)]">^</strong> Start of string / line</p>
+            <p class="font-mono text-[11px]"><strong class="text-[color:var(--fg)]">$</strong> End of string / line</p>
+            <p class="font-mono text-[11px]"><strong class="text-[color:var(--fg)]">\b</strong> Word boundary</p>
+            <p class="font-mono text-[11px]"><strong class="text-[color:var(--fg)]">\B</strong> Non-word boundary</p>
+            <p class="font-mono text-[11px]"><strong class="text-[color:var(--fg)]">|</strong> Alternation (OR operator)</p>
+          </div>
+          <div class="space-y-1.5 rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] p-3">
+            <p class="font-bold text-[color:var(--fg)]">Groups &amp; Lookarounds</p>
+            <p class="font-mono text-[11px]"><strong class="text-[color:var(--fg)]">(abc)</strong> Capture group</p>
+            <p class="font-mono text-[11px]"><strong class="text-[color:var(--fg)]">(?:abc)</strong> Non-capturing group</p>
+            <p class="font-mono text-[11px]"><strong class="text-[color:var(--fg)]">(?=abc)</strong> Positive lookahead</p>
+            <p class="font-mono text-[11px]"><strong class="text-[color:var(--fg)]">(?!abc)</strong> Negative lookahead</p>
+            <p class="font-mono text-[11px]"><strong class="text-[color:var(--fg)]">(?&lt;=abc)</strong> Positive lookbehind</p>
+          </div>
+        </div>
+      </details>
     </div>
+
+    <!-- Parameter Guide & Worked Example -->
+    <CalculatorParameterGuide
+      title="Regular Expression Parameters & Engine Reference"
+      description="Detailed technical breakdown of regex flags, capture mechanics, replacement tokens, and execution best practices."
+      parameters={[
+        {
+          name: "Pattern (/pattern/)",
+          type: "String (RegExp)",
+          defaultValue: "None (Required)",
+          description: "The regular expression string defining pattern grammar, character sets, quantifiers, and boundaries.",
+        },
+        {
+          name: "Global Flag (g)",
+          type: "Boolean",
+          defaultValue: "true",
+          description: "When enabled, finds all matching instances throughout the entire input string instead of stopping at the first match.",
+        },
+        {
+          name: "Case-Insensitive Flag (i)",
+          type: "Boolean",
+          defaultValue: "true",
+          description: "Treats lowercase and uppercase ASCII and unicode characters as equivalent during evaluation.",
+        },
+        {
+          name: "Multiline Flag (m)",
+          type: "Boolean",
+          defaultValue: "false",
+          description: "Changes the behavior of ^ and $ anchors to match the start and end of individual newline-delimited lines rather than the entire document.",
+        },
+        {
+          name: "DotAll Flag (s)",
+          type: "Boolean",
+          defaultValue: "false",
+          description: "Allows the dot wildcard character (.) to match carriage returns and newline breaks.",
+        },
+        {
+          name: "Replacement Pattern",
+          type: "String",
+          defaultValue: "Optional",
+          description: "String replacement schema supporting $1-$99 group references, $& full match, $` preceding text, and $' succeeding text.",
+        },
+      ]}
+      workedExample={{
+        title: "Extracting Domain Names & Usernames from Email Addresses",
+        description: "Given text containing customer email addresses, extract the separate username and hostname segments using capture groups.",
+        formula: "/([a-zA-Z0-9._%+-]+)@([a-zA-Z0-9.-]+\\.[a-zA-Z]{2,})/gi",
+        steps: [
+          {
+            step: "Define Capture Group 1",
+            calculation: "([a-zA-Z0-9._%+-]+) matches alphanumeric characters and email punctuation before the @ sign.",
+            result: "Group 1: support",
+          },
+          {
+            step: "Match Separator Literal",
+            calculation: "@ matches the literal at-sign delimiter.",
+            result: "Match anchor verified",
+          },
+          {
+            step: "Define Capture Group 2",
+            calculation: "([a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}) matches domain labels followed by a top-level domain extension.",
+            result: "Group 2: calculatorutility.tech",
+          },
+          {
+            step: "Optional Substitution",
+            calculation: "Apply replacement pattern 'User: $1 on Host: $2' to reshape data into human-readable strings.",
+            result: "'User: support on Host: calculatorutility.tech'",
+          },
+        ],
+      }}
+    />
 
     <!-- FAQs -->
     <section class="space-y-4">
@@ -193,7 +396,7 @@ const schemaGraph = [
           <details class="group rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
             <summary class="cursor-pointer list-none font-semibold text-sm sm:text-base text-[color:var(--fg)] flex items-center justify-between gap-4">
               <span>{faq.question}</span>
-              <span class="text-xs text-[color:var(--muted)] group-open:rotate-180 transition-transform">▼</span>
+              <span class="text-xs text-[color:var(--muted)] group-open:rotate-180 transition-transform">&#9660;</span>
             </summary>
             <p class="mt-3 text-xs sm:text-sm leading-relaxed text-[color:var(--muted)]">
               {faq.answer}
@@ -215,16 +418,35 @@ const schemaGraph = [
       const flagI = root.querySelector('#flag-i');
       const flagM = root.querySelector('#flag-m');
       const flagS = root.querySelector('#flag-s');
+      const flagU = root.querySelector('#flag-u');
+      const flagY = root.querySelector('#flag-y');
       const highlightBox = root.querySelector('#highlight-box');
-      const matchCount = root.querySelector('#match-count');
       const groupList = root.querySelector('#group-list');
       const regexErr = root.querySelector('#regex-error');
 
+      const statMatches = root.querySelector('#stat-matches');
+      const statGroups = root.querySelector('#stat-groups');
+      const statLength = root.querySelector('#stat-length');
+      const statTime = root.querySelector('#stat-time');
+
+      const enableReplace = root.querySelector('#enable-replace');
+      const replaceControls = root.querySelector('#replace-controls');
+      const replacePattern = root.querySelector('#replace-pattern');
+      const replacedBox = root.querySelector('#replaced-box');
+      const copyReplacedBtn = root.querySelector('[data-copy-replaced]');
+      const copyMatchesBtn = root.querySelector('[data-copy-matches]');
+      const clearTestBtn = root.querySelector('[data-clear-test]');
+
+      let currentMatches = [];
+
       const presets = {
-        email: { pattern: '([a-zA-Z0-9._%+-]+)@([a-zA-Z0-9.-]+\\.[a-zA-Z]{2,})', test: 'Contact support@calculatorutility.tech or info@domain.com.' },
-        url: { pattern: 'https?:\\/\\/([\\w\\.-]+)(:[0-9]+)?(\\/[\\w\\.\\/\\?%&=]*)?', test: 'Visit https://calculatorutility.tech/developer-tools/ or http://localhost:3000/api.' },
-        phone: { pattern: '\\(?([0-9]{3})\\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})', test: 'Call us at (800) 555-0199 or 555-234-5678 today.' },
-        date: { pattern: '(\\d{4})-(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01])', test: 'Release dates: 2026-09-03 and previous version 2026-05-15.' }
+        email: { pattern: '([a-zA-Z0-9._%+-]+)@([a-zA-Z0-9.-]+\\.[a-zA-Z]{2,})', test: 'Support desk: support@calculatorutility.tech, billing: billing@sub.domain.co.uk.' },
+        url: { pattern: 'https?:\\/\\/([\\w\\.-]+)(:[0-9]+)?(\\/[\\w\\.\\/\\?%&=-]*)?', test: 'Visit https://calculatorutility.tech/developer-tools/ or test API on http://localhost:8080/v1/health.' },
+        phone: { pattern: '\\(?([0-9]{3})\\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})', test: 'Main office: (800) 555-0199, secondary line: 415-555-2671.' },
+        isoDate: { pattern: '(\\d{4})-(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01])', test: 'Released on 2026-09-07, scheduled next review on 2026-12-31.' },
+        ipv4: { pattern: '\\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\b', test: 'Primary DNS 8.8.8.8, secondary DNS 1.1.1.1, gateway 192.168.1.1.' },
+        hexColor: { pattern: '#?([a-fA-F0-9]{6}|[a-fA-F0-9]{3})\\b', test: 'Accent colors: #10b981 (emerald), #3b82f6 (blue), #ef4444 (red).' },
+        uuid: { pattern: '[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-7][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}', test: 'Session UUID: 6ba7b810-9dad-11d1-80b4-00c04fd430c8, Request ID: 018e39f7-6400-7213-9111-d0b8156637e1.' }
       };
 
       root.querySelectorAll('[data-preset]').forEach(btn => {
@@ -244,6 +466,8 @@ const schemaGraph = [
         if (flagI.checked) f += 'i';
         if (flagM.checked) f += 'm';
         if (flagS.checked) f += 's';
+        if (flagU.checked) f += 'u';
+        if (flagY.checked) f += 'y';
         return f;
       }
 
@@ -257,15 +481,21 @@ const schemaGraph = [
         const p = patternIn.value;
         const text = testStr.value;
         const flags = getFlags();
+        statLength.textContent = `${text.length} chars`;
 
         if (!p) {
           highlightBox.innerHTML = escapeHtml(text);
-          matchCount.textContent = '0 Matches';
-          groupList.innerHTML = '<p class="text-[color:var(--muted)]">Enter a regular expression pattern.</p>';
+          statMatches.textContent = '0';
+          statGroups.textContent = '0';
+          statTime.textContent = '< 1 ms';
+          groupList.innerHTML = '<p class="text-[color:var(--muted)]">Enter a regular expression pattern above.</p>';
           regexErr.classList.add('hidden');
+          currentMatches = [];
+          updateReplacement();
           return;
         }
 
+        const t0 = performance.now();
         try {
           const regex = new RegExp(p, flags);
           regexErr.classList.add('hidden');
@@ -278,11 +508,21 @@ const schemaGraph = [
             if (m) matches = [m];
           }
 
-          matchCount.textContent = `${matches.length} Match${matches.length === 1 ? '' : 'es'}`;
+          const execTime = (performance.now() - t0).toFixed(2);
+          statTime.textContent = `${execTime} ms`;
+          currentMatches = matches;
+          statMatches.textContent = String(matches.length);
+
+          let totalGroupsCount = 0;
+          matches.forEach(m => {
+            totalGroupsCount += (m.length - 1);
+          });
+          statGroups.textContent = String(totalGroupsCount);
 
           if (matches.length === 0) {
             highlightBox.innerHTML = escapeHtml(text);
-            groupList.innerHTML = '<p class="text-[color:var(--muted)]">No matches found in test string.</p>';
+            groupList.innerHTML = '<p class="text-[color:var(--muted)]">No matches found in the test string with current pattern and flags.</p>';
+            updateReplacement();
             return;
           }
 
@@ -295,42 +535,112 @@ const schemaGraph = [
             const matchText = m[0];
             const end = start + matchText.length;
 
-            html += escapeHtml(text.substring(lastIndex, start));
-            html += `<mark class="bg-amber-500/30 text-[color:var(--fg)] font-bold rounded px-1">${escapeHtml(matchText)}</mark>`;
+            if (start > lastIndex) {
+              html += escapeHtml(text.substring(lastIndex, start));
+            }
+            html += `<mark class="bg-amber-500/30 dark:bg-amber-500/40 text-[color:var(--fg)] font-bold rounded-sm px-1 py-0.5 border border-amber-500/40">${escapeHtml(matchText)}</mark>`;
             lastIndex = end;
           });
-          html += escapeHtml(text.substring(lastIndex));
+
+          if (lastIndex < text.length) {
+            html += escapeHtml(text.substring(lastIndex));
+          }
           highlightBox.innerHTML = html;
 
           // Build Match Groups List
           groupList.innerHTML = matches.map((m, idx) => {
-            const groupsHtml = m.slice(1).map((g, gIdx) => {
-              return `<span class="inline-block rounded bg-[color:var(--surface)] border border-[color:var(--border)] px-2 py-0.5 text-[11px]">Group ${gIdx + 1}: <strong class="text-[color:var(--fg)]">${escapeHtml(g || 'undefined')}</strong></span>`;
+            const groups = m.slice(1);
+            const groupsHtml = groups.map((g, gIdx) => {
+              return `<span class="inline-flex items-center gap-1 rounded bg-[color:var(--surface)] border border-[color:var(--border)] px-2 py-1 text-[11px]">
+                <span class="text-[color:var(--muted)] font-mono">$${gIdx + 1}:</span>
+                <strong class="font-mono text-cyan-500 dark:text-cyan-400">${escapeHtml(g !== undefined ? g : 'undefined')}</strong>
+              </span>`;
             }).join(' ');
 
             return `
-              <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3 space-y-1.5">
-                <div class="flex items-center justify-between">
-                  <span class="font-bold text-[color:var(--fg)]">Match #${idx + 1}: <code class="font-mono text-emerald-500">${escapeHtml(m[0])}</code></span>
-                  <span class="text-[10px] text-[color:var(--muted)]">Index: ${m.index}</span>
+              <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3 space-y-2">
+                <div class="flex flex-wrap items-center justify-between gap-2">
+                  <span class="font-bold text-[color:var(--fg)]">Match #${idx + 1}: <code class="font-mono text-cyan-500 dark:text-cyan-400 px-1 py-0.5 rounded bg-[color:var(--surface-strong)]">${escapeHtml(m[0])}</code></span>
+                  <div class="flex items-center gap-3 text-[11px] text-[color:var(--muted)]">
+                    <span>Index: <strong class="text-[color:var(--fg)]">${m.index}</strong></span>
+                    <span>Length: <strong class="text-[color:var(--fg)]">${m[0].length}</strong></span>
+                  </div>
                 </div>
-                ${groupsHtml ? `<div class="flex flex-wrap gap-1.5 pt-1">${groupsHtml}</div>` : ''}
+                ${groupsHtml ? `<div class="flex flex-wrap gap-2 pt-1 border-t border-[color:var(--border)]">${groupsHtml}</div>` : '<p class="text-[11px] text-[color:var(--muted)] italic">No capture groups in pattern.</p>'}
               </div>
             `;
           }).join('');
 
+          updateReplacement();
+
         } catch (e) {
           regexErr.classList.remove('hidden');
-          regexErr.textContent = 'RegExp Error: ' + e.message;
+          regexErr.textContent = 'RegExp Syntax Error: ' + e.message;
           highlightBox.innerHTML = escapeHtml(text);
-          matchCount.textContent = 'Error';
+          statMatches.textContent = 'Error';
+          statGroups.textContent = '0';
+          statTime.textContent = '0 ms';
           groupList.innerHTML = '';
+          currentMatches = [];
+          updateReplacement();
+        }
+      }
+
+      function updateReplacement() {
+        if (!enableReplace.checked) {
+          replaceControls.classList.add('hidden');
+          return;
+        }
+        replaceControls.classList.remove('hidden');
+
+        const p = patternIn.value;
+        const text = testStr.value;
+        const flags = getFlags();
+        const rep = replacePattern.value;
+
+        if (!p) {
+          replacedBox.textContent = text;
+          return;
+        }
+
+        try {
+          const regex = new RegExp(p, flags);
+          const result = text.replace(regex, rep);
+          replacedBox.textContent = result;
+        } catch (e) {
+          replacedBox.textContent = 'Error during replacement: ' + e.message;
         }
       }
 
       patternIn.addEventListener('input', update);
       testStr.addEventListener('input', update);
-      [flagG, flagI, flagM, flagS].forEach(cb => cb.addEventListener('change', update));
+      replacePattern.addEventListener('input', updateReplacement);
+      enableReplace.addEventListener('change', updateReplacement);
+      [flagG, flagI, flagM, flagS, flagU, flagY].forEach(cb => cb.addEventListener('change', update));
+
+      clearTestBtn.addEventListener('click', () => {
+        testStr.value = '';
+        update();
+      });
+
+      copyMatchesBtn.addEventListener('click', () => {
+        if (!currentMatches.length) return;
+        const matchStrings = currentMatches.map(m => m[0]).join('\n');
+        navigator.clipboard.writeText(matchStrings);
+        const span = copyMatchesBtn.querySelector('span');
+        const orig = span.textContent;
+        span.textContent = 'Copied!';
+        setTimeout(() => span.textContent = orig, 1800);
+      });
+
+      copyReplacedBtn.addEventListener('click', () => {
+        if (!replacedBox.textContent) return;
+        navigator.clipboard.writeText(replacedBox.textContent);
+        const span = copyReplacedBtn.querySelector('span');
+        const orig = span.textContent;
+        span.textContent = 'Copied!';
+        setTimeout(() => span.textContent = orig, 1800);
+      });
 
       update();
     })();

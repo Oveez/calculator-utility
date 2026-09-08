@@ -149,6 +149,80 @@ const { initialTemplate = 'professional' } = Astro.props as Props;
             <p class="text-xs text-[color:var(--muted)] mt-0.5">Enter your verified contact info. Do not include personal age, marital status, or full street addresses.</p>
           </div>
 
+          <!-- Profile Photo Upload Card (Optional) -->
+          <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 space-y-3 shadow-xs">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <span class="text-xs font-bold text-[color:var(--fg)]">Profile Photo</span>
+                <span class="rounded-full bg-[color:var(--surface-strong)] px-2 py-0.5 text-[10px] font-semibold text-[color:var(--muted)] border border-[color:var(--border)]">
+                  Optional
+                </span>
+              </div>
+              <span id="cv-photo-status-badge" class="hidden text-[11px] font-medium text-emerald-600 dark:text-emerald-400">Photo Active</span>
+            </div>
+
+            <!-- Upload Area & Guidelines -->
+            <div class="flex flex-col sm:flex-row sm:items-start gap-4">
+              <!-- Photo Thumbnail / Active State (Hidden by default) -->
+              <div id="cv-photo-preview-wrap" class="hidden flex flex-col items-center gap-2 shrink-0">
+                <div class="relative w-20 h-20 rounded-xl overflow-hidden border-2 border-emerald-500/40 bg-slate-100 dark:bg-slate-800 shadow-xs">
+                  <img id="cv-photo-thumb" src="" alt="Profile Photo Preview" class="w-full h-full object-cover" />
+                </div>
+                <button
+                  type="button"
+                  id="cv-btn-remove-photo"
+                  class="cursor-pointer text-[11px] font-semibold text-rose-600 dark:text-rose-400 hover:underline transition"
+                >
+                  Remove Photo
+                </button>
+              </div>
+
+              <!-- Upload Button & File Input -->
+              <div class="flex-1 min-w-0 space-y-2">
+                <input
+                  type="file"
+                  id="inp-photo"
+                  accept="image/jpeg,image/png,image/jpg,image/webp"
+                  class="hidden"
+                />
+                <div id="cv-photo-upload-prompt" class="flex items-center gap-3">
+                  <label
+                    for="inp-photo"
+                    class="inline-flex cursor-pointer items-center justify-center gap-2 rounded-xl border border-[color:var(--border-strong)] bg-[color:var(--surface-strong)] px-3.5 py-2 text-xs font-bold text-[color:var(--fg)] shadow-xs transition hover:bg-[color:var(--accent-soft)] hover:text-[color:var(--accent)] hover:border-[color:var(--accent)]"
+                  >
+                    <svg class="h-4 w-4 stroke-current" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <rect width="18" height="18" x="3" y="3" rx="2" ry="2"/>
+                      <circle cx="9" cy="9" r="2"/>
+                      <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/>
+                    </svg>
+                    <span>Upload Headshot</span>
+                  </label>
+                  <span class="text-[11px] text-[color:var(--muted)]">JPG, JPEG, PNG (Auto-cropped 1:1)</span>
+                </div>
+
+                <div id="cv-photo-replace-prompt" class="hidden">
+                  <label
+                    for="inp-photo"
+                    class="inline-flex cursor-pointer items-center gap-1.5 text-xs font-semibold text-[color:var(--accent)] hover:underline"
+                  >
+                    Change photo...
+                  </label>
+                </div>
+
+                <!-- Guidelines Box -->
+                <div class="rounded-xl bg-[color:var(--surface-strong)] p-2.5 border border-[color:var(--border)] text-[11px] text-[color:var(--muted)] space-y-1">
+                  <div class="font-semibold text-[color:var(--fg)] text-[11px]">Photo Guidelines:</div>
+                  <ul class="list-disc list-inside space-y-0.5 leading-relaxed">
+                    <li>Use a clear, recent, professional-looking head-and-shoulders photo.</li>
+                    <li>Plain/clean background preferred with good lighting; face clearly visible.</li>
+                    <li>Avoid selfies, group photos, filters, sunglasses, or heavily edited images.</li>
+                    <li>Recommended: <strong>Square (1:1)</strong>, high quality (auto-fitted without distortion).</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+
           <div class="space-y-3.5">
             <div>
               <label class="block text-xs font-bold text-[color:var(--fg)] mb-1.5">Full Name *</label>
@@ -703,6 +777,50 @@ const { initialTemplate = 'professional' } = Astro.props as Props;
     color: #4b5563;
     text-align: right;
   }
+
+  /* -------------------------------------------------- */
+  /* SHARED PROFILE PHOTO HEADER STYLES                 */
+  /* -------------------------------------------------- */
+  .cv-header-with-photo {
+    display: flex !important;
+    align-items: center !important;
+    gap: 14pt !important;
+    text-align: left !important;
+  }
+  .cv-header-photo-col {
+    flex-shrink: 0;
+    line-height: 0;
+  }
+  .cv-header-photo {
+    width: 62pt;
+    height: 62pt;
+    min-width: 62pt;
+    min-height: 62pt;
+    object-fit: cover;
+    display: block;
+  }
+  .cv-header-text-col {
+    flex: 1;
+    min-width: 0;
+    text-align: left !important;
+  }
+  .cv-header-with-photo .cv-name,
+  .cv-header-with-photo .cv-title,
+  .cv-header-with-photo .cv-contact-line {
+    text-align: left !important;
+  }
+  .template-professional .cv-header-photo {
+    border-radius: 2pt;
+    border: 1px solid #4b5563;
+  }
+  .template-modern .cv-header-photo {
+    border-radius: 6pt;
+    border: 1.5px solid #93c5fd;
+  }
+  .template-student .cv-header-photo {
+    border-radius: 4pt;
+    border: 1.5px solid #a7f3d0;
+  }
 </style>
 
 <script>
@@ -784,6 +902,7 @@ const { initialTemplate = 'professional' } = Astro.props as Props;
     volunteer: VolunteerItem[];
     interests: string;
     references: string;
+    photo?: string;
   }
 
   const STORAGE_KEY = 'calculator_cv_state_v2';
@@ -864,6 +983,7 @@ const { initialTemplate = 'professional' } = Astro.props as Props;
     ],
     interests: 'Open-source software contributing, marathon running, algorithmic chess, technical writing.',
     references: 'Available upon request',
+    photo: '',
   };
 
   function initCvMaker() {
@@ -896,6 +1016,7 @@ const { initialTemplate = 'professional' } = Astro.props as Props;
       volunteer: [],
       interests: '',
       references: 'Available upon request',
+      photo: '',
     };
 
     if (defaultTemplateAttr && !localStorage.getItem(STORAGE_KEY)) {
@@ -931,6 +1052,15 @@ const { initialTemplate = 'professional' } = Astro.props as Props;
     const cvPreviewDoc = document.getElementById('cv-preview-doc') as HTMLElement;
     const previewTemplateLabel = document.getElementById('preview-template-label') as HTMLElement;
 
+    // Photo Elements
+    const inpPhoto = document.getElementById('inp-photo') as HTMLInputElement | null;
+    const cvPhotoPreviewWrap = document.getElementById('cv-photo-preview-wrap') as HTMLElement | null;
+    const cvPhotoThumb = document.getElementById('cv-photo-thumb') as HTMLImageElement | null;
+    const cvBtnRemovePhoto = document.getElementById('cv-btn-remove-photo') as HTMLElement | null;
+    const cvPhotoUploadPrompt = document.getElementById('cv-photo-upload-prompt') as HTMLElement | null;
+    const cvPhotoReplacePrompt = document.getElementById('cv-photo-replace-prompt') as HTMLElement | null;
+    const cvPhotoStatusBadge = document.getElementById('cv-photo-status-badge') as HTMLElement | null;
+
     // Containers
     const eduContainer = document.getElementById('edu-container') as HTMLElement;
     const expContainer = document.getElementById('exp-container') as HTMLElement;
@@ -952,6 +1082,21 @@ const { initialTemplate = 'professional' } = Astro.props as Props;
       if (inpSummary) inpSummary.value = state.summary || '';
       if (inpInterests) inpInterests.value = state.interests || '';
       if (inpReferences) inpReferences.value = state.references || '';
+
+      if (state.photo) {
+        if (cvPhotoThumb) cvPhotoThumb.src = state.photo;
+        cvPhotoPreviewWrap?.classList.remove('hidden');
+        cvPhotoReplacePrompt?.classList.remove('hidden');
+        cvPhotoUploadPrompt?.classList.add('hidden');
+        cvPhotoStatusBadge?.classList.remove('hidden');
+      } else {
+        if (cvPhotoThumb) cvPhotoThumb.src = '';
+        cvPhotoPreviewWrap?.classList.add('hidden');
+        cvPhotoReplacePrompt?.classList.add('hidden');
+        cvPhotoUploadPrompt?.classList.remove('hidden');
+        cvPhotoStatusBadge?.classList.add('hidden');
+        if (inpPhoto) inpPhoto.value = '';
+      }
 
       document.querySelectorAll('.cv-template-btn').forEach((btn) => {
         const t = btn.getAttribute('data-template-btn');
@@ -1214,8 +1359,20 @@ const { initialTemplate = 'professional' } = Astro.props as Props;
 
       const contactLineHtml = contactItems.length > 0 ? `<div class="cv-contact-line">${contactItems.join(' &nbsp;|&nbsp; ')}</div>` : '';
 
-      // Header Block
-      const headerHtml = `
+      // Header Block (Left photo when present, 100% backward compatible without photo)
+      const hasPhoto = Boolean(state.photo && state.photo.trim().length > 0);
+      const headerHtml = hasPhoto ? `
+        <div class="cv-header cv-header-with-photo">
+          <div class="cv-header-photo-col">
+            <img src="${state.photo}" alt="Profile Photo" class="cv-header-photo" />
+          </div>
+          <div class="cv-header-text-col">
+            <div class="cv-name">${escapeHtml(name)}</div>
+            ${title ? `<div class="cv-title">${escapeHtml(title)}</div>` : ''}
+            ${contactLineHtml}
+          </div>
+        </div>
+      ` : `
         <div class="cv-header">
           <div class="cv-name">${escapeHtml(name)}</div>
           ${title ? `<div class="cv-title">${escapeHtml(title)}</div>` : ''}
@@ -1463,6 +1620,53 @@ const { initialTemplate = 'professional' } = Astro.props as Props;
     bindInput(inpSummary, 'summary');
     bindInput(inpInterests, 'interests');
     bindInput(inpReferences, 'references');
+
+    // =========================================================================
+    // PROFILE PHOTO UPLOAD & AUTO-CROP HANDLER (1:1 SQUARE, RECIPIENT ATS SAFE)
+    // =========================================================================
+    inpPhoto?.addEventListener('change', (e) => {
+      const file = (e.target as HTMLInputElement).files?.[0];
+      if (!file) return;
+
+      if (!file.type.match(/^image\/(jpeg|jpg|png|webp)$/i)) {
+        alert('Please select a valid image file (JPG, JPEG, PNG, or WebP).');
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = (readerEvent) => {
+        const img = new Image();
+        img.onload = () => {
+          // Auto-crop to 1:1 square & scale to standard 360x360 via offscreen canvas
+          const canvas = document.createElement('canvas');
+          const targetSize = 360;
+          canvas.width = targetSize;
+          canvas.height = targetSize;
+          const ctx = canvas.getContext('2d');
+          if (!ctx) return;
+
+          const minSide = Math.min(img.width, img.height);
+          const startX = (img.width - minSide) / 2;
+          const startY = (img.height - minSide) / 2;
+
+          ctx.drawImage(img, startX, startY, minSide, minSide, 0, 0, targetSize, targetSize);
+
+          const croppedDataUrl = canvas.toDataURL('image/jpeg', 0.9);
+          state.photo = croppedDataUrl;
+          saveState();
+          syncFormInputs();
+        };
+        img.src = readerEvent.target?.result as string;
+      };
+      reader.readAsDataURL(file);
+    });
+
+    cvBtnRemovePhoto?.addEventListener('click', () => {
+      state.photo = '';
+      if (inpPhoto) inpPhoto.value = '';
+      saveState();
+      syncFormInputs();
+    });
 
     // =========================================================================
     // AI SUMMARY GENERATION HANDLER (ZERO EXPOSED SECRETS, RATE LIMITED)
@@ -1854,7 +2058,9 @@ const { initialTemplate = 'professional' } = Astro.props as Props;
           volunteer: [],
           interests: '',
           references: 'Available upon request',
+          photo: '',
         };
+        if (inpPhoto) inpPhoto.value = '';
         saveState();
         syncFormInputs();
       }

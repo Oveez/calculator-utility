@@ -1,10 +1,11 @@
 ---
 import SiteLayout from '../../layouts/SiteLayout.astro';
 import Icon from '../../components/Icon.astro';
+import CalculatorParameterGuide from '../../components/calculator/CalculatorParameterGuide.astro';
 import { siteName, toAbsoluteUrl, withBasePath } from '../../utils/site';
 
-const pageTitle = `CSV to Markdown Table Converter — Free Online Table Formatter · ${siteName}`;
-const pageDesc = 'Convert CSV spreadsheet tables to GitHub-flavored Markdown tables online. Perfect for README.md docs, PR descriptions, and static site content. 100% private in-browser tool.';
+const pageTitle = `CSV to Markdown Table Converter — GitHub GFM Tables · ${siteName}`;
+const pageDesc = 'Convert CSV spreadsheets, TSV, and Excel data into formatted Markdown tables for GitHub READMEs, docs, and static blogs. Includes column alignment, pretty-padding, live preview, and HTML table export. 100% private in-browser tool.';
 const canonicalUrl = toAbsoluteUrl('/data-tools/csv-to-markdown/');
 
 const breadcrumbItems = [
@@ -15,8 +16,16 @@ const breadcrumbItems = [
 
 const schemaFaq = [
   {
-    question: 'How are Markdown tables formatted from CSV?',
-    answer: 'The first row forms the header line wrapped in pipe symbols `| Header |`, followed by the Markdown separator row `| --- |`, and subsequent rows formatted into data table rows.',
+    question: 'How does CSV to Markdown conversion work?',
+    answer: 'The converter parses the CSV header and body rows according to RFC 4180 standards, formats header delimiters with specified text alignment colons (:---, :---:, ---:), and generates clean GitHub-Flavored Markdown (GFM) pipe tables.',
+  },
+  {
+    question: 'Does this converter support pretty-padded columns?',
+    answer: 'Yes. With Pretty Padding enabled, the tool measures the maximum text width in each column and pads cells with spaces so all vertical pipe (|) borders align neatly in plain text.',
+  },
+  {
+    question: 'Can I export clean HTML <table> code instead of Markdown?',
+    answer: 'Yes. You can toggle between GitHub-Flavored Markdown and semantic HTML table code (<table>, <thead>, <tbody>, <tr>, <th>, <td>).',
   },
 ];
 
@@ -54,6 +63,51 @@ const schemaGraph = [
     })),
   },
 ];
+
+const parameterGuide = [
+  {
+    id: 'column_alignment',
+    name: 'Column Alignment (:---, :---:, ---:)',
+    description: 'Dictates text justification across columns in rendered Markdown.',
+    whyItMatters: 'Left-align (:---) is best for text descriptions; Center-align (:---:) suits badges and status icons; Right-align (---:) is standard for financial and numeric data.',
+    typicalRange: 'Left, Center, Right, or Auto-detect',
+  },
+  {
+    id: 'pretty_padding',
+    name: 'Pretty Padding (Aligned Pipes)',
+    description: 'Pads each table cell with whitespace so pipes (|) line up vertically in source code editors.',
+    whyItMatters: 'Greatly enhances readability when reviewing Markdown files directly in raw Git diffs and code editors.',
+    typicalRange: 'Pretty-Padded vs Compact',
+  },
+  {
+    id: 'pipe_escaping',
+    name: 'Pipe Character Escaping (\\|)',
+    description: 'Automatically escapes literal pipe symbols inside data values so Markdown table columns do not break.',
+    whyItMatters: 'Unescaped pipes in cell contents inadvertently split one column into two, ruining table layout.',
+    typicalRange: 'Automatic (\\|)',
+  },
+  {
+    id: 'html_export',
+    name: 'HTML <table> Alternate Mode',
+    description: 'Allows switching between Markdown table syntax and standard HTML5 semantic table tags.',
+    whyItMatters: 'Useful for embedding tables into CMS editors, email templates, or websites that do not render Markdown.',
+    typicalRange: 'Markdown GFM vs HTML <table>',
+  },
+  {
+    id: 'delimiter_support',
+    name: 'Multi-Delimiter RFC 4180',
+    description: 'Auto-detects commas, semicolons, tabs, and pipes while safely preserving quoted strings.',
+    whyItMatters: 'Allows copying straight from Excel, Google Sheets, or TSV exports without pre-formatting.',
+    typicalRange: 'Comma, Tab, Semicolon, Pipe',
+  },
+  {
+    id: 'privacy',
+    name: '100% In-Memory Conversion',
+    description: 'All string transformations and live table previews execute locally in your web browser.',
+    whyItMatters: 'Ensures zero leakage of proprietary documentation or internal spreadsheets.',
+    typicalRange: 'In-Browser Memory',
+  },
+];
 ---
 
 <SiteLayout title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
@@ -82,60 +136,181 @@ const schemaGraph = [
     <header class="space-y-3">
       <div class="inline-flex items-center gap-2 rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1 text-xs font-semibold text-[color:var(--muted)]">
         <span class="inline-block h-2 w-2 rounded-full bg-emerald-500"></span>
-        <span>GitHub-Flavored Markdown (GFM)</span>
+        <span>100% Client-Side In-Memory Conversion</span>
       </div>
       <h1 class="text-2xl sm:text-4xl font-extrabold tracking-tight text-[color:var(--fg)]">
         CSV to Markdown Table Converter
       </h1>
-      <p class="max-w-2xl text-xs sm:text-sm text-[color:var(--muted)] leading-relaxed">
-        Convert CSV spreadsheets and Excel data into formatted Markdown tables for GitHub READMEs, docs, and static websites.
+      <p class="max-w-3xl text-xs sm:text-sm text-[color:var(--muted)] leading-relaxed">
+        Convert CSV spreadsheets, TSV data, and Excel tables into GitHub-Flavored Markdown (GFM) pipe tables. Features customizable column alignments, pretty vertical pipe padding, HTML table export, and live rendering.
       </p>
     </header>
 
+    <!-- Metrics Bar -->
+    <div id="stats-bar" class="grid grid-cols-2 gap-3 sm:grid-cols-4 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-center">
+      <div>
+        <span class="block text-[11px] uppercase tracking-wider text-[color:var(--muted)]">Total Rows</span>
+        <span id="stat-rows" class="font-mono text-lg font-bold text-[color:var(--fg)]">0</span>
+      </div>
+      <div>
+        <span class="block text-[11px] uppercase tracking-wider text-[color:var(--muted)]">Columns</span>
+        <span id="stat-cols" class="font-mono text-lg font-bold text-[color:var(--fg)]">0</span>
+      </div>
+      <div>
+        <span class="block text-[11px] uppercase tracking-wider text-[color:var(--muted)]">Markdown Characters</span>
+        <span id="stat-chars" class="font-mono text-lg font-bold text-cyan-600 dark:text-cyan-400 dark:text-cyan-400">0</span>
+      </div>
+      <div>
+        <span class="block text-[11px] uppercase tracking-wider text-[color:var(--muted)]">Output Mode</span>
+        <span id="stat-mode" class="font-mono text-xs font-bold text-[color:var(--muted)] truncate block px-2">GFM Markdown</span>
+      </div>
+    </div>
+
+    <!-- Main Workspace -->
     <div class="grid gap-6 lg:grid-cols-2">
-      <!-- Input -->
-      <div class="space-y-3">
+      <!-- Input Column -->
+      <div class="space-y-4">
         <div class="flex items-center justify-between">
-          <label for="csv-in" class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Source CSV</label>
+          <label for="csv-in" class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Source CSV Data</label>
           <div class="flex items-center gap-2 text-xs">
-            <button type="button" data-sample-btn class="text-[color:var(--primary)] hover:underline font-semibold">Load Sample</button>
+            <button type="button" data-sample-btn class="font-semibold text-[color:var(--primary)] hover:underline cursor-pointer">Load Sample</button>
             <span class="text-[color:var(--border)]">|</span>
-            <button type="button" data-clear-btn class="text-[color:var(--muted)] hover:text-[color:var(--fg)]">Clear</button>
+            <button type="button" data-clear-btn class="text-[color:var(--muted)] hover:text-[color:var(--fg)] cursor-pointer">Clear</button>
           </div>
         </div>
-        <textarea
-          id="csv-in"
-          rows="16"
-          class="w-full font-mono text-xs leading-relaxed rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-[color:var(--fg)] focus:border-[color:var(--border-strong)] focus:outline-hidden"
-          placeholder="Feature,Supported,Notes&#10;Dark Mode,Yes,Built-in system theme&#10;Offline,Yes,Client-side service worker"
-        ></textarea>
-        <button
-          type="button"
-          data-convert-btn
-          class="w-full rounded-xl bg-[color:var(--fg)] py-2.5 text-xs font-bold text-[color:var(--bg)] shadow-xs transition hover:opacity-90"
-        >
-          Convert to Markdown Table
-        </button>
-      </div>
 
-      <!-- Output -->
-      <div class="space-y-3">
-        <div class="flex items-center justify-between">
-          <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Markdown Table Output</span>
-          <button type="button" data-copy-btn class="inline-flex items-center gap-1 text-xs font-bold text-[color:var(--fg)] hover:underline">
-            <Icon name="copy" class="w-3.5 h-3.5" />
-            <span>Copy Markdown</span>
+        <div class="space-y-2">
+          <input
+            type="file"
+            id="csv-file-in"
+            accept=".csv,.tsv,.txt"
+            class="w-full text-xs text-[color:var(--muted)] file:mr-3 file:rounded-xl file:border file:border-[color:var(--border)] file:bg-[color:var(--surface)] file:px-3 file:py-1.5 file:text-xs file:font-semibold file:text-[color:var(--fg)] hover:file:bg-[color:var(--surface-strong)]"
+          />
+          <textarea
+            id="csv-in"
+            rows="14"
+            class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 font-mono text-xs leading-relaxed text-[color:var(--fg)] focus:border-[color:var(--border-strong)] focus:outline-hidden"
+            placeholder="Feature,Status,Platform,Rating&#10;Calculator Engine,Active,Web,4.9&#10;Developer Utilities,Active,Web,5.0&#10;Offline Service Worker,Planned,PWA,4.8"
+          ></textarea>
+        </div>
+
+        <!-- Format Controls -->
+        <div class="space-y-3 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-xs">
+          <div class="grid gap-3 sm:grid-cols-2">
+            <div>
+              <label for="align-select" class="block font-medium text-[color:var(--muted)] mb-1">Column Alignment:</label>
+              <select id="align-select" class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] px-3 py-1.5 text-xs text-[color:var(--fg)]">
+                <option value="left">Left Aligned (:---)</option>
+                <option value="center">Center Aligned (:---:)</option>
+                <option value="right">Right Aligned (---:)</option>
+                <option value="auto">Auto (Text Left, Numbers Right)</option>
+              </select>
+            </div>
+            <div>
+              <label for="format-mode" class="block font-medium text-[color:var(--muted)] mb-1">Syntax Format:</label>
+              <select id="format-mode" class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] px-3 py-1.5 text-xs text-[color:var(--fg)]">
+                <option value="gfm">GitHub-Flavored Markdown (GFM)</option>
+                <option value="html">HTML5 Table (&lt;table&gt;)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="flex flex-wrap items-center justify-between gap-2 pt-1">
+            <label class="flex items-center gap-2 cursor-pointer">
+              <input type="checkbox" id="pretty-pad" checked class="rounded border-[color:var(--border)] accent-[color:var(--fg)]" />
+              <span class="text-xs font-semibold text-[color:var(--fg)]">Pretty Padding (Align Vertical Pipes)</span>
+            </label>
+          </div>
+
+          <button
+            type="button"
+            data-convert-btn
+            class="w-full mt-2 rounded-xl bg-[color:var(--fg)] py-2.5 text-xs font-bold text-[color:var(--bg)] shadow-xs transition hover:opacity-90 cursor-pointer"
+          >
+            ⚡ Convert to Markdown Table
           </button>
         </div>
+      </div>
+
+      <!-- Output Column -->
+      <div class="space-y-4">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Generated Code</span>
+            <span id="status-badge" class="rounded-md bg-cyan-500/15 px-2 py-0.5 text-[10px] font-bold text-cyan-600 dark:text-cyan-400 dark:text-cyan-400">Ready</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <button type="button" data-copy-btn class="inline-flex items-center gap-1 text-xs font-bold text-[color:var(--fg)] hover:underline cursor-pointer">
+              <Icon name="copy" class="h-3.5 w-3.5" />
+              <span>Copy Code</span>
+            </button>
+            <span class="text-[color:var(--border)]">|</span>
+            <button type="button" data-dl-btn class="text-xs font-bold text-[color:var(--fg)] hover:underline cursor-pointer">Download File</button>
+          </div>
+        </div>
+
         <textarea
-          id="md-out"
-          rows="16"
+          id="code-out"
+          rows="18"
           readonly
-          class="w-full font-mono text-xs leading-relaxed rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-4 text-[color:var(--fg)] focus:outline-hidden"
-          placeholder="| Header 1 | Header 2 |&#10;| --- | --- |"
+          class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-4 font-mono text-xs leading-relaxed text-[color:var(--fg)] focus:outline-hidden whitespace-pre"
+          placeholder="Formatted Markdown or HTML table will appear here..."
         ></textarea>
       </div>
     </div>
+
+    <!-- Live Rendered Preview Section -->
+    <section class="space-y-3 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5">
+      <div class="flex items-center justify-between">
+        <h2 class="text-sm font-bold uppercase tracking-wider text-[color:var(--fg)]">
+          📊 Live Rendered Table Preview
+        </h2>
+        <span id="preview-badge" class="text-xs text-[color:var(--muted)]">Visual Rendering</span>
+      </div>
+      <div class="overflow-x-auto rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] p-1">
+        <div id="rendered-container" class="min-w-full">
+          <table class="min-w-full divide-y divide-[color:var(--border)] text-left text-xs font-sans">
+            <thead class="bg-[color:var(--surface)] text-[color:var(--fg)]">
+              <tr><th class="p-3 font-semibold text-[color:var(--muted)]">No data loaded yet</th></tr>
+            </thead>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- Step-by-Step Worked Example -->
+    <section class="space-y-4 rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 sm:p-8 text-xs sm:text-sm text-[color:var(--muted)] leading-relaxed">
+      <div class="flex items-center gap-2">
+        <span class="rounded-md bg-[color:var(--accent)]/15 px-2.5 py-1 text-xs font-bold text-[color:var(--accent)]">Worked Example</span>
+        <h2 class="text-base sm:text-lg font-bold text-[color:var(--fg)]">GitHub README Feature Comparison Table</h2>
+      </div>
+      <p>
+        Translating software feature benchmarks with right-aligned numeric ratings and pretty vertical pipe spacing:
+      </p>
+      <div class="grid gap-4 sm:grid-cols-2">
+        <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] p-4 font-mono text-xs">
+          <span class="text-[color:var(--muted)] block mb-1 font-bold font-sans">Source CSV:</span>
+          Module,Status,Rating<br/>
+          Core Calculators,Stable,4.9<br/>
+          Developer Tools,Active,5.0<br/>
+          Tax Engine,Updated,5.0
+        </div>
+        <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] p-4 font-mono text-xs whitespace-pre">
+<span class="text-[color:var(--muted)] block mb-1 font-bold font-sans">Pretty-Padded GFM Markdown:</span>
+| Module           | Status  | Rating |
+| :--------------- | :------ | -----: |
+| Core Calculators | Stable  |    4.9 |
+| Developer Tools  | Active  |    5.0 |
+| Tax Engine       | Updated |    5.0 |
+        </div>
+      </div>
+      <p class="text-xs text-[color:var(--muted)]">
+        The table is perfectly aligned in raw markdown and renders identically across GitHub, GitLab, Notion, and Discord.
+      </p>
+    </section>
+
+    <!-- Parameter Guide -->
+    <CalculatorParameterGuide parameters={parameterGuide} />
 
     <!-- FAQs -->
     <section class="space-y-4">
@@ -162,47 +337,256 @@ const schemaGraph = [
       if (!root) return;
 
       const input = root.querySelector('#csv-in');
-      const output = root.querySelector('#md-out');
+      const fileIn = root.querySelector('#csv-file-in');
+      const output = root.querySelector('#code-out');
+      const alignSelect = root.querySelector('#align-select');
+      const formatMode = root.querySelector('#format-mode');
+      const prettyPad = root.querySelector('#pretty-pad');
       const convertBtn = root.querySelector('[data-convert-btn]');
       const sampleBtn = root.querySelector('[data-sample-btn]');
       const clearBtn = root.querySelector('[data-clear-btn]');
       const copyBtn = root.querySelector('[data-copy-btn]');
+      const dlBtn = root.querySelector('[data-dl-btn]');
+
+      const statRows = root.querySelector('#stat-rows');
+      const statCols = root.querySelector('#stat-cols');
+      const statChars = root.querySelector('#stat-chars');
+      const statMode = root.querySelector('#stat-mode');
+
+      const renderedContainer = root.querySelector('#rendered-container');
+      const previewBadge = root.querySelector('#preview-badge');
+
+      function autoDetect(text) {
+        const firstLines = text.split('\n').slice(0, 5).join('\n');
+        const c = (firstLines.match(/,/g) || []).length;
+        const s = (firstLines.match(/;/g) || []).length;
+        const t = (firstLines.match(/\t/g) || []).length;
+        const p = (firstLines.match(/\|/g) || []).length;
+        if (s > c && s > t && s > p) return ';';
+        if (t > c && t > s && t > p) return '\t';
+        if (p > c && p > s && p > t) return '|';
+        return ',';
+      }
+
+      function parseCsv(text, delim) {
+        const rows = [];
+        let cur = [];
+        let val = '';
+        let inQuotes = false;
+
+        for (let i = 0; i < text.length; i++) {
+          const ch = text[i];
+          const nxt = text[i + 1];
+
+          if (ch === '"') {
+            if (inQuotes && nxt === '"') {
+              val += '"';
+              i++;
+            } else {
+              inQuotes = !inQuotes;
+            }
+          } else if (ch === delim && !inQuotes) {
+            cur.push(val.trim());
+            val = '';
+          } else if ((ch === '\r' || ch === '\n') && !inQuotes) {
+            if (ch === '\r' && nxt === '\n') i++;
+            cur.push(val.trim());
+            if (cur.some(x => x.length > 0)) rows.push(cur);
+            cur = [];
+            val = '';
+          } else {
+            val += ch;
+          }
+        }
+        if (val.length > 0 || cur.length > 0) {
+          cur.push(val.trim());
+          if (cur.some(x => x.length > 0)) rows.push(cur);
+        }
+        return rows;
+      }
+
+      function escapeHtml(s) {
+        return String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+      }
 
       function convert() {
         const text = input.value.trim();
         if (!text) {
           output.value = '';
+          statRows.textContent = '0';
+          statCols.textContent = '0';
+          statChars.textContent = '0';
+          statMode.textContent = formatMode.value === 'gfm' ? 'GFM Markdown' : 'HTML <table>';
+          renderedContainer.innerHTML = '<table class="min-w-full divide-y divide-[color:var(--border)] text-left text-xs font-sans"><thead class="bg-[color:var(--surface)] text-[color:var(--fg)]"><tr><th class="p-3 font-semibold text-[color:var(--muted)]">No data loaded yet</th></tr></thead></table>';
           return;
         }
 
-        const lines = text.split('\n').filter(l => l.trim().length > 0);
-        if (lines.length === 0) return;
+        const delim = autoDetect(text);
+        const rows = parseCsv(text, delim);
+        if (rows.length < 2) return;
 
-        const rows = lines.map(line => {
-          return line.split(',').map(c => c.trim().replace(/\|/g, '\\|'));
+        const headers = rows[0].map(h => h.replace(/\|/g, '\\|'));
+        const dataRows = rows.slice(1).map(r => r.map(c => String(c ?? '').replace(/\|/g, '\\|')));
+
+        const colCount = headers.length;
+        statRows.textContent = dataRows.length.toLocaleString();
+        statCols.textContent = colCount.toLocaleString();
+
+        const isHtml = formatMode.value === 'html';
+        statMode.textContent = isHtml ? 'HTML <table>' : 'GFM Markdown';
+
+        // Determine column alignments
+        const globalAlign = alignSelect.value;
+        const colAlignments = headers.map((_, colIdx) => {
+          if (globalAlign === 'auto') {
+            const isNumeric = dataRows.every(row => {
+              const val = row[colIdx];
+              return val === undefined || val === '' || /^-?\d+(\.\d+)?$/.test(val.trim());
+            });
+            return isNumeric ? 'right' : 'left';
+          }
+          return globalAlign;
         });
 
-        const headers = rows[0];
-        const dataRows = rows.slice(1);
+        if (isHtml) {
+          let html = '<table class="data-table">\n  <thead>\n    <tr>\n';
+          headers.forEach((h, i) => {
+            html += `      <th style="text-align: ${colAlignments[i]};">${escapeHtml(h)}</th>\n`;
+          });
+          html += '    </tr>\n  </thead>\n  <tbody>\n';
+          dataRows.forEach(row => {
+            html += '    <tr>\n';
+            headers.forEach((_, i) => {
+              html += `      <td style="text-align: ${colAlignments[i]};">${escapeHtml(row[i] ?? '')}</td>\n`;
+            });
+            html += '    </tr>\n';
+          });
+          html += '  </tbody>\n</table>';
 
-        const headLine = `| ${headers.join(' | ')} |`;
-        const sepLine = `| ${headers.map(() => '---').join(' | ')} |`;
-        const bodyLines = dataRows.map(r => `| ${r.join(' | ')} |`);
+          output.value = html;
+          statChars.textContent = html.length.toLocaleString();
+        } else {
+          // GFM Markdown
+          const usePadding = prettyPad.checked;
 
-        output.value = [headLine, sepLine, ...bodyLines].join('\n');
+          if (usePadding) {
+            // Calculate column max widths
+            const colWidths = headers.map((h, i) => {
+              let max = h.length;
+              dataRows.forEach(r => {
+                const len = (r[i] || '').length;
+                if (len > max) max = len;
+              });
+              return Math.max(max, 3); // Minimum 3 for separator :--
+            });
+
+            // Header line
+            const headerLine = '| ' + headers.map((h, i) => h.padEnd(colWidths[i])).join(' | ') + ' |';
+
+            // Separator line
+            const sepLine = '| ' + colWidths.map((w, i) => {
+              const align = colAlignments[i];
+              if (align === 'center') return ':' + '-'.repeat(Math.max(w - 2, 1)) + ':';
+              if (align === 'right') return '-'.repeat(Math.max(w - 1, 2)) + ':';
+              return ':' + '-'.repeat(Math.max(w - 1, 2));
+            }).join(' | ') + ' |';
+
+            // Data lines
+            const bodyLines = dataRows.map(row => {
+              return '| ' + headers.map((_, i) => {
+                const val = row[i] || '';
+                const align = colAlignments[i];
+                if (align === 'right') return val.padStart(colWidths[i]);
+                if (align === 'center') {
+                  const padTotal = colWidths[i] - val.length;
+                  const left = Math.floor(padTotal / 2);
+                  const right = padTotal - left;
+                  return ' '.repeat(left) + val + ' '.repeat(right);
+                }
+                return val.padEnd(colWidths[i]);
+              }).join(' | ') + ' |';
+            });
+
+            const mdText = [headerLine, sepLine, ...bodyLines].join('\n');
+            output.value = mdText;
+            statChars.textContent = mdText.length.toLocaleString();
+          } else {
+            // Compact GFM
+            const headerLine = '| ' + headers.join(' | ') + ' |';
+            const sepLine = '| ' + colAlignments.map(align => {
+              if (align === 'center') return ':---:';
+              if (align === 'right') return '---:';
+              return ':---';
+            }).join(' | ') + ' |';
+
+            const bodyLines = dataRows.map(row => '| ' + headers.map((_, i) => row[i] || '').join(' | ') + ' |');
+            const mdText = [headerLine, sepLine, ...bodyLines].join('\n');
+            output.value = mdText;
+            statChars.textContent = mdText.length.toLocaleString();
+          }
+        }
+
+        // Render visual table in DOM
+        renderDomPreview(headers, dataRows, colAlignments);
+      }
+
+      function renderDomPreview(headers, dataRows, colAlignments) {
+        previewBadge.textContent = `Showing 1–${Math.min(8, dataRows.length)} of ${dataRows.length} rows`;
+
+        let tableHtml = '<table class="min-w-full divide-y divide-[color:var(--border)] text-xs font-sans">\n';
+        tableHtml += '<thead class="bg-[color:var(--surface)] text-[color:var(--fg)]">\n<tr>';
+        headers.forEach((h, i) => {
+          tableHtml += `<th class="p-2.5 font-bold uppercase tracking-wider border-b border-[color:var(--border)] text-${colAlignments[i]}">${escapeHtml(h)}</th>`;
+        });
+        tableHtml += '</tr>\n</thead>\n<tbody class="divide-y divide-[color:var(--border)] text-[color:var(--muted)]">\n';
+
+        const sample = dataRows.slice(0, 8);
+        sample.forEach((row, rIdx) => {
+          tableHtml += `<tr class="${rIdx % 2 === 0 ? 'bg-[color:var(--surface)]/30' : ''}">`;
+          headers.forEach((_, i) => {
+            tableHtml += `<td class="p-2.5 border-b border-[color:var(--border)] text-${colAlignments[i]}">${escapeHtml(row[i] || '')}</td>`;
+          });
+          tableHtml += '</tr>\n';
+        });
+        tableHtml += '</tbody>\n</table>';
+
+        renderedContainer.innerHTML = tableHtml;
       }
 
       convertBtn.addEventListener('click', convert);
-      input.addEventListener('input', convert);
+      alignSelect.addEventListener('change', convert);
+      formatMode.addEventListener('change', convert);
+      prettyPad.addEventListener('change', convert);
+
+      input.addEventListener('input', () => {
+        clearTimeout(input._timer);
+        input._timer = setTimeout(convert, 250);
+      });
+
+      fileIn.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (evt) => {
+          input.value = evt.target.result;
+          convert();
+        };
+        reader.readAsText(file);
+      });
 
       sampleBtn.addEventListener('click', () => {
-        input.value = `Feature,Status,Platform,Notes\nCalculators,Live,Web,29 academic and financial engines\nDeveloper Tools,Live,Web,JSON and Regex validators\nOffline Support,Active,PWA,Zero server dependencies`;
+        input.value = `Feature,Status,Category,Rating\nCalculators Suite,Active,Finance & Education,4.95\nDeveloper Tools,Active,Productivity,5.00\nData CSV Utilities,Active,Data Transformation,5.00\nPWA Service Worker,Planned,Offline Support,4.80`;
         convert();
       });
 
       clearBtn.addEventListener('click', () => {
         input.value = '';
         output.value = '';
+        fileIn.value = '';
+        statRows.textContent = '0';
+        statCols.textContent = '0';
+        statChars.textContent = '0';
+        renderedContainer.innerHTML = '<table class="min-w-full divide-y divide-[color:var(--border)] text-left text-xs font-sans"><thead class="bg-[color:var(--surface)] text-[color:var(--fg)]"><tr><th class="p-3 font-semibold text-[color:var(--muted)]">No data loaded yet</th></tr></thead></table>';
       });
 
       copyBtn.addEventListener('click', () => {
@@ -214,6 +598,19 @@ const schemaGraph = [
         setTimeout(() => span.textContent = orig, 1800);
       });
 
+      dlBtn.addEventListener('click', () => {
+        if (!output.value) return;
+        const isHtml = formatMode.value === 'html';
+        const blob = new Blob([output.value], { type: isHtml ? 'text/html' : 'text/markdown' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = isHtml ? 'table.html' : 'table.md';
+        a.click();
+        URL.revokeObjectURL(url);
+      });
+
+      // Initialize with sample
       sampleBtn.click();
     })();
   </script>

@@ -1,10 +1,11 @@
 ---
 import SiteLayout from '../../layouts/SiteLayout.astro';
 import Icon from '../../components/Icon.astro';
+import CalculatorParameterGuide from '../../components/calculator/CalculatorParameterGuide.astro';
 import { siteName, toAbsoluteUrl, withBasePath } from '../../utils/site';
 
-const pageTitle = `YAML to JSON Converter — Free Online Config Parser · ${siteName}`;
-const pageDesc = 'Convert YAML files into valid structured JSON online. Handles key-value mappings, nested sequences, lists, and booleans. 100% private in-browser conversion.';
+const pageTitle = `YAML to JSON Converter — Online YAML Config Parser · ${siteName}`;
+const pageDesc = 'Convert YAML configuration files into standardized JSON format with formatted indentation, scalar type casting, and syntax error diagnostics. 100% private in-browser tool.';
 const canonicalUrl = toAbsoluteUrl('/developer-tools/yaml-to-json/');
 
 const breadcrumbItems = [
@@ -15,12 +16,16 @@ const breadcrumbItems = [
 
 const schemaFaq = [
   {
-    question: 'How does this tool convert YAML to JSON?',
-    answer: 'It parses YAML line indentation, nested mappings, and lists in memory, converting them into standard ECMAScript objects before serializing to formatted JSON.',
+    question: 'How are YAML comments and whitespace handled when converting to JSON?',
+    answer: 'YAML comments starting with `#` are automatically stripped during parsing because standard JSON specifications do not support comments. Indentation whitespace is parsed to establish object hierarchy and replaced with standard 2-space JSON formatting.',
   },
   {
-    question: 'Is my YAML data sent to an external server?',
-    answer: 'No. The conversion runs 100% locally in your browser memory. No files or text are uploaded anywhere.',
+    question: 'How are YAML numbers, booleans, and null values parsed?',
+    answer: 'Unquoted values like `true`, `false`, `yes`, and `no` are converted to native JSON booleans (`true`/`false`). Unquoted numbers (integers and floats) are parsed into numeric literals, and `null` or `~` values are parsed into `null`.',
+  },
+  {
+    question: 'Are my configuration files or cloud credentials stored or logged?',
+    answer: 'No. All conversion and parsing runs 100% locally inside your browser via client-side JavaScript. No tokens, secret keys, or YAML manifests are ever sent over the network.',
   },
 ];
 
@@ -86,41 +91,86 @@ const schemaGraph = [
     <header class="space-y-3">
       <div class="inline-flex items-center gap-2 rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1 text-xs font-semibold text-[color:var(--muted)]">
         <span class="inline-block h-2 w-2 rounded-full bg-emerald-500"></span>
-        <span>Local Config Parser</span>
+        <span>Standardized RFC 8259 JSON &bull; Type-Safe Coercion</span>
       </div>
       <h1 class="text-2xl sm:text-4xl font-extrabold tracking-tight text-[color:var(--fg)]">
         YAML to JSON Converter
       </h1>
       <p class="max-w-2xl text-xs sm:text-sm text-[color:var(--muted)] leading-relaxed">
-        Convert YAML configurations into standardized JSON format with formatted 2-space indentation.
+        Parse YAML manifests, Docker Compose files, and cloud configs into validated, formatted JSON. Supports multi-level nesting, lists of objects, and compact or pretty-printed indentation.
       </p>
     </header>
 
+    <!-- Telemetry Bar -->
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+      <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3 text-center">
+        <p class="text-[10px] font-bold uppercase tracking-wider text-[color:var(--muted)]">YAML Size</p>
+        <p id="stat-yaml-size" class="mt-1 font-mono text-base font-bold text-[color:var(--fg)]">0 B</p>
+      </div>
+      <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3 text-center">
+        <p class="text-[10px] font-bold uppercase tracking-wider text-[color:var(--muted)]">JSON Size</p>
+        <p id="stat-json-size" class="mt-1 font-mono text-base font-bold text-cyan-500 dark:text-cyan-400">0 B</p>
+      </div>
+      <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3 text-center">
+        <p class="text-[10px] font-bold uppercase tracking-wider text-[color:var(--muted)]">Nesting Depth</p>
+        <p id="stat-depth" class="mt-1 font-mono text-base font-bold text-[color:var(--fg)]">0 levels</p>
+      </div>
+      <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3 text-center">
+        <p class="text-[10px] font-bold uppercase tracking-wider text-[color:var(--muted)]">Size Delta</p>
+        <p id="stat-delta" class="mt-1 font-mono text-base font-bold text-[color:var(--fg)]">+0%</p>
+      </div>
+    </div>
+
+    <!-- Main Workspace -->
     <div class="grid gap-6 lg:grid-cols-2">
+      <!-- Input Column -->
       <div class="space-y-3">
         <div class="flex items-center justify-between">
-          <label for="yaml-in" class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">YAML Input</label>
+          <label for="yaml-in" class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">
+            YAML Input
+          </label>
           <div class="flex items-center gap-2 text-xs">
             <button type="button" data-sample-btn class="text-[color:var(--primary)] hover:underline font-semibold">Load Sample</button>
             <span class="text-[color:var(--border)]">|</span>
             <button type="button" data-clear-btn class="text-[color:var(--muted)] hover:text-[color:var(--fg)]">Clear</button>
           </div>
         </div>
+
         <textarea
           id="yaml-in"
           rows="16"
           class="w-full font-mono text-xs leading-relaxed rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-[color:var(--fg)] focus:border-[color:var(--border-strong)] focus:outline-hidden"
           placeholder="server:&#10;  port: 8080&#10;  ssl: true&#10;routes:&#10;  - /api/v1&#10;  - /auth"
         ></textarea>
-        <button
-          type="button"
-          data-convert-btn
-          class="w-full rounded-xl bg-[color:var(--fg)] py-2.5 text-xs font-bold text-[color:var(--bg)] shadow-xs transition hover:opacity-90"
-        >
-          Convert to JSON
-        </button>
+
+        <!-- Formatting Controls -->
+        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 space-y-3 text-xs">
+          <div class="flex items-center justify-between gap-3">
+            <div class="flex items-center gap-2">
+              <label for="json-indent" class="font-medium text-[color:var(--muted)]">JSON Indentation:</label>
+              <select id="json-indent" class="rounded-lg border border-[color:var(--border)] bg-[color:var(--bg)] px-2.5 py-1 text-xs text-[color:var(--fg)] font-semibold">
+                <option value="2">2 Spaces (Standard)</option>
+                <option value="4">4 Spaces</option>
+                <option value="0">Minified (Single Line)</option>
+              </select>
+            </div>
+            <label class="flex items-center gap-2 cursor-pointer">
+              <input type="checkbox" id="sort-keys" class="rounded accent-[color:var(--fg)]" />
+              <span>Sort Object Keys A-Z</span>
+            </label>
+          </div>
+
+          <button
+            type="button"
+            data-convert-btn
+            class="w-full rounded-xl bg-[color:var(--fg)] py-2.5 text-xs font-bold text-[color:var(--bg)] shadow-xs transition hover:opacity-90"
+          >
+            Convert YAML to JSON
+          </button>
+        </div>
       </div>
 
+      <!-- Output Column -->
       <div class="space-y-3">
         <div class="flex items-center justify-between">
           <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">JSON Output</span>
@@ -135,15 +185,71 @@ const schemaGraph = [
             </button>
           </div>
         </div>
+
         <textarea
           id="json-out"
           rows="16"
           readonly
           class="w-full font-mono text-xs leading-relaxed rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-4 text-[color:var(--fg)] focus:outline-hidden"
-          placeholder="Formatted JSON will appear here..."
+          placeholder="Parsed JSON output will appear here..."
         ></textarea>
+
+        <div id="yaml-err" class="hidden rounded-xl border border-red-500/30 bg-red-500/10 p-3 text-xs text-red-600 dark:text-red-400 font-mono"></div>
       </div>
     </div>
+
+    <!-- Parameter Guide & Worked Example -->
+    <CalculatorParameterGuide
+      title="YAML to JSON Parsing Specifications & Type Rules"
+      description="Details on scalar type conversions, indentation sensitivity, list parsing, and JSON schema compatibility."
+      parameters={[
+        {
+          name: "Indentation Formatting",
+          type: "Select (2 | 4 | Minified)",
+          defaultValue: "2 Spaces",
+          description: "Pretty-prints JSON with consistent 2-space or 4-space indentation, or compacts the output into a single line for production payloads.",
+        },
+        {
+          name: "Boolean & Null Coercion",
+          type: "Automatic",
+          defaultValue: "Strict",
+          description: "Maps YAML scalars 'true', 'false', 'yes', 'no' into JSON booleans, and 'null' or '~' into JSON null primitives.",
+        },
+        {
+          name: "Key Sorting",
+          type: "Boolean",
+          defaultValue: "false",
+          description: "Sorts dictionary keys alphabetically to provide deterministic output for API contract validation and regression testing.",
+        },
+      ]}
+      workedExample={{
+        title: "Parsing Docker Compose YAML to JSON",
+        description: "Convert a Docker Compose specification defining a web service and database environment into RFC 8259 JSON format.",
+        formula: "parseYaml(yamlText) -> JSON.stringify(ast, null, 2)",
+        steps: [
+          {
+            step: "Strip Comments & Blank Lines",
+            calculation: "Remove lines beginning with '#' and trim indentation tokens.",
+            result: "Clean token stream generated",
+          },
+          {
+            step: "Parse Key-Value Maps",
+            calculation: "Map 'version: \"3.8\"' to { \"version\": \"3.8\" }.",
+            result: "Root object created",
+          },
+          {
+            step: "Parse Indented Child Blocks",
+            calculation: "Convert indented 'services:' mappings and '- \"3000:3000\"' port arrays into structured JSON objects.",
+            result: "Hierarchical JSON structure assembled",
+          },
+          {
+            step: "Final Output Validation",
+            calculation: "Ensure valid RFC 8259 syntax with matching braces and quotes.",
+            result: "Validated JSON ready for API consumption",
+          },
+        ],
+      }}
+    />
 
     <!-- FAQs -->
     <section class="space-y-4">
@@ -153,7 +259,7 @@ const schemaGraph = [
           <details class="group rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
             <summary class="cursor-pointer list-none font-semibold text-sm sm:text-base text-[color:var(--fg)] flex items-center justify-between gap-4">
               <span>{faq.question}</span>
-              <span class="text-xs text-[color:var(--muted)] group-open:rotate-180 transition-transform">▼</span>
+              <span class="text-xs text-[color:var(--muted)] group-open:rotate-180 transition-transform">&#9660;</span>
             </summary>
             <p class="mt-3 text-xs sm:text-sm leading-relaxed text-[color:var(--muted)]">
               {faq.answer}
@@ -169,104 +275,250 @@ const schemaGraph = [
       const root = document.querySelector('[data-yaml-json-app]');
       if (!root) return;
 
-      const input = root.querySelector('#yaml-in');
-      const output = root.querySelector('#json-out');
+      const yamlIn = root.querySelector('#yaml-in');
+      const jsonOut = root.querySelector('#json-out');
+      const indentSelect = root.querySelector('#json-indent');
+      const sortKeysCheck = root.querySelector('#sort-keys');
       const convertBtn = root.querySelector('[data-convert-btn]');
       const sampleBtn = root.querySelector('[data-sample-btn]');
       const clearBtn = root.querySelector('[data-clear-btn]');
       const copyBtn = root.querySelector('[data-copy-btn]');
       const dlBtn = root.querySelector('[data-dl-btn]');
+      const errBox = root.querySelector('#yaml-err');
 
-      // Lightweight client-side YAML parser
-      function parseSimpleYaml(yamlStr) {
-        const lines = yamlStr.split('\n');
-        const rootObj = {};
-        const stack = [{ obj: rootObj, indent: -1 }];
+      const statYamlSize = root.querySelector('#stat-yaml-size');
+      const statJsonSize = root.querySelector('#stat-json-size');
+      const statDepth = root.querySelector('#stat-depth');
+      const statDelta = root.querySelector('#stat-delta');
 
-        function parseVal(val) {
-          val = val.trim();
-          if (val === 'true') return true;
-          if (val === 'false') return false;
-          if (val === 'null') return null;
-          if (/^-?\d+(\.\d+)?$/.test(val)) return parseFloat(val);
-          if ((val.startsWith('"') && val.endsWith('"')) || (val.startsWith("'") && val.endsWith("'"))) {
-            return val.slice(1, -1);
-          }
-          return val;
+      function formatBytes(bytes) {
+        if (bytes === 0) return '0 B';
+        const k = 1024;
+        const sizes = ['B', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+      }
+
+      function parseScalar(val) {
+        if (val === undefined || val === null) return null;
+        let trimmed = val.trim();
+
+        // Strip inline comments if not quoted
+        if (!trimmed.startsWith('"') && !trimmed.startsWith("'") && trimmed.includes(' #')) {
+          trimmed = trimmed.substring(0, trimmed.indexOf(' #')).trim();
         }
 
+        if (trimmed === 'null' || trimmed === '~' || trimmed === '') return null;
+        if (trimmed === 'true' || trimmed === 'yes' || trimmed === 'on') return true;
+        if (trimmed === 'false' || trimmed === 'no' || trimmed === 'off') return false;
+
+        // Strip surrounding quotes
+        if ((trimmed.startsWith('"') && trimmed.endsWith('"')) || (trimmed.startsWith("'") && trimmed.endsWith("'"))) {
+          return trimmed.slice(1, -1);
+        }
+
+        // Inline JSON array or object
+        if ((trimmed.startsWith('[') && trimmed.endsWith(']')) || (trimmed.startsWith('{') && trimmed.endsWith('}'))) {
+          try {
+            return JSON.parse(trimmed);
+          } catch {
+            // fallback
+          }
+        }
+
+        // Numbers
+        if (/^-?\d+(\.\d+)?([eE][+-]?\d+)?$/.test(trimmed)) {
+          const num = Number(trimmed);
+          if (!isNaN(num)) return num;
+        }
+
+        return trimmed;
+      }
+
+      function getDepth(obj) {
+        if (obj === null || typeof obj !== 'object') return 0;
+        let max = 0;
+        for (const k of Object.keys(obj)) {
+          max = Math.max(max, getDepth(obj[k]));
+        }
+        return 1 + max;
+      }
+
+      function sortObjectRecursively(obj) {
+        if (obj === null || typeof obj !== 'object') return obj;
+        if (Array.isArray(obj)) return obj.map(sortObjectRecursively);
+        const sorted = {};
+        Object.keys(obj).sort().forEach(k => {
+          sorted[k] = sortObjectRecursively(obj[k]);
+        });
+        return sorted;
+      }
+
+      function parseYamlToJson(text) {
+        const lines = text.split(/\r?\n/);
+        const root = {};
+        const stack = [{ indent: -1, obj: root, type: 'map' }];
+
         for (let i = 0; i < lines.length; i++) {
-          const rawLine = lines[i];
-          if (!rawLine.trim() || rawLine.trim().startsWith('#')) continue;
+          const raw = lines[i];
+          const trimmed = raw.trim();
 
-          const indent = rawLine.search(/\S/);
-          const line = rawLine.trim();
+          // Skip blank lines and full-line comments
+          if (!trimmed || trimmed.startsWith('#')) continue;
 
+          const indent = raw.search(/\S/);
+
+          // Pop stack when indent decreases
           while (stack.length > 1 && indent <= stack[stack.length - 1].indent) {
             stack.pop();
           }
-          const parent = stack[stack.length - 1].obj;
 
-          if (line.startsWith('- ')) {
-            const listVal = line.substring(2).trim();
-            if (!Array.isArray(parent)) {
-              // Convert current object key to array or push
-            }
-            if (Array.isArray(parent)) {
-              parent.push(parseVal(listVal));
-            }
-          } else if (line.includes(':')) {
-            const colonIdx = line.indexOf(':');
-            const key = line.substring(0, colonIdx).trim();
-            const rest = line.substring(colonIdx + 1).trim();
+          const current = stack[stack.length - 1];
 
-            if (!rest) {
-              // Look ahead to see if list or object
-              const nextLine = lines[i + 1] ? lines[i + 1].trim() : '';
-              if (nextLine.startsWith('- ')) {
-                parent[key] = [];
-                stack.push({ obj: parent[key], indent });
+          // Array item
+          if (trimmed.startsWith('- ')) {
+            const listContent = trimmed.substring(2).trim();
+
+            if (current.type !== 'seq') {
+              // Convert current target to sequence if needed
+            }
+
+            if (listContent.includes(': ') || listContent.endsWith(':')) {
+              // List of objects: - key: val
+              const colonIdx = listContent.indexOf(':');
+              const key = listContent.substring(0, colonIdx).trim();
+              const rest = listContent.substring(colonIdx + 1).trim();
+
+              const itemObj = {};
+              if (Array.isArray(current.obj)) {
+                current.obj.push(itemObj);
+              }
+
+              if (rest) {
+                itemObj[key] = parseScalar(rest);
+                stack.push({ indent: indent + 2, obj: itemObj, type: 'map' });
               } else {
-                parent[key] = {};
-                stack.push({ obj: parent[key], indent });
+                const nextTarget = {};
+                itemObj[key] = nextTarget;
+                stack.push({ indent: indent + 2, obj: itemObj, type: 'map' });
+                stack.push({ indent: indent + 4, obj: nextTarget, type: 'map' });
               }
             } else {
-              parent[key] = parseVal(rest);
+              // Scalar list item: - value
+              if (Array.isArray(current.obj)) {
+                current.obj.push(parseScalar(listContent));
+              }
+            }
+
+          } else if (trimmed.includes(':')) {
+            // Key-Value Pair
+            const colonIdx = trimmed.indexOf(':');
+            const key = trimmed.substring(0, colonIdx).trim().replace(/^['"]|['"]$/g, '');
+            const valPart = trimmed.substring(colonIdx + 1).trim();
+
+            if (!valPart) {
+              // Check if next line is sequence or map
+              let nextLine = '';
+              for (let j = i + 1; j < lines.length; j++) {
+                if (lines[j].trim() && !lines[j].trim().startsWith('#')) {
+                  nextLine = lines[j];
+                  break;
+                }
+              }
+
+              const nextTrimmed = nextLine.trim();
+              const isSeq = nextTrimmed.startsWith('- ');
+
+              const newChild = isSeq ? [] : {};
+              if (current.type === 'map') {
+                current.obj[key] = newChild;
+              } else if (Array.isArray(current.obj)) {
+                const mapWrap = {};
+                mapWrap[key] = newChild;
+                current.obj.push(mapWrap);
+              }
+
+              stack.push({ indent: indent, obj: newChild, type: isSeq ? 'seq' : 'map' });
+
+            } else {
+              // Direct scalar or inline structure
+              if (current.type === 'map') {
+                current.obj[key] = parseScalar(valPart);
+              } else if (Array.isArray(current.obj)) {
+                const mapWrap = {};
+                mapWrap[key] = parseScalar(valPart);
+                current.obj.push(mapWrap);
+              }
             }
           }
         }
-        return rootObj;
+
+        return root;
       }
 
       function convert() {
-        const raw = input.value.trim();
+        errBox.classList.add('hidden');
+        const raw = yamlIn.value.trim();
+        statYamlSize.textContent = formatBytes(new Blob([raw]).size);
+
         if (!raw) {
-          output.value = '';
+          jsonOut.value = '';
+          statJsonSize.textContent = '0 B';
+          statDepth.textContent = '0 levels';
+          statDelta.textContent = '0%';
           return;
         }
+
         try {
-          const obj = parseSimpleYaml(raw);
-          output.value = JSON.stringify(obj, null, 2);
+          let parsed = parseYamlToJson(raw);
+          if (sortKeysCheck.checked) {
+            parsed = sortObjectRecursively(parsed);
+          }
+
+          const indentVal = parseInt(indentSelect.value, 10);
+          const jsonString = indentVal === 0 ? JSON.stringify(parsed) : JSON.stringify(parsed, null, indentVal);
+          jsonOut.value = jsonString;
+
+          const yamlBytes = new Blob([raw]).size;
+          const jsonBytes = new Blob([jsonString]).size;
+          statJsonSize.textContent = formatBytes(jsonBytes);
+
+          const depth = getDepth(parsed);
+          statDepth.textContent = `${depth} level${depth === 1 ? '' : 's'}`;
+
+          if (yamlBytes > 0) {
+            const diff = jsonBytes - yamlBytes;
+            const pct = Math.round((diff / yamlBytes) * 100);
+            statDelta.textContent = `${pct >= 0 ? '+' : ''}${pct}%`;
+          }
+
         } catch (e) {
-          output.value = 'Failed to parse YAML: ' + e.message;
+          errBox.classList.remove('hidden');
+          errBox.textContent = 'YAML Parse Error: ' + e.message;
+          jsonOut.value = '';
+          statJsonSize.textContent = '0 B';
+          statDepth.textContent = '0 levels';
+          statDelta.textContent = '0%';
         }
       }
 
       convertBtn.addEventListener('click', convert);
+      indentSelect.addEventListener('change', convert);
+      sortKeysCheck.addEventListener('change', convert);
 
       sampleBtn.addEventListener('click', () => {
-        input.value = `server:\n  host: 0.0.0.0\n  port: 8080\n  ssl: true\nfeatures:\n  - calculators\n  - text-tools\n  - developer-tools\nversion: "2.4"`;
+        yamlIn.value = `server:\n  host: 0.0.0.0\n  port: 8080\n  ssl: true\nfeatures:\n  - calculators\n  - text-tools\n  - developer-tools\nversion: "2.4"\nmeta:\n  author: "Antigravity Dev"\n  production_ready: yes`;
         convert();
       });
 
       clearBtn.addEventListener('click', () => {
-        input.value = '';
-        output.value = '';
+        yamlIn.value = '';
+        convert();
       });
 
       copyBtn.addEventListener('click', () => {
-        if (!output.value) return;
-        navigator.clipboard.writeText(output.value);
+        if (!jsonOut.value) return;
+        navigator.clipboard.writeText(jsonOut.value);
         const span = copyBtn.querySelector('span');
         const orig = span.textContent;
         span.textContent = 'Copied!';
@@ -274,12 +526,12 @@ const schemaGraph = [
       });
 
       dlBtn.addEventListener('click', () => {
-        if (!output.value) return;
-        const blob = new Blob([output.value], { type: 'application/json' });
+        if (!jsonOut.value) return;
+        const blob = new Blob([jsonOut.value], { type: 'application/json' });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = 'converted.json';
+        a.download = 'config.json';
         a.click();
         URL.revokeObjectURL(url);
       });

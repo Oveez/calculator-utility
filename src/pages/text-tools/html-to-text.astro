@@ -1,7 +1,8 @@
 ---
-import SiteLayout from '../../layouts/SiteLayout.astro';
 import Icon from '../../components/Icon.astro';
-import { siteName, toAbsoluteUrl, withBasePath } from '../../utils/site';
+import SiteLayout from '../../layouts/SiteLayout.astro';
+import CalculatorParameterGuide from '../../components/calculator/CalculatorParameterGuide.astro';
+import { siteName, toAbsoluteUrl } from '../../utils/site';
 
 const pageTitle = `HTML to Plain Text Converter — Strip HTML Tags Online · ${siteName}`;
 const pageDesc = 'Convert HTML code into clean, readable plain text online. Strips tags, scripts, CSS styles, and decodes HTML entities. 100% private in-browser tool.';
@@ -15,8 +16,20 @@ const breadcrumbItems = [
 
 const schemaFaq = [
   {
-    question: 'How does this tool strip HTML tags?',
-    answer: 'It leverages the browser’s native DOMParser engine to parse the HTML DOM tree, extracting textual node contents (`textContent`) while ignoring `<script>`, `<style>`, and markup tags.',
+    question: 'How does this tool convert HTML tags to plain text?',
+    answer: 'It parses HTML documents in client memory using the browser DOMParser, traversing structural nodes. Block elements (headings, paragraphs, lists, tables) are transformed into readable layout linebreaks while script, style, and svg nodes are systematically purged.',
+  },
+  {
+    question: 'Can I preserve hyperlinks and citations during conversion?',
+    answer: 'Yes! You can choose between stripping links completely, appending target URLs inline (e.g. "Google (https://google.com)"), formatting them as Markdown links, or compiling a numbered footnote bibliography at the end of the document.',
+  },
+  {
+    question: 'How are HTML tables converted into plain text?',
+    answer: 'Tables can be converted into formatted ASCII box tables with aligned cell borders, tab-delimited columns for spreadsheet pasting, or comma-separated rows.',
+  },
+  {
+    question: 'Is my HTML data or email code uploaded to any server?',
+    answer: 'No. All DOM traversal, tag stripping, entity decoding, and text formatting run 100% locally in your web browser memory. No data is ever transmitted.',
   },
 ];
 
@@ -54,12 +67,54 @@ const schemaGraph = [
     })),
   },
 ];
+
+const parameterGuideData = [
+  {
+    name: 'Link Citation Strategy',
+    type: 'Strip | Inline URL | Markdown | Footnotes',
+    description: 'Determines how <a> anchor tags are handled: keep anchor text only, append the href URL in parentheses, convert to Markdown syntax, or assemble numbered endnote bibliography.',
+  },
+  {
+    name: 'Heading Styling',
+    type: 'Markdown (#) | Uppercase | Underline | Plain',
+    description: 'Formats <h1> through <h6> tags with Markdown octothorpes, capitalized headers, ASCII underline bar dividers, or clean unadorned text lines.',
+  },
+  {
+    name: 'Table Representation',
+    type: 'ASCII Grid | Tab-Separated (TSV) | CSV | Plain Lines',
+    description: 'Renders <table> data as visual ASCII monospace grids, tab-separated columns for Excel/Sheets copy-paste, or sequential text rows.',
+  },
+  {
+    name: 'Noise Filtering',
+    type: 'Checkbox Toggles',
+    description: 'Removes non-content web elements such as <nav>, <header>, <footer>, <aside>, <script>, <style>, and <noscript> tags before extracting text.',
+  },
+];
+
+const workedExampleData = {
+  title: 'Worked Example: Extracting Web Article Copy',
+  description: 'Converting boilerplate-heavy web markup into clean plain text.',
+  formula: 'Reduction Rate = (1 - Plain Text Bytes / Source HTML Bytes) × 100%',
+  steps: [
+    {
+      step: 'Step 1: Ingest Source HTML',
+      calculation: 'Source HTML size: 4,800 bytes containing nav, article, table, and scripts.',
+      result: '4,800 bytes loaded',
+    },
+    {
+      step: 'Step 2: Strip Markup & Structure Tables',
+      calculation: 'Purge scripts & nav; convert <table> to ASCII box; format links as citations.',
+      result: '1,200 bytes clean text (75.0% reduction)',
+    },
+  ],
+};
 ---
 
 <SiteLayout title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
   <script is:inline type="application/ld+json" set:html={JSON.stringify(schemaGraph)} />
 
   <article class="space-y-10 py-2" data-html-text-app>
+    <!-- Breadcrumb -->
     <nav aria-label="Breadcrumb">
       <ol class="flex flex-wrap items-center gap-2 text-xs text-[color:var(--muted)]">
         {breadcrumbItems.map((item, index) => (
@@ -79,61 +134,169 @@ const schemaGraph = [
       </ol>
     </nav>
 
+    <!-- Header -->
     <header class="space-y-3">
       <div class="inline-flex items-center gap-2 rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1 text-xs font-semibold text-[color:var(--muted)]">
         <span class="inline-block h-2 w-2 rounded-full bg-emerald-500"></span>
-        <span>Native Browser DOM Parser</span>
+        <span>DOM Tree Traversal • Smart Tables • Link Citations</span>
       </div>
       <h1 class="text-2xl sm:text-4xl font-extrabold tracking-tight text-[color:var(--fg)]">
         HTML to Plain Text Converter
       </h1>
-      <p class="max-w-2xl text-xs sm:text-sm text-[color:var(--muted)] leading-relaxed">
-        Strip HTML tags, extract clean copy from web pages, and decode HTML character entities instantly.
+      <p class="max-w-3xl text-xs sm:text-sm text-[color:var(--muted)] leading-relaxed">
+        Extract clean, human-readable plain text from HTML code, emails, or scraped web pages. Strips tags, formats ASCII tables, compiles link footnotes, and decodes HTML entities.
       </p>
     </header>
 
+    <!-- Control Options Panel -->
+    <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5 space-y-4">
+      <div class="grid gap-4 sm:grid-cols-2 md:grid-cols-4 text-xs">
+        <div>
+          <label for="opt-links" class="block font-bold text-[color:var(--fg)] mb-1.5">Link Handling</label>
+          <select id="opt-links" class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-[color:var(--fg)]">
+            <option value="inline">Inline URL: Text (https://...)</option>
+            <option value="strip">Strip Links: Keep Text Only</option>
+            <option value="markdown">Markdown: [Text](https://...)</option>
+            <option value="footnote">Footnotes: Text [1] ... [1] url</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="opt-headings" class="block font-bold text-[color:var(--fg)] mb-1.5">Heading Style</label>
+          <select id="opt-headings" class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-[color:var(--fg)]">
+            <option value="markdown">Markdown (# H1, ## H2)</option>
+            <option value="uppercase">UPPERCASE Headings</option>
+            <option value="underline">Underline Divider (=== / ---)</option>
+            <option value="plain">Plain Line Breaks</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="opt-tables" class="block font-bold text-[color:var(--fg)] mb-1.5">Table Rendering</label>
+          <select id="opt-tables" class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-[color:var(--fg)]">
+            <option value="ascii">ASCII Border Table</option>
+            <option value="tsv">Tab-Separated (TSV for Excel)</option>
+            <option value="csv">Comma-Separated (CSV)</option>
+            <option value="plain">Linear Text Rows</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="opt-lists" class="block font-bold text-[color:var(--fg)] mb-1.5">List Style</label>
+          <select id="opt-lists" class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-[color:var(--fg)]">
+            <option value="bullet">Bullet Points (•)</option>
+            <option value="dash">Hyphen Dash (-)</option>
+            <option value="asterisk">Asterisk (*)</option>
+            <option value="numbered">Smart Numbering (1, 2, 3)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-[color:var(--border)] text-xs">
+        <div class="flex flex-wrap items-center gap-4">
+          <label class="flex items-center gap-2 font-medium text-[color:var(--fg)] cursor-pointer">
+            <input type="checkbox" id="opt-filter-boilerplate" checked class="rounded accent-[color:var(--accent)]" />
+            <span>Strip Nav/Header/Footer/Aside</span>
+          </label>
+          <label class="flex items-center gap-2 font-medium text-[color:var(--fg)] cursor-pointer">
+            <input type="checkbox" id="opt-collapse-newlines" checked class="rounded accent-[color:var(--accent)]" />
+            <span>Collapse Multiple Blank Lines</span>
+          </label>
+          <label class="flex items-center gap-2 font-medium text-[color:var(--fg)] cursor-pointer">
+            <input type="checkbox" id="opt-decode-entities" checked class="rounded accent-[color:var(--accent)]" />
+            <span>Decode HTML Entities (&amp;copy; &rarr; &copy;)</span>
+          </label>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <button type="button" id="btn-sample-article" class="text-xs font-semibold text-[color:var(--accent)] hover:underline cursor-pointer">Sample Article</button>
+          <span class="text-[color:var(--border)]">•</span>
+          <button type="button" id="btn-sample-email" class="text-xs font-semibold text-[color:var(--accent)] hover:underline cursor-pointer">Sample HTML Email</button>
+          <span class="text-[color:var(--border)]">•</span>
+          <button type="button" id="btn-clear" class="text-xs font-semibold text-rose-600 dark:text-rose-400 hover:underline cursor-pointer">Clear</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Live Statistics Bar -->
+    <div class="grid grid-cols-2 gap-3 sm:grid-cols-4 text-center">
+      <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3">
+        <div class="text-[11px] font-bold uppercase tracking-wider text-[color:var(--muted)]">Source HTML</div>
+        <div id="stat-html-chars" class="text-xl font-extrabold text-[color:var(--fg)] mt-1">0 chars</div>
+      </div>
+      <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3">
+        <div class="text-[11px] font-bold uppercase tracking-wider text-[color:var(--muted)]">Plain Text Words</div>
+        <div id="stat-words" class="text-xl font-extrabold text-[color:var(--fg)] mt-1">0 words</div>
+      </div>
+      <div class="rounded-2xl border border-cyan-500/20 bg-emerald-500/5 p-3">
+        <div class="text-[11px] font-bold uppercase tracking-wider text-cyan-600 dark:text-cyan-400 dark:text-cyan-400">Size Reduction</div>
+        <div id="stat-reduction" class="text-xl font-extrabold text-cyan-600 dark:text-cyan-400 dark:text-cyan-400 mt-1">0%</div>
+      </div>
+      <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3">
+        <div class="text-[11px] font-bold uppercase tracking-wider text-[color:var(--muted)]">Extracted Lines</div>
+        <div id="stat-lines" class="text-xl font-extrabold text-[color:var(--fg)] mt-1">0 lines</div>
+      </div>
+    </div>
+
+    <!-- Dual Workspace Editors -->
     <div class="grid gap-6 lg:grid-cols-2">
+      <!-- Input -->
       <div class="space-y-3">
         <div class="flex items-center justify-between">
           <label for="html-in" class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">HTML Source</label>
           <div class="flex items-center gap-2 text-xs">
-            <button type="button" data-sample-btn class="text-[color:var(--primary)] hover:underline font-semibold">Load Sample</button>
-            <span class="text-[color:var(--border)]">|</span>
-            <button type="button" data-clear-btn class="text-[color:var(--muted)] hover:text-[color:var(--fg)]">Clear</button>
+            <label for="file-upload" class="cursor-pointer text-[color:var(--accent)] hover:underline font-semibold flex items-center gap-1">
+              <span>Import .html</span>
+              <input type="file" id="file-upload" accept=".html,.htm,.xhtml,.txt" class="hidden" />
+            </label>
           </div>
         </div>
         <textarea
           id="html-in"
-          rows="16"
-          class="w-full font-mono text-xs leading-relaxed rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-[color:var(--fg)] focus:border-[color:var(--border-strong)] focus:outline-hidden"
-          placeholder="<div><h1>Welcome</h1><p>This is paragraph text with a <a href='#'>link</a>.</p></div>"
+          rows="18"
+          class="w-full font-mono text-xs leading-relaxed rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-[color:var(--fg)] focus:border-[color:var(--accent)] focus:outline-hidden transition shadow-inner"
+          placeholder="Paste HTML source code here..."
         ></textarea>
-        <button
-          type="button"
-          data-strip-btn
-          class="w-full rounded-xl bg-[color:var(--fg)] py-2.5 text-xs font-bold text-[color:var(--bg)] shadow-xs transition hover:opacity-90"
-        >
-          Convert to Plain Text
-        </button>
       </div>
 
+      <!-- Output -->
       <div class="space-y-3">
         <div class="flex items-center justify-between">
-          <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Plain Text Output</span>
-          <button type="button" data-copy-btn class="inline-flex items-center gap-1 text-xs font-bold text-[color:var(--fg)] hover:underline">
-            <Icon name="copy" class="w-3.5 h-3.5" />
-            <span>Copy Text</span>
-          </button>
+          <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Clean Plain Text</span>
+          <div class="flex items-center gap-2">
+            <button
+              type="button"
+              id="btn-copy"
+              class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1 text-xs font-bold text-[color:var(--fg)] hover:border-[color:var(--accent)] transition cursor-pointer"
+            >
+              📋 Copy Text
+            </button>
+            <button
+              type="button"
+              id="btn-download"
+              class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1 text-xs font-bold text-[color:var(--fg)] hover:border-[color:var(--accent)] transition cursor-pointer"
+            >
+              💾 Download .txt
+            </button>
+          </div>
         </div>
         <textarea
           id="text-out"
-          rows="16"
+          rows="18"
           readonly
           class="w-full font-mono text-xs leading-relaxed rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-4 text-[color:var(--fg)] focus:outline-hidden"
-          placeholder="Extracted plain text will appear here..."
+          placeholder="Clean extracted text will appear here..."
         ></textarea>
       </div>
     </div>
+
+    <!-- Parameter Guide & Worked Example -->
+    <CalculatorParameterGuide
+      title="HTML Parsing & Text Extraction Guide"
+      description="Learn about DOM node pruning, whitespace preservation algorithms, table column alignment, and citation footnoting."
+      parameters={parameterGuideData}
+      workedExample={workedExampleData}
+    />
 
     <!-- FAQs -->
     <section class="space-y-4">
@@ -159,59 +322,353 @@ const schemaGraph = [
       const root = document.querySelector('[data-html-text-app]');
       if (!root) return;
 
-      const input = root.querySelector('#html-in');
-      const output = root.querySelector('#text-out');
-      const stripBtn = root.querySelector('[data-strip-btn]');
-      const sampleBtn = root.querySelector('[data-sample-btn]');
-      const clearBtn = root.querySelector('[data-clear-btn]');
-      const copyBtn = root.querySelector('[data-copy-btn]');
+      const htmlIn = root.querySelector('#html-in');
+      const textOut = root.querySelector('#text-out');
 
-      function stripHtml() {
-        const raw = input.value;
-        if (!raw) { output.value = ''; return; }
+      const optLinks = root.querySelector('#opt-links');
+      const optHeadings = root.querySelector('#opt-headings');
+      const optTables = root.querySelector('#opt-tables');
+      const optLists = root.querySelector('#opt-lists');
+      const optFilterBoilerplate = root.querySelector('#opt-filter-boilerplate');
+      const optCollapseNewlines = root.querySelector('#opt-collapse-newlines');
+      const optDecodeEntities = root.querySelector('#opt-decode-entities');
+
+      const btnSampleArticle = root.querySelector('#btn-sample-article');
+      const btnSampleEmail = root.querySelector('#btn-sample-email');
+      const btnClear = root.querySelector('#btn-clear');
+      const btnCopy = root.querySelector('#btn-copy');
+      const btnDownload = root.querySelector('#btn-download');
+      const fileUpload = root.querySelector('#file-upload');
+
+      const statHtmlChars = root.querySelector('#stat-html-chars');
+      const statWords = root.querySelector('#stat-words');
+      const statReduction = root.querySelector('#stat-reduction');
+      const statLines = root.querySelector('#stat-lines');
+
+      function decodeEntities(str) {
+        const textarea = document.createElement('textarea');
+        textarea.innerHTML = str;
+        return textarea.value;
+      }
+
+      function formatTable(tableEl, format) {
+        const rows = Array.from(tableEl.querySelectorAll('tr'));
+        if (!rows.length) return '';
+
+        const grid = [];
+        rows.forEach(r => {
+          const cells = Array.from(r.querySelectorAll('th, td')).map(c => c.textContent.trim().replace(/\s+/g, ' '));
+          if (cells.length) grid.push(cells);
+        });
+
+        if (!grid.length) return '';
+
+        if (format === 'tsv') {
+          return '\n' + grid.map(row => row.join('\t')).join('\n') + '\n';
+        }
+        if (format === 'csv') {
+          return '\n' + grid.map(row => row.map(c => `"${c.replace(/"/g, '""')}"`).join(',')).join('\n') + '\n';
+        }
+        if (format === 'plain') {
+          return '\n' + grid.map(row => row.join(' | ')).join('\n') + '\n';
+        }
+
+        // ASCII Table
+        const colWidths = [];
+        grid.forEach(row => {
+          row.forEach((cell, idx) => {
+            colWidths[idx] = Math.max(colWidths[idx] || 0, cell.length);
+          });
+        });
+
+        const divider = '+' + colWidths.map(w => '-'.repeat(w + 2)).join('+') + '+';
+        const lines = [divider];
+
+        grid.forEach((row, rowIdx) => {
+          const rowStr = '|' + row.map((cell, idx) => {
+            const pad = ' '.repeat((colWidths[idx] || 0) - cell.length);
+            return ` ${cell}${pad} `;
+          }).join('|') + '|';
+          lines.push(rowStr);
+          if (rowIdx === 0 && tableEl.querySelector('th')) {
+            lines.push(divider);
+          }
+        });
+        lines.push(divider);
+        return '\n' + lines.join('\n') + '\n';
+      }
+
+      function convertHtmlToText() {
+        const raw = htmlIn.value;
+        statHtmlChars.textContent = `${raw.length.toLocaleString()} chars`;
+
+        if (!raw.trim()) {
+          textOut.value = '';
+          statWords.textContent = '0 words';
+          statLines.textContent = '0 lines';
+          statReduction.textContent = '0%';
+          return;
+        }
 
         try {
           const parser = new DOMParser();
           const doc = parser.parseFromString(raw, 'text/html');
 
-          // Remove script and style elements
-          doc.querySelectorAll('script, style').forEach(el => el.remove());
+          // Always remove scripts, styles, svg, iframes, noscript
+          doc.querySelectorAll('script, style, svg, iframe, noscript').forEach(el => el.remove());
 
-          // Replace block elements with line breaks before text extraction
-          doc.querySelectorAll('p, div, h1, h2, h3, h4, h5, h6, li, br, tr').forEach(el => {
-            el.insertAdjacentText('afterend', '\n');
+          // Optional boilerplate removal
+          if (optFilterBoilerplate.checked) {
+            doc.querySelectorAll('nav, header, footer, aside').forEach(el => el.remove());
+          }
+
+          // Handle tables first before stripping nodes
+          const tableFormat = optTables.value;
+          doc.querySelectorAll('table').forEach(table => {
+            const formatted = formatTable(table, tableFormat);
+            table.replaceWith(doc.createTextNode(formatted));
           });
 
-          const text = doc.body.textContent || '';
-          output.value = text.split('\n').map(l => l.trim()).filter(l => l.length > 0).join('\n');
+          // Handle links
+          const linkStrategy = optLinks.value;
+          const footnotes = [];
+          doc.querySelectorAll('a').forEach(a => {
+            const href = a.getAttribute('href') || '';
+            const text = a.textContent.trim();
+            if (!href || href.startsWith('javascript:')) {
+              a.replaceWith(text);
+              return;
+            }
+
+            if (linkStrategy === 'strip') {
+              a.replaceWith(text);
+            } else if (linkStrategy === 'inline') {
+              a.replaceWith(`${text} (${href})`);
+            } else if (linkStrategy === 'markdown') {
+              a.replaceWith(`[${text}](${href})`);
+            } else if (linkStrategy === 'footnote') {
+              footnotes.push(href);
+              const fnIndex = footnotes.length;
+              a.replaceWith(`${text} [${fnIndex}]`);
+            }
+          });
+
+          // Handle Images
+          doc.querySelectorAll('img').forEach(img => {
+            const alt = img.getAttribute('alt');
+            if (alt) {
+              img.replaceWith(` [Image: ${alt}] `);
+            } else {
+              img.remove();
+            }
+          });
+
+          // Handle Headings
+          const headingStyle = optHeadings.value;
+          doc.querySelectorAll('h1, h2, h3, h4, h5, h6').forEach(h => {
+            const level = parseInt(h.tagName[1], 10) || 1;
+            const text = h.textContent.trim();
+            let replacement = '';
+            if (headingStyle === 'markdown') {
+              replacement = `\n\n${'#'.repeat(level)} ${text}\n\n`;
+            } else if (headingStyle === 'uppercase') {
+              replacement = `\n\n${text.toUpperCase()}\n\n`;
+            } else if (headingStyle === 'underline') {
+              const char = level === 1 ? '=' : '-';
+              replacement = `\n\n${text}\n${char.repeat(Math.max(text.length, 3))}\n\n`;
+            } else {
+              replacement = `\n\n${text}\n\n`;
+            }
+            h.replaceWith(doc.createTextNode(replacement));
+          });
+
+          // Handle Lists
+          const listStyle = optLists.value;
+          doc.querySelectorAll('ul, ol').forEach(list => {
+            const isOl = list.tagName.toLowerCase() === 'ol';
+            const items = list.querySelectorAll(':scope > li');
+            items.forEach((li, idx) => {
+              let prefix = '• ';
+              if (listStyle === 'dash') prefix = '- ';
+              else if (listStyle === 'asterisk') prefix = '* ';
+              else if (listStyle === 'numbered' || isOl) prefix = `${idx + 1}. `;
+              li.prepend(doc.createTextNode(prefix));
+              li.append(doc.createTextNode('\n'));
+            });
+            list.append(doc.createTextNode('\n'));
+          });
+
+          // Insert line breaks after block containers
+          doc.querySelectorAll('p, div, blockquote, hr, br, section, article').forEach(el => {
+            if (el.tagName.toLowerCase() === 'br') {
+              el.replaceWith('\n');
+            } else if (el.tagName.toLowerCase() === 'hr') {
+              el.replaceWith('\n---\n');
+            } else {
+              el.insertAdjacentText('afterend', '\n\n');
+            }
+          });
+
+          let textResult = doc.body.textContent || '';
+
+          // Add Footnotes if applicable
+          if (footnotes.length > 0) {
+            textResult += '\n\n--- References & Links ---\n';
+            footnotes.forEach((url, idx) => {
+              textResult += `[${idx + 1}] ${url}\n`;
+            });
+          }
+
+          // Entity decoding
+          if (optDecodeEntities.checked) {
+            textResult = decodeEntities(textResult);
+          }
+
+          // Line normalization
+          let cleanLines = textResult.split(/\r?\n/).map(l => l.trimEnd());
+
+          if (optCollapseNewlines.checked) {
+            const collapsed = [];
+            let lastEmpty = false;
+            cleanLines.forEach(l => {
+              const isEmpty = l.trim() === '';
+              if (!isEmpty) {
+                collapsed.push(l);
+                lastEmpty = false;
+              } else if (!lastEmpty) {
+                collapsed.push('');
+                lastEmpty = true;
+              }
+            });
+            cleanLines = collapsed;
+          }
+
+          const finalResult = cleanLines.join('\n').trim();
+          textOut.value = finalResult;
+
+          // Compute Statistics
+          const words = finalResult ? finalResult.split(/\s+/).filter(w => w.length > 0).length : 0;
+          const lines = finalResult ? finalResult.split('\n').length : 0;
+          const originalBytes = new Blob([raw]).size;
+          const resultBytes = new Blob([finalResult]).size;
+          const reduction = originalBytes > 0 ? Math.max(0, Math.round(((originalBytes - resultBytes) / originalBytes) * 100)) : 0;
+
+          statWords.textContent = `${words.toLocaleString()} words`;
+          statLines.textContent = `${lines.toLocaleString()} lines`;
+          statReduction.textContent = `${reduction}%`;
         } catch (e) {
-          output.value = raw.replace(/<[^>]*>/g, '');
+          console.error(e);
+          textOut.value = raw.replace(/<[^>]*>/g, '');
         }
       }
 
-      stripBtn.addEventListener('click', stripHtml);
-      input.addEventListener('input', stripHtml);
+      // Event Listeners
+      htmlIn.addEventListener('input', convertHtmlToText);
+      optLinks.addEventListener('change', convertHtmlToText);
+      optHeadings.addEventListener('change', convertHtmlToText);
+      optTables.addEventListener('change', convertHtmlToText);
+      optLists.addEventListener('change', convertHtmlToText);
+      optFilterBoilerplate.addEventListener('change', convertHtmlToText);
+      optCollapseNewlines.addEventListener('change', convertHtmlToText);
+      optDecodeEntities.addEventListener('change', convertHtmlToText);
 
-      sampleBtn.addEventListener('click', () => {
-        input.value = '<article>\n  <h1>Calculator Utility Suite</h1>\n  <p>Explore over <strong>85+ browser tools</strong> and utilities.</p>\n  <ul>\n    <li>100% Client-side processing</li>\n    <li>Zero server uploads</li>\n  </ul>\n  <style>.hidden { display: none; }</style>\n  <' + 'script>console.log("Ignored script");<' + '/script>\n</article>';
-        stripHtml();
+      btnClear.addEventListener('click', () => {
+        htmlIn.value = '';
+        convertHtmlToText();
       });
 
-      clearBtn.addEventListener('click', () => {
-        input.value = '';
-        output.value = '';
+      // File upload
+      fileUpload.addEventListener('change', (e) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+          htmlIn.value = ev.target?.result || '';
+          convertHtmlToText();
+        };
+        reader.readAsText(file);
+        fileUpload.value = '';
       });
 
-      copyBtn.addEventListener('click', () => {
-        if (!output.value) return;
-        navigator.clipboard.writeText(output.value);
-        const span = copyBtn.querySelector('span');
-        const orig = span.textContent;
-        span.textContent = 'Copied!';
-        setTimeout(() => span.textContent = orig, 1800);
+      // Sample Data
+      btnSampleArticle.addEventListener('click', () => {
+        htmlIn.value = `<!DOCTYPE html>
+<html>
+<head><title>Article Example</title></head>
+<body>
+  <header><nav><a href="/">Home</a> | <a href="/about">About</a></nav></header>
+  <main>
+    <h1>Privacy-First Web Development</h1>
+    <p>Modern web applications should process sensitive computations <strong>directly on client hardware</strong> rather than relaying payloads to remote cloud servers.</p>
+    <h2>Key Advantages</h2>
+    <ul>
+      <li>Zero network latency for data transforms</li>
+      <li>Compliant with GDPR and HIPAA data confidentiality</li>
+      <li>Resilient offline functionality via Service Workers</li>
+    </ul>
+    <h3>Benchmark Data</h3>
+    <table>
+      <thead>
+        <tr><th>Mode</th><th>Latency</th><th>Network Egress</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Server API</td><td>320 ms</td><td>45 KB</td></tr>
+        <tr><td>Client DOM</td><td>4 ms</td><td>0 KB</td></tr>
+      </tbody>
+    </table>
+    <p>Read more research at <a href="https://calculatorutility.tech/text-tools/">Calculator Utility Tools</a>.</p>
+  </main>
+  <footer><p>&copy; 2026 Calculator Utility Inc. All rights reserved.</p></footer>
+</body>
+</html>`;
+        convertHtmlToText();
       });
 
-      sampleBtn.click();
+      btnSampleEmail.addEventListener('click', () => {
+        htmlIn.value = `<div style="background:#f4f4f4;padding:20px;">
+  <div style="background:#fff;padding:20px;border-radius:8px;">
+    <h2>Order Confirmation #94821</h2>
+    <p>Hi Alex,</p>
+    <p>Thank you for subscribing to <strong>Calculator Utility Pro</strong>! Here is your purchase summary:</p>
+    <table cellpadding="6" cellspacing="0" border="1">
+      <tr><th>Item</th><th>Period</th><th>Amount</th></tr>
+      <tr><td>Developer Suite License</td><td>1 Year</td><td>$49.00</td></tr>
+      <tr><td>Priority Support Addon</td><td>1 Year</td><td>$19.00</td></tr>
+    </table>
+    <p>You can manage your active billing anytime at <a href="https://calculatorutility.tech/account/billing">Billing Portal</a> or contact our team at <a href="https://calculatorutility.tech/contact">Customer Support</a>.</p>
+  </div>
+</div>`;
+        convertHtmlToText();
+      });
+
+      // Copy & Download
+      btnCopy.addEventListener('click', async () => {
+        if (!textOut.value) return;
+        try {
+          await navigator.clipboard.writeText(textOut.value);
+          const orig = btnCopy.textContent;
+          btnCopy.textContent = '✓ Copied Text!';
+          setTimeout(() => { btnCopy.textContent = orig; }, 1800);
+        } catch (e) {
+          console.error(e);
+        }
+      });
+
+      btnDownload.addEventListener('click', () => {
+        if (!textOut.value) return;
+        const blob = new Blob([textOut.value], { type: 'text/plain;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `extracted-text-${Date.now()}.txt`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      });
+
+      // Initial run
+      btnSampleArticle.click();
     })();
   </script>
 </SiteLayout>

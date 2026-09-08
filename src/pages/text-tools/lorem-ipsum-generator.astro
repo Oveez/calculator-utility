@@ -1,7 +1,8 @@
 ---
-import SiteLayout from '../../layouts/SiteLayout.astro';
 import Icon from '../../components/Icon.astro';
-import { siteName, toAbsoluteUrl, withBasePath } from '../../utils/site';
+import SiteLayout from '../../layouts/SiteLayout.astro';
+import CalculatorParameterGuide from '../../components/calculator/CalculatorParameterGuide.astro';
+import { siteName, toAbsoluteUrl } from '../../utils/site';
 
 const pageTitle = `Lorem Ipsum Generator — Free Placeholder Dummy Text · ${siteName}`;
 const pageDesc = 'Generate custom Lorem Ipsum placeholder dummy text by paragraphs, sentences, or word count online. Includes HTML tag formatting and instant copy options.';
@@ -16,7 +17,19 @@ const breadcrumbItems = [
 const schemaFaq = [
   {
     question: 'What is Lorem Ipsum placeholder text?',
-    answer: 'Lorem Ipsum is standard placeholder text derived from sections of Cicero’s 45 BC Latin philosophical treatise, used by graphic designers and developers to preview typography and layouts without distracting content.',
+    answer: 'Lorem Ipsum is standard placeholder dummy text derived from sections 1.10.32 and 1.10.33 of Cicero’s 45 BC Latin philosophical treatise "de Finibus Bonorum et Malorum" (On the Extremes of Good and Evil), widely used by designers and developers since the 1500s to preview typography and layouts without distracting content.',
+  },
+  {
+    question: 'Can I format the generated dummy text with HTML tags or Markdown?',
+    answer: 'Yes! You can generate raw plain text, wrap content in semantic HTML (<p>, <ul>, <li>, <h2>), format as Markdown blocks, or output as a JSON array for programmatic API mocking.',
+  },
+  {
+    question: 'Does this tool support alternative vocabularies like Tech or Legal?',
+    answer: 'Yes! In addition to Classic Latin, you can generate Startup/Tech jargon, Legal contract boilerplate, and Modern hipster food filler text.',
+  },
+  {
+    question: 'Is any generated text tracked or saved?',
+    answer: 'No. All randomized generation runs entirely in client-side JavaScript memory in your web browser. No data is ever transmitted or logged.',
   },
 ];
 
@@ -54,12 +67,59 @@ const schemaGraph = [
     })),
   },
 ];
+
+const parameterGuideData = [
+  {
+    name: 'Vocabulary Theme',
+    type: 'Classic Latin | Tech Startup | Legal Boilerplate | Hipster',
+    description: 'Selects the source lexicon. Classic Latin uses standard Cicero treatises, while Tech and Legal themes provide domain-authentic mockups for SaaS apps and legal designs.',
+  },
+  {
+    name: 'Output Unit',
+    type: 'Paragraphs | Sentences | Words | Lists (Bullet / Numbered)',
+    description: 'Controls the structural quantum of generated text. Paragraphs and Lists include natural sentence lengths and punctuation cadence.',
+  },
+  {
+    name: 'Markup Encodings',
+    type: 'Plain Text | HTML Tags | Markdown | JSON Array',
+    description: 'Encodes the generated strings with semantic HTML wrappers (<p>, <li>), Markdown notation (*, #), or raw string lists.',
+  },
+  {
+    name: 'Headings & Injections',
+    type: 'Checkbox Toggles',
+    description: 'Optionally inserts <h2> section headers between paragraphs and prefixes the document with the standard "Lorem ipsum dolor sit amet...".',
+  },
+];
+
+const workedExampleData = {
+  title: 'Generating 3 HTML-Formatted Classic Paragraphs',
+  description: 'Step-by-step assembly of structured placeholder text with semantic HTML tags and reading metrics.',
+  formula: 'Word Generation: Unit Count × Vocabulary Cadence → Punctuation Normalizer → Tag Wrapper',
+  steps: [
+    {
+      step: 'Lexicon Selection & Cadence Calculation',
+      calculation: 'Selected Classic Latin with 3 Paragraphs target (5-7 sentences per paragraph, 12-18 words per sentence).',
+      result: '~280-300 Latin words generated with natural commas and period distribution.',
+    },
+    {
+      step: 'Tag Decoration & Heading Injection',
+      calculation: 'Applied <p>...</p> wrappers to each paragraph block with leading "Lorem ipsum dolor sit amet...".',
+      result: 'Valid HTML fragments ready to paste into web templates.',
+    },
+    {
+      step: 'Document Statistics Calculation',
+      calculation: 'Words: 285 | Characters: 1,840 | Reading Speed: 200 wpm.',
+      result: 'Estimated reading time of 1.4 minutes calculated instantly.',
+    },
+  ],
+};
 ---
 
 <SiteLayout title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
   <script is:inline type="application/ld+json" set:html={JSON.stringify(schemaGraph)} />
 
   <article class="space-y-10 py-2" data-lorem-app>
+    <!-- Breadcrumb -->
     <nav aria-label="Breadcrumb">
       <ol class="flex flex-wrap items-center gap-2 text-xs text-[color:var(--muted)]">
         {breadcrumbItems.map((item, index) => (
@@ -79,75 +139,180 @@ const schemaGraph = [
       </ol>
     </nav>
 
+    <!-- Header -->
     <header class="space-y-3">
       <div class="inline-flex items-center gap-2 rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1 text-xs font-semibold text-[color:var(--muted)]">
         <span class="inline-block h-2 w-2 rounded-full bg-emerald-500"></span>
-        <span>Mockup &amp; Wireframe Copy</span>
+        <span>Multi-Vocabulary Engine • HTML &amp; Markdown • Wireframe Copy</span>
       </div>
       <h1 class="text-2xl sm:text-4xl font-extrabold tracking-tight text-[color:var(--fg)]">
         Lorem Ipsum Dummy Text Generator
       </h1>
-      <p class="max-w-2xl text-xs sm:text-sm text-[color:var(--muted)] leading-relaxed">
-        Generate placeholder text for UI mockups, websites, and print layouts by paragraphs, sentences, or word count.
+      <p class="max-w-3xl text-xs sm:text-sm text-[color:var(--muted)] leading-relaxed">
+        Generate custom placeholder copy for UI mockups, websites, wireframes, and print layouts by paragraphs, sentences, or word count with HTML, Markdown, and JSON formatting.
       </p>
     </header>
 
-    <div class="space-y-6">
-      <!-- Options Bar -->
-      <div class="grid gap-4 sm:grid-cols-3 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 text-xs">
+    <!-- Quick Presets -->
+    <div class="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
+      <div class="flex items-center gap-2 text-xs">
+        <span class="font-bold uppercase tracking-wider text-[color:var(--muted)] mr-1">Quick Presets:</span>
+        <button type="button" id="preset-hero" class="rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-1.5 font-semibold text-[color:var(--accent)] hover:underline cursor-pointer">
+          Single Hero Paragraph
+        </button>
+        <button type="button" id="preset-article" class="rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-1.5 font-semibold text-[color:var(--accent)] hover:underline cursor-pointer">
+          Full Article (5 Paras + H2s)
+        </button>
+        <button type="button" id="preset-list" class="rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-1.5 font-semibold text-[color:var(--accent)] hover:underline cursor-pointer">
+          8-Item Bulleted List
+        </button>
+      </div>
+
+      <button
+        type="button"
+        id="btn-clear"
+        class="text-xs font-semibold text-rose-600 dark:text-rose-400 hover:underline cursor-pointer"
+      >
+        Clear Text
+      </button>
+    </div>
+
+    <!-- Generator Controls Grid -->
+    <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5 space-y-4">
+      <div class="grid gap-4 sm:grid-cols-2 md:grid-cols-4 text-xs">
         <div>
-          <label for="lorem-type" class="font-bold text-[color:var(--fg)] block mb-1.5">Generate By:</label>
-          <select id="lorem-type" class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-[color:var(--fg)]">
+          <label for="lorem-vocab" class="block font-bold text-[color:var(--fg)] mb-1.5">Vocabulary Theme</label>
+          <select id="lorem-vocab" class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-[color:var(--fg)] font-semibold">
+            <option value="latin">Classic Latin (Cicero 45 BC)</option>
+            <option value="tech">Tech &amp; Startup Jargon</option>
+            <option value="legal">Legal &amp; Contractual Terms</option>
+            <option value="hipster">Modern Hipster Foodie</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="lorem-type" class="block font-bold text-[color:var(--fg)] mb-1.5">Generate Unit</label>
+          <select id="lorem-type" class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-[color:var(--fg)] font-semibold">
             <option value="paragraphs">Paragraphs</option>
             <option value="sentences">Sentences</option>
             <option value="words">Words</option>
+            <option value="list-ul">Unordered List (&lt;ul&gt;)</option>
+            <option value="list-ol">Numbered List (&lt;ol&gt;)</option>
           </select>
         </div>
+
         <div>
-          <label for="lorem-qty" class="font-bold text-[color:var(--fg)] block mb-1.5">Quantity:</label>
-          <input
-            type="number"
-            id="lorem-qty"
-            min="1"
-            max="100"
-            value="3"
-            class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-[color:var(--fg)]"
-          />
+          <label for="lorem-qty" class="block font-bold text-[color:var(--fg)] mb-1.5">Quantity Count</label>
+          <div class="flex items-center gap-2">
+            <input
+              type="number"
+              id="lorem-qty"
+              min="1"
+              max="200"
+              value="3"
+              class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-[color:var(--fg)] font-bold"
+            />
+            <span id="qty-label" class="text-[11px] text-[color:var(--muted)] whitespace-nowrap">paras</span>
+          </div>
         </div>
-        <div class="flex items-end">
-          <label class="flex items-center gap-2 text-[color:var(--muted)] cursor-pointer pb-2">
-            <input type="checkbox" id="start-lorem" checked class="rounded accent-[color:var(--fg)]" />
-            <span>Start with "Lorem ipsum..."</span>
-          </label>
+
+        <div>
+          <label for="lorem-format" class="block font-bold text-[color:var(--fg)] mb-1.5">Markup Format</label>
+          <select id="lorem-format" class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-[color:var(--fg)] font-semibold">
+            <option value="plain">Plain Text</option>
+            <option value="html">HTML Tags (&lt;p&gt; / &lt;li&gt;)</option>
+            <option value="markdown">Markdown</option>
+            <option value="json">JSON Array of Strings</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="grid gap-3 sm:grid-cols-3 pt-3 border-t border-[color:var(--border)] text-xs">
+        <label class="flex items-center gap-2 font-medium text-[color:var(--fg)] cursor-pointer">
+          <input type="checkbox" id="start-lorem" checked class="rounded accent-[color:var(--accent)]" />
+          <span>Start with "Lorem ipsum dolor sit amet..."</span>
+        </label>
+        <label class="flex items-center gap-2 font-medium text-[color:var(--fg)] cursor-pointer">
+          <input type="checkbox" id="opt-inject-h2" class="rounded accent-[color:var(--accent)]" />
+          <span>Insert &lt;h2&gt; Headings Every 2 Paragraphs</span>
+        </label>
+        <div>
+          <span class="text-[color:var(--muted)]">Paragraph Length: </span>
+          <select id="opt-para-len" class="rounded-lg border border-[color:var(--border)] bg-[color:var(--bg)] px-2 py-1 text-[11px] text-[color:var(--fg)]">
+            <option value="short">Short (3-4 sentences)</option>
+            <option value="medium" selected>Medium (5-7 sentences)</option>
+            <option value="long">Long (8-12 sentences)</option>
+          </select>
         </div>
       </div>
 
       <button
         type="button"
-        data-generate-btn
-        class="w-full rounded-xl bg-[color:var(--fg)] py-2.5 text-xs font-bold text-[color:var(--bg)] shadow-xs transition hover:opacity-90"
+        id="btn-generate"
+        class="w-full rounded-xl bg-[color:var(--fg)] py-3 text-xs font-bold text-[color:var(--bg)] shadow-xs transition hover:opacity-90 cursor-pointer"
       >
-        Generate Lorem Ipsum
+        ⚡ Re-Generate Dummy Text
       </button>
+    </div>
 
-      <!-- Output -->
-      <div class="space-y-2">
-        <div class="flex items-center justify-between">
-          <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Generated Placeholder Text</span>
-          <button type="button" data-copy-btn class="inline-flex items-center gap-1 text-xs font-bold text-[color:var(--fg)] hover:underline">
-            <Icon name="copy" class="w-3.5 h-3.5" />
-            <span>Copy Text</span>
-          </button>
-        </div>
-        <textarea
-          id="lorem-out"
-          rows="14"
-          readonly
-          class="w-full font-mono text-xs leading-relaxed rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-4 text-[color:var(--fg)] focus:outline-hidden"
-          placeholder="Generated Lorem Ipsum will appear here..."
-        ></textarea>
+    <!-- Live Statistics Bar -->
+    <div class="grid grid-cols-2 gap-3 sm:grid-cols-4 text-center">
+      <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3">
+        <div class="text-[11px] font-bold uppercase tracking-wider text-[color:var(--muted)]">Word Count</div>
+        <div id="stat-words" class="text-xl font-extrabold text-[color:var(--fg)] mt-1">0</div>
+      </div>
+      <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3">
+        <div class="text-[11px] font-bold uppercase tracking-wider text-[color:var(--muted)]">Character Count</div>
+        <div id="stat-chars" class="text-xl font-extrabold text-[color:var(--fg)] mt-1">0</div>
+      </div>
+      <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3">
+        <div class="text-[11px] font-bold uppercase tracking-wider text-[color:var(--muted)]">Estimated Reading</div>
+        <div id="stat-reading" class="text-xl font-extrabold text-[color:var(--accent)] mt-1">&lt; 1 min</div>
+      </div>
+      <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3">
+        <div class="text-[11px] font-bold uppercase tracking-wider text-[color:var(--muted)]">Payload Size</div>
+        <div id="stat-bytes" class="text-xl font-extrabold text-[color:var(--fg)] mt-1">0 KB</div>
       </div>
     </div>
+
+    <!-- Output Container -->
+    <div class="space-y-3">
+      <div class="flex flex-wrap items-center justify-between gap-3">
+        <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Generated Output</span>
+        <div class="flex items-center gap-2">
+          <button
+            type="button"
+            id="btn-copy"
+            class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1.5 text-xs font-bold text-[color:var(--fg)] hover:border-[color:var(--accent)] transition cursor-pointer"
+          >
+            📋 Copy Text
+          </button>
+          <button
+            type="button"
+            id="btn-download"
+            class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1.5 text-xs font-bold text-[color:var(--fg)] hover:border-[color:var(--accent)] transition cursor-pointer"
+          >
+            💾 Download File
+          </button>
+        </div>
+      </div>
+
+      <textarea
+        id="lorem-out"
+        rows="16"
+        readonly
+        class="w-full font-mono text-xs leading-relaxed rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-5 text-[color:var(--fg)] focus:outline-hidden shadow-inner"
+        placeholder="Generated dummy text will appear here..."
+      ></textarea>
+    </div>
+
+    <!-- Parameter Guide & Worked Example -->
+    <CalculatorParameterGuide
+      title="Placeholder Typography & Lorem Ipsum Guide"
+      description="Learn about Cicero Latin origins, dummy text cadence, layout mockups, and structured format encodings."
+      parameters={parameterGuideData}
+      workedExample={workedExampleData}
+    />
 
     <!-- FAQs -->
     <section class="space-y-4">
@@ -173,97 +338,287 @@ const schemaGraph = [
       const root = document.querySelector('[data-lorem-app]');
       if (!root) return;
 
+      const vocabSelect = root.querySelector('#lorem-vocab');
       const typeSelect = root.querySelector('#lorem-type');
       const qtyInput = root.querySelector('#lorem-qty');
+      const qtyLabel = root.querySelector('#qty-label');
+      const formatSelect = root.querySelector('#lorem-format');
       const startLoremCheck = root.querySelector('#start-lorem');
-      const generateBtn = root.querySelector('[data-generate-btn]');
+      const injectH2Check = root.querySelector('#opt-inject-h2');
+      const paraLenSelect = root.querySelector('#opt-para-len');
+
+      const btnGenerate = root.querySelector('#btn-generate');
       const output = root.querySelector('#lorem-out');
-      const copyBtn = root.querySelector('[data-copy-btn]');
+      const btnCopy = root.querySelector('#btn-copy');
+      const btnDownload = root.querySelector('#btn-download');
+      const btnClear = root.querySelector('#btn-clear');
 
-      const words = [
-        'lorem', 'ipsum', 'dolor', 'sit', 'amet', 'consectetur', 'adipiscing', 'elit', 'curabitur',
-        'vel', 'hendrerit', 'libero', 'eleifend', 'blandit', 'nunc', 'ornare', 'odio', 'ut',
-        'orci', 'gravida', 'imperdiet', 'nullam', 'purus', 'lacinia', 'a', 'pretium', 'quis',
-        'congue', 'praesent', 'sagittis', 'laoreet', 'auctor', 'mauris', 'non', 'velit', 'eros',
-        'dictum', 'proin', 'accumsan', 'sapien', 'nec', 'massa', 'volutpat', 'venenatis', 'sed',
-        'eu', 'molestie', 'lacus', 'quisque', 'porttitor', 'ligula', 'dui', 'mollis', 'tempus',
-        'at', 'magna', 'vestibulum', 'turpis', 'ac', 'diam', 'tincidunt', 'id', 'condimentum',
-        'enim', 'sodales', 'in', 'hac', 'habitasse', 'platea', 'dictumst', 'aenean', 'neque',
-        'fusce', 'augue', 'leo', 'eget', 'semper', 'mattis', 'tortor', 'scelerisque', 'nulla'
-      ];
+      const presetHero = root.querySelector('#preset-hero');
+      const presetArticle = root.querySelector('#preset-article');
+      const presetList = root.querySelector('#preset-list');
 
-      function getRandomWord() {
-        return words[Math.floor(Math.random() * words.length)];
+      const statWords = root.querySelector('#stat-words');
+      const statChars = root.querySelector('#stat-chars');
+      const statReading = root.querySelector('#stat-reading');
+      const statBytes = root.querySelector('#stat-bytes');
+
+      const VOCABULARIES = {
+        latin: [
+          'lorem', 'ipsum', 'dolor', 'sit', 'amet', 'consectetur', 'adipiscing', 'elit', 'curabitur',
+          'vel', 'hendrerit', 'libero', 'eleifend', 'blandit', 'nunc', 'ornare', 'odio', 'ut',
+          'orci', 'gravida', 'imperdiet', 'nullam', 'purus', 'lacinia', 'a', 'pretium', 'quis',
+          'congue', 'praesent', 'sagittis', 'laoreet', 'auctor', 'mauris', 'non', 'velit', 'eros',
+          'dictum', 'proin', 'accumsan', 'sapien', 'nec', 'massa', 'volutpat', 'venenatis', 'sed',
+          'eu', 'molestie', 'lacus', 'quisque', 'porttitor', 'ligula', 'dui', 'mollis', 'tempus',
+          'at', 'magna', 'vestibulum', 'turpis', 'ac', 'diam', 'tincidunt', 'id', 'condimentum',
+          'enim', 'sodales', 'in', 'hac', 'habitasse', 'platea', 'dictumst', 'aenean', 'neque',
+          'fusce', 'augue', 'leo', 'eget', 'semper', 'mattis', 'tortor', 'scelerisque', 'nulla'
+        ],
+        tech: [
+          'kubernetes', 'microservices', 'cloud-native', 'serverless', 'docker', 'graphql', 'rest-api',
+          'pipeline', 'ci-cd', 'latency', 'concurrency', 'distributed', 'observability', 'telemetry',
+          'kafka', 'redis', 'nosql', 'postgres', 'asynchronous', 'event-driven', 'scalable', 'sharding',
+          'gateway', 'load-balancer', 'infrastructure', 'terraform', 'zero-trust', 'cryptography',
+          'authentication', 'jwt', 'oauth2', 'frontend', 'backend', 'fullstack', 'typescript',
+          'runtime', 'compiler', 'bytecode', 'memory-leak', 'garbage-collection', 'agile', 'sprint',
+          'devops', 'deployment', 'resilience', 'high-availability', 'fault-tolerant', 'throughput'
+        ],
+        legal: [
+          'hereinafter', 'pursuant', 'thereto', 'indemnification', 'jurisdiction', 'arbitration',
+          'confidentiality', 'covenant', 'breach', 'remedy', 'severability', 'force-majeure',
+          'statutory', 'proprietary', 'assignee', 'warranties', 'representations', 'obligations',
+          'termination', 'compliance', 'enforceability', 'non-disclosure', 'affiliates', 'subcontractor',
+          'indemnity', 'settlement', 'governing-law', 'recitals', 'exhibit', 'clause', 'stipulation'
+        ],
+        hipster: [
+          'artisanal', 'cold-brew', 'pour-over', 'kombucha', 'farm-to-table', 'bespoke', 'sustainable',
+          'organic', 'vintage', 'kale-chips', 'fixie', 'aesthetic', 'quinoa', 'sriracha', 'avocado-toast',
+          'nordic', 'craft-beer', 'single-origin', 'tote-bag', 'mustache', 'retro', 'distillery',
+          'biodynamic', 'locally-sourced', 'foraged', 'succulents', 'slow-carb', 'ironic', 'chia-seeds'
+        ]
+      };
+
+      function getRandomWord(vocab) {
+        return vocab[Math.floor(Math.random() * vocab.length)];
       }
 
-      function getSentence(wordCount = 10) {
-        const sentenceWords = [];
-        for (let i = 0; i < wordCount; i++) {
-          sentenceWords.push(getRandomWord());
+      function getSentence(vocab, minWords = 8, maxWords = 15) {
+        const count = Math.floor(Math.random() * (maxWords - minWords + 1)) + minWords;
+        const words = [];
+        for (let i = 0; i < count; i++) {
+          words.push(getRandomWord(vocab));
         }
-        sentenceWords[0] = sentenceWords[0].charAt(0).toUpperCase() + sentenceWords[0].slice(1);
-        return sentenceWords.join(' ') + '.';
+        words[0] = words[0].charAt(0).toUpperCase() + words[0].slice(1);
+        return words.join(' ') + '.';
       }
 
-      function getParagraph(sentenceCount = 5) {
-        const sentences = [];
-        for (let i = 0; i < sentenceCount; i++) {
-          sentences.push(getSentence(Math.floor(Math.random() * 8) + 8));
+      function getParagraph(vocab, lenMode) {
+        let sentCount = 5;
+        if (lenMode === 'short') sentCount = Math.floor(Math.random() * 2) + 3;
+        else if (lenMode === 'long') sentCount = Math.floor(Math.random() * 5) + 8;
+        else sentCount = Math.floor(Math.random() * 3) + 5;
+
+        const sents = [];
+        for (let i = 0; i < sentCount; i++) {
+          sents.push(getSentence(vocab));
         }
-        return sentences.join(' ');
+        return sents.join(' ');
       }
 
       function generate() {
+        const theme = vocabSelect.value;
+        const vocab = VOCABULARIES[theme] || VOCABULARIES.latin;
         const type = typeSelect.value;
-        const qty = Math.min(100, Math.max(1, parseInt(qtyInput.value, 10) || 3));
-        const startLorem = startLoremCheck.checked;
+        const qty = Math.min(200, Math.max(1, parseInt(qtyInput.value, 10) || 3));
+        const format = formatSelect.value;
+        const startLorem = startLoremCheck.checked && theme === 'latin';
+        const injectH2 = injectH2Check.checked && (type === 'paragraphs');
+        const paraLen = paraLenSelect.value;
 
-        let result = '';
+        // Update quantity label
+        if (type === 'paragraphs') qtyLabel.textContent = 'paragraphs';
+        else if (type === 'sentences') qtyLabel.textContent = 'sentences';
+        else if (type === 'words') qtyLabel.textContent = 'words';
+        else qtyLabel.textContent = 'items';
+
+        let rawItems = [];
 
         if (type === 'paragraphs') {
-          const paras = [];
           for (let i = 0; i < qty; i++) {
-            paras.push(getParagraph());
+            let p = getParagraph(vocab, paraLen);
+            if (i === 0 && startLorem) {
+              p = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. ' + p;
+            }
+            rawItems.push(p);
           }
-          if (startLorem && paras.length > 0) {
-            paras[0] = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. ' + paras[0];
-          }
-          result = paras.join('\n\n');
         } else if (type === 'sentences') {
-          const sents = [];
           for (let i = 0; i < qty; i++) {
-            sents.push(getSentence());
+            let s = getSentence(vocab);
+            if (i === 0 && startLorem) {
+              s = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.';
+            }
+            rawItems.push(s);
           }
-          if (startLorem && sents.length > 0) {
-            sents[0] = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.';
-          }
-          result = sents.join(' ');
         } else if (type === 'words') {
           const wList = [];
           for (let i = 0; i < qty; i++) {
-            wList.push(getRandomWord());
+            wList.push(getRandomWord(vocab));
           }
-          if (startLorem && wList.length >= 2) {
-            wList[0] = 'lorem';
-            wList[1] = 'ipsum';
+          if (startLorem && wList.length >= 5) {
+            wList[0] = 'lorem'; wList[1] = 'ipsum'; wList[2] = 'dolor'; wList[3] = 'sit'; wList[4] = 'amet';
           }
-          result = wList.join(' ');
+          rawItems = wList;
+        } else if (type === 'list-ul' || type === 'list-ol') {
+          for (let i = 0; i < qty; i++) {
+            rawItems.push(getSentence(vocab, 5, 10).replace(/\.$/, ''));
+          }
         }
 
-        output.value = result;
+        // Format serialization
+        let finalOutput = '';
+
+        if (format === 'plain') {
+          if (type === 'paragraphs') {
+            finalOutput = rawItems.join('\n\n');
+          } else if (type === 'sentences') {
+            finalOutput = rawItems.join(' ');
+          } else if (type === 'words') {
+            finalOutput = rawItems.join(' ');
+          } else if (type === 'list-ul') {
+            finalOutput = rawItems.map(item => `• ${item}`).join('\n');
+          } else if (type === 'list-ol') {
+            finalOutput = rawItems.map((item, idx) => `${idx + 1}. ${item}`).join('\n');
+          }
+        } else if (format === 'html') {
+          if (type === 'paragraphs') {
+            const paragraphsHtml = [];
+            rawItems.forEach((p, idx) => {
+              if (injectH2 && idx > 0 && idx % 2 === 0) {
+                paragraphsHtml.push(`<h2>Section ${Math.floor(idx / 2) + 1}</h2>`);
+              }
+              paragraphsHtml.push(`<p>${p}</p>`);
+            });
+            finalOutput = paragraphsHtml.join('\n');
+          } else if (type === 'sentences' || type === 'words') {
+            finalOutput = `<p>${rawItems.join(' ')}</p>`;
+          } else if (type === 'list-ul') {
+            finalOutput = `<ul>\n${rawItems.map(item => `  <li>${item}</li>`).join('\n')}\n</ul>`;
+          } else if (type === 'list-ol') {
+            finalOutput = `<ol>\n${rawItems.map(item => `  <li>${item}</li>`).join('\n')}\n</ol>`;
+          }
+        } else if (format === 'markdown') {
+          if (type === 'paragraphs') {
+            const paragraphsMd = [];
+            rawItems.forEach((p, idx) => {
+              if (injectH2 && idx > 0 && idx % 2 === 0) {
+                paragraphsMd.push(`## Heading ${Math.floor(idx / 2) + 1}\n`);
+              }
+              paragraphsMd.push(p);
+            });
+            finalOutput = paragraphsMd.join('\n\n');
+          } else if (type === 'sentences' || type === 'words') {
+            finalOutput = rawItems.join(' ');
+          } else if (type === 'list-ul') {
+            finalOutput = rawItems.map(item => `- ${item}`).join('\n');
+          } else if (type === 'list-ol') {
+            finalOutput = rawItems.map((item, idx) => `${idx + 1}. ${item}`).join('\n');
+          }
+        } else if (format === 'json') {
+          finalOutput = JSON.stringify(rawItems, null, 2);
+        }
+
+        output.value = finalOutput;
+
+        // Statistics
+        const words = finalOutput.trim() ? finalOutput.trim().split(/\s+/).length : 0;
+        const chars = finalOutput.length;
+        const bytes = new Blob([finalOutput]).size;
+        const readMins = Math.max(1, Math.ceil(words / 200));
+
+        statWords.textContent = words.toLocaleString();
+        statChars.textContent = chars.toLocaleString();
+        statReading.textContent = words > 0 ? `~${readMins} min` : '< 1 min';
+        statBytes.textContent = bytes > 1024 ? `${(bytes / 1024).toFixed(1)} KB` : `${bytes} B`;
       }
 
-      generateBtn.addEventListener('click', generate);
+      // Listeners
+      btnGenerate.addEventListener('click', generate);
+      vocabSelect.addEventListener('change', generate);
+      typeSelect.addEventListener('change', generate);
+      qtyInput.addEventListener('input', generate);
+      formatSelect.addEventListener('change', generate);
+      startLoremCheck.addEventListener('change', generate);
+      injectH2Check.addEventListener('change', generate);
+      paraLenSelect.addEventListener('change', generate);
 
-      copyBtn.addEventListener('click', () => {
-        if (!output.value) return;
-        navigator.clipboard.writeText(output.value);
-        const span = copyBtn.querySelector('span');
-        const orig = span.textContent;
-        span.textContent = 'Copied!';
-        setTimeout(() => span.textContent = orig, 1800);
+      btnClear.addEventListener('click', () => {
+        output.value = '';
+        statWords.textContent = '0';
+        statChars.textContent = '0';
+        statBytes.textContent = '0 B';
       });
 
+      // Presets
+      presetHero.addEventListener('click', () => {
+        typeSelect.value = 'paragraphs';
+        qtyInput.value = '1';
+        paraLenSelect.value = 'medium';
+        formatSelect.value = 'plain';
+        injectH2Check.checked = false;
+        generate();
+      });
+
+      presetArticle.addEventListener('click', () => {
+        typeSelect.value = 'paragraphs';
+        qtyInput.value = '5';
+        paraLenSelect.value = 'medium';
+        formatSelect.value = 'html';
+        injectH2Check.checked = true;
+        generate();
+      });
+
+      presetList.addEventListener('click', () => {
+        typeSelect.value = 'list-ul';
+        qtyInput.value = '8';
+        formatSelect.value = 'markdown';
+        injectH2Check.checked = false;
+        generate();
+      });
+
+      // Copy & Download
+      btnCopy.addEventListener('click', async () => {
+        if (!output.value) return;
+        try {
+          await navigator.clipboard.writeText(output.value);
+          const orig = btnCopy.textContent;
+          btnCopy.textContent = '✓ Copied!';
+          setTimeout(() => { btnCopy.textContent = orig; }, 1800);
+        } catch (e) {
+          console.error(e);
+        }
+      });
+
+      btnDownload.addEventListener('click', () => {
+        if (!output.value) return;
+        const fmt = formatSelect.value;
+        let ext = 'txt';
+        let mime = 'text/plain';
+        if (fmt === 'html') { ext = 'html'; mime = 'text/html'; }
+        else if (fmt === 'markdown') { ext = 'md'; mime = 'text/markdown'; }
+        else if (fmt === 'json') { ext = 'json'; mime = 'application/json'; }
+
+        const blob = new Blob([output.value], { type: `${mime};charset=utf-8` });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `placeholder-${Date.now()}.${ext}`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      });
+
+      // Initial run
       generate();
     })();
   </script>

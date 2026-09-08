@@ -1,7 +1,8 @@
 ---
 import SiteLayout from '../../layouts/SiteLayout.astro';
 import Icon from '../../components/Icon.astro';
-import { siteName, toAbsoluteUrl, withBasePath } from '../../utils/site';
+import CalculatorParameterGuide from '../../components/calculator/CalculatorParameterGuide.astro';
+import { siteName, toAbsoluteUrl } from '../../utils/site';
 
 const pageTitle = `PDF Page Rotator — Rotate PDF 90, 180, 270 Degrees Online · ${siteName}`;
 const pageDesc = 'Rotate PDF pages permanently by 90 degrees clockwise, 180 degrees, or 270 degrees counter-clockwise online. 100% private in-browser tool.';
@@ -16,7 +17,19 @@ const breadcrumbItems = [
 const schemaFaq = [
   {
     question: 'How does PDF page rotation work in the browser?',
-    answer: 'It updates the `/Rotate` attribute in the PDF document’s page dictionary objects (0, 90, 180, 270) in memory and generates a re-oriented PDF file without rasterizing vector text.',
+    answer: 'It updates the `/Rotate` attribute in the PDF document’s page dictionary objects (0, 90, 180, 270) in memory using pdf-lib, generating a permanently re-oriented PDF file without re-compressing or rasterizing vector text.',
+  },
+  {
+    question: 'Can I rotate only odd or even pages?',
+    answer: 'Yes! You can choose to rotate all pages, odd pages only, even pages only, or enter a custom range of specific page numbers (e.g. "1, 3-5").',
+  },
+  {
+    question: 'Does rotating a PDF degrade its visual quality?',
+    answer: 'No. The rotation modifies only the mathematical transformation matrix in the PDF page metadata. All embedded text fonts, vector graphics, and images remain at their original 100% native quality.',
+  },
+  {
+    question: 'Is my document uploaded to any external server?',
+    answer: 'No. All PDF binary manipulations execute 100% locally in your web browser memory. No files or information ever leave your device.',
   },
 ];
 
@@ -54,12 +67,49 @@ const schemaGraph = [
     })),
   },
 ];
+
+const parameterGuideData = [
+  {
+    name: 'Rotation Angle',
+    type: '90° Clockwise | 180° Flip | 270° Counter-Clockwise',
+    description: 'Degree increment applied to the target page transformation matrix. Positive values rotate clockwise.',
+  },
+  {
+    name: 'Target Page Scope',
+    type: 'All Pages | Odd Pages | Even Pages | Custom Range',
+    description: 'Selects which subset of the document receives the rotation matrix adjustment, leaving the rest intact.',
+  },
+  {
+    name: 'Output Filename',
+    type: 'String (Default: "rotated-document.pdf")',
+    description: 'Specifies the download filename for the newly oriented PDF document.',
+  },
+];
+
+const workedExampleData = {
+  title: 'Worked Example & Step-by-Step Walkthrough',
+  description: 'A practical demonstration of rotating specific pages in an 8-page document.',
+  formula: 'NewAngle = (CurrentAngle + RotationIncrement) mod 360°',
+  steps: [
+    {
+      step: 'Step 1: Parse Document Catalog & Page Dictionaries',
+      calculation: '8-page PDF loaded; Target Scope set to "Odd Pages" (Pages 1, 3, 5, 7); Angle = 90° CW.',
+      result: 'Identified 4 odd pages for transformation matrix updates.',
+    },
+    {
+      step: 'Step 2: Update Rotation Metadata',
+      calculation: 'Updated `/Rotate` property on pages 1, 3, 5, 7 from 0° to 90°. Even pages (2, 4, 6, 8) unchanged at 0°.',
+      result: 'Output PDF compiled and downloaded in ~400ms without quality loss.',
+    },
+  ],
+};
 ---
 
 <SiteLayout title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
   <script is:inline type="application/ld+json" set:html={JSON.stringify(schemaGraph)} />
 
   <article class="space-y-10 py-2" data-pdf-rotate-app>
+    <!-- Breadcrumb -->
     <nav aria-label="Breadcrumb">
       <ol class="flex flex-wrap items-center gap-2 text-xs text-[color:var(--muted)]">
         {breadcrumbItems.map((item, index) => (
@@ -79,28 +129,35 @@ const schemaGraph = [
       </ol>
     </nav>
 
+    <!-- Header -->
     <header class="space-y-3">
       <div class="inline-flex items-center gap-2 rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1 text-xs font-semibold text-[color:var(--muted)]">
         <span class="inline-block h-2 w-2 rounded-full bg-emerald-500"></span>
-        <span>Local Page Orientation Engine</span>
+        <span>Lossless Matrix Rotation • Selective Page Scope • Instant Download</span>
       </div>
       <h1 class="text-2xl sm:text-4xl font-extrabold tracking-tight text-[color:var(--fg)]">
         PDF Page Rotator
       </h1>
-      <p class="max-w-2xl text-xs sm:text-sm text-[color:var(--muted)] leading-relaxed">
-        Rotate sideways or upside-down PDF documents permanently by 90, 180, or 270 degrees in your browser.
+      <p class="max-w-3xl text-xs sm:text-sm text-[color:var(--muted)] leading-relaxed">
+        Rotate sideways or upside-down PDF documents permanently by 90, 180, or 270 degrees in your browser. Choose between all pages, odd/even pages, or custom page ranges.
       </p>
     </header>
 
     <div class="space-y-6">
-      <div id="dropzone-box" class="space-y-3 rounded-3xl border-2 border-dashed border-[color:var(--border)] bg-[color:var(--surface)] p-6 sm:p-8 text-center transition hover:border-[color:var(--border-strong)]">
+      <!-- Dropzone -->
+      <div id="dropzone-box" class="space-y-3 rounded-3xl border-2 border-dashed border-[color:var(--border)] bg-[color:var(--surface)] p-6 sm:p-10 text-center transition hover:border-[color:var(--accent)]">
         <input type="file" id="pdf-file" accept="application/pdf" class="hidden" />
-        <label for="pdf-file" id="upload-prompt" class="cursor-pointer space-y-2 block">
-          <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-[color:var(--surface-strong)] text-[color:var(--fg)]">
-            <Icon name="document" class="w-6 h-6 text-[color:var(--accent)]" />
+        <label for="pdf-file" id="upload-prompt" class="cursor-pointer space-y-3 block">
+          <div class="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-[color:var(--surface-strong)] text-[color:var(--fg)] shadow-xs">
+            <Icon name="document" class="w-7 h-7 text-[color:var(--accent)]" />
           </div>
-          <p class="text-sm font-bold text-[color:var(--fg)]">Choose a PDF document to rotate</p>
-          <p class="text-xs text-[color:var(--muted)]">Rotate pages permanently (100% private in browser)</p>
+          <div>
+            <p class="text-base font-bold text-[color:var(--fg)]">Choose a PDF or drag &amp; drop to rotate</p>
+            <p class="text-xs text-[color:var(--muted)] mt-1">Permanently rotates pages without quality loss (100% private in browser)</p>
+          </div>
+          <span class="inline-flex items-center gap-2 rounded-xl bg-[color:var(--fg)] px-5 py-2 text-xs font-bold text-[color:var(--bg)] shadow-xs">
+            Select PDF File
+          </span>
         </label>
 
         <!-- Visual Upload Preview Box -->
@@ -111,7 +168,7 @@ const schemaGraph = [
             </div>
             <div class="min-w-0 space-y-0.5">
               <p id="thumb-name" class="text-xs sm:text-sm font-bold text-[color:var(--fg)] truncate">document.pdf</p>
-              <p id="thumb-info" class="text-[11px] text-[color:var(--muted)]">0 KB</p>
+              <p id="thumb-info" class="text-[11px] text-[color:var(--muted)]">0 KB • 0 pages</p>
             </div>
           </div>
           <label for="pdf-file" class="cursor-pointer shrink-0 rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1.5 text-xs font-semibold text-[color:var(--muted)] hover:text-[color:var(--fg)] transition">
@@ -121,25 +178,82 @@ const schemaGraph = [
       </div>
 
       <!-- Settings & Download Card -->
-      <div id="rotate-card" class="hidden space-y-4 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6">
-        <div class="space-y-2 text-xs">
-          <label for="rot-deg" class="font-bold text-[color:var(--fg)] block">Rotation Angle:</label>
-          <select id="rot-deg" class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-[color:var(--fg)]">
-            <option value="90">90° Clockwise</option>
-            <option value="180">180° (Upside Down)</option>
-            <option value="270">270° (90° Counter-Clockwise)</option>
-          </select>
+      <div id="rotate-card" class="hidden space-y-6 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 sm:p-6">
+        <div class="grid gap-4 sm:grid-cols-2 md:grid-cols-3 text-xs">
+          <div>
+            <label for="rot-deg" class="font-bold text-[color:var(--fg)] block mb-1.5">Rotation Angle</label>
+            <select id="rot-deg" class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-[color:var(--fg)] font-semibold">
+              <option value="90">90° Clockwise</option>
+              <option value="180">180° (Upside Down)</option>
+              <option value="270">270° (90° Counter-Clockwise)</option>
+            </select>
+          </div>
+
+          <div>
+            <label for="rot-scope" class="font-bold text-[color:var(--fg)] block mb-1.5">Target Pages</label>
+            <select id="rot-scope" class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-[color:var(--fg)] font-semibold">
+              <option value="all">All Pages in Document</option>
+              <option value="odd">Odd Pages Only (1, 3, 5...)</option>
+              <option value="even">Even Pages Only (2, 4, 6...)</option>
+              <option value="custom">Custom Page Range</option>
+            </select>
+          </div>
+
+          <div id="custom-range-box" class="hidden">
+            <label for="custom-range-in" class="font-bold text-[color:var(--fg)] block mb-1.5">Page Range Specification</label>
+            <input
+              type="text"
+              id="custom-range-in"
+              placeholder="e.g. 1-3, 5"
+              class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-[color:var(--fg)] font-semibold"
+            />
+          </div>
         </div>
 
-        <button
-          type="button"
-          id="rotate-btn"
-          class="w-full rounded-xl bg-[color:var(--fg)] py-2.5 text-xs font-bold text-[color:var(--bg)] shadow-xs transition hover:opacity-90 active:scale-95 cursor-pointer"
-        >
-          Rotate &amp; Download PDF
-        </button>
+        <!-- Visual Rotation Angle Simulation Card -->
+        <div class="flex items-center gap-4 rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] p-4">
+          <div class="flex h-14 w-12 items-center justify-center rounded-lg border-2 border-dashed border-[color:var(--accent)] bg-[color:var(--surface)] text-xs font-bold text-[color:var(--fg)] shadow-xs transition-transform duration-300" id="preview-page-icon">
+            📄
+          </div>
+          <div class="text-xs space-y-1">
+            <p class="font-bold text-[color:var(--fg)]" id="preview-text">Rotating 90° Clockwise</p>
+            <p class="text-[color:var(--muted)]" id="preview-scope-text">Applied to all pages.</p>
+          </div>
+        </div>
+
+        <div class="grid gap-4 sm:grid-cols-2 pt-2 border-t border-[color:var(--border)] text-xs">
+          <div>
+            <label for="rot-filename" class="font-bold text-[color:var(--fg)] block mb-1">Output Filename</label>
+            <input
+              type="text"
+              id="rot-filename"
+              class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-[color:var(--fg)] font-mono"
+              value="rotated-document.pdf"
+            />
+          </div>
+        </div>
+
+        <!-- Submit Button & Status -->
+        <div class="space-y-2 pt-2 border-t border-[color:var(--border)]">
+          <button
+            type="button"
+            id="rotate-btn"
+            class="w-full rounded-xl bg-[color:var(--fg)] py-3 text-xs font-bold text-[color:var(--bg)] shadow-xs transition hover:opacity-90 active:scale-95 cursor-pointer flex items-center justify-center gap-2"
+          >
+            <span>⚡ Rotate &amp; Download PDF</span>
+          </button>
+          <p id="rotate-status" class="text-center text-xs text-[color:var(--muted)]"></p>
+        </div>
       </div>
     </div>
+
+    <!-- Parameter Guide & Worked Example -->
+    <CalculatorParameterGuide
+      title="PDF Rotation Geometry & Transformation Guide"
+      description="Understand PDF page /Rotate dictionaries, coordinate matrix transformations, and selective page scope partitioning."
+      parameters={parameterGuideData}
+      workedExample={workedExampleData}
+    />
 
     <!-- FAQs -->
     <section class="space-y-4">
@@ -167,15 +281,27 @@ const schemaGraph = [
       if (!root) return;
 
       const fileIn = root.querySelector('#pdf-file');
+      const dropzone = root.querySelector('#dropzone-box');
       const uploadPrompt = root.querySelector('#upload-prompt');
       const uploadPreviewBox = root.querySelector('#upload-preview-box');
       const thumbName = root.querySelector('#thumb-name');
       const thumbInfo = root.querySelector('#thumb-info');
       const card = root.querySelector('#rotate-card');
+
+      const rotDegSelect = root.querySelector('#rot-deg');
+      const rotScopeSelect = root.querySelector('#rot-scope');
+      const customRangeBox = root.querySelector('#custom-range-box');
+      const customRangeIn = root.querySelector('#custom-range-in');
+      const previewPageIcon = root.querySelector('#preview-page-icon');
+      const previewText = root.querySelector('#preview-text');
+      const previewScopeText = root.querySelector('#preview-scope-text');
+      const rotFilenameInput = root.querySelector('#rot-filename');
+
       const rotateBtn = root.querySelector('#rotate-btn');
-      const rotDeg = root.querySelector('#rot-deg');
+      const rotateStatus = root.querySelector('#rotate-status');
 
       let currentBytes = null;
+      let totalPages = 0;
       let originalFilename = 'document.pdf';
 
       function formatBytes(bytes) {
@@ -184,59 +310,161 @@ const schemaGraph = [
         return (bytes / 1048576).toFixed(2) + ' MB';
       }
 
-      fileIn.addEventListener('change', async (e) => {
-        const file = e.target.files[0];
-        if (!file) return;
+      function updatePreview() {
+        const deg = parseInt(rotDegSelect.value, 10);
+        previewPageIcon.style.transform = `rotate(${deg}deg)`;
+        previewText.textContent = `Rotating ${deg}° ${deg === 180 ? '(Upside Down)' : (deg === 90 ? 'Clockwise' : 'Counter-Clockwise')}`;
 
+        const scope = rotScopeSelect.value;
+        if (scope === 'all') previewScopeText.textContent = 'Applied to all pages in document.';
+        else if (scope === 'odd') previewScopeText.textContent = 'Applied only to odd pages (1, 3, 5...).';
+        else if (scope === 'even') previewScopeText.textContent = 'Applied only to even pages (2, 4, 6...).';
+        else previewScopeText.textContent = `Applied to custom range: ${customRangeIn.value || 'None specified'}.`;
+      }
+
+      rotDegSelect.addEventListener('change', updatePreview);
+      rotScopeSelect.addEventListener('change', () => {
+        customRangeBox.classList.toggle('hidden', rotScopeSelect.value !== 'custom');
+        updatePreview();
+      });
+      customRangeIn.addEventListener('input', updatePreview);
+
+      function parseCustomRange(str, max) {
+        const pages = new Set();
+        const parts = str.split(',').map(s => s.trim()).filter(Boolean);
+        for (const part of parts) {
+          if (part.includes('-')) {
+            const [startStr, endStr] = part.split('-');
+            const s = parseInt(startStr, 10);
+            const e = parseInt(endStr, 10);
+            if (!isNaN(s) && !isNaN(e)) {
+              for (let p = Math.max(1, s); p <= Math.min(max, e); p++) pages.add(p - 1);
+            }
+          } else {
+            const p = parseInt(part, 10);
+            if (!isNaN(p) && p >= 1 && p <= max) pages.add(p - 1);
+          }
+        }
+        return pages;
+      }
+
+      async function handleFile(file) {
         originalFilename = file.name;
         thumbName.textContent = file.name;
-        thumbInfo.textContent = formatBytes(file.size);
+        thumbInfo.textContent = `${formatBytes(file.size)} • Reading structure...`;
 
         uploadPrompt.classList.add('hidden');
         uploadPreviewBox.classList.remove('hidden');
 
         currentBytes = await file.arrayBuffer();
-        card.classList.remove('hidden');
-      });
 
-      rotateBtn.addEventListener('click', async () => {
-        if (!currentBytes) return;
-
-        const deg = parseInt(rotDeg.value, 10);
-
-        if (window.PDFLib) {
-          try {
-            const pdfDoc = await PDFLib.PDFDocument.load(currentBytes);
-            const pages = pdfDoc.getPages();
-            pages.forEach(page => {
-              const currentAngle = page.getRotation().angle;
-              page.setRotation(PDFLib.degrees((currentAngle + deg) % 360));
-            });
-
-            const pdfData = await pdfDoc.save();
-            const blob = new Blob([pdfData], { type: 'application/pdf' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            const base = originalFilename.substring(0, originalFilename.lastIndexOf('.')) || originalFilename;
-            a.download = `${base}_rotated_${deg}deg.pdf`;
-            a.click();
-            URL.revokeObjectURL(url);
-            return;
-          } catch(err) {
-            console.error(err);
+        try {
+          if (window.PDFLib) {
+            const pdfDoc = await PDFLib.PDFDocument.load(currentBytes, { ignoreEncryption: true });
+            totalPages = pdfDoc.getPageCount();
+          } else {
+            totalPages = 1;
           }
+        } catch (err) {
+          totalPages = 1;
         }
 
-        const blob = new Blob([currentBytes], { type: 'application/pdf' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        const base = originalFilename.substring(0, originalFilename.lastIndexOf('.')) || originalFilename;
-        a.download = `${base}_rotated_${deg}deg.pdf`;
-        a.click();
-        URL.revokeObjectURL(url);
+        thumbInfo.textContent = `${formatBytes(file.size)} • ${totalPages} pages`;
+        customRangeIn.placeholder = `1-${totalPages}`;
+        updatePreview();
+        card.classList.remove('hidden');
+      }
+
+      // Drag and drop
+      ['dragenter', 'dragover'].forEach(name => {
+        dropzone.addEventListener(name, (e) => {
+          e.preventDefault();
+          dropzone.classList.add('border-[color:var(--accent)]');
+        });
       });
+
+      ['dragleave', 'drop'].forEach(name => {
+        dropzone.addEventListener(name, (e) => {
+          e.preventDefault();
+          dropzone.classList.remove('border-[color:var(--accent)]');
+        });
+      });
+
+      dropzone.addEventListener('drop', (e) => {
+        const file = e.dataTransfer?.files?.[0];
+        if (file && (file.type === 'application/pdf' || file.name.endsWith('.pdf'))) {
+          handleFile(file);
+        }
+      });
+
+      fileIn.addEventListener('change', (e) => {
+        const file = e.target.files?.[0];
+        if (file) handleFile(file);
+        fileIn.value = '';
+      });
+
+      // Rotate action
+      rotateBtn.addEventListener('click', async () => {
+        if (!currentBytes) return;
+        if (!window.PDFLib) {
+          alert('PDF-Lib engine is still loading. Please wait a moment.');
+          return;
+        }
+
+        rotateBtn.disabled = true;
+        rotateBtn.classList.add('opacity-70');
+        rotateStatus.textContent = 'Applying rotation transformations to PDF page tree...';
+
+        try {
+          const pdfDoc = await PDFLib.PDFDocument.load(currentBytes, { ignoreEncryption: true });
+          const pages = pdfDoc.getPages();
+          const angle = parseInt(rotDegSelect.value, 10);
+          const scope = rotScopeSelect.value;
+
+          let targetIndices = new Set();
+          if (scope === 'all') {
+            for (let i = 0; i < pages.length; i++) targetIndices.add(i);
+          } else if (scope === 'odd') {
+            for (let i = 0; i < pages.length; i += 2) targetIndices.add(i);
+          } else if (scope === 'even') {
+            for (let i = 1; i < pages.length; i += 2) targetIndices.add(i);
+          } else if (scope === 'custom') {
+            targetIndices = parseCustomRange(customRangeIn.value, pages.length);
+          }
+
+          targetIndices.forEach(idx => {
+            if (pages[idx]) {
+              const currentAngle = pages[idx].getRotation().angle;
+              pages[idx].setRotation(PDFLib.degrees(currentAngle + angle));
+            }
+          });
+
+          const pdfBytes = await pdfDoc.save();
+          const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+
+          let filename = rotFilenameInput.value.trim() || 'rotated-document.pdf';
+          if (!filename.toLowerCase().endsWith('.pdf')) filename += '.pdf';
+          a.download = filename;
+
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+
+          rotateStatus.textContent = `✓ Successfully rotated ${targetIndices.size} pages by ${angle}°!`;
+        } catch (err) {
+          console.error('Rotation error:', err);
+          rotateStatus.textContent = `Error during rotation: ${err.message || err}`;
+        } finally {
+          rotateBtn.disabled = false;
+          rotateBtn.classList.remove('opacity-70');
+        }
+      });
+
+      updatePreview();
     })();
   </script>
 </SiteLayout>

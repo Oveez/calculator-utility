@@ -1,7 +1,8 @@
 ---
-import SiteLayout from '../../layouts/SiteLayout.astro';
 import Icon from '../../components/Icon.astro';
-import { siteName, toAbsoluteUrl, withBasePath } from '../../utils/site';
+import SiteLayout from '../../layouts/SiteLayout.astro';
+import CalculatorParameterGuide from '../../components/calculator/CalculatorParameterGuide.astro';
+import { siteName, toAbsoluteUrl } from '../../utils/site';
 
 const pageTitle = `URL Slug Generator — Free SEO Slug Maker · ${siteName}`;
 const pageDesc = 'Convert blog post titles, article headlines, and strings into clean, SEO-friendly URL slugs online. Removes stop words, replaces spaces with hyphens, and formats in lowercase.';
@@ -16,7 +17,19 @@ const breadcrumbItems = [
 const schemaFaq = [
   {
     question: 'What makes an SEO-friendly URL slug?',
-    answer: 'An optimal URL slug uses lowercase letters, replaces spaces and symbols with hyphens, removes common stop words (like "the", "a", "and"), and stays concise for search engine indexing.',
+    answer: 'An optimal URL slug uses lowercase letters, replaces spaces and symbols with hyphens, removes common stop words (like "the", "a", "and"), transliterates international accent characters, and stays concise (under 60 characters) for maximum search engine ranking and readability.',
+  },
+  {
+    question: 'How does accent and diacritic transliteration work?',
+    answer: 'The slug generator decomposes Unicode glyphs using NFD normalization and maps special non-ASCII Latin characters (such as German ä, ö, ü, ß or French/Spanish é, à, ñ, ç) into standard ASCII equivalents (ae, oe, ue, ss, e, a, n, c).',
+  },
+  {
+    question: 'Can I generate multiple URL slugs in bulk?',
+    answer: 'Yes! Toggle the Batch Mode switch to paste dozens or hundreds of article titles at once. The tool processes every line in real time and provides one-click export to CSV or plain text.',
+  },
+  {
+    question: 'Is my headline or proprietary content uploaded to a server?',
+    answer: 'No. All string manipulation and regular expression sanitization happens entirely in your local browser memory via JavaScript. Nothing is sent to any remote server.',
   },
 ];
 
@@ -54,12 +67,54 @@ const schemaGraph = [
     })),
   },
 ];
+
+const parameterGuideData = [
+  {
+    name: 'Separator Delimiter',
+    type: 'Hyphen (-) | Underscore (_) | Dot (.) | Slash (/)',
+    description: 'The character used to divide individual words. Hyphens are the industry gold standard recommended by Google Search Central for search engine readability.',
+  },
+  {
+    name: 'Stop Words Removal',
+    type: 'Boolean (Default: True)',
+    description: 'Filters out common grammatical conjunctions and prepositions (a, an, the, and, or, in, for, of, with) to make slugs shorter and more keyword dense.',
+  },
+  {
+    name: 'Max Length Truncation',
+    type: 'Number (30–120 characters)',
+    description: 'Caps the maximum character length of the generated slug without cutting words awkwardly in half at boundary edges.',
+  },
+  {
+    name: 'Transliterate Accents',
+    type: 'Boolean (Default: True)',
+    description: 'Converts international diacritics and umlauts (e.g. "Café Müller" &rarr; "cafe-mueller") into clean ASCII characters compatible with all DNS systems.',
+  },
+];
+
+const workedExampleData = {
+  title: 'Worked Example: Building an SEO-Optimized Article Permalink',
+  description: 'Sanitizing an article title into a clean, keyword-dense URL slug.',
+  formula: 'Raw Title → Lowercase & Transliterate → Filter Stop Words → Replace Separators → Trim Clean',
+  steps: [
+    {
+      step: 'Step 1: Ingest Headline & Transliterate',
+      calculation: 'Title: "The 10 Best Online Developer Tools for 2026 & Beyond!"',
+      result: 'Convert to lowercase, replace "&" with "and", transliterate non-ASCII glyphs',
+    },
+    {
+      step: 'Step 2: Remove Stop Words & Apply Separators',
+      calculation: 'Strip "the", "for"; join remaining keywords with hyphen separators.',
+      result: '"10-best-online-developer-tools-2026-beyond" (43 chars — Optimal SEO length)',
+    },
+  ],
+};
 ---
 
 <SiteLayout title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
   <script is:inline type="application/ld+json" set:html={JSON.stringify(schemaGraph)} />
 
   <article class="space-y-10 py-2" data-slug-app>
+    <!-- Breadcrumb -->
     <nav aria-label="Breadcrumb">
       <ol class="flex flex-wrap items-center gap-2 text-xs text-[color:var(--muted)]">
         {breadcrumbItems.map((item, index) => (
@@ -79,57 +134,238 @@ const schemaGraph = [
       </ol>
     </nav>
 
+    <!-- Header -->
     <header class="space-y-3">
       <div class="inline-flex items-center gap-2 rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1 text-xs font-semibold text-[color:var(--muted)]">
         <span class="inline-block h-2 w-2 rounded-full bg-emerald-500"></span>
-        <span>SEO Permanent Link Builder</span>
+        <span>SEO Permalink Engine • Accent Transliteration • SERP Simulator</span>
       </div>
       <h1 class="text-2xl sm:text-4xl font-extrabold tracking-tight text-[color:var(--fg)]">
         URL Slug Generator &amp; Permalink Maker
       </h1>
-      <p class="max-w-2xl text-xs sm:text-sm text-[color:var(--muted)] leading-relaxed">
-        Convert headlines, blog titles, and product names into clean, lowercase URL slugs.
+      <p class="max-w-3xl text-xs sm:text-sm text-[color:var(--muted)] leading-relaxed">
+        Convert headlines, blog post titles, and product listings into clean, SEO-optimized permalink slugs with accent normalization, stop word removal, and Google SERP preview.
       </p>
     </header>
 
-    <div class="space-y-6">
+    <!-- Mode Selector & Quick Presets -->
+    <div class="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
+      <div class="flex items-center gap-3">
+        <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Mode:</span>
+        <div class="inline-flex rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] p-1">
+          <button
+            type="button"
+            id="mode-single-btn"
+            class="rounded-lg px-3 py-1.5 text-xs font-bold transition bg-[color:var(--accent)] text-white shadow-xs"
+          >
+            Single Headline
+          </button>
+          <button
+            type="button"
+            id="mode-batch-btn"
+            class="rounded-lg px-3 py-1.5 text-xs font-bold transition text-[color:var(--muted)] hover:text-[color:var(--fg)]"
+          >
+            Batch Multi-Line
+          </button>
+        </div>
+      </div>
+
+      <div class="flex flex-wrap items-center gap-2 text-xs">
+        <span class="text-[color:var(--muted)] font-medium">Quick Samples:</span>
+        <button type="button" id="btn-sample-tech" class="text-[color:var(--accent)] hover:underline font-semibold cursor-pointer">Tech Post</button>
+        <span class="text-[color:var(--border)]">•</span>
+        <button type="button" id="btn-sample-ecommerce" class="text-[color:var(--accent)] hover:underline font-semibold cursor-pointer">Product SKU</button>
+        <span class="text-[color:var(--border)]">•</span>
+        <button type="button" id="btn-sample-accents" class="text-[color:var(--accent)] hover:underline font-semibold cursor-pointer">Accented (Fr/De)</button>
+        <span class="text-[color:var(--border)]">•</span>
+        <button type="button" id="btn-clear" class="text-rose-600 dark:text-rose-400 hover:underline cursor-pointer font-semibold">Clear</button>
+      </div>
+    </div>
+
+    <!-- Parameter Controls Grid -->
+    <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5 space-y-4">
+      <div class="grid gap-4 sm:grid-cols-2 md:grid-cols-4 text-xs">
+        <div>
+          <label for="opt-separator" class="block font-bold text-[color:var(--fg)] mb-1.5">Word Separator</label>
+          <select id="opt-separator" class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-[color:var(--fg)]">
+            <option value="-">Hyphen (-) [Standard SEO]</option>
+            <option value="_">Underscore (_)</option>
+            <option value=".">Dot (.)</option>
+            <option value="/">Slash (/)</option>
+            <option value="">None (Concatenated)</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="opt-case" class="block font-bold text-[color:var(--fg)] mb-1.5">Letter Casing</label>
+          <select id="opt-case" class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-[color:var(--fg)]">
+            <option value="lower">Lowercase (all small)</option>
+            <option value="upper">UPPERCASE</option>
+            <option value="preserve">Preserve Original Casing</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="opt-max-len" class="block font-bold text-[color:var(--fg)] mb-1.5">Max Character Length</label>
+          <select id="opt-max-len" class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-[color:var(--fg)]">
+            <option value="0">Unlimited (No cutoff)</option>
+            <option value="50">50 chars (Ultra concise)</option>
+            <option value="60" selected>60 chars (Recommended SEO)</option>
+            <option value="80">80 chars</option>
+            <option value="100">100 chars</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="opt-prefix" class="block font-bold text-[color:var(--fg)] mb-1.5">URL Prefix / Path</label>
+          <input
+            type="text"
+            id="opt-prefix"
+            class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-[color:var(--fg)]"
+            placeholder="e.g. /blog/"
+            value="/blog/"
+          />
+        </div>
+      </div>
+
+      <div class="grid gap-3 sm:grid-cols-2 md:grid-cols-4 pt-3 border-t border-[color:var(--border)] text-xs">
+        <label class="flex items-center gap-2 font-medium text-[color:var(--fg)] cursor-pointer">
+          <input type="checkbox" id="opt-stopwords" checked class="rounded accent-[color:var(--accent)]" />
+          <span>Remove Stop Words (a, the, in, for)</span>
+        </label>
+        <label class="flex items-center gap-2 font-medium text-[color:var(--fg)] cursor-pointer">
+          <input type="checkbox" id="opt-transliterate" checked class="rounded accent-[color:var(--accent)]" />
+          <span>Transliterate Accents (é &rarr; e, ü &rarr; ue)</span>
+        </label>
+        <label class="flex items-center gap-2 font-medium text-[color:var(--fg)] cursor-pointer">
+          <input type="checkbox" id="opt-strip-numbers" class="rounded accent-[color:var(--accent)]" />
+          <span>Strip Numbers &amp; Digits</span>
+        </label>
+        <label class="flex items-center gap-2 font-medium text-[color:var(--fg)] cursor-pointer">
+          <input type="checkbox" id="opt-ampersand-and" checked class="rounded accent-[color:var(--accent)]" />
+          <span>Replace &amp; with "and"</span>
+        </label>
+      </div>
+    </div>
+
+    <!-- SINGLE MODE WORKSPACE -->
+    <div id="workspace-single" class="space-y-6">
       <div class="space-y-2">
-        <label for="title-in" class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Article Title or Headline</label>
+        <div class="flex items-center justify-between">
+          <label for="title-in" class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Article Title or Headline</label>
+          <span id="single-char-count" class="text-xs text-[color:var(--muted)]">0 chars</span>
+        </div>
         <input
           type="text"
           id="title-in"
-          class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-sm sm:text-base font-semibold text-[color:var(--fg)] focus:border-[color:var(--border-strong)] focus:outline-hidden"
-          placeholder="e.g. 10 Best Online Developer Tools for 2026 & Beyond!"
+          class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-sm sm:text-base font-semibold text-[color:var(--fg)] focus:border-[color:var(--accent)] focus:outline-hidden transition shadow-inner"
+          placeholder="e.g. 10 Best Online Developer Tools for 2026 &amp; Beyond!"
           value="10 Best Online Developer Tools for 2026 & Beyond!"
         />
       </div>
 
       <!-- Generated Slug Output Card -->
-      <div class="space-y-3 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 sm:p-6">
-        <div class="flex items-center justify-between">
-          <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Generated SEO Slug</span>
-          <button type="button" data-copy-btn class="inline-flex items-center gap-1 text-xs font-bold text-[color:var(--fg)] hover:underline">
-            <Icon name="copy" class="w-3.5 h-3.5" />
-            <span>Copy Slug</span>
-          </button>
+      <div class="space-y-4 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 sm:p-6">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Generated SEO Slug</span>
+            <span id="slug-badge" class="rounded-full bg-cyan-500/10 px-2.5 py-0.5 text-[11px] font-semibold text-cyan-600 dark:text-cyan-400 dark:text-cyan-400">Optimal SEO Length</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <button
+              type="button"
+              id="btn-copy-slug"
+              class="rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-1.5 text-xs font-bold text-[color:var(--fg)] hover:border-[color:var(--accent)] transition cursor-pointer"
+            >
+              📋 Copy Slug
+            </button>
+            <button
+              type="button"
+              id="btn-copy-url"
+              class="rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-1.5 text-xs font-bold text-[color:var(--fg)] hover:border-[color:var(--accent)] transition cursor-pointer"
+            >
+              🔗 Copy Full URL
+            </button>
+          </div>
         </div>
-        <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] px-4 py-3">
-          <p id="slug-out" class="font-mono text-base sm:text-lg font-bold text-emerald-500 select-all break-all">-</p>
-        </div>
-      </div>
 
-      <!-- Settings -->
-      <div class="flex flex-wrap items-center gap-4 text-xs text-[color:var(--muted)]">
-        <label class="flex items-center gap-2 cursor-pointer">
-          <input type="checkbox" id="opt-stopwords" class="rounded accent-[color:var(--fg)]" />
-          <span>Strip Common Stop Words (a, the, in, for, of)</span>
-        </label>
-        <label class="flex items-center gap-2 cursor-pointer">
-          <input type="checkbox" id="opt-lowercase" checked class="rounded accent-[color:var(--fg)]" />
-          <span>Force Lowercase</span>
-        </label>
+        <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] px-4 py-3">
+          <p id="slug-out" class="font-mono text-base sm:text-lg font-bold text-cyan-600 dark:text-cyan-400 dark:text-cyan-400 select-all break-all">-</p>
+        </div>
+
+        <!-- Simulated Google SERP Preview Card -->
+        <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-strong)]/60 p-4 space-y-1.5 text-left">
+          <div class="text-[11px] font-bold uppercase tracking-wider text-[color:var(--muted)] mb-1">Google SERP URL Simulation:</div>
+          <div class="flex items-center gap-2 text-xs text-[color:var(--muted)] font-mono">
+            <span class="inline-block h-3.5 w-3.5 rounded-full bg-blue-500/20 text-blue-500 text-center text-[9px] font-bold leading-3.5">G</span>
+            <span class="truncate">https://yourdomain.com<span id="serp-prefix">/blog/</span><strong id="serp-slug" class="text-[color:var(--fg)]">-</strong></span>
+          </div>
+          <div id="serp-title" class="text-sm font-semibold text-blue-600 dark:text-blue-400 truncate hover:underline cursor-pointer">
+            10 Best Online Developer Tools for 2026 &amp; Beyond!
+          </div>
+          <div class="text-xs text-[color:var(--muted)] line-clamp-2">
+            Generate clean, performant, and search-optimized permalinks for blog posts, eCommerce catalog items, and technical documentation.
+          </div>
+        </div>
       </div>
     </div>
+
+    <!-- BATCH MODE WORKSPACE (Hidden by default) -->
+    <div id="workspace-batch" class="hidden space-y-6">
+      <div class="grid gap-6 lg:grid-cols-2">
+        <!-- Batch Input -->
+        <div class="space-y-3">
+          <div class="flex items-center justify-between">
+            <label for="batch-in" class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Titles (One per line)</label>
+            <span id="batch-in-count" class="text-xs text-[color:var(--muted)]">0 titles</span>
+          </div>
+          <textarea
+            id="batch-in"
+            rows="14"
+            class="w-full font-mono text-xs leading-relaxed rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-[color:var(--fg)] focus:border-[color:var(--accent)] focus:outline-hidden transition shadow-inner"
+            placeholder="The Ultimate Guide to Astro SSG&#10;How to Build 85+ Web Calculators&#10;10 Tips for High Performance JavaScript"
+          ></textarea>
+        </div>
+
+        <!-- Batch Output -->
+        <div class="space-y-3">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Generated Slugs</span>
+            <div class="flex items-center gap-2">
+              <button
+                type="button"
+                id="btn-copy-batch"
+                class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1 text-xs font-bold text-[color:var(--fg)] hover:border-[color:var(--accent)] transition cursor-pointer"
+              >
+                📋 Copy All
+              </button>
+              <button
+                type="button"
+                id="btn-download-csv"
+                class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1 text-xs font-bold text-[color:var(--fg)] hover:border-[color:var(--accent)] transition cursor-pointer"
+              >
+                💾 Export CSV
+              </button>
+            </div>
+          </div>
+          <textarea
+            id="batch-out"
+            rows="14"
+            readonly
+            class="w-full font-mono text-xs leading-relaxed rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-4 text-[color:var(--fg)] focus:outline-hidden"
+            placeholder="Generated slugs will appear here..."
+          ></textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- Parameter Guide & Worked Example -->
+    <CalculatorParameterGuide
+      title="URL Slug Construction & Permalinks Guide"
+      description="Understand slug sanitization pipelines, Unicode transliteration, stop words filtering, and SEO length best practices."
+      parameters={parameterGuideData}
+      workedExample={workedExampleData}
+    />
 
     <!-- FAQs -->
     <section class="space-y-4">
@@ -155,56 +391,287 @@ const schemaGraph = [
       const root = document.querySelector('[data-slug-app]');
       if (!root) return;
 
-      const input = root.querySelector('#title-in');
+      const modeSingleBtn = root.querySelector('#mode-single-btn');
+      const modeBatchBtn = root.querySelector('#mode-batch-btn');
+      const workspaceSingle = root.querySelector('#workspace-single');
+      const workspaceBatch = root.querySelector('#workspace-batch');
+
+      const titleIn = root.querySelector('#title-in');
+      const singleCharCount = root.querySelector('#single-char-count');
       const slugOut = root.querySelector('#slug-out');
+      const slugBadge = root.querySelector('#slug-badge');
+      const serpPrefix = root.querySelector('#serp-prefix');
+      const serpSlug = root.querySelector('#serp-slug');
+      const serpTitle = root.querySelector('#serp-title');
+
+      const batchIn = root.querySelector('#batch-in');
+      const batchOut = root.querySelector('#batch-out');
+      const batchInCount = root.querySelector('#batch-in-count');
+
+      const optSeparator = root.querySelector('#opt-separator');
+      const optCase = root.querySelector('#opt-case');
+      const optMaxLen = root.querySelector('#opt-max-len');
+      const optPrefix = root.querySelector('#opt-prefix');
       const optStopwords = root.querySelector('#opt-stopwords');
-      const optLowercase = root.querySelector('#opt-lowercase');
-      const copyBtn = root.querySelector('[data-copy-btn]');
+      const optTransliterate = root.querySelector('#opt-transliterate');
+      const optStripNumbers = root.querySelector('#opt-strip-numbers');
+      const optAmpersandAnd = root.querySelector('#opt-ampersand-and');
 
-      const STOP_WORDS = new Set(['a', 'an', 'the', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for', 'of', 'with', 'by']);
+      const btnSampleTech = root.querySelector('#btn-sample-tech');
+      const btnSampleEcommerce = root.querySelector('#btn-sample-ecommerce');
+      const btnSampleAccents = root.querySelector('#btn-sample-accents');
+      const btnClear = root.querySelector('#btn-clear');
 
-      function generateSlug() {
-        let text = input.value.trim();
-        if (!text) { slugOut.textContent = '-'; return; }
+      const btnCopySlug = root.querySelector('#btn-copy-slug');
+      const btnCopyUrl = root.querySelector('#btn-copy-url');
+      const btnCopyBatch = root.querySelector('#btn-copy-batch');
+      const btnDownloadCsv = root.querySelector('#btn-download-csv');
 
-        if (optLowercase.checked) {
-          text = text.toLowerCase();
+      const STOP_WORDS = new Set([
+        'a', 'about', 'above', 'after', 'again', 'against', 'all', 'am', 'an', 'and', 'any', 'are', 'as', 'at',
+        'be', 'because', 'been', 'before', 'being', 'below', 'between', 'both', 'but', 'by',
+        'during', 'for', 'from', 'further', 'had', 'has', 'have', 'having', 'he', 'her', 'here', 'hers',
+        'in', 'into', 'is', 'it', 'its', 'itself', 'just', 'me', 'more', 'most', 'my', 'myself',
+        'no', 'nor', 'not', 'of', 'off', 'on', 'once', 'only', 'or', 'other', 'our', 'ours', 'out', 'over', 'own',
+        'so', 'some', 'such', 'than', 'that', 'the', 'their', 'theirs', 'them', 'themselves', 'then', 'there',
+        'these', 'they', 'this', 'those', 'through', 'to', 'too', 'under', 'until', 'up', 'very',
+        'was', 'we', 'were', 'what', 'when', 'where', 'which', 'while', 'who', 'whom', 'why', 'with', 'you', 'your'
+      ]);
+
+      const ACCENT_MAP = {
+        'ä': 'ae', 'ö': 'oe', 'ü': 'ue', 'ß': 'ss',
+        'Ä': 'Ae', 'Ö': 'Oe', 'Ü': 'Ue', 'ẞ': 'Ss',
+        'æ': 'ae', 'œ': 'oe', 'Æ': 'Ae', 'Œ': 'Oe',
+        'ø': 'o', 'Ø': 'O', 'å': 'a', 'Å': 'A'
+      };
+
+      function transliterate(str) {
+        let res = str;
+        for (const [k, v] of Object.entries(ACCENT_MAP)) {
+          res = res.split(k).join(v);
+        }
+        return res.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+      }
+
+      function createSlug(raw) {
+        if (!raw || !raw.trim()) return '';
+
+        let text = raw.trim();
+
+        if (optTransliterate.checked) {
+          text = transliterate(text);
         }
 
-        // Replace ampersands
-        text = text.replace(/&/g, ' and ');
+        if (optAmpersandAnd.checked) {
+          text = text.replace(/&/g, ' and ');
+        }
 
-        // Split tokens
-        let tokens = text.split(/\s+/).filter(t => t.length > 0);
+        if (optStripNumbers.checked) {
+          text = text.replace(/\d+/g, '');
+        }
+
+        const caseMode = optCase.value;
+        if (caseMode === 'lower') {
+          text = text.toLowerCase();
+        } else if (caseMode === 'upper') {
+          text = text.toUpperCase();
+        }
+
+        // Split tokens on non-word characters
+        let tokens = text.split(/[^\w\d]+/i).filter(t => t.length > 0);
 
         if (optStopwords.checked) {
           tokens = tokens.filter(t => !STOP_WORDS.has(t.toLowerCase()));
         }
 
-        let slug = tokens.join('-')
-          .replace(/[^\w\-]+/g, '')
-          .replace(/\-\-+/g, '-')
-          .replace(/^-+/, '')
-          .replace(/-+$/, '');
+        const sep = optSeparator.value;
+        let slug = tokens.join(sep);
 
-        slugOut.textContent = slug || '-';
+        // Max length trimming at word boundaries if specified
+        const maxLen = parseInt(optMaxLen.value, 10);
+        if (maxLen > 0 && slug.length > maxLen) {
+          if (sep) {
+            const parts = slug.split(sep);
+            let truncated = '';
+            for (const part of parts) {
+              const candidate = truncated ? `${truncated}${sep}${part}` : part;
+              if (candidate.length <= maxLen) {
+                truncated = candidate;
+              } else {
+                break;
+              }
+            }
+            slug = truncated || slug.substring(0, maxLen);
+          } else {
+            slug = slug.substring(0, maxLen);
+          }
+        }
+
+        return slug;
       }
 
-      input.addEventListener('input', generateSlug);
-      optStopwords.addEventListener('change', generateSlug);
-      optLowercase.addEventListener('change', generateSlug);
+      function updateSingle() {
+        const title = titleIn.value;
+        singleCharCount.textContent = `${title.length.toLocaleString()} chars`;
 
-      copyBtn.addEventListener('click', () => {
-        const text = slugOut.textContent;
-        if (!text || text === '-') return;
-        navigator.clipboard.writeText(text);
-        const span = copyBtn.querySelector('span');
-        const orig = span.textContent;
-        span.textContent = 'Copied!';
-        setTimeout(() => span.textContent = orig, 1800);
+        const slug = createSlug(title);
+        slugOut.textContent = slug || '-';
+        serpSlug.textContent = slug || 'your-slug-here';
+        serpTitle.textContent = title || 'Your Page Title';
+
+        let prefix = optPrefix.value.trim();
+        if (prefix && !prefix.endsWith('/')) prefix += '/';
+        serpPrefix.textContent = prefix;
+
+        // Evaluate SEO grade
+        const len = slug.length;
+        if (len === 0) {
+          slugBadge.textContent = 'Empty';
+          slugBadge.className = 'rounded-full bg-zinc-500/10 px-2.5 py-0.5 text-[11px] font-semibold text-[color:var(--muted)]';
+        } else if (len <= 60) {
+          slugBadge.textContent = `Optimal SEO Length (${len} chars)`;
+          slugBadge.className = 'rounded-full bg-cyan-500/10 px-2.5 py-0.5 text-[11px] font-semibold text-cyan-600 dark:text-cyan-400 dark:text-cyan-400';
+        } else if (len <= 80) {
+          slugBadge.textContent = `Acceptable (${len} chars)`;
+          slugBadge.className = 'rounded-full bg-amber-500/10 px-2.5 py-0.5 text-[11px] font-semibold text-amber-600 dark:text-amber-400';
+        } else {
+          slugBadge.textContent = `Too Long (${len} chars — Consider Truncating)`;
+          slugBadge.className = 'rounded-full bg-rose-500/10 px-2.5 py-0.5 text-[11px] font-semibold text-rose-600 dark:text-rose-400';
+        }
+      }
+
+      function updateBatch() {
+        const raw = batchIn.value;
+        const lines = raw ? raw.split(/\r?\n/) : [];
+        batchInCount.textContent = `${lines.length} titles`;
+
+        const slugs = lines.map(line => createSlug(line));
+        batchOut.value = slugs.join('\n');
+      }
+
+      function updateAll() {
+        updateSingle();
+        updateBatch();
+      }
+
+      // Mode toggle
+      modeSingleBtn.addEventListener('click', () => {
+        workspaceSingle.classList.remove('hidden');
+        workspaceBatch.classList.add('hidden');
+        modeSingleBtn.className = 'rounded-lg px-3 py-1.5 text-xs font-bold transition bg-[color:var(--accent)] text-white shadow-xs';
+        modeBatchBtn.className = 'rounded-lg px-3 py-1.5 text-xs font-bold transition text-[color:var(--muted)] hover:text-[color:var(--fg)]';
       });
 
-      generateSlug();
+      modeBatchBtn.addEventListener('click', () => {
+        workspaceBatch.classList.remove('hidden');
+        workspaceSingle.classList.add('hidden');
+        modeBatchBtn.className = 'rounded-lg px-3 py-1.5 text-xs font-bold transition bg-[color:var(--accent)] text-white shadow-xs';
+        modeSingleBtn.className = 'rounded-lg px-3 py-1.5 text-xs font-bold transition text-[color:var(--muted)] hover:text-[color:var(--fg)]';
+      });
+
+      // Event Listeners
+      titleIn.addEventListener('input', updateSingle);
+      batchIn.addEventListener('input', updateBatch);
+
+      optSeparator.addEventListener('change', updateAll);
+      optCase.addEventListener('change', updateAll);
+      optMaxLen.addEventListener('change', updateAll);
+      optPrefix.addEventListener('input', updateAll);
+      optStopwords.addEventListener('change', updateAll);
+      optTransliterate.addEventListener('change', updateAll);
+      optStripNumbers.addEventListener('change', updateAll);
+      optAmpersandAnd.addEventListener('change', updateAll);
+
+      // Samples
+      btnSampleTech.addEventListener('click', () => {
+        titleIn.value = '10 Best Online Developer Tools for 2026 & Beyond!';
+        batchIn.value = `10 Best Online Developer Tools for 2026 & Beyond!\nHow to Master TypeScript Generics in 15 Minutes\nBuilding Fast Static Sites with Astro and Tailwind CSS\nWhy In-Memory Client Computing Protects User Privacy`;
+        updateAll();
+      });
+
+      btnSampleEcommerce.addEventListener('click', () => {
+        titleIn.value = 'Nike Air Max 270 React Running Shoes (Men\'s Size 11 - Black/White)';
+        batchIn.value = `Nike Air Max 270 React Running Shoes (Men\'s Size 11 - Black/White)\nApple MacBook Pro 16" M3 Max 64GB Unified RAM 1TB SSD Space Gray\nSony WH-1000XM5 Wireless Noise-Canceling Headphones`;
+        updateAll();
+      });
+
+      btnSampleAccents.addEventListener('click', () => {
+        titleIn.value = 'Café Müller in München: Ein Überblick über französische Küche & Crème Brûlée';
+        batchIn.value = `Café Müller in München: Ein Überblick über französische Küche & Crème Brûlée\nLes Misérables à Paris: Guide des Théâtres & Réservations\nEl Niño y la Niña: Fenómenos Meteorológicos Explicados`;
+        updateAll();
+      });
+
+      btnClear.addEventListener('click', () => {
+        titleIn.value = '';
+        batchIn.value = '';
+        updateAll();
+      });
+
+      // Copy & Download
+      btnCopySlug.addEventListener('click', async () => {
+        const text = slugOut.textContent;
+        if (!text || text === '-') return;
+        try {
+          await navigator.clipboard.writeText(text);
+          const orig = btnCopySlug.textContent;
+          btnCopySlug.textContent = '✓ Copied Slug!';
+          setTimeout(() => { btnCopySlug.textContent = orig; }, 1800);
+        } catch (e) {
+          console.error(e);
+        }
+      });
+
+      btnCopyUrl.addEventListener('click', async () => {
+        const slug = slugOut.textContent;
+        if (!slug || slug === '-') return;
+        let prefix = optPrefix.value.trim();
+        if (prefix && !prefix.endsWith('/')) prefix += '/';
+        const fullUrl = `https://yourdomain.com${prefix}${slug}`;
+        try {
+          await navigator.clipboard.writeText(fullUrl);
+          const orig = btnCopyUrl.textContent;
+          btnCopyUrl.textContent = '✓ Copied URL!';
+          setTimeout(() => { btnCopyUrl.textContent = orig; }, 1800);
+        } catch (e) {
+          console.error(e);
+        }
+      });
+
+      btnCopyBatch.addEventListener('click', async () => {
+        if (!batchOut.value) return;
+        try {
+          await navigator.clipboard.writeText(batchOut.value);
+          const orig = btnCopyBatch.textContent;
+          btnCopyBatch.textContent = '✓ Copied Batch!';
+          setTimeout(() => { btnCopyBatch.textContent = orig; }, 1800);
+        } catch (e) {
+          console.error(e);
+        }
+      });
+
+      btnDownloadCsv.addEventListener('click', () => {
+        const lines = batchIn.value.split(/\r?\n/).filter(l => l.trim().length > 0);
+        if (!lines.length) return;
+
+        let csv = 'Original Title,Generated Slug\n';
+        lines.forEach(line => {
+          const s = createSlug(line);
+          csv += `"${line.replace(/"/g, '""')}","${s.replace(/"/g, '""')}"\n`;
+        });
+
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `slugs-${Date.now()}.csv`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      });
+
+      // Initial run
+      btnSampleTech.click();
     })();
   </script>
 </SiteLayout>

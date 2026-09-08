@@ -1,6 +1,8 @@
 ---
 import SiteLayout from '../../layouts/SiteLayout.astro';
 import Icon from '../../components/Icon.astro';
+import CalculatorParameterGuide from '../../components/calculator/CalculatorParameterGuide.astro';
+import type { CalculatorParameterInfo } from '../../types/calculator';
 import { siteName, toAbsoluteUrl, withBasePath } from '../../utils/site';
 
 const pageTitle = `Handmade Product Pricing Calculator | Wholesale (2x) & Retail (4x) · ${siteName}`;
@@ -16,11 +18,82 @@ const breadcrumbItems = [
 const faqs = [
   {
     question: 'What is the 2x wholesale and 4x retail formula for crafts?',
-    answer: 'The maker formula calculates: Base Cost = Materials + Packaging + (Labor Hours × Wage) + Overhead. Wholesale Price = Base Cost × 2 (yielding a 50% gross margin for the maker). Retail MSRP = Wholesale × 2 = Base Cost × 4 (allowing boutique retailers to make their required 50% keystone markup).',
+    answer: 'The maker formula calculates: Base Cost = Materials + Packaging + (Labor Hours × Wage) + Studio Overhead. Wholesale Price = Base Cost × 2 (yielding a 50% gross margin for the maker). Retail MSRP = Wholesale × 2 = Base Cost × 4 (allowing boutique retailers to make their required 50% keystone markup).',
   },
   {
     question: 'Why do so many handmade crafters underprice their work?',
     answer: 'Makers often omit paying themselves a real hourly wage, ignore studio overhead costs (electricity, tools wear, studio rent), or price only for direct retail without leaving room for wholesale retailer margins or craft fair booth fees.',
+  },
+  {
+    question: 'How do marketplace fees like Etsy or Shopify impact artisan profit?',
+    answer: 'Selling on platforms incurs listing fees, transaction cuts, and payment processing fees (e.g. Etsy charges 6.5% transaction + $0.20 listing + 3% + $0.25 payment processing). A sustainable 4x retail markup ensures that even after paying 9–12% in marketplace fees, your artisan business still earns healthy double-digit net profit.',
+  },
+];
+
+const parameterGuide: CalculatorParameterInfo[] = [
+  {
+    id: 'rawMaterials',
+    name: 'Raw Materials Cost ($)',
+    description: 'Direct materials used to create one finished item (wax, wick, fragrance oils, fabric, yarn, clay, sterling wire, gemstones).',
+    whyItMatters: 'The baseline cost of goods sold. Sourcing materials wholesale reduces your unit base cost.',
+    typicalRange: '$1.00 – $100+',
+    unit: '$',
+  },
+  {
+    id: 'packagingCost',
+    name: 'Packaging & Labels ($)',
+    description: 'Product boxes, hang tags, thank you cards, ribbon, branded stickers, and protective wrap per piece.',
+    whyItMatters: 'Packaging elevates perceived brand value and protects goods during transit, but must be accounted for in unit cost.',
+    typicalRange: '$0.50 – $15.00',
+    unit: '$',
+  },
+  {
+    id: 'laborHours',
+    name: 'Production Labor (Hours)',
+    description: 'The exact time spent actively measuring, mixing, pouring, sewing, assembling, or finishing one piece.',
+    whyItMatters: 'Your time is a finite business resource. Failing to bill for labor means working as an unpaid volunteer.',
+    typicalRange: '0.1 – 10+ hours',
+    unit: 'Hours',
+  },
+  {
+    id: 'hourlyWage',
+    name: 'Artisan Hourly Wage ($/hr)',
+    description: 'The fair hourly wage you pay yourself as the maker and master artisan.',
+    whyItMatters: 'Must be high enough to represent a living wage ($18–$35+/hr depending on specialized artisan skill).',
+    typicalRange: '$15 – $60+/hr',
+    unit: '$/hr',
+  },
+  {
+    id: 'overheadRate',
+    name: 'Studio Overhead Rate (%)',
+    description: 'Markup percentage (typically 10%–25%) added to cover studio rent, electricity, tool depreciation, and business licenses.',
+    whyItMatters: 'Invisible expenses that deplete your bank account if not built directly into your base cost formula.',
+    typicalRange: '10% – 30%',
+    unit: '%',
+  },
+  {
+    id: 'baseCost',
+    name: 'Total Base Production Cost ($)',
+    description: 'Sum of Materials, Packaging, Direct Labor, and Studio Overhead: [Materials + Packaging + (Labor × Wage)] × (1 + Overhead).',
+    whyItMatters: 'The absolute bedrock floor below which you cannot sell without losing money on labor and materials.',
+    typicalRange: '$5 – $250+',
+    unit: '$',
+  },
+  {
+    id: 'wholesalePrice',
+    name: 'Wholesale Price (2x Base Cost)',
+    description: 'Base Cost multiplied by 2, delivering a 50% gross profit margin to the artisan maker.',
+    whyItMatters: 'The price you offer to boutiques, gift shops, and galleries who purchase in bulk.',
+    typicalRange: 'Base Cost × 2',
+    unit: '$',
+  },
+  {
+    id: 'retailMsrp',
+    name: 'Suggested Retail Price (MSRP / 4x Base Cost)',
+    description: 'Wholesale Price multiplied by 2 (or Base Cost multiplied by 4).',
+    whyItMatters: 'The standard retail keystone price displayed in boutiques and your online store. Protects your wholesale stockists from price undercutting.',
+    typicalRange: 'Base Cost × 4',
+    unit: '$',
   },
 ];
 
@@ -90,7 +163,7 @@ const schemaGraph = [
         Handmade Product Pricing Calculator
       </h1>
       <p class="max-w-3xl text-sm leading-relaxed text-[color:var(--muted)] sm:text-base">
-        Price your handmade candles, jewelry, crochet, soap, and artisan crafts for real profitability. Never work for pennies again.
+        Price your handmade candles, jewelry, crochet, ceramics, soap, and artisan goods for real sustainable profitability. Never work for pennies again.
       </p>
     </header>
 
@@ -110,64 +183,156 @@ const schemaGraph = [
           <div class="grid grid-cols-2 gap-3">
             <div>
               <label for="craft-mat" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Raw Materials ($)</label>
-              <input id="craft-mat" type="number" min="0" step="0.5" value="14.50" class="mt-1 w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none" data-craft-mat />
+              <input id="craft-mat" type="number" min="0" step="0.5" value="14.50" class="mt-1 w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)]" data-craft-mat />
             </div>
             <div>
               <label for="craft-pack" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Packaging &amp; Tags ($)</label>
-              <input id="craft-pack" type="number" min="0" step="0.5" value="2.50" class="mt-1 w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none" data-craft-pack />
+              <input id="craft-pack" type="number" min="0" step="0.5" value="2.50" class="mt-1 w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)]" data-craft-pack />
             </div>
           </div>
 
           <div class="grid grid-cols-2 gap-3">
             <div>
               <label for="craft-hrs" class="block text-xs font-medium text-[color:var(--muted)]">Labor Time (Hours)</label>
-              <input id="craft-hrs" type="number" min="0" step="0.25" value="1.25" class="mt-1 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-craft-hrs />
+              <input id="craft-hrs" type="number" min="0" step="0.25" value="1.25" class="mt-1 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)]" data-craft-hrs />
             </div>
             <div>
               <label for="craft-wage" class="block text-xs font-medium text-[color:var(--muted)]">Your Hourly Wage ($/hr)</label>
-              <input id="craft-wage" type="number" min="0" step="1" value="22" class="mt-1 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-craft-wage />
+              <input id="craft-wage" type="number" min="0" step="1" value="22" class="mt-1 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)]" data-craft-wage />
             </div>
           </div>
 
           <div class="space-y-1.5 pt-1">
-            <label for="craft-overhead" class="block text-xs font-medium text-[color:var(--muted)]">Studio Overhead &amp; Tool Wear (% of Base Cost)</label>
-            <input id="craft-overhead" type="number" min="0" max="50" step="1" value="15" class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-craft-overhead />
-            <p class="text-[10px] text-[color:var(--muted)]">Covers electricity, equipment amortization, marketing &amp; listing fees.</p>
+            <label for="craft-overhead" class="block text-xs font-medium text-[color:var(--muted)]">Studio Overhead &amp; Tool Wear (% of Direct Cost)</label>
+            <input id="craft-overhead" type="number" min="0" max="50" step="1" value="15" class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)]" data-craft-overhead />
+            <p class="text-[10px] text-[color:var(--muted)]">Covers studio electricity, equipment amortization, tool replacement, and listing subscriptions.</p>
+          </div>
+
+          <!-- Sales Channel Selector -->
+          <div class="space-y-1.5 pt-2 border-t border-[color:var(--border)]/60">
+            <label for="craft-channel" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">
+              Sales Channel / Marketplace Fee Model
+            </label>
+            <select
+              id="craft-channel"
+              class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3.5 py-2.5 text-xs font-bold text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)]"
+              data-craft-channel
+            >
+              <option value="direct" selected>Direct Online Store / Craft Fair (0% Fees)</option>
+              <option value="etsy">Etsy (6.5% Transaction + $0.20 + 3% + $0.25 Processing)</option>
+              <option value="shopify">Shopify / Stripe Gateway (2.9% + $0.30)</option>
+              <option value="wholesale">Boutique Wholesale (Sold at 50% Keystone)</option>
+            </select>
           </div>
         </form>
 
-        <div class="flex flex-col justify-between space-y-6 rounded-3xl border border-[color:var(--border)] bg-[color:var(--bg)] p-6 sm:p-8">
+        <div class="flex flex-col justify-between space-y-6 rounded-3xl border border-[color:var(--accent)]/30 bg-gradient-to-br from-[color:var(--accent-soft)] via-[color:var(--surface)] to-transparent p-6 sm:p-8 shadow-sm">
           <div class="space-y-5">
-            <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Pricing Framework</span>
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Pricing Framework</span>
+              <button
+                type="button"
+                data-copy-summary-btn
+                class="inline-flex items-center gap-1.5 rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] px-2.5 py-1 text-xs font-bold text-[color:var(--fg)] hover:border-[color:var(--accent)] hover:shadow-[0_0_12px_var(--accent-glow)] transition cursor-pointer"
+              >
+                <Icon name="copy" class="w-3.5 h-3.5" />
+                <span>Copy Summary</span>
+              </button>
+            </div>
 
-            <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 text-center">
-              <p class="text-xs font-semibold text-[color:var(--muted)]">Suggested Retail Price (MSRP)</p>
-              <p class="mt-1 text-5xl font-black tracking-tight text-green-600 dark:text-green-400" data-res-retail>
-                $204.00
+            <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 text-center shadow-sm">
+              <p class="text-xs font-semibold text-[color:var(--muted)]">Suggested Retail Price (MSRP / 4x)</p>
+              <p class="mt-1 text-4xl sm:text-5xl font-black tracking-tight text-cyan-600 dark:text-cyan-400" data-res-retail>
+                $204.72
               </p>
-              <p class="mt-2 text-xs font-medium text-[color:var(--muted)]" data-res-wholesale>
-                Wholesale Price (2x): $102.00
+              <p class="mt-2 text-xs font-bold text-[color:var(--muted)]" data-res-wholesale>
+                Wholesale Price (2x Keystone): $102.36
               </p>
             </div>
 
             <div class="space-y-2 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-xs">
               <div class="flex justify-between">
-                <span class="text-[color:var(--muted)]">Total Item Cost (Materials + Labor + Overhead):</span>
+                <span class="text-[color:var(--muted)]">Total Item Base Cost (All-In):</span>
                 <span class="font-bold text-[color:var(--fg)]" data-base-cost>$51.18</span>
               </div>
               <div class="flex justify-between">
-                <span class="text-[color:var(--muted)]">Direct Retail Profit:</span>
-                <span class="font-bold text-green-600" data-direct-profit>$152.82 (74.9% margin)</span>
+                <span class="text-[color:var(--muted)]" data-fee-label>Estimated Channel / Payment Fees:</span>
+                <span class="font-medium text-rose-500" data-channel-fees>$0.00</span>
               </div>
               <div class="flex justify-between border-t border-[color:var(--border)] pt-2">
-                <span class="text-[color:var(--muted)]">Wholesale Profit:</span>
-                <span class="font-bold text-[color:var(--fg)]" data-wholesale-profit>$50.82 (50.0% margin)</span>
+                <span class="font-bold text-[color:var(--fg)]">Net Pocket Profit Per Item:</span>
+                <span class="font-black text-cyan-600 dark:text-cyan-400" data-direct-profit>$153.54 (75.0% margin)</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-[color:var(--muted)]">Wholesale Profit Per Item:</span>
+                <span class="font-bold text-[color:var(--fg)]" data-wholesale-profit>$51.18 (50.0% margin)</span>
               </div>
             </div>
           </div>
         </div>
       </div>
     </div>
+
+    <!-- Mathematical Formula Reference Card -->
+    <section class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 sm:p-6 space-y-3">
+      <h3 class="text-base font-bold text-[color:var(--fg)] flex items-center gap-2">
+        <Icon name="math" class="w-4 h-4 text-[color:var(--accent)]" />
+        <span>Maker &amp; Craft Pricing Mathematical Formulas</span>
+      </h3>
+      <div class="grid gap-4 sm:grid-cols-2 text-xs sm:text-sm text-[color:var(--muted)] leading-relaxed">
+        <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-4 space-y-1">
+          <p class="font-bold text-[color:var(--fg)]">1. Direct Costs &amp; Studio Base Cost</p>
+          <p class="font-mono text-[color:var(--accent)]">Direct = Materials + Packaging + (Labor × Wage)</p>
+          <p class="font-mono text-[color:var(--accent)]">Base Cost = Direct × (1 + Overhead Rate)</p>
+          <p class="text-[11px]">Includes your living hourly wage and studio expenses.</p>
+        </div>
+        <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-4 space-y-1">
+          <p class="font-bold text-[color:var(--fg)]">2. 2x Wholesale &amp; 4x Retail MSRP</p>
+          <p class="font-mono text-[color:var(--accent)]">Wholesale Price = Base Cost × 2 (50% margin)</p>
+          <p class="font-mono text-[color:var(--accent)]">Retail MSRP = Wholesale × 2 = Base Cost × 4</p>
+          <p class="text-[11px]">Enables stocking in boutiques without price cannibalization.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Step-by-Step Worked Maker Example -->
+    <section class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 sm:p-6 space-y-3">
+      <h3 class="text-base font-bold text-[color:var(--fg)] flex items-center gap-2">
+        <Icon name="document" class="w-4 h-4 text-[color:var(--accent)]" />
+        <span>Step-by-Step Worked Calculation Example</span>
+      </h3>
+      <div class="space-y-3 text-xs sm:text-sm text-[color:var(--muted)] leading-relaxed">
+        <p>
+          Suppose an artisan crafts luxury hand-poured soy candles:
+        </p>
+        <ul class="list-disc pl-5 space-y-1">
+          <li>Raw Materials: <strong>$14.50</strong> (soy wax, amber glass vessel, custom fragrance oil, cotton wick)</li>
+          <li>Packaging: <strong>$2.50</strong> (embossed box, safety label, matchbook)</li>
+          <li>Labor: <strong>1.25 hours</strong> at a fair wage of <strong>$22.00/hour</strong> = <strong>$27.50</strong></li>
+          <li>Studio Overhead: <strong>15.0%</strong></li>
+        </ul>
+        <ol class="list-decimal pl-5 space-y-2 pt-1">
+          <li>
+            <strong class="text-[color:var(--fg)]">Compute Total Base Production Cost:</strong><br />
+            Direct Cost = $14.50 + $2.50 + $27.50 = $44.50<br />
+            Base Cost = $44.50 × (1 + 0.15) = <strong class="text-[color:var(--fg)]">$51.18 total unit cost</strong>.
+          </li>
+          <li>
+            <strong class="text-[color:var(--fg)]">Compute Wholesale &amp; Retail Prices:</strong><br />
+            Wholesale Price (2x) = $51.18 × 2 = <strong class="text-[color:var(--fg)]">$102.36</strong> ($51.18 profit per wholesale candle, 50% margin).<br />
+            Retail MSRP (4x) = $102.36 × 2 = <strong class="text-[color:var(--fg)]">$204.72</strong> ($153.54 gross profit per candle, 75.0% margin).
+          </li>
+          <li>
+            <strong class="text-[color:var(--fg)]">Net Profit After Marketplace Fees:</strong><br />
+            Selling direct online at MSRP yields <strong class="text-cyan-500 dark:text-cyan-400 font-bold">$153.54 net profit</strong>.<br />
+            On Etsy, total fees equal $20.10, yielding a net take-home of <strong class="text-cyan-500 dark:text-cyan-400 font-bold">$133.44 net profit (65.2% margin)</strong>.
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- Interactive Parameter Guide -->
+    <CalculatorParameterGuide parameters={parameterGuide} />
 
     <!-- FAQs -->
     <section class="space-y-4">
@@ -198,12 +363,17 @@ const schemaGraph = [
       const inHrs = root.querySelector('[data-craft-hrs]');
       const inWage = root.querySelector('[data-craft-wage]');
       const inOverhead = root.querySelector('[data-craft-overhead]');
+      const inChannel = root.querySelector('[data-craft-channel]');
+
       const outRetail = root.querySelector('[data-res-retail]');
       const outWholesale = root.querySelector('[data-res-wholesale]');
       const outBase = root.querySelector('[data-base-cost]');
+      const outFeeLabel = root.querySelector('[data-fee-label]');
+      const outFees = root.querySelector('[data-channel-fees]');
       const outDirect = root.querySelector('[data-direct-profit]');
       const outWholesaleProfit = root.querySelector('[data-wholesale-profit]');
       const resetBtn = root.querySelector('[data-reset-btn]');
+      const copyBtn = root.querySelector('[data-copy-summary-btn]');
 
       function update() {
         const mat = Math.max(0, parseFloat(inMat.value || '0'));
@@ -211,6 +381,7 @@ const schemaGraph = [
         const hrs = Math.max(0, parseFloat(inHrs.value || '0'));
         const wage = Math.max(0, parseFloat(inWage.value || '0'));
         const overheadPct = Math.max(0, parseFloat(inOverhead.value || '0')) / 100;
+        const channel = inChannel ? inChannel.value : 'direct';
 
         const directLabor = hrs * wage;
         const directCost = mat + pack + directLabor;
@@ -219,13 +390,32 @@ const schemaGraph = [
         const wholesale = totalBaseCost * 2;
         const retail = wholesale * 2;
 
-        const directProfit = retail - totalBaseCost;
+        let channelFee = 0;
+        if (channel === 'etsy') {
+          channelFee = (retail * 0.065) + 0.20 + (retail * 0.03) + 0.25;
+        } else if (channel === 'shopify') {
+          channelFee = (retail * 0.029) + 0.30;
+        } else if (channel === 'wholesale') {
+          channelFee = 0;
+        }
+
+        const effectiveSellingPrice = channel === 'wholesale' ? wholesale : retail;
+        const netProfit = effectiveSellingPrice - totalBaseCost - channelFee;
+        const netMargin = effectiveSellingPrice > 0 ? (netProfit / effectiveSellingPrice) * 100 : 0;
         const wholesaleProfit = wholesale - totalBaseCost;
 
         if (outRetail) outRetail.textContent = `$${retail.toFixed(2)}`;
-        if (outWholesale) outWholesale.textContent = `Wholesale Price (2x): $${wholesale.toFixed(2)}`;
+        if (outWholesale) outWholesale.textContent = `Wholesale Price (2x Keystone): $${wholesale.toFixed(2)}`;
         if (outBase) outBase.textContent = `$${totalBaseCost.toFixed(2)}`;
-        if (outDirect) outDirect.textContent = `$${directProfit.toFixed(2)} (${((directProfit / retail) * 100).toFixed(1)}% margin)`;
+        if (outFees) outFees.textContent = channelFee > 0 ? `-$${channelFee.toFixed(2)}` : '$0.00';
+        if (outFeeLabel) {
+          outFeeLabel.textContent = channel === 'etsy'
+            ? 'Etsy Platform & Payment Fees:'
+            : channel === 'shopify'
+            ? 'Shopify / Payment Processing Fees:'
+            : 'Estimated Channel / Payment Fees:';
+        }
+        if (outDirect) outDirect.textContent = `$${netProfit.toFixed(2)} (${netMargin.toFixed(1)}% net margin)`;
         if (outWholesaleProfit) outWholesaleProfit.textContent = `$${wholesaleProfit.toFixed(2)} (50.0% margin)`;
       }
 
@@ -234,6 +424,7 @@ const schemaGraph = [
       inHrs.addEventListener('input', update);
       inWage.addEventListener('input', update);
       inOverhead.addEventListener('input', update);
+      if (inChannel) inChannel.addEventListener('change', update);
 
       if (resetBtn) {
         resetBtn.addEventListener('click', () => {
@@ -242,7 +433,46 @@ const schemaGraph = [
           inHrs.value = '1.25';
           inWage.value = '22';
           inOverhead.value = '15';
+          if (inChannel) inChannel.value = 'direct';
           update();
+        });
+      }
+
+      if (copyBtn) {
+        copyBtn.addEventListener('click', () => {
+          const mat = inMat.value;
+          const pack = inPack.value;
+          const hrs = inHrs.value;
+          const wage = inWage.value;
+          const overhead = inOverhead.value;
+          const base = outBase?.textContent || '';
+          const retail = outRetail?.textContent || '';
+          const wholesale = outWholesale?.textContent || '';
+          const fees = outFees?.textContent || '';
+          const profit = outDirect?.textContent || '';
+          const wsProfit = outWholesaleProfit?.textContent || '';
+
+          const text = [
+            `Handmade Product Pricing Report`,
+            `----------------------------------------`,
+            `Raw Materials:                $${mat}`,
+            `Packaging & Labels:           $${pack}`,
+            `Labor Time & Wage:            ${hrs} hrs @ $${wage}/hr`,
+            `Studio Overhead Rate:         ${overhead}%`,
+            `Total Base Production Cost:   ${base}`,
+            `----------------------------------------`,
+            `Suggested Retail Price (MSRP): ${retail}`,
+            `${wholesale}`,
+            `Channel / Processing Fees:    ${fees}`,
+            `Net Profit Per Item:          ${profit}`,
+            `Wholesale Profit Per Item:    ${wsProfit}`,
+          ].join('\n');
+
+          navigator.clipboard.writeText(text).then(() => {
+            const orig = copyBtn.textContent;
+            copyBtn.textContent = '✓ Copied!';
+            setTimeout(() => { copyBtn.textContent = orig; }, 2000);
+          });
         });
       }
 

@@ -1,10 +1,11 @@
 ---
 import SiteLayout from '../../layouts/SiteLayout.astro';
 import Icon from '../../components/Icon.astro';
+import CalculatorParameterGuide from '../../components/calculator/CalculatorParameterGuide.astro';
 import { siteName, toAbsoluteUrl, withBasePath } from '../../utils/site';
 
-const pageTitle = `CSV Column Extractor — Select & Extract CSV Columns · ${siteName}`;
-const pageDesc = 'Select, reorder, and extract specific columns from CSV datasets online. Upload or paste CSV, check desired columns, and export a clean filtered CSV. 100% private in-browser tool.';
+const pageTitle = `CSV Column Extractor — Select, Reorder & Filter Columns · ${siteName}`;
+const pageDesc = 'Select, reorder, and extract specific columns from CSV datasets online. Upload or paste CSV, customize column order, preview data in real time, and export a clean filtered CSV. 100% private in-browser tool.';
 const canonicalUrl = toAbsoluteUrl('/data-tools/csv-column-extractor/');
 
 const breadcrumbItems = [
@@ -16,7 +17,15 @@ const breadcrumbItems = [
 const schemaFaq = [
   {
     question: 'How does CSV column extraction work?',
-    answer: 'The tool parses the header row to detect all available columns. You check the columns you want to keep, and it filters each row to include only those selected fields in your new CSV export.',
+    answer: 'The tool parses the header row of your CSV according to RFC 4180 rules, allowing you to select, reorder, and rename specific columns while dropping unwanted fields across all data rows.',
+  },
+  {
+    question: 'Does this tool preserve quoted fields with commas?',
+    answer: 'Yes. It uses an RFC 4180 compliant parser that properly respects quotes (e.g. "Smith, Jr.") without splitting columns incorrectly.',
+  },
+  {
+    question: 'Can I reorder columns before exporting?',
+    answer: 'Yes. You can use the Move Left and Move Right buttons on any selected column pill to customize the exported column sequence.',
   },
 ];
 
@@ -54,6 +63,51 @@ const schemaGraph = [
     })),
   },
 ];
+
+const parameterGuide = [
+  {
+    id: 'source_columns',
+    name: 'Source Columns',
+    description: 'All field headers detected in the first row of your CSV file.',
+    whyItMatters: 'Large enterprise exports (e.g. Salesforce or Shopify) often have 50+ columns when you only need 3 or 4.',
+    typicalRange: '2 to 100+ columns',
+  },
+  {
+    id: 'column_order',
+    name: 'Column Sequence',
+    description: 'The left-to-right positional order of columns in the final exported table.',
+    whyItMatters: 'Allows reordering fields to match external system import schemas (e.g. placing SKU before Product Name).',
+    typicalRange: 'Custom reordered sequence',
+  },
+  {
+    id: 'delimiter_selection',
+    name: 'Field Delimiter',
+    description: 'Separator character (comma, semicolon, tab, pipe) used in the source and destination files.',
+    whyItMatters: 'Allows switching between comma-separated and tab-separated formats during extraction.',
+    typicalRange: 'Auto, Comma (,), Semicolon (;), Tab (\\t)',
+  },
+  {
+    id: 'rfc4180',
+    name: 'RFC 4180 Quoting',
+    description: 'Standard specification for escaping commas, newlines, and double quotes in tabular text.',
+    whyItMatters: 'Guarantees that addresses or names containing commas are safely exported without corrupting adjacent columns.',
+    typicalRange: 'Standard compliant',
+  },
+  {
+    id: 'row_preservation',
+    name: 'Row Preservation',
+    description: 'Extracts chosen columns while strictly retaining all valid data rows in identical sequence.',
+    whyItMatters: 'Guarantees zero row loss while significantly slimming down overall file size.',
+    typicalRange: '100% row integrity',
+  },
+  {
+    id: 'client_privacy',
+    name: 'Client-Side Processing',
+    description: 'All parsing and file transformations occur in local browser memory via HTML5 APIs.',
+    whyItMatters: 'Confidential customer PII, financial spreadsheets, and proprietary tables never touch external servers.',
+    typicalRange: '100% In-Browser',
+  },
+];
 ---
 
 <SiteLayout title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
@@ -82,77 +136,157 @@ const schemaGraph = [
     <header class="space-y-3">
       <div class="inline-flex items-center gap-2 rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1 text-xs font-semibold text-[color:var(--muted)]">
         <span class="inline-block h-2 w-2 rounded-full bg-emerald-500"></span>
-        <span>Local Tabular Slicing</span>
+        <span>100% Client-Side In-Memory Slicing</span>
       </div>
       <h1 class="text-2xl sm:text-4xl font-extrabold tracking-tight text-[color:var(--fg)]">
         CSV Column Extractor &amp; Slicer
       </h1>
-      <p class="max-w-2xl text-xs sm:text-sm text-[color:var(--muted)] leading-relaxed">
-        Upload or paste large CSV files, select the specific columns you need, and export a streamlined CSV file instantly.
+      <p class="max-w-3xl text-xs sm:text-sm text-[color:var(--muted)] leading-relaxed">
+        Upload or paste large CSV files, select specific columns to keep, reorder fields, preview the extracted dataset in real time, and export clean CSVs instantly.
       </p>
     </header>
 
+    <!-- Dataset Metrics Bar -->
+    <div id="stats-bar" class="grid grid-cols-2 gap-3 sm:grid-cols-4 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-center">
+      <div>
+        <span class="block text-[11px] uppercase tracking-wider text-[color:var(--muted)]">Total Rows</span>
+        <span id="stat-rows" class="font-mono text-lg font-bold text-[color:var(--fg)]">0</span>
+      </div>
+      <div>
+        <span class="block text-[11px] uppercase tracking-wider text-[color:var(--muted)]">Source Columns</span>
+        <span id="stat-src-cols" class="font-mono text-lg font-bold text-[color:var(--fg)]">0</span>
+      </div>
+      <div>
+        <span class="block text-[11px] uppercase tracking-wider text-[color:var(--muted)]">Selected Columns</span>
+        <span id="stat-sel-cols" class="font-mono text-lg font-bold text-[color:var(--fg)]">0</span>
+      </div>
+      <div>
+        <span class="block text-[11px] uppercase tracking-wider text-[color:var(--muted)]">Size Reduction</span>
+        <span id="stat-savings" class="font-mono text-lg font-bold text-cyan-600 dark:text-cyan-400 dark:text-cyan-400">0%</span>
+      </div>
+    </div>
+
+    <!-- Main Workspace -->
     <div class="space-y-6">
       <div class="space-y-2">
         <div class="flex items-center justify-between">
           <label for="csv-in" class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Source CSV Data</label>
           <div class="flex items-center gap-2 text-xs">
-            <button type="button" data-sample-btn class="text-[color:var(--primary)] hover:underline font-semibold">Load Sample</button>
+            <button type="button" data-sample-btn class="font-semibold text-[color:var(--primary)] hover:underline cursor-pointer">Load Sample</button>
             <span class="text-[color:var(--border)]">|</span>
-            <button type="button" data-clear-btn class="text-[color:var(--muted)] hover:text-[color:var(--fg)]">Clear</button>
+            <button type="button" data-clear-btn class="text-[color:var(--muted)] hover:text-[color:var(--fg)] cursor-pointer">Clear</button>
           </div>
         </div>
+        <input
+          type="file"
+          id="csv-file-in"
+          accept=".csv,.tsv,.txt"
+          class="w-full text-xs text-[color:var(--muted)] file:mr-3 file:rounded-xl file:border file:border-[color:var(--border)] file:bg-[color:var(--surface)] file:px-3 file:py-1.5 file:text-xs file:font-semibold file:text-[color:var(--fg)] hover:file:bg-[color:var(--surface-strong)]"
+        />
         <textarea
           id="csv-in"
           rows="7"
-          class="w-full font-mono text-xs leading-relaxed rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-[color:var(--fg)] focus:border-[color:var(--border-strong)] focus:outline-hidden"
-          placeholder="id,first_name,last_name,email,gender,ip_address,city,country&#10;1,Alice,Smith,alice@example.com,Female,192.168.1.1,New York,US"
+          class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 font-mono text-xs leading-relaxed text-[color:var(--fg)] focus:border-[color:var(--border-strong)] focus:outline-hidden"
+          placeholder="id,first_name,last_name,email,gender,department,salary,city,country&#10;1,Alice,Smith,alice@work.com,Female,Engineering,115000,New York,USA"
         ></textarea>
       </div>
 
-      <!-- Detected Columns Checkbox Selector -->
-      <div class="space-y-3 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5">
-        <div class="flex items-center justify-between">
-          <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Select Columns to Keep</span>
+      <!-- Detected Columns Interactive Slicer -->
+      <div class="space-y-4 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Interactive Column Picker &amp; Reorderer</span>
+            <p class="text-[11px] text-[color:var(--muted)] mt-0.5">Toggle checkboxes to include columns. Use ◀ ▶ buttons to reorder columns.</p>
+          </div>
           <div class="flex items-center gap-3 text-xs">
-            <button type="button" data-select-all class="text-[color:var(--primary)] hover:underline font-semibold">Select All</button>
-            <button type="button" data-deselect-all class="text-[color:var(--muted)] hover:text-[color:var(--fg)]">Deselect All</button>
+            <button type="button" data-select-all class="font-semibold text-[color:var(--primary)] hover:underline cursor-pointer">Select All</button>
+            <span class="text-[color:var(--border)]">|</span>
+            <button type="button" data-invert-sel class="font-semibold text-[color:var(--muted)] hover:text-[color:var(--fg)] cursor-pointer">Invert</button>
+            <span class="text-[color:var(--border)]">|</span>
+            <button type="button" data-deselect-all class="text-[color:var(--muted)] hover:text-[color:var(--fg)] cursor-pointer">Deselect All</button>
           </div>
         </div>
-        <div id="col-checkboxes" class="flex flex-wrap gap-2 text-xs">
-          <p class="text-[color:var(--muted)] italic">Enter CSV data above to detect columns.</p>
+
+        <div id="col-container" class="flex flex-wrap gap-2 text-xs">
+          <p class="italic text-[color:var(--muted)]">Enter or upload CSV data above to detect columns.</p>
         </div>
-        <button
-          type="button"
-          data-extract-btn
-          class="rounded-xl bg-[color:var(--fg)] px-5 py-2 text-xs font-bold text-[color:var(--bg)] shadow-xs transition hover:opacity-90"
-        >
-          Extract Selected Columns
-        </button>
       </div>
 
-      <!-- Output -->
+      <!-- Output Section -->
       <div class="space-y-2">
         <div class="flex items-center justify-between">
-          <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Extracted CSV Table</span>
           <div class="flex items-center gap-2">
-            <button type="button" data-copy-btn class="inline-flex items-center gap-1 text-xs font-bold text-[color:var(--fg)] hover:underline">
-              <Icon name="copy" class="w-3.5 h-3.5" />
-              <span>Copy</span>
+            <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Extracted CSV Table</span>
+            <span id="output-badge" class="rounded-md bg-cyan-500/15 px-2 py-0.5 text-[10px] font-bold text-cyan-600 dark:text-cyan-400 dark:text-cyan-400">Ready</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <button type="button" data-copy-btn class="inline-flex items-center gap-1 text-xs font-bold text-[color:var(--fg)] hover:underline cursor-pointer">
+              <Icon name="copy" class="h-3.5 w-3.5" />
+              <span>Copy CSV</span>
             </button>
             <span class="text-[color:var(--border)]">|</span>
-            <button type="button" data-dl-btn class="text-xs font-bold text-[color:var(--fg)] hover:underline">Download CSV</button>
+            <button type="button" data-dl-btn class="text-xs font-bold text-[color:var(--fg)] hover:underline cursor-pointer">Download .csv</button>
           </div>
         </div>
         <textarea
           id="csv-out"
-          rows="10"
+          rows="9"
           readonly
-          class="w-full font-mono text-xs leading-relaxed rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-4 text-[color:var(--fg)] focus:outline-hidden"
+          class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-4 font-mono text-xs leading-relaxed text-[color:var(--fg)] focus:outline-hidden"
           placeholder="Extracted CSV table will appear here..."
         ></textarea>
       </div>
     </div>
+
+    <!-- Live Table Preview Section -->
+    <section class="space-y-3 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5">
+      <div class="flex items-center justify-between">
+        <h2 class="text-sm font-bold uppercase tracking-wider text-[color:var(--fg)]">
+          📊 Extracted Table Preview (First 8 Rows)
+        </h2>
+        <span id="preview-badge" class="text-xs text-[color:var(--muted)]">Live Data View</span>
+      </div>
+      <div class="overflow-x-auto rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)]">
+        <table id="preview-table" class="min-w-full divide-y divide-[color:var(--border)] text-left text-xs font-mono">
+          <thead id="preview-thead" class="bg-[color:var(--surface)] text-[color:var(--fg)]">
+            <tr><th class="p-3 font-semibold text-[color:var(--muted)]">No columns selected</th></tr>
+          </thead>
+          <tbody id="preview-tbody" class="divide-y divide-[color:var(--border)] text-[color:var(--muted)]">
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Step-by-Step Worked Example -->
+    <section class="space-y-4 rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 sm:p-8 text-xs sm:text-sm text-[color:var(--muted)] leading-relaxed">
+      <div class="flex items-center gap-2">
+        <span class="rounded-md bg-[color:var(--accent)]/15 px-2.5 py-1 text-xs font-bold text-[color:var(--accent)]">Worked Example</span>
+        <h2 class="text-base sm:text-lg font-bold text-[color:var(--fg)]">Slimming Down an HR Export for Public Directory</h2>
+      </div>
+      <p>
+        An HR database contains sensitive employee data (<code>ssn</code>, <code>salary</code>, <code>home_address</code>). We want to extract only <code>first_name</code>, <code>last_name</code>, and <code>email</code>:
+      </p>
+      <div class="grid gap-4 sm:grid-cols-2">
+        <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] p-4 font-mono text-xs">
+          <span class="text-[color:var(--muted)] block mb-1 font-bold font-sans">Source (9 Columns):</span>
+          id,first_name,last_name,email,ssn,salary,address,city,state<br/>
+          101,John,Doe,john@work.com,***,95000,"123 Main St",Austin,TX<br/>
+          102,Jane,Roe,jane@work.com,***,105000,"456 Elm St",Dallas,TX
+        </div>
+        <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] p-4 font-mono text-xs">
+          <span class="text-[color:var(--muted)] block mb-1 font-bold font-sans">Extracted Output (3 Columns):</span>
+          first_name,last_name,email<br/>
+          John,Doe,john@work.com<br/>
+          Jane,Roe,jane@work.com
+        </div>
+      </div>
+      <p class="text-xs text-[color:var(--muted)]">
+        The tool strips away all unselected columns across all records while guaranteeing zero row loss and preserving quoted fields.
+      </p>
+    </section>
+
+    <!-- Parameter Guide -->
+    <CalculatorParameterGuide parameters={parameterGuide} />
 
     <!-- FAQs -->
     <section class="space-y-4">
@@ -179,83 +313,275 @@ const schemaGraph = [
       if (!root) return;
 
       const input = root.querySelector('#csv-in');
+      const fileIn = root.querySelector('#csv-file-in');
       const output = root.querySelector('#csv-out');
-      const colCheckboxes = root.querySelector('#col-checkboxes');
-      const extractBtn = root.querySelector('[data-extract-btn]');
+      const colContainer = root.querySelector('#col-container');
       const selectAllBtn = root.querySelector('[data-select-all]');
+      const invertBtn = root.querySelector('[data-invert-sel]');
       const deselectAllBtn = root.querySelector('[data-deselect-all]');
       const sampleBtn = root.querySelector('[data-sample-btn]');
       const clearBtn = root.querySelector('[data-clear-btn]');
       const copyBtn = root.querySelector('[data-copy-btn]');
       const dlBtn = root.querySelector('[data-dl-btn]');
 
-      let parsedRows = [];
+      const statRows = root.querySelector('#stat-rows');
+      const statSrcCols = root.querySelector('#stat-src-cols');
+      const statSelCols = root.querySelector('#stat-sel-cols');
+      const statSavings = root.querySelector('#stat-savings');
 
-      function parseCsvLines(text) {
-        return text.split('\n').filter(l => l.trim().length > 0).map(l => l.split(',').map(c => c.trim()));
+      const thead = root.querySelector('#preview-thead');
+      const tbody = root.querySelector('#preview-tbody');
+      const previewBadge = root.querySelector('#preview-badge');
+
+      let parsedRows = [];
+      let columnOrder = []; // array of { originalIndex, name, selected }
+      let detectedDelim = ',';
+
+      function autoDetect(text) {
+        const firstLines = text.split('\n').slice(0, 5).join('\n');
+        const c = (firstLines.match(/,/g) || []).length;
+        const s = (firstLines.match(/;/g) || []).length;
+        const t = (firstLines.match(/\t/g) || []).length;
+        const p = (firstLines.match(/\|/g) || []).length;
+        if (s > c && s > t && s > p) return ';';
+        if (t > c && t > s && t > p) return '\t';
+        if (p > c && p > s && p > t) return '|';
+        return ',';
       }
 
-      function updateCols() {
-        const text = input.value.trim();
-        if (!text) {
-          colCheckboxes.innerHTML = '<p class="text-[color:var(--muted)] italic">Enter CSV data above to detect columns.</p>';
-          parsedRows = [];
-          output.value = '';
+      function parseCsv(text, delim) {
+        const rows = [];
+        let cur = [];
+        let val = '';
+        let inQuotes = false;
+
+        for (let i = 0; i < text.length; i++) {
+          const ch = text[i];
+          const nxt = text[i + 1];
+
+          if (ch === '"') {
+            if (inQuotes && nxt === '"') {
+              val += '"';
+              i++;
+            } else {
+              inQuotes = !inQuotes;
+            }
+          } else if (ch === delim && !inQuotes) {
+            cur.push(val.trim());
+            val = '';
+          } else if ((ch === '\r' || ch === '\n') && !inQuotes) {
+            if (ch === '\r' && nxt === '\n') i++;
+            cur.push(val.trim());
+            if (cur.some(x => x.length > 0)) rows.push(cur);
+            cur = [];
+            val = '';
+          } else {
+            val += ch;
+          }
+        }
+        if (val.length > 0 || cur.length > 0) {
+          cur.push(val.trim());
+          if (cur.some(x => x.length > 0)) rows.push(cur);
+        }
+        return rows;
+      }
+
+      function escapeCsvCell(cell, delim) {
+        const s = String(cell ?? '');
+        if (s.includes('"') || s.includes(delim) || s.includes('\n') || s.includes('\r')) {
+          return `"${s.replace(/"/g, '""')}"`;
+        }
+        return s;
+      }
+
+      function renderColumns() {
+        if (columnOrder.length === 0) {
+          colContainer.innerHTML = '<p class="italic text-[color:var(--muted)]">Enter or upload CSV data above to detect columns.</p>';
           return;
         }
 
-        parsedRows = parseCsvLines(text);
+        colContainer.innerHTML = columnOrder.map((col, idx) => `
+          <div class="flex items-center gap-1.5 rounded-xl border ${col.selected ? 'border-[color:var(--fg)] bg-[color:var(--surface-strong)]' : 'border-[color:var(--border)] bg-[color:var(--bg)]'} px-3 py-1.5 transition">
+            <button type="button" class="btn-move-left px-1 text-[10px] text-[color:var(--muted)] hover:text-[color:var(--fg)] cursor-pointer" data-idx="${idx}" title="Move Left">◀</button>
+            <label class="flex items-center gap-1.5 cursor-pointer select-none">
+              <input type="checkbox" class="col-cb rounded accent-[color:var(--fg)]" data-idx="${idx}" ${col.selected ? 'checked' : ''} />
+              <span class="font-bold ${col.selected ? 'text-[color:var(--fg)]' : 'text-[color:var(--muted)]'}">${escapeHtml(col.name)}</span>
+            </label>
+            <button type="button" class="btn-move-right px-1 text-[10px] text-[color:var(--muted)] hover:text-[color:var(--fg)] cursor-pointer" data-idx="${idx}" title="Move Right">▶</button>
+          </div>
+        `).join('');
+
+        // Attach listeners
+        colContainer.querySelectorAll('.col-cb').forEach(cb => {
+          cb.addEventListener('change', (e) => {
+            const i = parseInt(e.target.dataset.idx, 10);
+            columnOrder[i].selected = e.target.checked;
+            renderColumns();
+            extract();
+          });
+        });
+
+        colContainer.querySelectorAll('.btn-move-left').forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            const i = parseInt(e.target.dataset.idx, 10);
+            if (i > 0) {
+              const temp = columnOrder[i];
+              columnOrder[i] = columnOrder[i - 1];
+              columnOrder[i - 1] = temp;
+              renderColumns();
+              extract();
+            }
+          });
+        });
+
+        colContainer.querySelectorAll('.btn-move-right').forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            const i = parseInt(e.target.dataset.idx, 10);
+            if (i < columnOrder.length - 1) {
+              const temp = columnOrder[i];
+              columnOrder[i] = columnOrder[i + 1];
+              columnOrder[i + 1] = temp;
+              renderColumns();
+              extract();
+            }
+          });
+        });
+      }
+
+      function escapeHtml(s) {
+        return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+      }
+
+      function updateColsFromInput() {
+        const text = input.value.trim();
+        if (!text) {
+          colContainer.innerHTML = '<p class="italic text-[color:var(--muted)]">Enter or upload CSV data above to detect columns.</p>';
+          parsedRows = [];
+          columnOrder = [];
+          output.value = '';
+          statRows.textContent = '0';
+          statSrcCols.textContent = '0';
+          statSelCols.textContent = '0';
+          statSavings.textContent = '0%';
+          updatePreview([], []);
+          return;
+        }
+
+        detectedDelim = autoDetect(text);
+        parsedRows = parseCsv(text, detectedDelim);
         if (parsedRows.length === 0) return;
 
         const headers = parsedRows[0];
-        colCheckboxes.innerHTML = headers.map((h, i) => `
-          <label class="flex items-center gap-1.5 rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-1.5 cursor-pointer hover:border-[color:var(--border-strong)]">
-            <input type="checkbox" value="${i}" checked class="rounded accent-[color:var(--fg)] col-cb" />
-            <span class="font-bold text-[color:var(--fg)]">${h}</span>
-          </label>
-        `).join('');
+        columnOrder = headers.map((h, i) => ({
+          originalIndex: i,
+          name: h || `col_${i + 1}`,
+          selected: true,
+        }));
 
+        statRows.textContent = (parsedRows.length - 1).toLocaleString();
+        statSrcCols.textContent = headers.length.toLocaleString();
+
+        renderColumns();
         extract();
+      }
+
+      function updatePreview(headers, dataRows) {
+        if (!headers || headers.length === 0) {
+          thead.innerHTML = '<tr><th class="p-3 font-semibold text-[color:var(--muted)]">No columns selected</th></tr>';
+          tbody.innerHTML = '';
+          previewBadge.textContent = 'Empty';
+          return;
+        }
+
+        previewBadge.textContent = `Showing 1–${Math.min(8, dataRows.length)} of ${dataRows.length} rows`;
+        thead.innerHTML = `<tr>${headers.map(h => `<th class="p-2.5 font-bold uppercase tracking-wider text-[color:var(--fg)] border-b border-[color:var(--border)]">${escapeHtml(h)}</th>`).join('')}</tr>`;
+
+        const sample = dataRows.slice(0, 8);
+        tbody.innerHTML = sample.map((row, rIdx) => {
+          const cells = headers.map((_, cIdx) => `<td class="p-2.5 border-b border-[color:var(--border)]">${escapeHtml(String(row[cIdx] ?? ''))}</td>`).join('');
+          return `<tr class="${rIdx % 2 === 0 ? 'bg-[color:var(--surface)]/30' : ''}">${cells}</tr>`;
+        }).join('');
       }
 
       function extract() {
         if (parsedRows.length === 0) return;
-        const selectedIndices = Array.from(colCheckboxes.querySelectorAll('.col-cb:checked')).map(cb => parseInt(cb.value, 10));
 
-        if (selectedIndices.length === 0) {
+        const selected = columnOrder.filter(c => c.selected);
+        statSelCols.textContent = selected.length.toLocaleString();
+
+        if (selected.length === 0) {
           output.value = 'Please select at least 1 column to extract.';
+          statSavings.textContent = '100%';
+          updatePreview([], []);
           return;
         }
 
-        const filtered = parsedRows.map(row => {
-          return selectedIndices.map(idx => row[idx] !== undefined ? row[idx] : '').join(',');
+        const outRows = parsedRows.map(row => {
+          return selected.map(col => escapeCsvCell(row[col.originalIndex], detectedDelim)).join(detectedDelim);
         });
 
-        output.value = filtered.join('\n');
+        const resultCsv = outRows.join('\n');
+        output.value = resultCsv;
+
+        const srcSize = new Blob([input.value]).size;
+        const outSize = new Blob([resultCsv]).size;
+        if (srcSize > 0) {
+          const reduction = Math.max(0, Math.round(((srcSize - outSize) / srcSize) * 100));
+          statSavings.textContent = `${reduction}%`;
+        }
+
+        const previewHeaders = selected.map(c => c.name);
+        const previewData = parsedRows.slice(1).map(row => selected.map(c => row[c.originalIndex]));
+        updatePreview(previewHeaders, previewData);
       }
 
-      input.addEventListener('input', updateCols);
-      extractBtn.addEventListener('click', extract);
+      input.addEventListener('input', () => {
+        clearTimeout(input._timer);
+        input._timer = setTimeout(updateColsFromInput, 250);
+      });
+
+      fileIn.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (evt) => {
+          input.value = evt.target.result;
+          updateColsFromInput();
+        };
+        reader.readAsText(file);
+      });
 
       selectAllBtn.addEventListener('click', () => {
-        colCheckboxes.querySelectorAll('.col-cb').forEach(cb => cb.checked = true);
+        columnOrder.forEach(c => c.selected = true);
+        renderColumns();
+        extract();
+      });
+
+      invertBtn.addEventListener('click', () => {
+        columnOrder.forEach(c => c.selected = !c.selected);
+        renderColumns();
         extract();
       });
 
       deselectAllBtn.addEventListener('click', () => {
-        colCheckboxes.querySelectorAll('.col-cb').forEach(cb => cb.checked = false);
+        columnOrder.forEach(c => c.selected = false);
+        renderColumns();
         extract();
       });
 
       sampleBtn.addEventListener('click', () => {
-        input.value = `id,first_name,last_name,email,department,salary,city\n1,Alice,Smith,alice@company.com,Engineering,115000,Seattle\n2,Bob,Johnson,bob@company.com,Design,95000,San Francisco\n3,Carol,Davis,carol@company.com,Marketing,88000,Austin\n4,David,Brown,david@company.com,Sales,102000,Chicago`;
-        updateCols();
+        input.value = `id,first_name,last_name,email,gender,department,salary,city,country\n101,Alice,Smith,alice@techcorp.com,Female,Engineering,115000,New York,USA\n102,Bob,Jones,bob@techcorp.com,Male,Product,108000,Austin,USA\n103,Charlie,Davis,charlie@techcorp.com,Non-Binary,Design,95000,London,UK\n104,Diana,Prince,diana@techcorp.com,Female,Security,132000,Seattle,USA\n105,Evan,Wright,evan@techcorp.com,Male,Marketing,88000,Toronto,Canada`;
+        updateColsFromInput();
       });
 
       clearBtn.addEventListener('click', () => {
         input.value = '';
         output.value = '';
-        updateCols();
+        fileIn.value = '';
+        parsedRows = [];
+        columnOrder = [];
+        renderColumns();
+        updatePreview([], []);
       });
 
       copyBtn.addEventListener('click', () => {
@@ -269,7 +595,7 @@ const schemaGraph = [
 
       dlBtn.addEventListener('click', () => {
         if (!output.value) return;
-        const blob = new Blob([output.value], { type: 'text/csv' });
+        const blob = new Blob([output.value], { type: 'text/csv;charset=utf-8;' });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
@@ -278,6 +604,7 @@ const schemaGraph = [
         URL.revokeObjectURL(url);
       });
 
+      // Initialize with sample
       sampleBtn.click();
     })();
   </script>

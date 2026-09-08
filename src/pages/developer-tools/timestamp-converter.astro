@@ -1,26 +1,31 @@
 ---
 import SiteLayout from '../../layouts/SiteLayout.astro';
 import Icon from '../../components/Icon.astro';
+import CalculatorParameterGuide from '../../components/calculator/CalculatorParameterGuide.astro';
 import { siteName, toAbsoluteUrl, withBasePath } from '../../utils/site';
 
-const pageTitle = `Unix Timestamp Converter — Epoch Time & Date Tool · ${siteName}`;
-const pageDesc = 'Convert Unix timestamps in seconds and milliseconds to human-readable dates, UTC, ISO 8601, and local timezones. Convert dates to Unix epoch timestamps in real time.';
+const pageTitle = `Unix Timestamp Converter — Epoch to Date & Multi-Timezone · ${siteName}`;
+const pageDesc = 'Convert between Unix epoch timestamps (seconds, milliseconds, microseconds) and human-readable dates online. Includes real-time ticking clock, relative time, and multi-timezone converter. 100% private in-browser tool.';
 const canonicalUrl = toAbsoluteUrl('/developer-tools/timestamp-converter/');
 
 const breadcrumbItems = [
   { label: 'Home', href: toAbsoluteUrl('/') },
   { label: 'Developer Tools', href: toAbsoluteUrl('/developer-tools/') },
-  { label: 'Unix Timestamp Converter' },
+  { label: 'Timestamp Converter' },
 ];
 
 const schemaFaq = [
   {
-    question: 'What is a Unix timestamp (Epoch time)?',
-    answer: 'The Unix timestamp represents the number of seconds (or milliseconds) that have elapsed since midnight Coordinated Universal Time (UTC) on January 1, 1970, not counting leap seconds.',
+    question: 'What is Unix Epoch Time?',
+    answer: 'Unix Epoch time is the total number of elapsed seconds since 00:00:00 UTC on January 1, 1970, not counting leap seconds. It is the universal standard time representation across Linux, Unix, databases, and APIs.',
   },
   {
-    question: 'How do I know if a timestamp is in seconds or milliseconds?',
-    answer: 'Timestamps in seconds currently have 10 digits (e.g., 1725360000). Timestamps in milliseconds have 13 digits (e.g., 1725360000000). This converter auto-detects standard formats.',
+    question: 'How does this converter distinguish seconds from milliseconds?',
+    answer: 'Standard Unix timestamps in seconds are 10 digits long (e.g. 1772839200), whereas JavaScript and modern APIs often use 13-digit millisecond timestamps (e.g. 1772839200000). The engine automatically detects the magnitude and scales accordingly.',
+  },
+  {
+    question: 'What is the Year 2038 problem (Y2K38)?',
+    answer: 'On January 19, 2038, 32-bit signed integer timestamps will overflow (exceeding 2,147,483,647 seconds) and wrap around to December 13, 1901. Modern systems prevent this by upgrading to 64-bit timestamps, which are valid for billions of years.',
   },
 ];
 
@@ -58,6 +63,51 @@ const schemaGraph = [
     })),
   },
 ];
+
+const parameterGuide = [
+  {
+    id: 'epoch_seconds',
+    name: 'Seconds (10-Digit Epoch)',
+    description: 'The standard integer returned by UNIX `date +%s` and database functions like `EXTRACT(EPOCH FROM now())`.',
+    whyItMatters: 'Standard in POSIX systems, OAuth2 expiration tokens, and HTTP caching headers.',
+    typicalRange: '10 digits (e.g. 1772839200)',
+  },
+  {
+    id: 'epoch_millis',
+    name: 'Milliseconds (13-Digit Epoch)',
+    description: 'Integer timestamp used by JavaScript `Date.now()`, Java `System.currentTimeMillis()`, and MongoDB ObjectId timestamps.',
+    whyItMatters: 'Provides sub-second timing resolution necessary for high-throughput event logging.',
+    typicalRange: '13 digits (e.g. 1772839200000)',
+  },
+  {
+    id: 'relative_time',
+    name: 'Relative Time Calculation',
+    description: 'Human-friendly relative duration comparing the target timestamp to the current clock.',
+    whyItMatters: 'Allows immediate comprehension of log event ages ("3 hours ago") or token expirations ("in 45 mins").',
+    typicalRange: 'Seconds, minutes, days, years',
+  },
+  {
+    id: 'iso8601',
+    name: 'ISO 8601 & UTC Formatting',
+    description: 'Standardized string representation (YYYY-MM-DDTHH:mm:ss.sssZ) aligned with zero meridian UTC.',
+    whyItMatters: 'The universally required format for JSON API payloads, database timestamps, and OpenAPI contracts.',
+    typicalRange: 'Canonical UTC standard',
+  },
+  {
+    id: 'multi_tz',
+    name: 'Multi-Timezone Display',
+    description: 'Instant conversion of the epoch timestamp into major global financial and technology hubs.',
+    whyItMatters: 'Avoids timezone and daylight saving time confusion when coordinating incident response across distributed teams.',
+    typicalRange: 'UTC, Local, EST, PST, GMT, CET, JST',
+  },
+  {
+    id: 'client_privacy',
+    name: '100% In-Browser Conversion',
+    description: 'All date math executes using local JavaScript Intl and Date APIs.',
+    whyItMatters: 'Guarantees zero network latency and maximum privacy for sensitive audit timestamps.',
+    typicalRange: 'Local browser engine',
+  },
+];
 ---
 
 <SiteLayout title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
@@ -86,13 +136,13 @@ const schemaGraph = [
     <header class="space-y-3">
       <div class="inline-flex items-center gap-2 rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1 text-xs font-semibold text-[color:var(--muted)]">
         <span class="inline-block h-2 w-2 rounded-full bg-emerald-500"></span>
-        <span>Live Epoch Clock</span>
+        <span>Live Epoch Clock &amp; Intl DateTime</span>
       </div>
       <h1 class="text-2xl sm:text-4xl font-extrabold tracking-tight text-[color:var(--fg)]">
         Unix Timestamp Converter
       </h1>
-      <p class="max-w-2xl text-xs sm:text-sm text-[color:var(--muted)] leading-relaxed">
-        Convert between Unix epoch timestamps and human-readable UTC/local date formats in seconds and milliseconds.
+      <p class="max-w-3xl text-xs sm:text-sm text-[color:var(--muted)] leading-relaxed">
+        Convert between Unix epoch timestamps (seconds, milliseconds, microseconds) and human-readable dates across multiple timezones. Features live relative time and a real-time ticking clock.
       </p>
     </header>
 
@@ -100,106 +150,189 @@ const schemaGraph = [
     <div class="space-y-3 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 sm:p-6">
       <div class="flex items-center justify-between">
         <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Current Unix Epoch Time</span>
-        <span class="text-xs text-emerald-500 font-bold flex items-center gap-1">
-          <span class="h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span> Ticking
-        </span>
+        <div class="flex items-center gap-3 text-xs">
+          <button type="button" id="btn-pause-clock" class="font-semibold text-[color:var(--primary)] hover:underline cursor-pointer">Pause Ticker</button>
+          <span class="text-cyan-500 dark:text-cyan-400 font-bold flex items-center gap-1">
+            <span id="ticker-dot" class="h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span>
+            <span id="ticker-label">Live</span>
+          </span>
+        </div>
       </div>
       <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
         <input
           type="text"
           id="current-epoch"
           readonly
-          class="flex-1 rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] px-4 py-2.5 font-mono text-xl sm:text-2xl font-extrabold text-[color:var(--fg)] focus:outline-hidden"
+          class="flex-1 rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] px-4 py-2.5 font-mono text-xl sm:text-2xl font-extrabold text-[color:var(--fg)] focus:outline-hidden select-all"
         />
-        <button
-          type="button"
-          data-copy-current
-          class="inline-flex items-center justify-center gap-1.5 rounded-xl bg-[color:var(--fg)] px-5 py-2.5 text-xs font-bold text-[color:var(--bg)] shadow-xs transition hover:opacity-90"
-        >
-          <Icon name="copy" class="w-3.5 h-3.5" />
-          <span>Copy Epoch</span>
-        </button>
+        <div class="flex gap-2">
+          <button
+            type="button"
+            id="btn-copy-sec"
+            class="inline-flex items-center justify-center gap-1.5 rounded-xl bg-[color:var(--fg)] px-4 py-2.5 text-xs font-bold text-[color:var(--bg)] shadow-xs transition hover:opacity-90 cursor-pointer"
+          >
+            <Icon name="copy" class="h-3.5 w-3.5" />
+            <span>Copy Seconds</span>
+          </button>
+          <button
+            type="button"
+            id="btn-copy-ms"
+            class="inline-flex items-center justify-center rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] px-3 py-2.5 text-xs font-bold text-[color:var(--fg)] hover:bg-[color:var(--bg)] cursor-pointer"
+          >
+            Copy MS
+          </button>
+        </div>
       </div>
     </div>
 
     <!-- Conversion Grid -->
     <div class="grid gap-6 lg:grid-cols-2">
-      <!-- Timestamp to Date -->
+      <!-- Timestamp to Date Column -->
       <div class="space-y-4 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5">
-        <h2 class="font-bold text-sm text-[color:var(--fg)]">Convert Timestamp → Human Date</h2>
+        <div class="flex items-center justify-between">
+          <h2 class="font-bold text-sm text-[color:var(--fg)]">Convert Timestamp → Human Date</h2>
+          <span class="rounded bg-cyan-500/15 px-2 py-0.5 text-[10px] font-bold text-cyan-600 dark:text-cyan-400 dark:text-cyan-400">Auto-Detect Sec / MS</span>
+        </div>
 
         <div class="space-y-2">
-          <label for="ts-input" class="text-xs font-medium text-[color:var(--muted)]">Unix Timestamp (sec or ms):</label>
+          <label for="ts-input" class="text-xs font-medium text-[color:var(--muted)]">Unix Timestamp:</label>
           <div class="flex gap-2">
             <input
               type="text"
               id="ts-input"
-              class="flex-1 rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-xs text-[color:var(--fg)]"
-              placeholder="e.g. 1725360000"
+              class="flex-1 rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-xs text-[color:var(--fg)] focus:outline-hidden"
+              placeholder="e.g. 1772839200"
             />
-            <button type="button" data-now-btn class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] px-3 py-1.5 text-xs font-bold text-[color:var(--fg)]">
-              Now
+            <button type="button" id="btn-use-now" class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] px-3 py-1.5 text-xs font-bold text-[color:var(--fg)] hover:bg-[color:var(--bg)] cursor-pointer">
+              Use Now
             </button>
           </div>
         </div>
 
-        <div class="space-y-2.5 pt-2 text-xs">
-          <div class="flex justify-between border-b border-[color:var(--border)] pb-2">
-            <span class="text-[color:var(--muted)]">GMT / UTC Date:</span>
-            <span id="res-utc" class="font-mono font-bold text-[color:var(--fg)]">-</span>
+        <!-- Conversion Output Table -->
+        <div class="space-y-2 font-mono text-xs pt-2">
+          <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] p-3">
+            <span class="text-[10px] font-bold uppercase tracking-wider text-[color:var(--muted)] block font-sans">GMT / UTC Date:</span>
+            <p id="out-utc" class="text-[color:var(--fg)] font-bold mt-0.5">-</p>
           </div>
-          <div class="flex justify-between border-b border-[color:var(--border)] pb-2">
-            <span class="text-[color:var(--muted)]">Local Timezone:</span>
-            <span id="res-local" class="font-mono font-bold text-[color:var(--fg)]">-</span>
+          <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] p-3">
+            <span class="text-[10px] font-bold uppercase tracking-wider text-[color:var(--muted)] block font-sans">Your Local System Time:</span>
+            <p id="out-local" class="text-[color:var(--fg)] font-bold mt-0.5">-</p>
           </div>
-          <div class="flex justify-between border-b border-[color:var(--border)] pb-2">
-            <span class="text-[color:var(--muted)]">ISO 8601:</span>
-            <span id="res-iso" class="font-mono font-bold text-[color:var(--fg)]">-</span>
+          <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] p-3">
+            <span class="text-[10px] font-bold uppercase tracking-wider text-[color:var(--muted)] block font-sans">ISO 8601 String:</span>
+            <p id="out-iso" class="text-[color:var(--fg)] mt-0.5">-</p>
           </div>
-          <div class="flex justify-between">
-            <span class="text-[color:var(--muted)]">Relative Time:</span>
-            <span id="res-rel" class="font-bold text-emerald-500">-</span>
+          <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] p-3">
+            <span class="text-[10px] font-bold uppercase tracking-wider text-[color:var(--muted)] block font-sans">Relative Duration:</span>
+            <p id="out-relative" class="text-cyan-600 dark:text-cyan-400 dark:text-cyan-400 font-bold mt-0.5 font-sans">-</p>
           </div>
         </div>
       </div>
 
-      <!-- Date to Timestamp -->
+      <!-- Human Date to Timestamp Column -->
       <div class="space-y-4 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5">
-        <h2 class="font-bold text-sm text-[color:var(--fg)]">Convert Date → Unix Timestamp</h2>
+        <h2 class="font-bold text-sm text-[color:var(--fg)]">Convert Human Date → Unix Timestamp</h2>
 
-        <div class="grid grid-cols-2 gap-2">
+        <div class="space-y-3">
           <div>
-            <label for="date-val" class="text-xs font-medium text-[color:var(--muted)] block mb-1">Date:</label>
+            <label for="date-in" class="text-xs font-medium text-[color:var(--muted)] block mb-1">Calendar Date:</label>
             <input
               type="date"
-              id="date-val"
-              class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs text-[color:var(--fg)]"
+              id="date-in"
+              class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-xs text-[color:var(--fg)] focus:outline-hidden"
             />
           </div>
-          <div>
-            <label for="time-val" class="text-xs font-medium text-[color:var(--muted)] block mb-1">Time:</label>
-            <input
-              type="time"
-              id="time-val"
-              step="1"
-              value="00:00:00"
-              class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs text-[color:var(--fg)]"
-            />
+
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label for="time-in" class="text-xs font-medium text-[color:var(--muted)] block mb-1">Time (24h):</label>
+              <input
+                type="time"
+                id="time-in"
+                step="1"
+                class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-xs text-[color:var(--fg)] focus:outline-hidden"
+              />
+            </div>
+            <div>
+              <label for="tz-select" class="text-xs font-medium text-[color:var(--muted)] block mb-1">Timezone Basis:</label>
+              <select id="tz-select" class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-2.5 py-2 text-xs text-[color:var(--fg)]">
+                <option value="local">Local System Time</option>
+                <option value="utc">UTC / GMT</option>
+              </select>
+            </div>
           </div>
         </div>
 
-        <div class="space-y-2.5 pt-4 text-xs">
-          <div class="flex justify-between border-b border-[color:var(--border)] pb-2">
-            <span class="text-[color:var(--muted)]">Timestamp (Seconds):</span>
-            <span id="res-sec" class="font-mono font-bold text-lg text-[color:var(--fg)]">-</span>
+        <!-- Resulting Timestamps -->
+        <div class="space-y-2 font-mono text-xs pt-2">
+          <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] p-3">
+            <span class="text-[10px] font-bold uppercase tracking-wider text-[color:var(--muted)] block font-sans">Epoch Seconds (10 digits):</span>
+            <p id="res-sec" class="text-[color:var(--fg)] font-bold text-sm mt-0.5 select-all">-</p>
           </div>
-          <div class="flex justify-between">
-            <span class="text-[color:var(--muted)]">Timestamp (Milliseconds):</span>
-            <span id="res-ms" class="font-mono font-bold text-[color:var(--fg)]">-</span>
+          <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] p-3">
+            <span class="text-[10px] font-bold uppercase tracking-wider text-[color:var(--muted)] block font-sans">Epoch Milliseconds (13 digits):</span>
+            <p id="res-ms" class="text-[color:var(--fg)] font-bold text-sm mt-0.5 select-all">-</p>
+          </div>
+          <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] p-3">
+            <span class="text-[10px] font-bold uppercase tracking-wider text-[color:var(--muted)] block font-sans">Day of Year &amp; Calendar Info:</span>
+            <p id="res-info" class="text-[color:var(--muted)] mt-0.5 font-sans">-</p>
           </div>
         </div>
       </div>
     </div>
+
+    <!-- Multi-Timezone Preview Card -->
+    <section class="space-y-3 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5">
+      <h2 class="text-sm font-bold uppercase tracking-wider text-[color:var(--fg)]">
+        🌐 Global Hubs Timezone Preview
+      </h2>
+      <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4 font-mono text-xs">
+        <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] p-3">
+          <span class="text-[10px] uppercase font-bold font-sans text-[color:var(--muted)]">London (GMT / BST)</span>
+          <p id="tz-london" class="text-[color:var(--fg)] font-bold mt-1">-</p>
+        </div>
+        <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] p-3">
+          <span class="text-[10px] uppercase font-bold font-sans text-[color:var(--muted)]">New York (EST / EDT)</span>
+          <p id="tz-ny" class="text-[color:var(--fg)] font-bold mt-1">-</p>
+        </div>
+        <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-3">
+          <span class="text-[10px] uppercase font-bold font-sans text-[color:var(--muted)]">San Francisco (PST / PDT)</span>
+          <p id="tz-sf" class="text-[color:var(--fg)] font-bold mt-1">-</p>
+        </div>
+        <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-3">
+          <span class="text-[10px] uppercase font-bold font-sans text-[color:var(--muted)]">Tokyo (JST, UTC+9)</span>
+          <p id="tz-tokyo" class="text-[color:var(--fg)] font-bold mt-1">-</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Step-by-Step Worked Example -->
+    <section class="space-y-4 rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 sm:p-8 text-xs sm:text-sm text-[color:var(--muted)] leading-relaxed">
+      <div class="flex items-center gap-2">
+        <span class="rounded-md bg-[color:var(--accent)]/15 px-2.5 py-1 text-xs font-bold text-[color:var(--accent)]">Worked Example</span>
+        <h2 class="text-base sm:text-lg font-bold text-[color:var(--fg)]">Converting Billable Cloud Incident Epoch to UTC</h2>
+      </div>
+      <p>
+        An AWS CloudWatch log entry records an incident at timestamp <code>1741344000</code>:
+      </p>
+      <div class="space-y-2 font-mono text-xs">
+        <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] p-3">
+          <span class="text-[color:var(--muted)] block font-bold font-sans text-[11px]">UTC Human Date:</span>
+          Saturday, March 7, 2025 at 10:40:00 AM UTC
+        </div>
+        <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] p-3">
+          <span class="text-[color:var(--muted)] block font-bold font-sans text-[11px]">ISO 8601 String:</span>
+          2025-03-07T10:40:00.000Z
+        </div>
+      </div>
+      <p class="text-xs text-[color:var(--muted)]">
+        The converter translates the 10-digit integer into exact calendar representations across global data centers without needing manual time zone calculations.
+      </p>
+    </section>
+
+    <!-- Parameter Guide -->
+    <CalculatorParameterGuide parameters={parameterGuide} />
 
     <!-- FAQs -->
     <section class="space-y-4">
@@ -225,92 +358,194 @@ const schemaGraph = [
       const root = document.querySelector('[data-ts-app]');
       if (!root) return;
 
-      const currentEpoch = root.querySelector('#current-epoch');
-      const copyCurrent = root.querySelector('[data-copy-current]');
+      const currentEpochInput = root.querySelector('#current-epoch');
+      const pauseClockBtn = root.querySelector('#btn-pause-clock');
+      const tickerDot = root.querySelector('#ticker-dot');
+      const tickerLabel = root.querySelector('#ticker-label');
+      const copySecBtn = root.querySelector('#btn-copy-sec');
+      const copyMsBtn = root.querySelector('#btn-copy-ms');
+
       const tsInput = root.querySelector('#ts-input');
-      const nowBtn = root.querySelector('[data-now-btn]');
-      const resUtc = root.querySelector('#res-utc');
-      const resLocal = root.querySelector('#res-local');
-      const resIso = root.querySelector('#res-iso');
-      const resRel = root.querySelector('#res-rel');
-      const dateVal = root.querySelector('#date-val');
-      const timeVal = root.querySelector('#time-val');
+      const useNowBtn = root.querySelector('#btn-use-now');
+
+      const outUtc = root.querySelector('#out-utc');
+      const outLocal = root.querySelector('#out-local');
+      const outIso = root.querySelector('#out-iso');
+      const outRelative = root.querySelector('#out-relative');
+
+      const dateIn = root.querySelector('#date-in');
+      const timeIn = root.querySelector('#time-in');
+      const tzSelect = root.querySelector('#tz-select');
+
       const resSec = root.querySelector('#res-sec');
       const resMs = root.querySelector('#res-ms');
+      const resInfo = root.querySelector('#res-info');
 
-      // Live tick
-      setInterval(() => {
-        currentEpoch.value = Math.floor(Date.now() / 1000);
-      }, 1000);
-      currentEpoch.value = Math.floor(Date.now() / 1000);
+      const tzLondon = root.querySelector('#tz-london');
+      const tzNy = root.querySelector('#tz-ny');
+      const tzSf = root.querySelector('#tz-sf');
+      const tzTokyo = root.querySelector('#tz-tokyo');
 
-      copyCurrent.addEventListener('click', () => {
-        navigator.clipboard.writeText(currentEpoch.value);
-        const span = copyCurrent.querySelector('span');
+      let isClockPaused = false;
+      let clockTimer = null;
+
+      function updateClock() {
+        if (isClockPaused) return;
+        const nowMs = Date.now();
+        currentEpochInput.value = Math.floor(nowMs / 1000).toString();
+      }
+
+      clockTimer = setInterval(updateClock, 1000);
+      updateClock();
+
+      pauseClockBtn.addEventListener('click', () => {
+        isClockPaused = !isClockPaused;
+        if (isClockPaused) {
+          pauseClockBtn.textContent = 'Resume Ticker';
+          tickerDot.className = 'h-2 w-2 rounded-full bg-amber-500';
+          tickerLabel.textContent = 'Paused';
+        } else {
+          pauseClockBtn.textContent = 'Pause Ticker';
+          tickerDot.className = 'h-2 w-2 rounded-full bg-emerald-500 animate-pulse';
+          tickerLabel.textContent = 'Live';
+          updateClock();
+        }
+      });
+
+      copySecBtn.addEventListener('click', () => {
+        navigator.clipboard.writeText(currentEpochInput.value);
+        const span = copySecBtn.querySelector('span');
         const orig = span.textContent;
         span.textContent = 'Copied!';
         setTimeout(() => span.textContent = orig, 1800);
       });
 
-      function updateTsToDate() {
-        const raw = tsInput.value.trim();
-        if (!raw) {
-          resUtc.textContent = '-';
-          resLocal.textContent = '-';
-          resIso.textContent = '-';
-          resRel.textContent = '-';
-          return;
-        }
-
-        const num = parseFloat(raw);
-        if (isNaN(num)) {
-          resUtc.textContent = 'Invalid Number';
-          return;
-        }
-
-        // Detect milliseconds if > 30000000000 (roughly year 2920 in seconds)
-        const isMs = num > 30000000000;
-        const d = new Date(isMs ? num : num * 1000);
-
-        if (isNaN(d.getTime())) {
-          resUtc.textContent = 'Invalid Date';
-          return;
-        }
-
-        resUtc.textContent = d.toUTCString();
-        resLocal.textContent = d.toLocaleString();
-        resIso.textContent = d.toISOString();
-
-        const diffSec = Math.floor((d.getTime() - Date.now()) / 1000);
-        if (Math.abs(diffSec) < 60) resRel.textContent = 'Just now';
-        else if (diffSec > 0) resRel.textContent = `In ${Math.round(diffSec / 3600)} hours`;
-        else resRel.textContent = `${Math.abs(Math.round(diffSec / 3600))} hours ago`;
-      }
-
-      tsInput.addEventListener('input', updateTsToDate);
-      nowBtn.addEventListener('click', () => {
-        tsInput.value = Math.floor(Date.now() / 1000);
-        updateTsToDate();
+      copyMsBtn.addEventListener('click', () => {
+        navigator.clipboard.writeText(Date.now().toString());
+        const orig = copyMsBtn.textContent;
+        copyMsBtn.textContent = 'Copied!';
+        setTimeout(() => copyMsBtn.textContent = orig, 1800);
       });
 
-      function updateDateToTs() {
-        if (!dateVal.value) return;
-        const timeStr = timeVal.value || '00:00:00';
-        const d = new Date(`${dateVal.value}T${timeStr}`);
-        if (isNaN(d.getTime())) return;
+      function formatRelative(diffSec) {
+        const abs = Math.abs(diffSec);
+        const days = Math.floor(abs / 86400);
+        const hours = Math.floor((abs % 86400) / 3600);
+        const mins = Math.floor((abs % 3600) / 60);
+        const secs = Math.floor(abs % 60);
 
-        resSec.textContent = Math.floor(d.getTime() / 1000);
-        resMs.textContent = d.getTime();
+        let parts = [];
+        if (days > 0) parts.push(`${days} day${days > 1 ? 's' : ''}`);
+        if (hours > 0) parts.push(`${hours} hr${hours > 1 ? 's' : ''}`);
+        if (mins > 0 && days === 0) parts.push(`${mins} min${mins > 1 ? 's' : ''}`);
+        if (parts.length === 0) parts.push(`${secs} second${secs !== 1 ? 's' : ''}`);
+
+        const text = parts.slice(0, 2).join(', ');
+        return diffSec >= 0 ? `In ${text}` : `${text} ago`;
       }
 
-      dateVal.addEventListener('input', updateDateToTs);
-      timeVal.addEventListener('input', updateDateToTs);
+      function convertTsToDate() {
+        const raw = tsInput.value.trim();
+        if (!raw || isNaN(raw)) {
+          outUtc.textContent = '-';
+          outLocal.textContent = '-';
+          outIso.textContent = '-';
+          outRelative.textContent = '-';
+          tzLondon.textContent = '-';
+          tzNy.textContent = '-';
+          tzSf.textContent = '-';
+          tzTokyo.textContent = '-';
+          return;
+        }
 
-      // Set defaults
-      const today = new Date();
-      dateVal.value = today.toISOString().split('T')[0];
-      nowBtn.click();
-      updateDateToTs();
+        let num = parseFloat(raw);
+        // If 10 digits or fewer, assume seconds; if 13 digits, assume milliseconds
+        let ms = num;
+        if (raw.length <= 11) {
+          ms = num * 1000;
+        } else if (raw.length >= 16) {
+          // microseconds
+          ms = num / 1000;
+        }
+
+        const d = new Date(ms);
+        if (isNaN(d.getTime())) {
+          outUtc.textContent = 'Invalid Timestamp';
+          return;
+        }
+
+        outUtc.textContent = d.toUTCString();
+        outLocal.textContent = d.toString();
+        outIso.textContent = d.toISOString();
+
+        const diffSec = Math.floor((ms - Date.now()) / 1000);
+        outRelative.textContent = formatRelative(diffSec);
+
+        // Global Hubs
+        try {
+          const opts = { dateStyle: 'medium', timeStyle: 'medium' };
+          tzLondon.textContent = new Intl.DateTimeFormat('en-GB', { ...opts, timeZone: 'Europe/London' }).format(d);
+          tzNy.textContent = new Intl.DateTimeFormat('en-US', { ...opts, timeZone: 'America/New_York' }).format(d);
+          tzSf.textContent = new Intl.DateTimeFormat('en-US', { ...opts, timeZone: 'America/Los_Angeles' }).format(d);
+          tzTokyo.textContent = new Intl.DateTimeFormat('ja-JP', { ...opts, timeZone: 'Asia/Tokyo' }).format(d);
+        } catch (e) {
+          tzLondon.textContent = d.toUTCString();
+        }
+      }
+
+      function convertDateToTs() {
+        const dateVal = dateIn.value;
+        const timeVal = timeIn.value || '00:00:00';
+        if (!dateVal) return;
+
+        let d;
+        if (tzSelect.value === 'utc') {
+          d = new Date(`${dateVal}T${timeVal}Z`);
+        } else {
+          d = new Date(`${dateVal}T${timeVal}`);
+        }
+
+        if (isNaN(d.getTime())) return;
+
+        const ms = d.getTime();
+        const sec = Math.floor(ms / 1000);
+
+        resSec.textContent = sec.toString();
+        resMs.textContent = ms.toString();
+
+        // Day of year calculation
+        const startOfYear = new Date(d.getFullYear(), 0, 1);
+        const dayOfYear = Math.floor((d - startOfYear) / (24 * 60 * 60 * 1000)) + 1;
+        const isLeap = (d.getFullYear() % 4 === 0 && d.getFullYear() % 100 !== 0) || (d.getFullYear() % 400 === 0);
+
+        resInfo.textContent = `Day ${dayOfYear} of ${d.getFullYear()} | Leap Year: ${isLeap ? 'Yes' : 'No'}`;
+      }
+
+      tsInput.addEventListener('input', convertTsToDate);
+      useNowBtn.addEventListener('click', () => {
+        tsInput.value = Math.floor(Date.now() / 1000).toString();
+        convertTsToDate();
+      });
+
+      dateIn.addEventListener('input', convertDateToTs);
+      timeIn.addEventListener('input', convertDateToTs);
+      tzSelect.addEventListener('change', convertDateToTs);
+
+      // Initialize inputs with current date
+      const now = new Date();
+      const yr = now.getFullYear();
+      const mo = String(now.getMonth() + 1).padStart(2, '0');
+      const da = String(now.getDate()).padStart(2, '0');
+      dateIn.value = `${yr}-${mo}-${da}`;
+
+      const hr = String(now.getHours()).padStart(2, '0');
+      const mi = String(now.getMinutes()).padStart(2, '0');
+      const se = String(now.getSeconds()).padStart(2, '0');
+      timeIn.value = `${hr}:${mi}:${se}`;
+
+      tsInput.value = Math.floor(now.getTime() / 1000).toString();
+      convertTsToDate();
+      convertDateToTs();
     })();
   </script>
 </SiteLayout>

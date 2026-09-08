@@ -1,10 +1,11 @@
 ---
 import SiteLayout from '../../layouts/SiteLayout.astro';
 import Icon from '../../components/Icon.astro';
-import { siteName, toAbsoluteUrl, withBasePath } from '../../utils/site';
+import CalculatorParameterGuide from '../../components/calculator/CalculatorParameterGuide.astro';
+import { siteName, toAbsoluteUrl } from '../../utils/site';
 
 const pageTitle = `Random Sample Generator — Simple Random Sampling Tool · ${siteName}`;
-const pageDesc = 'Generate simple random sample (SRS) selections from population sizes (N) or raw item lists without replacement. Uses Web Cryptography CSPRNG random generation.';
+const pageDesc = 'Generate simple random sample (SRS) selections from numeric ranges or custom item lists without replacement. Uses Web Cryptography CSPRNG random generation.';
 const canonicalUrl = toAbsoluteUrl('/research-tools/random-sample-generator/');
 
 const breadcrumbItems = [
@@ -13,10 +14,79 @@ const breadcrumbItems = [
   { label: 'Random Sample Generator' },
 ];
 
+const parameterGuide = [
+  {
+    name: 'Sampling Source (Range vs Custom Items)',
+    description: 'Select whether to sample from a consecutive numeric range (e.g. IDs 1 through 10,000) or paste a custom list of participant names, barcodes, or emails.',
+    whyItMatters: 'Enables both simulated theoretical sampling and real-world field research roster selections.',
+    typicalRange: 'Numeric Range or Custom List',
+    unit: 'mode',
+  },
+  {
+    name: 'Population Size (N)',
+    description: 'The total number of available subjects, records, or units in the complete sampling frame.',
+    whyItMatters: 'Defines the denominator of inclusion probability and maximum sample bounds.',
+    typicalRange: '2 to 100,000+ units',
+    unit: 'units',
+  },
+  {
+    name: 'Sample Size to Draw (n)',
+    description: 'The target count of units to be randomly selected into the sample.',
+    whyItMatters: 'Must not exceed population size N when sampling without replacement.',
+    typicalRange: '1 to N units',
+    unit: 'units',
+  },
+  {
+    name: 'Sampling Methodology',
+    description: 'Choose between Simple Random Sampling without replacement (each unit picked at most once), with replacement (bootstrap), or Systematic Sampling (every k-th item with a random start).',
+    whyItMatters: 'Determines independence between selections and the mathematical validity of sample statistics.',
+    typicalRange: 'Without Replacement, With Replacement, Systematic',
+    unit: 'method',
+  },
+  {
+    name: 'Inclusion Probability (π)',
+    description: 'The probability that any single specific member of the population is included in the sample: π = n / N.',
+    whyItMatters: 'Equal inclusion probability is the fundamental requirement for unbiased Horvitz-Thompson estimation.',
+    typicalRange: '0.001 to 1.000',
+    unit: 'probability',
+  },
+];
+
+const workedExample = {
+  title: 'Worked Example: Selecting 25 Subjects from N = 500 Patient Registry',
+  description: 'Unbiased simple random sampling without replacement using Web Cryptography CSPRNG.',
+  formula: 'Sampling Fraction f = n / N; Selection Probability P(unit i) = n / N',
+  steps: [
+    {
+      step: '1. Establish Sampling Frame',
+      calculation: 'Population N = 500; Desired sample size n = 25',
+      result: 'N = 500, n = 25',
+    },
+    {
+      step: '2. Compute Inclusion Probability & Sampling Fraction',
+      calculation: 'f = 25 ÷ 500 = 0.050 (5.0% sampling fraction); P(inclusion) = 5.0%',
+      result: '5.0% probability per subject',
+    },
+    {
+      step: '3. CSPRNG Fisher-Yates Partial Permutation',
+      calculation: 'Execute 25 iterations selecting random index j ∈ [i, N-1] via crypto.getRandomValues',
+      result: '25 unique, uniformly distributed IDs selected without replacement',
+    },
+  ],
+};
+
 const schemaFaq = [
   {
     question: 'How does Simple Random Sampling (SRS) work without replacement?',
-    answer: 'It applies the Fisher-Yates shuffle algorithm using cryptographically secure random values (`crypto.getRandomValues`) to ensure each population member has an equal, independent probability of selection.',
+    answer: 'It applies the Fisher-Yates shuffle algorithm using cryptographically secure random values (`crypto.getRandomValues`) to ensure each population member has an equal, independent probability of selection without duplicate entries.',
+  },
+  {
+    question: 'What is the difference between sampling with vs without replacement?',
+    answer: 'Without replacement means once an individual or item is selected, it cannot be drawn again. With replacement allows the same item to be chosen multiple times, which is essential for bootstrap statistical resampling.',
+  },
+  {
+    question: 'How does 1-in-k Systematic Sampling work?',
+    answer: 'In systematic sampling, the population is divided into intervals of length k = floor(N / n). A single random starting integer r between 1 and k is chosen with CSPRNG, and subsequent subjects are taken at r, r+k, r+2k, up to n items.',
   },
 ];
 
@@ -80,64 +150,170 @@ const schemaGraph = [
     </nav>
 
     <header class="space-y-3">
-      <div class="inline-flex items-center gap-2 rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1 text-xs font-semibold text-[color:var(--muted)]">
+      <div class="inline-flex items-center gap-2 rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3.5 py-1 text-xs font-semibold text-[color:var(--muted)]">
         <span class="inline-block h-2 w-2 rounded-full bg-emerald-500"></span>
         <span>Fisher-Yates CSPRNG Sampler</span>
       </div>
-      <h1 class="text-2xl sm:text-4xl font-extrabold tracking-tight text-[color:var(--fg)]">
+      <h1 class="text-3xl font-extrabold tracking-tight text-[color:var(--fg)] sm:text-4xl">
         Random Sample Generator (SRS)
       </h1>
-      <p class="max-w-2xl text-xs sm:text-sm text-[color:var(--muted)] leading-relaxed">
-        Select unbiased, cryptographically randomized samples from population ranges or raw subject lists.
+      <p class="max-w-3xl text-sm leading-relaxed text-[color:var(--muted)] sm:text-base">
+        Select unbiased, cryptographically randomized samples from numeric ranges or custom subject lists. Supports sampling without replacement, bootstrap with replacement, and 1-in-k systematic sampling.
       </p>
     </header>
 
-    <div class="space-y-6">
-      <div class="grid gap-4 sm:grid-cols-2 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 text-xs">
-        <div>
-          <label for="pop-size" class="font-bold text-[color:var(--fg)] block mb-1">Total Population (N):</label>
-          <input
-            type="number"
-            id="pop-size"
-            min="1"
-            max="100000"
-            value="100"
-            class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-[color:var(--fg)]"
-          />
-        </div>
-        <div>
-          <label for="sample-size" class="font-bold text-[color:var(--fg)] block mb-1">Sample Size to Draw (n):</label>
-          <input
-            type="number"
-            id="sample-size"
-            min="1"
-            max="10000"
-            value="15"
-            class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-[color:var(--fg)]"
-          />
-        </div>
-      </div>
+    <div
+      class="rounded-[2.5rem] border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-6 shadow-[var(--shadow)] sm:p-10"
+    >
+      <div class="grid gap-8 lg:grid-cols-[1.1fr_0.9fr]">
+        <form class="space-y-5" onsubmit="return false;">
+          <div class="flex items-center justify-between">
+            <h2 class="text-lg font-bold text-[color:var(--fg)]">Sampling Frame</h2>
+            <button type="button" class="cursor-pointer text-xs font-semibold text-[color:var(--muted)] hover:text-[color:var(--fg)]" data-reset-btn>
+              ↺ Reset
+            </button>
+          </div>
 
-      <button
-        type="button"
-        data-draw-btn
-        class="w-full rounded-xl bg-[color:var(--fg)] py-2.5 text-xs font-bold text-[color:var(--bg)] shadow-xs transition hover:opacity-90"
-      >
-        Draw Random Sample
-      </button>
+          <div class="grid grid-cols-2 gap-2 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-1 text-xs font-semibold">
+            <button type="button" class="cursor-pointer rounded-xl bg-[color:var(--accent)] px-3 py-2 text-[color:var(--bg)] shadow-xs transition" data-source-btn="range">
+              Numeric Range (1 to N)
+            </button>
+            <button type="button" class="cursor-pointer rounded-xl px-3 py-2 text-[color:var(--muted)] hover:text-[color:var(--fg)] transition" data-source-btn="custom">
+              Custom Item Roster
+            </button>
+          </div>
 
-      <!-- Results Card -->
-      <div class="space-y-3 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 sm:p-6">
-        <div class="flex items-center justify-between">
-          <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Selected Sample Units</span>
-          <button type="button" data-copy-btn class="inline-flex items-center gap-1 text-xs font-bold text-[color:var(--fg)] hover:underline">
-            <Icon name="copy" class="w-3.5 h-3.5" />
-            <span>Copy List</span>
+          <!-- Range Inputs -->
+          <div class="space-y-4" data-range-fields>
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label for="pop-start" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Start Value (Min)</label>
+                <input id="pop-start" type="number" value="1" class="mt-1 w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2.5 text-sm font-semibold text-[color:var(--fg)] outline-none" data-pop-start />
+              </div>
+              <div>
+                <label for="pop-size" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">End Value (N)</label>
+                <input id="pop-size" type="number" min="1" max="500000" value="100" class="mt-1 w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2.5 text-sm font-semibold text-[color:var(--fg)] outline-none" data-pop-size />
+              </div>
+            </div>
+          </div>
+
+          <!-- Custom Roster Inputs (Hidden by default) -->
+          <div class="space-y-2" data-custom-fields hidden>
+            <label for="custom-items" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Paste Items / Names (One per line or comma-separated)</label>
+            <textarea
+              id="custom-items"
+              rows="5"
+              class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] p-3 text-xs font-mono font-semibold text-[color:var(--fg)] outline-none"
+              placeholder="e.g. Alice, Bob, Charlie, David, Emma, Frank, Grace, Henry..."
+              data-custom-items
+            >Patient-101, Patient-102, Patient-103, Patient-104, Patient-105, Patient-106, Patient-107, Patient-108, Patient-109, Patient-110, Patient-111, Patient-112, Patient-113, Patient-114, Patient-115, Patient-116, Patient-117, Patient-118, Patient-119, Patient-120</textarea>
+            <div class="flex justify-between text-[11px] text-[color:var(--muted)]">
+              <span data-custom-count-hint>Detected: 20 unique items</span>
+              <button type="button" class="text-[color:var(--accent)] hover:underline cursor-pointer" data-load-sample-roster>Load 50 Sample IDs</button>
+            </div>
+          </div>
+
+          <!-- Sample Size & Method -->
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label for="sample-size" class="block text-xs font-medium text-[color:var(--muted)]">Sample Size (n)</label>
+              <input id="sample-size" type="number" min="1" max="10000" value="15" class="mt-1 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-sample-size />
+            </div>
+            <div>
+              <label for="sampling-method" class="block text-xs font-medium text-[color:var(--muted)]">Sampling Method</label>
+              <select id="sampling-method" class="mt-1 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-sampling-method>
+                <option value="without" selected>SRS Without Replacement (Unique)</option>
+                <option value="with">Bootstrap With Replacement</option>
+                <option value="systematic">1-in-k Systematic Sampling</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label for="sort-order" class="block text-xs font-medium text-[color:var(--muted)]">Sort Results</label>
+              <select id="sort-order" class="mt-1 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-sort-order>
+                <option value="asc" selected>Ascending / Natural Order</option>
+                <option value="random">Order of Random Draw</option>
+              </select>
+            </div>
+            <div>
+              <label for="custom-prefix" class="block text-xs font-medium text-[color:var(--muted)]">ID Prefix (Optional)</label>
+              <input id="custom-prefix" type="text" placeholder="e.g. ID-" class="mt-1 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-custom-prefix />
+            </div>
+          </div>
+
+          <button
+            type="button"
+            data-draw-btn
+            class="w-full inline-flex items-center justify-center gap-2 rounded-2xl bg-[color:var(--accent)] py-3 text-sm font-bold text-[color:var(--accent-fg)] shadow-xs transition hover:bg-[color:var(--accent-hover)] hover:shadow-[0_0_18px_var(--accent-glow)] hover:-translate-y-0.5 active:scale-98 cursor-pointer"
+          >
+            <Icon name="dice" class="w-4 h-4" />
+            <span>Draw Random Sample Now</span>
           </button>
+        </form>
+
+        <!-- Results Display Box -->
+        <div class="flex flex-col justify-between space-y-6 rounded-3xl border border-[color:var(--accent)]/30 bg-gradient-to-br from-[color:var(--accent-soft)] via-[color:var(--surface)] to-transparent p-6 sm:p-8 shadow-sm">
+          <div class="space-y-4">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Selected Sample (n = <span data-sample-count-badge>15</span>)</span>
+              <div class="flex items-center gap-1.5">
+                <button
+                  type="button"
+                  data-copy-btn
+                  class="inline-flex items-center gap-1 rounded-lg border border-[color:var(--border)] bg-[color:var(--surface)] px-2.5 py-1 text-xs font-semibold text-[color:var(--fg)] hover:bg-[color:var(--bg)] transition cursor-pointer"
+                >
+                  <Icon name="copy" class="w-3.5 h-3.5" />
+                  <span>Copy</span>
+                </button>
+                <button
+                  type="button"
+                  data-export-csv-btn
+                  class="inline-flex items-center gap-1 rounded-lg border border-[color:var(--border)] bg-[color:var(--surface)] px-2.5 py-1 text-xs font-semibold text-[color:var(--fg)] hover:bg-[color:var(--bg)] transition cursor-pointer"
+                >
+                  <span>CSV</span>
+                </button>
+                <button
+                  type="button"
+                  data-export-txt-btn
+                  class="inline-flex items-center gap-1 rounded-lg border border-[color:var(--border)] bg-[color:var(--surface)] px-2.5 py-1 text-xs font-semibold text-[color:var(--fg)] hover:bg-[color:var(--bg)] transition cursor-pointer"
+                >
+                  <span>TXT</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Chips Container -->
+            <div
+              id="sample-output"
+              class="max-h-[260px] overflow-y-auto flex flex-wrap gap-2 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 font-mono text-xs"
+            >
+              <!-- Populated by JS -->
+            </div>
+
+            <!-- Sampling Metrics -->
+            <div class="space-y-2 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-xs">
+              <div class="flex justify-between">
+                <span class="text-[color:var(--muted)]">Sampling Fraction (f = n/N):</span>
+                <span class="font-mono font-bold text-[color:var(--fg)]" data-res-fraction>15.00%</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-[color:var(--muted)]">Inclusion Probability per Unit (π):</span>
+                <span class="font-mono font-bold text-[color:var(--accent)]" data-res-prob>p = 0.1500 (1 in 6.7)</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-[color:var(--muted)]">Random Engine:</span>
+                <span class="font-mono font-bold text-cyan-500 dark:text-cyan-400">CSPRNG crypto.getRandomValues</span>
+              </div>
+            </div>
+          </div>
         </div>
-        <div id="sample-output" class="flex flex-wrap gap-2 font-mono text-xs"></div>
       </div>
     </div>
+
+    <!-- Parameter Guide & Worked Example -->
+    <CalculatorParameterGuide parameters={parameterGuide} workedExample={workedExample} />
 
     <!-- FAQs -->
     <section class="space-y-4">
@@ -163,48 +339,248 @@ const schemaGraph = [
       const root = document.querySelector('[data-srs-app]');
       if (!root) return;
 
-      const popSize = root.querySelector('#pop-size');
-      const sampleSize = root.querySelector('#sample-size');
+      const sourceBtns = root.querySelectorAll('[data-source-btn]');
+      const rangeFields = root.querySelector('[data-range-fields]');
+      const customFields = root.querySelector('[data-custom-fields]');
+      const popStart = root.querySelector('[data-pop-start]');
+      const popSize = root.querySelector('[data-pop-size]');
+      const customItems = root.querySelector('[data-custom-items]');
+      const customCountHint = root.querySelector('[data-custom-count-hint]');
+      const loadSampleRosterBtn = root.querySelector('[data-load-sample-roster]');
+      const sampleSize = root.querySelector('[data-sample-size]');
+      const samplingMethod = root.querySelector('[data-sampling-method]');
+      const sortOrder = root.querySelector('[data-sort-order]');
+      const customPrefix = root.querySelector('[data-custom-prefix]');
       const drawBtn = root.querySelector('[data-draw-btn]');
       const output = root.querySelector('#sample-output');
+      const countBadge = root.querySelector('[data-sample-count-badge]');
+      const resFraction = root.querySelector('[data-res-fraction]');
+      const resProb = root.querySelector('[data-res-prob]');
+      const resetBtn = root.querySelector('[data-reset-btn]');
       const copyBtn = root.querySelector('[data-copy-btn]');
+      const exportCsvBtn = root.querySelector('[data-export-csv-btn]');
+      const exportTxtBtn = root.querySelector('[data-export-txt-btn]');
+
+      let currentSource = 'range';
+      let lastDrawnItems = [];
+
+      function getCSPRNGInt(maxExclusive) {
+        if (maxExclusive <= 1) return 0;
+        const maxUint32 = 0xFFFFFFFF;
+        const limit = maxUint32 - (maxUint32 % maxExclusive);
+        const buf = new Uint32Array(1);
+        while (true) {
+          crypto.getRandomValues(buf);
+          if (buf[0] < limit) {
+            return buf[0] % maxExclusive;
+          }
+        }
+      }
+
+      function parseCustomList(text) {
+        return text
+          .split(/[\r\n,;]+/)
+          .map(function (item) { return item.trim(); })
+          .filter(function (item) { return item.length > 0; });
+      }
+
+      function updateCustomCount() {
+        if (customCountHint && customItems) {
+          const items = parseCustomList(customItems.value);
+          customCountHint.textContent = `Detected: ${items.length} items`;
+        }
+      }
 
       function drawSample() {
-        const N = Math.min(100000, Math.max(1, parseInt(popSize.value, 10) || 100));
-        const n = Math.min(N, Math.max(1, parseInt(sampleSize.value, 10) || 10));
+        let population = [];
+        const prefix = (customPrefix.value || '').trim();
 
-        const population = Array.from({ length: N }, (_, i) => i + 1);
-
-        // Fisher-Yates partial shuffle
-        for (let i = 0; i < n; i++) {
-          const randArr = new Uint32Array(1);
-          crypto.getRandomValues(randArr);
-          const j = i + (randArr[0] % (N - i));
-          const temp = population[i];
-          population[i] = population[j];
-          population[j] = temp;
+        if (currentSource === 'range') {
+          const start = parseInt(popStart.value, 10) || 1;
+          const end = parseInt(popSize.value, 10) || 100;
+          const minVal = Math.min(start, end);
+          const maxVal = Math.max(start, end);
+          const N = maxVal - minVal + 1;
+          for (let i = minVal; i <= maxVal; i++) {
+            population.push(prefix ? `${prefix}${i}` : `${i}`);
+          }
+        } else {
+          const items = parseCustomList(customItems.value || '');
+          if (items.length === 0) {
+            output.innerHTML = '<span class="text-rose-500 font-sans">Please enter at least one item in the custom roster.</span>';
+            return;
+          }
+          population = items.map(function (it) { return prefix ? `${prefix}${it}` : it; });
         }
 
-        const sampled = population.slice(0, n).sort((a, b) => a - b);
+        const N = population.length;
+        const method = samplingMethod.value || 'without';
+        let requestedN = parseInt(sampleSize.value, 10) || 15;
+        if (method !== 'with') {
+          requestedN = Math.min(N, Math.max(1, requestedN));
+        } else {
+          requestedN = Math.max(1, requestedN);
+        }
 
-        output.innerHTML = sampled.map(num => `
-          <span class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] px-3 py-1.5 font-bold text-emerald-500">
-            #${num}
-          </span>
-        `).join('');
+        let sampled = [];
+
+        if (method === 'without') {
+          // Fisher-Yates partial shuffle
+          const clone = population.slice();
+          for (let i = 0; i < requestedN; i++) {
+            const j = i + getCSPRNGInt(N - i);
+            const temp = clone[i];
+            clone[i] = clone[j];
+            clone[j] = temp;
+            sampled.push(clone[i]);
+          }
+        } else if (method === 'with') {
+          // Bootstrap with replacement
+          for (let i = 0; i < requestedN; i++) {
+            const randIdx = getCSPRNGInt(N);
+            sampled.push(population[randIdx]);
+          }
+        } else if (method === 'systematic') {
+          // 1-in-k systematic sampling
+          const k = Math.max(1, Math.floor(N / requestedN));
+          const startR = getCSPRNGInt(k);
+          for (let i = 0; i < requestedN; i++) {
+            const idx = startR + i * k;
+            if (idx < N) {
+              sampled.push(population[idx]);
+            }
+          }
+        }
+
+        if (sortOrder.value === 'asc') {
+          sampled.sort(function (a, b) {
+            const numA = parseFloat(a.replace(/^[^\d.-]+/, ''));
+            const numB = parseFloat(b.replace(/^[^\d.-]+/, ''));
+            if (!isNaN(numA) && !isNaN(numB)) return numA - numB;
+            return a.localeCompare(b, undefined, { numeric: true });
+          });
+        }
+
+        lastDrawnItems = sampled;
+
+        if (countBadge) countBadge.textContent = sampled.length.toString();
+        const f = (sampled.length / N) * 100;
+        if (resFraction) resFraction.textContent = `${f.toFixed(2)}% (${sampled.length} of ${N})`;
+        if (resProb) {
+          const pVal = sampled.length / N;
+          resProb.textContent = `π = ${pVal.toFixed(4)} (1 in ${(1 / (pVal || 1)).toFixed(1)})`;
+        }
+
+        output.innerHTML = sampled.map(function (item, idx) {
+          return `<span class="inline-flex items-center gap-1 rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] px-2.5 py-1 text-xs font-semibold text-[color:var(--fg)] hover:border-[color:var(--accent)] transition">
+            <span class="text-[10px] text-[color:var(--muted)]">#${idx + 1}</span>
+            <span class="text-[color:var(--accent)] font-bold">${item}</span>
+          </span>`;
+        }).join('');
+      }
+
+      sourceBtns.forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          currentSource = btn.dataset.sourceBtn || 'range';
+          sourceBtns.forEach(function (b) {
+            if (b === btn) {
+              b.className = 'cursor-pointer rounded-xl bg-[color:var(--accent)] px-3 py-2 text-[color:var(--bg)] shadow-xs transition';
+            } else {
+              b.className = 'cursor-pointer rounded-xl px-3 py-2 text-[color:var(--muted)] hover:text-[color:var(--fg)] transition';
+            }
+          });
+
+          if (currentSource === 'range') {
+            rangeFields?.removeAttribute('hidden');
+            customFields?.setAttribute('hidden', '');
+          } else {
+            rangeFields?.setAttribute('hidden', '');
+            customFields?.removeAttribute('hidden');
+            updateCustomCount();
+          }
+          drawSample();
+        });
+      });
+
+      if (customItems) {
+        customItems.addEventListener('input', updateCustomCount);
+      }
+
+      if (loadSampleRosterBtn) {
+        loadSampleRosterBtn.addEventListener('click', function () {
+          const sampleRoster = [];
+          for (let i = 1; i <= 50; i++) {
+            sampleRoster.push(`Participant-${1000 + i}`);
+          }
+          customItems.value = sampleRoster.join('\n');
+          updateCustomCount();
+          drawSample();
+        });
       }
 
       drawBtn.addEventListener('click', drawSample);
 
-      copyBtn.addEventListener('click', () => {
-        const items = Array.from(output.querySelectorAll('span')).map(s => s.textContent.trim());
-        if (items.length === 0) return;
-        navigator.clipboard.writeText(items.join(', '));
-        const span = copyBtn.querySelector('span');
-        const orig = span.textContent;
-        span.textContent = 'Copied!';
-        setTimeout(() => span.textContent = orig, 1800);
-      });
+      if (resetBtn) {
+        resetBtn.addEventListener('click', function () {
+          popStart.value = '1';
+          popSize.value = '100';
+          sampleSize.value = '15';
+          samplingMethod.value = 'without';
+          sortOrder.value = 'asc';
+          customPrefix.value = '';
+          currentSource = 'range';
+          sourceBtns[0].click();
+          drawSample();
+        });
+      }
+
+      if (copyBtn) {
+        copyBtn.addEventListener('click', async function () {
+          if (lastDrawnItems.length === 0) return;
+          try {
+            await navigator.clipboard.writeText(lastDrawnItems.join(', '));
+            const orig = copyBtn.innerHTML;
+            copyBtn.innerHTML = '<span>✓ Copied!</span>';
+            setTimeout(function () { copyBtn.innerHTML = orig; }, 1800);
+          } catch {
+            alert('Failed to copy');
+          }
+        });
+      }
+
+      if (exportCsvBtn) {
+        exportCsvBtn.addEventListener('click', function () {
+          if (lastDrawnItems.length === 0) return;
+          const csvLines = ['Selection_Index,Sample_Unit'];
+          lastDrawnItems.forEach(function (unit, i) {
+            csvLines.push(`${i + 1},"${unit.replace(/"/g, '""')}"`);
+          });
+          const blob = new Blob([csvLines.join('\n')], { type: 'text/csv;charset=utf-8;' });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `random_sample_n${lastDrawnItems.length}.csv`;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+        });
+      }
+
+      if (exportTxtBtn) {
+        exportTxtBtn.addEventListener('click', function () {
+          if (lastDrawnItems.length === 0) return;
+          const blob = new Blob([lastDrawnItems.join('\n')], { type: 'text/plain;charset=utf-8;' });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `random_sample_n${lastDrawnItems.length}.txt`;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+        });
+      }
 
       drawSample();
     })();

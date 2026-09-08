@@ -1,10 +1,11 @@
 ---
 import SiteLayout from '../../layouts/SiteLayout.astro';
 import Icon from '../../components/Icon.astro';
+import CalculatorParameterGuide from '../../components/calculator/CalculatorParameterGuide.astro';
 import { siteName, toAbsoluteUrl, withBasePath } from '../../utils/site';
 
 const pageTitle = `Image Aspect Ratio Checker & Scaler — Simplified Ratios · ${siteName}`;
-const pageDesc = 'Calculate simplified image aspect ratio (16:9, 4:3, 1:1, 21:9) and scale pixel dimensions proportionally online. 100% private in-browser tool.';
+const pageDesc = 'Calculate simplified image aspect ratio (16:9, 4:3, 1:1, 9:16, 21:9), verify social media display presets, and scale pixel dimensions proportionally online.';
 const canonicalUrl = toAbsoluteUrl('/image-tools/image-aspect-ratio-checker/');
 
 const breadcrumbItems = [
@@ -16,7 +17,15 @@ const breadcrumbItems = [
 const schemaFaq = [
   {
     question: 'How is the simplified aspect ratio calculated?',
-    answer: 'The tool computes the Greatest Common Divisor (GCD) using the Euclidean algorithm between the width and height to reduce the ratio into simplest integers (e.g. 1920:1080 reduces to 16:9).',
+    answer: 'The tool computes the Greatest Common Divisor (GCD) using the Euclidean algorithm between width and height to reduce the ratio into the lowest integer terms (e.g. 1920:1080 divided by 120 reduces to 16:9).',
+  },
+  {
+    question: 'How does the proportional dimension scaler work?',
+    answer: 'When you lock the aspect ratio and input a new width or height, the tool calculates the corresponding dimension using the formula `Height = Width / Ratio` or `Width = Height * Ratio`, preventing visual distortion or stretching.',
+  },
+  {
+    question: 'What are standard social media aspect ratios?',
+    answer: 'Common standards include 16:9 (YouTube videos, horizontal banners), 1:1 (Instagram feed square), 4:5 (Instagram portrait posts), 9:16 (TikTok, Instagram Reels, YouTube Shorts), and 1.91:1 (Facebook and Twitter link cards).',
   },
 ];
 
@@ -82,15 +91,35 @@ const schemaGraph = [
     <header class="space-y-3">
       <div class="inline-flex items-center gap-2 rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1 text-xs font-semibold text-[color:var(--muted)]">
         <span class="inline-block h-2 w-2 rounded-full bg-emerald-500"></span>
-        <span>Euclidean GCD Ratio Engine</span>
+        <span>Euclidean GCD Ratio Engine &bull; Social Media Presets</span>
       </div>
       <h1 class="text-2xl sm:text-4xl font-extrabold tracking-tight text-[color:var(--fg)]">
         Image Aspect Ratio Checker &amp; Scaler
       </h1>
       <p class="max-w-2xl text-xs sm:text-sm text-[color:var(--muted)] leading-relaxed">
-        Check standard photographic and display aspect ratios and scale dimensions proportionally.
+        Check standard photographic, cinematic, and social media aspect ratios. Scale pixel dimensions proportionally with locked ratio, or upload any image to auto-detect its exact geometry.
       </p>
     </header>
+
+    <!-- Telemetry Bar -->
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+      <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3 text-center">
+        <p class="text-[10px] font-bold uppercase tracking-wider text-[color:var(--muted)]">Simplified Ratio</p>
+        <p id="stat-ratio" class="mt-1 font-mono text-base font-bold text-emerald-500">16:9</p>
+      </div>
+      <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3 text-center">
+        <p class="text-[10px] font-bold uppercase tracking-wider text-[color:var(--muted)]">Decimal Ratio</p>
+        <p id="stat-decimal" class="mt-1 font-mono text-base font-bold text-[color:var(--fg)]">1.78:1</p>
+      </div>
+      <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3 text-center">
+        <p class="text-[10px] font-bold uppercase tracking-wider text-[color:var(--muted)]">Orientation</p>
+        <p id="stat-orient" class="mt-1 font-mono text-base font-bold text-[color:var(--fg)]">Landscape</p>
+      </div>
+      <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3 text-center">
+        <p class="text-[10px] font-bold uppercase tracking-wider text-[color:var(--muted)]">Total Megapixels</p>
+        <p id="stat-mp" class="mt-1 font-mono text-base font-bold text-[color:var(--fg)]">2.07 MP</p>
+      </div>
+    </div>
 
     <div class="space-y-6">
       <!-- Image Upload Dropzone -->
@@ -112,7 +141,7 @@ const schemaGraph = [
             </div>
             <div class="min-w-0 space-y-0.5">
               <p id="thumb-name" class="text-xs sm:text-sm font-bold text-[color:var(--fg)] truncate">image.png</p>
-              <p id="thumb-info" class="text-[11px] text-[color:var(--muted)]">0 KB</p>
+              <p id="thumb-info" class="text-[11px] text-[color:var(--muted)] font-mono">0 KB</p>
             </div>
           </div>
           <label for="img-file" class="cursor-pointer shrink-0 rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1.5 text-xs font-semibold text-[color:var(--muted)] hover:text-[color:var(--fg)] transition">
@@ -121,39 +150,173 @@ const schemaGraph = [
         </div>
       </div>
 
-      <div class="grid gap-4 sm:grid-cols-2 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 text-xs">
-        <div>
-          <label for="dim-w" class="font-bold text-[color:var(--fg)] block mb-1">Width (px):</label>
-          <input
-            type="number"
-            id="dim-w"
-            value="1920"
-            class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-[color:var(--fg)]"
-          />
+      <!-- Dimension Inputs and Proportional Scaler -->
+      <div class="grid gap-6 lg:grid-cols-2">
+        <!-- Input Dimensions -->
+        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 space-y-4 text-xs">
+          <p class="font-bold uppercase tracking-wider text-[color:var(--muted)] text-[10px]">Current Dimensions</p>
+          <div class="grid gap-4 sm:grid-cols-2">
+            <div>
+              <label for="dim-w" class="font-bold text-[color:var(--fg)] block mb-1">Width (px):</label>
+              <input
+                type="number"
+                id="dim-w"
+                value="1920"
+                min="1"
+                class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-[color:var(--fg)] font-semibold"
+              />
+            </div>
+            <div>
+              <label for="dim-h" class="font-bold text-[color:var(--fg)] block mb-1">Height (px):</label>
+              <input
+                type="number"
+                id="dim-h"
+                value="1080"
+                min="1"
+                class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-[color:var(--fg)] font-semibold"
+              />
+            </div>
+          </div>
+
+          <!-- Quick Presets -->
+          <div class="pt-2 border-t border-[color:var(--border)] space-y-2">
+            <span class="text-[11px] font-bold text-[color:var(--muted)]">Common Resolution Presets:</span>
+            <div class="flex flex-wrap gap-1.5">
+              <button type="button" data-res="1920,1080" class="rounded-lg border border-[color:var(--border)] bg-[color:var(--bg)] px-2.5 py-1 text-[11px] hover:border-[color:var(--border-strong)]">1920 &times; 1080 (16:9)</button>
+              <button type="button" data-res="1080,1080" class="rounded-lg border border-[color:var(--border)] bg-[color:var(--bg)] px-2.5 py-1 text-[11px] hover:border-[color:var(--border-strong)]">1080 &times; 1080 (1:1)</button>
+              <button type="button" data-res="1080,1350" class="rounded-lg border border-[color:var(--border)] bg-[color:var(--bg)] px-2.5 py-1 text-[11px] hover:border-[color:var(--border-strong)]">1080 &times; 1350 (4:5)</button>
+              <button type="button" data-res="1080,1920" class="rounded-lg border border-[color:var(--border)] bg-[color:var(--bg)] px-2.5 py-1 text-[11px] hover:border-[color:var(--border-strong)]">1080 &times; 1920 (9:16)</button>
+              <button type="button" data-res="3840,2160" class="rounded-lg border border-[color:var(--border)] bg-[color:var(--bg)] px-2.5 py-1 text-[11px] hover:border-[color:var(--border-strong)]">3840 &times; 2160 (4K)</button>
+            </div>
+          </div>
         </div>
-        <div>
-          <label for="dim-h" class="font-bold text-[color:var(--fg)] block mb-1">Height (px):</label>
-          <input
-            type="number"
-            id="dim-h"
-            value="1080"
-            class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-[color:var(--fg)]"
-          />
+
+        <!-- Proportional Scaler -->
+        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 space-y-4 text-xs">
+          <div class="flex items-center justify-between">
+            <p class="font-bold uppercase tracking-wider text-[color:var(--muted)] text-[10px]">Proportional Dimension Scaler</p>
+            <span class="rounded bg-emerald-500/10 text-emerald-500 px-2 py-0.5 font-bold font-mono text-[10px]">Ratio Locked</span>
+          </div>
+
+          <div class="grid gap-4 sm:grid-cols-2">
+            <div>
+              <label for="scale-w" class="font-bold text-[color:var(--fg)] block mb-1">New Target Width (px):</label>
+              <input
+                type="number"
+                id="scale-w"
+                placeholder="e.g. 1280"
+                class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-[color:var(--fg)]"
+              />
+            </div>
+            <div>
+              <label for="scale-h" class="font-bold text-[color:var(--fg)] block mb-1">Scaled Result Height (px):</label>
+              <input
+                type="number"
+                id="scale-h"
+                placeholder="Calculated automatically"
+                class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] px-3 py-2 font-mono text-emerald-500 font-bold"
+              />
+            </div>
+          </div>
+
+          <p class="text-[11px] text-[color:var(--muted)] leading-relaxed">
+            Enter any target width to calculate the exact proportional height (or vice versa) without distorting the image aspect ratio.
+          </p>
         </div>
       </div>
 
-      <!-- Ratio Results -->
-      <div class="grid gap-4 sm:grid-cols-2">
-        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 space-y-2 text-center">
-          <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Simplified Ratio</span>
-          <p id="res-simple" class="text-4xl font-extrabold text-emerald-500">16:9</p>
-        </div>
-        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 space-y-2 text-center">
-          <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Decimal Ratio</span>
-          <p id="res-dec" class="text-4xl font-extrabold text-[color:var(--fg)]">1.78:1</p>
+      <!-- Social Media & Standard Aspect Ratio Matrix -->
+      <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 sm:p-6 space-y-4">
+        <h2 class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Platform Match &amp; Standard Aspect Ratio Standards</h2>
+        
+        <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4 text-xs">
+          <div id="match-16-9" class="rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] p-3.5 space-y-1">
+            <div class="flex items-center justify-between">
+              <span class="font-bold text-[color:var(--fg)]">16:9 Widescreen</span>
+              <span class="status-badge text-[10px] font-bold">Standard</span>
+            </div>
+            <p class="text-[11px] text-[color:var(--muted)]">YouTube videos, TV displays, desktop monitors, presentation slides.</p>
+          </div>
+
+          <div id="match-1-1" class="rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] p-3.5 space-y-1">
+            <div class="flex items-center justify-between">
+              <span class="font-bold text-[color:var(--fg)]">1:1 Square</span>
+              <span class="status-badge text-[10px] font-bold">Standard</span>
+            </div>
+            <p class="text-[11px] text-[color:var(--muted)]">Instagram grid posts, profile avatars, eCommerce product listings.</p>
+          </div>
+
+          <div id="match-4-5" class="rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] p-3.5 space-y-1">
+            <div class="flex items-center justify-between">
+              <span class="font-bold text-[color:var(--fg)]">4:5 Social Portrait</span>
+              <span class="status-badge text-[10px] font-bold">Standard</span>
+            </div>
+            <p class="text-[11px] text-[color:var(--muted)]">Instagram feed portrait photos (maximum vertical screen real-estate).</p>
+          </div>
+
+          <div id="match-9-16" class="rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] p-3.5 space-y-1">
+            <div class="flex items-center justify-between">
+              <span class="font-bold text-[color:var(--fg)]">9:16 Mobile Vertical</span>
+              <span class="status-badge text-[10px] font-bold">Standard</span>
+            </div>
+            <p class="text-[11px] text-[color:var(--muted)]">TikTok videos, Instagram Stories &amp; Reels, YouTube Shorts.</p>
+          </div>
         </div>
       </div>
     </div>
+
+    <!-- Parameter Guide & Worked Example -->
+    <CalculatorParameterGuide
+      title="Aspect Ratio Mathematics & Euclidean Algorithm Reference"
+      description="Mathematical foundations of aspect ratios, Euclidean GCD fraction reduction, and pixel geometry scaling."
+      parameters={[
+        {
+          name: "Aspect Ratio",
+          type: "Ratio (W:H)",
+          defaultValue: "16:9",
+          description: "The proportional relationship between image width and height, represented as two integers separated by a colon.",
+        },
+        {
+          name: "Euclidean GCD Algorithm",
+          type: "Number Theory",
+          defaultValue: "gcd(w, h)",
+          description: "Calculates the Greatest Common Divisor by repeatedly taking remainders until 0 is reached, reducing pixel counts to lowest terms.",
+        },
+        {
+          name: "Decimal Aspect Ratio",
+          type: "Float",
+          defaultValue: "1.78",
+          description: "Width divided by height, representing width relative to a unit height of 1.0 (e.g. 1.78:1 for 16:9; 2.39:1 for Anamorphic Cinema).",
+        },
+      ]}
+      workedExample={{
+        title: "Reducing a 2560x1440 QHD Monitor Resolution to Its Lowest Terms",
+        description: "Apply the Euclidean algorithm to find the simplified aspect ratio of a Quad HD screen.",
+        formula: "GCD(2560, 1440) -> 2560 / GCD : 1440 / GCD",
+        steps: [
+          {
+            step: "Apply Euclidean Division",
+            calculation: "2560 % 1440 = 1120; 1440 % 1120 = 320; 1120 % 320 = 160; 320 % 160 = 0.",
+            result: "Greatest Common Divisor (GCD) = 160",
+          },
+          {
+            step: "Divide Dimensions by GCD",
+            calculation: "2560 / 160 = 16; 1440 / 160 = 9.",
+            result: "Simplified ratio: 16:9",
+          },
+          {
+            step: "Compute Decimal Ratio",
+            calculation: "2560 / 1440 = 1.7777... -> 1.78:1",
+            result: "Decimal ratio: 1.78:1",
+          },
+          {
+            step: "Determine Matching Preset",
+            calculation: "16:9 matches YouTube, standard widescreen TV, and desktop gaming monitors.",
+            result: "Matched Widescreen Standard",
+          },
+        ],
+      }}
+    />
 
     <!-- FAQs -->
     <section class="space-y-4">
@@ -163,7 +326,7 @@ const schemaGraph = [
           <details class="group rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
             <summary class="cursor-pointer list-none font-semibold text-sm sm:text-base text-[color:var(--fg)] flex items-center justify-between gap-4">
               <span>{faq.question}</span>
-              <span class="text-xs text-[color:var(--muted)] group-open:rotate-180 transition-transform">▼</span>
+              <span class="text-xs text-[color:var(--muted)] group-open:rotate-180 transition-transform">&#9660;</span>
             </summary>
             <p class="mt-3 text-xs sm:text-sm leading-relaxed text-[color:var(--muted)]">
               {faq.answer}
@@ -185,53 +348,155 @@ const schemaGraph = [
       const thumbPreview = root.querySelector('#thumb-preview');
       const thumbName = root.querySelector('#thumb-name');
       const thumbInfo = root.querySelector('#thumb-info');
+
       const dimW = root.querySelector('#dim-w');
       const dimH = root.querySelector('#dim-h');
-      const resSimple = root.querySelector('#res-simple');
-      const resDec = root.querySelector('#res-dec');
+      const scaleW = root.querySelector('#scale-w');
+      const scaleH = root.querySelector('#scale-h');
 
-      function formatBytes(bytes) {
-        if (bytes < 1024) return bytes + ' B';
-        if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
-        return (bytes / 1048576).toFixed(2) + ' MB';
+      const statRatio = root.querySelector('#stat-ratio');
+      const statDecimal = root.querySelector('#stat-decimal');
+      const statOrient = root.querySelector('#stat-orient');
+      const statMp = root.querySelector('#stat-mp');
+
+      const match16_9 = root.querySelector('#match-16-9');
+      const match1_1 = root.querySelector('#match-1-1');
+      const match4_5 = root.querySelector('#match-4-5');
+      const match9_16 = root.querySelector('#match-9-16');
+
+      function gcd(a, b) {
+        return b === 0 ? a : gcd(b, a % b);
       }
 
-      function gcd(a, b) { return b === 0 ? a : gcd(b, a % b); }
+      function update() {
+        const w = parseInt(dimW.value, 10) || 0;
+        const h = parseInt(dimH.value, 10) || 0;
 
-      function updateRatio() {
+        if (w <= 0 || h <= 0) {
+          statRatio.textContent = '-';
+          statDecimal.textContent = '-';
+          statOrient.textContent = '-';
+          statMp.textContent = '0 MP';
+          return;
+        }
+
+        const divisor = gcd(w, h);
+        const rw = w / divisor;
+        const rh = h / divisor;
+
+        // Check common approximations (e.g. 1920x1080 vs 1366x768)
+        let ratioDisplay = `${rw}:${rh}`;
+        const dec = (w / h);
+        if (Math.abs(dec - 16 / 9) < 0.01) ratioDisplay = '16:9';
+        else if (Math.abs(dec - 4 / 3) < 0.01) ratioDisplay = '4:3';
+        else if (Math.abs(dec - 1) < 0.001) ratioDisplay = '1:1';
+        else if (Math.abs(dec - 4 / 5) < 0.01) ratioDisplay = '4:5';
+        else if (Math.abs(dec - 9 / 16) < 0.01) ratioDisplay = '9:16';
+        else if (Math.abs(dec - 21 / 9) < 0.02) ratioDisplay = '21:9';
+
+        statRatio.textContent = ratioDisplay;
+        statDecimal.textContent = `${dec.toFixed(2)}:1`;
+
+        if (w > h) statOrient.textContent = 'Landscape';
+        else if (h > w) statOrient.textContent = 'Portrait';
+        else statOrient.textContent = 'Square';
+
+        const mp = (w * h) / 1000000;
+        statMp.textContent = `${mp.toFixed(2)} MP`;
+
+        // Highlight matching platform card
+        [match16_9, match1_1, match4_5, match9_16].forEach(card => {
+          card.classList.remove('border-emerald-500', 'bg-emerald-500/10');
+          const badge = card.querySelector('.status-badge');
+          if (badge) {
+            badge.className = 'status-badge text-[10px] font-bold text-[color:var(--muted)]';
+            badge.textContent = 'Standard';
+          }
+        });
+
+        function markActive(card) {
+          card.classList.add('border-emerald-500', 'bg-emerald-500/10');
+          const badge = card.querySelector('.status-badge');
+          if (badge) {
+            badge.className = 'status-badge text-[10px] font-bold text-emerald-500';
+            badge.textContent = 'Active Match';
+          }
+        }
+
+        if (ratioDisplay === '16:9') markActive(match16_9);
+        else if (ratioDisplay === '1:1') markActive(match1_1);
+        else if (ratioDisplay === '4:5') markActive(match4_5);
+        else if (ratioDisplay === '9:16') markActive(match9_16);
+
+        // Update proportional scale if target width present
+        if (scaleW.value) {
+          const sw = parseFloat(scaleW.value);
+          if (!isNaN(sw) && sw > 0) {
+            scaleH.value = Math.round(sw / dec);
+          }
+        }
+      }
+
+      scaleW.addEventListener('input', () => {
         const w = parseInt(dimW.value, 10) || 1;
         const h = parseInt(dimH.value, 10) || 1;
+        const sw = parseFloat(scaleW.value);
+        if (!isNaN(sw) && sw > 0) {
+          scaleH.value = Math.round(sw * (h / w));
+        } else {
+          scaleH.value = '';
+        }
+      });
 
-        const g = gcd(w, h);
-        resSimple.textContent = `${w / g}:${h / g}`;
-        resDec.textContent = `${(w / h).toFixed(2)}:1`;
-      }
+      scaleH.addEventListener('input', () => {
+        const w = parseInt(dimW.value, 10) || 1;
+        const h = parseInt(dimH.value, 10) || 1;
+        const sh = parseFloat(scaleH.value);
+        if (!isNaN(sh) && sh > 0) {
+          scaleW.value = Math.round(sh * (w / h));
+        } else {
+          scaleW.value = '';
+        }
+      });
 
-      fileIn?.addEventListener('change', (e) => {
+      dimW.addEventListener('input', update);
+      dimH.addEventListener('input', update);
+
+      root.querySelectorAll('[data-res]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const [w, h] = btn.dataset.res.split(',').map(Number);
+          dimW.value = w;
+          dimH.value = h;
+          update();
+        });
+      });
+
+      fileIn.addEventListener('change', (e) => {
         const file = e.target.files[0];
         if (!file) return;
 
-        const url = URL.createObjectURL(file);
-        thumbPreview.src = url;
-        thumbName.textContent = file.name;
-        thumbInfo.textContent = `${formatBytes(file.size)} • ${file.type || 'image'}`;
+        const reader = new FileReader();
+        reader.onload = (loadEvt) => {
+          const img = new Image();
+          img.onload = () => {
+            thumbPreview.src = img.src;
+            thumbName.textContent = file.name;
+            thumbInfo.textContent = `${(file.size / 1024).toFixed(1)} KB &bull; ${img.naturalWidth} &times; ${img.naturalHeight} px`;
 
-        uploadPrompt.classList.add('hidden');
-        uploadPreviewBox.classList.remove('hidden');
+            dimW.value = img.naturalWidth;
+            dimH.value = img.naturalHeight;
 
-        const img = new Image();
-        img.onload = () => {
-          dimW.value = img.naturalWidth;
-          dimH.value = img.naturalHeight;
-          thumbInfo.textContent = `${img.naturalWidth}×${img.naturalHeight} px • ${formatBytes(file.size)}`;
-          updateRatio();
+            uploadPrompt.classList.add('hidden');
+            uploadPreviewBox.classList.remove('hidden');
+
+            update();
+          };
+          img.src = loadEvt.target.result;
         };
-        img.src = url;
+        reader.readAsDataURL(file);
       });
 
-      dimW.addEventListener('input', updateRatio);
-      dimH.addEventListener('input', updateRatio);
-      updateRatio();
+      update();
     })();
   </script>
 </SiteLayout>

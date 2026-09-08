@@ -1,10 +1,12 @@
 ---
 import SiteLayout from '../../layouts/SiteLayout.astro';
 import Icon from '../../components/Icon.astro';
+import CalculatorParameterGuide from '../../components/calculator/CalculatorParameterGuide.astro';
+import type { CalculatorParameterInfo } from '../../types/calculator';
 import { siteName, toAbsoluteUrl, withBasePath } from '../../utils/site';
 
-const pageTitle = `Participant ID Generator — Anonymized Research Subject Codes · ${siteName}`;
-const pageDesc = 'Generate anonymized participant codes (PID-XXXX) and research subject ID lists for clinical trials, psychology studies, and surveys. 100% private in-browser tool.';
+const pageTitle = `Participant ID Generator — Clinical Trial Codes & Block Randomizer · ${siteName}`;
+const pageDesc = 'Generate anonymized participant codes (PID-XXXX) and randomized study arm assignments (Control vs Treatment) with permuted block randomization. 100% private in-browser tool.';
 const canonicalUrl = toAbsoluteUrl('/research-tools/participant-id-generator/');
 
 const breadcrumbItems = [
@@ -13,10 +15,49 @@ const breadcrumbItems = [
   { label: 'Participant ID Generator' },
 ];
 
+const parameterGuideData: CalculatorParameterInfo[] = [
+  {
+    name: 'Prefix Identifier & Site Code',
+    description: 'Custom alphanumeric string placed at the start of each subject ID (e.g. "PID-", "SITE01-", "ONC-"). Helps differentiate multi-center trial sites.',
+    type: 'String Prefix',
+    defaultValue: 'PID-',
+    whyItMatters: 'Prevents collision across multiple investigative sites, trial cohorts, and study phases.',
+  },
+  {
+    name: 'Study Arm & Permuted Block Randomization',
+    description: 'The experimental group allocation (e.g. Control vs Treatment). Permuted block randomization uses small balanced blocks (sizes of 2, 4, or 6) to prevent sample size imbalance over time.',
+    type: 'Experimental Allocation',
+    defaultValue: '2 Arms: Control (50%) vs Treatment (50%)',
+    whyItMatters: 'Guarantees equal cohort sizes throughout clinical enrollment, preventing selection and historical bias.',
+  },
+  {
+    name: 'Zero-Padded Digit Length',
+    description: 'The fixed length of numerical subject counters (e.g. 3 digits: "001" to "999"; 4 digits: "0001" to "9999").',
+    type: 'Padding (3 to 6 digits)',
+    defaultValue: '4 digits (0001)',
+    whyItMatters: 'Ensures uniform record width for consistent sorting in electronic data capture (EDC) systems like REDCap.',
+  },
+  {
+    name: 'Transcription Check Digits',
+    description: 'An optional checksum character appended to the end of each code to detect manual data entry and transposition typos.',
+    type: 'Modulo Checksum',
+    defaultValue: 'Optional Check Character',
+    whyItMatters: 'Detects clerical transcription errors before data enters statistical analysis pipelines.',
+  },
+];
+
 const schemaFaq = [
   {
     question: 'Why are randomized Participant IDs required in research?',
-    answer: 'Anonymized identifiers prevent researcher bias, comply with institutional ethics (IRB/HIPAA/GDPR), and ensure subject confidentiality by decoupling personal data from study measurements.',
+    answer: 'Anonymized identifiers prevent researcher bias, comply with institutional ethics (IRB, HIPAA, GDPR), and ensure subject confidentiality by decoupling personal medical records from experimental measurements.',
+  },
+  {
+    question: 'What is permuted block randomization in clinical trials?',
+    answer: 'Permuted block randomization divides participants into small blocks (e.g. block size 4 with 2 Control and 2 Treatment). The sequence within each block is randomly permuted, ensuring equal group allocation across the entire study timeline.',
+  },
+  {
+    question: 'Is this participant ID generator HIPAA/GDPR compliant?',
+    answer: 'Yes, 100% compliant. All random generation and table formatting execute purely in your local browser sandbox via Web Cryptography CSPRNG. No subject names, IDs, or trial configurations are ever transmitted to external servers.',
   },
 ];
 
@@ -80,79 +121,172 @@ const schemaGraph = [
     </nav>
 
     <header class="space-y-3">
-      <div class="inline-flex items-center gap-2 rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1 text-xs font-semibold text-[color:var(--muted)]">
+      <div class="inline-flex items-center gap-2 rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3.5 py-1 text-xs font-semibold text-[color:var(--muted)]">
         <span class="inline-block h-2 w-2 rounded-full bg-emerald-500"></span>
-        <span>IRB-Compliant Subject Anonymizer</span>
+        <span>IRB &amp; Clinical Trial Anonymization Suite</span>
       </div>
       <h1 class="text-2xl sm:text-4xl font-extrabold tracking-tight text-[color:var(--fg)]">
-        Participant ID Generator
+        Participant ID Generator &amp; Study Arm Randomizer
       </h1>
-      <p class="max-w-2xl text-xs sm:text-sm text-[color:var(--muted)] leading-relaxed">
-        Generate custom, anonymized subject codes and cohort identifiers in bulk for clinical trials and surveys.
+      <p class="max-w-3xl text-xs sm:text-sm text-[color:var(--muted)] leading-relaxed">
+        Generate custom, anonymized subject identification codes and balanced study arm allocations (Control vs Treatment) for clinical trials, psychological experiments, and longitudinal surveys. 100% private in-browser generation.
       </p>
     </header>
 
     <div class="space-y-6">
-      <div class="grid gap-4 sm:grid-cols-3 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 text-xs">
+      <!-- Configuration Controls -->
+      <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-5 sm:p-6 text-xs">
         <div>
-          <label for="pid-prefix" class="font-bold text-[color:var(--fg)] block mb-1">Prefix Code:</label>
+          <label for="pid-prefix" class="font-bold text-[color:var(--fg)] block mb-1">Prefix String:</label>
           <input
             type="text"
             id="pid-prefix"
+            class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)]"
             value="PID-"
-            class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-[color:var(--fg)]"
+            placeholder="e.g. PID-, SUBJ-, SITE1-"
           />
         </div>
+
         <div>
-          <label for="pid-count" class="font-bold text-[color:var(--fg)] block mb-1">Total Subjects:</label>
+          <label for="pid-count" class="font-bold text-[color:var(--fg)] block mb-1">Participant Count:</label>
           <input
             type="number"
             id="pid-count"
             min="1"
-            max="1000"
-            value="25"
-            class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-[color:var(--fg)]"
+            max="2000"
+            value="24"
+            class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)]"
           />
         </div>
+
+        <div>
+          <label for="pid-start" class="font-bold text-[color:var(--fg)] block mb-1">Starting Number:</label>
+          <input
+            type="number"
+            id="pid-start"
+            min="1"
+            value="1"
+            class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)]"
+          />
+        </div>
+
         <div>
           <label for="pid-digits" class="font-bold text-[color:var(--fg)] block mb-1">Digit Padding:</label>
-          <select id="pid-digits" class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-[color:var(--fg)]">
-            <option value="4">4 Digits (0001)</option>
+          <select id="pid-digits" class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)]">
             <option value="3">3 Digits (001)</option>
+            <option value="4" selected>4 Digits (0001)</option>
             <option value="5">5 Digits (00001)</option>
-            <option value="rand">Alphanumeric Random (e.g. A9X2)</option>
+            <option value="6">6 Digits (000001)</option>
           </select>
         </div>
       </div>
 
-      <div class="space-y-2">
-        <div class="flex items-center justify-between">
-          <button
-            type="button"
-            data-gen-btn
-            class="rounded-xl bg-[color:var(--fg)] px-5 py-2.5 text-xs font-bold text-[color:var(--bg)] shadow-xs transition hover:opacity-90"
-          >
-            Generate Participant Codes
-          </button>
+      <!-- Study Arm Allocation Settings -->
+      <div class="grid gap-4 sm:grid-cols-3 rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 sm:p-6 text-xs">
+        <div>
+          <label for="arm-type" class="font-bold text-[color:var(--fg)] block mb-1">Study Arm Allocation:</label>
+          <select id="arm-type" class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)]">
+            <option value="none">None (IDs Only — Single Cohort)</option>
+            <option value="2arms" selected>2 Arms: Control (50%) vs Treatment (50%)</option>
+            <option value="3arms">3 Arms: Control (33%) vs Treatment A (33%) vs Treatment B (33%)</option>
+            <option value="4arms">4 Arms: 2×2 Factorial (Control, Trt A, Trt B, Combined)</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="rand-method" class="font-bold text-[color:var(--fg)] block mb-1">Randomization Engine:</label>
+          <select id="rand-method" class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)]">
+            <option value="block4" selected>Permuted Block Randomization (Block Size 4)</option>
+            <option value="block6">Permuted Block Randomization (Block Size 6)</option>
+            <option value="simple">Simple Random Assignment (CSPRNG Coin-Flip)</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="check-digit-toggle" class="font-bold text-[color:var(--fg)] block mb-1">Transcription Check Digit:</label>
+          <select id="check-digit-toggle" class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)]">
+            <option value="none">No Check Digit</option>
+            <option value="mod7" selected>Mod-7 Verification Character (A–G)</option>
+            <option value="luhn">Luhn Checksum Digit (0–9)</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Results & Roster Section -->
+      <div class="space-y-4">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <h2 class="text-lg font-bold text-[color:var(--fg)]">Generated Clinical Trial Roster</h2>
+            <p class="text-xs text-[color:var(--muted)]" id="roster-summary">24 Subjects Generated &bull; 12 Control / 12 Treatment</p>
+          </div>
           <div class="flex items-center gap-2">
-            <button type="button" data-copy-btn class="inline-flex items-center gap-1 text-xs font-bold text-[color:var(--fg)] hover:underline">
-              <Icon name="copy" class="w-3.5 h-3.5" />
-              <span>Copy All</span>
+            <button
+              type="button"
+              id="copy-roster-btn"
+              class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] px-3.5 py-1.5 text-xs font-bold text-[color:var(--fg)] hover:border-emerald-500 transition cursor-pointer"
+            >
+              Copy Roster (CSV)
             </button>
-            <span class="text-[color:var(--border)]">|</span>
-            <button type="button" data-dl-btn class="text-xs font-bold text-[color:var(--fg)] hover:underline">Download CSV</button>
+            <button
+              type="button"
+              id="dl-roster-btn"
+              class="rounded-xl bg-[color:var(--fg)] px-3.5 py-1.5 text-xs font-bold text-[color:var(--bg)] hover:opacity-90 transition cursor-pointer"
+            >
+              Download CSV
+            </button>
           </div>
         </div>
 
-        <textarea
-          id="pid-out"
-          rows="12"
-          readonly
-          class="w-full font-mono text-xs leading-relaxed rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-4 text-[color:var(--fg)] focus:outline-hidden"
-          placeholder="Generated subject IDs will appear here..."
-        ></textarea>
+        <div class="overflow-x-auto rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)]">
+          <table class="w-full text-left text-xs">
+            <thead class="bg-[color:var(--surface-strong)] text-[color:var(--muted)] border-b border-[color:var(--border)]">
+              <tr>
+                <th class="p-3 font-bold w-12 text-center">#</th>
+                <th class="p-3 font-bold">Participant ID</th>
+                <th class="p-3 font-bold">Assigned Study Arm</th>
+                <th class="p-3 font-bold text-center">Block ID</th>
+                <th class="p-3 font-bold text-center">Enrollment Status</th>
+              </tr>
+            </thead>
+            <tbody id="roster-tbody" class="divide-y divide-[color:var(--border)] font-mono text-[color:var(--fg)]">
+              <!-- Dynamically rendered by JavaScript -->
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
+
+    <!-- Parameter Guide Component -->
+    <CalculatorParameterGuide
+      parameters={parameterGuideData}
+      workedExample={{
+        title: 'Clinical Trial Subject Randomization Scenario',
+        description: 'Generating 24 anonymized IDs with balanced permuted block randomization for a double-blind trial.',
+        formula: 'ID = Prefix + ZeroPaddedIndex + CheckDigit | Allocation = Random Permutation within Blocks of 4',
+        steps: [
+          {
+            step: 'Configure Prefix & Digits',
+            calculation: 'Prefix "PID-" with 4 digits starting from 0001',
+            result: 'Initial format: PID-0001',
+          },
+          {
+            step: 'Apply Mod-7 Checksum',
+            calculation: '1 mod 7 = 1 (maps to verification letter B)',
+            result: 'Full ID: PID-0001-B',
+          },
+          {
+            step: 'Generate Permuted Blocks',
+            calculation: 'Block 1: [Control, Treatment, Control, Treatment]',
+            result: 'Strict balance maintained after every 4th participant',
+          },
+          {
+            step: 'Export Trial Roster',
+            calculation: 'Compile CSV with subject ID and assigned treatment arm',
+            result: 'REDCap and HIPAA-compliant participant manifest ready',
+          },
+        ],
+      }}
+    />
 
     <!-- FAQs -->
     <section class="space-y-4">
@@ -162,7 +296,7 @@ const schemaGraph = [
           <details class="group rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
             <summary class="cursor-pointer list-none font-semibold text-sm sm:text-base text-[color:var(--fg)] flex items-center justify-between gap-4">
               <span>{faq.question}</span>
-              <span class="text-xs text-[color:var(--muted)] group-open:rotate-180 transition-transform">▼</span>
+              <span class="text-xs text-[color:var(--muted)] group-open:rotate-180 transition-transform">&blacktriangledown;</span>
             </summary>
             <p class="mt-3 text-xs sm:text-sm leading-relaxed text-[color:var(--muted)]">
               {faq.answer}
@@ -178,64 +312,199 @@ const schemaGraph = [
       const root = document.querySelector('[data-pid-app]');
       if (!root) return;
 
-      const prefix = root.querySelector('#pid-prefix');
-      const count = root.querySelector('#pid-count');
-      const digits = root.querySelector('#pid-digits');
-      const genBtn = root.querySelector('[data-gen-btn]');
-      const output = root.querySelector('#pid-out');
-      const copyBtn = root.querySelector('[data-copy-btn]');
-      const dlBtn = root.querySelector('[data-dl-btn]');
+      const prefixInput = root.querySelector('#pid-prefix');
+      const countInput = root.querySelector('#pid-count');
+      const startInput = root.querySelector('#pid-start');
+      const digitsSelect = root.querySelector('#pid-digits');
+      const armSelect = root.querySelector('#arm-type');
+      const randSelect = root.querySelector('#rand-method');
+      const checkSelect = root.querySelector('#check-digit-toggle');
 
-      function getRandomHex(len = 4) {
-        const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-        let res = '';
-        for (let i = 0; i < len; i++) {
-          res += chars[Math.floor(Math.random() * chars.length)];
+      const rosterTbody = root.querySelector('#roster-tbody');
+      const rosterSummary = root.querySelector('#roster-summary');
+      const copyBtn = root.querySelector('#copy-roster-btn');
+      const dlBtn = root.querySelector('#dl-roster-btn');
+
+      let currentRoster = [];
+
+      function shuffle(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+          const randBuf = new Uint32Array(1);
+          crypto.getRandomValues(randBuf);
+          const j = randBuf[0] % (i + 1);
+          [array[i], array[j]] = [array[j], array[i]];
         }
-        return res;
+        return array;
       }
 
-      function generatePids() {
-        const p = prefix.value.trim();
-        const n = Math.min(1000, Math.max(1, parseInt(count.value, 10) || 25));
-        const mode = digits.value;
+      function computeMod7(num) {
+        const letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G'];
+        return letters[num % 7];
+      }
 
-        const list = ['Participant_ID'];
-        for (let i = 1; i <= n; i++) {
-          if (mode === 'rand') {
-            list.push(`${p}${getRandomHex(4)}`);
+      function computeLuhn(num) {
+        let sum = 0;
+        let alt = true;
+        const str = String(num);
+        for (let i = str.length - 1; i >= 0; i--) {
+          let n = parseInt(str[i], 10);
+          if (alt) {
+            n *= 2;
+            if (n > 9) n = (n % 10) + 1;
+          }
+          sum += n;
+          alt = !alt;
+        }
+        return (10 - (sum % 10)) % 10;
+      }
+
+      function generate() {
+        const prefix = prefixInput.value.trim();
+        const count = Math.max(1, Math.min(2000, parseInt(countInput.value, 10) || 24));
+        const start = Math.max(1, parseInt(startInput.value, 10) || 1);
+        const digits = parseInt(digitsSelect.value, 10) || 4;
+        const armType = armSelect.value;
+        const randMethod = randSelect.value;
+        const checkType = checkSelect.value;
+
+        // Determine Arms
+        let arms = [];
+        if (armType === '2arms') arms = ['Control', 'Treatment'];
+        else if (armType === '3arms') arms = ['Control', 'Treatment A', 'Treatment B'];
+        else if (armType === '4arms') arms = ['Control', 'Treatment A', 'Treatment B', 'Combined'];
+
+        // Build Arm Allocations
+        const allocatedArms = [];
+        const allocatedBlocks = [];
+
+        if (arms.length > 0) {
+          if (randMethod === 'simple') {
+            for (let i = 0; i < count; i++) {
+              const randBuf = new Uint32Array(1);
+              crypto.getRandomValues(randBuf);
+              allocatedArms.push(arms[randBuf[0] % arms.length]);
+              allocatedBlocks.push('-');
+            }
           } else {
-            const padLen = parseInt(mode, 10);
-            list.push(`${p}${String(i).padStart(padLen, '0')}`);
+            // Block Randomization
+            const blockSize = randMethod === 'block6' ? 6 : 4;
+            const blocksNeeded = Math.ceil(count / blockSize);
+            let bCounter = 1;
+
+            for (let b = 0; b < blocksNeeded; b++) {
+              let blockPool = [];
+              if (arms.length === 2) {
+                if (blockSize === 4) blockPool = ['Control', 'Control', 'Treatment', 'Treatment'];
+                else blockPool = ['Control', 'Control', 'Control', 'Treatment', 'Treatment', 'Treatment'];
+              } else if (arms.length === 3) {
+                blockPool = ['Control', 'Treatment A', 'Treatment B', 'Control', 'Treatment A', 'Treatment B'];
+              } else if (arms.length === 4) {
+                blockPool = ['Control', 'Treatment A', 'Treatment B', 'Combined'];
+              }
+              shuffle(blockPool);
+
+              for (let k = 0; k < blockPool.length; k++) {
+                if (allocatedArms.length < count) {
+                  allocatedArms.push(blockPool[k]);
+                  allocatedBlocks.push(`Block ${bCounter}`);
+                }
+              }
+              bCounter++;
+            }
           }
         }
 
-        output.value = list.join('\n');
+        // Generate Records
+        const roster = [];
+        const armCounts = {};
+
+        for (let i = 0; i < count; i++) {
+          const num = start + i;
+          const padded = String(num).padStart(digits, '0');
+
+          let checkSuffix = '';
+          if (checkType === 'mod7') checkSuffix = `-${computeMod7(num)}`;
+          else if (checkType === 'luhn') checkSuffix = `-${computeLuhn(num)}`;
+
+          const fullId = `${prefix}${padded}${checkSuffix}`;
+          const arm = allocatedArms[i] || 'Single Cohort';
+          const block = allocatedBlocks[i] || '-';
+
+          armCounts[arm] = (armCounts[arm] || 0) + 1;
+
+          roster.push({
+            index: i + 1,
+            id: fullId,
+            arm: arm,
+            block: block,
+            status: 'Ready / Pending'
+          });
+        }
+
+        currentRoster = roster;
+
+        // Render Summary
+        const armSummaryStr = Object.entries(armCounts)
+          .map(([k, v]) => `${v} ${k}`)
+          .join(' / ');
+        rosterSummary.textContent = `${count} Subjects Generated • ${armSummaryStr}`;
+
+        // Render Table
+        rosterTbody.innerHTML = roster.map(r => {
+          let armBadge = 'bg-[color:var(--surface-strong)] text-[color:var(--muted)] border-[color:var(--border)]';
+          if (r.arm === 'Control') armBadge = 'bg-blue-500/10 text-blue-400 border-blue-500/30';
+          else if (r.arm.includes('Treatment')) armBadge = 'bg-cyan-500/10 text-cyan-400 border-emerald-500/30';
+          else if (r.arm.includes('Combined')) armBadge = 'bg-purple-500/10 text-purple-400 border-purple-500/30';
+
+          return `
+            <tr class="hover:bg-[color:var(--surface-strong)] transition">
+              <td class="p-3 text-center text-[color:var(--muted)]">${r.index}</td>
+              <td class="p-3 font-bold text-[color:var(--fg)]">${r.id}</td>
+              <td class="p-3">
+                <span class="inline-block px-2.5 py-0.5 rounded-full text-[11px] font-sans font-bold border ${armBadge}">
+                  ${r.arm}
+                </span>
+              </td>
+              <td class="p-3 text-center text-[color:var(--muted)]">${r.block}</td>
+              <td class="p-3 text-center text-xs font-sans text-cyan-500 dark:text-cyan-400 font-semibold">${r.status}</td>
+            </tr>
+          `;
+        }).join('');
       }
 
-      genBtn.addEventListener('click', generatePids);
+      function buildCsv() {
+        const header = ['SubjectNumber', 'ParticipantID', 'StudyArm', 'BlockNumber', 'Status'].join(',');
+        const rows = currentRoster.map(r => [
+          r.index,
+          `"${r.id}"`,
+          `"${r.arm}"`,
+          `"${r.block}"`,
+          `"${r.status}"`
+        ].join(','));
+        return [header, ...rows].join('\n');
+      }
 
-      copyBtn.addEventListener('click', () => {
-        if (!output.value) return;
-        navigator.clipboard.writeText(output.value);
-        const span = copyBtn.querySelector('span');
-        const orig = span.textContent;
-        span.textContent = 'Copied!';
-        setTimeout(() => span.textContent = orig, 1800);
+      copyBtn?.addEventListener('click', () => {
+        navigator.clipboard.writeText(buildCsv()).then(() => {
+          const orig = copyBtn.textContent;
+          copyBtn.textContent = 'Copied CSV!';
+          setTimeout(() => { copyBtn.textContent = orig; }, 1800);
+        });
       });
 
-      dlBtn.addEventListener('click', () => {
-        if (!output.value) return;
-        const blob = new Blob([output.value], { type: 'text/csv' });
-        const url = URL.createObjectURL(blob);
+      dlBtn?.addEventListener('click', () => {
+        const blob = new Blob([buildCsv()], { type: 'text/csv' });
         const a = document.createElement('a');
-        a.href = url;
-        a.download = 'participant_ids.csv';
+        a.href = URL.createObjectURL(blob);
+        a.download = `participant_roster_${prefixInput.value.replace(/[^a-z0-9]/gi, '') || 'study'}.csv`;
         a.click();
-        URL.revokeObjectURL(url);
       });
 
-      generatePids();
+      [prefixInput, countInput, startInput, digitsSelect, armSelect, randSelect, checkSelect].forEach(el => {
+        el?.addEventListener('input', generate);
+      });
+
+      generate();
     })();
   </script>
 </SiteLayout>

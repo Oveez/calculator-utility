@@ -1,7 +1,17 @@
 ---
 import SiteLayout from '../../layouts/SiteLayout.astro';
 import Icon from '../../components/Icon.astro';
-import { siteName, toAbsoluteUrl, withBasePath } from '../../utils/site';
+import CalculatorParameterGuide from '../../components/calculator/CalculatorParameterGuide.astro';
+import { siteName, toAbsoluteUrl } from '../../utils/site';
+
+const parameterGuide = [
+  { id: 'carrierPreset', name: 'Carrier Pricing Rule (Divisor)', description: 'Divisor 139 for FedEx and UPS daily commercial contract accounts; Divisor 166 for retail counter rates and USPS Priority Mail.', whyItMatters: 'Lower divisor (139) produces a significantly higher dimensional weight than 166.', typicalRange: '139 (Commercial) vs 166 (Retail)', unit: 'divisor' },
+  { id: 'packageDims', name: 'Parcel Dimensions (in)', description: 'Exterior length, width, and height in inches, measured at the widest bulge points.', whyItMatters: 'Multiplied together to calculate total parcel cubic inches (in³).', typicalRange: '6 to 48+ inches', unit: 'in' },
+  { id: 'cubicVolume', name: 'Cubic Volume (in³ & ft³)', description: 'Total three-dimensional space displacement of the box (Cubic Feet = in³ ÷ 1,728).', whyItMatters: 'USPS Priority Mail only triggers DIM weight rules if volume exceeds 1,728 cu in (1 cu ft).', typicalRange: '100 to 10,000+ in³', unit: 'in³' },
+  { id: 'actualScaleWt', name: 'Actual Scale Weight (lbs)', description: 'Physical scale weight of the packed carton rounded up to the nearest whole pound.', whyItMatters: 'If actual weight is heavier than dimensional weight, you are billed on scale weight.', typicalRange: '0.5 to 150 lbs', unit: 'lbs' },
+  { id: 'dimWeight', name: 'Calculated DIM Weight (lbs)', description: 'Theoretical density weight calculated as (L × W × H in inches) ÷ Divisor, rounded up to next integer.', whyItMatters: 'The minimum weight charged by air couriers to compensate for vehicle and aircraft cargo space.', typicalRange: '1 to 150 lbs', unit: 'lbs' },
+  { id: 'billedWeight', name: 'Final Billed Shipping Weight (lbs)', description: 'The greater of actual scale weight vs dimensional weight.', whyItMatters: 'The exact billable weight displayed on the courier shipping label and monthly invoice.', typicalRange: 'Calculated dynamically', unit: 'lbs' },
+];
 
 const pageTitle = `Dimensional Weight Calculator | FedEx, UPS & USPS DIM Weight · ${siteName}`;
 const pageDesc = 'Calculate domestic and international dimensional weight for FedEx (139/166), UPS, and USPS Priority Mail packages in inches and pounds.';
@@ -136,9 +146,19 @@ const schemaGraph = [
           </div>
         </form>
 
-        <div class="flex flex-col justify-between space-y-6 rounded-3xl border border-[color:var(--border)] bg-[color:var(--bg)] p-6 sm:p-8">
+        <div class="flex flex-col justify-between space-y-6 rounded-3xl border border-[color:var(--accent)]/30 bg-gradient-to-br from-[color:var(--accent-soft)] via-[color:var(--surface)] to-transparent p-6 sm:p-8 shadow-sm">
           <div class="space-y-5">
-            <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Billable Weight</span>
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Billable Weight</span>
+              <button
+                type="button"
+                class="inline-flex items-center gap-1.5 rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1.5 text-xs font-bold text-[color:var(--fg)] hover:bg-[color:var(--surface-strong)] transition cursor-pointer"
+                data-copy-btn
+              >
+                <Icon name="copy" class="w-3.5 h-3.5" />
+                <span>Copy Summary</span>
+              </button>
+            </div>
 
             <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 text-center">
               <p class="text-xs font-semibold text-[color:var(--muted)]">Billed Shipping Weight</p>
@@ -164,6 +184,68 @@ const schemaGraph = [
         </div>
       </div>
     </div>
+
+    <!-- Mathematical Formula & Carrier DIM Rules -->
+    <section class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 sm:p-8 space-y-4">
+      <div>
+        <p class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Courier DIM Mathematics</p>
+        <h2 class="text-xl font-bold text-[color:var(--fg)] flex items-center gap-2"><Icon name="math" class="w-4 h-4 text-[color:var(--accent)]" /><span>How FedEx, UPS &amp; USPS Calculate Billable Weight</span></h2>
+      </div>
+
+      <div class="grid gap-4 sm:grid-cols-2 text-xs sm:text-sm">
+        <div class="rounded-2xl bg-[color:var(--bg)] p-4 border border-[color:var(--border)] space-y-2">
+          <p class="font-bold text-[color:var(--fg)]">1. Dimensional Weight Formula</p>
+          <div class="rounded-xl bg-[color:var(--surface)] p-3 font-mono text-xs text-[color:var(--fg)] overflow-x-auto">
+            DIM Weight (lbs) = ⌈(Length × Width × Height in inches) ÷ Divisor⌉
+          </div>
+          <p class="text-xs text-[color:var(--muted)]">
+            FedEx &amp; UPS commercial daily rates use divisor 139. Retail counter and USPS standard rates use divisor 166.
+          </p>
+        </div>
+
+        <div class="rounded-2xl bg-[color:var(--bg)] p-4 border border-[color:var(--border)] space-y-2">
+          <p class="font-bold text-[color:var(--fg)]">2. Final Invoiced Weight</p>
+          <div class="rounded-xl bg-[color:var(--surface)] p-3 font-mono text-xs text-[color:var(--fg)] overflow-x-auto">
+            Billed Weight = max(⌈Actual Scale Weight⌉, DIM Weight)
+          </div>
+          <p class="text-xs text-[color:var(--muted)]">
+            USPS Priority Mail only evaluates DIM weight when parcel cubic volume exceeds 1,728 cu in (1.0 cubic foot).
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Step-by-Step Worked Example -->
+    <section class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 sm:p-8 space-y-4">
+      <div>
+        <p class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Step-By-Step Walkthrough</p>
+        <h2 class="text-xl font-bold text-[color:var(--fg)] flex items-center gap-2"><Icon name="document" class="w-4 h-4 text-[color:var(--accent)]" /><span>Worked Example: 18 × 14 × 12 in Parcel (8.0 lbs Scale Weight)</span></h2>
+      </div>
+
+      <div class="grid gap-4 sm:grid-cols-3 text-xs sm:text-sm">
+        <div class="rounded-2xl bg-[color:var(--bg)] p-4 border border-[color:var(--border)] space-y-1.5">
+          <p class="font-bold text-[color:var(--fg)]">1. Package Volume</p>
+          <p class="text-[color:var(--muted)]">L = 18 in, W = 14 in, H = 12 in.</p>
+          <p class="text-[color:var(--muted)]">Volume = 18 × 14 × 12 = <strong>3,024 cu in</strong>.</p>
+          <p class="text-[color:var(--muted)]">Cubic Feet = 3,024 ÷ 1,728 = <strong>1.75 cu ft</strong>.</p>
+        </div>
+        <div class="rounded-2xl bg-[color:var(--bg)] p-4 border border-[color:var(--border)] space-y-1.5">
+          <p class="font-bold text-[color:var(--fg)]">2. DIM Calculation (Div 139)</p>
+          <p class="text-[color:var(--muted)]">DIM = 3,024 ÷ 139 = <strong>21.76 lbs</strong>.</p>
+          <p class="text-[color:var(--muted)]">Carrier rounds up to integer: <strong>22 lbs</strong>.</p>
+          <p class="text-[color:var(--muted)]">(At Divisor 166: 3,024 ÷ 166 = 19 lbs).</p>
+        </div>
+        <div class="rounded-2xl bg-[color:var(--bg)] p-4 border border-[color:var(--border)] space-y-1.5">
+          <p class="font-bold text-[color:var(--fg)]">3. Billable Weight Result</p>
+          <p class="text-[color:var(--muted)]">Actual scale weight = 8.0 lbs.</p>
+          <p class="text-[color:var(--muted)]">Dimensional weight = 22 lbs.</p>
+          <p class="text-[color:var(--muted)]">Invoiced at <strong>22 lbs (+14 lbs DIM penalty)</strong>.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Parameter Guide -->
+    <CalculatorParameterGuide parameters={parameterGuide} />
 
     <!-- FAQs -->
     <section class="space-y-4">
@@ -225,7 +307,7 @@ const schemaGraph = [
             outSummary.className = 'mt-2 text-xs font-medium text-red-500';
           } else {
             outSummary.textContent = `Actual scale weight applies (Billed at ${finalBilled} lbs).`;
-            outSummary.className = 'mt-2 text-xs font-medium text-green-600';
+            outSummary.className = 'mt-2 text-xs font-medium text-cyan-600 dark:text-cyan-400';
           }
         }
       }
@@ -244,6 +326,23 @@ const schemaGraph = [
           inH.value = '12';
           inAct.value = '8.0';
           update();
+        });
+      }
+
+      const copyBtn = root.querySelector('[data-copy-btn]');
+      if (copyBtn) {
+        copyBtn.addEventListener('click', async () => {
+          const text = `Dimensional Weight Assessment:\n• Billed Weight: ${outBilled?.textContent || ''}\n• Status: ${outSummary?.textContent || ''}\n• Cubic Volume: ${outCuVol?.textContent || ''}\n• Calculated DIM: ${outDimExact?.textContent || ''}`;
+          try {
+            await navigator.clipboard.writeText(text);
+            const originalText = copyBtn.innerHTML;
+            copyBtn.innerHTML = '<span>Copied!</span>';
+            setTimeout(() => {
+              copyBtn.innerHTML = originalText;
+            }, 2000);
+          } catch (e) {
+            console.error('Clipboard copy failed', e);
+          }
         });
       }
 

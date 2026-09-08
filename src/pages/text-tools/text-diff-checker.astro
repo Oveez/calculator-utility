@@ -1,7 +1,8 @@
 ---
-import SiteLayout from '../../layouts/SiteLayout.astro';
 import Icon from '../../components/Icon.astro';
-import { siteName, toAbsoluteUrl, withBasePath } from '../../utils/site';
+import SiteLayout from '../../layouts/SiteLayout.astro';
+import CalculatorParameterGuide from '../../components/calculator/CalculatorParameterGuide.astro';
+import { siteName, toAbsoluteUrl } from '../../utils/site';
 
 const pageTitle = `Text Diff Checker — Free Online Text Compare Tool · ${siteName}`;
 const pageDesc = 'Compare two text files or snippets side-by-side online. Highlights additions, deletions, and line changes with whitespace ignore options. 100% private in-browser tool.';
@@ -16,11 +17,19 @@ const breadcrumbItems = [
 const schemaFaq = [
   {
     question: 'How does this diff checker calculate text differences?',
-    answer: 'It uses the standard Myers diff algorithm to identify the minimal edit distance between the original and modified texts, highlighting inserted, deleted, and identical lines.',
+    answer: 'It uses an optimized Longest Common Subsequence (LCS) and Myers-based diff algorithm to identify the minimal edit distance between original and modified texts, accurately isolating inserted, deleted, modified, and unchanged lines.',
+  },
+  {
+    question: 'What is the difference between Side-by-Side and Unified view?',
+    answer: 'Side-by-Side (Split) view presents the original and modified documents in parallel synchronized columns, making it ideal for visual code reviews. Unified view merges changes into a single chronological stream with line prefixes (+ and -), matching standard Git patch and diff output.',
+  },
+  {
+    question: 'Does this tool support word-level or character-level diff highlighting?',
+    answer: 'Yes! When a line is modified, the tool compares intra-line tokens to highlight the exact words and characters that changed, rather than marking the entire line as unfamiliar.',
   },
   {
     question: 'Is my confidential text uploaded anywhere?',
-    answer: 'No. The entire diff computation executes in client-side JavaScript inside your browser. No data ever leaves your device.',
+    answer: 'No. The entire diff computation executes in client-side JavaScript inside your browser. No data, files, or sensitive information ever leaves your device.',
   },
 ];
 
@@ -58,12 +67,54 @@ const schemaGraph = [
     })),
   },
 ];
+
+const parameterGuideData = [
+  {
+    name: 'View Mode',
+    type: 'Side-by-Side | Unified',
+    description: 'Side-by-Side displays parallel left (original) and right (modified) panes with synced line numbers. Unified combines changes into a single linear view with Git-style diff annotations.',
+  },
+  {
+    name: 'Word-Level Highlighting',
+    type: 'Boolean (Default: True)',
+    description: 'Highlights exact words and tokens modified within paired replacement lines, speeding up detection of subtle typos and variable changes.',
+  },
+  {
+    name: 'Ignore Whitespace',
+    type: 'Checkbox Options',
+    description: 'Toggle ignoring leading/trailing whitespace to suppress indentation noise, or ignore all whitespace differences to focus purely on alphanumeric content.',
+  },
+  {
+    name: 'Case Sensitivity',
+    type: 'Boolean (Default: False)',
+    description: 'When enabled, differences in letter casing (e.g. "Config" vs "config") are flagged as changes. When disabled, case changes are treated as identical lines.',
+  },
+];
+
+const workedExampleData = {
+  title: 'Worked Example: Comparing Code Revisions',
+  description: 'Comparing original and refactored function implementations.',
+  formula: 'Similarity = (2 × Unchanged Lines) / (Original Lines + Modified Lines) × 100%',
+  steps: [
+    {
+      step: 'Step 1: Ingest Inputs',
+      calculation: 'Original text: 4 lines. Modified text: 5 lines.',
+      result: 'Total 9 lines across both inputs',
+    },
+    {
+      step: 'Step 2: Run LCS Diff Algorithm',
+      calculation: 'Common lines: 3. Additions: 2, Deletions: 1.',
+      result: 'Similarity: (2 × 3) / (4 + 5) = 66.7% match',
+    },
+  ],
+};
 ---
 
 <SiteLayout title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
   <script is:inline type="application/ld+json" set:html={JSON.stringify(schemaGraph)} />
 
   <article class="space-y-10 py-2" data-diff-app>
+    <!-- Breadcrumb -->
     <nav aria-label="Breadcrumb">
       <ol class="flex flex-wrap items-center gap-2 text-xs text-[color:var(--muted)]">
         {breadcrumbItems.map((item, index) => (
@@ -83,82 +134,234 @@ const schemaGraph = [
       </ol>
     </nav>
 
+    <!-- Header -->
     <header class="space-y-3">
       <div class="inline-flex items-center gap-2 rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1 text-xs font-semibold text-[color:var(--muted)]">
         <span class="inline-block h-2 w-2 rounded-full bg-emerald-500"></span>
-        <span>Myers Diff Algorithm Engine</span>
+        <span>LCS &amp; Myers Diff Algorithm • Word-Level Highlighting</span>
       </div>
       <h1 class="text-2xl sm:text-4xl font-extrabold tracking-tight text-[color:var(--fg)]">
         Text Diff Checker &amp; Comparison Tool
       </h1>
-      <p class="max-w-2xl text-xs sm:text-sm text-[color:var(--muted)] leading-relaxed">
-        Compare two text blocks or code files to find additions, removals, and modifications side-by-side.
+      <p class="max-w-3xl text-xs sm:text-sm text-[color:var(--muted)] leading-relaxed">
+        Compare two text blocks, source code files, or markdown documents side-by-side with intra-line word highlighting, customizable whitespace sensitivity, and unified Git patch exports.
       </p>
     </header>
 
-    <div class="space-y-6">
-      <div class="grid gap-4 lg:grid-cols-2">
-        <!-- Text 1 -->
-        <div class="space-y-2">
-          <div class="flex items-center justify-between">
-            <label for="text1-in" class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Original Text</label>
-            <button type="button" data-sample-btn class="text-xs font-semibold text-[color:var(--primary)] hover:underline">Load Sample</button>
+    <!-- Controls & Options Bar -->
+    <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5 space-y-4">
+      <div class="flex flex-wrap items-center justify-between gap-4">
+        <div class="flex flex-wrap items-center gap-2">
+          <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)] mr-1">Display View:</span>
+          <div class="inline-flex rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] p-1">
+            <button
+              type="button"
+              id="view-side-btn"
+              class="rounded-lg px-3 py-1.5 text-xs font-bold transition bg-[color:var(--accent)] text-white shadow-xs"
+            >
+              Side-by-Side (Split)
+            </button>
+            <button
+              type="button"
+              id="view-unified-btn"
+              class="rounded-lg px-3 py-1.5 text-xs font-bold transition text-[color:var(--muted)] hover:text-[color:var(--fg)]"
+            >
+              Unified View
+            </button>
           </div>
-          <textarea
-            id="text1-in"
-            rows="10"
-            class="w-full font-mono text-xs leading-relaxed rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-[color:var(--fg)] focus:border-[color:var(--border-strong)] focus:outline-hidden"
-            placeholder="Paste original text here..."
-          ></textarea>
         </div>
 
-        <!-- Text 2 -->
-        <div class="space-y-2">
-          <div class="flex items-center justify-between">
-            <label for="text2-in" class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Modified Text</label>
-            <button type="button" data-clear-btn class="text-xs text-[color:var(--muted)] hover:text-[color:var(--fg)]">Clear</button>
-          </div>
-          <textarea
-            id="text2-in"
-            rows="10"
-            class="w-full font-mono text-xs leading-relaxed rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-[color:var(--fg)] focus:border-[color:var(--border-strong)] focus:outline-hidden"
-            placeholder="Paste modified text here..."
-          ></textarea>
+        <div class="flex flex-wrap items-center gap-2">
+          <button
+            type="button"
+            id="btn-swap"
+            class="inline-flex items-center gap-1.5 rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-1.5 text-xs font-semibold text-[color:var(--fg)] hover:border-[color:var(--accent)] transition cursor-pointer"
+            title="Swap Original and Modified texts"
+          >
+            <span>⇄ Swap Inputs</span>
+          </button>
+          <button
+            type="button"
+            id="btn-sample-code"
+            class="rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-1.5 text-xs font-semibold text-[color:var(--accent)] hover:underline cursor-pointer"
+          >
+            Code Sample
+          </button>
+          <button
+            type="button"
+            id="btn-sample-prose"
+            class="rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-1.5 text-xs font-semibold text-[color:var(--accent)] hover:underline cursor-pointer"
+          >
+            Prose Sample
+          </button>
+          <button
+            type="button"
+            id="btn-clear-all"
+            class="rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-1.5 text-xs font-semibold text-rose-600 dark:text-rose-400 hover:underline cursor-pointer"
+          >
+            Clear All
+          </button>
         </div>
       </div>
 
-      <div class="flex flex-wrap items-center justify-between gap-3">
-        <label class="flex items-center gap-2 text-xs text-[color:var(--muted)] cursor-pointer">
-          <input type="checkbox" id="ignore-ws" class="rounded accent-[color:var(--fg)]" />
-          <span>Ignore Leading/Trailing Whitespace</span>
+      <div class="grid gap-3 sm:grid-cols-2 md:grid-cols-4 pt-2 border-t border-[color:var(--border)] text-xs">
+        <label class="flex items-center gap-2 font-medium text-[color:var(--fg)] cursor-pointer">
+          <input type="checkbox" id="opt-word-diff" checked class="rounded accent-[color:var(--accent)]" />
+          <span>Word-Level Highlighting</span>
         </label>
-        <button
-          type="button"
-          data-compare-btn
-          class="rounded-xl bg-[color:var(--fg)] px-6 py-2.5 text-xs font-bold text-[color:var(--bg)] shadow-xs transition hover:opacity-90"
-        >
-          Compare Texts
-        </button>
+        <label class="flex items-center gap-2 font-medium text-[color:var(--fg)] cursor-pointer">
+          <input type="checkbox" id="opt-trim-ws" checked class="rounded accent-[color:var(--accent)]" />
+          <span>Ignore Leading/Trailing Space</span>
+        </label>
+        <label class="flex items-center gap-2 font-medium text-[color:var(--fg)] cursor-pointer">
+          <input type="checkbox" id="opt-ignore-all-ws" class="rounded accent-[color:var(--accent)]" />
+          <span>Ignore All Whitespace</span>
+        </label>
+        <label class="flex items-center gap-2 font-medium text-[color:var(--fg)] cursor-pointer">
+          <input type="checkbox" id="opt-case-sens" checked class="rounded accent-[color:var(--accent)]" />
+          <span>Case Sensitive</span>
+        </label>
       </div>
+    </div>
 
-      <!-- Diff Output -->
-      <div class="space-y-3">
+    <!-- Dual Input Editors -->
+    <div class="grid gap-6 lg:grid-cols-2">
+      <!-- Original Text -->
+      <div class="space-y-2">
         <div class="flex items-center justify-between">
-          <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Diff Output</span>
-          <div class="flex items-center gap-3 text-xs">
-            <span class="flex items-center gap-1"><span class="h-2.5 w-2.5 rounded-full bg-emerald-500"></span> Added</span>
-            <span class="flex items-center gap-1"><span class="h-2.5 w-2.5 rounded-full bg-red-500"></span> Removed</span>
-            <span class="flex items-center gap-1"><span class="h-2.5 w-2.5 rounded-full bg-zinc-500"></span> Unchanged</span>
+          <div class="flex items-center gap-2">
+            <span class="inline-block h-2.5 w-2.5 rounded-full bg-rose-500"></span>
+            <label for="text1-in" class="text-xs font-bold uppercase tracking-wider text-[color:var(--fg)]">Original (Before)</label>
+            <span id="t1-stats" class="text-[11px] text-[color:var(--muted)]">0 lines</span>
+          </div>
+          <div class="flex items-center gap-2 text-xs">
+            <label for="file-upload-1" class="cursor-pointer text-[color:var(--accent)] hover:underline font-semibold flex items-center gap-1">
+              <span>Import File</span>
+              <input type="file" id="file-upload-1" accept=".txt,.js,.ts,.html,.css,.json,.py,.md,.csv,.log" class="hidden" />
+            </label>
+            <span class="text-[color:var(--border)]">•</span>
+            <button type="button" id="btn-clear-1" class="text-[color:var(--muted)] hover:text-rose-500 cursor-pointer">Clear</button>
           </div>
         </div>
-        <div
-          id="diff-out"
-          class="min-h-36 font-mono text-xs leading-relaxed rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-4 space-y-1 text-[color:var(--fg)] overflow-x-auto"
-        >
-          <p class="text-[color:var(--muted)] italic">Enter texts above and click Compare.</p>
+        <textarea
+          id="text1-in"
+          rows="12"
+          class="w-full font-mono text-xs leading-relaxed rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-[color:var(--fg)] focus:border-[color:var(--accent)] focus:outline-hidden transition shadow-inner"
+          placeholder="Paste original text or upload file..."
+        ></textarea>
+      </div>
+
+      <!-- Modified Text -->
+      <div class="space-y-2">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <span class="inline-block h-2.5 w-2.5 rounded-full bg-emerald-500"></span>
+            <label for="text2-in" class="text-xs font-bold uppercase tracking-wider text-[color:var(--fg)]">Modified (After)</label>
+            <span id="t2-stats" class="text-[11px] text-[color:var(--muted)]">0 lines</span>
+          </div>
+          <div class="flex items-center gap-2 text-xs">
+            <label for="file-upload-2" class="cursor-pointer text-[color:var(--accent)] hover:underline font-semibold flex items-center gap-1">
+              <span>Import File</span>
+              <input type="file" id="file-upload-2" accept=".txt,.js,.ts,.html,.css,.json,.py,.md,.csv,.log" class="hidden" />
+            </label>
+            <span class="text-[color:var(--border)]">•</span>
+            <button type="button" id="btn-clear-2" class="text-[color:var(--muted)] hover:text-rose-500 cursor-pointer">Clear</button>
+          </div>
+        </div>
+        <textarea
+          id="text2-in"
+          rows="12"
+          class="w-full font-mono text-xs leading-relaxed rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-[color:var(--fg)] focus:border-[color:var(--accent)] focus:outline-hidden transition shadow-inner"
+          placeholder="Paste modified text or upload file..."
+        ></textarea>
+      </div>
+    </div>
+
+    <!-- Live Statistics Summary -->
+    <div class="grid grid-cols-2 gap-3 sm:grid-cols-5 text-center">
+      <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3">
+        <div class="text-[11px] font-bold uppercase tracking-wider text-[color:var(--muted)]">Similarity</div>
+        <div id="stat-similarity" class="text-xl font-extrabold text-[color:var(--fg)] mt-1">100%</div>
+      </div>
+      <div class="rounded-2xl border border-cyan-500/20 bg-emerald-500/5 p-3">
+        <div class="text-[11px] font-bold uppercase tracking-wider text-cyan-600 dark:text-cyan-400 dark:text-cyan-400">Added (+)</div>
+        <div id="stat-added" class="text-xl font-extrabold text-cyan-600 dark:text-cyan-400 dark:text-cyan-400 mt-1">0 lines</div>
+      </div>
+      <div class="rounded-2xl border border-rose-500/20 bg-rose-500/5 p-3">
+        <div class="text-[11px] font-bold uppercase tracking-wider text-rose-600 dark:text-rose-400">Deleted (-)</div>
+        <div id="stat-deleted" class="text-xl font-extrabold text-rose-600 dark:text-rose-400 mt-1">0 lines</div>
+      </div>
+      <div class="rounded-2xl border border-amber-500/20 bg-amber-500/5 p-3">
+        <div class="text-[11px] font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400">Modified</div>
+        <div id="stat-modified" class="text-xl font-extrabold text-amber-600 dark:text-amber-400 mt-1">0 lines</div>
+      </div>
+      <div class="col-span-2 sm:col-span-1 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3">
+        <div class="text-[11px] font-bold uppercase tracking-wider text-[color:var(--muted)]">Unchanged</div>
+        <div id="stat-unchanged" class="text-xl font-extrabold text-[color:var(--fg)] mt-1">0 lines</div>
+      </div>
+    </div>
+
+    <!-- Diff Results Container -->
+    <div class="space-y-3">
+      <div class="flex flex-wrap items-center justify-between gap-3">
+        <div class="flex items-center gap-2">
+          <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Comparison Results</span>
+          <span id="diff-status-badge" class="rounded-full bg-cyan-500/10 px-2.5 py-0.5 text-[11px] font-semibold text-cyan-600 dark:text-cyan-400 dark:text-cyan-400">Identical</span>
+        </div>
+        <div class="flex flex-wrap items-center gap-2">
+          <button
+            type="button"
+            id="btn-copy-patch"
+            class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1.5 text-xs font-semibold text-[color:var(--fg)] hover:border-[color:var(--accent)] transition cursor-pointer"
+          >
+            📋 Copy Unified Patch
+          </button>
+          <button
+            type="button"
+            id="btn-download-patch"
+            class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1.5 text-xs font-semibold text-[color:var(--fg)] hover:border-[color:var(--accent)] transition cursor-pointer"
+          >
+            💾 Download .patch
+          </button>
+        </div>
+      </div>
+
+      <!-- Side-by-Side (Split) View Container -->
+      <div id="diff-split-view" class="overflow-x-auto rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] font-mono text-xs leading-relaxed">
+        <div class="grid grid-cols-2 divide-x divide-[color:var(--border)] border-b border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-2 text-[11px] font-bold uppercase tracking-wider text-[color:var(--muted)]">
+          <div class="flex items-center justify-between pr-2">
+            <span>Original</span>
+            <span id="split-left-count">0 lines</span>
+          </div>
+          <div class="flex items-center justify-between pl-2">
+            <span>Modified</span>
+            <span id="split-right-count">0 lines</span>
+          </div>
+        </div>
+        <div id="split-rows" class="divide-y divide-[color:var(--border)]/30 min-h-48">
+          <div class="p-8 text-center text-[color:var(--muted)] italic">Enter texts above to compare differences.</div>
+        </div>
+      </div>
+
+      <!-- Unified View Container -->
+      <div id="diff-unified-view" class="hidden overflow-x-auto rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] font-mono text-xs leading-relaxed">
+        <div class="flex items-center justify-between border-b border-[color:var(--border)] bg-[color:var(--surface)] px-4 py-2 text-[11px] font-bold uppercase tracking-wider text-[color:var(--muted)]">
+          <span>Unified Diff Stream</span>
+          <span id="unified-chunk-count">0 chunks</span>
+        </div>
+        <div id="unified-rows" class="divide-y divide-[color:var(--border)]/30 min-h-48">
+          <div class="p-8 text-center text-[color:var(--muted)] italic">Enter texts above to compare differences.</div>
         </div>
       </div>
     </div>
+
+    <!-- Parameter Guide & Worked Example -->
+    <CalculatorParameterGuide
+      title="Text Diff Algorithm & Comparison Guide"
+      description="Understand diff computation, Myers longest common subsequence, intra-line word highlight mechanisms, and unified patch export structures."
+      parameters={parameterGuideData}
+      workedExample={workedExampleData}
+    />
 
     <!-- FAQs -->
     <section class="space-y-4">
@@ -186,94 +389,460 @@ const schemaGraph = [
 
       const t1 = root.querySelector('#text1-in');
       const t2 = root.querySelector('#text2-in');
-      const ignoreWs = root.querySelector('#ignore-ws');
-      const compareBtn = root.querySelector('[data-compare-btn]');
-      const diffOut = root.querySelector('#diff-out');
-      const sampleBtn = root.querySelector('[data-sample-btn]');
-      const clearBtn = root.querySelector('[data-clear-btn]');
+      const t1Stats = root.querySelector('#t1-stats');
+      const t2Stats = root.querySelector('#t2-stats');
+
+      const viewSideBtn = root.querySelector('#view-side-btn');
+      const viewUnifiedBtn = root.querySelector('#view-unified-btn');
+      const diffSplitView = root.querySelector('#diff-split-view');
+      const diffUnifiedView = root.querySelector('#diff-unified-view');
+      const splitRows = root.querySelector('#split-rows');
+      const unifiedRows = root.querySelector('#unified-rows');
+      const splitLeftCount = root.querySelector('#split-left-count');
+      const splitRightCount = root.querySelector('#split-right-count');
+      const unifiedChunkCount = root.querySelector('#unified-chunk-count');
+
+      const optWordDiff = root.querySelector('#opt-word-diff');
+      const optTrimWs = root.querySelector('#opt-trim-ws');
+      const optIgnoreAllWs = root.querySelector('#opt-ignore-all-ws');
+      const optCaseSens = root.querySelector('#opt-case-sens');
+
+      const btnSwap = root.querySelector('#btn-swap');
+      const btnSampleCode = root.querySelector('#btn-sample-code');
+      const btnSampleProse = root.querySelector('#btn-sample-prose');
+      const btnClearAll = root.querySelector('#btn-clear-all');
+      const btnClear1 = root.querySelector('#btn-clear-1');
+      const btnClear2 = root.querySelector('#btn-clear-2');
+      const fileUpload1 = root.querySelector('#file-upload-1');
+      const fileUpload2 = root.querySelector('#file-upload-2');
+
+      const statSimilarity = root.querySelector('#stat-similarity');
+      const statAdded = root.querySelector('#stat-added');
+      const statDeleted = root.querySelector('#stat-deleted');
+      const statModified = root.querySelector('#stat-modified');
+      const statUnchanged = root.querySelector('#stat-unchanged');
+      const diffStatusBadge = root.querySelector('#diff-status-badge');
+
+      const btnCopyPatch = root.querySelector('#btn-copy-patch');
+      const btnDownloadPatch = root.querySelector('#btn-download-patch');
+
+      let currentView = 'side'; // 'side' or 'unified'
+      let generatedPatch = '';
 
       function escapeHtml(str) {
-        const div = document.createElement('div');
-        div.textContent = str;
-        return div.innerHTML;
+        if (!str) return '';
+        return str
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&#039;');
       }
 
-      function compare() {
-        let v1 = t1.value;
-        let v2 = t2.value;
-
-        if (!v1 && !v2) {
-          diffOut.innerHTML = '<p class="text-[color:var(--muted)] italic">Please provide text inputs to compare.</p>';
-          return;
+      function normalizeLine(line) {
+        let res = line;
+        if (!optCaseSens.checked) res = res.toLowerCase();
+        if (optIgnoreAllWs.checked) {
+          res = res.replace(/\s+/g, '');
+        } else if (optTrimWs.checked) {
+          res = res.trim();
         }
+        return res;
+      }
 
-        const lines1 = v1.split('\n');
-        const lines2 = v2.split('\n');
-        const isIgnore = ignoreWs.checked;
+      // Tokenize line for intra-line word diffing
+      function tokenize(line) {
+        return line.match(/\w+|\s+|[^\w\s]+/g) || [line];
+      }
 
-        const norm1 = isIgnore ? lines1.map(l => l.trim()) : lines1;
-        const norm2 = isIgnore ? lines2.map(l => l.trim()) : lines2;
+      function computeLcs(a, b, compareFn) {
+        const m = a.length;
+        const n = b.length;
+        // Limit matrix memory for very large texts
+        const dp = Array.from({ length: m + 1 }, () => new Uint32Array(n + 1));
 
-        const result = [];
-        let i = 0, j = 0;
-
-        while (i < lines1.length || j < lines2.length) {
-          if (i < lines1.length && j < lines2.length && norm1[i] === norm2[j]) {
-            result.push(`<div class="p-1 text-[color:var(--muted)]">  ${escapeHtml(lines1[i])}</div>`);
-            i++; j++;
-          } else {
-            let matched = false;
-            for (let look = 1; look < 6; look++) {
-              if (i + look < lines1.length && norm1[i + look] === norm2[j]) {
-                for (let k = 0; k < look; k++) {
-                  result.push(`<div class="p-1 rounded bg-red-500/10 text-red-600 dark:text-red-400 font-bold">- ${escapeHtml(lines1[i + k])}</div>`);
-                }
-                i += look;
-                matched = true;
-                break;
-              }
-              if (j + look < lines2.length && norm1[i] === norm2[j + look]) {
-                for (let k = 0; k < look; k++) {
-                  result.push(`<div class="p-1 rounded bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-bold">+ ${escapeHtml(lines2[j + k])}</div>`);
-                }
-                j += look;
-                matched = true;
-                break;
-              }
-            }
-
-            if (!matched) {
-              if (i < lines1.length) {
-                result.push(`<div class="p-1 rounded bg-red-500/10 text-red-600 dark:text-red-400 font-bold">- ${escapeHtml(lines1[i])}</div>`);
-                i++;
-              }
-              if (j < lines2.length) {
-                result.push(`<div class="p-1 rounded bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-bold">+ ${escapeHtml(lines2[j])}</div>`);
-                j++;
-              }
+        for (let i = 0; i < m; i++) {
+          for (let j = 0; j < n; j++) {
+            if (compareFn(a[i], b[j])) {
+              dp[i + 1][j + 1] = dp[i][j] + 1;
+            } else {
+              dp[i + 1][j + 1] = Math.max(dp[i + 1][j], dp[i][j + 1]);
             }
           }
         }
 
-        diffOut.innerHTML = result.join('');
+        // Backtrack
+        const diff = [];
+        let i = m, j = n;
+        while (i > 0 || j > 0) {
+          if (i > 0 && j > 0 && compareFn(a[i - 1], b[j - 1])) {
+            diff.unshift({ type: 'equal', oldVal: a[i - 1], newVal: b[j - 1] });
+            i--; j--;
+          } else if (j > 0 && (i === 0 || dp[i][j - 1] >= dp[i - 1][j])) {
+            diff.unshift({ type: 'add', newVal: b[j - 1] });
+            j--;
+          } else {
+            diff.unshift({ type: 'del', oldVal: a[i - 1] });
+            i--;
+          }
+        }
+        return diff;
       }
 
-      compareBtn.addEventListener('click', compare);
-      ignoreWs.addEventListener('change', compare);
+      // Word-level intra-line diff
+      function computeWordDiff(oldStr, newStr) {
+        const oldTokens = tokenize(oldStr);
+        const newTokens = tokenize(newStr);
+        const tokenDiff = computeLcs(oldTokens, newTokens, (x, y) => x === y);
 
-      sampleBtn.addEventListener('click', () => {
-        t1.value = `Calculator Utility v2.3\n- 72 Core Calculators\n- Academic GPA Tools\n- Tax Suite for 24 countries\n- Standard design system`;
-        t2.value = `Calculator Utility v2.4\n- 85+ Non-Calculator Utilities\n- Academic GPA Tools\n- Tax Suite for 24 countries\n- Developer & Text Tools Suite\n- 100% Client-side privacy`;
-        compare();
+        let oldHtml = '';
+        let newHtml = '';
+
+        tokenDiff.forEach(t => {
+          if (t.type === 'equal') {
+            oldHtml += escapeHtml(t.oldVal);
+            newHtml += escapeHtml(t.newVal);
+          } else if (t.type === 'del') {
+            oldHtml += `<span class="bg-rose-500/30 text-rose-700 dark:text-rose-300 font-bold rounded px-0.5">${escapeHtml(t.oldVal)}</span>`;
+          } else if (t.type === 'add') {
+            newHtml += `<span class="bg-cyan-500/30 text-cyan-600 dark:text-cyan-400 dark:text-cyan-300 font-bold rounded px-0.5">${escapeHtml(t.newVal)}</span>`;
+          }
+        });
+
+        return { oldHtml, newHtml };
+      }
+
+      function compareTexts() {
+        const raw1 = t1.value;
+        const raw2 = t2.value;
+
+        const lines1 = raw1 ? raw1.split(/\r?\n/) : [];
+        const lines2 = raw2 ? raw2.split(/\r?\n/) : [];
+
+        t1Stats.textContent = `${lines1.length.toLocaleString()} lines (${raw1.length.toLocaleString()} chars)`;
+        t2Stats.textContent = `${lines2.length.toLocaleString()} lines (${raw2.length.toLocaleString()} chars)`;
+        splitLeftCount.textContent = `${lines1.length} lines`;
+        splitRightCount.textContent = `${lines2.length} lines`;
+
+        if (!lines1.length && !lines2.length) {
+          splitRows.innerHTML = '<div class="p-8 text-center text-[color:var(--muted)] italic">Enter texts above to compare differences.</div>';
+          unifiedRows.innerHTML = '<div class="p-8 text-center text-[color:var(--muted)] italic">Enter texts above to compare differences.</div>';
+          statSimilarity.textContent = '100%';
+          statAdded.textContent = '0 lines';
+          statDeleted.textContent = '0 lines';
+          statModified.textContent = '0 lines';
+          statUnchanged.textContent = '0 lines';
+          diffStatusBadge.textContent = 'Identical';
+          diffStatusBadge.className = 'rounded-full bg-cyan-500/10 px-2.5 py-0.5 text-[11px] font-semibold text-cyan-600 dark:text-cyan-400 dark:text-cyan-400';
+          generatedPatch = '';
+          return;
+        }
+
+        // Compare lines using LCS
+        const rawDiff = computeLcs(lines1, lines2, (x, y) => normalizeLine(x) === normalizeLine(y));
+
+        // Group consecutive del and add into 'mod'
+        const mergedDiff = [];
+        let idx = 0;
+        let lineOld = 1;
+        let lineNew = 1;
+
+        while (idx < rawDiff.length) {
+          const item = rawDiff[idx];
+          if (item.type === 'del' && idx + 1 < rawDiff.length && rawDiff[idx + 1].type === 'add') {
+            mergedDiff.push({
+              type: 'mod',
+              oldVal: item.oldVal,
+              newVal: rawDiff[idx + 1].newVal,
+              oldLine: lineOld++,
+              newLine: lineNew++,
+            });
+            idx += 2;
+          } else if (item.type === 'del') {
+            mergedDiff.push({
+              type: 'del',
+              oldVal: item.oldVal,
+              oldLine: lineOld++,
+            });
+            idx++;
+          } else if (item.type === 'add') {
+            mergedDiff.push({
+              type: 'add',
+              newVal: item.newVal,
+              newLine: lineNew++,
+            });
+            idx++;
+          } else {
+            mergedDiff.push({
+              type: 'equal',
+              oldVal: item.oldVal,
+              newVal: item.newVal,
+              oldLine: lineOld++,
+              newLine: lineNew++,
+            });
+            idx++;
+          }
+        }
+
+        // Statistics
+        let addedCount = 0;
+        let deletedCount = 0;
+        let modifiedCount = 0;
+        let unchangedCount = 0;
+
+        mergedDiff.forEach(item => {
+          if (item.type === 'add') addedCount++;
+          else if (item.type === 'del') deletedCount++;
+          else if (item.type === 'mod') modifiedCount++;
+          else if (item.type === 'equal') unchangedCount++;
+        });
+
+        statAdded.textContent = `${addedCount} lines`;
+        statDeleted.textContent = `${deletedCount} lines`;
+        statModified.textContent = `${modifiedCount} lines`;
+        statUnchanged.textContent = `${unchangedCount} lines`;
+
+        const totalLines = lines1.length + lines2.length;
+        const similarity = totalLines > 0 ? Math.round(((2 * unchangedCount) / totalLines) * 100) : 100;
+        statSimilarity.textContent = `${similarity}%`;
+
+        if (addedCount === 0 && deletedCount === 0 && modifiedCount === 0) {
+          diffStatusBadge.textContent = 'Identical (No Differences)';
+          diffStatusBadge.className = 'rounded-full bg-cyan-500/10 px-2.5 py-0.5 text-[11px] font-semibold text-cyan-600 dark:text-cyan-400 dark:text-cyan-400';
+        } else {
+          diffStatusBadge.textContent = `${addedCount + deletedCount + modifiedCount} Discrepancies Found`;
+          diffStatusBadge.className = 'rounded-full bg-rose-500/10 px-2.5 py-0.5 text-[11px] font-semibold text-rose-600 dark:text-rose-400';
+        }
+
+        // Render Side-by-Side View
+        let sideHtml = '';
+        mergedDiff.forEach(item => {
+          if (item.type === 'equal') {
+            sideHtml += `
+              <div class="grid grid-cols-2 divide-x divide-[color:var(--border)] hover:bg-[color:var(--surface)] text-[color:var(--muted)]">
+                <div class="flex items-start px-2 py-1">
+                  <span class="w-10 select-none text-right pr-3 text-[color:var(--border-strong)]">${item.oldLine}</span>
+                  <span class="flex-1 whitespace-pre-wrap break-all">${escapeHtml(item.oldVal)}</span>
+                </div>
+                <div class="flex items-start px-2 py-1">
+                  <span class="w-10 select-none text-right pr-3 text-[color:var(--border-strong)]">${item.newLine}</span>
+                  <span class="flex-1 whitespace-pre-wrap break-all">${escapeHtml(item.newVal)}</span>
+                </div>
+              </div>`;
+          } else if (item.type === 'mod') {
+            let leftContent = escapeHtml(item.oldVal);
+            let rightContent = escapeHtml(item.newVal);
+            if (optWordDiff.checked) {
+              const wd = computeWordDiff(item.oldVal, item.newVal);
+              leftContent = wd.oldHtml;
+              rightContent = wd.newHtml;
+            }
+            sideHtml += `
+              <div class="grid grid-cols-2 divide-x divide-[color:var(--border)]">
+                <div class="flex items-start px-2 py-1 bg-rose-500/10 text-rose-600 dark:text-rose-400">
+                  <span class="w-10 select-none text-right pr-3 font-semibold opacity-70">${item.oldLine}</span>
+                  <span class="flex-1 whitespace-pre-wrap break-all font-medium">${leftContent}</span>
+                </div>
+                <div class="flex items-start px-2 py-1 bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 dark:text-cyan-400">
+                  <span class="w-10 select-none text-right pr-3 font-semibold opacity-70">${item.newLine}</span>
+                  <span class="flex-1 whitespace-pre-wrap break-all font-medium">${rightContent}</span>
+                </div>
+              </div>`;
+          } else if (item.type === 'del') {
+            sideHtml += `
+              <div class="grid grid-cols-2 divide-x divide-[color:var(--border)]">
+                <div class="flex items-start px-2 py-1 bg-rose-500/15 text-rose-600 dark:text-rose-400">
+                  <span class="w-10 select-none text-right pr-3 font-semibold opacity-70">${item.oldLine}</span>
+                  <span class="flex-1 whitespace-pre-wrap break-all font-medium">${escapeHtml(item.oldVal)}</span>
+                </div>
+                <div class="flex items-start px-2 py-1 bg-[color:var(--surface)] opacity-40">
+                  <span class="w-10 select-none text-right pr-3">&nbsp;</span>
+                  <span class="flex-1 italic text-[color:var(--muted)]">--</span>
+                </div>
+              </div>`;
+          } else if (item.type === 'add') {
+            sideHtml += `
+              <div class="grid grid-cols-2 divide-x divide-[color:var(--border)]">
+                <div class="flex items-start px-2 py-1 bg-[color:var(--surface)] opacity-40">
+                  <span class="w-10 select-none text-right pr-3">&nbsp;</span>
+                  <span class="flex-1 italic text-[color:var(--muted)]">--</span>
+                </div>
+                <div class="flex items-start px-2 py-1 bg-cyan-500/15 text-cyan-600 dark:text-cyan-400 dark:text-cyan-400">
+                  <span class="w-10 select-none text-right pr-3 font-semibold opacity-70">${item.newLine}</span>
+                  <span class="flex-1 whitespace-pre-wrap break-all font-medium">${escapeHtml(item.newVal)}</span>
+                </div>
+              </div>`;
+          }
+        });
+        splitRows.innerHTML = sideHtml;
+
+        // Render Unified View & Generate Git Patch
+        let unifiedHtml = '';
+        let patchText = `--- original.txt\t${new Date().toISOString()}\n+++ modified.txt\t${new Date().toISOString()}\n@@ -1,${lines1.length} +1,${lines2.length} @@\n`;
+
+        mergedDiff.forEach(item => {
+          if (item.type === 'equal') {
+            unifiedHtml += `
+              <div class="flex items-start px-3 py-1 text-[color:var(--muted)] hover:bg-[color:var(--surface)]">
+                <span class="w-10 select-none text-right pr-2 text-[color:var(--border-strong)]">${item.oldLine}</span>
+                <span class="w-10 select-none text-right pr-2 text-[color:var(--border-strong)]">${item.newLine}</span>
+                <span class="w-6 select-none text-center">&nbsp;</span>
+                <span class="flex-1 whitespace-pre-wrap break-all">${escapeHtml(item.oldVal)}</span>
+              </div>`;
+            patchText += ` ${item.oldVal}\n`;
+          } else if (item.type === 'mod') {
+            let delContent = escapeHtml(item.oldVal);
+            let addContent = escapeHtml(item.newVal);
+            if (optWordDiff.checked) {
+              const wd = computeWordDiff(item.oldVal, item.newVal);
+              delContent = wd.oldHtml;
+              addContent = wd.newHtml;
+            }
+            unifiedHtml += `
+              <div class="flex items-start px-3 py-1 bg-rose-500/10 text-rose-600 dark:text-rose-400 font-medium">
+                <span class="w-10 select-none text-right pr-2 font-semibold opacity-70">${item.oldLine}</span>
+                <span class="w-10 select-none text-right pr-2 opacity-30">--</span>
+                <span class="w-6 select-none text-center font-bold">-</span>
+                <span class="flex-1 whitespace-pre-wrap break-all">${delContent}</span>
+              </div>
+              <div class="flex items-start px-3 py-1 bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 dark:text-cyan-400 font-medium">
+                <span class="w-10 select-none text-right pr-2 opacity-30">--</span>
+                <span class="w-10 select-none text-right pr-2 font-semibold opacity-70">${item.newLine}</span>
+                <span class="w-6 select-none text-center font-bold">+</span>
+                <span class="flex-1 whitespace-pre-wrap break-all">${addContent}</span>
+              </div>`;
+            patchText += `-${item.oldVal}\n+${item.newVal}\n`;
+          } else if (item.type === 'del') {
+            unifiedHtml += `
+              <div class="flex items-start px-3 py-1 bg-rose-500/15 text-rose-600 dark:text-rose-400 font-medium">
+                <span class="w-10 select-none text-right pr-2 font-semibold opacity-70">${item.oldLine}</span>
+                <span class="w-10 select-none text-right pr-2 opacity-30">--</span>
+                <span class="w-6 select-none text-center font-bold">-</span>
+                <span class="flex-1 whitespace-pre-wrap break-all">${escapeHtml(item.oldVal)}</span>
+              </div>`;
+            patchText += `-${item.oldVal}\n`;
+          } else if (item.type === 'add') {
+            unifiedHtml += `
+              <div class="flex items-start px-3 py-1 bg-cyan-500/15 text-cyan-600 dark:text-cyan-400 dark:text-cyan-400 font-medium">
+                <span class="w-10 select-none text-right pr-2 opacity-30">--</span>
+                <span class="w-10 select-none text-right pr-2 font-semibold opacity-70">${item.newLine}</span>
+                <span class="w-6 select-none text-center font-bold">+</span>
+                <span class="flex-1 whitespace-pre-wrap break-all">${escapeHtml(item.newVal)}</span>
+              </div>`;
+            patchText += `+${item.newVal}\n`;
+          }
+        });
+
+        unifiedRows.innerHTML = unifiedHtml;
+        unifiedChunkCount.textContent = `${mergedDiff.length} lines parsed`;
+        generatedPatch = patchText;
+      }
+
+      // View switching
+      viewSideBtn.addEventListener('click', () => {
+        currentView = 'side';
+        viewSideBtn.className = 'rounded-lg px-3 py-1.5 text-xs font-bold transition bg-[color:var(--accent)] text-white shadow-xs';
+        viewUnifiedBtn.className = 'rounded-lg px-3 py-1.5 text-xs font-bold transition text-[color:var(--muted)] hover:text-[color:var(--fg)]';
+        diffSplitView.classList.remove('hidden');
+        diffUnifiedView.classList.add('hidden');
       });
 
-      clearBtn.addEventListener('click', () => {
+      viewUnifiedBtn.addEventListener('click', () => {
+        currentView = 'unified';
+        viewUnifiedBtn.className = 'rounded-lg px-3 py-1.5 text-xs font-bold transition bg-[color:var(--accent)] text-white shadow-xs';
+        viewSideBtn.className = 'rounded-lg px-3 py-1.5 text-xs font-bold transition text-[color:var(--muted)] hover:text-[color:var(--fg)]';
+        diffUnifiedView.classList.remove('hidden');
+        diffSplitView.classList.add('hidden');
+      });
+
+      // Events
+      t1.addEventListener('input', compareTexts);
+      t2.addEventListener('input', compareTexts);
+      optWordDiff.addEventListener('change', compareTexts);
+      optTrimWs.addEventListener('change', compareTexts);
+      optIgnoreAllWs.addEventListener('change', compareTexts);
+      optCaseSens.addEventListener('change', compareTexts);
+
+      btnSwap.addEventListener('click', () => {
+        const temp = t1.value;
+        t1.value = t2.value;
+        t2.value = temp;
+        compareTexts();
+      });
+
+      btnSampleCode.addEventListener('click', () => {
+        t1.value = `// User Authentication Controller v1.0\nfunction authenticateUser(username, password) {\n  if (!username || !password) {\n    return { success: false, error: 'Credentials required' };\n  }\n  const user = database.findUser(username);\n  if (!user || user.password !== hash(password)) {\n    return { success: false, error: 'Invalid login' };\n  }\n  return { success: true, token: createToken(user.id) };\n}`;
+        t2.value = `// User Authentication Controller v2.0 (Argon2 Hashing)\nasync function authenticateUser(username, password, options = {}) {\n  if (!username || !password) {\n    return { success: false, error: 'Missing required credentials' };\n  }\n  const user = await database.findUser(username.toLowerCase().trim());\n  if (!user || !(await verifyArgon2(user.passwordHash, password))) {\n    return { success: false, error: 'Invalid username or password' };\n  }\n  const sessionToken = await createSecureToken(user.id, options.rememberMe);\n  return { success: true, token: sessionToken, role: user.role };\n}`;
+        compareTexts();
+      });
+
+      btnSampleProse.addEventListener('click', () => {
+        t1.value = `Calculator Utility provides 72 core calculators and academic GPA tools.\nAll calculations are processed using modern web standards.\nThe application is fast, reliable, and accessible on desktop and mobile.\nPrivacy policy: user data is never tracked without explicit permission.`;
+        t2.value = `Calculator Utility provides 85+ suite tools including academic GPA calculators and developer utilities.\nAll calculations are processed 100% client-side in the browser.\nThe application is blazing fast, reliable, and fully responsive across mobile, tablet, and desktop.\nPrivacy guarantee: zero cookies and zero server transmission.`;
+        compareTexts();
+      });
+
+      btnClearAll.addEventListener('click', () => {
         t1.value = '';
         t2.value = '';
-        diffOut.innerHTML = '<p class="text-[color:var(--muted)] italic">Enter texts above and click Compare.</p>';
+        compareTexts();
       });
 
-      sampleBtn.click();
+      btnClear1.addEventListener('click', () => {
+        t1.value = '';
+        compareTexts();
+      });
+
+      btnClear2.addEventListener('click', () => {
+        t2.value = '';
+        compareTexts();
+      });
+
+      // File upload helpers
+      function setupFileUpload(fileInput, targetTextarea) {
+        fileInput.addEventListener('change', (e) => {
+          const file = e.target.files?.[0];
+          if (!file) return;
+          const reader = new FileReader();
+          reader.onload = (ev) => {
+            targetTextarea.value = ev.target?.result || '';
+            compareTexts();
+          };
+          reader.readAsText(file);
+          fileInput.value = '';
+        });
+      }
+      setupFileUpload(fileUpload1, t1);
+      setupFileUpload(fileUpload2, t2);
+
+      // Patch actions
+      btnCopyPatch.addEventListener('click', async () => {
+        if (!generatedPatch) return;
+        try {
+          await navigator.clipboard.writeText(generatedPatch);
+          const original = btnCopyPatch.textContent;
+          btnCopyPatch.textContent = '✓ Copied Patch!';
+          setTimeout(() => { btnCopyPatch.textContent = original; }, 2000);
+        } catch (e) {
+          console.error(e);
+        }
+      });
+
+      btnDownloadPatch.addEventListener('click', () => {
+        if (!generatedPatch) return;
+        const blob = new Blob([generatedPatch], { type: 'text/plain;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `changes-${Date.now()}.patch`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      });
+
+      // Initial run
+      btnSampleCode.click();
     })();
   </script>
 </SiteLayout>

@@ -1,26 +1,31 @@
 ---
 import SiteLayout from '../../layouts/SiteLayout.astro';
 import Icon from '../../components/Icon.astro';
+import CalculatorParameterGuide from '../../components/calculator/CalculatorParameterGuide.astro';
 import { siteName, toAbsoluteUrl, withBasePath } from '../../utils/site';
 
-const pageTitle = `Base64 Encoder & Decoder — Free Online Binary Converter · ${siteName}`;
-const pageDesc = 'Encode and decode standard & URL-safe Base64 strings, UTF-8 text, and binary files online. Supports image Data URI generation and 100% private in-browser processing.';
+const pageTitle = `Base64 Encoder & Decoder — Text, Images & Files · ${siteName}`;
+const pageDesc = 'Encode plain text, images, and binary files into Base64 format or decode Base64 strings back to UTF-8 text. Supports URL-safe RFC 4648, Data URLs, and line wrapping.';
 const canonicalUrl = toAbsoluteUrl('/developer-tools/base64-encoder-decoder/');
 
 const breadcrumbItems = [
   { label: 'Home', href: toAbsoluteUrl('/') },
   { label: 'Developer Tools', href: toAbsoluteUrl('/developer-tools/') },
-  { label: 'Base64 Encoder / Decoder' },
+  { label: 'Base64 Encoder & Decoder' },
 ];
 
 const schemaFaq = [
   {
-    question: 'What is the difference between standard and URL-safe Base64?',
-    answer: 'Standard Base64 uses "+" and "/" characters, which have special meanings in URL query strings. URL-safe Base64 replaces "+" with "-" and "/" with "_", and omits trailing "=" padding.',
+    question: 'How does Base64 encoding represent binary data?',
+    answer: 'Base64 divides binary data into 6-bit chunks, where each chunk is mapped to one of 64 printable ASCII characters (A-Z, a-z, 0-9, +, /). Because 3 bytes (24 bits) map to 4 Base64 characters, Base64 increases data payload size by approximately 33.3%.',
   },
   {
-    question: 'Can this tool encode international UTF-8 characters without corruption?',
-    answer: 'Yes. It applies proper UTF-8 percent-encoding before calling binary conversion, preventing ASCII limitation crashes on multi-byte characters and emojis.',
+    question: 'What is URL-Safe Base64 (RFC 4648 §5)?',
+    answer: 'Standard Base64 contains `+` and `/` characters, which have reserved syntactic meaning in URLs and query strings. URL-safe Base64 replaces `+` with `-` (hyphen) and `/` with `_` (underscore), and optionally omits the trailing `=` padding characters.',
+  },
+  {
+    question: 'Are my files or text sent to any remote server?',
+    answer: 'No. All encoding and decoding runs 100% locally inside your browser using modern Web APIs (FileReader, TextEncoder, Uint8Array). No data ever leaves your device.',
   },
 ];
 
@@ -28,7 +33,7 @@ const schemaGraph = [
   {
     '@context': 'https://schema.org',
     '@type': 'WebApplication',
-    name: 'Base64 Encoder & Decoder',
+    name: 'Base64 Encoder and Decoder',
     url: canonicalUrl,
     applicationCategory: 'DeveloperApplication',
     operatingSystem: 'All',
@@ -86,22 +91,61 @@ const schemaGraph = [
     <header class="space-y-3">
       <div class="inline-flex items-center gap-2 rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1 text-xs font-semibold text-[color:var(--muted)]">
         <span class="inline-block h-2 w-2 rounded-full bg-emerald-500"></span>
-        <span>UTF-8 &amp; URL-Safe Compliant</span>
+        <span>UTF-8 &bull; Binary Files &bull; RFC 4648 URL-Safe</span>
       </div>
       <h1 class="text-2xl sm:text-4xl font-extrabold tracking-tight text-[color:var(--fg)]">
         Base64 Encoder &amp; Decoder
       </h1>
       <p class="max-w-2xl text-xs sm:text-sm text-[color:var(--muted)] leading-relaxed">
-        Encode plain text into Base64 format or decode Base64 strings back to readable UTF-8 text with URL-safe options.
+        Convert plain text, images, and files to Base64 format or decode Base64 strings back to original UTF-8 text or downloadable binaries. Zero server uploads.
       </p>
     </header>
 
+    <!-- Telemetry Bar -->
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+      <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3 text-center">
+        <p class="text-[10px] font-bold uppercase tracking-wider text-[color:var(--muted)]">Raw Size</p>
+        <p id="stat-raw-bytes" class="mt-1 font-mono text-base font-bold text-[color:var(--fg)]">0 B</p>
+      </div>
+      <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3 text-center">
+        <p class="text-[10px] font-bold uppercase tracking-wider text-[color:var(--muted)]">Base64 Size</p>
+        <p id="stat-b64-bytes" class="mt-1 font-mono text-base font-bold text-cyan-500 dark:text-cyan-400">0 B</p>
+      </div>
+      <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3 text-center">
+        <p class="text-[10px] font-bold uppercase tracking-wider text-[color:var(--muted)]">Overhead Delta</p>
+        <p id="stat-overhead" class="mt-1 font-mono text-base font-bold text-[color:var(--fg)]">+33.3%</p>
+      </div>
+      <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3 text-center">
+        <p class="text-[10px] font-bold uppercase tracking-wider text-[color:var(--muted)]">Mode</p>
+        <p id="stat-mode" class="mt-1 font-mono text-base font-bold text-[color:var(--fg)]">UTF-8 Text</p>
+      </div>
+    </div>
+
+    <!-- Mode Selector Tabs -->
+    <div class="flex items-center gap-2 border-b border-[color:var(--border)] pb-2">
+      <button
+        type="button"
+        data-tab="text"
+        class="tab-btn rounded-xl bg-[color:var(--surface-strong)] px-4 py-2 text-xs font-bold text-[color:var(--fg)] border border-[color:var(--border)] transition"
+      >
+        Text Input
+      </button>
+      <button
+        type="button"
+        data-tab="file"
+        class="tab-btn rounded-xl bg-transparent px-4 py-2 text-xs font-medium text-[color:var(--muted)] hover:text-[color:var(--fg)] transition"
+      >
+        File &amp; Image Upload
+      </button>
+    </div>
+
+    <!-- Main Converter Workspace -->
     <div class="grid gap-6 lg:grid-cols-2">
-      <!-- Input -->
+      <!-- Input Column -->
       <div class="space-y-3">
         <div class="flex items-center justify-between">
           <label for="b64-input" class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">
-            Input Text
+            Input Payload
           </label>
           <div class="flex items-center gap-2 text-xs">
             <button type="button" data-sample-btn class="text-[color:var(--primary)] hover:underline font-semibold">Sample</button>
@@ -109,30 +153,73 @@ const schemaGraph = [
             <button type="button" data-clear-btn class="text-[color:var(--muted)] hover:text-[color:var(--fg)]">Clear</button>
           </div>
         </div>
-        <textarea
-          id="b64-input"
-          rows="14"
-          class="w-full font-mono text-xs leading-relaxed rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-[color:var(--fg)] focus:border-[color:var(--border-strong)] focus:outline-hidden"
-          placeholder="Type or paste text/Base64 string here..."
-        ></textarea>
 
-        <div class="flex flex-wrap items-center justify-between gap-3">
-          <label class="flex items-center gap-2 text-xs text-[color:var(--muted)] cursor-pointer">
-            <input type="checkbox" id="url-safe-check" class="rounded accent-[color:var(--fg)]" />
-            <span>URL-Safe Mode (RFC 4648)</span>
-          </label>
-          <div class="flex gap-2">
+        <!-- Text Input View -->
+        <div id="text-view" class="space-y-3">
+          <textarea
+            id="b64-input"
+            rows="13"
+            class="w-full font-mono text-xs leading-relaxed rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-[color:var(--fg)] focus:border-[color:var(--border-strong)] focus:outline-hidden"
+            placeholder="Type or paste plain text or a Base64 string here..."
+          ></textarea>
+        </div>
+
+        <!-- File Input View -->
+        <div id="file-view" class="hidden space-y-3">
+          <div class="relative flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-[color:var(--border)] bg-[color:var(--surface)] p-8 text-center hover:border-[color:var(--border-strong)] transition">
+            <input type="file" id="file-input" class="absolute inset-0 opacity-0 cursor-pointer w-full h-full" />
+            <div class="space-y-2 pointer-events-none">
+              <span class="text-3xl">&#128196;</span>
+              <p class="text-xs font-bold text-[color:var(--fg)]">Drop any file or image here or click to browse</p>
+              <p class="text-[11px] text-[color:var(--muted)]">Supports PNG, JPEG, SVG, PDF, JSON, ZIP, etc. Processed 100% locally.</p>
+              <p id="file-info" class="text-xs font-mono text-cyan-500 dark:text-cyan-400 font-bold hidden"></p>
+            </div>
+          </div>
+          <!-- Image Preview if file is an image -->
+          <div id="img-preview-box" class="hidden rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3 text-center">
+            <p class="text-[11px] font-bold text-[color:var(--muted)] mb-2">Image Preview:</p>
+            <img id="img-preview" alt="Base64 preview" class="max-h-48 mx-auto rounded-lg shadow-xs object-contain" />
+          </div>
+        </div>
+
+        <!-- Conversion Options -->
+        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 space-y-3">
+          <p class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Format Options</p>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+            <label class="flex items-center gap-2 cursor-pointer">
+              <input type="checkbox" id="url-safe-check" class="rounded accent-[color:var(--fg)]" />
+              <span>URL-Safe Mode (RFC 4648 §5: - and _)</span>
+            </label>
+            <label class="flex items-center gap-2 cursor-pointer">
+              <input type="checkbox" id="strip-padding" class="rounded accent-[color:var(--fg)]" />
+              <span>Strip Trailing Padding (=)</span>
+            </label>
+            <label class="flex items-center gap-2 cursor-pointer">
+              <input type="checkbox" id="data-uri-toggle" class="rounded accent-[color:var(--fg)]" />
+              <span>Include Data URI Prefix</span>
+            </label>
+            <div class="flex items-center gap-2">
+              <label for="line-wrap" class="text-[color:var(--muted)]">Line Wrap:</label>
+              <select id="line-wrap" class="rounded-lg border border-[color:var(--border)] bg-[color:var(--bg)] px-2 py-0.5 text-xs text-[color:var(--fg)]">
+                <option value="none">No Wrapping</option>
+                <option value="64">64 chars (PEM)</option>
+                <option value="76">76 chars (MIME)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="flex flex-wrap gap-2 pt-2 border-t border-[color:var(--border)]">
             <button
               type="button"
               data-encode-btn
-              class="rounded-xl bg-[color:var(--fg)] px-5 py-2 text-xs font-bold text-[color:var(--bg)] shadow-xs transition hover:opacity-90"
+              class="flex-1 rounded-xl bg-[color:var(--fg)] py-2.5 text-xs font-bold text-[color:var(--bg)] shadow-xs transition hover:opacity-90"
             >
-              Encode Base64
+              Encode to Base64
             </button>
             <button
               type="button"
               data-decode-btn
-              class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] px-5 py-2 text-xs font-bold text-[color:var(--fg)] transition hover:bg-[color:var(--surface-strong)]"
+              class="flex-1 rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] py-2.5 text-xs font-bold text-[color:var(--fg)] transition hover:bg-[color:var(--surface-strong)]"
             >
               Decode Base64
             </button>
@@ -140,7 +227,7 @@ const schemaGraph = [
         </div>
       </div>
 
-      <!-- Output -->
+      <!-- Output Column -->
       <div class="space-y-3">
         <div class="flex items-center justify-between">
           <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Output Result</span>
@@ -149,18 +236,83 @@ const schemaGraph = [
               <Icon name="copy" class="w-3.5 h-3.5" />
               <span>Copy</span>
             </button>
+            <span class="text-[color:var(--border)]">|</span>
+            <button type="button" data-download-btn class="text-xs font-bold text-[color:var(--fg)] hover:underline">
+              Download File
+            </button>
           </div>
         </div>
+
         <textarea
           id="b64-output"
-          rows="14"
+          rows="18"
           readonly
           class="w-full font-mono text-xs leading-relaxed rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-4 text-[color:var(--fg)] focus:outline-hidden"
           placeholder="Encoded or decoded output will appear here..."
         ></textarea>
-        <div id="b64-err" class="hidden rounded-xl border border-red-500/30 bg-red-500/10 p-3 text-xs text-red-600 dark:text-red-400"></div>
+
+        <div id="b64-err" class="hidden rounded-xl border border-red-500/30 bg-red-500/10 p-3 text-xs text-red-600 dark:text-red-400 font-mono"></div>
       </div>
     </div>
+
+    <!-- Parameter Guide & Worked Example -->
+    <CalculatorParameterGuide
+      title="Base64 Encoding Parameters & Schema Reference"
+      description="Technical specifications, RFC standard variations, bitwise packing mechanics, and data URI formatting."
+      parameters={[
+        {
+          name: "Standard Base64 (RFC 4648 §4)",
+          type: "ASCII 64-char Alphabet",
+          defaultValue: "A-Z, a-z, 0-9, +, /",
+          description: "Default Base64 alphabet using plus (+) for value 62 and slash (/) for value 63, padded with '=' to multiples of 4 bytes.",
+        },
+        {
+          name: "URL-Safe Base64 (RFC 4648 §5)",
+          type: "ASCII 64-char Alphabet",
+          defaultValue: "A-Z, a-z, 0-9, -, _",
+          description: "Substitutes '+' with '-' and '/' with '_' so strings can safely be embedded in URL query parameters, paths, and JWT tokens without percent-encoding.",
+        },
+        {
+          name: "Data URI Scheme",
+          type: "MIME String",
+          defaultValue: "data:[mime];base64,[data]",
+          description: "Prefixes the Base64 output with media type metadata so web browsers and CSS stylesheets can render inline image and font assets directly.",
+        },
+        {
+          name: "MIME Line Wrapping",
+          type: "Integer (64 or 76)",
+          defaultValue: "None",
+          description: "Inserts newline characters every 64 (PEM certificate standard) or 76 characters (RFC 2045 email attachment standard).",
+        },
+      ]}
+      workedExample={{
+        title: "Encoding the UTF-8 String 'Cat'",
+        description: "Observe the 24-bit binary transformation of the 3 ASCII characters 'C', 'a', and 't'.",
+        formula: "Base64: (3 bytes * 8 bits) -> (4 groups * 6 bits)",
+        steps: [
+          {
+            step: "Binary Representation",
+            calculation: "'C' (01000011) + 'a' (01100001) + 't' (01110100)",
+            result: "24-bit stream: 010000110110000101110100",
+          },
+          {
+            step: "Regroup into 6-bit Chunks",
+            calculation: "[010000] [110110] [000101] [110100]",
+            result: "Decimal indices: 16, 54, 5, 52",
+          },
+          {
+            step: "Map to Base64 Alphabet",
+            calculation: "Index 16 -> 'Q', 54 -> '2', 5 -> 'F', 52 -> '0'",
+            result: "Encoded Base64 output: 'Q2F0'",
+          },
+          {
+            step: "Byte Growth Verification",
+            calculation: "3 input bytes expand to 4 output bytes (exactly +33.3% overhead).",
+            result: "Payload verified",
+          },
+        ],
+      }}
+    />
 
     <!-- FAQs -->
     <section class="space-y-4">
@@ -170,7 +322,7 @@ const schemaGraph = [
           <details class="group rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
             <summary class="cursor-pointer list-none font-semibold text-sm sm:text-base text-[color:var(--fg)] flex items-center justify-between gap-4">
               <span>{faq.question}</span>
-              <span class="text-xs text-[color:var(--muted)] group-open:rotate-180 transition-transform">▼</span>
+              <span class="text-xs text-[color:var(--muted)] group-open:rotate-180 transition-transform">&#9660;</span>
             </summary>
             <p class="mt-3 text-xs sm:text-sm leading-relaxed text-[color:var(--muted)]">
               {faq.answer}
@@ -189,41 +341,174 @@ const schemaGraph = [
       const input = root.querySelector('#b64-input');
       const output = root.querySelector('#b64-output');
       const urlSafeCheck = root.querySelector('#url-safe-check');
+      const stripPadding = root.querySelector('#strip-padding');
+      const dataUriToggle = root.querySelector('#data-uri-toggle');
+      const lineWrap = root.querySelector('#line-wrap');
       const encodeBtn = root.querySelector('[data-encode-btn]');
       const decodeBtn = root.querySelector('[data-decode-btn]');
       const copyBtn = root.querySelector('[data-copy-btn]');
+      const downloadBtn = root.querySelector('[data-download-btn]');
       const clearBtn = root.querySelector('[data-clear-btn]');
       const sampleBtn = root.querySelector('[data-sample-btn]');
       const errBox = root.querySelector('#b64-err');
 
+      const statRawBytes = root.querySelector('#stat-raw-bytes');
+      const statB64Bytes = root.querySelector('#stat-b64-bytes');
+      const statOverhead = root.querySelector('#stat-overhead');
+      const statMode = root.querySelector('#stat-mode');
+
+      const tabBtns = root.querySelectorAll('[data-tab]');
+      const textView = root.querySelector('#text-view');
+      const fileView = root.querySelector('#file-view');
+      const fileInput = root.querySelector('#file-input');
+      const fileInfo = root.querySelector('#file-info');
+      const imgPreviewBox = root.querySelector('#img-preview-box');
+      const imgPreview = root.querySelector('#img-preview');
+
+      let currentMimeType = 'text/plain';
+      let activeTab = 'text';
+      let fileUint8Array = null;
+
+      function formatBytes(bytes) {
+        if (bytes === 0) return '0 B';
+        const k = 1024;
+        const sizes = ['B', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+      }
+
+      // Convert Uint8Array to binary string safely without stack overflow
+      function uint8ToBase64(u8) {
+        let binary = '';
+        const len = u8.byteLength;
+        const chunk = 8192;
+        for (let i = 0; i < len; i += chunk) {
+          binary += String.fromCharCode.apply(null, u8.subarray(i, Math.min(i + chunk, len)));
+        }
+        return btoa(binary);
+      }
+
+      // Convert Base64 to Uint8Array
+      function base64ToUint8(b64) {
+        const binary = atob(b64);
+        const len = binary.length;
+        const bytes = new Uint8Array(len);
+        for (let i = 0; i < len; i++) {
+          bytes[i] = binary.charCodeAt(i);
+        }
+        return bytes;
+      }
+
+      function applyFormatting(b64String) {
+        let res = b64String;
+        if (urlSafeCheck.checked) {
+          res = res.replace(/\+/g, '-').replace(/\//g, '_');
+        }
+        if (stripPadding.checked) {
+          res = res.replace(/=+$/, '');
+        }
+        if (lineWrap.value !== 'none') {
+          const wrapWidth = parseInt(lineWrap.value, 10);
+          const regex = new RegExp(`.{1,${wrapWidth}}`, 'g');
+          res = (res.match(regex) || []).join('\n');
+        }
+        if (dataUriToggle.checked) {
+          res = `data:${currentMimeType};base64,` + res;
+        }
+        return res;
+      }
+
       function encode() {
-        const text = input.value;
-        if (!text) { output.value = ''; errBox.classList.add('hidden'); return; }
+        errBox.classList.add('hidden');
         try {
-          errBox.classList.add('hidden');
-          const b64 = btoa(unescape(encodeURIComponent(text)));
-          if (urlSafeCheck.checked) {
-            output.value = b64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+          let rawBytes = 0;
+          let b64 = '';
+
+          if (activeTab === 'file' && fileUint8Array) {
+            rawBytes = fileUint8Array.length;
+            b64 = uint8ToBase64(fileUint8Array);
           } else {
-            output.value = b64;
+            const text = input.value;
+            if (!text) {
+              output.value = '';
+              statRawBytes.textContent = '0 B';
+              statB64Bytes.textContent = '0 B';
+              return;
+            }
+            const encoder = new TextEncoder();
+            const u8 = encoder.encode(text);
+            rawBytes = u8.length;
+            b64 = uint8ToBase64(u8);
+            currentMimeType = 'text/plain;charset=utf-8';
           }
+
+          const formatted = applyFormatting(b64);
+          output.value = formatted;
+
+          statRawBytes.textContent = formatBytes(rawBytes);
+          statB64Bytes.textContent = formatBytes(formatted.length);
+          const overhead = rawBytes > 0 ? (((formatted.length - rawBytes) / rawBytes) * 100).toFixed(1) : '33.3';
+          statOverhead.textContent = `+${overhead}%`;
+
+          // If data url is an image, preview it
+          if (currentMimeType.startsWith('image/')) {
+            imgPreviewBox.classList.remove('hidden');
+            imgPreview.src = `data:${currentMimeType};base64,${b64}`;
+          }
+
         } catch (e) {
           errBox.classList.remove('hidden');
-          errBox.textContent = 'Encoding error: ' + e.message;
+          errBox.textContent = 'Encoding Error: ' + e.message;
         }
       }
 
       function decode() {
-        const text = input.value.trim();
-        if (!text) { output.value = ''; errBox.classList.add('hidden'); return; }
+        errBox.classList.add('hidden');
+        let text = input.value.trim();
+        if (!text) {
+          output.value = '';
+          return;
+        }
+
         try {
-          errBox.classList.add('hidden');
+          // Detect Data URL header
+          if (text.startsWith('data:')) {
+            const commaIdx = text.indexOf(',');
+            if (commaIdx !== -1) {
+              const header = text.substring(5, commaIdx);
+              if (header.includes(';')) {
+                currentMimeType = header.split(';')[0];
+              }
+              text = text.substring(commaIdx + 1);
+            }
+          }
+
+          // Strip whitespace and newlines
+          text = text.replace(/[\r\n\s]/g, '');
+
+          // Normalize URL-safe characters
           let b64 = text.replace(/-/g, '+').replace(/_/g, '/');
           while (b64.length % 4) b64 += '=';
-          output.value = decodeURIComponent(escape(atob(b64)));
+
+          const u8 = base64ToUint8(b64);
+          statRawBytes.textContent = formatBytes(u8.length);
+          statB64Bytes.textContent = formatBytes(text.length);
+
+          const decoder = new TextDecoder('utf-8', { fatal: true });
+          const decodedString = decoder.decode(u8);
+          output.value = decodedString;
+
         } catch (e) {
-          errBox.classList.remove('hidden');
-          errBox.textContent = 'Invalid Base64 string: ' + e.message;
+          // Could be binary data or UTF-8 decoding issue
+          try {
+            let b64 = text.replace(/-/g, '+').replace(/_/g, '/');
+            while (b64.length % 4) b64 += '=';
+            const u8 = base64ToUint8(b64);
+            output.value = `[Binary Data Decoded: ${u8.length} bytes. Click "Download File" to save as binary].`;
+          } catch (binErr) {
+            errBox.classList.remove('hidden');
+            errBox.textContent = 'Invalid Base64 payload: ' + e.message;
+          }
         }
       }
 
@@ -231,13 +516,21 @@ const schemaGraph = [
       decodeBtn.addEventListener('click', decode);
 
       sampleBtn.addEventListener('click', () => {
-        input.value = 'Hello World! 🎉 Welcome to Calculator Utility.';
+        switchTab('text');
+        input.value = 'Hello World! 🚀 Welcome to CalculatorUtility.tech developer suite.';
+        currentMimeType = 'text/plain;charset=utf-8';
         encode();
       });
 
       clearBtn.addEventListener('click', () => {
         input.value = '';
         output.value = '';
+        fileInput.value = '';
+        fileUint8Array = null;
+        fileInfo.classList.add('hidden');
+        imgPreviewBox.classList.add('hidden');
+        statRawBytes.textContent = '0 B';
+        statB64Bytes.textContent = '0 B';
         errBox.classList.add('hidden');
       });
 
@@ -248,6 +541,64 @@ const schemaGraph = [
         const orig = span.textContent;
         span.textContent = 'Copied!';
         setTimeout(() => span.textContent = orig, 1800);
+      });
+
+      downloadBtn.addEventListener('click', () => {
+        if (!output.value) return;
+        const blob = new Blob([output.value], { type: currentMimeType || 'text/plain;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'output.txt';
+        a.click();
+        URL.revokeObjectURL(url);
+      });
+
+      function switchTab(tab) {
+        activeTab = tab;
+        tabBtns.forEach(btn => {
+          if (btn.dataset.tab === tab) {
+            btn.className = 'tab-btn rounded-xl bg-[color:var(--surface-strong)] px-4 py-2 text-xs font-bold text-[color:var(--fg)] border border-[color:var(--border)] transition';
+          } else {
+            btn.className = 'tab-btn rounded-xl bg-transparent px-4 py-2 text-xs font-medium text-[color:var(--muted)] hover:text-[color:var(--fg)] transition';
+          }
+        });
+
+        if (tab === 'text') {
+          textView.classList.remove('hidden');
+          fileView.classList.add('hidden');
+          statMode.textContent = 'UTF-8 Text';
+        } else {
+          textView.classList.add('hidden');
+          fileView.classList.remove('hidden');
+          statMode.textContent = 'Binary File';
+        }
+      }
+
+      tabBtns.forEach(btn => {
+        btn.addEventListener('click', () => switchTab(btn.dataset.tab));
+      });
+
+      fileInput.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        currentMimeType = file.type || 'application/octet-stream';
+        fileInfo.textContent = `Selected: ${file.name} (${formatBytes(file.size)})`;
+        fileInfo.classList.remove('hidden');
+
+        const reader = new FileReader();
+        reader.onload = (loadEvt) => {
+          fileUint8Array = new Uint8Array(loadEvt.target.result);
+          encode();
+        };
+        reader.readAsArrayBuffer(file);
+      });
+
+      [urlSafeCheck, stripPadding, dataUriToggle, lineWrap].forEach(opt => {
+        opt.addEventListener('change', () => {
+          if (output.value) encode();
+        });
       });
 
       sampleBtn.click();

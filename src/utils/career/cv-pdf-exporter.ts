@@ -75,6 +75,7 @@ export interface CvState {
   volunteer: VolunteerItem[];
   interests: string;
   references: string;
+  photo?: string;
 }
 
 /**
@@ -151,6 +152,76 @@ export function generateCvPdf(data: CvState): jsPDF {
       data.website?.trim(),
     ].filter(Boolean) as string[];
 
+    const hasPhoto = Boolean(data.photo && data.photo.trim().length > 0);
+
+    if (hasPhoto) {
+      const photoSize = 22; // mm (square standard headshot)
+      const photoGap = 4.5; // mm
+      const photoX = marginLeft;
+      const photoY = currentY;
+
+      // Render photo on the left margin
+      try {
+        const photoFormat = data.photo!.startsWith('data:image/png') ? 'PNG' : 'JPEG';
+        doc.addImage(data.photo!, photoFormat, photoX, photoY, photoSize, photoSize);
+      } catch (err) {
+        console.error('Failed to embed profile photo in PDF:', err);
+      }
+
+      // Subtle border around photo matching template palette
+      doc.setDrawColor(colors.headerLine[0], colors.headerLine[1], colors.headerLine[2]);
+      doc.setLineWidth(0.25);
+      doc.rect(photoX, photoY, photoSize, photoSize);
+
+      // Text column cleanly aligned beside photo
+      const textX = photoX + photoSize + photoGap;
+      const textWidth = contentWidth - photoSize - photoGap;
+      let textY = photoY + 0.5;
+
+      // Name
+      doc.setFont(primaryFont, 'bold');
+      doc.setFontSize(isModern ? 19 : 18);
+      doc.setTextColor(colors.nameText[0], colors.nameText[1], colors.nameText[2]);
+      const nameToPrint = isProfessional ? name.toUpperCase() : name;
+      doc.text(nameToPrint, textX, textY, { baseline: 'top' });
+      textY += isModern ? 7.2 : 6.8;
+
+      // Professional Title
+      if (title) {
+        doc.setFont(primaryFont, 'bold');
+        doc.setFontSize(10.2);
+        doc.setTextColor(colors.titleText[0], colors.titleText[1], colors.titleText[2]);
+        doc.text(title, textX, textY, { baseline: 'top' });
+        textY += 4.5;
+      }
+
+      // Contact Details Line
+      if (contactItems.length > 0) {
+        doc.setFont(primaryFont, 'normal');
+        doc.setFontSize(8.6);
+        doc.setTextColor(colors.mutedText[0], colors.mutedText[1], colors.mutedText[2]);
+
+        const contactStr = contactItems.join('   |   ');
+        const wrappedContact = doc.splitTextToSize(contactStr, textWidth);
+
+        wrappedContact.forEach((line: string) => {
+          doc.text(line, textX, textY, { baseline: 'top' });
+          textY += 3.8;
+        });
+      }
+
+      // Advance currentY past both photo and text
+      currentY = Math.max(photoY + photoSize, textY) + 2.5;
+
+      // Header Divider Line across full content width
+      doc.setDrawColor(colors.headerLine[0], colors.headerLine[1], colors.headerLine[2]);
+      doc.setLineWidth(isModern ? 0.6 : 0.45);
+      doc.line(marginLeft, currentY, marginLeft + contentWidth, currentY);
+      currentY += isModern ? 3.8 : 3.2;
+      return;
+    }
+
+    // Default Header without Photo (100% Backward Compatible)
     // Name
     doc.setFont(primaryFont, 'bold');
     doc.setFontSize(isModern ? 19 : 18);

@@ -1,10 +1,12 @@
 ---
 import SiteLayout from '../../layouts/SiteLayout.astro';
 import Icon from '../../components/Icon.astro';
+import CalculatorParameterGuide from '../../components/calculator/CalculatorParameterGuide.astro';
+import type { CalculatorParameterInfo } from '../../types/calculator';
 import { siteName, toAbsoluteUrl, withBasePath } from '../../utils/site';
 
-const pageTitle = `ISBN Book Citation Generator — APA, MLA, Chicago, Harvard · ${siteName}`;
-const pageDesc = 'Generate formatted book bibliography citations from ISBN, book title, publisher, and year online. Formats in APA 7th, MLA 9th, Chicago, and BibTeX styles.';
+const pageTitle = `ISBN Book Citation Generator — APA 7, MLA 9, Chicago, Harvard, BibTeX · ${siteName}`;
+const pageDesc = 'Generate formatted book citations from an ISBN number with live Open Library metadata lookup and checksum validation. Formats in APA 7th, MLA 9th, Chicago, Harvard, and BibTeX.';
 const canonicalUrl = toAbsoluteUrl('/research-tools/isbn-citation-generator/');
 
 const breadcrumbItems = [
@@ -13,10 +15,49 @@ const breadcrumbItems = [
   { label: 'ISBN Citation Generator' },
 ];
 
+const parameterGuideData: CalculatorParameterInfo[] = [
+  {
+    name: 'International Standard Book Number (ISBN)',
+    description: 'A 10-digit or 13-digit commercial machine-readable book identifier assigned to every published edition and variation.',
+    type: 'String (ISBN-10 or ISBN-13)',
+    defaultValue: '978-0262033848',
+    whyItMatters: 'Uniquely distinguishes specific book editions, revisions, and publishers across global library databases.',
+  },
+  {
+    name: 'Author Attribution (Authors / Editors)',
+    description: 'The writers, translators, or editors credited for the book. Different citation guides prescribe specific capitalization, initials, and ampersand formatting.',
+    type: 'Author String',
+    defaultValue: 'Cormen, Thomas H., et al.',
+    whyItMatters: 'Establishes scholarly provenance and intellectual copyright.',
+  },
+  {
+    name: 'Book Title & Subtitle',
+    description: 'The full official title of the publication, including subtitle separated by a colon.',
+    type: 'String',
+    defaultValue: 'Introduction to Algorithms (3rd ed.)',
+    whyItMatters: 'The primary identifier used in reading lists, bibliographies, and university syllabi.',
+  },
+  {
+    name: 'Publisher & Publication City',
+    description: 'The publishing house responsible for typesetting and distribution (e.g. MIT Press, O\'Reilly, Pearson).',
+    type: 'String',
+    defaultValue: 'MIT Press',
+    whyItMatters: 'Required in Chicago, Harvard, and traditional academic citation styles.',
+  },
+];
+
 const schemaFaq = [
   {
-    question: 'How are book citations formatted in APA 7th and MLA 9th?',
-    answer: 'APA 7th follows `Author, A. A. (Year). Title of book (Edition). Publisher.` MLA 9th follows `Author. Title of Book. Edition, Publisher, Year.`.',
+    question: 'How are book citations formatted in APA 7th vs MLA 9th?',
+    answer: 'APA 7th follows: Author, A. A. (Year). Title of book (Edition). Publisher. MLA 9th follows: Author, First. Title of Book. Edition, Publisher, Year.',
+  },
+  {
+    question: 'What is the difference between ISBN-10 and ISBN-13?',
+    answer: 'ISBN-10 was the legacy standard adopted in 1970 using a 10-digit modulus-11 checksum. In 2007, the international standard expanded to ISBN-13 to align with EAN-13 barcodes, typically prefixed by 978 or 979.',
+  },
+  {
+    question: 'How does the Open Library ISBN metadata lookup work?',
+    answer: 'When you enter an ISBN and click "Fetch Book Details", our client-side tool queries the free, non-profit Open Library REST API (openlibrary.org/isbn/). It automatically retrieves and populates the book title, authors, publisher, and publication year.',
   },
 ];
 
@@ -80,50 +121,99 @@ const schemaGraph = [
     </nav>
 
     <header class="space-y-3">
-      <div class="inline-flex items-center gap-2 rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1 text-xs font-semibold text-[color:var(--muted)]">
+      <div class="inline-flex items-center gap-2 rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3.5 py-1 text-xs font-semibold text-[color:var(--muted)]">
         <span class="inline-block h-2 w-2 rounded-full bg-emerald-500"></span>
-        <span>Book Bibliography Formatter</span>
+        <span>Open Library API &amp; ISBN Checksum Engine</span>
       </div>
       <h1 class="text-2xl sm:text-4xl font-extrabold tracking-tight text-[color:var(--fg)]">
         ISBN Book Citation Generator
       </h1>
-      <p class="max-w-2xl text-xs sm:text-sm text-[color:var(--muted)] leading-relaxed">
-        Format book references into APA 7, MLA 9, Chicago, and BibTeX book entries.
+      <p class="max-w-3xl text-xs sm:text-sm text-[color:var(--muted)] leading-relaxed">
+        Format published books into APA 7, MLA 9, Chicago, Harvard, and BibTeX. Validate ISBN checksums, fetch bibliographic metadata automatically via Open Library, or customize citations manually.
       </p>
     </header>
 
     <div class="space-y-6">
-      <div class="space-y-4 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 sm:p-6 text-xs">
-        <div class="grid gap-4 sm:grid-cols-2">
-          <div>
-            <label for="isbn-val" class="font-bold text-[color:var(--fg)] block mb-1">ISBN (10 or 13 digits):</label>
+      <!-- ISBN Lookup Card -->
+      <div class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-5 sm:p-6 space-y-4">
+        <div class="flex flex-col sm:flex-row items-stretch sm:items-end gap-3">
+          <div class="grow space-y-1">
+            <div class="flex items-center justify-between">
+              <label for="isbn-val" class="font-bold text-xs uppercase tracking-wider text-[color:var(--fg)]">
+                ISBN-10 or ISBN-13:
+              </label>
+              <span id="isbn-status-badge" class="rounded-md bg-cyan-500/10 border border-emerald-500/30 px-2 py-0.5 text-[10px] font-mono text-cyan-500 dark:text-cyan-400 font-bold">
+                Valid ISBN-13
+              </span>
+            </div>
             <input
               type="text"
               id="isbn-val"
-              class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-[color:var(--fg)]"
-              placeholder="978-0131103627"
-              value="978-0131103627"
+              class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-2.5 font-mono text-xs sm:text-sm text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)]"
+              placeholder="e.g. 978-0262033848 or 0262033844"
+              value="978-0262033848"
             />
           </div>
+          <button
+            type="button"
+            id="fetch-isbn-btn"
+            class="rounded-2xl bg-[color:var(--fg)] px-5 py-2.5 text-xs font-bold text-[color:var(--bg)] shadow-xs transition hover:opacity-90 active:scale-95 cursor-pointer shrink-0"
+          >
+            Fetch Book Details
+          </button>
+        </div>
+
+        <div id="fetch-status" class="hidden text-xs font-medium"></div>
+
+        <!-- Preset Book Samples -->
+        <div class="flex flex-wrap items-center gap-2 text-xs pt-1 border-t border-[color:var(--border)]/60">
+          <span class="text-[color:var(--muted)] font-semibold">Popular Textbooks:</span>
+          <button type="button" class="sample-isbn-btn rounded-lg border border-[color:var(--border)] bg-[color:var(--surface)] px-2.5 py-1 text-[color:var(--fg)] hover:border-emerald-500 cursor-pointer" data-isbn="978-0262033848">Intro to Algorithms (CLRS)</button>
+          <button type="button" class="sample-isbn-btn rounded-lg border border-[color:var(--border)] bg-[color:var(--surface)] px-2.5 py-1 text-[color:var(--fg)] hover:border-emerald-500 cursor-pointer" data-isbn="978-0132350884">Clean Code (Robert Martin)</button>
+          <button type="button" class="sample-isbn-btn rounded-lg border border-[color:var(--border)] bg-[color:var(--surface)] px-2.5 py-1 text-[color:var(--fg)] hover:border-emerald-500 cursor-pointer" data-isbn="978-0201633610">Design Patterns (GoF)</button>
+        </div>
+      </div>
+
+      <!-- Book Metadata Form -->
+      <div class="space-y-4 rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 sm:p-6 text-xs">
+        <div class="flex items-center justify-between border-b border-[color:var(--border)] pb-2">
+          <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Book Bibliographic Information</span>
+          <button type="button" id="clear-btn" class="text-[11px] font-semibold text-[color:var(--muted)] hover:text-[color:var(--fg)] cursor-pointer">
+            Clear Form
+          </button>
+        </div>
+
+        <div class="grid gap-4 sm:grid-cols-2">
           <div>
             <label for="author-val" class="font-bold text-[color:var(--fg)] block mb-1">Author(s) (Last, First):</label>
             <input
               type="text"
               id="author-val"
               class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-[color:var(--fg)]"
-              value="Kernighan, Brian W., &amp; Ritchie, Dennis M."
+              placeholder="e.g. Cormen, Thomas H., Leiserson, Charles E., & Rivest, Ronald L."
+              value="Cormen, Thomas H., Leiserson, Charles E., Rivest, Ronald L., & Stein, Clifford"
             />
           </div>
-        </div>
-
-        <div class="grid gap-4 sm:grid-cols-3">
-          <div class="sm:col-span-2">
-            <label for="title-val" class="font-bold text-[color:var(--fg)] block mb-1">Book Title:</label>
+          <div>
+            <label for="title-val" class="font-bold text-[color:var(--fg)] block mb-1">Book Title &amp; Subtitle:</label>
             <input
               type="text"
               id="title-val"
               class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-[color:var(--fg)]"
-              value="The C Programming Language"
+              placeholder="e.g. Introduction to Algorithms"
+              value="Introduction to Algorithms"
+            />
+          </div>
+        </div>
+
+        <div class="grid gap-4 sm:grid-cols-4">
+          <div class="sm:col-span-2">
+            <label for="publisher-val" class="font-bold text-[color:var(--fg)] block mb-1">Publisher Name:</label>
+            <input
+              type="text"
+              id="publisher-val"
+              class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-[color:var(--fg)]"
+              value="MIT Press"
             />
           </div>
           <div>
@@ -132,67 +222,126 @@ const schemaGraph = [
               type="number"
               id="year-val"
               class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-[color:var(--fg)]"
-              value="1988"
-            />
-          </div>
-        </div>
-
-        <div class="grid gap-4 sm:grid-cols-2">
-          <div>
-            <label for="publisher-val" class="font-bold text-[color:var(--fg)] block mb-1">Publisher:</label>
-            <input
-              type="text"
-              id="publisher-val"
-              class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-[color:var(--fg)]"
-              value="Prentice Hall"
+              value="2009"
             />
           </div>
           <div>
-            <label for="edition-val" class="font-bold text-[color:var(--fg)] block mb-1">Edition (optional):</label>
+            <label for="edition-val" class="font-bold text-[color:var(--fg)] block mb-1">Edition (Optional):</label>
             <input
               type="text"
               id="edition-val"
               class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-[color:var(--fg)]"
-              value="2nd ed."
+              value="3rd ed."
             />
           </div>
         </div>
       </div>
 
-      <!-- Formatted Output Styles -->
+      <!-- Formatted Citations Output Section -->
       <div class="space-y-4">
-        <h2 class="text-base font-bold text-[color:var(--fg)]">Formatted Book Citations</h2>
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <h2 class="text-lg font-bold text-[color:var(--fg)]">Formatted Book Citations</h2>
+            <p class="text-xs text-[color:var(--muted)]">Ready to copy directly into reference lists and LaTeX documents</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <button
+              type="button"
+              id="dl-bib-btn"
+              class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1.5 text-xs font-semibold text-[color:var(--fg)] hover:border-emerald-500 transition cursor-pointer"
+            >
+              Download .bib
+            </button>
+            <button
+              type="button"
+              id="copy-all-btn"
+              class="rounded-xl bg-[color:var(--fg)] px-3.5 py-1.5 text-xs font-bold text-[color:var(--bg)] hover:opacity-90 transition cursor-pointer"
+            >
+              Copy All Citations
+            </button>
+          </div>
+        </div>
 
-        <div class="space-y-3">
+        <div class="grid gap-3.5">
           <!-- APA 7 -->
           <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 space-y-1.5">
             <div class="flex items-center justify-between">
-              <span class="text-xs font-bold text-emerald-500 uppercase">APA 7th Edition</span>
-              <button type="button" data-copy-apa class="text-xs font-bold text-[color:var(--fg)] hover:underline">Copy APA</button>
+              <span class="text-xs font-bold text-cyan-500 dark:text-cyan-400 uppercase tracking-wider">APA 7th Edition</span>
+              <button type="button" class="copy-single-btn text-xs font-bold text-[color:var(--fg)] hover:underline cursor-pointer" data-target="cite-apa">Copy APA</button>
             </div>
-            <p id="cite-apa" class="text-xs leading-relaxed text-[color:var(--fg)] font-serif select-all">-</p>
+            <p id="cite-apa" class="text-xs sm:text-sm leading-relaxed text-[color:var(--fg)] font-serif select-all break-words">-</p>
           </div>
 
           <!-- MLA 9 -->
           <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 space-y-1.5">
             <div class="flex items-center justify-between">
-              <span class="text-xs font-bold text-emerald-500 uppercase">MLA 9th Edition</span>
-              <button type="button" data-copy-mla class="text-xs font-bold text-[color:var(--fg)] hover:underline">Copy MLA</button>
+              <span class="text-xs font-bold text-cyan-500 dark:text-cyan-400 uppercase tracking-wider">MLA 9th Edition</span>
+              <button type="button" class="copy-single-btn text-xs font-bold text-[color:var(--fg)] hover:underline cursor-pointer" data-target="cite-mla">Copy MLA</button>
             </div>
-            <p id="cite-mla" class="text-xs leading-relaxed text-[color:var(--fg)] font-serif select-all">-</p>
+            <p id="cite-mla" class="text-xs sm:text-sm leading-relaxed text-[color:var(--fg)] font-serif select-all break-words">-</p>
+          </div>
+
+          <!-- Chicago (Author-Date) -->
+          <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 space-y-1.5">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-cyan-500 dark:text-cyan-400 uppercase tracking-wider">Chicago (Author-Date 17th)</span>
+              <button type="button" class="copy-single-btn text-xs font-bold text-[color:var(--fg)] hover:underline cursor-pointer" data-target="cite-chicago">Copy Chicago</button>
+            </div>
+            <p id="cite-chicago" class="text-xs sm:text-sm leading-relaxed text-[color:var(--fg)] font-serif select-all break-words">-</p>
+          </div>
+
+          <!-- Harvard Reference -->
+          <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 space-y-1.5">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-cyan-500 dark:text-cyan-400 uppercase tracking-wider">Harvard Style</span>
+              <button type="button" class="copy-single-btn text-xs font-bold text-[color:var(--fg)] hover:underline cursor-pointer" data-target="cite-harvard">Copy Harvard</button>
+            </div>
+            <p id="cite-harvard" class="text-xs sm:text-sm leading-relaxed text-[color:var(--fg)] font-serif select-all break-words">-</p>
           </div>
 
           <!-- BibTeX -->
           <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 space-y-1.5">
             <div class="flex items-center justify-between">
-              <span class="text-xs font-bold text-emerald-500 uppercase">BibTeX Book Entry</span>
-              <button type="button" data-copy-bib class="text-xs font-bold text-[color:var(--fg)] hover:underline">Copy BibTeX</button>
+              <span class="text-xs font-bold text-cyan-500 dark:text-cyan-400 uppercase tracking-wider">BibTeX Entry (LaTeX)</span>
+              <button type="button" class="copy-single-btn text-xs font-bold text-[color:var(--fg)] hover:underline cursor-pointer" data-target="cite-bib">Copy BibTeX</button>
             </div>
-            <pre id="cite-bib" class="text-xs leading-relaxed text-[color:var(--fg)] font-mono whitespace-pre-wrap select-all">-</pre>
+            <pre id="cite-bib" class="text-xs leading-relaxed text-[color:var(--fg)] font-mono whitespace-pre-wrap select-all bg-[color:var(--surface-strong)] p-3 rounded-xl border border-[color:var(--border)]">-</pre>
           </div>
         </div>
       </div>
     </div>
+
+    <!-- Parameter Guide Component -->
+    <CalculatorParameterGuide
+      parameters={parameterGuideData}
+      workedExample={{
+        title: 'Book ISBN Citation Example',
+        description: 'Generating compliant bibliographic entries for a major academic textbook.',
+        formula: 'Author(s) + (Year) + Book Title (Edition) + Publisher + ISBN',
+        steps: [
+          {
+            step: 'ISBN Checksum Validation',
+            calculation: 'Verify Modulo-10 checksum on 978-0262033848',
+            result: 'Valid ISBN-13 checksum verified',
+          },
+          {
+            step: 'Format APA 7th',
+            calculation: 'Cormen, T. H., et al. (2009). Introduction to algorithms (3rd ed.). MIT Press',
+            result: 'Cormen, T. H., et al. (2009). Introduction to algorithms (3rd ed.). MIT Press.',
+          },
+          {
+            step: 'Format MLA 9th',
+            calculation: 'Cormen, Thomas H., et al. Introduction to Algorithms. 3rd ed., MIT Press, 2009.',
+            result: 'Cormen, Thomas H., et al. Introduction to Algorithms. 3rd ed., MIT Press, 2009.',
+          },
+          {
+            step: 'Export BibTeX Entry',
+            calculation: 'Construct @book block with citekey cormen2009',
+            result: 'Ready for LaTeX document compilation',
+          },
+        ],
+      }}
+    />
 
     <!-- FAQs -->
     <section class="space-y-4">
@@ -202,7 +351,7 @@ const schemaGraph = [
           <details class="group rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
             <summary class="cursor-pointer list-none font-semibold text-sm sm:text-base text-[color:var(--fg)] flex items-center justify-between gap-4">
               <span>{faq.question}</span>
-              <span class="text-xs text-[color:var(--muted)] group-open:rotate-180 transition-transform">▼</span>
+              <span class="text-xs text-[color:var(--muted)] group-open:rotate-180 transition-transform">&blacktriangledown;</span>
             </summary>
             <p class="mt-3 text-xs sm:text-sm leading-relaxed text-[color:var(--muted)]">
               {faq.answer}
@@ -218,53 +367,243 @@ const schemaGraph = [
       const root = document.querySelector('[data-isbn-app]');
       if (!root) return;
 
+      const isbnVal = root.querySelector('#isbn-val');
       const authorVal = root.querySelector('#author-val');
       const titleVal = root.querySelector('#title-val');
       const yearVal = root.querySelector('#year-val');
       const publisherVal = root.querySelector('#publisher-val');
       const editionVal = root.querySelector('#edition-val');
-      const isbnVal = root.querySelector('#isbn-val');
+
+      const fetchBtn = root.querySelector('#fetch-isbn-btn');
+      const fetchStatus = root.querySelector('#fetch-status');
+      const isbnBadge = root.querySelector('#isbn-status-badge');
+      const clearBtn = root.querySelector('#clear-btn');
 
       const citeApa = root.querySelector('#cite-apa');
       const citeMla = root.querySelector('#cite-mla');
+      const citeChicago = root.querySelector('#cite-chicago');
+      const citeHarvard = root.querySelector('#cite-harvard');
       const citeBib = root.querySelector('#cite-bib');
 
-      const copyApa = root.querySelector('[data-copy-apa]');
-      const copyMla = root.querySelector('[data-copy-mla]');
-      const copyBib = root.querySelector('[data-copy-bib]');
+      const copySingleBtns = root.querySelectorAll('.copy-single-btn');
+      const copyAllBtn = root.querySelector('#copy-all-btn');
+      const dlBibBtn = root.querySelector('#dl-bib-btn');
+      const sampleBtns = root.querySelectorAll('.sample-isbn-btn');
+
+      function sanitizeIsbn(raw) {
+        return raw.replace(/[^0-9X]/gi, '').toUpperCase();
+      }
+
+      function validateIsbn(isbn) {
+        const clean = sanitizeIsbn(isbn);
+        if (clean.length === 10) {
+          let sum = 0;
+          for (let i = 0; i < 9; i++) {
+            sum += parseInt(clean[i], 10) * (10 - i);
+          }
+          const last = clean[9] === 'X' ? 10 : parseInt(clean[9], 10);
+          sum += last;
+          return sum % 11 === 0 ? 'isbn10' : false;
+        } else if (clean.length === 13) {
+          let sum = 0;
+          for (let i = 0; i < 12; i++) {
+            sum += parseInt(clean[i], 10) * (i % 2 === 0 ? 1 : 3);
+          }
+          const check = (10 - (sum % 10)) % 10;
+          return check === parseInt(clean[12], 10) ? 'isbn13' : false;
+        }
+        return false;
+      }
+
+      function updateBadge() {
+        const type = validateIsbn(isbnVal.value);
+        if (type === 'isbn13') {
+          isbnBadge.className = 'rounded-md bg-cyan-500/10 border border-emerald-500/30 px-2 py-0.5 text-[10px] font-mono text-cyan-500 dark:text-cyan-400 font-bold';
+          isbnBadge.textContent = 'Valid ISBN-13';
+        } else if (type === 'isbn10') {
+          isbnBadge.className = 'rounded-md bg-teal-500/10 border border-teal-500/30 px-2 py-0.5 text-[10px] font-mono text-cyan-500 dark:text-cyan-400 font-bold';
+          isbnBadge.textContent = 'Valid ISBN-10';
+        } else {
+          isbnBadge.className = 'rounded-md bg-amber-500/10 border border-amber-500/30 px-2 py-0.5 text-[10px] font-mono text-amber-500 font-bold';
+          isbnBadge.textContent = 'Check Digits Unverified';
+        }
+      }
 
       function updateCitations() {
+        updateBadge();
+
         const a = authorVal.value.trim() || 'Author, A.';
-        const t = titleVal.value.trim() || 'Title of book';
-        const y = yearVal.value.trim() || '2026';
+        const t = titleVal.value.trim() || 'Book Title';
+        const y = yearVal.value.trim() || '2024';
         const pub = publisherVal.value.trim() || 'Publisher';
         const ed = editionVal.value.trim();
-        const isbn = isbnVal.value.trim();
+        const isbnClean = sanitizeIsbn(isbnVal.value);
 
-        // APA 7
-        const edStr = ed ? ` (${ed})` : '';
-        citeApa.textContent = `${a} (${y}). ${t}${edStr}. ${pub}.`;
+        // APA 7th: Author, A. A. (Year). Title of book (edition). Publisher.
+        let apa = `${a} (${y}). <em>${t}</em>`;
+        if (ed) apa += ` (${ed})`;
+        apa += `. ${pub}.`;
+        citeApa.innerHTML = apa;
 
-        // MLA 9
-        citeMla.textContent = `${a}. ${t}.${ed ? ' ' + ed + ',' : ''} ${pub}, ${y}.`;
+        // MLA 9th: Author. Title of Book. Edition, Publisher, Year.
+        let mla = `${a} <em>${t}</em>.`;
+        if (ed) mla += ` ${ed},`;
+        mla += ` ${pub}, ${y}.`;
+        citeMla.innerHTML = mla;
 
-        // BibTeX
-        const citeKey = (a.split(',')[0].toLowerCase() + y).replace(/\s+/g, '');
-        citeBib.textContent = `@book{${citeKey},\n  author = {${a}},\n  title = {${t}},\n  publisher = {${pub}},\n  year = {${y}},\n  isbn = {${isbn}}\n}`;
+        // Chicago: Author. Year. Title of Book. Edition. City: Publisher.
+        let chicago = `${a} ${y}. <em>${t}</em>.`;
+        if (ed) chicago += ` ${ed}.`;
+        chicago += ` ${pub}.`;
+        citeChicago.innerHTML = chicago;
+
+        // Harvard: Author, Year. Title of book. Edition. Place: Publisher.
+        let harvard = `${a}, ${y}. <em>${t}</em>.`;
+        if (ed) harvard += ` ${ed}.`;
+        harvard += ` ${pub}.`;
+        citeHarvard.innerHTML = harvard;
+
+        // BibTeX Key
+        const firstWord = a.split(/[\s,]+/)[0].toLowerCase().replace(/[^a-z0-9]/g, '') || 'book';
+        const bibKey = `${firstWord}${y}`;
+
+        const bibtex = `@book{${bibKey},
+  author    = {${a}},
+  title     = {${t}},
+  year      = {${y}},
+  publisher = {${pub}}${ed ? `,\n  edition   = {${ed}}` : ''}${isbnClean ? `,\n  isbn      = {${isbnClean}}` : ''}
+}`;
+        citeBib.textContent = bibtex;
       }
 
-      [authorVal, titleVal, yearVal, publisherVal, editionVal, isbnVal].forEach(el => el.addEventListener('input', updateCitations));
+      async function fetchOpenLibrary(isbn) {
+        const clean = sanitizeIsbn(isbn);
+        if (!clean) {
+          showStatus('Please enter an ISBN number.', 'text-rose-500');
+          return;
+        }
 
-      function copyText(btn, el) {
-        navigator.clipboard.writeText(el.textContent);
-        const orig = btn.textContent;
-        btn.textContent = 'Copied!';
-        setTimeout(() => btn.textContent = orig, 1800);
+        showStatus('Connecting to Open Library book database...', 'text-cyan-500 dark:text-cyan-400');
+        fetchBtn.disabled = true;
+        fetchBtn.textContent = 'Searching...';
+
+        try {
+          const res = await fetch(`https://openlibrary.org/isbn/${clean}.json`);
+          if (!res.ok) throw new Error('Book not found in Open Library database.');
+
+          const data = await res.json();
+
+          // Title
+          if (data.title) {
+            titleVal.value = data.subtitle ? `${data.title}: ${data.subtitle}` : data.title;
+          }
+
+          // Year
+          if (data.publish_date) {
+            const yearMatch = data.publish_date.match(/\b(19\d\d|20\d\d)\b/);
+            if (yearMatch) yearVal.value = yearMatch[1];
+          }
+
+          // Publishers
+          if (data.publishers && data.publishers.length > 0) {
+            publisherVal.value = data.publishers[0];
+          }
+
+          // Authors (Open Library stores author keys)
+          if (data.authors && data.authors.length > 0) {
+            try {
+              const authorKey = data.authors[0].key;
+              const aRes = await fetch(`https://openlibrary.org${authorKey}.json`);
+              if (aRes.ok) {
+                const aData = await aRes.json();
+                if (aData.name) authorVal.value = aData.name;
+              }
+            } catch (e) {}
+          }
+
+          showStatus('✓ Book metadata retrieved successfully!', 'text-cyan-500 dark:text-cyan-400');
+          updateCitations();
+        } catch (err) {
+          showStatus('Book metadata not found in Open Library. You can enter details manually below.', 'text-amber-500');
+        } finally {
+          fetchBtn.disabled = false;
+          fetchBtn.textContent = 'Fetch Book Details';
+        }
       }
 
-      copyApa.addEventListener('click', () => copyText(copyApa, citeApa));
-      copyMla.addEventListener('click', () => copyText(copyMla, citeMla));
-      copyBib.addEventListener('click', () => copyText(copyBib, citeBib));
+      function showStatus(msg, colorClass) {
+        fetchStatus.className = `text-xs font-semibold ${colorClass} block`;
+        fetchStatus.textContent = msg;
+      }
+
+      fetchBtn?.addEventListener('click', () => fetchOpenLibrary(isbnVal.value));
+
+      sampleBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          isbnVal.value = btn.dataset.isbn;
+          fetchOpenLibrary(btn.dataset.isbn);
+        });
+      });
+
+      clearBtn?.addEventListener('click', () => {
+        isbnVal.value = '';
+        authorVal.value = '';
+        titleVal.value = '';
+        yearVal.value = '';
+        publisherVal.value = '';
+        editionVal.value = '';
+        updateCitations();
+      });
+
+      [isbnVal, authorVal, titleVal, yearVal, publisherVal, editionVal].forEach(el => {
+        el?.addEventListener('input', updateCitations);
+      });
+
+      // Copy single citation
+      copySingleBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          const targetId = btn.dataset.target;
+          const targetEl = root.querySelector(`#${targetId}`);
+          if (!targetEl) return;
+          const text = targetEl.innerText || targetEl.textContent;
+          navigator.clipboard.writeText(text).then(() => {
+            const orig = btn.textContent;
+            btn.textContent = 'Copied!';
+            setTimeout(() => { btn.textContent = orig; }, 1800);
+          });
+        });
+      });
+
+      // Copy All
+      copyAllBtn?.addEventListener('click', () => {
+        const text = [
+          '=== APA 7th Edition ===',
+          citeApa.innerText,
+          '\n=== MLA 9th Edition ===',
+          citeMla.innerText,
+          '\n=== Chicago 17th ===',
+          citeChicago.innerText,
+          '\n=== Harvard ===',
+          citeHarvard.innerText,
+          '\n=== BibTeX ===',
+          citeBib.textContent
+        ].join('\n');
+
+        navigator.clipboard.writeText(text).then(() => {
+          const orig = copyAllBtn.textContent;
+          copyAllBtn.textContent = 'All Copied!';
+          setTimeout(() => { copyAllBtn.textContent = orig; }, 1800);
+        });
+      });
+
+      // Download BibTeX
+      dlBibBtn?.addEventListener('click', () => {
+        const blob = new Blob([citeBib.textContent], { type: 'application/x-bibtex' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = 'book_citation.bib';
+        a.click();
+      });
 
       updateCitations();
     })();

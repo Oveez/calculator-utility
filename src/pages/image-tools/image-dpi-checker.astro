@@ -1,10 +1,12 @@
 ---
 import SiteLayout from '../../layouts/SiteLayout.astro';
 import Icon from '../../components/Icon.astro';
+import CalculatorParameterGuide from '../../components/calculator/CalculatorParameterGuide.astro';
+import type { CalculatorParameterInfo } from '../../types/calculator';
 import { siteName, toAbsoluteUrl, withBasePath } from '../../utils/site';
 
-const pageTitle = `Image DPI & Print Size Calculator — Calculate PPI & Inches · ${siteName}`;
-const pageDesc = 'Calculate physical print dimensions (inches & cm) from digital image pixel dimensions based on target DPI (72, 150, 300 DPI). 100% private in-browser tool.';
+const pageTitle = `Image DPI & Print Size Calculator — Calculate PPI, Inches & Resolution · ${siteName}`;
+const pageDesc = 'Calculate physical print dimensions (inches & cm) from digital pixel dimensions based on target DPI (72, 150, 300, 600 DPI), or compute required megapixels for any photo print size.';
 const canonicalUrl = toAbsoluteUrl('/image-tools/image-dpi-checker/');
 
 const breadcrumbItems = [
@@ -13,10 +15,53 @@ const breadcrumbItems = [
   { label: 'Image DPI Calculator' },
 ];
 
+const parameterGuideData: CalculatorParameterInfo[] = [
+  {
+    name: 'Pixel Dimensions (Width & Height)',
+    description: 'The raw digital width and height of an image in pixels (px). Digital sensors and displays measure images strictly by pixel count, independent of physical physical size.',
+    type: 'Integer (px)',
+    defaultValue: '3000 × 2000 px',
+    whyItMatters: 'A photo taken at 3000 px wide printed at 300 DPI will measure 10 inches wide (3000 / 300 = 10").',
+  },
+  {
+    name: 'Target DPI / PPI (Dots / Pixels Per Inch)',
+    description: 'Density of pixels or ink dots packed into one linear inch. Higher DPI results in sharper physical prints with invisible pixelation at close viewing distances.',
+    type: 'Selection / Integer',
+    defaultValue: '300 DPI',
+    whyItMatters: '300 DPI is the standard benchmark for fine-art, magazines, and photographic prints held at arm\'s length.',
+  },
+  {
+    name: 'Physical Print Size (Inches / Centimeters)',
+    description: 'The real-world dimension of the printed paper or canvas. Governed by the direct mathematical relation: Print Size = Pixels / DPI.',
+    type: 'Decimal (in / cm)',
+    defaultValue: '10.00" × 6.67" (25.4 × 16.9 cm)',
+    whyItMatters: 'To convert inches to centimeters: cm = Inches × 2.54.',
+  },
+  {
+    name: 'Human Visual Acuity & Optimal Viewing Distance',
+    description: 'The human eye with 20/20 vision resolves approximately 1 arcminute (1/60th degree) of detail. As viewing distance increases, lower DPI looks completely sharp.',
+    type: 'Distance Formula',
+    defaultValue: 'Distance (in) ≈ 3438 / DPI',
+    whyItMatters: 'At 150 DPI, the print becomes visually indistinguishable from 300 DPI when viewed beyond 23 inches (~60 cm).',
+  },
+];
+
 const schemaFaq = [
   {
-    question: 'What is the formula for calculating print dimensions from pixels and DPI?',
-    answer: 'Print Width (inches) = Pixel Width / DPI. Print Width (cm) = (Pixel Width / DPI) * 2.54. High quality printing typically requires 300 DPI.',
+    question: 'What is the formula to calculate print size from image pixels and DPI?',
+    answer: 'Print Width (inches) = Pixel Width ÷ DPI. Print Height (inches) = Pixel Height ÷ DPI. To convert to centimeters, multiply inches by 2.54: Print Width (cm) = (Pixel Width ÷ DPI) × 2.54.',
+  },
+  {
+    question: 'What DPI is needed for high-quality photo printing?',
+    answer: '300 DPI (Dots Per Inch) is the universally accepted industry standard for crisp, lab-grade photographic prints and editorial magazines viewed at 10 to 14 inches. For large wall posters viewed from 3+ feet away, 150 to 200 DPI is generally sufficient.',
+  },
+  {
+    question: 'What is the difference between DPI and PPI?',
+    answer: 'PPI (Pixels Per Inch) describes digital image pixel density on computer screens or camera sensors. DPI (Dots Per Inch) refers to physical ink dots deposited onto paper by commercial printing presses or inkjet printers. In digital workflows, the terms are frequently used interchangeably.',
+  },
+  {
+    question: 'How many pixels do I need to print an 8x10 inch photo?',
+    answer: 'At 300 DPI, an 8×10 inch print requires 2400 × 3000 pixels (7.2 Megapixels). At 150 DPI, it requires 1200 × 1500 pixels (1.8 Megapixels).',
   },
 ];
 
@@ -24,7 +69,7 @@ const schemaGraph = [
   {
     '@context': 'https://schema.org',
     '@type': 'WebApplication',
-    name: 'Image DPI Calculator',
+    name: 'Image DPI & Print Size Calculator',
     url: canonicalUrl,
     applicationCategory: 'ImageApplication',
     operatingSystem: 'All',
@@ -82,87 +127,341 @@ const schemaGraph = [
     <header class="space-y-3">
       <div class="inline-flex items-center gap-2 rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1 text-xs font-semibold text-[color:var(--muted)]">
         <span class="inline-block h-2 w-2 rounded-full bg-emerald-500"></span>
-        <span>Print Dimension Calculator</span>
+        <span>Resolution &amp; Print Engine</span>
       </div>
       <h1 class="text-2xl sm:text-4xl font-extrabold tracking-tight text-[color:var(--fg)]">
         Image DPI / PPI &amp; Print Size Calculator
       </h1>
-      <p class="max-w-2xl text-xs sm:text-sm text-[color:var(--muted)] leading-relaxed">
-        Calculate physical print sizes in inches and centimeters for 72 screen, 150 draft, and 300 print DPI.
+      <p class="max-w-3xl text-xs sm:text-sm text-[color:var(--muted)] leading-relaxed">
+        Accurately calculate physical print dimensions in inches, centimeters, and millimeters from digital image pixels, or reverse-calculate required resolution for any print format at 72, 150, 300, or 600 DPI.
       </p>
     </header>
 
-    <div class="space-y-6">
-      <!-- Optional Dropzone for Image Auto-Detection -->
-      <div id="dropzone-box" class="space-y-3 rounded-3xl border-2 border-dashed border-[color:var(--border)] bg-[color:var(--surface)] p-6 sm:p-8 text-center transition hover:border-[color:var(--border-strong)]">
-        <input type="file" id="img-file" accept="image/*" class="hidden" />
-        <label for="img-file" id="upload-prompt" class="cursor-pointer space-y-2 block">
-          <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-[color:var(--surface-strong)] text-[color:var(--fg)]">
-            <Icon name="image" class="w-6 h-6 text-[color:var(--accent)]" />
-          </div>
-          <p class="text-sm font-bold text-[color:var(--fg)]">Choose an image to auto-detect dimensions &amp; DPI</p>
-          <p class="text-xs text-[color:var(--muted)]">Or manually type pixel values below (100% private in browser)</p>
-        </label>
+    <!-- Upload & Auto-Detect Banner -->
+    <div id="dropzone-box" class="space-y-3 rounded-3xl border-2 border-dashed border-[color:var(--border)] bg-[color:var(--surface)] p-6 sm:p-8 text-center transition hover:border-[color:var(--border-strong)]">
+      <input type="file" id="img-file" accept="image/*" class="hidden" />
+      <label for="img-file" id="upload-prompt" class="cursor-pointer space-y-2 block">
+        <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-[color:var(--surface-strong)] text-[color:var(--fg)]">
+          <Icon name="image" class="w-6 h-6 text-[color:var(--accent)]" />
+        </div>
+        <p class="text-sm font-bold text-[color:var(--fg)]">Upload an image to auto-detect pixel dimensions</p>
+        <p class="text-xs text-[color:var(--muted)]">Or enter pixel values directly below &bull; 100% private in-browser computation</p>
+      </label>
 
-        <!-- Visual Upload Preview Box -->
-        <div id="upload-preview-box" class="hidden flex flex-col sm:flex-row items-center justify-between gap-4 rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] p-3.5 text-left">
-          <div class="flex items-center gap-3 min-w-0">
-            <div class="h-14 w-14 rounded-xl bg-[color:var(--surface-strong)] overflow-hidden shrink-0 flex items-center justify-center border border-[color:var(--border)]">
-              <img id="thumb-preview" alt="Thumbnail" class="max-h-full max-w-full object-cover" />
-            </div>
-            <div class="min-w-0 space-y-0.5">
-              <p id="thumb-name" class="text-xs sm:text-sm font-bold text-[color:var(--fg)] truncate">image.png</p>
-              <p id="thumb-info" class="text-[11px] text-[color:var(--muted)]">0 KB</p>
-            </div>
+      <!-- Visual Upload Preview Box -->
+      <div id="upload-preview-box" class="hidden flex flex-col sm:flex-row items-center justify-between gap-4 rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] p-3.5 text-left">
+        <div class="flex items-center gap-3 min-w-0">
+          <div class="h-14 w-14 rounded-xl bg-[color:var(--surface-strong)] overflow-hidden shrink-0 flex items-center justify-center border border-[color:var(--border)]">
+            <img id="thumb-preview" alt="Thumbnail" class="max-h-full max-w-full object-cover" />
           </div>
-          <label for="img-file" class="cursor-pointer shrink-0 rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1.5 text-xs font-semibold text-[color:var(--muted)] hover:text-[color:var(--fg)] transition">
+          <div class="min-w-0 space-y-0.5">
+            <p id="thumb-name" class="text-xs sm:text-sm font-bold text-[color:var(--fg)] truncate">image.png</p>
+            <p id="thumb-info" class="text-[11px] text-[color:var(--muted)]">0 KB</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-2 shrink-0">
+          <label for="img-file" class="cursor-pointer rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1.5 text-xs font-semibold text-[color:var(--muted)] hover:text-[color:var(--fg)] transition">
             Change Image
           </label>
         </div>
       </div>
+    </div>
 
+    <!-- Mode Selector Tabs -->
+    <div class="flex flex-wrap gap-2 border-b border-[color:var(--border)] pb-2 text-xs font-semibold">
+      <button
+        type="button"
+        id="tab-mode-pixels"
+        class="tab-btn active rounded-xl bg-[color:var(--fg)] px-4 py-2 text-[color:var(--bg)] transition cursor-pointer"
+        data-mode="pixels"
+      >
+        Pixels &rarr; Physical Print Size
+      </button>
+      <button
+        type="button"
+        id="tab-mode-physical"
+        class="tab-btn rounded-xl bg-[color:var(--surface)] border border-[color:var(--border)] px-4 py-2 text-[color:var(--muted)] hover:text-[color:var(--fg)] transition cursor-pointer"
+        data-mode="physical"
+      >
+        Physical Size &rarr; Required Pixels
+      </button>
+      <button
+        type="button"
+        id="tab-mode-effective"
+        class="tab-btn rounded-xl bg-[color:var(--surface)] border border-[color:var(--border)] px-4 py-2 text-[color:var(--muted)] hover:text-[color:var(--fg)] transition cursor-pointer"
+        data-mode="effective"
+      >
+        Calculate Effective DPI / PPI
+      </button>
+    </div>
+
+    <!-- Mode A: Pixels -> Print Size -->
+    <section id="panel-mode-pixels" class="space-y-6">
       <div class="grid gap-4 sm:grid-cols-3 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 text-xs">
         <div>
-          <label for="px-w" class="font-bold text-[color:var(--fg)] block mb-1">Width (Pixels):</label>
+          <label for="px-w" class="font-bold text-[color:var(--fg)] block mb-1">Image Width (Pixels):</label>
           <input
             type="number"
             id="px-w"
             value="3000"
+            min="1"
+            max="100000"
             class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-[color:var(--fg)]"
           />
         </div>
         <div>
-          <label for="px-h" class="font-bold text-[color:var(--fg)] block mb-1">Height (Pixels):</label>
+          <label for="px-h" class="font-bold text-[color:var(--fg)] block mb-1">Image Height (Pixels):</label>
           <input
             type="number"
             id="px-h"
             value="2000"
+            min="1"
+            max="100000"
             class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-[color:var(--fg)]"
           />
         </div>
         <div>
-          <label for="target-dpi" class="font-bold text-[color:var(--fg)] block mb-1">Target DPI / PPI:</label>
+          <label for="target-dpi" class="font-bold text-[color:var(--fg)] block mb-1">Target Print DPI / PPI:</label>
           <select id="target-dpi" class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-[color:var(--fg)]">
-            <option value="300">300 DPI (Magazine / Pro Print)</option>
-            <option value="150">150 DPI (Newspaper / Posters)</option>
-            <option value="72">72 DPI (Standard Web Screen)</option>
-            <option value="96">96 DPI (Standard Windows Screen)</option>
+            <option value="300">300 DPI (Magazine / Fine-Art Photo Print)</option>
+            <option value="240">240 DPI (High-End Inkjet Photo)</option>
+            <option value="150">150 DPI (Poster / Exhibition Board)</option>
+            <option value="96">96 DPI (Standard Windows Display)</option>
+            <option value="72">72 DPI (Standard Web / Low Res Screen)</option>
+            <option value="600">600 DPI (Ultra-Sharp Vector / Line Art)</option>
           </select>
         </div>
       </div>
 
+      <!-- Quick DPI Presets -->
+      <div class="flex flex-wrap items-center gap-2 text-xs">
+        <span class="font-semibold text-[color:var(--muted)]">Quick DPI Tiers:</span>
+        <button type="button" class="quick-dpi-btn rounded-lg border border-[color:var(--border)] bg-[color:var(--surface)] px-2.5 py-1 text-[color:var(--fg)] hover:border-emerald-500 cursor-pointer" data-val="300">300 DPI (Pro Photo)</button>
+        <button type="button" class="quick-dpi-btn rounded-lg border border-[color:var(--border)] bg-[color:var(--surface)] px-2.5 py-1 text-[color:var(--fg)] hover:border-emerald-500 cursor-pointer" data-val="150">150 DPI (Poster)</button>
+        <button type="button" class="quick-dpi-btn rounded-lg border border-[color:var(--border)] bg-[color:var(--surface)] px-2.5 py-1 text-[color:var(--fg)] hover:border-emerald-500 cursor-pointer" data-val="72">72 DPI (Web)</button>
+        <button type="button" class="quick-dpi-btn rounded-lg border border-[color:var(--border)] bg-[color:var(--surface)] px-2.5 py-1 text-[color:var(--fg)] hover:border-emerald-500 cursor-pointer" data-val="600">600 DPI (Fine Print)</button>
+      </div>
+
       <!-- Results Grid -->
-      <div class="grid gap-4 sm:grid-cols-2">
+      <div class="grid gap-4 sm:grid-cols-3">
         <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 space-y-2 text-center">
-          <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Print Size in Inches</span>
-          <p id="res-in" class="text-3xl font-extrabold text-emerald-500">-</p>
+          <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Print Size (Inches)</span>
+          <p id="res-in" class="text-2xl sm:text-3xl font-extrabold text-emerald-500 font-mono">10.00" &times; 6.67"</p>
+          <p id="res-in-feet" class="text-[11px] text-[color:var(--muted)] font-mono">0.83 ft &times; 0.56 ft</p>
         </div>
         <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 space-y-2 text-center">
-          <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Print Size in Centimeters</span>
-          <p id="res-cm" class="text-3xl font-extrabold text-[color:var(--fg)]">-</p>
+          <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Print Size (Centimeters)</span>
+          <p id="res-cm" class="text-2xl sm:text-3xl font-extrabold text-[color:var(--fg)] font-mono">25.40 &times; 16.93 cm</p>
+          <p id="res-mm" class="text-[11px] text-[color:var(--muted)] font-mono">254 &times; 169 mm</p>
+        </div>
+        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 space-y-2 text-center">
+          <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Image Telemetry</span>
+          <p id="res-mp" class="text-2xl sm:text-3xl font-extrabold text-[color:var(--fg)] font-mono">6.00 MP</p>
+          <p id="res-ratio" class="text-[11px] text-[color:var(--muted)] font-mono">Aspect Ratio: 3:2 (1.50:1)</p>
         </div>
       </div>
-    </div>
+    </section>
+
+    <!-- Mode B: Physical Size -> Required Pixels -->
+    <section id="panel-mode-physical" class="hidden space-y-6">
+      <div class="grid gap-4 sm:grid-cols-4 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 text-xs">
+        <div>
+          <label for="phy-w" class="font-bold text-[color:var(--fg)] block mb-1">Target Print Width:</label>
+          <input
+            type="number"
+            id="phy-w"
+            value="8"
+            step="0.1"
+            min="0.1"
+            class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-[color:var(--fg)]"
+          />
+        </div>
+        <div>
+          <label for="phy-h" class="font-bold text-[color:var(--fg)] block mb-1">Target Print Height:</label>
+          <input
+            type="number"
+            id="phy-h"
+            value="10"
+            step="0.1"
+            min="0.1"
+            class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-[color:var(--fg)]"
+          />
+        </div>
+        <div>
+          <label for="phy-unit" class="font-bold text-[color:var(--fg)] block mb-1">Measurement Unit:</label>
+          <select id="phy-unit" class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-[color:var(--fg)]">
+            <option value="in">Inches (in)</option>
+            <option value="cm">Centimeters (cm)</option>
+            <option value="mm">Millimeters (mm)</option>
+          </select>
+        </div>
+        <div>
+          <label for="phy-dpi" class="font-bold text-[color:var(--fg)] block mb-1">Target Print Quality (DPI):</label>
+          <select id="phy-dpi" class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-[color:var(--fg)]">
+            <option value="300">300 DPI (Gallery / Photo Quality)</option>
+            <option value="240">240 DPI (High Quality Inkjet)</option>
+            <option value="150">150 DPI (Poster / Signage)</option>
+            <option value="72">72 DPI (Web Screen Only)</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Quick Print Presets -->
+      <div class="flex flex-wrap items-center gap-2 text-xs">
+        <span class="font-semibold text-[color:var(--muted)]">Standard Print Formats:</span>
+        <button type="button" class="preset-btn rounded-lg border border-[color:var(--border)] bg-[color:var(--surface)] px-2.5 py-1 text-[color:var(--fg)] hover:border-emerald-500 cursor-pointer" data-w="4" data-h="6" data-u="in">4&times;6" Photo</button>
+        <button type="button" class="preset-btn rounded-lg border border-[color:var(--border)] bg-[color:var(--surface)] px-2.5 py-1 text-[color:var(--fg)] hover:border-emerald-500 cursor-pointer" data-w="5" data-h="7" data-u="in">5&times;7" Portrait</button>
+        <button type="button" class="preset-btn rounded-lg border border-[color:var(--border)] bg-[color:var(--surface)] px-2.5 py-1 text-[color:var(--fg)] hover:border-emerald-500 cursor-pointer" data-w="8" data-h="10" data-u="in">8&times;10" Frame</button>
+        <button type="button" class="preset-btn rounded-lg border border-[color:var(--border)] bg-[color:var(--surface)] px-2.5 py-1 text-[color:var(--fg)] hover:border-emerald-500 cursor-pointer" data-w="8.5" data-h="11" data-u="in">8.5&times;11" US Letter</button>
+        <button type="button" class="preset-btn rounded-lg border border-[color:var(--border)] bg-[color:var(--surface)] px-2.5 py-1 text-[color:var(--fg)] hover:border-emerald-500 cursor-pointer" data-w="21" data-h="29.7" data-u="cm">A4 (21&times;29.7 cm)</button>
+        <button type="button" class="preset-btn rounded-lg border border-[color:var(--border)] bg-[color:var(--surface)] px-2.5 py-1 text-[color:var(--fg)] hover:border-emerald-500 cursor-pointer" data-w="29.7" data-h="42" data-u="cm">A3 (29.7&times;42 cm)</button>
+      </div>
+
+      <!-- Physical Output Cards -->
+      <div class="grid gap-4 sm:grid-cols-2">
+        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 space-y-2 text-center">
+          <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Required Pixel Resolution</span>
+          <p id="res-req-px" class="text-2xl sm:text-3xl font-extrabold text-emerald-500 font-mono">2400 &times; 3000 px</p>
+          <p id="res-req-total" class="text-[11px] text-[color:var(--muted)] font-mono">7,200,000 Total Pixels</p>
+        </div>
+        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 space-y-2 text-center">
+          <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Camera Sensor Recommendation</span>
+          <p id="res-req-mp" class="text-2xl sm:text-3xl font-extrabold text-[color:var(--fg)] font-mono">&ge; 7.2 MP</p>
+          <p id="res-req-sensor" class="text-[11px] text-[color:var(--muted)]">Any standard smartphone or mirrorless camera</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Mode C: Calculate Effective DPI -->
+    <section id="panel-mode-effective" class="hidden space-y-6">
+      <div class="grid gap-4 sm:grid-cols-4 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 text-xs">
+        <div>
+          <label for="eff-px-w" class="font-bold text-[color:var(--fg)] block mb-1">Image Width (Pixels):</label>
+          <input
+            type="number"
+            id="eff-px-w"
+            value="1920"
+            min="1"
+            class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-[color:var(--fg)]"
+          />
+        </div>
+        <div>
+          <label for="eff-px-h" class="font-bold text-[color:var(--fg)] block mb-1">Image Height (Pixels):</label>
+          <input
+            type="number"
+            id="eff-px-h"
+            value="1080"
+            min="1"
+            class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-[color:var(--fg)]"
+          />
+        </div>
+        <div>
+          <label for="eff-phy-w" class="font-bold text-[color:var(--fg)] block mb-1">Desired Print Width (in):</label>
+          <input
+            type="number"
+            id="eff-phy-w"
+            value="10"
+            step="0.1"
+            min="0.1"
+            class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-[color:var(--fg)]"
+          />
+        </div>
+        <div>
+          <label for="eff-phy-h" class="font-bold text-[color:var(--fg)] block mb-1">Desired Print Height (in):</label>
+          <input
+            type="number"
+            id="eff-phy-h"
+            value="6"
+            step="0.1"
+            min="0.1"
+            class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-[color:var(--fg)]"
+          />
+        </div>
+      </div>
+
+      <div class="grid gap-4 sm:grid-cols-3">
+        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 space-y-2 text-center">
+          <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Effective Print DPI</span>
+          <p id="eff-dpi-val" class="text-3xl font-extrabold text-emerald-500 font-mono">192 DPI</p>
+          <p class="text-[11px] text-[color:var(--muted)]">Calculated based on image dimensions</p>
+        </div>
+        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 space-y-2 text-center">
+          <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Quality Classification</span>
+          <div id="eff-badge" class="inline-flex items-center gap-1.5 rounded-full bg-amber-500/10 border border-amber-500/20 px-3 py-1 text-xs font-bold text-amber-500 mt-2">
+            Standard Quality (Posters &amp; Signs)
+          </div>
+          <p id="eff-quality-desc" class="text-[11px] text-[color:var(--muted)] mt-1">Acceptable sharpness viewed from &gt; 18 inches.</p>
+        </div>
+        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 space-y-2 text-center">
+          <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Min. Viewing Distance</span>
+          <p id="eff-view-dist" class="text-3xl font-extrabold text-[color:var(--fg)] font-mono">18 inches</p>
+          <p class="text-[11px] text-[color:var(--muted)]">Human eye resolves pixels as smooth beyond this point</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Standard Print Sizes Matrix Table -->
+    <section class="space-y-4">
+      <div class="flex items-center justify-between">
+        <div>
+          <h2 class="text-lg font-bold text-[color:var(--fg)]">Standard Print Format Suitability Matrix</h2>
+          <p class="text-xs text-[color:var(--muted)]">Effective DPI and print fidelity breakdown for your current image pixel dimensions</p>
+        </div>
+        <span class="rounded-full bg-[color:var(--surface)] border border-[color:var(--border)] px-3 py-1 text-[11px] font-mono text-[color:var(--muted)]" id="matrix-source-label">
+          Source: 3000 &times; 2000 px
+        </span>
+      </div>
+
+      <div class="overflow-x-auto rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)]">
+        <table class="w-full text-left text-xs">
+          <thead class="bg-[color:var(--surface-strong)] text-[color:var(--muted)] border-b border-[color:var(--border)]">
+            <tr>
+              <th class="p-3 font-bold">Print Format</th>
+              <th class="p-3 font-bold">Dimensions (Inches)</th>
+              <th class="p-3 font-bold">Dimensions (Metric)</th>
+              <th class="p-3 font-bold">Effective DPI</th>
+              <th class="p-3 font-bold">Print Fidelity</th>
+              <th class="p-3 font-bold">Min. Viewing Distance</th>
+            </tr>
+          </thead>
+          <tbody id="matrix-tbody" class="divide-y divide-[color:var(--border)]">
+            <!-- Dynamic matrix rows populated by JavaScript -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Parameter Guide Component -->
+    <CalculatorParameterGuide
+      parameters={parameterGuideData}
+      workedExample={{
+        title: 'Step-by-Step Print Size & DPI Calculation',
+        description: 'Calculating maximum physical print dimensions for a 12.2 MP smartphone photo at 300 DPI.',
+        formula: 'Print Width (in) = Pixels Width ÷ DPI | Print Height (in) = Pixels Height ÷ DPI | cm = Inches × 2.54',
+        steps: [
+          {
+            step: 'Identify pixel resolution',
+            calculation: 'Smartphone camera photo: 4032 × 3024 pixels',
+            result: 'Width = 4032 px, Height = 3024 px (12.2 MP)',
+          },
+          {
+            step: 'Select target print DPI',
+            calculation: 'Commercial gallery & magazine print standard',
+            result: '300 DPI',
+          },
+          {
+            step: 'Calculate width in inches & cm',
+            calculation: '4032 ÷ 300 = 13.44 inches (13.44 × 2.54)',
+            result: '13.44" (34.14 cm)',
+          },
+          {
+            step: 'Calculate height in inches & cm',
+            calculation: '3024 ÷ 300 = 10.08 inches (10.08 × 2.54)',
+            result: '10.08" (25.60 cm)',
+          },
+        ],
+      }}
+    />
 
     <!-- FAQs -->
     <section class="space-y-4">
@@ -172,7 +471,7 @@ const schemaGraph = [
           <details class="group rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
             <summary class="cursor-pointer list-none font-semibold text-sm sm:text-base text-[color:var(--fg)] flex items-center justify-between gap-4">
               <span>{faq.question}</span>
-              <span class="text-xs text-[color:var(--muted)] group-open:rotate-180 transition-transform">▼</span>
+              <span class="text-xs text-[color:var(--muted)] group-open:rotate-180 transition-transform">&blacktriangledown;</span>
             </summary>
             <p class="mt-3 text-xs sm:text-sm leading-relaxed text-[color:var(--muted)]">
               {faq.answer}
@@ -188,17 +487,57 @@ const schemaGraph = [
       const root = document.querySelector('[data-dpi-app]');
       if (!root) return;
 
+      // Elements
       const fileIn = root.querySelector('#img-file');
       const uploadPrompt = root.querySelector('#upload-prompt');
       const uploadPreviewBox = root.querySelector('#upload-preview-box');
       const thumbPreview = root.querySelector('#thumb-preview');
       const thumbName = root.querySelector('#thumb-name');
       const thumbInfo = root.querySelector('#thumb-info');
+
+      // Mode Tabs
+      const tabBtns = root.querySelectorAll('.tab-btn');
+      const panelPixels = root.querySelector('#panel-mode-pixels');
+      const panelPhysical = root.querySelector('#panel-mode-physical');
+      const panelEffective = root.querySelector('#panel-mode-effective');
+
+      // Mode A inputs
       const pxW = root.querySelector('#px-w');
       const pxH = root.querySelector('#px-h');
       const targetDpi = root.querySelector('#target-dpi');
       const resIn = root.querySelector('#res-in');
+      const resInFeet = root.querySelector('#res-in-feet');
       const resCm = root.querySelector('#res-cm');
+      const resMm = root.querySelector('#res-mm');
+      const resMp = root.querySelector('#res-mp');
+      const resRatio = root.querySelector('#res-ratio');
+
+      // Mode B inputs
+      const phyW = root.querySelector('#phy-w');
+      const phyH = root.querySelector('#phy-h');
+      const phyUnit = root.querySelector('#phy-unit');
+      const phyDpi = root.querySelector('#phy-dpi');
+      const resReqPx = root.querySelector('#res-req-px');
+      const resReqTotal = root.querySelector('#res-req-total');
+      const resReqMp = root.querySelector('#res-req-mp');
+
+      // Mode C inputs
+      const effPxW = root.querySelector('#eff-px-w');
+      const effPxH = root.querySelector('#eff-px-h');
+      const effPhyW = root.querySelector('#eff-phy-w');
+      const effPhyH = root.querySelector('#eff-phy-h');
+      const effDpiVal = root.querySelector('#eff-dpi-val');
+      const effBadge = root.querySelector('#eff-badge');
+      const effQualityDesc = root.querySelector('#eff-quality-desc');
+      const effViewDist = root.querySelector('#eff-view-dist');
+
+      // Matrix Table
+      const matrixTbody = root.querySelector('#matrix-tbody');
+      const matrixSourceLabel = root.querySelector('#matrix-source-label');
+
+      function gcd(a, b) {
+        return b === 0 ? a : gcd(b, a % b);
+      }
 
       function formatBytes(bytes) {
         if (bytes < 1024) return bytes + ' B';
@@ -206,23 +545,215 @@ const schemaGraph = [
         return (bytes / 1048576).toFixed(2) + ' MB';
       }
 
-      function calculate() {
+      const standardFormats = [
+        { name: 'Wallet / Mini', inW: 2.5, inH: 3.5, metric: '6.4 &times; 8.9 cm' },
+        { name: '4&times;6" Snapshot', inW: 4, inH: 6, metric: '10.2 &times; 15.2 cm' },
+        { name: '5&times;7" Greeting/Portrait', inW: 5, inH: 7, metric: '12.7 &times; 17.8 cm' },
+        { name: '8&times;10" Photo Frame', inW: 8, inH: 10, metric: '20.3 &times; 25.4 cm' },
+        { name: '8.5&times;11" US Letter', inW: 8.5, inH: 11, metric: '21.6 &times; 27.9 cm' },
+        { name: 'A4 Document', inW: 8.27, inH: 11.69, metric: '21.0 &times; 29.7 cm' },
+        { name: '11&times;14" Wall Art', inW: 11, inH: 14, metric: '27.9 &times; 35.6 cm' },
+        { name: '12&times;18" Mini Poster', inW: 12, inH: 18, metric: '30.5 &times; 45.7 cm' },
+        { name: 'A3 Medium Poster', inW: 11.69, inH: 16.54, metric: '29.7 &times; 42.0 cm' },
+        { name: '16&times;20" Large Canvas', inW: 16, inH: 20, metric: '40.6 &times; 50.8 cm' },
+        { name: '24&times;36" Architectural Poster', inW: 24, inH: 36, metric: '61.0 &times; 91.4 cm' },
+      ];
+
+      function updateMatrix(w, h) {
+        if (!matrixTbody) return;
+        if (matrixSourceLabel) {
+          matrixSourceLabel.textContent = `Source: ${w} × ${h} px`;
+        }
+
+        matrixTbody.innerHTML = standardFormats.map(fmt => {
+          // calculate effective DPI for both orientations (fit longest side)
+          const imgLong = Math.max(w, h);
+          const imgShort = Math.min(w, h);
+          const fmtLong = Math.max(fmt.inW, fmt.inH);
+          const fmtShort = Math.min(fmt.inW, fmt.inH);
+
+          // Effective DPI fits the bounding box
+          const effDpi = Math.min(imgLong / fmtLong, imgShort / fmtShort);
+          const roundedDpi = Math.round(effDpi);
+
+          let badgeClass = '';
+          let badgeText = '';
+          let distanceInches = Math.round(3438 / Math.max(roundedDpi, 10));
+
+          if (roundedDpi >= 300) {
+            badgeClass = 'bg-emerald-500/10 text-emerald-500 border-emerald-500/30';
+            badgeText = 'Gallery Grade (Ultra Sharp)';
+          } else if (roundedDpi >= 200) {
+            badgeClass = 'bg-teal-500/10 text-teal-500 border-teal-500/30';
+            badgeText = 'Very Good (Crisp Print)';
+          } else if (roundedDpi >= 150) {
+            badgeClass = 'bg-blue-500/10 text-blue-500 border-blue-500/30';
+            badgeText = 'Good (Standard Poster)';
+          } else if (roundedDpi >= 100) {
+            badgeClass = 'bg-amber-500/10 text-amber-500 border-amber-500/30';
+            badgeText = 'Fair (Viewable &gt; 3 ft)';
+          } else {
+            badgeClass = 'bg-rose-500/10 text-rose-500 border-rose-500/30';
+            badgeText = 'Pixelated / Low Res';
+          }
+
+          return `
+            <tr class="hover:bg-[color:var(--surface-strong)] transition">
+              <td class="p-3 font-semibold text-[color:var(--fg)]">${fmt.name}</td>
+              <td class="p-3 font-mono text-[color:var(--muted)]">${fmt.inW}" &times; ${fmt.inH}"</td>
+              <td class="p-3 font-mono text-[color:var(--muted)]">${fmt.metric}</td>
+              <td class="p-3 font-mono font-bold ${roundedDpi >= 200 ? 'text-emerald-500' : roundedDpi >= 150 ? 'text-blue-400' : 'text-amber-500'}">
+                ${roundedDpi} DPI
+              </td>
+              <td class="p-3">
+                <span class="inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold border ${badgeClass}">
+                  ${badgeText}
+                </span>
+              </td>
+              <td class="p-3 font-mono text-[color:var(--muted)]">&ge; ${distanceInches}" (${Math.round(distanceInches * 2.54)} cm)</td>
+            </tr>
+          `;
+        }).join('');
+      }
+
+      function calcModeA() {
         const w = parseFloat(pxW.value) || 0;
         const h = parseFloat(pxH.value) || 0;
         const dpi = parseFloat(targetDpi.value) || 300;
 
-        const inW = (w / dpi).toFixed(2);
-        const inH = (h / dpi).toFixed(2);
+        if (w <= 0 || h <= 0) return;
 
-        const cmW = ((w / dpi) * 2.54).toFixed(2);
-        const cmH = ((h / dpi) * 2.54).toFixed(2);
+        const inW = w / dpi;
+        const inH = h / dpi;
 
-        resIn.textContent = `${inW}" × ${inH}"`;
-        resCm.textContent = `${cmW} × ${cmH} cm`;
+        resIn.textContent = `${inW.toFixed(2)}" × ${inH.toFixed(2)}"`;
+        resInFeet.textContent = `${(inW / 12).toFixed(2)} ft × ${(inH / 12).toFixed(2)} ft`;
+
+        const cmW = inW * 2.54;
+        const cmH = inH * 2.54;
+        resCm.textContent = `${cmW.toFixed(2)} × ${cmH.toFixed(2)} cm`;
+        resMm.textContent = `${(cmW * 10).toFixed(0)} × ${(cmH * 10).toFixed(0)} mm`;
+
+        const mp = (w * h) / 1000000;
+        resMp.textContent = `${mp.toFixed(2)} MP`;
+
+        const g = gcd(Math.round(w), Math.round(h));
+        const rw = Math.round(w) / g;
+        const rh = Math.round(h) / g;
+        const decRatio = (w / h).toFixed(2);
+        resRatio.textContent = `Aspect Ratio: ${rw}:${rh} (${decRatio}:1)`;
+
+        updateMatrix(w, h);
       }
 
+      function calcModeB() {
+        let w = parseFloat(phyW.value) || 0;
+        let h = parseFloat(phyH.value) || 0;
+        const unit = phyUnit.value;
+        const dpi = parseFloat(phyDpi.value) || 300;
+
+        // Convert to inches
+        let inW = w;
+        let inH = h;
+        if (unit === 'cm') {
+          inW = w / 2.54;
+          inH = h / 2.54;
+        } else if (unit === 'mm') {
+          inW = w / 25.4;
+        }
+
+        const reqW = Math.round(inW * dpi);
+        const reqH = Math.round(inH * dpi);
+        const totalPx = reqW * reqH;
+        const mp = (totalPx / 1000000).toFixed(1);
+
+        resReqPx.textContent = `${reqW.toLocaleString()} × ${reqH.toLocaleString()} px`;
+        resReqTotal.textContent = `${totalPx.toLocaleString()} Total Pixels`;
+        resReqMp.textContent = `≥ ${mp} MP`;
+      }
+
+      function calcModeC() {
+        const w = parseFloat(effPxW.value) || 0;
+        const h = parseFloat(effPxH.value) || 0;
+        const inW = parseFloat(effPhyW.value) || 0;
+        const inH = parseFloat(effPhyH.value) || 0;
+
+        if (w <= 0 || inW <= 0) return;
+
+        const dpiX = w / inW;
+        const dpiY = h / (inH || 1);
+        const dpi = Math.round(Math.min(dpiX, dpiY));
+
+        effDpiVal.textContent = `${dpi} DPI`;
+
+        const distIn = Math.round(3438 / Math.max(dpi, 10));
+        effViewDist.textContent = `${distIn}" (${Math.round(distIn * 2.54)} cm)`;
+
+        if (dpi >= 300) {
+          effBadge.className = 'inline-flex items-center gap-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 px-3 py-1 text-xs font-bold text-emerald-500 mt-2';
+          effBadge.textContent = 'Ultra Sharp / Gallery Quality (300+ DPI)';
+          effQualityDesc.textContent = 'Flawless clarity even when viewed at close reading distance (< 12 inches).';
+        } else if (dpi >= 200) {
+          effBadge.className = 'inline-flex items-center gap-1.5 rounded-full bg-teal-500/10 border border-teal-500/30 px-3 py-1 text-xs font-bold text-teal-500 mt-2';
+          effBadge.textContent = 'High Quality / Fine Art (200-299 DPI)';
+          effQualityDesc.textContent = 'Crisp, professional quality for photo frames and home displays.';
+        } else if (dpi >= 150) {
+          effBadge.className = 'inline-flex items-center gap-1.5 rounded-full bg-blue-500/10 border border-blue-500/30 px-3 py-1 text-xs font-bold text-blue-400 mt-2';
+          effBadge.textContent = 'Standard Poster Quality (150-199 DPI)';
+          effQualityDesc.textContent = 'Recommended for medium and large posters viewed from 2+ feet away.';
+        } else if (dpi >= 100) {
+          effBadge.className = 'inline-flex items-center gap-1.5 rounded-full bg-amber-500/10 border border-amber-500/30 px-3 py-1 text-xs font-bold text-amber-500 mt-2';
+          effBadge.textContent = 'Fair / Distance Viewing (100-149 DPI)';
+          effQualityDesc.textContent = 'Individual pixels will be visible if inspected closer than 3 feet.';
+        } else {
+          effBadge.className = 'inline-flex items-center gap-1.5 rounded-full bg-rose-500/10 border border-rose-500/30 px-3 py-1 text-xs font-bold text-rose-500 mt-2';
+          effBadge.textContent = 'Pixelated / Blurry (< 100 DPI)';
+          effQualityDesc.textContent = 'Pixel structure is noticeable. Suitable only for large banners viewed from 10+ feet.';
+        }
+      }
+
+      // Tab Switching
+      tabBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          tabBtns.forEach(b => {
+            b.classList.remove('bg-[color:var(--fg)]', 'text-[color:var(--bg)]');
+            b.classList.add('bg-[color:var(--surface)]', 'border', 'border-[color:var(--border)]', 'text-[color:var(--muted)]');
+          });
+          btn.classList.add('bg-[color:var(--fg)]', 'text-[color:var(--bg)]');
+          btn.classList.remove('bg-[color:var(--surface)]', 'border-[color:var(--border)]', 'text-[color:var(--muted)]');
+
+          const mode = btn.dataset.mode;
+          panelPixels.classList.toggle('hidden', mode !== 'pixels');
+          panelPhysical.classList.toggle('hidden', mode !== 'physical');
+          panelEffective.classList.toggle('hidden', mode !== 'effective');
+
+          if (mode === 'pixels') calcModeA();
+          if (mode === 'physical') calcModeB();
+          if (mode === 'effective') calcModeC();
+        });
+      });
+
+      // Quick DPI Buttons
+      root.querySelectorAll('.quick-dpi-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          targetDpi.value = btn.dataset.val;
+          calcModeA();
+        });
+      });
+
+      // Preset Buttons for Mode B
+      root.querySelectorAll('.preset-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          phyW.value = btn.dataset.w;
+          phyH.value = btn.dataset.h;
+          phyUnit.value = btn.dataset.u;
+          calcModeB();
+        });
+      });
+
+      // File upload handler
       fileIn?.addEventListener('change', (e) => {
-        const file = e.target.files[0];
+        const file = e.target.files?.[0];
         if (!file) return;
 
         const url = URL.createObjectURL(file);
@@ -237,14 +768,24 @@ const schemaGraph = [
         img.onload = () => {
           pxW.value = img.naturalWidth;
           pxH.value = img.naturalHeight;
-          thumbInfo.textContent = `${img.naturalWidth}×${img.naturalHeight} px • ${formatBytes(file.size)}`;
-          calculate();
+          effPxW.value = img.naturalWidth;
+          effPxH.value = img.naturalHeight;
+          thumbInfo.textContent = `${img.naturalWidth} × ${img.naturalHeight} px • ${formatBytes(file.size)}`;
+          calcModeA();
+          calcModeC();
         };
         img.src = url;
       });
 
-      [pxW, pxH, targetDpi].forEach(el => el.addEventListener('input', calculate));
-      calculate();
+      // Input Event Listeners
+      [pxW, pxH, targetDpi].forEach(el => el?.addEventListener('input', calcModeA));
+      [phyW, phyH, phyUnit, phyDpi].forEach(el => el?.addEventListener('input', calcModeB));
+      [effPxW, effPxH, effPhyW, effPhyH].forEach(el => el?.addEventListener('input', calcModeC));
+
+      // Initialize
+      calcModeA();
+      calcModeB();
+      calcModeC();
     })();
   </script>
 </SiteLayout>

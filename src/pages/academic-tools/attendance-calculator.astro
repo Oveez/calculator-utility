@@ -1,7 +1,16 @@
 ---
 import SiteLayout from '../../layouts/SiteLayout.astro';
 import Icon from '../../components/Icon.astro';
+import CalculatorParameterGuide from '../../components/calculator/CalculatorParameterGuide.astro';
 import { siteName, toAbsoluteUrl, withBasePath } from '../../utils/site';
+
+const parameterGuide = [
+  { id: 'classesAttended', name: 'Classes Attended', description: 'Total lecture and lab sessions you physically attended.', whyItMatters: 'Forms the numerator in your attendance percentage.', typicalRange: '0 to total classes', unit: 'classes' },
+  { id: 'totalClasses', name: 'Total Classes Conducted', description: 'Cumulative class sessions held by your institution to date.', whyItMatters: 'Forms the denominator in your attendance percentage.', typicalRange: '1 to 200+', unit: 'classes' },
+  { id: 'targetAttendance', name: 'Target Attendance Goal', description: 'Institutional cutoff threshold (e.g. 75% or 80%) required to sit for exams.', whyItMatters: 'Determines whether you have an attendance shortage or safe bunks.', typicalRange: '75% to 85%', unit: '%' },
+  { id: 'safeBunks', name: 'Safe Bunks Remaining', description: 'The number of upcoming lectures you can skip without falling below the cutoff.', whyItMatters: 'Allows you to plan absences for health, festivals, or emergencies.', typicalRange: '0 to 25+ classes', unit: 'classes' },
+  { id: 'consecutiveNeeded', name: 'Consecutive Classes to Recover', description: 'How many continuous upcoming classes you must attend to restore your target standing.', whyItMatters: 'Helps clear shortages and prevents exam debarment.', typicalRange: '1 to 50+ classes', unit: 'classes' },
+];
 
 const pageTitle = `Attendance Calculator | Track Percentage, Shortage & Safe Bunks · ${siteName}`;
 const pageDesc = 'Free college attendance calculator. Calculate your current attendance percentage, find out how many classes you can miss or must attend to reach 75%, 80%, 85%, or 90%.';
@@ -205,7 +214,7 @@ const schemaGraph = [
         </form>
 
         <!-- Live Results Panel -->
-        <div class="flex flex-col justify-between space-y-6 rounded-3xl border border-[color:var(--border)] bg-[color:var(--bg)] p-6 sm:p-8">
+        <div class="flex flex-col justify-between space-y-6 rounded-3xl border border-[color:var(--accent)]/30 bg-gradient-to-br from-[color:var(--accent-soft)] via-[color:var(--surface)] to-transparent p-6 sm:p-8 shadow-sm">
           <div class="space-y-5">
             <div class="flex items-center justify-between">
               <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Current Standing</span>
@@ -267,7 +276,7 @@ const schemaGraph = [
     <!-- Educational Content Sections -->
     <section class="grid gap-6 lg:grid-cols-2">
       <div class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 space-y-3">
-        <h2 class="text-lg font-bold text-[color:var(--fg)]">How Attendance Is Calculated</h2>
+        <h2 class="text-lg font-bold text-[color:var(--fg)] flex items-center gap-2"><Icon name="math" class="w-4 h-4 text-[color:var(--accent)]" /><span>How Attendance Is Calculated</span></h2>
         <p class="text-xs sm:text-sm text-[color:var(--muted)] leading-relaxed">
           Your attendance percentage reflects the ratio of lectures attended to total lectures scheduled. When planning absences or recovering from medical leaves, simple addition cannot be used because both the numerator (attended classes) and denominator (total classes held) increment simultaneously.
         </p>
@@ -277,7 +286,7 @@ const schemaGraph = [
       </div>
 
       <div class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 space-y-3">
-        <h2 class="text-lg font-bold text-[color:var(--fg)]">Attendance Shortage Formula</h2>
+        <h2 class="text-lg font-bold text-[color:var(--fg)] flex items-center gap-2"><Icon name="math" class="w-4 h-4 text-[color:var(--accent)]" /><span>Attendance Shortage Formula</span></h2>
         <p class="text-xs sm:text-sm text-[color:var(--muted)] leading-relaxed">
           To find how many consecutive future classes <span class="font-mono">X</span> you must attend to elevate your attendance to target fraction <span class="font-mono">T</span>:
         </p>
@@ -294,7 +303,7 @@ const schemaGraph = [
     <section class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 sm:p-8 space-y-4">
       <div>
         <p class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Step-By-Step Walkthrough</p>
-        <h2 class="text-xl font-bold text-[color:var(--fg)]">Example Calculation: 75% Attendance Requirement</h2>
+        <h2 class="text-xl font-bold text-[color:var(--fg)] flex items-center gap-2"><Icon name="math" class="w-4 h-4 text-[color:var(--accent)]" /><span>Example Calculation: 75% Attendance Requirement</span></h2>
       </div>
 
       <div class="grid gap-4 sm:grid-cols-3 text-xs sm:text-sm">
@@ -319,6 +328,9 @@ const schemaGraph = [
         </div>
       </div>
     </section>
+
+    <!-- Parameter Guide -->
+    <CalculatorParameterGuide parameters={parameterGuide} />
 
     <!-- FAQs Section -->
     <section class="space-y-4">
@@ -413,7 +425,7 @@ const schemaGraph = [
         // Status Badge & Advice Box
         if (pct >= target) {
           if (statusBadge) {
-            statusBadge.className = 'mt-3 inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-bold bg-green-500/10 text-green-600 dark:text-green-400 border border-green-500/20';
+            statusBadge.className = 'mt-3 inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-bold bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 dark:text-cyan-400 border border-cyan-500/20';
           }
           if (statusText) statusText.textContent = `Safe (Above ${target}% Target)`;
           if (adviceText) {
@@ -443,7 +455,7 @@ const schemaGraph = [
             let note = '';
             if (pct >= t) {
               const m = Math.max(0, Math.floor((attended / tFrac) - total));
-              note = `<span class="text-green-600 dark:text-green-400 font-bold">Can miss ${m} class${m === 1 ? '' : 'es'}</span>`;
+              note = `<span class="text-cyan-600 dark:text-cyan-400 dark:text-cyan-400 font-bold">Can miss ${m} class${m === 1 ? '' : 'es'}</span>`;
             } else {
               const a = tFrac >= 1 ? 999 : Math.max(0, Math.ceil((tFrac * total - attended) / (1 - tFrac)));
               note = `<span class="text-red-600 dark:text-red-400 font-bold">Must attend ${a} class${a === 1 ? '' : 'es'}</span>`;

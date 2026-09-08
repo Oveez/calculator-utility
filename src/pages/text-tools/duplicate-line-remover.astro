@@ -1,7 +1,8 @@
 ---
 import SiteLayout from '../../layouts/SiteLayout.astro';
 import Icon from '../../components/Icon.astro';
-import { siteName, toAbsoluteUrl, withBasePath } from '../../utils/site';
+import CalculatorParameterGuide from '../../components/calculator/CalculatorParameterGuide.astro';
+import { siteName, toAbsoluteUrl } from '../../utils/site';
 
 const pageTitle = `Duplicate Line Remover — Find & Remove Duplicate Lines · ${siteName}`;
 const pageDesc = 'Remove duplicate text lines online. Supports case sensitivity toggle, keeping first or last occurrence, trimming whitespace, and counting removed duplicates. 100% private in-browser tool.';
@@ -16,7 +17,19 @@ const breadcrumbItems = [
 const schemaFaq = [
   {
     question: 'How does duplicate line removal work?',
-    answer: 'It iterates through your text lines, recording unique entries in a lookup Set. Redundant repeated lines are removed while preserving original sequence order.',
+    answer: 'The tool parses raw text line by line using an in-memory hash Set with O(N) linear time complexity. Unique entries are preserved in sequence while repeated records are filtered out, optionally taking into account case sensitivity and whitespace trimming.',
+  },
+  {
+    question: 'What is the difference between keeping the first vs. last occurrence?',
+    answer: 'Keeping the first occurrence preserves the initial entry when it was first encountered in your document. Keeping the last occurrence retains the latest chronological entry, which is useful for audit logs, status updates, and progressive data feeds.',
+  },
+  {
+    question: 'Can I isolate only the duplicated lines rather than removing them?',
+    answer: 'Yes. Switch the Filter Mode to "Show Duplicates Only". The tool will filter your dataset to display only records that appeared two or more times, making it easy to identify data entry errors or recurring keywords.',
+  },
+  {
+    question: 'Is my text uploaded to a remote server?',
+    answer: 'No. All string manipulation executes 100% locally in your web browser memory via JavaScript. No data, files, or sensitive information ever leave your device.',
   },
 ];
 
@@ -54,6 +67,67 @@ const schemaGraph = [
     })),
   },
 ];
+
+const parameterGuideData = [
+  {
+    id: 'case-sensitivity',
+    name: 'Case Sensitivity',
+    description: 'When enabled, "Apple" and "apple" are treated as distinct items. When disabled, case differences are ignored and duplicates are merged.',
+    whyItMatters: 'Essential for case-insensitive data like email addresses and domain names vs. case-sensitive data like programming tokens and hashes.',
+    typicalRange: 'Enabled / Disabled (Default: Disabled)',
+  },
+  {
+    id: 'trim-whitespace',
+    name: 'Trim Whitespace',
+    description: 'Strips leading and trailing spaces and tab characters from each line before evaluating uniqueness.',
+    whyItMatters: 'Prevents lines with accidental invisible spaces from bypassing duplicate detection.',
+    typicalRange: 'Enabled / Disabled (Default: Enabled)',
+  },
+  {
+    id: 'occurrence-strategy',
+    name: 'Retention Strategy',
+    description: 'Determines whether the first occurrence or the last occurrence of each recurring entry is preserved in the output list.',
+    whyItMatters: 'Keeping first maintains chronological beginnings; keeping last retains latest record updates.',
+    typicalRange: 'Keep First / Keep Last (Default: Keep First)',
+  },
+  {
+    id: 'filter-mode',
+    name: 'Filter Mode',
+    description: 'Standard mode removes duplicate lines leaving unique items. Inverted mode extracts only the duplicate entries that appeared more than once.',
+    whyItMatters: 'Allows instant auditing and inspection of dirty data without manual search.',
+    typicalRange: 'Remove Duplicates / Show Duplicates Only',
+  },
+  {
+    id: 'output-sorting',
+    name: 'Output Sorting',
+    description: 'Optionally reorders clean lines alphabetically (A–Z or Z–A) or by duplicate frequency count.',
+    whyItMatters: 'Eliminates secondary sorting steps for SEO keyword lists, inventories, and CSV categories.',
+    typicalRange: 'Original Order, A–Z, Z–A, Frequency',
+  },
+];
+
+const workedExampleData = {
+  title: 'Cleaning an Email Subscriber List',
+  description: 'An export of newsletter signups contains repeated email entries with inconsistent capitalization and trailing spaces.',
+  formula: 'Unique Count = Total Entries - Duplicate Entries',
+  steps: [
+    {
+      step: 'Step 1: Ingest Raw Data',
+      calculation: '10 total email lines submitted with redundant duplicates.',
+      result: '10 records loaded',
+    },
+    {
+      step: 'Step 2: Normalize & Trim Whitespace',
+      calculation: '"  user@example.com " trimmed to "user@example.com". Case set to lower.',
+      result: 'Whitespace removed',
+    },
+    {
+      step: 'Step 3: Hash Set Deduplication',
+      calculation: 'Evaluate entries in linear O(N) pass. 4 recurring entries filtered.',
+      result: '6 unique records remaining (40% reduction)',
+    },
+  ],
+};
 ---
 
 <SiteLayout title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
@@ -82,71 +156,161 @@ const schemaGraph = [
     <header class="space-y-3">
       <div class="inline-flex items-center gap-2 rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1 text-xs font-semibold text-[color:var(--muted)]">
         <span class="inline-block h-2 w-2 rounded-full bg-emerald-500"></span>
-        <span>Fast List Deduplication</span>
+        <span>100% Client-Side • Case &amp; Frequency Analysis • Instant Deduplication</span>
       </div>
       <h1 class="text-2xl sm:text-4xl font-extrabold tracking-tight text-[color:var(--fg)]">
         Duplicate Line Remover
       </h1>
       <p class="max-w-2xl text-xs sm:text-sm text-[color:var(--muted)] leading-relaxed">
-        Deduplicate item lists, keywords, email lists, and text files with customizable case matching.
+        Clean and deduplicate lists, keywords, email databases, and log files. Custom case sensitivity, whitespace normalization, occurrence controls, and duplicate frequency inspection.
       </p>
     </header>
 
+    <!-- Metrics Summary Bar -->
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+      <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-center shadow-xs">
+        <span class="block text-[11px] font-bold uppercase tracking-wider text-[color:var(--muted)]">Original Lines</span>
+        <span id="stat-in-lines" class="mt-1 block text-xl sm:text-2xl font-black text-[color:var(--fg)] font-mono">0</span>
+      </div>
+      <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-center shadow-xs">
+        <span class="block text-[11px] font-bold uppercase tracking-wider text-[color:var(--muted)]">Unique Lines</span>
+        <span id="stat-out-lines" class="mt-1 block text-xl sm:text-2xl font-black text-cyan-600 dark:text-cyan-400 dark:text-cyan-400 font-mono">0</span>
+      </div>
+      <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-center shadow-xs">
+        <span class="block text-[11px] font-bold uppercase tracking-wider text-[color:var(--muted)]">Duplicates Removed</span>
+        <span id="stat-dups-removed" class="mt-1 block text-xl sm:text-2xl font-black text-rose-600 dark:text-rose-400 font-mono">0</span>
+      </div>
+      <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-center shadow-xs">
+        <span class="block text-[11px] font-bold uppercase tracking-wider text-[color:var(--muted)]">Reduction</span>
+        <span id="stat-pct-reduced" class="mt-1 block text-xl sm:text-2xl font-black text-[color:var(--accent)] font-mono">0%</span>
+      </div>
+    </div>
+
+    <!-- Controls Panel -->
+    <div class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 sm:p-6 space-y-4 shadow-sm">
+      <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 text-xs">
+        <div>
+          <label for="opt-filter-mode" class="block font-bold text-[color:var(--fg)] mb-1.5">Action Mode</label>
+          <select id="opt-filter-mode" class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-[color:var(--fg)] font-semibold">
+            <option value="remove-duplicates">Remove Duplicates (Keep Unique)</option>
+            <option value="show-duplicates-only">Show Duplicates Only (Invert)</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="opt-occurrence" class="block font-bold text-[color:var(--fg)] mb-1.5">Occurrence Strategy</label>
+          <select id="opt-occurrence" class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-[color:var(--fg)]">
+            <option value="first">Keep First Occurrence</option>
+            <option value="last">Keep Last Occurrence</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="opt-sort" class="block font-bold text-[color:var(--fg)] mb-1.5">Sort Output</label>
+          <select id="opt-sort" class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-[color:var(--fg)]">
+            <option value="original">Retain Original Order</option>
+            <option value="az">Alphabetical (A &rarr; Z)</option>
+            <option value="za">Reverse Alphabetical (Z &rarr; A)</option>
+            <option value="freq">By Frequency (Most Repeated First)</option>
+          </select>
+        </div>
+
+        <div class="space-y-2 pt-1">
+          <label class="flex items-center gap-2 font-medium text-[color:var(--fg)] cursor-pointer">
+            <input type="checkbox" id="opt-case-sens" class="rounded accent-[color:var(--accent)]" />
+            <span>Case Sensitive</span>
+          </label>
+          <label class="flex items-center gap-2 font-medium text-[color:var(--fg)] cursor-pointer">
+            <input type="checkbox" id="opt-trim-ws" checked class="rounded accent-[color:var(--accent)]" />
+            <span>Trim Whitespace</span>
+          </label>
+          <label class="flex items-center gap-2 font-medium text-[color:var(--fg)] cursor-pointer">
+            <input type="checkbox" id="opt-skip-empty" checked class="rounded accent-[color:var(--accent)]" />
+            <span>Remove Empty Lines</span>
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <!-- Dual Text Editor Workspace -->
     <div class="grid gap-6 lg:grid-cols-2">
+      <!-- Left: Source Editor -->
       <div class="space-y-3">
         <div class="flex items-center justify-between">
-          <label for="text-in" class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Original Text</label>
+          <div class="flex items-center gap-2">
+            <label for="text-in" class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Source Text</label>
+            <span id="char-count-in" class="text-[11px] text-[color:var(--muted)]">0 chars</span>
+          </div>
           <div class="flex items-center gap-2 text-xs">
-            <button type="button" data-sample-btn class="text-[color:var(--primary)] hover:underline font-semibold">Load Sample</button>
-            <span class="text-[color:var(--border)]">|</span>
-            <button type="button" data-clear-btn class="text-[color:var(--muted)] hover:text-[color:var(--fg)]">Clear</button>
+            <label for="file-upload" class="cursor-pointer text-[color:var(--accent)] hover:underline font-semibold flex items-center gap-1">
+              <span>Import File</span>
+              <input type="file" id="file-upload" accept=".txt,.csv,.tsv,.log" class="hidden" />
+            </label>
+            <span class="text-[color:var(--border)]">•</span>
+            <button type="button" id="btn-sample" class="text-[color:var(--accent)] hover:underline font-semibold cursor-pointer">Sample</button>
+            <span class="text-[color:var(--border)]">•</span>
+            <button type="button" id="btn-clear" class="text-rose-600 dark:text-rose-400 hover:underline cursor-pointer">Clear</button>
           </div>
         </div>
         <textarea
           id="text-in"
-          rows="14"
-          class="w-full font-mono text-xs leading-relaxed rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-[color:var(--fg)] focus:border-[color:var(--border-strong)] focus:outline-hidden"
-          placeholder="Paste lines of text here..."
+          rows="15"
+          class="w-full font-mono text-xs leading-relaxed rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-[color:var(--fg)] focus:border-[color:var(--accent)] focus:outline-hidden transition shadow-inner"
+          placeholder="Paste or type lines of text here..."
         ></textarea>
-
-        <div class="flex flex-wrap items-center justify-between gap-3">
-          <label class="flex items-center gap-2 text-xs text-[color:var(--muted)] cursor-pointer">
-            <input type="checkbox" id="case-sens" class="rounded accent-[color:var(--fg)]" />
-            <span>Case Sensitive</span>
-          </label>
-          <button
-            type="button"
-            data-process-btn
-            class="rounded-xl bg-[color:var(--fg)] px-5 py-2 text-xs font-bold text-[color:var(--bg)] shadow-xs transition hover:opacity-90"
-          >
-            Remove Duplicates
-          </button>
-        </div>
       </div>
 
+      <!-- Right: Processed Output -->
       <div class="space-y-3">
         <div class="flex items-center justify-between">
-          <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Unique Lines</span>
-          <button type="button" data-copy-btn class="inline-flex items-center gap-1 text-xs font-bold text-[color:var(--fg)] hover:underline">
-            <Icon name="copy" class="w-3.5 h-3.5" />
-            <span>Copy</span>
-          </button>
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Clean Output</span>
+            <span id="char-count-out" class="text-[11px] text-[color:var(--muted)]">0 chars</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <button
+              type="button"
+              id="btn-copy"
+              class="inline-flex cursor-pointer items-center gap-1.5 rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1.5 text-xs font-bold text-[color:var(--fg)] shadow-xs transition hover:bg-[color:var(--surface-strong)]"
+            >
+              <Icon name="copy" class="w-3.5 h-3.5" />
+              <span id="copy-label">Copy</span>
+            </button>
+            <button
+              type="button"
+              id="btn-download"
+              class="inline-flex cursor-pointer items-center gap-1.5 rounded-xl bg-[color:var(--fg)] px-3 py-1.5 text-xs font-bold text-[color:var(--bg)] shadow-xs transition hover:opacity-90"
+            >
+              <span>Download .txt</span>
+            </button>
+          </div>
         </div>
         <textarea
           id="text-out"
-          rows="14"
+          rows="15"
           readonly
-          class="w-full font-mono text-xs leading-relaxed rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-4 text-[color:var(--fg)] focus:outline-hidden"
-          placeholder="Unique lines will appear here..."
+          class="w-full font-mono text-xs leading-relaxed rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-4 text-[color:var(--fg)] focus:outline-hidden transition shadow-inner"
+          placeholder="Deduplicated lines will appear here in real-time..."
         ></textarea>
-
-        <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3 text-xs flex justify-between font-mono">
-          <span>Original: <strong id="orig-lines">0</strong> lines</span>
-          <span>Removed: <strong id="removed-lines" class="text-red-500">0</strong></span>
-          <span>Unique: <strong id="uniq-lines" class="text-emerald-500">0</strong></span>
-        </div>
       </div>
     </div>
+
+    <!-- Duplicate Frequency Breakdown Card -->
+    <div id="freq-card" class="hidden rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 sm:p-6 space-y-3 shadow-sm">
+      <div class="flex items-center justify-between border-b border-[color:var(--border)] pb-2.5">
+        <h3 class="text-sm font-bold text-[color:var(--fg)]">Repeated Items Frequency Audit</h3>
+        <span id="freq-count-badge" class="rounded-full bg-rose-500/10 px-2.5 py-0.5 text-[11px] font-bold text-rose-600 dark:text-rose-400 border border-rose-500/20">0 items</span>
+      </div>
+      <div class="max-h-60 overflow-y-auto space-y-1.5 pr-1" id="freq-list"></div>
+    </div>
+
+    <!-- Parameter Guide & Worked Example -->
+    <CalculatorParameterGuide
+      title="How Line Deduplication Works"
+      description="Understand duplicate detection parameters, whitespace normalization, and occurrence retention options."
+      parameters={parameterGuideData}
+      workedExample={workedExampleData}
+    />
 
     <!-- FAQs -->
     <section class="space-y-4">
@@ -172,71 +336,214 @@ const schemaGraph = [
       const root = document.querySelector('[data-dup-app]');
       if (!root) return;
 
-      const input = root.querySelector('#text-in');
-      const output = root.querySelector('#text-out');
-      const caseSens = root.querySelector('#case-sens');
-      const processBtn = root.querySelector('[data-process-btn]');
-      const sampleBtn = root.querySelector('[data-sample-btn]');
-      const clearBtn = root.querySelector('[data-clear-btn]');
-      const copyBtn = root.querySelector('[data-copy-btn]');
-      const origLines = root.querySelector('#orig-lines');
-      const removedLines = root.querySelector('#removed-lines');
-      const uniqLines = root.querySelector('#uniq-lines');
+      const textIn = root.querySelector('#text-in');
+      const textOut = root.querySelector('#text-out');
+      const statInLines = root.querySelector('#stat-in-lines');
+      const statOutLines = root.querySelector('#stat-out-lines');
+      const statDupsRemoved = root.querySelector('#stat-dups-removed');
+      const statPctReduced = root.querySelector('#stat-pct-reduced');
+      const charCountIn = root.querySelector('#char-count-in');
+      const charCountOut = root.querySelector('#char-count-out');
 
-      function process() {
-        const text = input.value;
-        if (!text) {
-          output.value = '';
-          origLines.textContent = '0';
-          removedLines.textContent = '0';
-          uniqLines.textContent = '0';
+      const optFilterMode = root.querySelector('#opt-filter-mode');
+      const optOccurrence = root.querySelector('#opt-occurrence');
+      const optSort = root.querySelector('#opt-sort');
+      const optCaseSens = root.querySelector('#opt-case-sens');
+      const optTrimWs = root.querySelector('#opt-trim-ws');
+      const optSkipEmpty = root.querySelector('#opt-skip-empty');
+
+      const btnSample = root.querySelector('#btn-sample');
+      const btnClear = root.querySelector('#btn-clear');
+      const btnCopy = root.querySelector('#btn-copy');
+      const copyLabel = root.querySelector('#copy-label');
+      const btnDownload = root.querySelector('#btn-download');
+      const fileUpload = root.querySelector('#file-upload');
+
+      const freqCard = root.querySelector('#freq-card');
+      const freqList = root.querySelector('#freq-list');
+      const freqCountBadge = root.querySelector('#freq-count-badge');
+
+      const SAMPLE_TEXT = `apple\nbanana\norange\napple\ngrape\nbanana\npear\nApple\norange\n  peach  \nbanana\nwatermelon\npeach`;
+
+      function processText() {
+        const raw = textIn.value;
+        charCountIn.textContent = `${raw.length.toLocaleString()} chars`;
+
+        if (!raw.length) {
+          textOut.value = '';
+          statInLines.textContent = '0';
+          statOutLines.textContent = '0';
+          statDupsRemoved.textContent = '0';
+          statPctReduced.textContent = '0%';
+          charCountOut.textContent = '0 chars';
+          freqCard.classList.add('hidden');
           return;
         }
 
-        const lines = text.split('\n');
-        const isCase = caseSens.checked;
-        const seen = new Set();
-        const result = [];
+        let lines = raw.split(/\r\n|\r|\n/);
+        const totalIn = lines.length;
+        statInLines.textContent = totalIn.toLocaleString();
 
-        lines.forEach(line => {
-          const key = isCase ? line : line.toLowerCase();
-          if (!seen.has(key)) {
-            seen.add(key);
-            result.push(line);
-          }
+        const trimWs = optTrimWs.checked;
+        const caseSens = optCaseSens.checked;
+        const skipEmpty = optSkipEmpty.checked;
+        const occurrence = optOccurrence.value;
+        const filterMode = optFilterMode.value;
+        const sortMode = optSort.value;
+
+        // Process lines
+        const normalized = lines.map(line => trimWs ? line.trim() : line);
+        const filteredLines = skipEmpty ? normalized.filter(l => l.length > 0) : normalized;
+
+        // Build frequency map
+        const freqMap = new Map();
+        filteredLines.forEach(line => {
+          const key = caseSens ? line : line.toLowerCase();
+          freqMap.set(key, (freqMap.get(key) || 0) + 1);
         });
 
-        output.value = result.join('\n');
-        origLines.textContent = lines.length;
-        removedLines.textContent = lines.length - result.length;
-        uniqLines.textContent = result.length;
+        // Deduplication or Duplicate extraction
+        let outputLines = [];
+
+        if (filterMode === 'show-duplicates-only') {
+          // Keep only items with count > 1
+          const seen = new Set();
+          for (const line of filteredLines) {
+            const key = caseSens ? line : line.toLowerCase();
+            if ((freqMap.get(key) || 0) > 1 && !seen.has(key)) {
+              outputLines.push(line);
+              seen.add(key);
+            }
+          }
+        } else {
+          // Standard deduplication
+          const seen = new Set();
+          if (occurrence === 'last') {
+            for (let i = filteredLines.length - 1; i >= 0; i--) {
+              const line = filteredLines[i];
+              const key = caseSens ? line : line.toLowerCase();
+              if (!seen.has(key)) {
+                outputLines.unshift(line);
+                seen.add(key);
+              }
+            }
+          } else {
+            for (const line of filteredLines) {
+              const key = caseSens ? line : line.toLowerCase();
+              if (!seen.has(key)) {
+                outputLines.push(line);
+                seen.add(key);
+              }
+            }
+          }
+        }
+
+        // Sorting
+        if (sortMode === 'az') {
+          outputLines.sort((a, b) => a.localeCompare(b, undefined, { sensitivity: caseSens ? 'variant' : 'base', numeric: true }));
+        } else if (sortMode === 'za') {
+          outputLines.sort((a, b) => b.localeCompare(a, undefined, { sensitivity: caseSens ? 'variant' : 'base', numeric: true }));
+        } else if (sortMode === 'freq') {
+          outputLines.sort((a, b) => {
+            const keyA = caseSens ? a : a.toLowerCase();
+            const keyB = caseSens ? b : b.toLowerCase();
+            const countDiff = (freqMap.get(keyB) || 0) - (freqMap.get(keyA) || 0);
+            return countDiff !== 0 ? countDiff : a.localeCompare(b);
+          });
+        }
+
+        const resultText = outputLines.join('\n');
+        textOut.value = resultText;
+        charCountOut.textContent = `${resultText.length.toLocaleString()} chars`;
+
+        const outCount = outputLines.length;
+        const dupsRemoved = Math.max(0, filteredLines.length - outCount);
+        const pctReduced = filteredLines.length > 0 ? Math.round((dupsRemoved / filteredLines.length) * 100) : 0;
+
+        statOutLines.textContent = outCount.toLocaleString();
+        statDupsRemoved.textContent = dupsRemoved.toLocaleString();
+        statPctReduced.textContent = `${pctReduced}%`;
+
+        // Update Frequency Breakdown
+        const duplicateEntries = Array.from(freqMap.entries()).filter(([_, count]) => count > 1);
+        if (duplicateEntries.length > 0) {
+          duplicateEntries.sort((a, b) => b[1] - a[1]);
+          freqCountBadge.textContent = `${duplicateEntries.length} unique repeats`;
+          freqList.innerHTML = duplicateEntries.map(([key, count]) => `
+            <div class="flex items-center justify-between py-1.5 px-3 rounded-xl bg-[color:var(--surface-strong)] text-xs border border-[color:var(--border)]">
+              <span class="font-mono text-[color:var(--fg)] truncate max-w-[80%]">${escapeHtml(key)}</span>
+              <span class="rounded-full bg-rose-500/10 px-2 py-0.5 text-[11px] font-bold text-rose-600 dark:text-rose-400 font-mono">${count}x</span>
+            </div>
+          `).join('');
+          freqCard.classList.remove('hidden');
+        } else {
+          freqCard.classList.add('hidden');
+        }
       }
 
-      processBtn.addEventListener('click', process);
-      input.addEventListener('input', process);
-      caseSens.addEventListener('change', process);
+      function escapeHtml(str) {
+        return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+      }
 
-      sampleBtn.addEventListener('click', () => {
-        input.value = `apple\nbanana\norange\napple\ngrapes\nbanana\nwatermelon\nOrange\napple`;
-        process();
+      // Event Listeners
+      textIn.addEventListener('input', processText);
+      optFilterMode.addEventListener('change', processText);
+      optOccurrence.addEventListener('change', processText);
+      optSort.addEventListener('change', processText);
+      optCaseSens.addEventListener('change', processText);
+      optTrimWs.addEventListener('change', processText);
+      optSkipEmpty.addEventListener('change', processText);
+
+      btnSample?.addEventListener('click', () => {
+        textIn.value = SAMPLE_TEXT;
+        processText();
       });
 
-      clearBtn.addEventListener('click', () => {
-        input.value = '';
-        output.value = '';
-        process();
+      btnClear?.addEventListener('click', () => {
+        textIn.value = '';
+        processText();
       });
 
-      copyBtn.addEventListener('click', () => {
-        if (!output.value) return;
-        navigator.clipboard.writeText(output.value);
-        const span = copyBtn.querySelector('span');
-        const orig = span.textContent;
-        span.textContent = 'Copied!';
-        setTimeout(() => span.textContent = orig, 1800);
+      btnCopy?.addEventListener('click', async () => {
+        if (!textOut.value) return;
+        try {
+          await navigator.clipboard.writeText(textOut.value);
+          copyLabel.textContent = 'Copied!';
+          setTimeout(() => { copyLabel.textContent = 'Copy'; }, 2000);
+        } catch (e) {
+          textOut.select();
+          document.execCommand('copy');
+          copyLabel.textContent = 'Copied!';
+          setTimeout(() => { copyLabel.textContent = 'Copy'; }, 2000);
+        }
       });
 
-      sampleBtn.click();
+      btnDownload?.addEventListener('click', () => {
+        if (!textOut.value) return;
+        const blob = new Blob([textOut.value], { type: 'text/plain;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'cleaned_unique_lines.txt';
+        a.click();
+        URL.revokeObjectURL(url);
+      });
+
+      fileUpload?.addEventListener('change', (e) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (evt) => {
+          textIn.value = evt.target.result;
+          processText();
+        };
+        reader.readAsText(file);
+      });
+
+      // Initial run if text already present
+      if (textIn.value) {
+        processText();
+      }
     })();
   </script>
 </SiteLayout>

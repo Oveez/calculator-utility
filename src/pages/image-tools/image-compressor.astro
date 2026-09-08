@@ -1,10 +1,11 @@
 ---
 import SiteLayout from '../../layouts/SiteLayout.astro';
 import Icon from '../../components/Icon.astro';
+import CalculatorParameterGuide from '../../components/calculator/CalculatorParameterGuide.astro';
 import { siteName, toAbsoluteUrl, withBasePath } from '../../utils/site';
 
 const pageTitle = `Client-Side Image Compressor — Compress JPEG, WebP, PNG Online · ${siteName}`;
-const pageDesc = 'Compress JPEG, WebP, and PNG images locally in your browser. Adjustable quality slider, live file weight comparison, and instant download with zero server uploads.';
+const pageDesc = 'Compress JPEG, WebP, and PNG images locally in your browser. Adjustable quality slider, target file size mode, live file weight comparison, and instant download with zero server uploads.';
 const canonicalUrl = toAbsoluteUrl('/image-tools/image-compressor/');
 
 const breadcrumbItems = [
@@ -16,7 +17,15 @@ const breadcrumbItems = [
 const schemaFaq = [
   {
     question: 'How does client-side image compression work?',
-    answer: 'The browser renders your image into an HTML5 Canvas and uses `canvas.toBlob(callback, type, quality)` with your chosen compression quality factor, reducing file size in memory.',
+    answer: 'The browser renders your image into an HTML5 Canvas and uses `canvas.toBlob(callback, type, quality)` with your chosen compression quality factor, reducing file size directly in memory without sending photos to remote servers.',
+  },
+  {
+    question: 'What is Target File Size mode?',
+    answer: 'Target File Size mode lets you specify an exact maximum file weight (e.g., 200 KB or 500 KB). The tool runs a binary search on the quality factor to find the optimal compression level that satisfies your size limit while retaining maximum visual fidelity.',
+  },
+  {
+    question: 'Which image format provides the best compression ratio?',
+    answer: 'WebP generally produces 25% to 35% smaller file sizes than JPEG at equivalent perceived visual quality. For photographic imagery, WebP or JPEG is recommended; for diagrams, logos, and screenshots with crisp edges, PNG is ideal.',
   },
 ];
 
@@ -82,17 +91,38 @@ const schemaGraph = [
     <header class="space-y-3">
       <div class="inline-flex items-center gap-2 rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1 text-xs font-semibold text-[color:var(--muted)]">
         <span class="inline-block h-2 w-2 rounded-full bg-emerald-500"></span>
-        <span>100% In-Browser Compression</span>
+        <span>100% In-Browser Compression &bull; Zero Server Uploads</span>
       </div>
       <h1 class="text-2xl sm:text-4xl font-extrabold tracking-tight text-[color:var(--fg)]">
         Client-Side Image Compressor
       </h1>
       <p class="max-w-2xl text-xs sm:text-sm text-[color:var(--muted)] leading-relaxed">
-        Reduce image file sizes instantly without sending any photos to external servers.
+        Reduce image file sizes instantly. Choose standard quality compression or set a target file weight (KB/MB) with automatic convergence. Your photos never leave your device.
       </p>
     </header>
 
+    <!-- Telemetry Bar -->
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+      <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3 text-center">
+        <p class="text-[10px] font-bold uppercase tracking-wider text-[color:var(--muted)]">Original Size</p>
+        <p id="stat-orig" class="mt-1 font-mono text-base font-bold text-[color:var(--fg)]">0 B</p>
+      </div>
+      <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3 text-center">
+        <p class="text-[10px] font-bold uppercase tracking-wider text-[color:var(--muted)]">Compressed Size</p>
+        <p id="stat-comp" class="mt-1 font-mono text-base font-bold text-emerald-500">0 B</p>
+      </div>
+      <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3 text-center">
+        <p class="text-[10px] font-bold uppercase tracking-wider text-[color:var(--muted)]">Bytes Saved</p>
+        <p id="stat-saved" class="mt-1 font-mono text-base font-bold text-[color:var(--fg)]">0 B</p>
+      </div>
+      <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3 text-center">
+        <p class="text-[10px] font-bold uppercase tracking-wider text-[color:var(--muted)]">Reduction</p>
+        <p id="stat-pct" class="mt-1 font-mono text-base font-bold text-emerald-500">0%</p>
+      </div>
+    </div>
+
     <div class="space-y-6">
+      <!-- Upload Dropzone -->
       <div id="dropzone-box" class="space-y-3 rounded-3xl border-2 border-dashed border-[color:var(--border)] bg-[color:var(--surface)] p-6 sm:p-8 text-center transition hover:border-[color:var(--border-strong)]">
         <input type="file" id="img-file" accept="image/*" class="hidden" />
         
@@ -100,8 +130,8 @@ const schemaGraph = [
           <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-[color:var(--surface-strong)] text-[color:var(--fg)]">
             <Icon name="image" class="w-6 h-6 text-[color:var(--accent)]" />
           </div>
-          <p class="text-sm font-bold text-[color:var(--fg)]">Choose an image to compress</p>
-          <p class="text-xs text-[color:var(--muted)]">Supports JPG, PNG, and WebP (100% private in browser)</p>
+          <p class="text-sm font-bold text-[color:var(--fg)]">Choose an image to compress or drag and drop</p>
+          <p class="text-xs text-[color:var(--muted)]">Supports JPG, JPEG, PNG, WebP, AVIF, BMP (100% private in browser)</p>
         </label>
 
         <!-- Visual Upload Preview Box -->
@@ -112,7 +142,7 @@ const schemaGraph = [
             </div>
             <div class="min-w-0 space-y-0.5">
               <p id="thumb-name" class="text-xs sm:text-sm font-bold text-[color:var(--fg)] truncate">image.jpg</p>
-              <p id="thumb-info" class="text-[11px] text-[color:var(--muted)]">0 KB</p>
+              <p id="thumb-info" class="text-[11px] text-[color:var(--muted)] font-mono">0 KB</p>
             </div>
           </div>
           <label for="img-file" class="cursor-pointer shrink-0 rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1.5 text-xs font-semibold text-[color:var(--muted)] hover:text-[color:var(--fg)] transition">
@@ -121,56 +151,190 @@ const schemaGraph = [
         </div>
       </div>
 
-      <!-- Controls & Preview -->
+      <!-- Controls & Preview Section -->
       <div id="comp-wrapper" class="hidden space-y-6">
-        <div class="grid gap-4 sm:grid-cols-2 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 text-xs">
-          <div>
-            <div class="flex justify-between mb-1.5 font-bold text-[color:var(--fg)]">
-              <span>Compression Quality:</span>
-              <span id="qual-val" class="font-mono text-emerald-500">80%</span>
-            </div>
-            <input
-              type="range"
-              id="qual-slider"
-              min="10"
-              max="100"
-              value="80"
-              class="w-full accent-[color:var(--fg)] cursor-pointer"
-            />
+        <!-- Mode Tabs: Quality Slider vs Target Size -->
+        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 space-y-4 text-xs">
+          <div class="flex items-center gap-2 border-b border-[color:var(--border)] pb-3">
+            <button
+              type="button"
+              id="tab-quality"
+              class="rounded-xl bg-[color:var(--surface-strong)] border border-[color:var(--border)] px-4 py-2 text-xs font-bold text-[color:var(--fg)] transition cursor-pointer"
+            >
+              Quality Slider Mode
+            </button>
+            <button
+              type="button"
+              id="tab-target"
+              class="rounded-xl bg-transparent px-4 py-2 text-xs font-medium text-[color:var(--muted)] hover:text-[color:var(--fg)] transition cursor-pointer"
+            >
+              Target Max File Size Mode
+            </button>
           </div>
-          <div>
-            <label for="out-format" class="font-bold text-[color:var(--fg)] block mb-1.5">Output Format:</label>
-            <select id="out-format" class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-1.5 text-[color:var(--fg)]">
-              <option value="image/jpeg">JPEG (Standard)</option>
-              <option value="image/webp">WebP (High Efficiency)</option>
-            </select>
+
+          <!-- Quality Mode Controls -->
+          <div id="panel-quality" class="grid gap-4 sm:grid-cols-3">
+            <div class="sm:col-span-2 space-y-1.5">
+              <div class="flex justify-between font-bold text-[color:var(--fg)]">
+                <span>Compression Quality:</span>
+                <span id="qual-val" class="font-mono text-emerald-500">80%</span>
+              </div>
+              <input
+                type="range"
+                id="qual-slider"
+                min="5"
+                max="100"
+                value="80"
+                class="w-full accent-[color:var(--fg)] cursor-pointer"
+              />
+              <div class="flex justify-between text-[10px] text-[color:var(--muted)] font-mono">
+                <span>Maximum Compression (5%)</span>
+                <span>Balanced (80%)</span>
+                <span>Original Quality (100%)</span>
+              </div>
+            </div>
+
+            <div>
+              <label for="out-format" class="font-bold text-[color:var(--fg)] block mb-1.5">Output Format:</label>
+              <select id="out-format" class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-[color:var(--fg)] font-semibold">
+                <option value="image/webp">WebP (Recommended &bull; High Efficiency)</option>
+                <option value="image/jpeg">JPEG (Standard &bull; Universal Compatibility)</option>
+                <option value="image/png">PNG (Lossless &bull; Best for Graphics)</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Target Size Mode Controls -->
+          <div id="panel-target" class="hidden space-y-3">
+            <div class="grid gap-4 sm:grid-cols-2">
+              <div>
+                <label for="target-kb" class="font-bold text-[color:var(--fg)] block mb-1">Target Max Size (KB):</label>
+                <input
+                  type="number"
+                  id="target-kb"
+                  value="250"
+                  min="10"
+                  max="10000"
+                  class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-[color:var(--fg)]"
+                />
+              </div>
+              <div class="flex items-end gap-1.5">
+                <button type="button" data-preset-kb="100" class="rounded-lg border border-[color:var(--border)] bg-[color:var(--bg)] px-2.5 py-2 font-medium hover:border-[color:var(--border-strong)]">100 KB</button>
+                <button type="button" data-preset-kb="250" class="rounded-lg border border-[color:var(--border)] bg-[color:var(--bg)] px-2.5 py-2 font-medium hover:border-[color:var(--border-strong)]">250 KB</button>
+                <button type="button" data-preset-kb="500" class="rounded-lg border border-[color:var(--border)] bg-[color:var(--bg)] px-2.5 py-2 font-medium hover:border-[color:var(--border-strong)]">500 KB</button>
+                <button type="button" data-preset-kb="1000" class="rounded-lg border border-[color:var(--border)] bg-[color:var(--bg)] px-2.5 py-2 font-medium hover:border-[color:var(--border-strong)]">1 MB</button>
+              </div>
+            </div>
+            <p class="text-[11px] text-[color:var(--muted)]">The compressor will iteratively tune quality to achieve the highest visual fidelity that stays under this limit.</p>
+          </div>
+
+          <!-- Scale Resolution Control -->
+          <div class="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-[color:var(--border)]">
+            <div class="flex items-center gap-2">
+              <label for="scale-select" class="font-medium text-[color:var(--muted)]">Dimension Scaling:</label>
+              <select id="scale-select" class="rounded-lg border border-[color:var(--border)] bg-[color:var(--bg)] px-2.5 py-1 text-xs text-[color:var(--fg)]">
+                <option value="1">100% (Original Dimensions)</option>
+                <option value="0.75">75% Scaling</option>
+                <option value="0.5">50% Scaling (Half Dimensions)</option>
+                <option value="0.25">25% Scaling</option>
+              </select>
+            </div>
+            <span id="scale-info" class="text-[11px] font-mono text-[color:var(--muted)]">1920 &times; 1080 px</span>
           </div>
         </div>
 
-        <div class="grid gap-4 sm:grid-cols-3 text-center">
-          <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4">
-            <span class="text-xs text-[color:var(--muted)]">Original Size</span>
-            <p id="orig-size" class="text-xl font-bold text-[color:var(--fg)]">-</p>
+        <!-- Side-by-Side Visual Preview -->
+        <div class="grid gap-6 sm:grid-cols-2">
+          <div class="space-y-2 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Original Preview</span>
+              <span id="prev-orig-size" class="text-xs font-mono font-bold text-[color:var(--fg)]">-</span>
+            </div>
+            <div class="h-64 rounded-xl bg-[color:var(--surface-strong)] overflow-hidden flex items-center justify-center p-2">
+              <img id="img-orig-preview" alt="Original" class="max-h-full max-w-full object-contain" />
+            </div>
           </div>
-          <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4">
-            <span class="text-xs text-[color:var(--muted)]">Compressed Size</span>
-            <p id="comp-size" class="text-xl font-bold text-emerald-500">-</p>
-          </div>
-          <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4">
-            <span class="text-xs text-[color:var(--muted)]">Savings</span>
-            <p id="savings-val" class="text-xl font-bold text-emerald-500">-</p>
+
+          <div class="space-y-2 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Compressed Result</span>
+              <span id="prev-comp-size" class="text-xs font-mono font-bold text-emerald-500">-</span>
+            </div>
+            <div class="h-64 rounded-xl bg-[color:var(--surface-strong)] overflow-hidden flex items-center justify-center p-2">
+              <img id="img-comp-preview" alt="Compressed" class="max-h-full max-w-full object-contain" />
+            </div>
           </div>
         </div>
 
         <button
           type="button"
           id="dl-comp-btn"
-          class="w-full rounded-xl bg-[color:var(--fg)] py-3 text-xs font-bold text-[color:var(--bg)] shadow-xs transition hover:opacity-90"
+          class="w-full rounded-xl bg-[color:var(--fg)] py-3 text-xs font-bold text-[color:var(--bg)] shadow-xs transition hover:opacity-90 cursor-pointer flex items-center justify-center gap-2"
         >
-          Download Compressed Image
+          <Icon name="download" class="w-4 h-4" />
+          <span>Download Compressed Image</span>
         </button>
       </div>
     </div>
+
+    <!-- Parameter Guide & Worked Example -->
+    <CalculatorParameterGuide
+      title="Image Compression Parameters & Technical Specifications"
+      description="Guidelines covering canvas encoding parameters, lossy vs lossless mechanisms, and WebP efficiency."
+      parameters={[
+        {
+          name: "Quality Factor",
+          type: "Float (0.05 to 1.0)",
+          defaultValue: "0.80 (80%)",
+          description: "Governs the quantization table matrix in lossy encoders (JPEG and WebP). Lower values discard high-frequency chrominance details to drastically lower byte weight.",
+        },
+        {
+          name: "Target File Size Mode",
+          type: "Numeric (KB / MB)",
+          defaultValue: "250 KB",
+          description: "Runs iterative binary search convergence against the canvas buffer to pinpoint the highest quality level that does not exceed the target threshold.",
+        },
+        {
+          name: "Output Format (MIME)",
+          type: "image/webp | image/jpeg | image/png",
+          defaultValue: "image/webp",
+          description: "WebP provides predictive macroblock coding for high compression; JPEG provides universal compatibility; PNG provides lossless deflation.",
+        },
+        {
+          name: "Dimension Scaling",
+          type: "Scale Factor (0.25 to 1.0)",
+          defaultValue: "1.0 (100%)",
+          description: "Downscales pixel dimensions via bicubic interpolation, reducing total pixel count and multiplying file size savings.",
+        },
+      ]}
+      workedExample={{
+        title: "Compressing a 4.2 MB High-Resolution Smartphone Photo for Web Publishing",
+        description: "Transform a 4000x3000 JPEG photo into an optimized WebP format suitable for fast webpage loading.",
+        formula: "Compressed Size = Canvas.toBlob(image, 'image/webp', 0.80)",
+        steps: [
+          {
+            step: "Analyze Original Image",
+            calculation: "Dimensions: 4000x3000 (12 MP), Weight: 4,200 KB (4.2 MB)",
+            result: "Initial payload: 4.2 MB",
+          },
+          {
+            step: "Transcode to WebP at 80% Quality",
+            calculation: "Convert 24-bit RGB pixel stream using WebP predictive block compression.",
+            result: "Compressed weight: 620 KB",
+          },
+          {
+            step: "Optional 50% Dimension Scaling",
+            calculation: "Rescale to 2000x1500 (3 MP), ideal for Retina web display.",
+            result: "Final weight: 195 KB",
+          },
+          {
+            step: "Calculate Total Savings",
+            calculation: "(4,200 KB - 195 KB) / 4,200 KB = 95.3% reduction.",
+            result: "-95.3% saved (4,005 KB reduced)",
+          },
+        ],
+      }}
+    />
 
     <!-- FAQs -->
     <section class="space-y-4">
@@ -180,7 +344,7 @@ const schemaGraph = [
           <details class="group rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
             <summary class="cursor-pointer list-none font-semibold text-sm sm:text-base text-[color:var(--fg)] flex items-center justify-between gap-4">
               <span>{faq.question}</span>
-              <span class="text-xs text-[color:var(--muted)] group-open:rotate-180 transition-transform">▼</span>
+              <span class="text-xs text-[color:var(--muted)] group-open:rotate-180 transition-transform">&#9660;</span>
             </summary>
             <p class="mt-3 text-xs sm:text-sm leading-relaxed text-[color:var(--muted)]">
               {faq.answer}
@@ -203,18 +367,35 @@ const schemaGraph = [
       const thumbName = root.querySelector('#thumb-name');
       const thumbInfo = root.querySelector('#thumb-info');
       const wrapper = root.querySelector('#comp-wrapper');
+
+      const tabQuality = root.querySelector('#tab-quality');
+      const tabTarget = root.querySelector('#tab-target');
+      const panelQuality = root.querySelector('#panel-quality');
+      const panelTarget = root.querySelector('#panel-target');
+
       const qualSlider = root.querySelector('#qual-slider');
       const qualVal = root.querySelector('#qual-val');
       const outFmt = root.querySelector('#out-format');
-      const origSizeEl = root.querySelector('#orig-size');
-      const compSizeEl = root.querySelector('#comp-size');
-      const savingsEl = root.querySelector('#savings-val');
+      const targetKb = root.querySelector('#target-kb');
+      const scaleSelect = root.querySelector('#scale-select');
+      const scaleInfo = root.querySelector('#scale-info');
+
+      const statOrig = root.querySelector('#stat-orig');
+      const statComp = root.querySelector('#stat-comp');
+      const statSaved = root.querySelector('#stat-saved');
+      const statPct = root.querySelector('#stat-pct');
+
+      const prevOrigSize = root.querySelector('#prev-orig-size');
+      const prevCompSize = root.querySelector('#prev-comp-size');
+      const imgOrigPreview = root.querySelector('#img-orig-preview');
+      const imgCompPreview = root.querySelector('#img-comp-preview');
       const dlBtn = root.querySelector('#dl-comp-btn');
 
       let loadedImg = null;
       let origSizeBytes = 0;
       let compBlobUrl = null;
       let origFileName = 'image.jpg';
+      let activeMode = 'quality';
 
       function formatBytes(bytes) {
         if (bytes < 1024) return bytes + ' B';
@@ -222,27 +403,103 @@ const schemaGraph = [
         return (bytes / 1048576).toFixed(2) + ' MB';
       }
 
-      function compress() {
-        if (!loadedImg) return;
-        const quality = parseInt(qualSlider.value, 10) / 100;
-        qualVal.textContent = `${qualSlider.value}%`;
-        const fmt = outFmt.value;
+      function switchMode(mode) {
+        activeMode = mode;
+        if (mode === 'quality') {
+          tabQuality.className = 'rounded-xl bg-[color:var(--surface-strong)] border border-[color:var(--border)] px-4 py-2 text-xs font-bold text-[color:var(--fg)] transition cursor-pointer';
+          tabTarget.className = 'rounded-xl bg-transparent px-4 py-2 text-xs font-medium text-[color:var(--muted)] hover:text-[color:var(--fg)] transition cursor-pointer';
+          panelQuality.classList.remove('hidden');
+          panelTarget.classList.add('hidden');
+        } else {
+          tabQuality.className = 'rounded-xl bg-transparent px-4 py-2 text-xs font-medium text-[color:var(--muted)] hover:text-[color:var(--fg)] transition cursor-pointer';
+          tabTarget.className = 'rounded-xl bg-[color:var(--surface-strong)] border border-[color:var(--border)] px-4 py-2 text-xs font-bold text-[color:var(--fg)] transition cursor-pointer';
+          panelQuality.classList.add('hidden');
+          panelTarget.classList.remove('hidden');
+        }
+        compress();
+      }
+
+      tabQuality.addEventListener('click', () => switchMode('quality'));
+      tabTarget.addEventListener('click', () => switchMode('target'));
+
+      function renderCanvas(scale) {
+        const targetW = Math.round(loadedImg.naturalWidth * scale);
+        const targetH = Math.round(loadedImg.naturalHeight * scale);
+        scaleInfo.textContent = `${targetW} × ${targetH} px`;
 
         const canvas = document.createElement('canvas');
-        canvas.width = loadedImg.naturalWidth;
-        canvas.height = loadedImg.naturalHeight;
+        canvas.width = targetW;
+        canvas.height = targetH;
         const ctx = canvas.getContext('2d');
-        ctx.drawImage(loadedImg, 0, 0);
+        ctx.drawImage(loadedImg, 0, 0, targetW, targetH);
+        return canvas;
+      }
 
-        canvas.toBlob((blob) => {
-          if (compBlobUrl) URL.revokeObjectURL(compBlobUrl);
-          compBlobUrl = URL.createObjectURL(blob);
-          compSizeEl.textContent = formatBytes(blob.size);
+      function updateStats(blobSize) {
+        if (compBlobUrl) URL.revokeObjectURL(compBlobUrl);
 
-          const saved = Math.max(0, origSizeBytes - blob.size);
-          const pct = ((saved / origSizeBytes) * 100).toFixed(0);
-          savingsEl.textContent = `${pct}% (${formatBytes(saved)})`;
-        }, fmt, quality);
+        statOrig.textContent = formatBytes(origSizeBytes);
+        statComp.textContent = formatBytes(blobSize);
+        prevOrigSize.textContent = formatBytes(origSizeBytes);
+        prevCompSize.textContent = formatBytes(blobSize);
+
+        const saved = Math.max(0, origSizeBytes - blobSize);
+        statSaved.textContent = formatBytes(saved);
+        const pct = origSizeBytes > 0 ? ((saved / origSizeBytes) * 100).toFixed(1) : 0;
+        statPct.textContent = `-${pct}%`;
+      }
+
+      function compress() {
+        if (!loadedImg) return;
+        const scale = parseFloat(scaleSelect.value);
+        const canvas = renderCanvas(scale);
+        const fmt = outFmt.value;
+
+        if (activeMode === 'quality') {
+          const quality = parseInt(qualSlider.value, 10) / 100;
+          qualVal.textContent = `${qualSlider.value}%`;
+
+          canvas.toBlob((blob) => {
+            if (!blob) return;
+            compBlobUrl = URL.createObjectURL(blob);
+            imgCompPreview.src = compBlobUrl;
+            updateStats(blob.size);
+          }, fmt, quality);
+
+        } else {
+          // Target Max File Size Mode: Binary Search for optimal quality
+          const targetBytes = (parseFloat(targetKb.value) || 250) * 1024;
+          let low = 0.05;
+          let high = 1.0;
+          let bestBlob = null;
+          let iterations = 0;
+
+          function search() {
+            if (iterations >= 7 || high - low < 0.04) {
+              if (bestBlob) {
+                compBlobUrl = URL.createObjectURL(bestBlob);
+                imgCompPreview.src = compBlobUrl;
+                updateStats(bestBlob.size);
+              }
+              return;
+            }
+
+            const mid = (low + high) / 2;
+            iterations++;
+            canvas.toBlob((blob) => {
+              if (!blob) return;
+              if (blob.size <= targetBytes) {
+                bestBlob = blob;
+                low = mid; // Try higher quality
+              } else {
+                high = mid; // Too large, lower quality
+              }
+              search();
+            }, fmt, mid);
+          }
+
+          search();
+        }
       }
 
       fileIn.addEventListener('change', (e) => {
@@ -251,36 +508,49 @@ const schemaGraph = [
 
         origFileName = file.name;
         origSizeBytes = file.size;
-        origSizeEl.textContent = formatBytes(file.size);
 
-        const url = URL.createObjectURL(file);
-        thumbPreview.src = url;
-        thumbName.textContent = file.name;
-        thumbInfo.textContent = `${formatBytes(file.size)} • ${file.type || 'image'}`;
+        const reader = new FileReader();
+        reader.onload = (loadEvt) => {
+          const img = new Image();
+          img.onload = () => {
+            loadedImg = img;
+            thumbPreview.src = img.src;
+            imgOrigPreview.src = img.src;
+            thumbName.textContent = file.name;
+            thumbInfo.textContent = `${formatBytes(file.size)} &bull; ${img.naturalWidth} &times; ${img.naturalHeight} px`;
 
-        uploadPrompt.classList.add('hidden');
-        uploadPreviewBox.classList.remove('hidden');
+            uploadPrompt.classList.add('hidden');
+            uploadPreviewBox.classList.remove('hidden');
+            wrapper.classList.remove('hidden');
 
-        const img = new Image();
-        img.onload = () => {
-          loadedImg = img;
-          thumbInfo.textContent = `${img.naturalWidth}×${img.naturalHeight} px • ${formatBytes(file.size)}`;
-          wrapper.classList.remove('hidden');
-          compress();
+            compress();
+          };
+          img.src = loadEvt.target.result;
         };
-        img.src = url;
+        reader.readAsDataURL(file);
       });
 
       qualSlider.addEventListener('input', compress);
       outFmt.addEventListener('change', compress);
+      scaleSelect.addEventListener('change', compress);
+      targetKb.addEventListener('input', compress);
+
+      root.querySelectorAll('[data-preset-kb]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          targetKb.value = btn.dataset.presetKb;
+          compress();
+        });
+      });
 
       dlBtn.addEventListener('click', () => {
         if (!compBlobUrl) return;
+        const fmt = outFmt.value;
+        const ext = fmt === 'image/webp' ? '.webp' : fmt === 'image/png' ? '.png' : '.jpg';
+        const base = origFileName.substring(0, origFileName.lastIndexOf('.')) || origFileName;
+
         const a = document.createElement('a');
         a.href = compBlobUrl;
-        const ext = outFmt.value === 'image/webp' ? '.webp' : '.jpg';
-        const base = origFileName.substring(0, origFileName.lastIndexOf('.')) || origFileName;
-        a.download = `${base}_compressed${ext}`;
+        a.download = `${base}-compressed${ext}`;
         a.click();
       });
     })();

@@ -1,7 +1,15 @@
 ---
 import SiteLayout from '../../layouts/SiteLayout.astro';
 import Icon from '../../components/Icon.astro';
+import CalculatorParameterGuide from '../../components/calculator/CalculatorParameterGuide.astro';
 import { siteName, toAbsoluteUrl, withBasePath } from '../../utils/site';
+
+const parameterGuide = [
+  { id: 'attended', name: 'Lectures Attended', description: 'Total classes you were physically present for.', whyItMatters: 'Forms the fixed numerator during the bunk period.', typicalRange: '0 to 100+', unit: 'classes' },
+  { id: 'total', name: 'Total Lectures Held', description: 'Total number of classes held to date by instructors.', whyItMatters: 'Forms the denominator which expands by 1 for each missed lecture.', typicalRange: '1 to 150+', unit: 'classes' },
+  { id: 'threshold', name: 'Attendance Cutoff Threshold', description: 'Mandatory minimum percentage needed to take exams (75% or 80%).', whyItMatters: 'Crossing below this threshold leads to hall ticket debarment.', typicalRange: '75% or 80%', unit: '%' },
+  { id: 'safeBunks', name: 'Safe Bunks', description: 'The integer number of consecutive classes you can skip without falling below the cutoff.', whyItMatters: 'Calculated using floor function: ⌊(Attended ÷ Target) - Total⌋.', typicalRange: '0 to 20+ classes', unit: 'classes' },
+];
 
 const pageTitle = `Bunk Calculator | How Many Classes Can I Miss? · ${siteName}`;
 const pageDesc = 'College bunk calculator. Calculate exactly how many lectures and lab classes you can skip without falling below your minimum attendance requirement (75% or 80%).';
@@ -176,7 +184,7 @@ const schemaGraph = [
         </form>
 
         <!-- Result Box -->
-        <div class="flex flex-col justify-between space-y-6 rounded-3xl border border-[color:var(--border)] bg-[color:var(--bg)] p-6 sm:p-8">
+        <div class="flex flex-col justify-between space-y-6 rounded-3xl border border-[color:var(--accent)]/30 bg-gradient-to-br from-[color:var(--accent-soft)] via-[color:var(--surface)] to-transparent p-6 sm:p-8 shadow-sm">
           <div class="space-y-5">
             <div class="flex items-center justify-between">
               <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Bunk Allowance</span>
@@ -232,6 +240,9 @@ const schemaGraph = [
         </p>
       </div>
     </section>
+
+    <!-- Parameter Guide -->
+    <CalculatorParameterGuide parameters={parameterGuide} />
 
     <!-- FAQs -->
     <section class="space-y-4">
@@ -291,7 +302,7 @@ const schemaGraph = [
               : `You can safely skip ${safe} class${safe === 1 ? '' : 'es'} without dropping below ${target}%.`;
           }
           if (badge) {
-            badge.className = 'rounded-full px-3 py-0.5 text-xs font-bold bg-green-500/10 text-green-600 dark:text-green-400 border border-green-500/20';
+            badge.className = 'rounded-full px-3 py-0.5 text-xs font-bold bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 dark:text-cyan-400 border border-cyan-500/20';
             badge.textContent = safe === 0 ? 'Warning' : 'Safe';
           }
         } else {

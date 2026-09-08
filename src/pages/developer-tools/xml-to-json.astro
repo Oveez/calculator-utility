@@ -1,10 +1,11 @@
 ---
 import SiteLayout from '../../layouts/SiteLayout.astro';
 import Icon from '../../components/Icon.astro';
+import CalculatorParameterGuide from '../../components/calculator/CalculatorParameterGuide.astro';
 import { siteName, toAbsoluteUrl, withBasePath } from '../../utils/site';
 
-const pageTitle = `XML to JSON Converter — Free Online XML Parser · ${siteName}`;
-const pageDesc = 'Convert XML files and RSS/SOAP feeds into structured JSON objects online. Preserves tag attributes, text nodes, and hierarchies. 100% private in-browser tool.';
+const pageTitle = `XML to JSON Converter — Online XML Parser & Formatter · ${siteName}`;
+const pageDesc = 'Convert XML documents, SOAP responses, and RSS feeds into structured JSON. Features attribute prefixing, numeric coercion, CDATA parsing, and root unwrapping.';
 const canonicalUrl = toAbsoluteUrl('/developer-tools/xml-to-json/');
 
 const breadcrumbItems = [
@@ -15,12 +16,16 @@ const breadcrumbItems = [
 
 const schemaFaq = [
   {
-    question: 'How does this tool parse XML in the browser?',
-    answer: 'It uses the browser’s native DOMParser API to build an XML Document Object Model, which is then recursively mapped into standard JSON key-value pairs and arrays.',
+    question: 'How are XML attributes represented in the resulting JSON?',
+    answer: 'XML attributes can be preserved under an `@attributes` object or mapped alongside child element properties. This allows full round-trip preservation of metadata without colliding with child tag names.',
   },
   {
-    question: 'How are XML attributes represented in JSON?',
-    answer: 'Attributes on XML tags are mapped as prefixed properties (e.g. `@attributes` or `@id`) alongside nested child element properties.',
+    question: 'How are duplicate XML tags converted to JSON arrays?',
+    answer: 'When multiple sibling XML elements share the same tag name (e.g. `<item>` or `<book>`), the parser automatically aggregates them into a single JSON array with all child properties preserved.',
+  },
+  {
+    question: 'Can XML CDATA sections be parsed?',
+    answer: 'Yes. The parser recognizes CDATA blocks (`<![CDATA[...]]>`) and extracts their unescaped string contents directly into the resulting JSON text fields.',
   },
 ];
 
@@ -86,41 +91,95 @@ const schemaGraph = [
     <header class="space-y-3">
       <div class="inline-flex items-center gap-2 rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1 text-xs font-semibold text-[color:var(--muted)]">
         <span class="inline-block h-2 w-2 rounded-full bg-emerald-500"></span>
-        <span>Native DOMParser Engine</span>
+        <span>Native DOMParser Engine &bull; CDATA &amp; Attribute Support</span>
       </div>
       <h1 class="text-2xl sm:text-4xl font-extrabold tracking-tight text-[color:var(--fg)]">
         XML to JSON Converter
       </h1>
       <p class="max-w-2xl text-xs sm:text-sm text-[color:var(--muted)] leading-relaxed">
-        Convert XML feeds, SOAP payloads, and markup into structured JSON with hierarchical mapping.
+        Convert XML feeds, SOAP payloads, and markup into structured JSON. Configure attribute handling, repeated tag arrays, numeric type casting, and root wrapper options.
       </p>
     </header>
 
+    <!-- Telemetry Bar -->
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+      <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3 text-center">
+        <p class="text-[10px] font-bold uppercase tracking-wider text-[color:var(--muted)]">XML Size</p>
+        <p id="stat-xml-size" class="mt-1 font-mono text-base font-bold text-[color:var(--fg)]">0 B</p>
+      </div>
+      <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3 text-center">
+        <p class="text-[10px] font-bold uppercase tracking-wider text-[color:var(--muted)]">JSON Size</p>
+        <p id="stat-json-size" class="mt-1 font-mono text-base font-bold text-cyan-500 dark:text-cyan-400">0 B</p>
+      </div>
+      <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3 text-center">
+        <p class="text-[10px] font-bold uppercase tracking-wider text-[color:var(--muted)]">Tag Elements</p>
+        <p id="stat-tags" class="mt-1 font-mono text-base font-bold text-[color:var(--fg)]">0</p>
+      </div>
+      <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3 text-center">
+        <p class="text-[10px] font-bold uppercase tracking-wider text-[color:var(--muted)]">Size Delta</p>
+        <p id="stat-delta" class="mt-1 font-mono text-base font-bold text-[color:var(--fg)]">0%</p>
+      </div>
+    </div>
+
+    <!-- Main Workspace -->
     <div class="grid gap-6 lg:grid-cols-2">
+      <!-- Input Column -->
       <div class="space-y-3">
         <div class="flex items-center justify-between">
-          <label for="xml-in" class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">XML Input</label>
+          <label for="xml-in" class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">
+            XML Input
+          </label>
           <div class="flex items-center gap-2 text-xs">
             <button type="button" data-sample-btn class="text-[color:var(--primary)] hover:underline font-semibold">Load Sample</button>
             <span class="text-[color:var(--border)]">|</span>
             <button type="button" data-clear-btn class="text-[color:var(--muted)] hover:text-[color:var(--fg)]">Clear</button>
           </div>
         </div>
+
         <textarea
           id="xml-in"
           rows="16"
           class="w-full font-mono text-xs leading-relaxed rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-[color:var(--fg)] focus:border-[color:var(--border-strong)] focus:outline-hidden"
           placeholder="<user id='101'><name>Alice</name><role>Admin</role></user>"
         ></textarea>
-        <button
-          type="button"
-          data-convert-btn
-          class="w-full rounded-xl bg-[color:var(--fg)] py-2.5 text-xs font-bold text-[color:var(--bg)] shadow-xs transition hover:opacity-90"
-        >
-          Convert to JSON
-        </button>
+
+        <!-- Parser Options -->
+        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 space-y-3 text-xs">
+          <p class="font-bold uppercase tracking-wider text-[color:var(--muted)] text-[10px]">Parser Configuration</p>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <label class="flex items-center gap-2 cursor-pointer">
+              <input type="checkbox" id="attr-prefix" checked class="rounded accent-[color:var(--fg)]" />
+              <span>Use @attributes prefix</span>
+            </label>
+            <label class="flex items-center gap-2 cursor-pointer">
+              <input type="checkbox" id="type-coerce" checked class="rounded accent-[color:var(--fg)]" />
+              <span>Auto-coerce numbers &amp; booleans</span>
+            </label>
+            <label class="flex items-center gap-2 cursor-pointer">
+              <input type="checkbox" id="unwrap-root" class="rounded accent-[color:var(--fg)]" />
+              <span>Unwrap root element</span>
+            </label>
+            <div class="flex items-center gap-2">
+              <label for="indent-opt" class="text-[color:var(--muted)]">Indentation:</label>
+              <select id="indent-opt" class="rounded-lg border border-[color:var(--border)] bg-[color:var(--bg)] px-2 py-0.5 text-xs text-[color:var(--fg)] font-semibold">
+                <option value="2">2 Spaces</option>
+                <option value="4">4 Spaces</option>
+                <option value="0">Minified</option>
+              </select>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            data-convert-btn
+            class="w-full rounded-xl bg-[color:var(--fg)] py-2.5 text-xs font-bold text-[color:var(--bg)] shadow-xs transition hover:opacity-90"
+          >
+            Convert XML to JSON
+          </button>
+        </div>
       </div>
 
+      <!-- Output Column -->
       <div class="space-y-3">
         <div class="flex items-center justify-between">
           <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">JSON Output</span>
@@ -135,15 +194,71 @@ const schemaGraph = [
             </button>
           </div>
         </div>
+
         <textarea
           id="json-out"
           rows="16"
           readonly
           class="w-full font-mono text-xs leading-relaxed rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-4 text-[color:var(--fg)] focus:outline-hidden"
-          placeholder="JSON output will appear here..."
+          placeholder="Formatted JSON will appear here..."
         ></textarea>
+
+        <div id="xml-err" class="hidden rounded-xl border border-red-500/30 bg-red-500/10 p-3 text-xs text-red-600 dark:text-red-400 font-mono"></div>
       </div>
     </div>
+
+    <!-- Parameter Guide & Worked Example -->
+    <CalculatorParameterGuide
+      title="XML to JSON Transformation Parameters & Node Hierarchy"
+      description="Guidelines covering DOM traversal, repeated element arrays, attribute namespaces, and type coercion."
+      parameters={[
+        {
+          name: "Attribute Prefixing (@)",
+          type: "Boolean",
+          defaultValue: "true",
+          description: "Places XML node attributes inside an '@attributes' object. When disabled, attributes are merged directly into the element object.",
+        },
+        {
+          name: "Type Coercion",
+          type: "Boolean",
+          defaultValue: "true",
+          description: "Detects numeric and boolean strings (e.g. '123', '45.67', 'true', 'false') and converts them into native JSON numbers and booleans instead of raw strings.",
+        },
+        {
+          name: "Root Unwrapping",
+          type: "Boolean",
+          defaultValue: "false",
+          description: "Omits the top-level XML document root tag key, placing its child elements directly at the root of the JSON object.",
+        },
+      ]}
+      workedExample={{
+        title: "Converting a Multi-Item Product Catalog from XML to JSON",
+        description: "Parse an XML product catalog with item attributes, prices, and nested tags into a clean JSON array structure.",
+        formula: "DOMParser.parseFromString() -> Recursive AST Mapping -> JSON.stringify()",
+        steps: [
+          {
+            step: "Parse Root Tag",
+            calculation: "Detect `<catalog>` root element containing 2 `<book>` tags.",
+            result: "Root container identified",
+          },
+          {
+            step: "Aggregate Sibling Elements",
+            calculation: "Detect repeated `<book>` tags and automatically convert them into an array of objects.",
+            result: "Array created: [book1, book2]",
+          },
+          {
+            step: "Extract Attributes & Text",
+            calculation: "Extract `id='bk101'` into `@attributes` and leaf text `<price>44.95</price>` into numeric 44.95.",
+            result: "Object fields populated with coerced types",
+          },
+          {
+            step: "Format JSON Document",
+            calculation: "Serialize with 2-space indentation ready for modern REST API integration.",
+            result: "Valid JSON generated",
+          },
+        ],
+      }}
+    />
 
     <!-- FAQs -->
     <section class="space-y-4">
@@ -153,7 +268,7 @@ const schemaGraph = [
           <details class="group rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
             <summary class="cursor-pointer list-none font-semibold text-sm sm:text-base text-[color:var(--fg)] flex items-center justify-between gap-4">
               <span>{faq.question}</span>
-              <span class="text-xs text-[color:var(--muted)] group-open:rotate-180 transition-transform">▼</span>
+              <span class="text-xs text-[color:var(--muted)] group-open:rotate-180 transition-transform">&#9660;</span>
             </summary>
             <p class="mt-3 text-xs sm:text-sm leading-relaxed text-[color:var(--muted)]">
               {faq.answer}
@@ -169,26 +284,65 @@ const schemaGraph = [
       const root = document.querySelector('[data-xml-json-app]');
       if (!root) return;
 
-      const input = root.querySelector('#xml-in');
-      const output = root.querySelector('#json-out');
+      const xmlIn = root.querySelector('#xml-in');
+      const jsonOut = root.querySelector('#json-out');
+      const attrPrefixCheck = root.querySelector('#attr-prefix');
+      const typeCoerceCheck = root.querySelector('#type-coerce');
+      const unwrapRootCheck = root.querySelector('#unwrap-root');
+      const indentOpt = root.querySelector('#indent-opt');
       const convertBtn = root.querySelector('[data-convert-btn]');
       const sampleBtn = root.querySelector('[data-sample-btn]');
       const clearBtn = root.querySelector('[data-clear-btn]');
       const copyBtn = root.querySelector('[data-copy-btn]');
       const dlBtn = root.querySelector('[data-dl-btn]');
+      const errBox = root.querySelector('#xml-err');
+
+      const statXmlSize = root.querySelector('#stat-xml-size');
+      const statJsonSize = root.querySelector('#stat-json-size');
+      const statTags = root.querySelector('#stat-tags');
+      const statDelta = root.querySelector('#stat-delta');
+
+      let tagCounter = 0;
+
+      function formatBytes(bytes) {
+        if (bytes === 0) return '0 B';
+        const k = 1024;
+        const sizes = ['B', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+      }
+
+      function coerceValue(val) {
+        if (!typeCoerceCheck.checked) return val;
+        if (val === 'true') return true;
+        if (val === 'false') return false;
+        if (val === 'null') return null;
+        if (/^-?\d+(\.\d+)?$/.test(val)) {
+          const num = Number(val);
+          if (!isNaN(num)) return num;
+        }
+        return val;
+      }
 
       function xmlNodeToJson(node) {
-        if (node.nodeType === Node.TEXT_NODE) {
-          return node.nodeValue.trim();
-        }
-
+        tagCounter++;
         const obj = {};
+        const usePrefix = attrPrefixCheck.checked;
 
-        if (node.attributes && node.attributes.length > 0) {
-          obj['@attributes'] = {};
+        // Process Attributes
+        if (node.hasAttributes && node.hasAttributes()) {
+          const attrs = {};
           for (let i = 0; i < node.attributes.length; i++) {
             const attr = node.attributes[i];
-            obj['@attributes'][attr.name] = attr.value;
+            const val = coerceValue(attr.value);
+            if (usePrefix) {
+              attrs[attr.name] = val;
+            } else {
+              obj['@' + attr.name] = val;
+            }
+          }
+          if (usePrefix && Object.keys(attrs).length > 0) {
+            obj['@attributes'] = attrs;
           }
         }
 
@@ -197,6 +351,7 @@ const schemaGraph = [
 
         for (let i = 0; i < node.childNodes.length; i++) {
           const child = node.childNodes[i];
+
           if (child.nodeType === Node.ELEMENT_NODE) {
             hasChildElements = true;
             const childObj = xmlNodeToJson(child);
@@ -210,7 +365,7 @@ const schemaGraph = [
             } else {
               obj[nodeName] = childObj;
             }
-          } else if (child.nodeType === Node.TEXT_NODE) {
+          } else if (child.nodeType === Node.TEXT_NODE || child.nodeType === Node.CDATA_SECTION_NODE) {
             const txt = child.nodeValue.trim();
             if (txt) textVal += txt;
           }
@@ -218,9 +373,9 @@ const schemaGraph = [
 
         if (!hasChildElements) {
           if (Object.keys(obj).length === 0) {
-            return textVal;
+            return coerceValue(textVal);
           } else if (textVal) {
-            obj['#text'] = textVal;
+            obj['#text'] = coerceValue(textVal);
           }
         }
 
@@ -228,45 +383,86 @@ const schemaGraph = [
       }
 
       function convert() {
-        const raw = input.value.trim();
+        errBox.classList.add('hidden');
+        const raw = xmlIn.value.trim();
+        statXmlSize.textContent = formatBytes(new Blob([raw]).size);
+
         if (!raw) {
-          output.value = '';
+          jsonOut.value = '';
+          statJsonSize.textContent = '0 B';
+          statTags.textContent = '0';
+          statDelta.textContent = '0%';
           return;
         }
 
         try {
+          tagCounter = 0;
           const parser = new DOMParser();
           const xmlDoc = parser.parseFromString(raw, 'text/xml');
 
           const parseError = xmlDoc.querySelector('parsererror');
           if (parseError) {
-            output.value = 'XML Parse Error: ' + parseError.textContent;
+            errBox.classList.remove('hidden');
+            errBox.textContent = 'XML Parsing Error: ' + parseError.textContent;
+            jsonOut.value = '';
+            statJsonSize.textContent = '0 B';
+            statTags.textContent = '0';
             return;
           }
 
-          const result = {};
-          result[xmlDoc.documentElement.nodeName] = xmlNodeToJson(xmlDoc.documentElement);
-          output.value = JSON.stringify(result, null, 2);
+          const rootNode = xmlDoc.documentElement;
+          let result = {};
+          const rootContent = xmlNodeToJson(rootNode);
+
+          if (unwrapRootCheck.checked) {
+            result = rootContent;
+          } else {
+            result[rootNode.nodeName] = rootContent;
+          }
+
+          const indent = parseInt(indentOpt.value, 10);
+          const jsonString = indent === 0 ? JSON.stringify(result) : JSON.stringify(result, null, indent);
+          jsonOut.value = jsonString;
+
+          const xmlBytes = new Blob([raw]).size;
+          const jsonBytes = new Blob([jsonString]).size;
+          statJsonSize.textContent = formatBytes(jsonBytes);
+          statTags.textContent = String(tagCounter);
+
+          if (xmlBytes > 0) {
+            const diff = jsonBytes - xmlBytes;
+            const pct = Math.round((diff / xmlBytes) * 100);
+            statDelta.textContent = `${pct >= 0 ? '+' : ''}${pct}%`;
+          }
+
         } catch (e) {
-          output.value = 'Conversion failed: ' + e.message;
+          errBox.classList.remove('hidden');
+          errBox.textContent = 'XML Conversion Error: ' + e.message;
+          jsonOut.value = '';
+          statJsonSize.textContent = '0 B';
+          statTags.textContent = '0';
         }
       }
 
       convertBtn.addEventListener('click', convert);
+      attrPrefixCheck.addEventListener('change', convert);
+      typeCoerceCheck.addEventListener('change', convert);
+      unwrapRootCheck.addEventListener('change', convert);
+      indentOpt.addEventListener('change', convert);
 
       sampleBtn.addEventListener('click', () => {
-        input.value = `<catalog>\n  <book id="bk101">\n    <author>Gambardella, Matthew</author>\n    <title>XML Developer's Guide</title>\n    <genre>Computer</genre>\n    <price>44.95</price>\n    <publish_date>2000-10-01</publish_date>\n  </book>\n  <book id="bk102">\n    <author>Ralls, Kim</author>\n    <title>Midnight Rain</title>\n    <genre>Fantasy</genre>\n    <price>5.95</price>\n    <publish_date>2000-12-16</publish_date>\n  </book>\n</catalog>`;
+        xmlIn.value = `<catalog store="Central Warehouse">\n  <book id="bk101">\n    <author>Gambardella, Matthew</author>\n    <title>XML Developer's Guide</title>\n    <genre>Computer</genre>\n    <price>44.95</price>\n    <in_stock>true</in_stock>\n    <publish_date>2000-10-01</publish_date>\n  </book>\n  <book id="bk102">\n    <author>Ralls, Kim</author>\n    <title>Midnight Rain</title>\n    <genre>Fantasy</genre>\n    <price>5.95</price>\n    <in_stock>false</in_stock>\n    <publish_date>2000-12-16</publish_date>\n  </book>\n</catalog>`;
         convert();
       });
 
       clearBtn.addEventListener('click', () => {
-        input.value = '';
-        output.value = '';
+        xmlIn.value = '';
+        convert();
       });
 
       copyBtn.addEventListener('click', () => {
-        if (!output.value) return;
-        navigator.clipboard.writeText(output.value);
+        if (!jsonOut.value) return;
+        navigator.clipboard.writeText(jsonOut.value);
         const span = copyBtn.querySelector('span');
         const orig = span.textContent;
         span.textContent = 'Copied!';
@@ -274,12 +470,12 @@ const schemaGraph = [
       });
 
       dlBtn.addEventListener('click', () => {
-        if (!output.value) return;
-        const blob = new Blob([output.value], { type: 'application/json' });
+        if (!jsonOut.value) return;
+        const blob = new Blob([jsonOut.value], { type: 'application/json' });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = 'xml_converted.json';
+        a.download = 'data.json';
         a.click();
         URL.revokeObjectURL(url);
       });

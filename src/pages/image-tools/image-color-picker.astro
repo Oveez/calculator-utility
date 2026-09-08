@@ -1,10 +1,11 @@
 ---
 import SiteLayout from '../../layouts/SiteLayout.astro';
 import Icon from '../../components/Icon.astro';
+import CalculatorParameterGuide from '../../components/calculator/CalculatorParameterGuide.astro';
 import { siteName, toAbsoluteUrl, withBasePath } from '../../utils/site';
 
 const pageTitle = `Image Color Picker — Online Eyedropper & HEX/RGB/HSL Finder · ${siteName}`;
-const pageDesc = 'Pick pixel colors directly from uploaded images with an interactive eyedropper canvas. Get instant HEX, RGB, and HSL color codes with one-click copy. 100% private in-browser tool.';
+const pageDesc = 'Pick pixel colors directly from uploaded images with an interactive eyedropper canvas, loupe magnifier, and WCAG contrast inspector. Get instant HEX, RGB, HSL, and CMYK codes.';
 const canonicalUrl = toAbsoluteUrl('/image-tools/image-color-picker/');
 
 const breadcrumbItems = [
@@ -15,8 +16,16 @@ const breadcrumbItems = [
 
 const schemaFaq = [
   {
-    question: 'How does the image color eyedropper work?',
-    answer: 'When you click anywhere on the uploaded image canvas, JavaScript queries `ctx.getImageData(x, y, 1, 1)` to extract the exact red, green, blue, and alpha values of that pixel, converting them to HEX, RGB, and HSL.',
+    question: 'How does the image color eyedropper and loupe magnifier work?',
+    answer: 'When you move your cursor across the canvas, JavaScript samples the local 9x9 pixel grid using `ctx.getImageData()` to render a magnified loupe preview. Clicking fixes the target pixel and extracts precise HEX, RGB, HSL, and CMYK color values.',
+  },
+  {
+    question: 'How is WCAG accessibility contrast calculated?',
+    answer: 'The tool computes the relative luminance of the sampled color according to W3C WCAG 2.1 formulas and calculates the contrast ratio against pure black (#000000) and pure white (#FFFFFF), verifying AA (4.5:1) and AAA (7:1) compliance.',
+  },
+  {
+    question: 'Are my uploaded design files or photos kept private?',
+    answer: 'Yes. All image processing and pixel queries execute 100% locally in your browser memory. No graphics or colors are transmitted over the network.',
   },
 ];
 
@@ -82,24 +91,25 @@ const schemaGraph = [
     <header class="space-y-3">
       <div class="inline-flex items-center gap-2 rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1 text-xs font-semibold text-[color:var(--muted)]">
         <span class="inline-block h-2 w-2 rounded-full bg-emerald-500"></span>
-        <span>Canvas Pixel Eyedropper</span>
+        <span>Canvas Pixel Eyedropper &bull; Loupe Magnifier &bull; WCAG Contrast</span>
       </div>
       <h1 class="text-2xl sm:text-4xl font-extrabold tracking-tight text-[color:var(--fg)]">
         Image Color Picker &amp; Eyedropper
       </h1>
       <p class="max-w-2xl text-xs sm:text-sm text-[color:var(--muted)] leading-relaxed">
-        Click anywhere on your image to sample exact pixel colors in HEX, RGB, and HSL formats.
+        Click anywhere on your image to sample exact pixel colors. Includes a zoomed loupe magnifier, multi-format color readouts (HEX, RGB, HSL, CMYK), and real-time WCAG accessibility contrast ratings.
       </p>
     </header>
 
     <div class="space-y-6">
+      <!-- Upload Dropzone -->
       <div id="dropzone-box" class="space-y-3 rounded-3xl border-2 border-dashed border-[color:var(--border)] bg-[color:var(--surface)] p-6 sm:p-8 text-center transition hover:border-[color:var(--border-strong)]">
         <input type="file" id="img-file" accept="image/*" class="hidden" />
         <label for="img-file" id="upload-prompt" class="cursor-pointer space-y-2 block">
           <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-[color:var(--surface-strong)] text-[color:var(--fg)]">
             <Icon name="color" class="w-6 h-6 text-[color:var(--accent)]" />
           </div>
-          <p class="text-sm font-bold text-[color:var(--fg)]">Upload image to sample colors</p>
+          <p class="text-sm font-bold text-[color:var(--fg)]">Upload image to sample colors or drag and drop</p>
           <p class="text-xs text-[color:var(--muted)]">Click or hover over pixels to inspect color codes (100% private in browser)</p>
         </label>
 
@@ -111,7 +121,7 @@ const schemaGraph = [
             </div>
             <div class="min-w-0 space-y-0.5">
               <p id="thumb-name" class="text-xs sm:text-sm font-bold text-[color:var(--fg)] truncate">image.png</p>
-              <p id="thumb-info" class="text-[11px] text-[color:var(--muted)]">0 KB</p>
+              <p id="thumb-info" class="text-[11px] text-[color:var(--muted)] font-mono">0 KB</p>
             </div>
           </div>
           <label for="img-file" class="cursor-pointer shrink-0 rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1.5 text-xs font-semibold text-[color:var(--muted)] hover:text-[color:var(--fg)] transition">
@@ -122,38 +132,158 @@ const schemaGraph = [
 
       <!-- Canvas and Selected Color Card -->
       <div id="picker-wrapper" class="hidden grid gap-6 lg:grid-cols-3">
-        <div class="lg:col-span-2 space-y-2">
-          <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Click Image to Pick Color</span>
-          <div class="overflow-auto rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-2 max-h-96 flex items-center justify-center cursor-crosshair">
-            <canvas id="img-canvas" class="max-w-full h-auto rounded-xl"></canvas>
+        <!-- Canvas Interactive Surface -->
+        <div class="lg:col-span-2 space-y-3">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Click Image to Pick Color</span>
+            <span class="text-xs text-[color:var(--muted)]">Move cursor to magnify pixels</span>
+          </div>
+
+          <div class="relative overflow-auto rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-2 max-h-[500px] flex items-center justify-center cursor-crosshair">
+            <canvas id="img-canvas" class="max-w-full h-auto rounded-xl shadow-xs"></canvas>
+
+            <!-- Floating Loupe Magnifier -->
+            <div
+              id="loupe-box"
+              class="pointer-events-none absolute hidden h-24 w-24 rounded-full border-2 border-white shadow-xl overflow-hidden bg-black/80"
+              style="transform: translate(-50%, -120%);"
+            >
+              <canvas id="loupe-canvas" width="96" height="96" class="w-full h-full"></canvas>
+              <!-- Center Crosshair -->
+              <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+                <div class="h-2 w-2 border border-white rounded-full bg-black/20"></div>
+              </div>
+            </div>
           </div>
         </div>
 
-        <!-- Selected Color Stats -->
-        <div class="space-y-4 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5">
-          <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Selected Color</span>
+        <!-- Selected Color Stats & Details -->
+        <div class="space-y-4 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 text-xs">
+          <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Active Pixel Color</span>
 
           <div class="flex items-center gap-4">
-            <div id="color-preview" class="h-16 w-16 rounded-2xl border border-[color:var(--border)] shadow-xs bg-[#10b981]"></div>
-            <div>
-              <p id="hex-val" class="font-mono text-lg font-extrabold text-[color:var(--fg)]">#10B981</p>
-              <p class="text-xs text-[color:var(--muted)]">Clicked Pixel</p>
+            <div id="color-preview" class="h-16 w-16 rounded-2xl border border-[color:var(--border)] shadow-xs bg-[#10b981] shrink-0"></div>
+            <div class="min-w-0">
+              <p id="hex-val" class="font-mono text-xl font-extrabold text-[color:var(--fg)]">#10B981</p>
+              <p id="pixel-coord" class="text-[11px] text-[color:var(--muted)] font-mono">X: 0, Y: 0</p>
             </div>
           </div>
 
-          <div class="space-y-2 pt-2 text-xs">
-            <div class="flex justify-between border-b border-[color:var(--border)] pb-2">
-              <span class="text-[color:var(--muted)]">RGB Code:</span>
-              <span id="rgb-val" class="font-mono font-bold text-[color:var(--fg)]">rgb(16, 185, 129)</span>
+          <!-- Color Values List with Copy Buttons -->
+          <div class="space-y-2 pt-2 border-t border-[color:var(--border)]">
+            <div class="flex items-center justify-between rounded-xl bg-[color:var(--bg)] p-2.5 font-mono">
+              <span class="text-[color:var(--muted)]">HEX:</span>
+              <div class="flex items-center gap-2">
+                <span id="val-hex" class="font-bold text-[color:var(--fg)]">#10B981</span>
+                <button type="button" data-copy="val-hex" class="text-[10px] font-bold text-[color:var(--primary)] hover:underline">Copy</button>
+              </div>
             </div>
-            <div class="flex justify-between">
-              <span class="text-[color:var(--muted)]">HSL Code:</span>
-              <span id="hsl-val" class="font-mono font-bold text-[color:var(--fg)]">hsl(160, 84%, 39%)</span>
+
+            <div class="flex items-center justify-between rounded-xl bg-[color:var(--bg)] p-2.5 font-mono">
+              <span class="text-[color:var(--muted)]">RGB:</span>
+              <div class="flex items-center gap-2">
+                <span id="val-rgb" class="font-bold text-[color:var(--fg)]">rgb(16, 185, 129)</span>
+                <button type="button" data-copy="val-rgb" class="text-[10px] font-bold text-[color:var(--primary)] hover:underline">Copy</button>
+              </div>
+            </div>
+
+            <div class="flex items-center justify-between rounded-xl bg-[color:var(--bg)] p-2.5 font-mono">
+              <span class="text-[color:var(--muted)]">HSL:</span>
+              <div class="flex items-center gap-2">
+                <span id="val-hsl" class="font-bold text-[color:var(--fg)]">hsl(160, 84%, 39%)</span>
+                <button type="button" data-copy="val-hsl" class="text-[10px] font-bold text-[color:var(--primary)] hover:underline">Copy</button>
+              </div>
+            </div>
+
+            <div class="flex items-center justify-between rounded-xl bg-[color:var(--bg)] p-2.5 font-mono">
+              <span class="text-[color:var(--muted)]">CMYK:</span>
+              <div class="flex items-center gap-2">
+                <span id="val-cmyk" class="font-bold text-[color:var(--fg)]">91%, 0%, 30%, 27%</span>
+                <button type="button" data-copy="val-cmyk" class="text-[10px] font-bold text-[color:var(--primary)] hover:underline">Copy</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- WCAG Accessibility Contrast Ratings -->
+          <div class="space-y-2 pt-2 border-t border-[color:var(--border)]">
+            <span class="font-bold text-[color:var(--fg)] block text-[11px]">WCAG 2.1 Contrast Ratios:</span>
+            <div class="grid grid-cols-2 gap-2">
+              <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] p-2.5 text-center">
+                <span class="text-[10px] text-[color:var(--muted)] block">vs Black (#000)</span>
+                <p id="contrast-black" class="font-mono text-sm font-bold text-[color:var(--fg)]">8.2:1</p>
+                <span id="badge-black" class="inline-block mt-0.5 rounded px-1.5 py-0.2 text-[9px] font-bold bg-emerald-500/20 text-emerald-500">AAA Pass</span>
+              </div>
+              <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] p-2.5 text-center">
+                <span class="text-[10px] text-[color:var(--muted)] block">vs White (#FFF)</span>
+                <p id="contrast-white" class="font-mono text-sm font-bold text-[color:var(--fg)]">2.6:1</p>
+                <span id="badge-white" class="inline-block mt-0.5 rounded px-1.5 py-0.2 text-[9px] font-bold bg-red-500/20 text-red-500">Fail</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Clicked Color History -->
+          <div class="space-y-2 pt-2 border-t border-[color:var(--border)]">
+            <span class="font-bold text-[color:var(--fg)] block text-[11px]">Recent Color History:</span>
+            <div id="history-strip" class="flex flex-wrap gap-1.5">
+              <span class="text-[10px] text-[color:var(--muted)] italic">Click canvas to add colors.</span>
             </div>
           </div>
         </div>
       </div>
     </div>
+
+    <!-- Parameter Guide & Worked Example -->
+    <CalculatorParameterGuide
+      title="Color Space Conversions & Contrast Specifications"
+      description="Technical specifications covering sRGB coordinates, HSL angular projections, CMYK subtractive models, and WCAG luminance."
+      parameters={[
+        {
+          name: "sRGB Color Space",
+          type: "8-bit Integer (0-255)",
+          defaultValue: "Native Canvas",
+          description: "Additive primary color coordinates. Red, Green, and Blue intensities represented on a non-linear gamma-corrected 0-255 spectrum.",
+        },
+        {
+          name: "HSL Representation",
+          type: "Polar Coordinates",
+          defaultValue: "H: 0-360°, S: 0-100%, L: 0-100%",
+          description: "Cylindrical representation of color points where Hue indicates color wheel angle, Saturation represents purity, and Lightness determines luminosity.",
+        },
+        {
+          name: "WCAG 2.1 Relative Luminance",
+          type: "Float (0.0 to 1.0)",
+          defaultValue: "W3C Recommendation",
+          description: "Calculates the relative brightness of any point in a color space, normalized to 0 for darkest black and 1 for lightest white.",
+        },
+      ]}
+      workedExample={{
+        title: "Evaluating Color Contrast for Digital Accessibility",
+        description: "Verify whether a sampled emerald teal (#10B981) meets WCAG AA standards for readable text against black background.",
+        formula: "Contrast Ratio = (L1 + 0.05) / (L2 + 0.05)",
+        steps: [
+          {
+            step: "Sample RGB Values",
+            calculation: "Sampled color: R=16, G=185, B=129 -> Relative Luminance L1 = 0.360",
+            result: "Luminance computed",
+          },
+          {
+            step: "Determine Reference Luminance",
+            calculation: "Pure black (#000000) relative luminance L2 = 0.000",
+            result: "L2 = 0.000",
+          },
+          {
+            step: "Calculate Contrast Ratio",
+            calculation: "(0.360 + 0.05) / (0.000 + 0.05) = 0.410 / 0.05 = 8.2:1",
+            result: "Ratio: 8.2:1",
+          },
+          {
+            step: "Evaluate WCAG Compliance",
+            calculation: "8.2:1 exceeds 4.5:1 (AA) and 7:1 (AAA) thresholds.",
+            result: "AAA Pass for Normal & Large Text",
+          },
+        ],
+      }}
+    />
 
     <!-- FAQs -->
     <section class="space-y-4">
@@ -163,7 +293,7 @@ const schemaGraph = [
           <details class="group rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
             <summary class="cursor-pointer list-none font-semibold text-sm sm:text-base text-[color:var(--fg)] flex items-center justify-between gap-4">
               <span>{faq.question}</span>
-              <span class="text-xs text-[color:var(--muted)] group-open:rotate-180 transition-transform">▼</span>
+              <span class="text-xs text-[color:var(--muted)] group-open:rotate-180 transition-transform">&#9660;</span>
             </summary>
             <p class="mt-3 text-xs sm:text-sm leading-relaxed text-[color:var(--muted)]">
               {faq.answer}
@@ -185,20 +315,31 @@ const schemaGraph = [
       const thumbPreview = root.querySelector('#thumb-preview');
       const thumbName = root.querySelector('#thumb-name');
       const thumbInfo = root.querySelector('#thumb-info');
-      const wrapper = root.querySelector('#picker-wrapper');
+      const pickerWrapper = root.querySelector('#picker-wrapper');
+
       const canvas = root.querySelector('#img-canvas');
-      const preview = root.querySelector('#color-preview');
+      const ctx = canvas.getContext('2d', { willReadFrequently: true });
+      const loupeBox = root.querySelector('#loupe-box');
+      const loupeCanvas = root.querySelector('#loupe-canvas');
+      const loupeCtx = loupeCanvas.getContext('2d');
+
+      const colorPreview = root.querySelector('#color-preview');
       const hexVal = root.querySelector('#hex-val');
-      const rgbVal = root.querySelector('#rgb-val');
-      const hslVal = root.querySelector('#hsl-val');
+      const pixelCoord = root.querySelector('#pixel-coord');
 
-      const ctx = canvas.getContext('2d');
+      const valHex = root.querySelector('#val-hex');
+      const valRgb = root.querySelector('#val-rgb');
+      const valHsl = root.querySelector('#val-hsl');
+      const valCmyk = root.querySelector('#val-cmyk');
 
-      function formatBytes(bytes) {
-        if (bytes < 1024) return bytes + ' B';
-        if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
-        return (bytes / 1048576).toFixed(2) + ' MB';
-      }
+      const contrastBlack = root.querySelector('#contrast-black');
+      const badgeBlack = root.querySelector('#badge-black');
+      const contrastWhite = root.querySelector('#contrast-white');
+      const badgeWhite = root.querySelector('#badge-white');
+      const historyStrip = root.querySelector('#history-strip');
+
+      let loadedImg = null;
+      let historyColors = [];
 
       function rgbToHex(r, g, b) {
         return '#' + [r, g, b].map(x => x.toString(16).padStart(2, '0')).join('').toUpperCase();
@@ -219,47 +360,197 @@ const schemaGraph = [
           }
           h /= 6;
         }
-        return `hsl(${Math.round(h * 360)}, ${Math.round(s * 100)}%, ${Math.round(l * 100)}%)`;
+        return { h: Math.round(h * 360), s: Math.round(s * 100), l: Math.round(l * 100) };
       }
+
+      function rgbToCmyk(r, g, b) {
+        const rNorm = r / 255;
+        const gNorm = g / 255;
+        const bNorm = b / 255;
+        const k = 1 - Math.max(rNorm, gNorm, bNorm);
+        if (k === 1) return { c: 0, m: 0, y: 0, k: 100 };
+        const c = Math.round(((1 - rNorm - k) / (1 - k)) * 100);
+        const m = Math.round(((1 - gNorm - k) / (1 - k)) * 100);
+        const y = Math.round(((1 - bNorm - k) / (1 - k)) * 100);
+        return { c, m, y, k: Math.round(k * 100) };
+      }
+
+      function getLuminance(r, g, b) {
+        const a = [r, g, b].map(v => {
+          v /= 255;
+          return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
+        });
+        return a[0] * 0.2126 + a[1] * 0.7152 + a[2] * 0.0722;
+      }
+
+      function updateColor(r, g, b, x = 0, y = 0) {
+        const hex = rgbToHex(r, g, b);
+        const hsl = rgbToHsl(r, g, b);
+        const cmyk = rgbToCmyk(r, g, b);
+
+        colorPreview.style.backgroundColor = hex;
+        hexVal.textContent = hex;
+        pixelCoord.textContent = `X: ${x}, Y: ${y}`;
+
+        valHex.textContent = hex;
+        valRgb.textContent = `rgb(${r}, ${g}, ${b})`;
+        valHsl.textContent = `hsl(${hsl.h}, ${hsl.s}%, ${hsl.l}%)`;
+        valCmyk.textContent = `${cmyk.c}%, ${cmyk.m}%, ${cmyk.y}%, ${cmyk.k}%`;
+
+        // WCAG Luminance
+        const lum = getLuminance(r, g, b);
+        const ratioBlack = (lum + 0.05) / (0.00 + 0.05);
+        const ratioWhite = (1.00 + 0.05) / (lum + 0.05);
+
+        contrastBlack.textContent = `${ratioBlack.toFixed(1)}:1`;
+        if (ratioBlack >= 7) {
+          badgeBlack.className = 'inline-block mt-0.5 rounded px-1.5 py-0.2 text-[9px] font-bold bg-emerald-500/20 text-emerald-500';
+          badgeBlack.textContent = 'AAA Pass';
+        } else if (ratioBlack >= 4.5) {
+          badgeBlack.className = 'inline-block mt-0.5 rounded px-1.5 py-0.2 text-[9px] font-bold bg-emerald-500/20 text-emerald-500';
+          badgeBlack.textContent = 'AA Pass';
+        } else {
+          badgeBlack.className = 'inline-block mt-0.5 rounded px-1.5 py-0.2 text-[9px] font-bold bg-red-500/20 text-red-500';
+          badgeBlack.textContent = 'Fail';
+        }
+
+        contrastWhite.textContent = `${ratioWhite.toFixed(1)}:1`;
+        if (ratioWhite >= 7) {
+          badgeWhite.className = 'inline-block mt-0.5 rounded px-1.5 py-0.2 text-[9px] font-bold bg-emerald-500/20 text-emerald-500';
+          badgeWhite.textContent = 'AAA Pass';
+        } else if (ratioWhite >= 4.5) {
+          badgeWhite.className = 'inline-block mt-0.5 rounded px-1.5 py-0.2 text-[9px] font-bold bg-emerald-500/20 text-emerald-500';
+          badgeWhite.textContent = 'AA Pass';
+        } else {
+          badgeWhite.className = 'inline-block mt-0.5 rounded px-1.5 py-0.2 text-[9px] font-bold bg-red-500/20 text-red-500';
+          badgeWhite.textContent = 'Fail';
+        }
+      }
+
+      function addToHistory(hex) {
+        if (!historyColors.includes(hex)) {
+          historyColors.unshift(hex);
+          if (historyColors.length > 10) historyColors.pop();
+
+          historyStrip.innerHTML = historyColors.map(c => `
+            <button
+              type="button"
+              data-history-hex="${c}"
+              class="h-6 w-6 rounded-lg border border-[color:var(--border)] shadow-xs transition transform hover:scale-110 cursor-pointer"
+              style="background-color: ${c};"
+              title="Click to select ${c}"
+            ></button>
+          `).join('');
+
+          historyStrip.querySelectorAll('[data-history-hex]').forEach(b => {
+            b.addEventListener('click', () => {
+              const h = b.dataset.historyHex;
+              const r = parseInt(h.slice(1, 3), 16);
+              const g = parseInt(h.slice(3, 5), 16);
+              const bVal = parseInt(h.slice(5, 7), 16);
+              updateColor(r, g, bVal);
+            });
+          });
+        }
+      }
+
+      function getCanvasCoords(e) {
+        const rect = canvas.getBoundingClientRect();
+        const scaleX = canvas.width / rect.width;
+        const scaleY = canvas.height / rect.height;
+        const x = Math.floor((e.clientX - rect.left) * scaleX);
+        const y = Math.floor((e.clientY - rect.top) * scaleY);
+        return { x: Math.max(0, Math.min(canvas.width - 1, x)), y: Math.max(0, Math.min(canvas.height - 1, y)) };
+      }
+
+      canvas.addEventListener('mousemove', (e) => {
+        if (!loadedImg) return;
+        const { x, y } = getCanvasCoords(e);
+
+        // Position Loupe
+        loupeBox.classList.remove('hidden');
+        const containerRect = canvas.parentElement.getBoundingClientRect();
+        loupeBox.style.left = `${e.clientX - containerRect.left}px`;
+        loupeBox.style.top = `${e.clientY - containerRect.top}px`;
+
+        // Render zoomed 9x9 pixels on loupe canvas
+        const zoomRadius = 4;
+        loupeCtx.imageSmoothingEnabled = false;
+        loupeCtx.clearRect(0, 0, 96, 96);
+        loupeCtx.drawImage(
+          canvas,
+          Math.max(0, x - zoomRadius),
+          Math.max(0, y - zoomRadius),
+          zoomRadius * 2 + 1,
+          zoomRadius * 2 + 1,
+          0,
+          0,
+          96,
+          96
+        );
+
+        // Sample pixel color
+        const p = ctx.getImageData(x, y, 1, 1).data;
+        updateColor(p[0], p[1], p[2], x, y);
+      });
+
+      canvas.addEventListener('mouseleave', () => {
+        loupeBox.classList.add('hidden');
+      });
+
+      canvas.addEventListener('click', (e) => {
+        const { x, y } = getCanvasCoords(e);
+        const p = ctx.getImageData(x, y, 1, 1).data;
+        const hex = rgbToHex(p[0], p[1], p[2]);
+        updateColor(p[0], p[1], p[2], x, y);
+        addToHistory(hex);
+      });
 
       fileIn.addEventListener('change', (e) => {
         const file = e.target.files[0];
         if (!file) return;
 
-        const url = URL.createObjectURL(file);
-        thumbPreview.src = url;
-        thumbName.textContent = file.name;
-        thumbInfo.textContent = `${formatBytes(file.size)} • ${file.type || 'image'}`;
+        const reader = new FileReader();
+        reader.onload = (loadEvt) => {
+          const img = new Image();
+          img.onload = () => {
+            loadedImg = img;
+            thumbPreview.src = img.src;
+            thumbName.textContent = file.name;
+            thumbInfo.textContent = `${(file.size / 1024).toFixed(1)} KB &bull; ${img.naturalWidth} &times; ${img.naturalHeight} px`;
 
-        uploadPrompt.classList.add('hidden');
-        uploadPreviewBox.classList.remove('hidden');
+            // Draw full-res image onto canvas
+            canvas.width = img.naturalWidth;
+            canvas.height = img.naturalHeight;
+            ctx.drawImage(img, 0, 0);
 
-        const img = new Image();
-        img.onload = () => {
-          thumbInfo.textContent = `${img.naturalWidth}×${img.naturalHeight} px • ${formatBytes(file.size)}`;
-          wrapper.classList.remove('hidden');
-          canvas.width = img.naturalWidth;
-          canvas.height = img.naturalHeight;
-          ctx.drawImage(img, 0, 0);
+            uploadPrompt.classList.add('hidden');
+            uploadPreviewBox.classList.remove('hidden');
+            pickerWrapper.classList.remove('hidden');
+
+            // Pick center pixel by default
+            const cx = Math.floor(img.naturalWidth / 2);
+            const cy = Math.floor(img.naturalHeight / 2);
+            const p = ctx.getImageData(cx, cy, 1, 1).data;
+            updateColor(p[0], p[1], p[2], cx, cy);
+            addToHistory(rgbToHex(p[0], p[1], p[2]));
+          };
+          img.src = loadEvt.target.result;
         };
-        img.src = url;
+        reader.readAsDataURL(file);
       });
 
-      canvas.addEventListener('click', (e) => {
-        const rect = canvas.getBoundingClientRect();
-        const scaleX = canvas.width / rect.width;
-        const scaleY = canvas.height / rect.height;
-
-        const x = Math.floor((e.clientX - rect.left) * scaleX);
-        const y = Math.floor((e.clientY - rect.top) * scaleY);
-
-        const pixel = ctx.getImageData(x, y, 1, 1).data;
-        const hex = rgbToHex(pixel[0], pixel[1], pixel[2]);
-
-        preview.style.backgroundColor = hex;
-        hexVal.textContent = hex;
-        rgbVal.textContent = `rgb(${pixel[0]}, ${pixel[1]}, ${pixel[2]})`;
-        hslVal.textContent = rgbToHsl(pixel[0], pixel[1], pixel[2]);
+      root.querySelectorAll('[data-copy]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const targetId = btn.dataset.copy;
+          const targetEl = root.querySelector('#' + targetId);
+          if (targetEl) {
+            navigator.clipboard.writeText(targetEl.textContent);
+            const orig = btn.textContent;
+            btn.textContent = 'Copied!';
+            setTimeout(() => btn.textContent = orig, 1500);
+          }
+        });
       });
     })();
   </script>

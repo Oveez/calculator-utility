@@ -1,10 +1,12 @@
 ---
 import SiteLayout from '../../layouts/SiteLayout.astro';
 import Icon from '../../components/Icon.astro';
-import { siteName, toAbsoluteUrl, withBasePath } from '../../utils/site';
+import CalculatorParameterGuide from '../../components/calculator/CalculatorParameterGuide.astro';
+import type { CalculatorParameterInfo } from '../../types/calculator';
+import { siteName, toAbsoluteUrl } from '../../utils/site';
 
 const pageTitle = `Standard Deviation Calculator — Sample & Population Variance · ${siteName}`;
-const pageDesc = 'Calculate sample standard deviation (s), population standard deviation (σ), variance, mean, sum, and count online with step-by-step statistical formulas.';
+const pageDesc = 'Calculate sample standard deviation (s), population standard deviation (σ), variance, mean, median, IQR, Tukey outliers, and step-by-step deviation tables online.';
 const canonicalUrl = toAbsoluteUrl('/research-tools/standard-deviation-calculator/');
 
 const breadcrumbItems = [
@@ -13,10 +15,86 @@ const breadcrumbItems = [
   { label: 'Standard Deviation Calculator' },
 ];
 
+const parameterGuide: CalculatorParameterInfo[] = [
+  {
+    name: 'Dataset Observations (X)',
+    description: 'Numerical observations or sample measurements separated by commas, spaces, or line breaks.',
+    whyItMatters: 'Raw data points from which all distribution moments (central tendency, statistical dispersion, and quartiles) are computed.',
+    typicalRange: 'Any real numbers (n ≥ 2 for sample variance/SD)',
+    unit: 'observations',
+  },
+  {
+    name: 'Sample Standard Deviation (s)',
+    description: 'Estimated standard deviation of an underlying population using Bessel’s correction (dividing sum of squares by n - 1).',
+    whyItMatters: 'Corrects negative bias when working with a subset or sample rather than the full population census.',
+    typicalRange: 's ≥ 0',
+    unit: 'same as data',
+  },
+  {
+    name: 'Population Standard Deviation (σ)',
+    description: 'Exact standard deviation of the entire population, dividing total squared deviations by N.',
+    whyItMatters: 'Used when the dataset represents a complete census of all members in the target population.',
+    typicalRange: 'σ ≥ 0',
+    unit: 'same as data',
+  },
+  {
+    name: 'Sample Variance (s²)',
+    description: 'The average squared distance between each sample point and the mean (SS / [n - 1]).',
+    whyItMatters: 'Fundamental metric used in ANOVA tests, F-tests, regression analysis, and risk volatility models.',
+    typicalRange: 's² ≥ 0',
+    unit: 'squared units',
+  },
+  {
+    name: 'Arithmetic Mean (x̄ / μ)',
+    description: 'The central balance point of the dataset, calculated as the sum of values divided by count (Σx / n).',
+    whyItMatters: 'The reference point from which all deviation distances are measured.',
+    typicalRange: 'Any real number',
+    unit: 'same as data',
+  },
+  {
+    name: 'Interquartile Range (IQR)',
+    description: 'The difference between the 75th percentile (Q3) and the 25th percentile (Q1): IQR = Q3 - Q1.',
+    whyItMatters: 'A robust measure of dispersion resistant to extreme outliers and skewed distributions.',
+    typicalRange: 'IQR ≥ 0',
+    unit: 'same as data',
+  },
+];
+
+const workedExample = {
+  title: 'Worked Example: Exam Scores Dataset (n = 8, Scores: 10, 12, 16, 16, 21, 23, 23, 23)',
+  description: 'Step-by-step computation of sample mean, sum of squared deviations, variance, and standard deviation with Bessel correction.',
+  formula: 's = √[ Σ(xᵢ - x̄)² / (n - 1) ]',
+  steps: [
+    {
+      step: '1. Compute Arithmetic Mean',
+      calculation: 'Σx = 10 + 12 + 16 + 16 + 21 + 23 + 23 + 23 = 144; x̄ = 144 ÷ 8 = 18.00',
+      result: 'Mean x̄ = 18.00',
+    },
+    {
+      step: '2. Sum of Squared Deviations (SS)',
+      calculation: '(-8)² + (-6)² + (-2)² + (-2)² + (3)² + (5)² + (5)² + (5)² = 64 + 36 + 4 + 4 + 9 + 25 + 25 + 25 = 192.00',
+      result: 'SS = 192.00',
+    },
+    {
+      step: '3. Sample Variance & Standard Deviation (df = 7)',
+      calculation: 's² = 192 ÷ (8 - 1) = 27.4286; s = √27.4286 = 5.2372',
+      result: 's² = 27.43, s = 5.24',
+    },
+  ],
+};
+
 const schemaFaq = [
   {
     question: 'What is the difference between Sample (s) and Population (σ) Standard Deviation?',
     answer: 'Sample standard deviation divides sum of squared deviations by `n - 1` (Bessel’s correction) to provide an unbiased estimator for sample subsets. Population standard deviation divides by `N` when data contains the entire population.',
+  },
+  {
+    question: 'Why does sample standard deviation use n - 1 instead of n?',
+    answer: 'Using `n` systematically underestimates the true population variance because sample points cluster closer to their own sample mean than to the unknown population mean. Dividing by `n - 1` removes this bias.',
+  },
+  {
+    question: 'How does Tukey’s rule identify statistical outliers?',
+    answer: 'Tukey’s rule calculates an inner fence: Lower Fence = Q1 - 1.5 × IQR, Upper Fence = Q3 + 1.5 × IQR. Any data point lying strictly beyond these fences is flagged as a potential statistical outlier.',
   },
 ];
 
@@ -80,55 +158,192 @@ const schemaGraph = [
     </nav>
 
     <header class="space-y-3">
-      <div class="inline-flex items-center gap-2 rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1 text-xs font-semibold text-[color:var(--muted)]">
+      <div class="inline-flex items-center gap-2 rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3.5 py-1 text-xs font-semibold text-[color:var(--muted)]">
         <span class="inline-block h-2 w-2 rounded-full bg-emerald-500"></span>
         <span>Statistical Dispersion Engine</span>
       </div>
-      <h1 class="text-2xl sm:text-4xl font-extrabold tracking-tight text-[color:var(--fg)]">
+      <h1 class="text-3xl font-extrabold tracking-tight text-[color:var(--fg)] sm:text-4xl">
         Standard Deviation &amp; Variance Calculator
       </h1>
-      <p class="max-w-2xl text-xs sm:text-sm text-[color:var(--muted)] leading-relaxed">
-        Compute sample standard deviation (s), population standard deviation (σ), variance, mean, and range.
+      <p class="max-w-3xl text-sm leading-relaxed text-[color:var(--muted)] sm:text-base">
+        Compute sample standard deviation (s), population standard deviation (σ), variance, mean, median, IQR, Tukey outliers, and step-by-step deviation calculation tables.
       </p>
     </header>
 
-    <div class="space-y-6">
-      <div class="space-y-2">
-        <label for="data-vals" class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Enter Dataset Values (comma or space separated)</label>
+    <div
+      class="rounded-[2.5rem] border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-6 shadow-[var(--shadow)] sm:p-10 space-y-8"
+    >
+      <div class="space-y-3">
+        <div class="flex items-center justify-between">
+          <label for="data-vals" class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">
+            Enter Dataset Values (comma, space, or newline separated)
+          </label>
+          <div class="flex items-center gap-2">
+            <button type="button" class="text-xs text-[color:var(--accent)] hover:underline cursor-pointer" data-load-sample-btn>
+              Load Example
+            </button>
+            <button type="button" class="text-xs text-[color:var(--muted)] hover:text-[color:var(--fg)] cursor-pointer" data-clear-btn>
+              Clear
+            </button>
+          </div>
+        </div>
         <textarea
           id="data-vals"
           rows="4"
-          class="w-full font-mono text-xs leading-relaxed rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-[color:var(--fg)] focus:border-[color:var(--border-strong)] focus:outline-hidden"
-          placeholder="12, 15, 18, 22, 25, 30"
+          class="w-full font-mono text-xs leading-relaxed rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] p-4 text-[color:var(--fg)] outline-none"
+          placeholder="10, 12, 23, 23, 16, 23, 21, 16"
         >10, 12, 23, 23, 16, 23, 21, 16</textarea>
       </div>
 
-      <!-- Stats Grid -->
+      <!-- Action Toolbar -->
+      <div class="flex flex-wrap items-center justify-between gap-3 border-t border-[color:var(--border)] pt-4">
+        <h2 class="text-sm font-bold uppercase tracking-wider text-[color:var(--muted)]">Calculated Statistics</h2>
+        <div class="flex items-center gap-2">
+          <button
+            type="button"
+            data-copy-btn
+            class="inline-flex items-center gap-1.5 rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1.5 text-xs font-semibold text-[color:var(--fg)] hover:border-[color:var(--border-strong)] transition cursor-pointer"
+          >
+            <Icon name="copy" class="w-3.5 h-3.5" />
+            <span>Copy Summary</span>
+          </button>
+          <button
+            type="button"
+            data-export-csv-btn
+            class="inline-flex items-center gap-1.5 rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1.5 text-xs font-semibold text-[color:var(--fg)] hover:border-[color:var(--border-strong)] transition cursor-pointer"
+          >
+            <span>Export CSV</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Primary Stats Grid -->
       <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 text-center">
-        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 space-y-1">
+        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] p-5 space-y-1">
           <span class="text-xs font-bold text-[color:var(--muted)] uppercase">Sample SD (s)</span>
-          <p id="res-sample-sd" class="text-2xl font-extrabold text-emerald-500">-</p>
-          <p class="text-[10px] text-[color:var(--muted)]">n - 1 Bessel Divisor</p>
+          <p id="res-sample-sd" class="text-3xl font-extrabold text-cyan-500 dark:text-cyan-400 font-mono">5.2372</p>
+          <p class="text-[10px] text-[color:var(--muted)]">Bessel Divisor: n - 1 = 7</p>
         </div>
 
-        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 space-y-1">
+        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] p-5 space-y-1">
           <span class="text-xs font-bold text-[color:var(--muted)] uppercase">Population SD (σ)</span>
-          <p id="res-pop-sd" class="text-2xl font-extrabold text-[color:var(--fg)]">-</p>
-          <p class="text-[10px] text-[color:var(--muted)]">N Divisor</p>
+          <p id="res-pop-sd" class="text-3xl font-extrabold text-[color:var(--fg)] font-mono">4.8990</p>
+          <p class="text-[10px] text-[color:var(--muted)]">Population Census Divisor: N = 8</p>
         </div>
 
-        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 space-y-1">
+        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] p-5 space-y-1">
           <span class="text-xs font-bold text-[color:var(--muted)] uppercase">Sample Variance (s²)</span>
-          <p id="res-var" class="text-2xl font-extrabold text-[color:var(--fg)]">-</p>
+          <p id="res-var" class="text-3xl font-extrabold text-[color:var(--fg)] font-mono">27.4286</p>
+          <p class="text-[10px] text-[color:var(--muted)]">SS / (n - 1)</p>
         </div>
 
-        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 space-y-1">
-          <span class="text-xs font-bold text-[color:var(--muted)] uppercase">Mean (μ / x̄)</span>
-          <p id="res-mean" class="text-2xl font-extrabold text-[color:var(--fg)]">-</p>
-          <p id="res-count" class="text-[10px] text-[color:var(--muted)]">Count: 0</p>
+        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] p-5 space-y-1">
+          <span class="text-xs font-bold text-[color:var(--muted)] uppercase">Arithmetic Mean (x̄)</span>
+          <p id="res-mean" class="text-3xl font-extrabold text-[color:var(--fg)] font-mono">18.0000</p>
+          <p id="res-count" class="text-[10px] text-[color:var(--muted)]">Count: 8 (Sum: 144.00)</p>
+        </div>
+      </div>
+
+      <!-- Secondary Comprehensive Stats Grid -->
+      <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-xs font-mono">
+        <div class="flex justify-between border-b sm:border-b-0 border-[color:var(--border)] pb-1 sm:pb-0">
+          <span class="text-[color:var(--muted)] font-sans">Median:</span>
+          <span class="font-bold text-[color:var(--fg)]" data-res-median>18.50</span>
+        </div>
+        <div class="flex justify-between border-b sm:border-b-0 border-[color:var(--border)] pb-1 sm:pb-0">
+          <span class="text-[color:var(--muted)] font-sans">Mode:</span>
+          <span class="font-bold text-[color:var(--fg)]" data-res-mode>23</span>
+        </div>
+        <div class="flex justify-between border-b sm:border-b-0 border-[color:var(--border)] pb-1 sm:pb-0">
+          <span class="text-[color:var(--muted)] font-sans">Range (Max - Min):</span>
+          <span class="font-bold text-[color:var(--fg)]" data-res-range>13.00 [10 to 23]</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-[color:var(--muted)] font-sans">IQR (Q3 - Q1):</span>
+          <span class="font-bold text-[color:var(--fg)]" data-res-iqr>9.00 [14 to 23]</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-[color:var(--muted)] font-sans">Standard Error (SEM):</span>
+          <span class="font-bold text-[color:var(--accent)]" data-res-sem>1.8516</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-[color:var(--muted)] font-sans">Coeff. of Variation (CV):</span>
+          <span class="font-bold text-[color:var(--accent)]" data-res-cv>29.10%</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-[color:var(--muted)] font-sans">Sum of Squares (SS):</span>
+          <span class="font-bold text-[color:var(--fg)]" data-res-ss>192.00</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-[color:var(--muted)] font-sans">Tukey Outliers:</span>
+          <span class="font-bold text-cyan-500 dark:text-cyan-400" data-res-outliers>None Detected</span>
+        </div>
+      </div>
+
+      <!-- Step-by-Step Deviation Table -->
+      <div class="space-y-3">
+        <div class="flex items-center justify-between">
+          <h3 class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Step-By-Step Deviations (SS Calculation)</h3>
+          <span class="text-[11px] text-[color:var(--muted)]">Showing individual observation deviations</span>
+        </div>
+        <div class="max-h-64 overflow-y-auto rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)]">
+          <table class="w-full text-left text-xs font-mono">
+            <thead class="sticky top-0 bg-[color:var(--surface)] text-[color:var(--muted)] border-b border-[color:var(--border)]">
+              <tr>
+                <th class="py-2 px-3">#</th>
+                <th class="py-2 px-3">Observation (xᵢ)</th>
+                <th class="py-2 px-3">Mean (x̄)</th>
+                <th class="py-2 px-3">Deviation (xᵢ - x̄)</th>
+                <th class="py-2 px-3">Squared Deviation (xᵢ - x̄)²</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-[color:var(--border)]" data-deviations-tbody>
+              <!-- Populated by script -->
+            </tbody>
+            <tfoot class="bg-[color:var(--surface)] font-bold text-[color:var(--fg)] border-t border-[color:var(--border)]">
+              <tr>
+                <td class="py-2 px-3" colspan="3">Total Sum of Squared Deviations (SS)</td>
+                <td class="py-2 px-3 text-[color:var(--muted)]">0.00</td>
+                <td class="py-2 px-3 text-cyan-500 dark:text-cyan-400" data-tfoot-ss>192.00</td>
+              </tr>
+            </tfoot>
+          </table>
         </div>
       </div>
     </div>
+
+    <!-- Mathematical Formulas Reference Card -->
+    <section class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 sm:p-8 space-y-4">
+      <div>
+        <p class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Statistical Dispersion Theory</p>
+        <h2 class="text-xl font-bold text-[color:var(--fg)] flex items-center gap-2"><Icon name="math" class="w-4 h-4 text-[color:var(--accent)]" /><span>Dispersion Formulas &amp; Bessel's Correction</span></h2>
+      </div>
+
+      <div class="grid gap-4 sm:grid-cols-2 text-xs sm:text-sm text-[color:var(--muted)]">
+        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] p-5 space-y-2">
+          <p class="font-bold text-[color:var(--fg)]">1. Sample Standard Deviation &amp; Variance</p>
+          <div class="font-mono text-xs text-cyan-500 dark:text-cyan-400 bg-[color:var(--surface)] p-2.5 rounded-xl">
+            s = √[ Σ(xᵢ - x̄)² / (n - 1) ]
+          </div>
+          <p class="text-xs">
+            Bessel’s correction divides by <code>n - 1</code> degrees of freedom to prevent systematic underestimation of population variance caused by measuring deviations against sample mean x̄ instead of true population mean μ.
+          </p>
+        </div>
+
+        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] p-5 space-y-2">
+          <p class="font-bold text-[color:var(--fg)]">2. Population Standard Deviation &amp; Variance</p>
+          <div class="font-mono text-xs text-[color:var(--fg)] bg-[color:var(--surface)] p-2.5 rounded-xl">
+            σ = √[ Σ(xᵢ - μ)² / N ]
+          </div>
+          <p class="text-xs">
+            Divides directly by total census size <code>N</code> when all members of the entire target population are measured.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Parameter Guide & Worked Example -->
+    <CalculatorParameterGuide parameters={parameterGuide} workedExample={workedExample} />
 
     <!-- FAQs -->
     <section class="space-y-4">
@@ -155,22 +370,59 @@ const schemaGraph = [
       if (!root) return;
 
       const dataInput = root.querySelector('#data-vals');
+      const loadSampleBtn = root.querySelector('[data-load-sample-btn]');
+      const clearBtn = root.querySelector('[data-clear-btn]');
+      const copyBtn = root.querySelector('[data-copy-btn]');
+      const exportCsvBtn = root.querySelector('[data-export-csv-btn]');
+
       const resSampleSd = root.querySelector('#res-sample-sd');
       const resPopSd = root.querySelector('#res-pop-sd');
       const resVar = root.querySelector('#res-var');
       const resMean = root.querySelector('#res-mean');
       const resCount = root.querySelector('#res-count');
 
+      const resMedian = root.querySelector('[data-res-median]');
+      const resMode = root.querySelector('[data-res-mode]');
+      const resRange = root.querySelector('[data-res-range]');
+      const resIqr = root.querySelector('[data-res-iqr]');
+      const resSem = root.querySelector('[data-res-sem]');
+      const resCv = root.querySelector('[data-res-cv]');
+      const resSs = root.querySelector('[data-res-ss]');
+      const resOutliers = root.querySelector('[data-res-outliers]');
+      const deviationsTbody = root.querySelector('[data-deviations-tbody]');
+      const tfootSs = root.querySelector('[data-tfoot-ss]');
+
+      let currentAnalysis = null;
+
+      function getQuantile(sorted, q) {
+        const pos = (sorted.length - 1) * q;
+        const base = Math.floor(pos);
+        const rest = pos - base;
+        if (sorted[base + 1] !== undefined) {
+          return sorted[base] + rest * (sorted[base + 1] - sorted[base]);
+        } else {
+          return sorted[base];
+        }
+      }
+
       function calculate() {
-        const nums = dataInput.value.split(/[\s,]+/).map(Number).filter(n => !isNaN(n));
+        const nums = dataInput.value
+          .split(/[\s,;\n\t]+/)
+          .map(Number)
+          .filter(n => !isNaN(n) && isFinite(n));
         const n = nums.length;
 
         if (n === 0) {
-          resSampleSd.textContent = '-'; resPopSd.textContent = '-'; resVar.textContent = '-';
-          resMean.textContent = '-'; resCount.textContent = 'Count: 0';
+          resSampleSd.textContent = '-';
+          resPopSd.textContent = '-';
+          resVar.textContent = '-';
+          resMean.textContent = '-';
+          resCount.textContent = 'Count: 0';
+          if (deviationsTbody) deviationsTbody.innerHTML = '<tr><td colspan="5" class="py-4 text-center text-[color:var(--muted)]">No data entered</td></tr>';
           return;
         }
 
+        const sorted = nums.slice().sort((a, b) => a - b);
         const sum = nums.reduce((a, b) => a + b, 0);
         const mean = sum / n;
         const sqDiffs = nums.reduce((a, b) => a + Math.pow(b - mean, 2), 0);
@@ -178,12 +430,156 @@ const schemaGraph = [
         const popSd = Math.sqrt(sqDiffs / n);
         const sampleSd = n > 1 ? Math.sqrt(sqDiffs / (n - 1)) : 0;
         const sampleVar = n > 1 ? sqDiffs / (n - 1) : 0;
+        const sem = sampleSd / Math.sqrt(n);
+        const cv = mean !== 0 ? (sampleSd / Math.abs(mean)) * 100 : 0;
+
+        // Median
+        const median = getQuantile(sorted, 0.5);
+        const q1 = getQuantile(sorted, 0.25);
+        const q3 = getQuantile(sorted, 0.75);
+        const iqr = q3 - q1;
+        const minVal = sorted[0];
+        const maxVal = sorted[n - 1];
+
+        // Outlier detection via Tukey's fences
+        const lowerFence = q1 - 1.5 * iqr;
+        const upperFence = q3 + 1.5 * iqr;
+        const outliers = sorted.filter(x => x < lowerFence || x > upperFence);
+
+        // Mode calculation
+        const freqMap = {};
+        let maxFreq = 0;
+        nums.forEach(x => {
+          freqMap[x] = (freqMap[x] || 0) + 1;
+          if (freqMap[x] > maxFreq) maxFreq = freqMap[x];
+        });
+        let modes = [];
+        if (maxFreq > 1) {
+          for (let k in freqMap) {
+            if (freqMap[k] === maxFreq) modes.push(k);
+          }
+        }
 
         resSampleSd.textContent = sampleSd.toFixed(4);
         resPopSd.textContent = popSd.toFixed(4);
         resVar.textContent = sampleVar.toFixed(4);
         resMean.textContent = mean.toFixed(4);
-        resCount.textContent = `Count: ${n} numbers (Sum: ${sum})`;
+        resCount.textContent = `Count: ${n} (Sum: ${sum.toFixed(2)})`;
+
+        if (resMedian) resMedian.textContent = median.toFixed(2);
+        if (resMode) resMode.textContent = modes.length > 0 ? modes.join(', ') : 'None (all unique)';
+        if (resRange) resRange.textContent = `${(maxVal - minVal).toFixed(2)} [${minVal} to ${maxVal}]`;
+        if (resIqr) resIqr.textContent = `${iqr.toFixed(2)} [Q1: ${q1.toFixed(1)}, Q3: ${q3.toFixed(1)}]`;
+        if (resSem) resSem.textContent = sem.toFixed(4);
+        if (resCv) resCv.textContent = `${cv.toFixed(2)}%`;
+        if (resSs) resSs.textContent = sqDiffs.toFixed(4);
+
+        if (resOutliers) {
+          if (outliers.length > 0) {
+            resOutliers.className = 'font-bold text-amber-500';
+            resOutliers.textContent = `${outliers.length} detected: [${outliers.join(', ')}]`;
+          } else {
+            resOutliers.className = 'font-bold text-cyan-500 dark:text-cyan-400';
+            resOutliers.textContent = 'None Detected';
+          }
+        }
+
+        if (tfootSs) tfootSs.textContent = sqDiffs.toFixed(4);
+
+        // Render step-by-step deviations table
+        if (deviationsTbody) {
+          const rows = nums.map((x, i) => {
+            const dev = x - mean;
+            const sqDev = dev * dev;
+            return `
+              <tr class="hover:bg-[color:var(--surface)] transition">
+                <td class="py-1.5 px-3 text-[color:var(--muted)]">${i + 1}</td>
+                <td class="py-1.5 px-3 font-semibold text-[color:var(--fg)]">${x}</td>
+                <td class="py-1.5 px-3 text-[color:var(--muted)]">${mean.toFixed(2)}</td>
+                <td class="py-1.5 px-3 ${dev < 0 ? 'text-rose-500' : 'text-cyan-500 dark:text-cyan-400'}">${dev >= 0 ? '+' : ''}${dev.toFixed(2)}</td>
+                <td class="py-1.5 px-3 font-bold text-[color:var(--fg)]">${sqDev.toFixed(4)}</td>
+              </tr>
+            `;
+          });
+          deviationsTbody.innerHTML = rows.join('');
+        }
+
+        currentAnalysis = {
+          nums: nums,
+          n: n,
+          mean: mean,
+          sum: sum,
+          sampleSd: sampleSd,
+          popSd: popSd,
+          sampleVar: sampleVar,
+          sem: sem,
+          cv: cv,
+          median: median,
+          iqr: iqr,
+          sqDiffs: sqDiffs,
+          outliers: outliers
+        };
+      }
+
+      if (loadSampleBtn) {
+        loadSampleBtn.addEventListener('click', () => {
+          dataInput.value = '10, 12, 23, 23, 16, 23, 21, 16, 18, 14, 25';
+          calculate();
+        });
+      }
+
+      if (clearBtn) {
+        clearBtn.addEventListener('click', () => {
+          dataInput.value = '';
+          calculate();
+        });
+      }
+
+      if (copyBtn) {
+        copyBtn.addEventListener('click', () => {
+          if (!currentAnalysis) return;
+          const text = [
+            '--- Standard Deviation & Descriptive Summary ---',
+            `Observations Count (n): ${currentAnalysis.n}`,
+            `Sum of Values: ${currentAnalysis.sum.toFixed(2)}`,
+            `Sample Mean (x̄): ${currentAnalysis.mean.toFixed(4)}`,
+            `Median: ${resMedian?.textContent || ''}`,
+            `Sample Standard Deviation (s): ${currentAnalysis.sampleSd.toFixed(4)}`,
+            `Population Standard Deviation (σ): ${currentAnalysis.popSd.toFixed(4)}`,
+            `Sample Variance (s²): ${currentAnalysis.sampleVar.toFixed(4)}`,
+            `Standard Error (SEM): ${currentAnalysis.sem.toFixed(4)}`,
+            `Coefficient of Variation (CV): ${currentAnalysis.cv.toFixed(2)}%`,
+            `Sum of Squares (SS): ${currentAnalysis.sqDiffs.toFixed(4)}`,
+            `Outliers: ${resOutliers?.textContent || 'None'}`,
+          ].join('\n');
+
+          navigator.clipboard.writeText(text).then(() => {
+            const orig = copyBtn.innerHTML;
+            copyBtn.innerHTML = '<span>✓ Copied!</span>';
+            setTimeout(() => { copyBtn.innerHTML = orig; }, 2000);
+          });
+        });
+      }
+
+      if (exportCsvBtn) {
+        exportCsvBtn.addEventListener('click', () => {
+          if (!currentAnalysis || currentAnalysis.n === 0) return;
+          const csvLines = ['Index,Value,Mean,Deviation,Squared_Deviation'];
+          currentAnalysis.nums.forEach((x, i) => {
+            const dev = x - currentAnalysis.mean;
+            const sqDev = dev * dev;
+            csvLines.push(`${i + 1},${x},${currentAnalysis.mean.toFixed(4)},${dev.toFixed(4)},${sqDev.toFixed(4)}`);
+          });
+          const blob = new Blob([csvLines.join('\n')], { type: 'text/csv;charset=utf-8;' });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `standard_deviation_analysis_n${currentAnalysis.n}.csv`;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+        });
       }
 
       dataInput.addEventListener('input', calculate);

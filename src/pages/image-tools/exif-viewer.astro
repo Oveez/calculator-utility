@@ -1,10 +1,12 @@
 ---
 import SiteLayout from '../../layouts/SiteLayout.astro';
 import Icon from '../../components/Icon.astro';
+import CalculatorParameterGuide from '../../components/calculator/CalculatorParameterGuide.astro';
+import type { CalculatorParameterInfo } from '../../types/calculator';
 import { siteName, toAbsoluteUrl, withBasePath } from '../../utils/site';
 
-const pageTitle = `EXIF Metadata Viewer — Inspect Photo Camera & GPS Info · ${siteName}`;
-const pageDesc = 'Inspect camera model, shutter speed, ISO, aperture, focal length, date taken, and GPS coordinates embedded inside photo EXIF tags. 100% private in-browser tool.';
+const pageTitle = `EXIF Metadata Viewer — Inspect Camera Specs, Exposure & GPS Geotags · ${siteName}`;
+const pageDesc = 'Extract camera model, lens, shutter speed, ISO, aperture, focal length, timestamps, and GPS coordinates from JPEG/TIFF photos directly in your browser. 100% private, zero uploads.';
 const canonicalUrl = toAbsoluteUrl('/image-tools/exif-viewer/');
 
 const breadcrumbItems = [
@@ -13,10 +15,53 @@ const breadcrumbItems = [
   { label: 'EXIF Viewer' },
 ];
 
+const parameterGuideData: CalculatorParameterInfo[] = [
+  {
+    name: 'Camera Body & Lens Model',
+    description: 'Hardware metadata identifying the camera make, model, firmware version, and attached lens model recorded by the image sensor processor at the moment of capture.',
+    type: 'String',
+    defaultValue: 'Canon EOS R5 / RF 24-70mm F2.8 L IS USM',
+    whyItMatters: 'Knowing the exact lens model allows photographers to inspect optical sharpness and distortion profiles.',
+  },
+  {
+    name: 'Exposure Triangle (Aperture, Shutter, ISO)',
+    description: 'The core optical parameters: Aperture (f-stop value controlling depth of field), Shutter Speed (sensor exposure time in fractions of a second), and ISO Sensitivity (sensor signal amplification).',
+    type: 'Technical Values',
+    defaultValue: 'f/2.8, 1/500s, ISO 100',
+    whyItMatters: 'A fast shutter speed like 1/1000s freezes rapid motion, while an aperture of f/1.4 produces creamy background blur (bokeh).',
+  },
+  {
+    name: 'Focal Length & 35mm Equivalent',
+    description: 'The optical focal distance of the lens in millimeters. The 35mm equivalent normalizes field-of-view across crop sensors against standard 35mm full frame.',
+    type: 'Millimeters (mm)',
+    defaultValue: '24 mm (35mm equivalent: 24 mm)',
+    whyItMatters: 'An 18mm lens on an APS-C crop sensor (1.5x crop factor) has a 35mm equivalent focal length of 27mm.',
+  },
+  {
+    name: 'GPS Geotag Coordinates',
+    description: 'Exact latitude, longitude, and elevation coordinates recorded by GPS chips in smartphones, drones, or GPS-enabled cameras. Present in many unedited mobile photos.',
+    type: 'Coordinates (Lat, Long, Alt)',
+    defaultValue: '37.7749° N, 122.4194° W',
+    whyItMatters: 'Smartphones automatically tag home locations unless location permissions are disabled in the camera app.',
+  },
+];
+
 const schemaFaq = [
   {
-    question: 'What is EXIF data in digital photos?',
-    answer: 'Exchangeable Image File Format (EXIF) is standard metadata embedded into JPEG/HEIC image files by digital cameras and smartphones, storing camera specifications, exposure settings, timestamps, and GPS geotags.',
+    question: 'What is EXIF metadata in digital photos?',
+    answer: 'Exchangeable Image File Format (EXIF) is an open international standard for storing technical metadata directly inside JPEG, TIFF, and HEIC files. It stores camera model, exposure settings (shutter speed, ISO, aperture), lens details, dates, and optional GPS coordinates.',
+  },
+  {
+    question: 'Is it safe to inspect EXIF data on this website?',
+    answer: 'Yes, 100% safe. The binary array parser runs entirely on your local machine within your browser using JavaScript DataView. Your photo is never transmitted over the internet or saved to any server.',
+  },
+  {
+    question: 'Why does my photo show "No EXIF Data Found"?',
+    answer: 'Social media platforms (like Instagram, Facebook, Twitter, WhatsApp, and Reddit) automatically strip all EXIF tags and GPS coordinates upon upload to protect user privacy and save bandwidth. Photos exported from web graphics editors without metadata preservation also contain no EXIF headers.',
+  },
+  {
+    question: 'How do I remove GPS geotags from my photos?',
+    answer: 'You can use our free companion tool, EXIF & GPS Remover, which redraws the image on an HTML5 canvas to completely scrub all embedded metadata, serial numbers, and geotags.',
   },
 ];
 
@@ -85,23 +130,23 @@ const schemaGraph = [
         <span>Local Binary ArrayBuffer Parser</span>
       </div>
       <h1 class="text-2xl sm:text-4xl font-extrabold tracking-tight text-[color:var(--fg)]">
-        EXIF Photo Metadata Viewer
+        EXIF Photo Metadata Viewer &amp; GPS Inspector
       </h1>
-      <p class="max-w-2xl text-xs sm:text-sm text-[color:var(--muted)] leading-relaxed">
-        Inspect camera models, exposure values, lens data, and embedded GPS coordinates without uploading files.
+      <p class="max-w-3xl text-xs sm:text-sm text-[color:var(--muted)] leading-relaxed">
+        Inspect camera hardware, lens details, exposure settings (ISO, Shutter, F-Stop), timestamps, and embedded GPS coordinates without uploading files. 100% private in-browser binary analysis.
       </p>
     </header>
 
     <div class="space-y-6">
-      <!-- File Upload Zone -->
+      <!-- File Upload Dropzone -->
       <div id="dropzone-box" class="space-y-3 rounded-3xl border-2 border-dashed border-[color:var(--border)] bg-[color:var(--surface)] p-6 sm:p-8 text-center transition hover:border-[color:var(--border-strong)]">
-        <input type="file" id="img-file" accept="image/jpeg,image/png,image/webp,image/tiff" class="hidden" />
+        <input type="file" id="img-file" accept="image/jpeg,image/jpg,image/tiff,image/png,image/webp" class="hidden" />
         <label for="img-file" id="upload-prompt" class="cursor-pointer space-y-2 block">
           <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-[color:var(--surface-strong)] text-[color:var(--fg)]">
             <Icon name="image" class="w-6 h-6 text-[color:var(--accent)]" />
           </div>
           <p class="text-sm font-bold text-[color:var(--fg)]">Click to choose a photo or drag &amp; drop</p>
-          <p class="text-xs text-[color:var(--muted)]">Supports JPG, JPEG, PNG, TIFF (Zero upload, 100% private in browser)</p>
+          <p class="text-xs text-[color:var(--muted)]">Supports JPG, JPEG, TIFF (Uncompressed camera originals recommended) &bull; Zero server upload</p>
         </label>
 
         <!-- Visual Upload Preview Box -->
@@ -115,44 +160,186 @@ const schemaGraph = [
               <p id="thumb-info" class="text-[11px] text-[color:var(--muted)]">0 KB</p>
             </div>
           </div>
-          <label for="img-file" class="cursor-pointer shrink-0 rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1.5 text-xs font-semibold text-[color:var(--muted)] hover:text-[color:var(--fg)] transition">
-            Change Photo
-          </label>
+          <div class="flex items-center gap-2 shrink-0">
+            <label for="img-file" class="cursor-pointer rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1.5 text-xs font-semibold text-[color:var(--muted)] hover:text-[color:var(--fg)] transition">
+              Change Photo
+            </label>
+          </div>
         </div>
       </div>
 
-      <!-- Preview and Metadata Grid -->
-      <div id="results-wrapper" class="hidden grid gap-6 lg:grid-cols-3">
-        <!-- Photo Preview -->
-        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 space-y-3">
-          <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Photo Preview</span>
-          <div class="aspect-4/3 rounded-xl overflow-hidden bg-[color:var(--surface-strong)] flex items-center justify-center">
-            <img id="img-preview" alt="Uploaded photo" class="max-h-full max-w-full object-contain" />
+      <!-- GPS Geotag Warning Banner (Shown if GPS coordinates found) -->
+      <div id="gps-banner" class="hidden rounded-2xl border border-amber-500/40 bg-amber-500/10 p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div class="flex items-start gap-3">
+          <span class="text-xl shrink-0 mt-0.5">&map;</span>
+          <div class="space-y-1">
+            <h3 class="text-sm font-bold text-amber-500">Sensitive GPS Location Coordinates Detected!</h3>
+            <p class="text-xs text-[color:var(--fg)] leading-relaxed">
+              This photo contains embedded latitude and longitude geotags: <strong id="gps-coords-banner" class="font-mono text-amber-400">0.0000°, 0.0000°</strong>. Sharing this photo publicly exposes your physical location.
+            </p>
           </div>
-          <div class="text-xs text-[color:var(--muted)] space-y-1">
-            <p>File Name: <strong id="file-name" class="text-[color:var(--fg)]">-</strong></p>
-            <p>File Size: <strong id="file-size" class="text-[color:var(--fg)]">-</strong></p>
-            <p>Image Format: <strong id="file-type" class="text-[color:var(--fg)]">-</strong></p>
+        </div>
+        <div class="flex items-center gap-2 shrink-0">
+          <a
+            id="gps-map-link"
+            href="#"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="rounded-xl border border-amber-500/30 bg-amber-500/20 px-3 py-1.5 text-xs font-bold text-amber-300 hover:bg-amber-500/30 transition"
+          >
+            View on Map &rarr;
+          </a>
+          <a
+            href={withBasePath('/image-tools/exif-remover/')}
+            class="rounded-xl bg-amber-500 px-3.5 py-1.5 text-xs font-bold text-black hover:opacity-90 transition shadow-xs"
+          >
+            Strip Metadata &rarr;
+          </a>
+        </div>
+      </div>
+
+      <!-- Main Results Wrapper -->
+      <div id="results-wrapper" class="hidden space-y-6">
+        <!-- Quick Exposure Highlights Bar -->
+        <div class="grid gap-3 sm:grid-cols-4 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-center">
+          <div class="space-y-0.5">
+            <span class="text-[10px] font-bold text-[color:var(--muted)] uppercase">Camera / Device</span>
+            <p id="quick-camera" class="font-bold text-xs sm:text-sm text-[color:var(--fg)] truncate">-</p>
+          </div>
+          <div class="space-y-0.5">
+            <span class="text-[10px] font-bold text-[color:var(--muted)] uppercase">Lens / Focal</span>
+            <p id="quick-lens" class="font-bold text-xs sm:text-sm text-[color:var(--fg)] truncate">-</p>
+          </div>
+          <div class="space-y-0.5">
+            <span class="text-[10px] font-bold text-[color:var(--muted)] uppercase">Exposure Triangle</span>
+            <p id="quick-exposure" class="font-bold text-xs sm:text-sm text-emerald-500 font-mono truncate">-</p>
+          </div>
+          <div class="space-y-0.5">
+            <span class="text-[10px] font-bold text-[color:var(--muted)] uppercase">Date Taken</span>
+            <p id="quick-date" class="font-bold text-xs sm:text-sm text-[color:var(--fg)] truncate">-</p>
           </div>
         </div>
 
-        <!-- EXIF Table -->
-        <div class="lg:col-span-2 space-y-3">
-          <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Detected EXIF Tags</span>
-          <div class="overflow-x-auto rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)]">
-            <table class="w-full text-left text-xs">
-              <thead class="bg-[color:var(--surface-strong)] text-[color:var(--muted)] border-b border-[color:var(--border)]">
-                <tr>
-                  <th class="p-3.5 font-bold">Metadata Property</th>
-                  <th class="p-3.5 font-bold">Recorded Value</th>
-                </tr>
-              </thead>
-              <tbody id="exif-tbody" class="divide-y divide-[color:var(--border)] font-mono text-[color:var(--fg)]"></tbody>
-            </table>
+        <!-- Category Filter & Action Bar -->
+        <div class="flex flex-wrap items-center justify-between gap-3 border-b border-[color:var(--border)] pb-2 text-xs">
+          <div class="flex flex-wrap gap-1.5" id="category-filters">
+            <button type="button" class="cat-btn active rounded-lg bg-[color:var(--fg)] px-3 py-1 font-semibold text-[color:var(--bg)] transition cursor-pointer" data-cat="all">All Tags</button>
+            <button type="button" class="cat-btn rounded-lg bg-[color:var(--surface)] border border-[color:var(--border)] px-3 py-1 font-semibold text-[color:var(--muted)] hover:text-[color:var(--fg)] transition cursor-pointer" data-cat="camera">Camera &amp; Lens</button>
+            <button type="button" class="cat-btn rounded-lg bg-[color:var(--surface)] border border-[color:var(--border)] px-3 py-1 font-semibold text-[color:var(--muted)] hover:text-[color:var(--fg)] transition cursor-pointer" data-cat="exposure">Exposure &amp; Optics</button>
+            <button type="button" class="cat-btn rounded-lg bg-[color:var(--surface)] border border-[color:var(--border)] px-3 py-1 font-semibold text-[color:var(--muted)] hover:text-[color:var(--fg)] transition cursor-pointer" data-cat="location">GPS Location</button>
+            <button type="button" class="cat-btn rounded-lg bg-[color:var(--surface)] border border-[color:var(--border)] px-3 py-1 font-semibold text-[color:var(--muted)] hover:text-[color:var(--fg)] transition cursor-pointer" data-cat="file">File Specs</button>
+          </div>
+
+          <div class="flex items-center gap-2">
+            <button
+              type="button"
+              id="copy-json-btn"
+              class="rounded-lg border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1 text-xs font-semibold text-[color:var(--fg)] hover:border-emerald-500 transition cursor-pointer"
+            >
+              Copy JSON
+            </button>
+            <button
+              type="button"
+              id="dl-report-btn"
+              class="rounded-lg border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1 text-xs font-semibold text-[color:var(--fg)] hover:border-emerald-500 transition cursor-pointer"
+            >
+              Download Report
+            </button>
+          </div>
+        </div>
+
+        <!-- Preview and Detailed Metadata Grid -->
+        <div class="grid gap-6 lg:grid-cols-3">
+          <!-- Photo Preview & Quick Specs -->
+          <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 space-y-3">
+            <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Photo Preview</span>
+            <div class="aspect-4/3 rounded-xl overflow-hidden bg-[color:var(--surface-strong)] flex items-center justify-center border border-[color:var(--border)]">
+              <img id="img-preview" alt="Uploaded photo" class="max-h-full max-w-full object-contain" />
+            </div>
+            <div class="text-xs text-[color:var(--muted)] space-y-1.5 font-mono pt-1">
+              <p class="flex justify-between border-b border-[color:var(--border)] pb-1">
+                <span>File Name:</span> <strong id="file-name" class="text-[color:var(--fg)] truncate max-w-[160px]">-</strong>
+              </p>
+              <p class="flex justify-between border-b border-[color:var(--border)] pb-1">
+                <span>File Size:</span> <strong id="file-size" class="text-[color:var(--fg)]">-</strong>
+              </p>
+              <p class="flex justify-between border-b border-[color:var(--border)] pb-1">
+                <span>MIME Type:</span> <strong id="file-type" class="text-[color:var(--fg)]">-</strong>
+              </p>
+              <p class="flex justify-between border-b border-[color:var(--border)] pb-1">
+                <span>Resolution:</span> <strong id="file-res" class="text-[color:var(--fg)]">-</strong>
+              </p>
+              <p class="flex justify-between">
+                <span>Megapixels:</span> <strong id="file-mp" class="text-emerald-500">-</strong>
+              </p>
+            </div>
+          </div>
+
+          <!-- EXIF Table -->
+          <div class="lg:col-span-2 space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Detailed Metadata Registry</span>
+              <span id="tag-count-label" class="text-xs text-[color:var(--muted)] font-mono">0 tags discovered</span>
+            </div>
+
+            <div class="overflow-x-auto rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)]">
+              <table class="w-full text-left text-xs">
+                <thead class="bg-[color:var(--surface-strong)] text-[color:var(--muted)] border-b border-[color:var(--border)]">
+                  <tr>
+                    <th class="p-3 font-bold w-1/3">EXIF Field</th>
+                    <th class="p-3 font-bold w-1/2">Decoded Value</th>
+                    <th class="p-3 font-bold w-1/6">Category</th>
+                  </tr>
+                </thead>
+                <tbody id="exif-tbody" class="divide-y divide-[color:var(--border)] font-mono text-[color:var(--fg)]">
+                  <!-- Dynamic rows -->
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Empty / No EXIF notice -->
+            <div id="no-exif-card" class="hidden rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-6 text-center space-y-2">
+              <p class="text-sm font-bold text-[color:var(--fg)]">No Embedded EXIF Tags Found in this File</p>
+              <p class="text-xs text-[color:var(--muted)] max-w-md mx-auto">
+                This image either does not contain EXIF headers, or was stripped of metadata during social media upload, messaging apps (WhatsApp, Messenger), or web optimization.
+              </p>
+            </div>
           </div>
         </div>
       </div>
     </div>
+
+    <!-- Parameter Guide Component -->
+    <CalculatorParameterGuide
+      parameters={parameterGuideData}
+      workedExample={{
+        title: 'Decoded EXIF Exposure Scenario',
+        description: 'Audit of camera hardware and optical exposure parameters extracted from photo headers.',
+        formula: 'Exposure Triangle: Exposure Time (1/500s) + Aperture (f/2.8) + ISO 100 + Focal Length (70mm)',
+        steps: [
+          {
+            step: 'Camera Body & Lens Model',
+            calculation: 'Parsed from IFD0 and Exif SubIFD tags',
+            result: 'Sony Alpha 7 IV with FE 70-200mm F2.8 GM OSS II',
+          },
+          {
+            step: 'Shutter Speed & Aperture',
+            calculation: 'Parsed from tags 0x829A and 0x829D',
+            result: '1/1000 sec at f/2.8 (shallow depth of field)',
+          },
+          {
+            step: 'ISO Sensitivity',
+            calculation: 'Parsed from tag 0x8827',
+            result: 'ISO 100 (base ISO, zero noise)',
+          },
+          {
+            step: 'GPS Geolocation Geotag',
+            calculation: 'Parsed from GPS IFD rational degree/minute arrays',
+            result: '37°46\'29.9" N, 122°25\'09.8" W',
+          },
+        ],
+      }}
+    />
 
     <!-- FAQs -->
     <section class="space-y-4">
@@ -162,7 +349,7 @@ const schemaGraph = [
           <details class="group rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
             <summary class="cursor-pointer list-none font-semibold text-sm sm:text-base text-[color:var(--fg)] flex items-center justify-between gap-4">
               <span>{faq.question}</span>
-              <span class="text-xs text-[color:var(--muted)] group-open:rotate-180 transition-transform">▼</span>
+              <span class="text-xs text-[color:var(--muted)] group-open:rotate-180 transition-transform">&blacktriangledown;</span>
             </summary>
             <p class="mt-3 text-xs sm:text-sm leading-relaxed text-[color:var(--muted)]">
               {faq.answer}
@@ -189,7 +376,30 @@ const schemaGraph = [
       const fileName = root.querySelector('#file-name');
       const fileSize = root.querySelector('#file-size');
       const fileType = root.querySelector('#file-type');
+      const fileRes = root.querySelector('#file-res');
+      const fileMp = root.querySelector('#file-mp');
       const tbody = root.querySelector('#exif-tbody');
+      const tagCountLabel = root.querySelector('#tag-count-label');
+      const noExifCard = root.querySelector('#no-exif-card');
+
+      // Banner elements
+      const gpsBanner = root.querySelector('#gps-banner');
+      const gpsCoordsBanner = root.querySelector('#gps-coords-banner');
+      const gpsMapLink = root.querySelector('#gps-map-link');
+
+      // Quick highlights
+      const quickCamera = root.querySelector('#quick-camera');
+      const quickLens = root.querySelector('#quick-lens');
+      const quickExposure = root.querySelector('#quick-exposure');
+      const quickDate = root.querySelector('#quick-date');
+
+      // Actions
+      const copyJsonBtn = root.querySelector('#copy-json-btn');
+      const dlReportBtn = root.querySelector('#dl-report-btn');
+      const catBtns = root.querySelectorAll('.cat-btn');
+
+      let parsedMetadata = [];
+      let activeCategory = 'all';
 
       function formatBytes(bytes) {
         if (bytes < 1024) return bytes + ' B';
@@ -197,11 +407,294 @@ const schemaGraph = [
         return (bytes / 1048576).toFixed(2) + ' MB';
       }
 
-      fileIn.addEventListener('change', (e) => {
-        const file = e.target.files[0];
+      // Robust Pure-JS Binary EXIF / TIFF Parser
+      function parseExif(buffer) {
+        const view = new DataView(buffer);
+        const tags = [];
+        let gpsData = null;
+
+        // Check JPEG SOI marker (0xFFD8)
+        if (view.byteLength < 4) return { tags, gpsData };
+        if (view.getUint16(0, false) !== 0xFFD8) {
+          return { tags, gpsData };
+        }
+
+        let offset = 2;
+        const length = view.byteLength;
+
+        while (offset < length) {
+          if (view.getUint8(offset) !== 0xFF) break;
+          const marker = view.getUint8(offset + 1);
+
+          // APP1 Marker = 0xE1 (EXIF)
+          if (marker === 0xE1) {
+            const app1Len = view.getUint16(offset + 2, false);
+            const exifStart = offset + 4;
+
+            // Check "Exif\0\0" (0x45, 0x78, 0x69, 0x66, 0x00, 0x00)
+            const isExif = view.getUint32(exifStart, false) === 0x45786966 && view.getUint16(exifStart + 4, false) === 0x0000;
+            if (isExif) {
+              const tiffOffset = exifStart + 6;
+              parseTiff(view, tiffOffset, tags, (gps) => { gpsData = gps; });
+            }
+            offset += 2 + app1Len;
+          } else if (marker === 0xDA || marker === 0xD9) {
+            // SOS (Start of Scan) or EOI
+            break;
+          } else {
+            const segLen = view.getUint16(offset + 2, false);
+            offset += 2 + segLen;
+          }
+        }
+
+        return { tags, gpsData };
+      }
+
+      function parseTiff(view, tiffStart, tags, onGps) {
+        const endianMark = view.getUint16(tiffStart, false);
+        let littleEndian = false;
+        if (endianMark === 0x4949) {
+          littleEndian = true;
+        } else if (endianMark === 0x4D4D) {
+          littleEndian = false;
+        } else {
+          return;
+        }
+
+        if (view.getUint16(tiffStart + 2, littleEndian) !== 0x002A) return;
+
+        const firstIfdOffset = view.getUint32(tiffStart + 4, littleEndian);
+        let exifIfdOffset = null;
+        let gpsIfdOffset = null;
+
+        function readString(strOffset, byteCount) {
+          let str = '';
+          for (let i = 0; i < byteCount; i++) {
+            const c = view.getUint8(strOffset + i);
+            if (c === 0) break;
+            str += String.fromCharCode(c);
+          }
+          return str.trim();
+        }
+
+        function readEntry(entryOffset) {
+          const tagId = view.getUint16(entryOffset, littleEndian);
+          const type = view.getUint16(entryOffset + 2, littleEndian);
+          const count = view.getUint32(entryOffset + 4, littleEndian);
+          const valOrOffset = entryOffset + 8;
+
+          let val = null;
+          let dataOffset = valOrOffset;
+          if ((type === 1 || type === 2 || type === 7) && count > 4) {
+            dataOffset = tiffStart + view.getUint32(valOrOffset, littleEndian);
+          } else if (type === 3 && count > 2) {
+            dataOffset = tiffStart + view.getUint32(valOrOffset, littleEndian);
+          } else if ((type === 4 || type === 5 || type === 9 || type === 10) && (count > 1 || type === 5 || type === 10)) {
+            dataOffset = tiffStart + view.getUint32(valOrOffset, littleEndian);
+          }
+
+          if (type === 2) {
+            val = readString(dataOffset, count);
+          } else if (type === 3) {
+            val = view.getUint16(dataOffset, littleEndian);
+          } else if (type === 4) {
+            val = view.getUint32(dataOffset, littleEndian);
+          } else if (type === 5) {
+            const num = view.getUint32(dataOffset, littleEndian);
+            const den = view.getUint32(dataOffset + 4, littleEndian);
+            val = den !== 0 ? num / den : 0;
+            if (num && den) val = { num, den, val: num / den };
+          }
+
+          return { tagId, type, count, val, dataOffset };
+        }
+
+        function parseIfd(ifdOffset, isGps = false, isExifSub = false) {
+          if (ifdOffset >= view.byteLength) return;
+          const numEntries = view.getUint16(ifdOffset, littleEndian);
+
+          for (let i = 0; i < numEntries; i++) {
+            const entryOffset = ifdOffset + 2 + (i * 12);
+            if (entryOffset + 12 > view.byteLength) break;
+            const entry = readEntry(entryOffset);
+
+            if (isGps) {
+              handleGpsTag(entry);
+            } else if (isExifSub) {
+              handleExifSubTag(entry);
+            } else {
+              handleIfd0Tag(entry);
+            }
+          }
+        }
+
+        const tagMap = {
+          // IFD0
+          0x010F: { name: 'Camera Make', cat: 'camera' },
+          0x0110: { name: 'Camera Model', cat: 'camera' },
+          0x0112: { name: 'Orientation', cat: 'file' },
+          0x011A: { name: 'X Resolution', cat: 'file' },
+          0x011B: { name: 'Y Resolution', cat: 'file' },
+          0x0128: { name: 'Resolution Unit', cat: 'file' },
+          0x0131: { name: 'Software', cat: 'camera' },
+          0x0132: { name: 'Date & Time', cat: 'file' },
+          0x013B: { name: 'Artist / Author', cat: 'camera' },
+          0x8298: { name: 'Copyright', cat: 'camera' },
+
+          // Exif SubIFD
+          0x829A: { name: 'Exposure Time', cat: 'exposure' },
+          0x829D: { name: 'F-Number (Aperture)', cat: 'exposure' },
+          0x8822: { name: 'Exposure Program', cat: 'exposure' },
+          0x8827: { name: 'ISO Speed Rating', cat: 'exposure' },
+          0x9003: { name: 'Date Taken (Original)', cat: 'file' },
+          0x9004: { name: 'Date Digitized', cat: 'file' },
+          0x9201: { name: 'Shutter Speed', cat: 'exposure' },
+          0x9202: { name: 'Aperture Value', cat: 'exposure' },
+          0x9204: { name: 'Exposure Bias', cat: 'exposure' },
+          0x9207: { name: 'Metering Mode', cat: 'exposure' },
+          0x9208: { name: 'Light Source', cat: 'exposure' },
+          0x9209: { name: 'Flash', cat: 'exposure' },
+          0x920A: { name: 'Focal Length', cat: 'exposure' },
+          0xA405: { name: 'Focal Length (35mm Equiv)', cat: 'exposure' },
+          0xA433: { name: 'Lens Make', cat: 'camera' },
+          0xA434: { name: 'Lens Model', cat: 'camera' },
+          0xA001: { name: 'Color Space', cat: 'file' },
+          0xA002: { name: 'Exif Image Width', cat: 'file' },
+          0xA003: { name: 'Exif Image Height', cat: 'file' },
+        };
+
+        const gpsRaw = {};
+
+        function handleIfd0Tag(entry) {
+          if (entry.tagId === 0x8769) {
+            exifIfdOffset = tiffStart + entry.val;
+          } else if (entry.tagId === 0x8825) {
+            gpsIfdOffset = tiffStart + entry.val;
+          } else if (tagMap[entry.tagId]) {
+            let displayVal = entry.val;
+            if (typeof displayVal === 'object' && displayVal !== null && displayVal.val !== undefined) {
+              displayVal = displayVal.val.toFixed(1);
+            }
+            tags.push({
+              key: tagMap[entry.tagId].name,
+              value: String(displayVal),
+              cat: tagMap[entry.tagId].cat
+            });
+          }
+        }
+
+        function handleExifSubTag(entry) {
+          if (tagMap[entry.tagId]) {
+            let displayVal = entry.val;
+            if (entry.tagId === 0x829A && typeof entry.val === 'object') {
+              // Shutter speed 1/X
+              if (entry.val.num === 1) {
+                displayVal = `1/${entry.val.den} sec`;
+              } else if (entry.val.val < 1) {
+                displayVal = `1/${Math.round(1 / entry.val.val)} sec`;
+              } else {
+                displayVal = `${entry.val.val.toFixed(2)} sec`;
+              }
+            } else if (entry.tagId === 0x829D && typeof entry.val === 'object') {
+              displayVal = `f/${entry.val.val.toFixed(1)}`;
+            } else if (entry.tagId === 0x920A && typeof entry.val === 'object') {
+              displayVal = `${entry.val.val.toFixed(1)} mm`;
+            } else if (entry.tagId === 0xA405) {
+              displayVal = `${entry.val} mm`;
+            } else if (entry.tagId === 0x8827) {
+              displayVal = `ISO ${entry.val}`;
+            } else if (typeof displayVal === 'object' && displayVal !== null && displayVal.val !== undefined) {
+              displayVal = displayVal.val.toFixed(2);
+            }
+
+            tags.push({
+              key: tagMap[entry.tagId].name,
+              value: String(displayVal),
+              cat: tagMap[entry.tagId].cat
+            });
+          }
+        }
+
+        function readRationalArray(offset, count) {
+          const arr = [];
+          for (let i = 0; i < count; i++) {
+            const num = view.getUint32(offset + (i * 8), littleEndian);
+            const den = view.getUint32(offset + (i * 8) + 4, littleEndian);
+            arr.push(den !== 0 ? num / den : 0);
+          }
+          return arr;
+        }
+
+        function handleGpsTag(entry) {
+          if (entry.tagId === 0x0001) { // LatRef
+            gpsRaw.latRef = readString(entry.dataOffset, 2);
+          } else if (entry.tagId === 0x0002) { // Lat
+            gpsRaw.lat = readRationalArray(entry.dataOffset, 3);
+          } else if (entry.tagId === 0x0003) { // LonRef
+            gpsRaw.lonRef = readString(entry.dataOffset, 2);
+          } else if (entry.tagId === 0x0004) { // Lon
+            gpsRaw.lon = readRationalArray(entry.dataOffset, 3);
+          } else if (entry.tagId === 0x0006) { // Alt
+            const alt = readRationalArray(entry.dataOffset, 1)[0];
+            if (alt) tags.push({ key: 'GPS Altitude', value: `${alt.toFixed(1)} meters`, cat: 'location' });
+          }
+        }
+
+        parseIfd(tiffStart + firstIfdOffset, false, false);
+        if (exifIfdOffset) parseIfd(exifIfdOffset, false, true);
+        if (gpsIfdOffset) {
+          parseIfd(gpsIfdOffset, true, false);
+
+          if (gpsRaw.lat && gpsRaw.lon && gpsRaw.lat.length === 3 && gpsRaw.lon.length === 3) {
+            let lat = gpsRaw.lat[0] + (gpsRaw.lat[1] / 60) + (gpsRaw.lat[2] / 3600);
+            if (gpsRaw.latRef === 'S') lat = -lat;
+
+            let lon = gpsRaw.lon[0] + (gpsRaw.lon[1] / 60) + (gpsRaw.lon[2] / 3600);
+            if (gpsRaw.lonRef === 'W') lon = -lon;
+
+            tags.push({ key: 'GPS Latitude', value: `${lat.toFixed(6)}° (${gpsRaw.latRef || 'N'})`, cat: 'location' });
+            tags.push({ key: 'GPS Longitude', value: `${lon.toFixed(6)}° (${gpsRaw.lonRef || 'E'})`, cat: 'location' });
+
+            onGps({ lat, lon });
+          }
+        }
+      }
+
+      function renderTags() {
+        const filtered = activeCategory === 'all'
+          ? parsedMetadata
+          : parsedMetadata.filter(t => t.cat === activeCategory);
+
+        tagCountLabel.textContent = `${filtered.length} of ${parsedMetadata.length} tags displayed`;
+
+        if (filtered.length === 0) {
+          tbody.innerHTML = `
+            <tr>
+              <td colspan="3" class="p-6 text-center text-[color:var(--muted)]">
+                No tags found in this category.
+              </td>
+            </tr>
+          `;
+          return;
+        }
+
+        tbody.innerHTML = filtered.map(t => `
+          <tr class="hover:bg-[color:var(--surface-strong)] transition">
+            <td class="p-3 font-bold text-emerald-500">${t.key}</td>
+            <td class="p-3 break-all">${t.value}</td>
+            <td class="p-3 text-[11px] text-[color:var(--muted)] uppercase font-sans">${t.cat}</td>
+          </tr>
+        `).join('');
+      }
+
+      fileIn?.addEventListener('change', (e) => {
+        const file = e.target.files?.[0];
         if (!file) return;
 
         resultsWrapper.classList.remove('hidden');
+        gpsBanner.classList.add('hidden');
+        noExifCard.classList.add('hidden');
+
         fileName.textContent = file.name;
         fileSize.textContent = formatBytes(file.size);
         fileType.textContent = file.type || 'image/jpeg';
@@ -215,28 +708,109 @@ const schemaGraph = [
         uploadPrompt.classList.add('hidden');
         uploadPreviewBox.classList.remove('hidden');
 
-        const img = new Image();
-        img.onload = () => {
-          thumbInfo.textContent = `${img.naturalWidth}×${img.naturalHeight} px • ${formatBytes(file.size)}`;
-          const tags = [
-            { key: 'Image Width', val: `${img.naturalWidth} px` },
-            { key: 'Image Height', val: `${img.naturalHeight} px` },
-            { key: 'Megapixels', val: `${((img.naturalWidth * img.naturalHeight) / 1000000).toFixed(2)} MP` },
-            { key: 'Aspect Ratio', val: `${(img.naturalWidth / img.naturalHeight).toFixed(2)}:1` },
-            { key: 'MIME Type', val: file.type },
-            { key: 'Last Modified Date', val: new Date(file.lastModified).toLocaleString() },
-            { key: 'Color Space', val: 'sRGB (Browser Calibrated)' },
-            { key: 'EXIF Parsing Status', val: 'Loaded locally via Web APIs' }
-          ];
+        // Read ArrayBuffer for EXIF
+        const reader = new FileReader();
+        reader.onload = (re) => {
+          const buffer = re.target.result;
+          const { tags, gpsData } = parseExif(buffer);
 
-          tbody.innerHTML = tags.map(t => `
-            <tr class="hover:bg-[color:var(--surface-strong)]">
-              <td class="p-3.5 font-bold text-emerald-500">${t.key}</td>
-              <td class="p-3.5">${t.val}</td>
-            </tr>
-          `).join('');
+          const img = new Image();
+          img.onload = () => {
+            fileRes.textContent = `${img.naturalWidth} × ${img.naturalHeight} px`;
+            fileMp.textContent = `${((img.naturalWidth * img.naturalHeight) / 1000000).toFixed(2)} MP`;
+            thumbInfo.textContent = `${img.naturalWidth}×${img.naturalHeight} px • ${formatBytes(file.size)}`;
+
+            // Add standard image properties
+            tags.unshift(
+              { key: 'Image Width', value: `${img.naturalWidth} px`, cat: 'file' },
+              { key: 'Image Height', value: `${img.naturalHeight} px`, cat: 'file' },
+              { key: 'Megapixels', value: `${((img.naturalWidth * img.naturalHeight) / 1000000).toFixed(2)} MP`, cat: 'file' },
+              { key: 'Aspect Ratio', value: `${(img.naturalWidth / img.naturalHeight).toFixed(2)}:1`, cat: 'file' },
+              { key: 'File Size', value: formatBytes(file.size), cat: 'file' },
+              { key: 'MIME Type', value: file.type || 'image/jpeg', cat: 'file' },
+              { key: 'Last Modified', value: new Date(file.lastModified).toLocaleString(), cat: 'file' }
+            );
+
+            parsedMetadata = tags;
+
+            // Update Quick Highlights
+            const getTag = (name) => tags.find(t => t.key.toLowerCase().includes(name.toLowerCase()))?.value || '-';
+            const make = getTag('Camera Make');
+            const model = getTag('Camera Model');
+            quickCamera.textContent = (make !== '-' && model !== '-') ? `${make} ${model}` : (model !== '-' ? model : (make !== '-' ? make : 'Standard Device'));
+
+            const lens = getTag('Lens Model');
+            const focal = getTag('Focal Length');
+            quickLens.textContent = lens !== '-' ? lens : (focal !== '-' ? focal : '-');
+
+            const shutter = getTag('Exposure Time');
+            const fnum = getTag('F-Number');
+            const iso = getTag('ISO Speed');
+            const expParts = [shutter !== '-' ? shutter : '', fnum !== '-' ? fnum : '', iso !== '-' ? iso : ''].filter(Boolean);
+            quickExposure.textContent = expParts.length > 0 ? expParts.join(' • ') : 'Auto Program';
+
+            const dateTaken = getTag('Date Taken') !== '-' ? getTag('Date Taken') : getTag('Date & Time');
+            quickDate.textContent = dateTaken !== '-' ? dateTaken : new Date(file.lastModified).toLocaleDateString();
+
+            // Handle GPS Banner
+            if (gpsData) {
+              gpsBanner.classList.remove('hidden');
+              gpsCoordsBanner.textContent = `${gpsData.lat.toFixed(6)}°, ${gpsData.lon.toFixed(6)}°`;
+              gpsMapLink.href = `https://www.google.com/maps?q=${gpsData.lat},${gpsData.lon}`;
+            }
+
+            if (tags.filter(t => t.cat !== 'file').length === 0) {
+              noExifCard.classList.remove('hidden');
+            }
+
+            renderTags();
+          };
+          img.src = url;
         };
-        img.src = url;
+        reader.readAsArrayBuffer(file);
+      });
+
+      // Category filters
+      catBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          catBtns.forEach(b => {
+            b.classList.remove('bg-[color:var(--fg)]', 'text-[color:var(--bg)]');
+            b.classList.add('bg-[color:var(--surface)]', 'border', 'border-[color:var(--border)]', 'text-[color:var(--muted)]');
+          });
+          btn.classList.add('bg-[color:var(--fg)]', 'text-[color:var(--bg)]');
+          btn.classList.remove('bg-[color:var(--surface)]', 'border-[color:var(--border)]', 'text-[color:var(--muted)]');
+
+          activeCategory = btn.dataset.cat;
+          renderTags();
+        });
+      });
+
+      // Copy JSON
+      copyJsonBtn?.addEventListener('click', () => {
+        const obj = {};
+        parsedMetadata.forEach(t => { obj[t.key] = t.value; });
+        navigator.clipboard.writeText(JSON.stringify(obj, null, 2)).then(() => {
+          const orig = copyJsonBtn.textContent;
+          copyJsonBtn.textContent = 'Copied!';
+          setTimeout(() => { copyJsonBtn.textContent = orig; }, 1800);
+        });
+      });
+
+      // Download Report
+      dlReportBtn?.addEventListener('click', () => {
+        const lines = [
+          '=== EXIF METADATA AUDIT REPORT ===',
+          `Generated: ${new Date().toISOString()}`,
+          `File: ${fileName.textContent}`,
+          `Size: ${fileSize.textContent}`,
+          '===================================\n',
+          ...parsedMetadata.map(t => `[${t.cat.toUpperCase()}] ${t.key}: ${t.value}`)
+        ];
+        const blob = new Blob([lines.join('\n')], { type: 'text/plain' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = `${fileName.textContent || 'photo'}_exif_report.txt`;
+        a.click();
       });
     })();
   </script>

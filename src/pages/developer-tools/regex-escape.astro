@@ -1,10 +1,11 @@
 ---
 import SiteLayout from '../../layouts/SiteLayout.astro';
 import Icon from '../../components/Icon.astro';
+import CalculatorParameterGuide from '../../components/calculator/CalculatorParameterGuide.astro';
 import { siteName, toAbsoluteUrl, withBasePath } from '../../utils/site';
 
 const pageTitle = `Regex Escape Tool — Escape Special Regex Characters · ${siteName}`;
-const pageDesc = 'Escape special regex characters (. * + ? ^ $ { } [ ] ( ) | \\ /) in literal strings for safe inclusion in dynamic JavaScript and backend RegExp constructors.';
+const pageDesc = 'Escape special regex metacharacters (. * + ? ^ $ { } [ ] ( ) | \\ /) in literal strings for safe inclusion in dynamic JavaScript and backend RegExp constructors.';
 const canonicalUrl = toAbsoluteUrl('/developer-tools/regex-escape/');
 
 const breadcrumbItems = [
@@ -16,7 +17,15 @@ const breadcrumbItems = [
 const schemaFaq = [
   {
     question: 'Why do literal strings need escaping before being passed to new RegExp()?',
-    answer: 'Characters like `.`, `*`, `+`, `?`, `^`, `$`, `(`, `)`, `[`, `]`, `{`, `}`, `|`, and `\\` have special structural meanings in regular expressions. Escaping them with backslashes ensures they match literal punctuation rather than regex patterns.',
+    answer: 'Characters like `.`, `*`, `+`, `?`, `^`, `$`, `(`, `)`, `[`, `]`, `{`, `}`, `|`, and `\\` have special grammatical meanings in regular expressions. Escaping them with backslashes ensures the regex engine matches literal punctuation characters rather than executing wildcards, anchors, or quantifiers.',
+  },
+  {
+    question: 'What is the standard JavaScript RegExp escaping pattern?',
+    answer: 'In ECMAScript, the recommended pattern is `string.replace(/[.*+?^${}()|[\\]\\\\]/g, "\\\\$&")`. This safely prepends a backslash before any regex metacharacter.',
+  },
+  {
+    question: 'Can this tool unescape previously escaped regex strings?',
+    answer: 'Yes. Switch the mode to Unescape (Reverse) to strip backslash escapes from metacharacters and recover the original raw literal string.',
   },
 ];
 
@@ -82,63 +91,208 @@ const schemaGraph = [
     <header class="space-y-3">
       <div class="inline-flex items-center gap-2 rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1 text-xs font-semibold text-[color:var(--muted)]">
         <span class="inline-block h-2 w-2 rounded-full bg-emerald-500"></span>
-        <span>RegExp Constructor Safety</span>
+        <span>RegExp Constructor Safety &bull; Reversible Escaping</span>
       </div>
       <h1 class="text-2xl sm:text-4xl font-extrabold tracking-tight text-[color:var(--fg)]">
         Regex Special Character Escaper
       </h1>
       <p class="max-w-2xl text-xs sm:text-sm text-[color:var(--muted)] leading-relaxed">
-        Escape special regular expression metacharacters in literal text to safely use strings inside dynamic RegExp objects.
+        Escape or unescape special regular expression metacharacters in literal text strings. Generate production-ready JavaScript snippets for safe dynamic RegExp constructors.
       </p>
     </header>
 
-    <div class="grid gap-6 lg:grid-cols-2">
-      <div class="space-y-3">
-        <div class="flex items-center justify-between">
-          <label for="esc-in" class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Raw Literal String</label>
-          <div class="flex items-center gap-2 text-xs">
-            <button type="button" data-sample-btn class="text-[color:var(--primary)] hover:underline font-semibold">Sample</button>
-            <span class="text-[color:var(--border)]">|</span>
-            <button type="button" data-clear-btn class="text-[color:var(--muted)] hover:text-[color:var(--fg)]">Clear</button>
-          </div>
+    <!-- Controls & Telemetry -->
+    <div class="space-y-6">
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3 text-center">
+          <p class="text-[10px] font-bold uppercase tracking-wider text-[color:var(--muted)]">Input Length</p>
+          <p id="stat-orig" class="mt-1 font-mono text-base font-bold text-[color:var(--fg)]">0 chars</p>
         </div>
-        <textarea
-          id="esc-in"
-          rows="12"
-          class="w-full font-mono text-xs leading-relaxed rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-[color:var(--fg)] focus:border-[color:var(--border-strong)] focus:outline-hidden"
-          placeholder="e.g. price is $100.00 (or [10-20]%)"
-        ></textarea>
-        <button
-          type="button"
-          data-esc-btn
-          class="w-full rounded-xl bg-[color:var(--fg)] py-2.5 text-xs font-bold text-[color:var(--bg)] shadow-xs transition hover:opacity-90"
-        >
-          Escape Special Characters
-        </button>
+        <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3 text-center">
+          <p class="text-[10px] font-bold uppercase tracking-wider text-[color:var(--muted)]">Escaped Length</p>
+          <p id="stat-escaped" class="mt-1 font-mono text-base font-bold text-cyan-500 dark:text-cyan-400">0 chars</p>
+        </div>
+        <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3 text-center">
+          <p class="text-[10px] font-bold uppercase tracking-wider text-[color:var(--muted)]">Metachars Escaped</p>
+          <p id="stat-count" class="mt-1 font-mono text-base font-bold text-[color:var(--fg)]">0</p>
+        </div>
+        <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3 text-center">
+          <p class="text-[10px] font-bold uppercase tracking-wider text-[color:var(--muted)]">Length Delta</p>
+          <p id="stat-delta" class="mt-1 font-mono text-base font-bold text-[color:var(--fg)]">+0%</p>
+        </div>
       </div>
 
-      <div class="space-y-3">
-        <div class="flex items-center justify-between">
-          <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Escaped Regex Pattern</span>
-          <button type="button" data-copy-btn class="inline-flex items-center gap-1 text-xs font-bold text-[color:var(--fg)] hover:underline">
-            <Icon name="copy" class="w-3.5 h-3.5" />
-            <span>Copy Pattern</span>
-          </button>
-        </div>
-        <textarea
-          id="esc-out"
-          rows="12"
-          readonly
-          class="w-full font-mono text-xs leading-relaxed rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-4 text-[color:var(--fg)] focus:outline-hidden"
-          placeholder="Escaped string will appear here..."
-        ></textarea>
+      <div class="grid gap-6 lg:grid-cols-2">
+        <!-- Input Panel -->
+        <div class="space-y-3">
+          <div class="flex items-center justify-between">
+            <label for="esc-in" class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">
+              Input String
+            </label>
+            <div class="flex items-center gap-2 text-xs">
+              <button type="button" data-sample-btn class="text-[color:var(--primary)] hover:underline font-semibold">Load Sample</button>
+              <span class="text-[color:var(--border)]">|</span>
+              <button type="button" data-clear-btn class="text-[color:var(--muted)] hover:text-[color:var(--fg)]">Clear</button>
+            </div>
+          </div>
 
-        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-xs space-y-1.5 text-[color:var(--muted)]">
-          <p class="font-bold text-[color:var(--fg)]">Escaped Metacharacters:</p>
-          <p class="font-mono">. * + ? ^ $ { } ( ) | [ ] \ /</p>
+          <textarea
+            id="esc-in"
+            rows="10"
+            class="w-full font-mono text-xs leading-relaxed rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-[color:var(--fg)] focus:border-[color:var(--border-strong)] focus:outline-hidden"
+            placeholder="Type or paste literal string containing special characters..."
+          ></textarea>
+
+          <div class="flex flex-wrap items-center justify-between gap-3">
+            <div class="flex items-center gap-2">
+              <label for="escape-mode" class="text-xs font-medium text-[color:var(--muted)]">Action:</label>
+              <select id="escape-mode" class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1.5 text-xs text-[color:var(--fg)] font-semibold">
+                <option value="escape">Escape Metacharacters (Literal &rarr; RegExp)</option>
+                <option value="unescape">Unescape Metacharacters (RegExp &rarr; Literal)</option>
+              </select>
+            </div>
+
+            <div class="flex items-center gap-2">
+              <label class="flex items-center gap-1.5 text-xs text-[color:var(--muted)] cursor-pointer">
+                <input type="checkbox" id="escape-slashes" checked class="rounded accent-[color:var(--fg)]" />
+                <span>Escape Forward Slashes (/)</span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Output Panel -->
+        <div class="space-y-3">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Processed Output</span>
+            <div class="flex items-center gap-2">
+              <button type="button" data-copy-btn class="inline-flex items-center gap-1 text-xs font-bold text-[color:var(--fg)] hover:underline">
+                <Icon name="copy" class="w-3.5 h-3.5" />
+                <span>Copy Output</span>
+              </button>
+            </div>
+          </div>
+
+          <textarea
+            id="esc-out"
+            rows="10"
+            readonly
+            class="w-full font-mono text-xs leading-relaxed rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-4 text-[color:var(--fg)] focus:outline-hidden"
+            placeholder="Escaped pattern will appear here..."
+          ></textarea>
+
+          <!-- Generated JS Code Snippet -->
+          <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-xs space-y-2">
+            <div class="flex items-center justify-between">
+              <span class="font-bold text-[color:var(--fg)]">Ready-to-Use JavaScript Snippet:</span>
+              <button type="button" data-copy-code class="text-[11px] font-bold text-[color:var(--primary)] hover:underline">
+                Copy Code
+              </button>
+            </div>
+            <code id="js-code-box" class="block rounded-lg bg-[color:var(--bg)] p-2.5 font-mono text-[11px] text-cyan-500 dark:text-cyan-400 overflow-x-auto whitespace-pre">const regex = new RegExp("", "g");</code>
+          </div>
+        </div>
+      </div>
+
+      <!-- Metacharacter Reference Grid -->
+      <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5 space-y-3">
+        <h2 class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Recognized Regex Metacharacters</h2>
+        <div class="grid grid-cols-3 sm:grid-cols-7 gap-2 text-center text-xs font-mono">
+          <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] p-2">
+            <span class="font-bold text-[color:var(--fg)] text-sm">.</span>
+            <p class="text-[10px] text-[color:var(--muted)] mt-0.5">Dot / Any</p>
+          </div>
+          <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] p-2">
+            <span class="font-bold text-[color:var(--fg)] text-sm">*</span>
+            <p class="text-[10px] text-[color:var(--muted)] mt-0.5">Asterisk (0+)</p>
+          </div>
+          <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] p-2">
+            <span class="font-bold text-[color:var(--fg)] text-sm">+</span>
+            <p class="text-[10px] text-[color:var(--muted)] mt-0.5">Plus (1+)</p>
+          </div>
+          <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] p-2">
+            <span class="font-bold text-[color:var(--fg)] text-sm">?</span>
+            <p class="text-[10px] text-[color:var(--muted)] mt-0.5">Optional (0-1)</p>
+          </div>
+          <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] p-2">
+            <span class="font-bold text-[color:var(--fg)] text-sm">^ $</span>
+            <p class="text-[10px] text-[color:var(--muted)] mt-0.5">Line Anchors</p>
+          </div>
+          <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] p-2">
+            <span class="font-bold text-[color:var(--fg)] text-sm">( )</span>
+            <p class="text-[10px] text-[color:var(--muted)] mt-0.5">Capture Group</p>
+          </div>
+          <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] p-2">
+            <span class="font-bold text-[color:var(--fg)] text-sm">[ ]</span>
+            <p class="text-[10px] text-[color:var(--muted)] mt-0.5">Character Class</p>
+          </div>
+          <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] p-2">
+            <span class="font-bold text-[color:var(--fg)] text-sm">&#123; &#125;</span>
+            <p class="text-[10px] text-[color:var(--muted)] mt-0.5">Quantifier</p>
+          </div>
+          <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] p-2">
+            <span class="font-bold text-[color:var(--fg)] text-sm">|</span>
+            <p class="text-[10px] text-[color:var(--muted)] mt-0.5">Alternation</p>
+          </div>
+          <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] p-2">
+            <span class="font-bold text-[color:var(--fg)] text-sm">\</span>
+            <p class="text-[10px] text-[color:var(--muted)] mt-0.5">Backslash</p>
+          </div>
+          <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] p-2">
+            <span class="font-bold text-[color:var(--fg)] text-sm">/</span>
+            <p class="text-[10px] text-[color:var(--muted)] mt-0.5">Delimiter Slash</p>
+          </div>
         </div>
       </div>
     </div>
+
+    <!-- Parameter Guide & Worked Example -->
+    <CalculatorParameterGuide
+      title="Regex Escape Parameters & Syntax Reference"
+      description="Guidelines on safely handling dynamic user input inside regular expression patterns."
+      parameters={[
+        {
+          name: "Action Mode",
+          type: "Select (Escape | Unescape)",
+          defaultValue: "Escape",
+          description: "Escape prepends backslashes to all regex metacharacters. Unescape removes single preceding backslashes to restore raw text.",
+        },
+        {
+          name: "Forward Slash Handling",
+          type: "Boolean",
+          defaultValue: "true",
+          description: "Whether to escape the forward slash (/) character, necessary when constructing patterns with literal slash delimiters (e.g. /pattern/g) in JavaScript and PHP.",
+        },
+        {
+          name: "Metacharacter Set",
+          type: "RegExp Range",
+          defaultValue: "[.*+?^${}()|[\\]\\\\/]",
+          description: "The complete set of characters with special reserved semantic meaning in ECMAScript RegExp syntax.",
+        },
+      ]}
+      workedExample={{
+        title: "Safely Searching User Price Queries in Product Descriptions",
+        description: "A user inputs the literal search query '$100.00 (special offer)'. If passed directly to new RegExp(), '$' matches line ends, '.' matches any character, and '()' creates capture groups.",
+        formula: "query.replace(/[.*+?^${}()|[\\]\\\\]/g, '\\\\$&')",
+        steps: [
+          {
+            step: "Identify Metacharacters",
+            calculation: "Target characters detected: '$', '.', '(', ')'",
+            result: "4 special metacharacters located",
+          },
+          {
+            step: "Apply Escape Transforms",
+            calculation: "$ -> \\$, . -> \\., ( -> \\(, ) -> \\)",
+            result: "Prepend backslash before each match",
+          },
+          {
+            step: "Construct Safe RegExp",
+            calculation: "new RegExp('\\$100\\.00 \\(special offer\\)', 'i')",
+            result: "Matches literal string exactly without regex syntax errors",
+          },
+        ],
+      }}
+    />
 
     <!-- FAQs -->
     <section class="space-y-4">
@@ -148,7 +302,7 @@ const schemaGraph = [
           <details class="group rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
             <summary class="cursor-pointer list-none font-semibold text-sm sm:text-base text-[color:var(--fg)] flex items-center justify-between gap-4">
               <span>{faq.question}</span>
-              <span class="text-xs text-[color:var(--muted)] group-open:rotate-180 transition-transform">▼</span>
+              <span class="text-xs text-[color:var(--muted)] group-open:rotate-180 transition-transform">&#9660;</span>
             </summary>
             <p class="mt-3 text-xs sm:text-sm leading-relaxed text-[color:var(--muted)]">
               {faq.answer}
@@ -166,30 +320,93 @@ const schemaGraph = [
 
       const input = root.querySelector('#esc-in');
       const output = root.querySelector('#esc-out');
-      const escBtn = root.querySelector('[data-esc-btn]');
+      const modeSelect = root.querySelector('#escape-mode');
+      const escapeSlashes = root.querySelector('#escape-slashes');
       const sampleBtn = root.querySelector('[data-sample-btn]');
       const clearBtn = root.querySelector('[data-clear-btn]');
       const copyBtn = root.querySelector('[data-copy-btn]');
+      const copyCodeBtn = root.querySelector('[data-copy-code]');
+      const jsCodeBox = root.querySelector('#js-code-box');
 
-      function escapeRegex(str) {
-        return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      const statOrig = root.querySelector('#stat-orig');
+      const statEscaped = root.querySelector('#stat-escaped');
+      const statCount = root.querySelector('#stat-count');
+      const statDelta = root.querySelector('#stat-delta');
+
+      function escapeRegex(str, withSlash) {
+        const regex = withSlash ? /[.*+?^${}()|[\]\\\/]/g : /[.*+?^${}()|[\]\\]/g;
+        let count = 0;
+        const res = str.replace(regex, (match) => {
+          count++;
+          return '\\' + match;
+        });
+        return { result: res, count };
+      }
+
+      function unescapeRegex(str) {
+        let count = 0;
+        const res = str.replace(/\\([.*+?^${}()|[\]\\\/])/g, (_, char) => {
+          count++;
+          return char;
+        });
+        return { result: res, count };
       }
 
       function update() {
-        output.value = escapeRegex(input.value);
+        const raw = input.value;
+        statOrig.textContent = `${raw.length} chars`;
+
+        if (!raw) {
+          output.value = '';
+          statEscaped.textContent = '0 chars';
+          statCount.textContent = '0';
+          statDelta.textContent = '+0%';
+          jsCodeBox.textContent = 'const regex = new RegExp("", "g");';
+          return;
+        }
+
+        const mode = modeSelect.value;
+        let outText = '';
+        let count = 0;
+
+        if (mode === 'escape') {
+          const res = escapeRegex(raw, escapeSlashes.checked);
+          outText = res.result;
+          count = res.count;
+        } else {
+          const res = unescapeRegex(raw);
+          outText = res.result;
+          count = res.count;
+        }
+
+        output.value = outText;
+        statEscaped.textContent = `${outText.length} chars`;
+        statCount.textContent = String(count);
+
+        if (raw.length > 0) {
+          const diff = outText.length - raw.length;
+          const pct = Math.round((diff / raw.length) * 100);
+          statDelta.textContent = `${pct >= 0 ? '+' : ''}${pct}% (${diff >= 0 ? '+' : ''}${diff} chars)`;
+        }
+
+        // Generate JavaScript code snippet
+        const jsonPattern = JSON.stringify(outText);
+        jsCodeBox.textContent = `// Safe dynamic regular expression\nconst pattern = ${jsonPattern};\nconst regex = new RegExp(pattern, "g");\nconst isMatch = regex.test(userInput);`;
       }
 
-      escBtn.addEventListener('click', update);
       input.addEventListener('input', update);
+      modeSelect.addEventListener('change', update);
+      escapeSlashes.addEventListener('change', update);
 
       sampleBtn.addEventListener('click', () => {
-        input.value = 'Formula: [A + B] * (x / y)^2 = $100.00? Yes/No.';
+        modeSelect.value = 'escape';
+        input.value = 'Special pricing formula: [A + B] * (x / y)^2 == $100.00? Check out https://calculatorutility.tech/developer-tools/.';
         update();
       });
 
       clearBtn.addEventListener('click', () => {
         input.value = '';
-        output.value = '';
+        update();
       });
 
       copyBtn.addEventListener('click', () => {
@@ -199,6 +416,14 @@ const schemaGraph = [
         const orig = span.textContent;
         span.textContent = 'Copied!';
         setTimeout(() => span.textContent = orig, 1800);
+      });
+
+      copyCodeBtn.addEventListener('click', () => {
+        if (!jsCodeBox.textContent) return;
+        navigator.clipboard.writeText(jsCodeBox.textContent);
+        const orig = copyCodeBtn.textContent;
+        copyCodeBtn.textContent = 'Copied!';
+        setTimeout(() => copyCodeBtn.textContent = orig, 1800);
       });
 
       sampleBtn.click();

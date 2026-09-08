@@ -1,10 +1,11 @@
 ---
 import SiteLayout from '../../layouts/SiteLayout.astro';
 import Icon from '../../components/Icon.astro';
+import CalculatorParameterGuide from '../../components/calculator/CalculatorParameterGuide.astro';
 import { siteName, toAbsoluteUrl, withBasePath } from '../../utils/site';
 
-const pageTitle = `UUID / GUID v4 Generator — Free Bulk Online Generator · ${siteName}`;
-const pageDesc = 'Generate cryptographically random Version 4 UUIDs (Universally Unique Identifiers) and GUIDs online. Supports single and bulk generation (up to 500 UUIDs), uppercase/lowercase, and hyphens. 100% private in-browser tool.';
+const pageTitle = `UUID / GUID Generator (v4, v7, v1) — Free Online Tool · ${siteName}`;
+const pageDesc = 'Generate cryptographically secure UUID v4 (random), UUID v7 (time-ordered / RFC 9562), and UUID v1 identifiers online. Bulk generation, custom casing, hyphens, braces, and instant export.';
 const canonicalUrl = toAbsoluteUrl('/developer-tools/uuid-generator/');
 
 const breadcrumbItems = [
@@ -15,12 +16,16 @@ const breadcrumbItems = [
 
 const schemaFaq = [
   {
-    question: 'How are UUID v4 values generated?',
-    answer: 'UUID v4 utilizes 122 cryptographically random bits generated using the browser’s native `crypto.randomUUID()` and Web Cryptography random source, yielding an astronomically low collision probability.',
+    question: 'What is the difference between UUID v4 and UUID v7?',
+    answer: 'UUID v4 is entirely generated from 122 bits of cryptographically secure random numbers. UUID v7 (RFC 9562) embeds a 48-bit millisecond Unix timestamp followed by random bits, creating time-ordered IDs that drastically improve database B-tree index insertion performance.',
   },
   {
-    question: 'What is the format of a UUID v4?',
-    answer: 'A standard UUID is a 36-character hexadecimal string formatted in five hyphen-separated groups: 8-4-4-4-12 (e.g. `f47ac10b-58cc-4372-a567-0e02b2c3d479`), where the 13th character is always `4`.',
+    question: 'How are random UUIDs generated on this page?',
+    answer: 'UUIDs are generated using the browser’s native crypto.getRandomValues() CSPRNG (Cryptographically Secure Pseudo-Random Number Generator), ensuring non-predictable, high-entropy unique identifiers.',
+  },
+  {
+    question: 'What are the odds of two UUID v4 values colliding?',
+    answer: 'Negligible. With 122 bits of randomness, you would need to generate over 1 billion UUIDs per second for 85 years to have a 50% chance of a single collision.',
   },
 ];
 
@@ -28,7 +33,7 @@ const schemaGraph = [
   {
     '@context': 'https://schema.org',
     '@type': 'WebApplication',
-    name: 'UUID v4 Generator',
+    name: 'UUID / GUID Generator',
     url: canonicalUrl,
     applicationCategory: 'DeveloperApplication',
     operatingSystem: 'All',
@@ -56,6 +61,51 @@ const schemaGraph = [
         text: item.answer,
       },
     })),
+  },
+];
+
+const parameterGuide = [
+  {
+    id: 'uuid_v4',
+    name: 'UUID Version 4 (Random)',
+    description: 'Fully pseudo-random 128-bit identifier (122 random bits + 6 version/variant bits).',
+    whyItMatters: 'Universal standard across APIs, web cookies, session tokens, and distributed services.',
+    typicalRange: '122 bits entropy',
+  },
+  {
+    id: 'uuid_v7',
+    name: 'UUID Version 7 (Time-Ordered)',
+    description: 'Modern standard (RFC 9562) combining a 48-bit millisecond timestamp with 74 random bits.',
+    whyItMatters: 'Sorts sequentially by creation time, eliminating index fragmentation in PostgreSQL, MySQL, and MongoDB.',
+    typicalRange: 'Time-sorted + 74 random bits',
+  },
+  {
+    id: 'hyphens',
+    name: 'Hyphen Delimiters',
+    description: 'Standard 8-4-4-4-12 canonical string representation vs continuous 32-character hex.',
+    whyItMatters: 'Relational databases and Microsoft COM GUIDs typically expect canonical hyphens, while some key-value stores prefer compact 32-char hex.',
+    typicalRange: 'Canonical (with hyphens) / Compact',
+  },
+  {
+    id: 'casing',
+    name: 'Uppercase vs Lowercase',
+    description: 'Hexadecimal letter formatting (e.g. "a-f" vs "A-F").',
+    whyItMatters: 'RFC 4122 specifies lowercase for HTTP headers and JSON, while Windows registry and C++ GUID structs often use uppercase.',
+    typicalRange: 'Lowercase (Standard) / Uppercase',
+  },
+  {
+    id: 'batch_quantity',
+    name: 'Bulk Batch Generation',
+    description: 'Instantly generates lists of up to 500 unique UUIDs.',
+    whyItMatters: 'Essential for database seed scripts, mock fixtures, and load testing data pipelines.',
+    typicalRange: '1 to 500 per batch',
+  },
+  {
+    id: 'csprng',
+    name: 'CSPRNG Cryptographic Entropy',
+    description: 'Generated using crypto.getRandomValues() backed by OS kernel entropy pools.',
+    whyItMatters: 'Guarantees unguessable tokens resistant to brute-force enumeration attacks.',
+    typicalRange: 'Hardware cryptographic randomness',
   },
 ];
 ---
@@ -86,36 +136,56 @@ const schemaGraph = [
     <header class="space-y-3">
       <div class="inline-flex items-center gap-2 rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1 text-xs font-semibold text-[color:var(--muted)]">
         <span class="inline-block h-2 w-2 rounded-full bg-emerald-500"></span>
-        <span>Cryptographic CSPRNG Engine</span>
+        <span>Cryptographic CSPRNG Engine (crypto.getRandomValues)</span>
       </div>
       <h1 class="text-2xl sm:text-4xl font-extrabold tracking-tight text-[color:var(--fg)]">
-        UUID / GUID v4 Generator
+        UUID / GUID Generator (v4, v7, v1)
       </h1>
-      <p class="max-w-2xl text-xs sm:text-sm text-[color:var(--muted)] leading-relaxed">
-        Generate Version 4 UUIDs instantly in bulk or single mode with custom case and hyphen options.
+      <p class="max-w-3xl text-xs sm:text-sm text-[color:var(--muted)] leading-relaxed">
+        Generate Version 4 (Random) and Version 7 (Time-Ordered / RFC 9562) Universally Unique Identifiers. Features single and bulk modes, custom casing, hyphens, quotes, and instant download.
       </p>
     </header>
+
+    <!-- Telemetry Bar -->
+    <div id="stats-bar" class="grid grid-cols-2 gap-3 sm:grid-cols-4 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-center">
+      <div>
+        <span class="block text-[11px] uppercase tracking-wider text-[color:var(--muted)]">Active Version</span>
+        <span id="stat-version" class="font-mono text-lg font-bold text-cyan-600 dark:text-cyan-400 dark:text-cyan-400">UUID v4</span>
+      </div>
+      <div>
+        <span class="block text-[11px] uppercase tracking-wider text-[color:var(--muted)]">Batch Generated</span>
+        <span id="stat-count" class="font-mono text-lg font-bold text-[color:var(--fg)]">10</span>
+      </div>
+      <div>
+        <span class="block text-[11px] uppercase tracking-wider text-[color:var(--muted)]">Entropy</span>
+        <span id="stat-entropy" class="font-mono text-sm font-bold text-purple-600 dark:text-purple-400">122 Random Bits</span>
+      </div>
+      <div>
+        <span class="block text-[11px] uppercase tracking-wider text-[color:var(--muted)]">Collision Risk</span>
+        <span class="font-mono text-xs font-bold text-[color:var(--fg)]">1 in 5.3 &times; 10<sup>36</sup></span>
+      </div>
+    </div>
 
     <!-- Single Quick Generator Hero -->
     <div class="space-y-3 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 sm:p-6">
       <div class="flex items-center justify-between">
-        <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Single Random UUID v4</span>
-        <button type="button" data-refresh-hero class="text-xs font-bold text-[color:var(--primary)] hover:underline">Generate New</button>
+        <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Single Instant UUID</span>
+        <button type="button" id="btn-refresh-hero" class="text-xs font-bold text-[color:var(--primary)] hover:underline cursor-pointer">⚡ Generate New</button>
       </div>
       <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
         <input
           type="text"
           id="hero-uuid"
           readonly
-          class="flex-1 rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] px-4 py-2.5 font-mono text-sm sm:text-base font-bold text-[color:var(--fg)] focus:outline-hidden"
+          class="flex-1 rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] px-4 py-2.5 font-mono text-sm sm:text-base font-bold text-[color:var(--fg)] focus:outline-hidden select-all"
           value="f47ac10b-58cc-4372-a567-0e02b2c3d479"
         />
         <button
           type="button"
-          data-copy-hero
-          class="inline-flex items-center justify-center gap-1.5 rounded-xl bg-[color:var(--fg)] px-5 py-2.5 text-xs font-bold text-[color:var(--bg)] shadow-xs transition hover:opacity-90"
+          id="btn-copy-hero"
+          class="inline-flex items-center justify-center gap-1.5 rounded-xl bg-[color:var(--fg)] px-5 py-2.5 text-xs font-bold text-[color:var(--bg)] shadow-xs transition hover:opacity-90 cursor-pointer"
         >
-          <Icon name="copy" class="w-3.5 h-3.5" />
+          <Icon name="copy" class="h-3.5 w-3.5" />
           <span>Copy UUID</span>
         </button>
       </div>
@@ -123,9 +193,19 @@ const schemaGraph = [
 
     <!-- Bulk Generator Section -->
     <div class="space-y-4">
-      <h2 class="text-lg font-bold text-[color:var(--fg)]">Bulk UUID Generator</h2>
+      <h2 class="text-lg font-bold text-[color:var(--fg)]">Bulk Batch UUID Generator</h2>
 
-      <div class="grid gap-4 sm:grid-cols-3 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5 text-xs">
+      <div class="grid gap-4 sm:grid-cols-4 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5 text-xs">
+        <div>
+          <label for="uuid-version" class="font-bold text-[color:var(--fg)] block mb-1.5">Version:</label>
+          <select id="uuid-version" class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] px-3 py-1.5 text-xs text-[color:var(--fg)]">
+            <option value="v4">UUID v4 (Random / Universal)</option>
+            <option value="v7">UUID v7 (Time-Ordered / DB Friendly)</option>
+            <option value="v1">UUID v1 (Timestamp-Based)</option>
+            <option value="nil">NIL UUID (All Zeros)</option>
+          </select>
+        </div>
+
         <div>
           <label for="bulk-count" class="font-bold text-[color:var(--fg)] block mb-1.5">Quantity (1 - 500):</label>
           <input
@@ -134,55 +214,83 @@ const schemaGraph = [
             min="1"
             max="500"
             value="10"
-            class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-1.5 font-mono text-[color:var(--fg)]"
+            class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] px-3 py-1.5 font-mono text-xs text-[color:var(--fg)]"
           />
         </div>
+
         <div>
-          <label for="bulk-case" class="font-bold text-[color:var(--fg)] block mb-1.5">Letter Case:</label>
-          <select id="bulk-case" class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-1.5 text-[color:var(--fg)]">
-            <option value="lower">lowercase (standard)</option>
-            <option value="upper">UPPERCASE</option>
+          <label for="bulk-casing" class="font-bold text-[color:var(--fg)] block mb-1.5">Casing:</label>
+          <select id="bulk-casing" class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] px-3 py-1.5 text-xs text-[color:var(--fg)]">
+            <option value="lower">Lowercase (standard)</option>
+            <option value="upper">Uppercase (GUID)</option>
           </select>
         </div>
+
         <div>
-          <label for="bulk-hyphen" class="font-bold text-[color:var(--fg)] block mb-1.5">Hyphens:</label>
-          <select id="bulk-hyphen" class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-1.5 text-[color:var(--fg)]">
-            <option value="yes">Include Hyphens (8-4-4-4-12)</option>
-            <option value="no">No Hyphens (32 chars)</option>
+          <label for="bulk-format" class="font-bold text-[color:var(--fg)] block mb-1.5">Enclosure / Style:</label>
+          <select id="bulk-format" class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] px-3 py-1.5 text-xs text-[color:var(--fg)]">
+            <option value="hyphens">Standard (with hyphens)</option>
+            <option value="no-hyphens">Compact (no hyphens)</option>
+            <option value="braces">&#123; Wrapped in Braces &#125;</option>
+            <option value="quotes">"Wrapped in Quotes",</option>
           </select>
         </div>
       </div>
 
+      <div class="flex gap-2">
+        <button
+          type="button"
+          id="btn-generate-bulk"
+          class="rounded-xl bg-[color:var(--fg)] px-6 py-2.5 text-xs font-bold text-[color:var(--bg)] shadow-xs transition hover:opacity-90 cursor-pointer"
+        >
+          ⚡ Generate Batch
+        </button>
+      </div>
+
+      <!-- Output Textarea -->
       <div class="space-y-2">
         <div class="flex items-center justify-between">
-          <button
-            type="button"
-            data-generate-bulk
-            class="rounded-xl bg-[color:var(--fg)] px-5 py-2.5 text-xs font-bold text-[color:var(--bg)] shadow-xs transition hover:opacity-90"
-          >
-            Generate Bulk UUIDs
-          </button>
+          <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Generated Batch Output</span>
           <div class="flex items-center gap-2">
-            <button type="button" data-copy-bulk class="inline-flex items-center gap-1 text-xs font-bold text-[color:var(--fg)] hover:underline">
-              <Icon name="copy" class="w-3.5 h-3.5" />
+            <button type="button" id="btn-copy-bulk" class="inline-flex items-center gap-1 text-xs font-bold text-[color:var(--fg)] hover:underline cursor-pointer">
+              <Icon name="copy" class="h-3.5 w-3.5" />
               <span>Copy All</span>
             </button>
             <span class="text-[color:var(--border)]">|</span>
-            <button type="button" data-dl-bulk class="text-xs font-bold text-[color:var(--fg)] hover:underline">
-              Download .txt
-            </button>
+            <button type="button" id="btn-dl-txt" class="text-xs font-bold text-[color:var(--fg)] hover:underline cursor-pointer">Download .txt</button>
           </div>
         </div>
-
         <textarea
           id="bulk-output"
-          rows="12"
+          rows="10"
           readonly
-          class="w-full font-mono text-xs leading-relaxed rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-4 text-[color:var(--fg)] focus:outline-hidden"
-          placeholder="Generated UUID list will appear here..."
+          class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-4 font-mono text-xs leading-relaxed text-[color:var(--fg)] focus:outline-hidden"
         ></textarea>
       </div>
     </div>
+
+    <!-- Step-by-Step Worked Example -->
+    <section class="space-y-4 rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 sm:p-8 text-xs sm:text-sm text-[color:var(--muted)] leading-relaxed">
+      <div class="flex items-center gap-2">
+        <span class="rounded-md bg-[color:var(--accent)]/15 px-2.5 py-1 text-xs font-bold text-[color:var(--accent)]">Worked Example</span>
+        <h2 class="text-base sm:text-lg font-bold text-[color:var(--fg)]">Why Modern Databases Are Migrating to UUID v7</h2>
+      </div>
+      <p>
+        Traditional random UUID v4 values fragment B-tree indexes because every new insert lands in an unpredictable index location. UUID v7 embeds millisecond epoch time in the first 48 bits:
+      </p>
+      <div class="space-y-2 font-mono text-xs">
+        <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] p-3">
+          <span class="text-[color:var(--muted)] block font-bold font-sans text-[11px]">UUID v7 (Time-Ordered):</span>
+          018e47b2-c0e8-7d8b-9e4a-5f6b7c8d9e0f
+        </div>
+      </div>
+      <p class="text-xs text-[color:var(--muted)]">
+        The prefix <code>018e47b2-c0e8</code> encodes the timestamp, guaranteeing natural chronologic ordering, high database cache locality, and zero index page splits.
+      </p>
+    </section>
+
+    <!-- Parameter Guide -->
+    <CalculatorParameterGuide parameters={parameterGuide} />
 
     <!-- FAQs -->
     <section class="space-y-4">
@@ -208,68 +316,136 @@ const schemaGraph = [
       const root = document.querySelector('[data-uuid-app]');
       if (!root) return;
 
-      const heroInput = root.querySelector('#hero-uuid');
-      const refreshHero = root.querySelector('[data-refresh-hero]');
-      const copyHero = root.querySelector('[data-copy-hero]');
-      const bulkCount = root.querySelector('#bulk-count');
-      const bulkCase = root.querySelector('#bulk-case');
-      const bulkHyphen = root.querySelector('#bulk-hyphen');
-      const generateBulk = root.querySelector('[data-generate-bulk]');
-      const bulkOutput = root.querySelector('#bulk-output');
-      const copyBulk = root.querySelector('[data-copy-bulk]');
-      const dlBulk = root.querySelector('[data-dl-bulk]');
+      const heroUuid = root.querySelector('#hero-uuid');
+      const refreshHeroBtn = root.querySelector('#btn-refresh-hero');
+      const copyHeroBtn = root.querySelector('#btn-copy-hero');
 
-      function getOneUuid() {
+      const versionSelect = root.querySelector('#uuid-version');
+      const bulkCount = root.querySelector('#bulk-count');
+      const bulkCasing = root.querySelector('#bulk-casing');
+      const bulkFormat = root.querySelector('#bulk-format');
+      const generateBulkBtn = root.querySelector('#btn-generate-bulk');
+      const bulkOutput = root.querySelector('#bulk-output');
+      const copyBulkBtn = root.querySelector('#btn-copy-bulk');
+      const dlTxtBtn = root.querySelector('#btn-dl-txt');
+
+      const statVersion = root.querySelector('#stat-version');
+      const statCount = root.querySelector('#stat-count');
+      const statEntropy = root.querySelector('#stat-entropy');
+
+      function generateV4() {
         if (typeof crypto.randomUUID === 'function') {
           return crypto.randomUUID();
         }
-        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-          const r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
-          return v.toString(16);
-        });
+        const bytes = new Uint8Array(16);
+        crypto.getRandomValues(bytes);
+        bytes[6] = (bytes[6] & 0x0f) | 0x40; // version 4
+        bytes[8] = (bytes[8] & 0x3f) | 0x80; // variant 1
+        const hex = Array.from(bytes).map(b => b.toString(16).padStart(2, '0')).join('');
+        return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20)}`;
       }
 
-      function updateHero() {
-        heroInput.value = getOneUuid();
+      function generateV7() {
+        const bytes = new Uint8Array(16);
+        crypto.getRandomValues(bytes);
+        const now = Date.now();
+
+        // 48-bit timestamp
+        bytes[0] = Math.floor(now / 0x10000000000) & 0xff;
+        bytes[1] = Math.floor(now / 0x100000000) & 0xff;
+        bytes[2] = Math.floor(now / 0x1000000) & 0xff;
+        bytes[3] = Math.floor(now / 0x10000) & 0xff;
+        bytes[4] = Math.floor(now / 0x100) & 0xff;
+        bytes[5] = now & 0xff;
+
+        bytes[6] = (bytes[6] & 0x0f) | 0x70; // version 7
+        bytes[8] = (bytes[8] & 0x3f) | 0x80; // variant 1
+
+        const hex = Array.from(bytes).map(b => b.toString(16).padStart(2, '0')).join('');
+        return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20)}`;
       }
 
-      refreshHero.addEventListener('click', updateHero);
+      function generateV1() {
+        const bytes = new Uint8Array(16);
+        crypto.getRandomValues(bytes);
+        const now = Date.now();
+        const hexTime = (now * 10000 + 0x01b21dd213814000).toString(16).padStart(16, '0');
 
-      copyHero.addEventListener('click', () => {
-        navigator.clipboard.writeText(heroInput.value);
-        const span = copyHero.querySelector('span');
-        const orig = span.textContent;
-        span.textContent = 'Copied!';
-        setTimeout(() => span.textContent = orig, 1800);
-      });
+        const timeLow = hexTime.slice(-8);
+        const timeMid = hexTime.slice(-12, -8);
+        const timeHiAndVersion = '1' + hexTime.slice(-15, -12);
 
-      function buildBulk() {
-        const count = Math.min(500, Math.max(1, parseInt(bulkCount.value, 10) || 10));
-        const isUpper = bulkCase.value === 'upper';
-        const noHyphens = bulkHyphen.value === 'no';
+        bytes[8] = (bytes[8] & 0x3f) | 0x80; // variant
+        const clockSeqAndNode = Array.from(bytes.slice(8)).map(b => b.toString(16).padStart(2, '0')).join('');
+
+        return `${timeLow}-${timeMid}-${timeHiAndVersion}-${clockSeqAndNode.slice(0, 4)}-${clockSeqAndNode.slice(4)}`;
+      }
+
+      function generateSingle(version) {
+        if (version === 'v7') return generateV7();
+        if (version === 'v1') return generateV1();
+        if (version === 'nil') return '00000000-0000-0000-0000-000000000000';
+        return generateV4();
+      }
+
+      function formatUuid(raw, casing, style) {
+        let clean = casing === 'upper' ? raw.toUpperCase() : raw.toLowerCase();
+        if (style === 'no-hyphens') {
+          clean = clean.replace(/-/g, '');
+        } else if (style === 'braces') {
+          clean = `{${clean}}`;
+        } else if (style === 'quotes') {
+          clean = `"${clean}",`;
+        }
+        return clean;
+      }
+
+      function refreshHero() {
+        heroUuid.value = generateV4();
+      }
+
+      function generateBatch() {
+        const ver = versionSelect.value;
+        const count = Math.max(1, Math.min(500, parseInt(bulkCount.value, 10) || 10));
+        const casing = bulkCasing.value;
+        const style = bulkFormat.value;
+
+        statVersion.textContent = ver === 'v7' ? 'UUID v7' : ver === 'v1' ? 'UUID v1' : ver === 'nil' ? 'NIL UUID' : 'UUID v4';
+        statCount.textContent = count.toLocaleString();
+        statEntropy.textContent = ver === 'v7' ? '74 Random Bits (Time-Sorted)' : ver === 'v4' ? '122 Random Bits' : '60 Bits Timestamp';
 
         const list = [];
         for (let i = 0; i < count; i++) {
-          let u = getOneUuid();
-          if (noHyphens) u = u.replace(/-/g, '');
-          if (isUpper) u = u.toUpperCase();
-          list.push(u);
+          list.push(formatUuid(generateSingle(ver), casing, style));
         }
+
         bulkOutput.value = list.join('\n');
       }
 
-      generateBulk.addEventListener('click', buildBulk);
-
-      copyBulk.addEventListener('click', () => {
-        if (!bulkOutput.value) return;
-        navigator.clipboard.writeText(bulkOutput.value);
-        const span = copyBulk.querySelector('span');
+      refreshHeroBtn.addEventListener('click', refreshHero);
+      copyHeroBtn.addEventListener('click', () => {
+        navigator.clipboard.writeText(heroUuid.value);
+        const span = copyHeroBtn.querySelector('span');
         const orig = span.textContent;
         span.textContent = 'Copied!';
         setTimeout(() => span.textContent = orig, 1800);
       });
 
-      dlBulk.addEventListener('click', () => {
+      generateBulkBtn.addEventListener('click', generateBatch);
+      versionSelect.addEventListener('change', generateBatch);
+      bulkCasing.addEventListener('change', generateBatch);
+      bulkFormat.addEventListener('change', generateBatch);
+
+      copyBulkBtn.addEventListener('click', () => {
+        if (!bulkOutput.value) return;
+        navigator.clipboard.writeText(bulkOutput.value);
+        const span = copyBulkBtn.querySelector('span');
+        const orig = span.textContent;
+        span.textContent = 'Copied!';
+        setTimeout(() => span.textContent = orig, 1800);
+      });
+
+      dlTxtBtn.addEventListener('click', () => {
         if (!bulkOutput.value) return;
         const blob = new Blob([bulkOutput.value], { type: 'text/plain' });
         const url = URL.createObjectURL(blob);
@@ -280,8 +456,9 @@ const schemaGraph = [
         URL.revokeObjectURL(url);
       });
 
-      updateHero();
-      buildBulk();
+      // Init
+      refreshHero();
+      generateBatch();
     })();
   </script>
 </SiteLayout>

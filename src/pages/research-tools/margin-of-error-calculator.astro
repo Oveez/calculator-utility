@@ -1,10 +1,12 @@
 ---
 import SiteLayout from '../../layouts/SiteLayout.astro';
 import Icon from '../../components/Icon.astro';
+import CalculatorParameterGuide from '../../components/calculator/CalculatorParameterGuide.astro';
+import type { CalculatorParameterInfo } from '../../types/calculator';
 import { siteName, toAbsoluteUrl, withBasePath } from '../../utils/site';
 
 const pageTitle = `Margin of Error Calculator | Survey Precision & Confidence Interval · ${siteName}`;
-const pageDesc = 'Calculate the exact margin of error (±%) for surveys and public polls given your sample size, observed proportion, and confidence level (90%, 95%, 99%).';
+const pageDesc = 'Calculate exact margin of error (±%) for surveys, public polls, and sample means across 90%, 95%, and 99% confidence levels with finite population correction.';
 const canonicalUrl = toAbsoluteUrl('/research-tools/margin-of-error-calculator/');
 
 const breadcrumbItems = [
@@ -13,14 +15,49 @@ const breadcrumbItems = [
   { label: 'Margin of Error Calculator' },
 ];
 
-const faqs = [
+const parameterGuideData: CalculatorParameterInfo[] = [
   {
-    question: 'How do you calculate the margin of error?',
-    answer: 'The margin of error for a sample proportion is computed as: MOE = Z × √[(p × (1 - p)) ÷ n], where Z is the critical value for the selected confidence level (1.96 for 95%), p is the sample proportion (typically 0.50), and n is the sample size.',
+    name: 'Sample Size (n)',
+    description: 'The number of completed, valid observations collected. Margin of error contracts inversely with the square root of sample size (1/√n).',
+    type: 'Integer',
+    defaultValue: '400 respondents',
+    whyItMatters: 'Quadrupling sample size cuts the margin of error in half.',
+  },
+  {
+    name: 'Confidence Level (%)',
+    description: 'The probability that repeated random samplings would generate confidence intervals containing the true population parameter.',
+    type: 'Percentage & Z-score',
+    defaultValue: '95% (Z = 1.960)',
+    whyItMatters: 'Higher confidence (99%) yields a wider, more conservative margin of error.',
+  },
+  {
+    name: 'Observed Sample Proportion (p)',
+    description: 'The percentage of respondents selecting a specific answer. 50% represents the mathematical worst-case scenario with maximum variance (p(1 - p) = 0.25).',
+    type: 'Percentage (0 to 100%)',
+    defaultValue: '50% (Max Variance)',
+    whyItMatters: 'Proportions closer to 0% or 100% naturally yield narrower margins of error.',
+  },
+  {
+    name: 'Population Size (N) & Finite Population Correction',
+    description: 'The total target population. When sample size exceeds 5% of the population, Finite Population Correction reduces the margin of error.',
+    type: 'Integer (Optional)',
+    defaultValue: 'Infinite / Unknown',
+    whyItMatters: 'Shrinks error bounds when conducting organizational, clinical, or campus surveys.',
+  },
+];
+
+const schemaFaq = [
+  {
+    question: 'How do you calculate the margin of error for a survey proportion?',
+    answer: 'MOE = Z × √[(p(1 - p)) ÷ n] × √[(N - n) ÷ (N - 1)], where Z is the critical value for your confidence level (1.96 for 95%), p is the sample proportion, n is the sample size, and the final term is the Finite Population Correction (FPC).',
   },
   {
     question: 'What is a good margin of error for a survey?',
-    answer: 'In public opinion polling and academic research, a margin of error between ±3% and ±5% at a 95% confidence level is the widely accepted industry standard.',
+    answer: 'In public opinion polling, political surveys, and academic research, a margin of error between ±3% and ±5% at a 95% confidence level is universally considered standard and reliable.',
+  },
+  {
+    question: 'How is margin of error calculated for sample means?',
+    answer: 'For continuous numeric means, MOE = Z × (σ ÷ √n) when population standard deviation σ is known, or MOE = t × (s ÷ √n) using sample standard deviation s and Student t-distribution with df = n - 1.',
   },
 ];
 
@@ -47,7 +84,7 @@ const schemaGraph = [
   {
     '@context': 'https://schema.org',
     '@type': 'FAQPage',
-    mainEntity: faqs.map((f) => ({
+    mainEntity: schemaFaq.map((f) => ({
       '@type': 'Question',
       name: f.question,
       acceptedAnswer: {
@@ -62,7 +99,8 @@ const schemaGraph = [
 <SiteLayout title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
   <script is:inline type="application/ld+json" set:html={JSON.stringify(schemaGraph)} />
 
-  <article class="space-y-10 py-2">
+  <article class="space-y-10 py-2" data-moe-app>
+    <!-- Breadcrumbs -->
     <nav aria-label="Breadcrumb">
       <ol class="flex flex-wrap items-center gap-2 text-xs text-[color:var(--muted)]">
         {breadcrumbItems.map((item, index) => (
@@ -82,127 +120,325 @@ const schemaGraph = [
       </ol>
     </nav>
 
+    <!-- Header -->
     <header class="space-y-3">
-      <div class="inline-flex items-center gap-2 rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3.5 py-1 text-xs font-semibold text-[color:var(--fg)]">
-        <span>Survey Precision &amp; Polling Analytics</span>
+      <div class="inline-flex items-center gap-2 rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3.5 py-1 text-xs font-semibold text-[color:var(--muted)]">
+        <span class="inline-block h-2 w-2 rounded-full bg-emerald-500"></span>
+        <span>Survey Precision &amp; Confidence Interval Radii</span>
       </div>
       <h1 class="text-3xl font-extrabold tracking-tight text-[color:var(--fg)] sm:text-4xl">
         Margin of Error Calculator
       </h1>
       <p class="max-w-3xl text-sm leading-relaxed text-[color:var(--muted)] sm:text-base">
-        Determine the statistical accuracy and confidence bounds of your survey results. Enter your completed sample size and confidence level to calculate your exact margin of error.
+        Determine the exact statistical margin of error (±%) and confidence bounds for survey proportions, public polls, and continuous sample means with finite population adjustments.
       </p>
     </header>
 
-    <div
-      class="rounded-[2.5rem] border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-6 shadow-[var(--shadow)] sm:p-10"
-      data-moe-app
-    >
+    <!-- Mode Selector Tabs -->
+    <div class="flex flex-wrap gap-2 border-b border-[color:var(--border)] pb-2 text-xs font-semibold">
+      <button
+        type="button"
+        id="tab-mode-prop"
+        class="mode-tab active rounded-xl bg-[color:var(--fg)] px-4 py-2 text-[color:var(--bg)] transition cursor-pointer"
+        data-mode="proportion"
+      >
+        Survey Proportion / Percentage Mode (±%)
+      </button>
+      <button
+        type="button"
+        id="tab-mode-mean"
+        class="mode-tab rounded-xl bg-[color:var(--surface)] border border-[color:var(--border)] px-4 py-2 text-[color:var(--muted)] hover:text-[color:var(--fg)] transition cursor-pointer"
+        data-mode="mean"
+      >
+        Continuous Sample Mean Mode (Units)
+      </button>
+      <button
+        type="button"
+        id="tab-mode-inv"
+        class="mode-tab rounded-xl bg-[color:var(--surface)] border border-[color:var(--border)] px-4 py-2 text-[color:var(--muted)] hover:text-[color:var(--fg)] transition cursor-pointer"
+        data-mode="inverse"
+      >
+        Inverse Target MOE &rarr; Required Sample Size
+      </button>
+    </div>
+
+    <!-- App Card -->
+    <div class="rounded-[2.5rem] border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-6 shadow-xs sm:p-10">
       <div class="grid gap-8 lg:grid-cols-[1.15fr_0.85fr]">
+        <!-- Form Panel -->
         <form class="space-y-5" onsubmit="return false;">
           <div class="flex items-center justify-between">
-            <h2 class="text-lg font-bold text-[color:var(--fg)]">Survey Metrics</h2>
-            <button type="button" class="cursor-pointer text-xs font-semibold text-[color:var(--muted)] hover:text-[color:var(--fg)]" data-reset-btn>
+            <h2 class="text-lg font-bold text-[color:var(--fg)]">Study Parameters</h2>
+            <button type="button" class="cursor-pointer text-xs font-semibold text-[color:var(--muted)] hover:text-[color:var(--fg)]" id="reset-btn">
               ↺ Reset
             </button>
           </div>
 
+          <!-- Confidence Level -->
           <div class="space-y-1.5">
-            <label for="sample-size" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">
-              Sample Size (Completed Responses n)
-            </label>
-            <input
-              id="sample-size"
-              type="number"
-              min="1"
-              value="400"
-              class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none"
-              data-sample-size
-            />
-          </div>
-
-          <div class="space-y-1.5">
-            <label for="moe-conf" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">
+            <label for="conf-level" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">
               Confidence Level
             </label>
             <select
-              id="moe-conf"
-              class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-sm font-semibold text-[color:var(--fg)] outline-none"
-              data-moe-conf
+              id="conf-level"
+              class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-sm font-semibold text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)]"
             >
               <option value="90">90% (Z = 1.645)</option>
-              <option value="95" selected>95% - Standard (Z = 1.960)</option>
-              <option value="99">99% - High Precision (Z = 2.576)</option>
+              <option value="95" selected>95% — Standard Scientific (Z = 1.960)</option>
+              <option value="99">99% — High Precision (Z = 2.576)</option>
             </select>
           </div>
 
-          <div class="space-y-1.5">
-            <label for="moe-prop" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">
-              Observed Sample Proportion (%)
-            </label>
-            <input
-              id="moe-prop"
-              type="number"
-              min="1"
-              max="99"
-              value="50"
-              class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none"
-              data-moe-prop
-            />
+          <!-- Proportion Mode Inputs -->
+          <div id="prop-fields" class="space-y-4">
+            <div class="space-y-1.5">
+              <label for="sample-size-input" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">
+                Sample Size (Completed Respondents):
+              </label>
+              <input
+                id="sample-size-input"
+                type="number"
+                min="1"
+                step="1"
+                value="400"
+                class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)]"
+              />
+            </div>
+
+            <div class="space-y-1.5">
+              <div class="flex items-center justify-between">
+                <label for="prop-input" class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">
+                  Observed Sample Proportion (%)
+                </label>
+                <span class="text-xs font-mono text-[color:var(--fg)]" id="prop-display">50%</span>
+              </div>
+              <input
+                id="prop-input"
+                type="number"
+                min="1"
+                max="99"
+                step="1"
+                value="50"
+                class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)]"
+              />
+              <p class="text-[11px] text-[color:var(--muted)]">50% gives the most conservative (maximum) margin of error.</p>
+            </div>
           </div>
 
-          <div class="space-y-1.5 pt-1">
-            <label for="moe-pop" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">
-              Total Population Size (Optional)
+          <!-- Mean Mode Inputs -->
+          <div id="mean-fields" class="hidden space-y-4">
+            <div class="space-y-1.5">
+              <label for="mean-n-input" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">
+                Sample Size (n):
+              </label>
+              <input
+                id="mean-n-input"
+                type="number"
+                min="2"
+                step="1"
+                value="100"
+                class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)]"
+              />
+            </div>
+
+            <div class="space-y-1.5">
+              <label for="mean-val-input" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">
+                Observed Sample Mean (x̄):
+              </label>
+              <input
+                id="mean-val-input"
+                type="number"
+                step="0.1"
+                value="50.0"
+                class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)]"
+              />
+            </div>
+
+            <div class="space-y-1.5">
+              <label for="sd-input" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">
+                Sample Standard Deviation (s):
+              </label>
+              <input
+                id="sd-input"
+                type="number"
+                min="0.001"
+                step="0.1"
+                value="10.0"
+                class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)]"
+              />
+            </div>
+          </div>
+
+          <!-- Inverse Mode Inputs -->
+          <div id="inv-fields" class="hidden space-y-4">
+            <div class="space-y-1.5">
+              <label for="target-moe-input" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">
+                Desired Target Margin of Error (±%):
+              </label>
+              <input
+                id="target-moe-input"
+                type="number"
+                min="0.1"
+                max="25"
+                step="0.1"
+                value="3.0"
+                class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)]"
+              />
+            </div>
+
+            <div class="space-y-1.5">
+              <label for="inv-prop-input" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">
+                Expected Proportion (%):
+              </label>
+              <input
+                id="inv-prop-input"
+                type="number"
+                min="1"
+                max="99"
+                step="1"
+                value="50"
+                class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)]"
+              />
+            </div>
+          </div>
+
+          <!-- Population Size (Common to all) -->
+          <div class="space-y-1.5 pt-1 border-t border-[color:var(--border)]/60">
+            <label for="pop-size-input" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">
+              Population Size (N) — Optional for Finite Correction:
             </label>
             <input
-              id="moe-pop"
+              id="pop-size-input"
               type="number"
               min="10"
-              placeholder="Leave empty for infinite/large populations"
-              class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-sm font-semibold text-[color:var(--fg)] outline-none"
-              data-moe-pop
+              step="1"
+              placeholder="Leave blank for infinite / large population"
+              class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-sm font-semibold text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)]"
             />
           </div>
         </form>
 
-        <div class="flex flex-col justify-between space-y-6 rounded-3xl border border-[color:var(--border)] bg-[color:var(--bg)] p-6 sm:p-8">
+        <!-- Result Box -->
+        <div class="flex flex-col justify-between space-y-6 rounded-3xl border border-[color:var(--accent)]/30 bg-gradient-to-br from-[color:var(--accent-soft)] via-[color:var(--surface)] to-transparent p-6 sm:p-8 shadow-sm">
           <div class="space-y-5">
-            <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Calculated Precision</span>
-
-            <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 text-center">
-              <p class="text-xs font-semibold text-[color:var(--muted)]">Margin of Error</p>
-              <p class="mt-1 text-5xl font-black tracking-tight text-[color:var(--fg)]" data-res-moe>
-                ±4.90%
-              </p>
-              <p class="mt-2 text-xs font-medium text-[color:var(--muted)]" data-moe-summary>
-                Results are accurate within ±4.90% at 95% confidence.
-              </p>
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]" id="res-label">Margin of Error</span>
+              <button
+                type="button"
+                id="copy-result-btn"
+                class="inline-flex items-center gap-1.5 rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] px-2.5 py-1 text-xs font-bold text-[color:var(--fg)] hover:border-[color:var(--accent)] hover:shadow-[0_0_12px_var(--accent-glow)] transition cursor-pointer"
+              >
+                Copy Result
+              </button>
             </div>
 
-            <div class="space-y-2 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-xs">
-              <div class="flex justify-between">
-                <span class="text-[color:var(--muted)]">Confidence Interval Bounds:</span>
-                <span class="font-mono font-bold text-[color:var(--fg)]" data-moe-bounds>45.10% to 54.90%</span>
+            <div>
+              <div class="flex items-baseline gap-2">
+                <span id="res-main-val" class="text-5xl font-extrabold tracking-tight text-cyan-500 dark:text-cyan-400 font-mono">±4.90%</span>
               </div>
-              <div class="flex justify-between">
-                <span class="text-[color:var(--muted)]">Critical Z-Score:</span>
-                <span class="font-mono font-bold text-[color:var(--fg)]" data-moe-z>1.960</span>
+              <p id="res-sub-text" class="mt-1 text-xs text-[color:var(--muted)]">Calculated at 95% statistical confidence</p>
+            </div>
+
+            <!-- Confidence Interval Range Box -->
+            <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 space-y-2">
+              <span class="text-[10px] font-bold uppercase tracking-wider text-[color:var(--muted)]">Confidence Interval Bounds</span>
+              <div class="flex items-baseline justify-between">
+                <span class="text-xs font-semibold text-[color:var(--fg)]">Estimated Range:</span>
+                <span id="res-ci-range" class="text-base font-bold font-mono text-cyan-400">45.10% – 54.90%</span>
+              </div>
+              <p id="res-ci-desc" class="text-[11px] text-[color:var(--muted)]">There is a 95% probability that the true population value falls within this range.</p>
+            </div>
+
+            <!-- Breakdown Telemetry -->
+            <div class="divide-y divide-[color:var(--border)] border-t border-[color:var(--border)] text-xs">
+              <div class="flex justify-between py-2">
+                <span class="text-[color:var(--muted)]">Critical Value:</span>
+                <span id="res-crit-val" class="font-mono font-bold text-[color:var(--fg)]">Z = 1.960</span>
+              </div>
+              <div class="flex justify-between py-2">
+                <span class="text-[color:var(--muted)]">Standard Error:</span>
+                <span id="res-se-val" class="font-mono font-bold text-[color:var(--fg)]">0.0250 (2.50%)</span>
+              </div>
+              <div class="flex justify-between py-2">
+                <span class="text-[color:var(--muted)]">Finite Correction Factor:</span>
+                <span id="res-fpc-val" class="font-mono font-bold text-[color:var(--fg)]">1.000 (None)</span>
               </div>
             </div>
+          </div>
+
+          <div class="rounded-2xl border border-cyan-500/20 bg-cyan-500/10 p-3.5 text-xs leading-relaxed text-cyan-400">
+            <strong>Survey Finding:</strong> With <span id="callout-sample" class="font-bold font-mono">400</span> responses, your results are accurate to within <span id="callout-moe" class="font-bold font-mono">±4.90%</span> at <span id="callout-conf" class="font-bold">95%</span> confidence.
           </div>
         </div>
       </div>
     </div>
 
+    <!-- Sample Size vs MOE Comparative Table -->
+    <section class="space-y-4">
+      <div>
+        <h2 class="text-lg font-bold text-[color:var(--fg)]">Sample Size vs. Margin of Error Benchmark Matrix</h2>
+        <p class="text-xs text-[color:var(--muted)]">How survey precision scales across respondent counts at 90%, 95%, and 99% confidence (p = 0.50)</p>
+      </div>
+
+      <div class="overflow-x-auto rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)]">
+        <table class="w-full text-left text-xs">
+          <thead class="bg-[color:var(--surface-strong)] text-[color:var(--muted)] border-b border-[color:var(--border)]">
+            <tr>
+              <th class="p-3.5 font-bold">Sample Size (n)</th>
+              <th class="p-3.5 font-bold text-center">90% Confidence</th>
+              <th class="p-3.5 font-bold text-center text-cyan-500 dark:text-cyan-400">95% Confidence (Gold Standard)</th>
+              <th class="p-3.5 font-bold text-center">99% Confidence</th>
+              <th class="p-3.5 font-bold">Typical Application</th>
+            </tr>
+          </thead>
+          <tbody id="matrix-tbody" class="divide-y divide-[color:var(--border)] font-mono">
+            <!-- Populated dynamically -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Parameter Guide Component -->
+    <CalculatorParameterGuide
+      parameters={parameterGuideData}
+      workedExample={{
+        title: 'Survey Margin of Error Calculation',
+        description: 'Computing precision for a customer survey with 400 respondents and 50% response proportion.',
+        formula: 'MOE = Z × √[(p(1 - p)) ÷ n] | CI = p ± MOE',
+        steps: [
+          {
+            step: 'Compute Standard Error',
+            calculation: '√[(0.50 × 0.50) ÷ 400] = √(0.25 ÷ 400)',
+            result: 'SE = 0.0250 (2.50%)',
+          },
+          {
+            step: 'Multiply by Critical Value Z',
+            calculation: '1.960 × 0.0250',
+            result: 'MOE = ±0.0490 (±4.90%)',
+          },
+          {
+            step: 'Construct 95% Confidence Interval',
+            calculation: '50% ± 4.90%',
+            result: 'Range: [45.10%, 54.90%]',
+          },
+          {
+            step: 'Conclusion',
+            calculation: 'Sample size of 400 reliably bounds error within 5%',
+            result: 'Scientifically acceptable precision confirmed',
+          },
+        ],
+      }}
+    />
+
+    <!-- FAQs -->
     <section class="space-y-4">
       <h2 class="text-xl font-bold text-[color:var(--fg)]">Frequently Asked Questions</h2>
       <div class="space-y-3">
-        {faqs.map((faq) => (
+        {schemaFaq.map((faq) => (
           <details class="group rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
             <summary class="cursor-pointer list-none font-semibold text-sm sm:text-base text-[color:var(--fg)] flex items-center justify-between gap-4">
               <span>{faq.question}</span>
-              <span class="text-xs text-[color:var(--muted)] group-open:rotate-180 transition-transform">▼</span>
+              <span class="text-xs text-[color:var(--muted)] group-open:rotate-180 transition-transform">&blacktriangledown;</span>
             </summary>
             <p class="mt-3 text-xs sm:text-sm leading-relaxed text-[color:var(--muted)]">
               {faq.answer}
@@ -218,59 +454,222 @@ const schemaGraph = [
       const root = document.querySelector('[data-moe-app]');
       if (!root) return;
 
-      const inSample = root.querySelector('[data-sample-size]');
-      const inConf = root.querySelector('[data-moe-conf]');
-      const inProp = root.querySelector('[data-moe-prop]');
-      const inPop = root.querySelector('[data-moe-pop]');
-      const outMoe = root.querySelector('[data-res-moe]');
-      const outSummary = root.querySelector('[data-moe-summary]');
-      const outBounds = root.querySelector('[data-moe-bounds]');
-      const outZ = root.querySelector('[data-moe-z]');
-      const resetBtn = root.querySelector('[data-reset-btn]');
+      const modeTabs = root.querySelectorAll('.mode-tab');
+      const propFields = root.querySelector('#prop-fields');
+      const meanFields = root.querySelector('#mean-fields');
+      const invFields = root.querySelector('#inv-fields');
 
-      const zMap = { '90': 1.644853, '95': 1.959964, '99': 2.575829 };
+      const confLevel = root.querySelector('#conf-level');
+      const sampleSizeInput = root.querySelector('#sample-size-input');
+      const propInput = root.querySelector('#prop-input');
+      const propDisplay = root.querySelector('#prop-display');
+      const meanNInput = root.querySelector('#mean-n-input');
+      const meanValInput = root.querySelector('#mean-val-input');
+      const sdInput = root.querySelector('#sd-input');
+      const targetMoeInput = root.querySelector('#target-moe-input');
+      const invPropInput = root.querySelector('#inv-prop-input');
+      const popSizeInput = root.querySelector('#pop-size-input');
+      const resetBtn = root.querySelector('#reset-btn');
 
-      function update() {
-        const n = Math.max(1, parseInt(inSample.value || '1', 10));
-        const conf = inConf.value || '95';
-        const z = zMap[conf] || 1.96;
-        const p = Math.max(0.01, Math.min(0.99, parseFloat(inProp.value || '50') / 100));
-        const pop = inPop.value ? parseInt(inPop.value, 10) : undefined;
+      const resLabel = root.querySelector('#res-label');
+      const resMainVal = root.querySelector('#res-main-val');
+      const resSubText = root.querySelector('#res-sub-text');
+      const resCiRange = root.querySelector('#res-ci-range');
+      const resCiDesc = root.querySelector('#res-ci-desc');
+      const resCritVal = root.querySelector('#res-crit-val');
+      const resSeVal = root.querySelector('#res-se-val');
+      const resFpcVal = root.querySelector('#res-fpc-val');
+      const calloutSample = root.querySelector('#callout-sample');
+      const calloutMoe = root.querySelector('#callout-moe');
+      const calloutConf = root.querySelector('#callout-conf');
+      const copyBtn = root.querySelector('#copy-result-btn');
+      const matrixTbody = root.querySelector('#matrix-tbody');
 
-        let moe = z * Math.sqrt((p * (1 - p)) / n);
-        if (pop && pop > n) {
-          moe *= Math.sqrt((pop - n) / (pop - 1));
+      let currentMode = 'proportion';
+
+      const zMap = {
+        '90': 1.645,
+        '95': 1.960,
+        '99': 2.576,
+      };
+
+      function calculate() {
+        const conf = confLevel.value;
+        const z = zMap[conf] || 1.960;
+        const pop = parseFloat(popSizeInput.value) || 0;
+
+        calloutConf.textContent = `${conf}%`;
+        resCritVal.textContent = `Z = ${z.toFixed(3)}`;
+
+        if (currentMode === 'proportion') {
+          resLabel.textContent = 'Margin of Error (±%)';
+          const n = Math.max(1, parseFloat(sampleSizeInput.value) || 400);
+          const p = (parseFloat(propInput.value) || 50) / 100;
+          propDisplay.textContent = `${Math.round(p * 100)}%`;
+
+          let fpc = 1.0;
+          if (pop > 0 && n < pop) {
+            fpc = Math.sqrt((pop - n) / (pop - 1));
+            resFpcVal.textContent = fpc.toFixed(4);
+          } else {
+            resFpcVal.textContent = '1.000 (None)';
+          }
+
+          const se = Math.sqrt((p * (1 - p)) / n) * fpc;
+          const moe = z * se;
+          const moePct = moe * 100;
+
+          resMainVal.textContent = `±${moePct.toFixed(2)}%`;
+          resSubText.textContent = `Calculated at ${conf}% statistical confidence`;
+          resSeVal.textContent = `${se.toFixed(4)} (${(se * 100).toFixed(2)}%)`;
+
+          const lower = Math.max(0, (p - moe) * 100).toFixed(2);
+          const upper = Math.min(100, (p + moe) * 100).toFixed(2);
+          resCiRange.textContent = `${lower}% – ${upper}%`;
+          resCiDesc.textContent = `There is a ${conf}% probability that the true population proportion falls between ${lower}% and ${upper}%.`;
+
+          calloutSample.textContent = n.toLocaleString();
+          calloutMoe.textContent = `±${moePct.toFixed(2)}%`;
+
+        } else if (currentMode === 'mean') {
+          resLabel.textContent = 'Margin of Error (Units)';
+          const n = Math.max(2, parseFloat(meanNInput.value) || 100);
+          const mean = parseFloat(meanValInput.value) || 50;
+          const sd = parseFloat(sdInput.value) || 10;
+
+          let fpc = 1.0;
+          if (pop > 0 && n < pop) {
+            fpc = Math.sqrt((pop - n) / (pop - 1));
+            resFpcVal.textContent = fpc.toFixed(4);
+          } else {
+            resFpcVal.textContent = '1.000 (None)';
+          }
+
+          const se = (sd / Math.sqrt(n)) * fpc;
+          const moe = z * se;
+
+          resMainVal.textContent = `±${moe.toFixed(2)} units`;
+          resSubText.textContent = `Sample Mean: ${mean.toFixed(2)}`;
+          resSeVal.textContent = `${se.toFixed(4)} (SEM)`;
+
+          const lower = (mean - moe).toFixed(2);
+          const upper = (mean + moe).toFixed(2);
+          resCiRange.textContent = `${lower} – ${upper}`;
+          resCiDesc.textContent = `There is a ${conf}% probability that the true population mean lies between ${lower} and ${upper}.`;
+
+          calloutSample.textContent = n.toLocaleString();
+          calloutMoe.textContent = `±${moe.toFixed(2)} units`;
+
+        } else if (currentMode === 'inverse') {
+          resLabel.textContent = 'Required Sample Size';
+          const targetMoe = (parseFloat(targetMoeInput.value) || 3) / 100;
+          const p = (parseFloat(invPropInput.value) || 50) / 100;
+
+          let n0 = (Math.pow(z, 2) * p * (1 - p)) / Math.pow(targetMoe, 2);
+          let finalN = Math.ceil(n0);
+
+          if (pop > 0 && pop > n0) {
+            finalN = Math.ceil(n0 / (1 + ((n0 - 1) / pop)));
+            resFpcVal.textContent = (finalN / n0).toFixed(4);
+          } else {
+            resFpcVal.textContent = '1.000 (None)';
+          }
+
+          resMainVal.textContent = `${finalN.toLocaleString()} n`;
+          resSubText.textContent = `Needed for ±${(targetMoe * 100).toFixed(1)}% precision at ${conf}% confidence`;
+          resCiRange.textContent = `±${(targetMoe * 100).toFixed(1)}% Target MOE`;
+          resCiDesc.textContent = `Conducting a survey with ${finalN.toLocaleString()} completed responses guarantees precision within ±${(targetMoe * 100).toFixed(1)}%.`;
+          resSeVal.textContent = `${(targetMoe / z).toFixed(4)} Target SE`;
+
+          calloutSample.textContent = finalN.toLocaleString();
+          calloutMoe.textContent = `±${(targetMoe * 100).toFixed(1)}%`;
         }
 
-        const moePct = moe * 100;
-        const pPct = p * 100;
-        const low = Math.max(0, pPct - moePct);
-        const high = Math.min(100, pPct + moePct);
-
-        if (outMoe) outMoe.textContent = `±${moePct.toFixed(2)}%`;
-        if (outZ) outZ.textContent = z.toFixed(3);
-        if (outBounds) outBounds.textContent = `${low.toFixed(2)}% to ${high.toFixed(2)}%`;
-        if (outSummary) {
-          outSummary.textContent = `Results are accurate within ±${moePct.toFixed(2)}% at ${conf}% confidence.`;
-        }
+        updateMatrix(pop);
       }
 
-      inSample.addEventListener('input', update);
-      inConf.addEventListener('change', update);
-      inProp.addEventListener('input', update);
-      inPop.addEventListener('input', update);
+      function updateMatrix(pop) {
+        if (!matrixTbody) return;
 
-      if (resetBtn) {
-        resetBtn.addEventListener('click', () => {
-          inSample.value = '400';
-          inConf.value = '95';
-          inProp.value = '50';
-          inPop.value = '';
-          update();
+        const sampleSizes = [
+          { n: 100, desc: 'Small exploratory surveys & student course evaluations' },
+          { n: 250, desc: 'B2B audience studies & specialized industry surveys' },
+          { n: 500, desc: 'Regional public opinion polls & consumer preference tests' },
+          { n: 1000, desc: 'National media polls (Reuters, Gallup, Pew Research standard)' },
+          { n: 2500, desc: 'High-precision electoral polling & academic dissertations' },
+          { n: 5000, desc: 'Clinical epidemiology & national census validation benchmarks' },
+        ];
+
+        matrixTbody.innerHTML = sampleSizes.map(item => {
+          function calcMoe(zVal) {
+            let fpc = 1.0;
+            if (pop > 0 && item.n < pop) {
+              fpc = Math.sqrt((pop - item.n) / (pop - 1));
+            }
+            const se = Math.sqrt(0.25 / item.n) * fpc;
+            return (zVal * se * 100).toFixed(2);
+          }
+
+          const m90 = calcMoe(1.645);
+          const m95 = calcMoe(1.960);
+          const m99 = calcMoe(2.576);
+
+          return `
+            <tr class="hover:bg-[color:var(--surface-strong)] transition">
+              <td class="p-3.5 font-bold text-[color:var(--fg)]">${item.n.toLocaleString()}</td>
+              <td class="p-3.5 text-center text-[color:var(--muted)]">±${m90}%</td>
+              <td class="p-3.5 text-center font-bold text-cyan-500 dark:text-cyan-400">±${m95}%</td>
+              <td class="p-3.5 text-center text-[color:var(--muted)]">±${m99}%</td>
+              <td class="p-3.5 font-sans text-[11px] text-[color:var(--muted)]">${item.desc}</td>
+            </tr>
+          `;
+        }).join('');
+      }
+
+      modeTabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+          modeTabs.forEach(t => {
+            t.classList.remove('bg-[color:var(--fg)]', 'text-[color:var(--bg)]');
+            t.classList.add('bg-[color:var(--surface)]', 'border', 'border-[color:var(--border)]', 'text-[color:var(--muted)]');
+          });
+          tab.classList.add('bg-[color:var(--fg)]', 'text-[color:var(--bg)]');
+          tab.classList.remove('bg-[color:var(--surface)]', 'border-[color:var(--border)]', 'text-[color:var(--muted)]');
+
+          currentMode = tab.dataset.mode;
+          propFields.classList.toggle('hidden', currentMode !== 'proportion');
+          meanFields.classList.toggle('hidden', currentMode !== 'mean');
+          invFields.classList.toggle('hidden', currentMode !== 'inverse');
+          calculate();
         });
-      }
+      });
 
-      update();
+      resetBtn?.addEventListener('click', () => {
+        confLevel.value = '95';
+        sampleSizeInput.value = '400';
+        propInput.value = '50';
+        meanNInput.value = '100';
+        meanValInput.value = '50.0';
+        sdInput.value = '10.0';
+        targetMoeInput.value = '3.0';
+        invPropInput.value = '50';
+        popSizeInput.value = '';
+        calculate();
+      });
+
+      copyBtn?.addEventListener('click', () => {
+        const text = `Margin of Error Result: ${resMainVal.textContent} at ${confLevel.value}% confidence (Interval Range: ${resCiRange.textContent})`;
+        navigator.clipboard.writeText(text).then(() => {
+          const orig = copyBtn.textContent;
+          copyBtn.textContent = 'Copied!';
+          setTimeout(() => { copyBtn.textContent = orig; }, 1800);
+        });
+      });
+
+      [confLevel, sampleSizeInput, propInput, meanNInput, meanValInput, sdInput, targetMoeInput, invPropInput, popSizeInput].forEach(el => {
+        el?.addEventListener('input', calculate);
+      });
+
+      calculate();
     })();
   </script>
 </SiteLayout>

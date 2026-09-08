@@ -1,10 +1,11 @@
 ---
 import SiteLayout from '../../layouts/SiteLayout.astro';
 import Icon from '../../components/Icon.astro';
+import CalculatorParameterGuide from '../../components/calculator/CalculatorParameterGuide.astro';
 import { siteName, toAbsoluteUrl, withBasePath } from '../../utils/site';
 
-const pageTitle = `Cron Expression Generator & Parser — Free Online Schedule Builder · ${siteName}`;
-const pageDesc = 'Visual cron schedule builder and parser online. Generates standard 5-field cron syntax (minute, hour, day, month, weekday) with human-readable descriptions and next 5 run-time previews.';
+const pageTitle = `Cron Expression Generator & Visual Schedule Builder · ${siteName}`;
+const pageDesc = 'Build, parse, and translate standard 5-field Unix cron schedule expressions online. Features visual field builder, human-readable English translation, upcoming run dates, and quick presets. 100% private in-browser tool.';
 const canonicalUrl = toAbsoluteUrl('/developer-tools/cron-expression-generator/');
 
 const breadcrumbItems = [
@@ -15,12 +16,16 @@ const breadcrumbItems = [
 
 const schemaFaq = [
   {
-    question: 'What is the standard format of a 5-part cron expression?',
-    answer: 'Standard Unix/Linux cron expressions consist of 5 space-delimited fields: Minute (0-59), Hour (0-23), Day of the Month (1-31), Month (1-12 or JAN-DEC), and Day of the Week (0-6 where 0 is Sunday, or SUN-SAT).',
+    question: 'How do Unix cron expressions work?',
+    answer: 'Standard Unix cron expressions consist of 5 space-separated fields representing: Minute (0-59), Hour (0-23), Day of Month (1-31), Month (1-12), and Day of Week (0-6, where 0 is Sunday).',
   },
   {
-    question: 'What does `*/5 * * * *` mean?',
-    answer: 'The asterisk `*` denotes "every", while `/5` represents a step value. Therefore, `*/5 * * * *` translates to "Every 5 minutes, every hour, every day".',
+    question: 'What do the special characters *, /, -, and , mean in cron?',
+    answer: '* means "every value"; / specifies step intervals (e.g. */15 = every 15 minutes); - denotes inclusive ranges (e.g. 1-5 = Monday through Friday); and , separates discrete items (e.g. 1,15 = the 1st and 15th).',
+  },
+  {
+    question: 'How does this tool calculate the next scheduled execution times?',
+    answer: 'The engine parses the five fields and simulates clock progression forward from the current client time, finding the next calendar dates that satisfy all five cron field constraints.',
   },
 ];
 
@@ -58,6 +63,51 @@ const schemaGraph = [
     })),
   },
 ];
+
+const parameterGuide = [
+  {
+    id: 'minute_field',
+    name: 'Field 1: Minute (0 - 59)',
+    description: 'The minute of the hour when the task should trigger.',
+    whyItMatters: 'Using 0 runs at the top of the hour; using */10 runs every 10 minutes (0, 10, 20, 30, 40, 50).',
+    typicalRange: '0 - 59, *, */n',
+  },
+  {
+    id: 'hour_field',
+    name: 'Field 2: Hour (0 - 23)',
+    description: 'The hour of the day in 24-hour military format (0 = Midnight, 12 = Noon, 23 = 11 PM).',
+    whyItMatters: 'Critical for scheduling heavy database backups or ETL batch jobs during off-peak hours (e.g., 2 AM).',
+    typicalRange: '0 - 23, *, */n',
+  },
+  {
+    id: 'dom_field',
+    name: 'Field 3: Day of Month (1 - 31)',
+    description: 'The calendar day of the month.',
+    whyItMatters: 'Used for monthly billing runs (e.g., 1 for the first of the month) or bi-weekly runs (e.g., 1,15).',
+    typicalRange: '1 - 31, *',
+  },
+  {
+    id: 'month_field',
+    name: 'Field 4: Month (1 - 12)',
+    description: 'The calendar month of the year (1 = January, 12 = December).',
+    whyItMatters: 'Allows running quarterly maintenance (e.g., 1,4,7,10) or annual year-end archives.',
+    typicalRange: '1 - 12, *',
+  },
+  {
+    id: 'dow_field',
+    name: 'Field 5: Day of Week (0 - 6)',
+    description: 'The day of the week, where 0 is Sunday, 1 is Monday, ..., and 6 is Saturday.',
+    whyItMatters: 'Commonly configured as 1-5 to trigger workflows strictly on business weekdays.',
+    typicalRange: '0 - 6 (0=Sun), 1-5 (Mon-Fri), *',
+  },
+  {
+    id: 'human_translation',
+    name: 'Natural Language Translation',
+    description: 'Translates raw symbols into clear plain English explanations.',
+    whyItMatters: 'Eliminates misconfigurations before deploying schedules to production Kubernetes CronJobs or crontab.',
+    typicalRange: 'Real-time English translation',
+  },
+];
 ---
 
 <SiteLayout title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
@@ -86,22 +136,22 @@ const schemaGraph = [
     <header class="space-y-3">
       <div class="inline-flex items-center gap-2 rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1 text-xs font-semibold text-[color:var(--muted)]">
         <span class="inline-block h-2 w-2 rounded-full bg-emerald-500"></span>
-        <span>Standard 5-Field Unix Cron Builder</span>
+        <span>Standard 5-Field Unix Cron Engine</span>
       </div>
       <h1 class="text-2xl sm:text-4xl font-extrabold tracking-tight text-[color:var(--fg)]">
-        Cron Expression Generator &amp; Parser
+        Cron Expression Generator &amp; Visual Builder
       </h1>
-      <p class="max-w-2xl text-xs sm:text-sm text-[color:var(--muted)] leading-relaxed">
-        Build automated cron schedule expressions visually, translate complex syntax into plain English, and preview upcoming scheduled executions.
+      <p class="max-w-3xl text-xs sm:text-sm text-[color:var(--muted)] leading-relaxed">
+        Build, parse, and validate Unix cron expressions visually. Translate complex schedules into plain English and preview upcoming execution times in seconds.
       </p>
     </header>
 
-    <!-- Cron Result Hero Card -->
+    <!-- Cron Hero Result Card -->
     <div class="space-y-4 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6">
       <div class="flex items-center justify-between">
-        <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Generated Cron Expression</span>
-        <button type="button" data-copy-cron class="inline-flex items-center gap-1 text-xs font-bold text-[color:var(--fg)] hover:underline">
-          <Icon name="copy" class="w-3.5 h-3.5" />
+        <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Active Cron Expression</span>
+        <button type="button" id="btn-copy-cron" class="inline-flex items-center gap-1 text-xs font-bold text-[color:var(--fg)] hover:underline cursor-pointer">
+          <Icon name="copy" class="h-3.5 w-3.5" />
           <span>Copy Expression</span>
         </button>
       </div>
@@ -110,36 +160,147 @@ const schemaGraph = [
         <input
           type="text"
           id="cron-expr"
-          class="w-full bg-transparent font-mono text-2xl sm:text-3xl font-extrabold text-[color:var(--fg)] focus:outline-hidden"
-          value="0 0 * * *"
+          class="w-full bg-transparent font-mono text-2xl sm:text-3xl font-extrabold text-[color:var(--fg)] focus:outline-hidden select-all"
+          value="0 9 * * 1-5"
         />
       </div>
 
       <!-- Human Translation -->
-      <div class="rounded-xl border border-emerald-500/20 bg-emerald-500/10 p-3.5 text-xs text-emerald-600 dark:text-emerald-400">
-        <p class="font-bold">Human-Readable Meaning:</p>
-        <p id="cron-human" class="mt-0.5 text-sm font-semibold">"At 00:00 (midnight) every day"</p>
+      <div class="rounded-xl border border-cyan-500/20 bg-cyan-500/10 p-3.5 text-xs text-cyan-600 dark:text-cyan-400 dark:text-cyan-400">
+        <p class="font-bold">Human-Readable Schedule:</p>
+        <p id="cron-human" class="mt-1 text-sm font-semibold">At 09:00 AM, Monday through Friday</p>
       </div>
     </div>
 
     <!-- Quick Presets -->
     <div class="space-y-2">
-      <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Common Schedule Presets</span>
+      <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Quick Presets</span>
       <div class="flex flex-wrap gap-2 text-xs font-medium">
-        <button type="button" data-cron-preset="* * * * *" class="rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1 text-[color:var(--fg)] hover:bg-[color:var(--surface-strong)]">Every Minute</button>
-        <button type="button" data-cron-preset="*/5 * * * *" class="rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1 text-[color:var(--fg)] hover:bg-[color:var(--surface-strong)]">Every 5 Minutes</button>
-        <button type="button" data-cron-preset="0 * * * *" class="rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1 text-[color:var(--fg)] hover:bg-[color:var(--surface-strong)]">Every Hour</button>
-        <button type="button" data-cron-preset="0 0 * * *" class="rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1 text-[color:var(--fg)] hover:bg-[color:var(--surface-strong)]">Every Midnight</button>
-        <button type="button" data-cron-preset="0 9 * * 1-5" class="rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1 text-[color:var(--fg)] hover:bg-[color:var(--surface-strong)]">Weekdays 9:00 AM</button>
-        <button type="button" data-cron-preset="0 0 1 * *" class="rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1 text-[color:var(--fg)] hover:bg-[color:var(--surface-strong)]">1st of Month</button>
+        <button type="button" data-preset="* * * * *" class="rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1 text-[color:var(--fg)] hover:bg-[color:var(--surface-strong)] cursor-pointer">Every Minute</button>
+        <button type="button" data-preset="*/5 * * * *" class="rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1 text-[color:var(--fg)] hover:bg-[color:var(--surface-strong)] cursor-pointer">Every 5 Mins</button>
+        <button type="button" data-preset="*/15 * * * *" class="rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1 text-[color:var(--fg)] hover:bg-[color:var(--surface-strong)] cursor-pointer">Every 15 Mins</button>
+        <button type="button" data-preset="0 * * * *" class="rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1 text-[color:var(--fg)] hover:bg-[color:var(--surface-strong)] cursor-pointer">Every Hour</button>
+        <button type="button" data-preset="0 0 * * *" class="rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1 text-[color:var(--fg)] hover:bg-[color:var(--surface-strong)] cursor-pointer">Every Midnight</button>
+        <button type="button" data-preset="0 9 * * 1-5" class="rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1 text-[color:var(--fg)] hover:bg-[color:var(--surface-strong)] cursor-pointer">Weekdays 9:00 AM</button>
+        <button type="button" data-preset="0 0 * * 0" class="rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1 text-[color:var(--fg)] hover:bg-[color:var(--surface-strong)] cursor-pointer">Weekly (Sunday)</button>
+        <button type="button" data-preset="0 0 1 * *" class="rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1 text-[color:var(--fg)] hover:bg-[color:var(--surface-strong)] cursor-pointer">1st of Month</button>
       </div>
     </div>
 
-    <!-- Next 5 Run Previews -->
-    <div class="space-y-3 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 text-xs">
-      <h2 class="font-bold text-sm text-[color:var(--fg)]">Next Scheduled Runs (Estimated Preview)</h2>
-      <ul id="cron-next" class="space-y-1.5 font-mono text-[color:var(--muted)]"></ul>
+    <!-- Visual 5-Field Interactive Builder -->
+    <div class="space-y-4 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 text-xs">
+      <h2 class="font-bold text-sm text-[color:var(--fg)] uppercase tracking-wider">Visual 5-Field Schedule Builder</h2>
+      <div class="grid gap-3 sm:grid-cols-5">
+        <!-- Field 1: Minute -->
+        <div>
+          <label for="f-minute" class="font-bold text-[color:var(--fg)] block mb-1">1. Minute (0-59):</label>
+          <input
+            type="text"
+            id="f-minute"
+            class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] px-3 py-1.5 font-mono text-xs text-[color:var(--fg)] focus:outline-hidden"
+            value="0"
+          />
+          <span class="text-[10px] text-[color:var(--muted)] mt-0.5 block">e.g. *, */5, 0, 30</span>
+        </div>
+
+        <!-- Field 2: Hour -->
+        <div>
+          <label for="f-hour" class="font-bold text-[color:var(--fg)] block mb-1">2. Hour (0-23):</label>
+          <input
+            type="text"
+            id="f-hour"
+            class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] px-3 py-1.5 font-mono text-xs text-[color:var(--fg)] focus:outline-hidden"
+            value="9"
+          />
+          <span class="text-[10px] text-[color:var(--muted)] mt-0.5 block">e.g. *, 0, 9, 23</span>
+        </div>
+
+        <!-- Field 3: Day of Month -->
+        <div>
+          <label for="f-dom" class="font-bold text-[color:var(--fg)] block mb-1">3. Day of Month:</label>
+          <input
+            type="text"
+            id="f-dom"
+            class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] px-3 py-1.5 font-mono text-xs text-[color:var(--fg)] focus:outline-hidden"
+            value="*"
+          />
+          <span class="text-[10px] text-[color:var(--muted)] mt-0.5 block">e.g. *, 1, 15, 1-10</span>
+        </div>
+
+        <!-- Field 4: Month -->
+        <div>
+          <label for="f-month" class="font-bold text-[color:var(--fg)] block mb-1">4. Month (1-12):</label>
+          <input
+            type="text"
+            id="f-month"
+            class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] px-3 py-1.5 font-mono text-xs text-[color:var(--fg)] focus:outline-hidden"
+            value="*"
+          />
+          <span class="text-[10px] text-[color:var(--muted)] mt-0.5 block">e.g. *, 1-6, */3</span>
+        </div>
+
+        <!-- Field 5: Day of Week -->
+        <div>
+          <label for="f-dow" class="font-bold text-[color:var(--fg)] block mb-1">5. Day of Week:</label>
+          <input
+            type="text"
+            id="f-dow"
+            class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] px-3 py-1.5 font-mono text-xs text-[color:var(--fg)] focus:outline-hidden"
+            value="1-5"
+          />
+          <span class="text-[10px] text-[color:var(--muted)] mt-0.5 block">0=Sun, 1-5=Mon-Fri</span>
+        </div>
+      </div>
     </div>
+
+    <!-- Next 8 Scheduled Runs Preview -->
+    <div class="space-y-3 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 text-xs">
+      <div class="flex items-center justify-between">
+        <h2 class="font-bold text-sm text-[color:var(--fg)] uppercase tracking-wider">Next 8 Scheduled Executions</h2>
+        <span class="text-[11px] text-[color:var(--muted)]">Local Timezone Preview</span>
+      </div>
+      <div class="overflow-x-auto rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)]">
+        <table class="min-w-full divide-y divide-[color:var(--border)] text-left font-mono text-xs">
+          <thead class="bg-[color:var(--surface)] text-[color:var(--fg)]">
+            <tr>
+              <th class="p-2.5 font-bold">#</th>
+              <th class="p-2.5 font-bold">Scheduled Execution Date &amp; Time</th>
+              <th class="p-2.5 font-bold">Relative Time</th>
+            </tr>
+          </thead>
+          <tbody id="runs-tbody" class="divide-y divide-[color:var(--border)] text-[color:var(--muted)]">
+            <!-- Simulated upcoming dates -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Step-by-Step Worked Example -->
+    <section class="space-y-4 rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 sm:p-8 text-xs sm:text-sm text-[color:var(--muted)] leading-relaxed">
+      <div class="flex items-center gap-2">
+        <span class="rounded-md bg-[color:var(--accent)]/15 px-2.5 py-1 text-xs font-bold text-[color:var(--accent)]">Worked Example</span>
+        <h2 class="text-base sm:text-lg font-bold text-[color:var(--fg)]">Scheduling Database Backups: "0 2 * * 0"</h2>
+      </div>
+      <p>
+        A systems architect needs to run weekly full backups at 2:00 AM on Sunday mornings:
+      </p>
+      <div class="space-y-2 font-mono text-xs">
+        <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] p-3">
+          <span class="text-[color:var(--muted)] block font-bold font-sans text-[11px]">Fields Breakdown:</span>
+          0 &rarr; Minute 0 (top of the hour)<br/>
+          2 &rarr; Hour 2 (2:00 AM)<br/>
+          * &rarr; Every day of the month<br/>
+          * &rarr; Every month<br/>
+          0 &rarr; Day 0 (Sunday)
+        </div>
+      </div>
+      <p class="text-xs text-[color:var(--muted)]">
+        The natural language parser confirms: <em>"At 02:00 AM, only on Sunday"</em>.
+      </p>
+    </section>
+
+    <!-- Parameter Guide -->
+    <CalculatorParameterGuide parameters={parameterGuide} />
 
     <!-- FAQs -->
     <section class="space-y-4">
@@ -165,64 +326,184 @@ const schemaGraph = [
       const root = document.querySelector('[data-cron-app]');
       if (!root) return;
 
-      const cronExpr = root.querySelector('#cron-expr');
+      const cronExprInput = root.querySelector('#cron-expr');
+      const copyCronBtn = root.querySelector('#btn-copy-cron');
       const cronHuman = root.querySelector('#cron-human');
-      const cronNext = root.querySelector('#cron-next');
-      const copyBtn = root.querySelector('[data-copy-cron]');
 
-      const presetMeanings = {
-        '* * * * *': 'Every minute',
-        '*/5 * * * *': 'Every 5 minutes',
-        '0 * * * *': 'Every hour at minute 0',
-        '0 0 * * *': 'At 00:00 (midnight) every day',
-        '0 9 * * 1-5': 'At 09:00 AM, Monday through Friday',
-        '0 0 1 * *': 'At 00:00 on day 1 of every month'
-      };
+      const fMinute = root.querySelector('#f-minute');
+      const fHour = root.querySelector('#f-hour');
+      const fDom = root.querySelector('#f-dom');
+      const fMonth = root.querySelector('#f-month');
+      const fDow = root.querySelector('#f-dow');
 
-      function parseCron(expr) {
+      const runsTbody = root.querySelector('#runs-tbody');
+
+      function translateCron(expr) {
         const parts = expr.trim().split(/\s+/);
-        if (parts.length !== 5) {
-          cronHuman.textContent = 'Invalid cron: Must have exactly 5 parts (Minute Hour Day Month Weekday).';
-          cronNext.innerHTML = '<li>-</li>';
-          return;
-        }
+        if (parts.length !== 5) return 'Invalid expression (requires exactly 5 parts)';
 
-        const [min, hr, day, month, week] = parts;
+        const [min, hr, dom, mo, dow] = parts;
 
-        if (presetMeanings[expr.trim()]) {
-          cronHuman.textContent = `"${presetMeanings[expr.trim()]}"`;
+        let timeStr = '';
+        if (min === '*' && hr === '*') timeStr = 'Every minute';
+        else if (min.startsWith('*/') && hr === '*') timeStr = `Every ${min.slice(2)} minutes`;
+        else if (min === '0' && hr === '*') timeStr = 'Every hour, at minute 0';
+        else if (min === '0' && hr === '0') timeStr = 'At 00:00 (midnight)';
+        else if (hr !== '*' && min !== '*') {
+          const h = parseInt(hr, 10);
+          const m = parseInt(min, 10);
+          if (!isNaN(h) && !isNaN(m)) {
+            const ampm = h >= 12 ? 'PM' : 'AM';
+            const displayH = h % 12 === 0 ? 12 : h % 12;
+            const displayM = m.toString().padStart(2, '0');
+            timeStr = `At ${displayH}:${displayM} ${ampm}`;
+          } else {
+            timeStr = `At minute ${min} past hour ${hr}`;
+          }
         } else {
-          cronHuman.textContent = `"Minute: ${min}, Hour: ${hr}, Day: ${day}, Month: ${month}, Weekday: ${week}"`;
+          timeStr = `At minute ${min} of hour ${hr}`;
         }
 
-        // Calculate next 5 approximate runs
-        const runs = [];
-        const now = new Date();
-        for (let i = 1; i <= 5; i++) {
-          const nextDate = new Date(now.getTime() + i * 86400000);
-          runs.push(`<li>• ${nextDate.toUTCString()}</li>`);
+        let dayStr = '';
+        if (dow === '*' && dom === '*') {
+          dayStr = 'every day';
+        } else if (dow === '1-5') {
+          dayStr = 'Monday through Friday';
+        } else if (dow === '0' || dow === '7') {
+          dayStr = 'only on Sunday';
+        } else if (dow === '6') {
+          dayStr = 'only on Saturday';
+        } else if (dow !== '*') {
+          const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+          dayStr = `on ${dow.split(',').map(d => days[parseInt(d, 10)] || d).join(', ')}`;
+        } else if (dom !== '*') {
+          dayStr = `on day ${dom} of the month`;
         }
-        cronNext.innerHTML = runs.join('');
+
+        let monthStr = mo === '*' ? '' : ` in month ${mo}`;
+
+        return `${timeStr}, ${dayStr}${monthStr}`;
       }
 
-      cronExpr.addEventListener('input', () => parseCron(cronExpr.value));
+      function matchesCronField(val, expr) {
+        if (expr === '*') return true;
+        if (expr.startsWith('*/')) {
+          const step = parseInt(expr.slice(2), 10);
+          return val % step === 0;
+        }
+        if (expr.includes(',')) {
+          return expr.split(',').map(x => parseInt(x, 10)).includes(val);
+        }
+        if (expr.includes('-')) {
+          const [start, end] = expr.split('-').map(x => parseInt(x, 10));
+          return val >= start && val <= end;
+        }
+        return parseInt(expr, 10) === val;
+      }
 
-      root.querySelectorAll('[data-cron-preset]').forEach(btn => {
+      function computeNextRuns(expr, count = 8) {
+        const parts = expr.trim().split(/\s+/);
+        if (parts.length !== 5) return [];
+
+        const [minExp, hrExp, domExp, moExp, dowExp] = parts;
+        const runs = [];
+        let curr = new Date(Date.now() + 60000); // start from next minute
+        curr.setSeconds(0, 0);
+
+        let iterations = 0;
+        while (runs.length < count && iterations < 50000) {
+          iterations++;
+          const min = curr.getMinutes();
+          const hr = curr.getHours();
+          const dom = curr.getDate();
+          const mo = curr.getMonth() + 1;
+          const dow = curr.getDay();
+
+          if (
+            matchesCronField(min, minExp) &&
+            matchesCronField(hr, hrExp) &&
+            matchesCronField(dom, domExp) &&
+            matchesCronField(mo, moExp) &&
+            matchesCronField(dow, dowExp)
+          ) {
+            runs.push(new Date(curr));
+          }
+
+          curr.setMinutes(curr.getMinutes() + 1);
+        }
+
+        return runs;
+      }
+
+      function formatDuration(targetDate) {
+        const diffMs = targetDate.getTime() - Date.now();
+        const diffSec = Math.floor(diffMs / 1000);
+        if (diffSec < 60) return 'In < 1 min';
+        const mins = Math.floor(diffSec / 60);
+        if (mins < 60) return `In ${mins} min${mins > 1 ? 's' : ''}`;
+        const hrs = Math.floor(mins / 60);
+        const remMins = mins % 60;
+        if (hrs < 24) return `In ${hrs}h ${remMins}m`;
+        const days = Math.floor(hrs / 24);
+        return `In ${days} day${days > 1 ? 's' : ''}`;
+      }
+
+      function updateSchedule() {
+        const expr = cronExprInput.value.trim();
+        cronHuman.textContent = translateCron(expr);
+
+        const nextRuns = computeNextRuns(expr, 8);
+        if (nextRuns.length === 0) {
+          runsTbody.innerHTML = '<tr><td colspan="3" class="p-3 text-center text-rose-500 italic">No upcoming executions found within simulation window.</td></tr>';
+        } else {
+          runsTbody.innerHTML = nextRuns.map((d, i) => `
+            <tr class="${i % 2 === 0 ? 'bg-[color:var(--surface)]/30' : ''}">
+              <td class="p-2.5 font-bold text-[color:var(--fg)]">${i + 1}</td>
+              <td class="p-2.5 text-[color:var(--fg)] font-semibold">${d.toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' })} at ${d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</td>
+              <td class="p-2.5 text-cyan-600 dark:text-cyan-400 dark:text-cyan-400 font-sans">${formatDuration(d)}</td>
+            </tr>
+          `).join('');
+        }
+      }
+
+      function syncFieldsToExpr() {
+        cronExprInput.value = `${fMinute.value.trim()} ${fHour.value.trim()} ${fDom.value.trim()} ${fMonth.value.trim()} ${fDow.value.trim()}`;
+        updateSchedule();
+      }
+
+      function syncExprToFields() {
+        const parts = cronExprInput.value.trim().split(/\s+/);
+        if (parts.length === 5) {
+          fMinute.value = parts[0];
+          fHour.value = parts[1];
+          fDom.value = parts[2];
+          fMonth.value = parts[3];
+          fDow.value = parts[4];
+        }
+        updateSchedule();
+      }
+
+      cronExprInput.addEventListener('input', syncExprToFields);
+      [fMinute, fHour, fDom, fMonth, fDow].forEach(f => f.addEventListener('input', syncFieldsToExpr));
+
+      // Preset buttons
+      root.querySelectorAll('[data-preset]').forEach(btn => {
         btn.addEventListener('click', () => {
-          cronExpr.value = btn.dataset.cronPreset;
-          parseCron(cronExpr.value);
+          cronExprInput.value = btn.dataset.preset;
+          syncExprToFields();
         });
       });
 
-      copyBtn.addEventListener('click', () => {
-        navigator.clipboard.writeText(cronExpr.value);
-        const span = copyBtn.querySelector('span');
+      copyCronBtn.addEventListener('click', () => {
+        navigator.clipboard.writeText(cronExprInput.value);
+        const span = copyCronBtn.querySelector('span');
         const orig = span.textContent;
         span.textContent = 'Copied!';
         setTimeout(() => span.textContent = orig, 1800);
       });
 
-      parseCron(cronExpr.value);
+      // Init
+      syncExprToFields();
     })();
   </script>
 </SiteLayout>

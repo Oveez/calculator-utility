@@ -1,4 +1,4 @@
-import type { CalculatorConfig } from '../types/calculator';
+import type { CalculatorConfig, CalculatorDetailedResult } from '../types/calculator';
 import {
 	ageFromIsoDate,
 	calculateCompoundInterest,
@@ -19,12 +19,15 @@ import {
 	formatCurrency,
 	formatInteger,
 	formatNumber,
+	generateAmortizationSchedule,
+	generateCompoundGrowthSchedule,
 	getTextValue,
 	getValue,
 	normalizeToken,
 	weightedAverage,
 	workingDaysFromIso,
 } from '../utils/calculatorMath';
+
 
 const makeContent = (
 	intro: string,
@@ -49,17 +52,92 @@ const calculators: CalculatorConfig[] = [
 		category: 'Finance',
 		metaDescription: 'Free online loan calculator to calculate loan payment amounts, interest charges, monthly loan rate schedule, and total payoff terms.',
 		inputs: [
-			{ id: 'principal', label: 'Loan / Home amount', type: 'number', min: 1000, step: 1000, defaultValue: 300000, unit: '$' },
-			{ id: 'interestRate', label: 'Annual interest rate', type: 'number', min: 0.1, max: 30, step: 0.05, defaultValue: 6.5, unit: '%' },
-			{ id: 'loanTermYears', label: 'Loan term', type: 'number', min: 1, max: 50, step: 1, defaultValue: 30, unit: 'years' },
+			{ id: 'homePrice', label: 'Home / Loan amount', type: 'number', min: 1000, step: 5000, defaultValue: 400000, unit: '$', prefix: '$', colSpan: 'half', helpText: 'Purchase price or total loan sum' },
+			{ id: 'downPayment', label: 'Down payment', type: 'number', min: 0, step: 1000, defaultValue: 80000, unit: '$', prefix: '$', colSpan: 'half', helpText: '20% down ($80,000) eliminates Private Mortgage Insurance (PMI)' },
+			{ id: 'interestRate', label: 'Annual interest rate', type: 'number', min: 0.1, max: 30, step: 0.05, defaultValue: 6.5, unit: '%', suffix: '%', colSpan: 'half' },
+			{ id: 'loanTermYears', label: 'Loan term', type: 'number', min: 1, max: 50, step: 1, defaultValue: 30, unit: 'years', suffix: 'years', colSpan: 'half' },
+			{ id: 'propertyTaxAnnual', label: 'Annual property tax', type: 'number', min: 0, step: 100, defaultValue: 3600, unit: '$/yr', prefix: '$', colSpan: 'half', tier: 'advanced', helpText: 'Estimated local county real estate tax' },
+			{ id: 'homeInsuranceAnnual', label: 'Home insurance (annual)', type: 'number', min: 0, step: 50, defaultValue: 1200, unit: '$/yr', prefix: '$', colSpan: 'half', tier: 'advanced', helpText: 'Hazard and homeowners insurance policy' },
+			{ id: 'hoaMonthly', label: 'Monthly HOA dues', type: 'number', min: 0, step: 25, defaultValue: 0, unit: '$/mo', prefix: '$', colSpan: 'half', tier: 'advanced' },
+			{ id: 'extraMonthly', label: 'Extra principal payment', type: 'number', min: 0, step: 50, defaultValue: 0, unit: '$/mo', prefix: '$', colSpan: 'half', tier: 'advanced', helpText: 'Directly speeds up loan payoff' },
 		],
-		formula: (values) => {
-			const principal = getValue(values, 'principal', 300000);
+		formula: (values): CalculatorDetailedResult => {
+			const homePrice = getValue(values, 'homePrice', getValue(values, 'principal', 400000));
+			const downPayment = getValue(values, 'downPayment', 80000);
+			const principal = Math.max(homePrice - downPayment, 0);
 			const rate = getValue(values, 'interestRate', 6.5);
 			const years = getValue(values, 'loanTermYears', 30);
-			return calculateLoanMonthlyPayment(principal, rate, years);
+			const propertyTax = getValue(values, 'propertyTaxAnnual', 3600);
+			const homeInsurance = getValue(values, 'homeInsuranceAnnual', 1200);
+			const hoa = getValue(values, 'hoaMonthly', 0);
+			const extra = getValue(values, 'extraMonthly', 0);
+
+			const pniMonthly = calculateLoanMonthlyPayment(principal, rate, years);
+			const taxMonthly = propertyTax / 12;
+			const insMonthly = homeInsurance / 12;
+			const totalMonthly = pniMonthly + taxMonthly + insMonthly + hoa + extra;
+
+			const sched = generateAmortizationSchedule(principal, rate, years, extra);
+			const totalFinancedCost = principal + sched.totalInterest;
+
+			const warnings: string[] = [];
+			if (downPayment < homePrice * 0.2 && homePrice > 0) {
+				warnings.push('Down payment is under 20%. Private Mortgage Insurance (PMI) may add $50–$200/mo depending on your credit score.');
+			}
+			if (extra > 0) {
+				const standardYears = years;
+				const actualYears = Math.ceil(sched.totalMonths / 12);
+				warnings.push(`Extra payment of ${formatCurrency(extra)}/mo shortens your loan by ~${standardYears - actualYears} years!`);
+			}
+
+			return {
+				primary: {
+					label: 'Total Monthly Payment',
+					value: totalMonthly,
+					formattedValue: `${formatCurrency(totalMonthly)} / mo`,
+					subtext: 'Includes Principal, Interest, Taxes & Insurance'
+				},
+				secondary: [
+					{ id: 'pni', label: 'Principal & Interest', value: pniMonthly, formattedValue: `${formatCurrency(pniMonthly)} / mo` },
+					{ id: 'totalInterest', label: 'Total Interest Paid', value: sched.totalInterest, formattedValue: formatCurrency(sched.totalInterest), badge: `${((sched.totalInterest / Math.max(principal, 1)) * 100).toFixed(0)}% of loan` },
+					{ id: 'totalCost', label: 'Total Loan Cost', value: totalFinancedCost, formattedValue: formatCurrency(totalFinancedCost) },
+					{ id: 'payoffTime', label: 'Payoff Horizon', value: sched.totalMonths, formattedValue: `${Math.ceil(sched.totalMonths / 12)} yrs (${sched.totalMonths} mo)` },
+				],
+				breakdown: [
+					{ label: 'Principal & Interest', value: pniMonthly, formattedValue: `${formatCurrency(pniMonthly)}/mo` },
+					{ label: 'Property Taxes', value: taxMonthly, formattedValue: `${formatCurrency(taxMonthly)}/mo` },
+					{ label: 'Home Insurance', value: insMonthly, formattedValue: `${formatCurrency(insMonthly)}/mo` },
+					...(hoa > 0 ? [{ label: 'HOA Fees', value: hoa, formattedValue: `${formatCurrency(hoa)}/mo` }] : []),
+					...(extra > 0 ? [{ label: 'Extra Principal', value: extra, formattedValue: `${formatCurrency(extra)}/mo` }] : []),
+				],
+				chart: {
+					type: 'donut',
+					title: 'Monthly Payment Composition',
+					labels: ['Principal & Interest', 'Property Taxes', 'Home Insurance', ...(hoa + extra > 0 ? ['HOA & Extra'] : [])],
+					datasets: [{
+						label: 'Monthly Share',
+						data: [pniMonthly, taxMonthly, insMonthly, ...(hoa + extra > 0 ? [hoa + extra] : [])]
+					}],
+					summaryText: `P&I accounts for ${((pniMonthly / Math.max(totalMonthly, 1)) * 100).toFixed(1)}% of your monthly payment.`
+				},
+				table: {
+					title: 'Annual Amortization Schedule',
+					headers: sched.headers,
+					rows: sched.rows,
+					maxInitialRows: 10
+				},
+				warnings: warnings.length > 0 ? warnings : undefined
+			};
 		},
-		resultFormat: (value) => `${formatCurrency(value)} / month`,
+		resultFormat: (value) => typeof value === 'object' && 'primary' in value ? value.primary.formattedValue : `${formatCurrency(value)} / month`,
+		parametersGuide: [
+			{ id: 'homePrice', name: 'Home Purchase Price', description: 'The contract price of the home or total amount of financing requested.', whyItMatters: 'Serves as the foundation for loan calculations, down payment percentages, and transfer taxes.', typicalRange: '$150,000 to $1,500,000+' },
+			{ id: 'downPayment', name: 'Down Payment', description: 'Cash upfront contribution paid by the buyer towards the property.', whyItMatters: 'Paying at least 20% down avoids Private Mortgage Insurance (PMI) and secures lower interest rates.', typicalRange: '3% to 25%' },
+			{ id: 'interestRate', name: 'Annual Interest Rate (APR)', description: 'The yearly cost charged by the lender to borrow mortgage funds.', whyItMatters: 'Even a 0.5% rate reduction saves tens of thousands of dollars over a 30-year amortization.', typicalRange: '5.5% to 7.8%' },
+			{ id: 'loanTermYears', name: 'Loan Duration', description: 'Total repayment period contracted with the financial institution.', whyItMatters: '15-year loans have higher monthly payments but cut lifetime interest costs by up to 60%.', typicalRange: '15, 20, or 30 years' },
+			{ id: 'propertyTaxAnnual', name: 'Property Taxes', description: 'County and municipal tax assessments on real property.', whyItMatters: 'Usually collected monthly into an escrow account alongside principal and interest.', typicalRange: '$2,000 to $10,000/yr' },
+			{ id: 'homeInsuranceAnnual', name: 'Hazard & Homeowners Insurance', description: 'Mandatory coverage against fire, storms, and casualty losses.', whyItMatters: 'Required by mortgage lenders to protect property collateral value.', typicalRange: '$800 to $2,500/yr' },
+		],
 		faq: [
 			{
 				question: 'How do I calculate loan payment and monthly interest?',
@@ -96,20 +174,77 @@ const calculators: CalculatorConfig[] = [
 		category: 'Finance',
 		metaDescription: 'Free compound interest calculator to estimate compound interest, cumulative interest, monthly growth, and future investment returns over time.',
 		inputs: [
-			{ id: 'principal', label: 'Initial deposit', type: 'number', min: 0, step: 100, defaultValue: 10000, unit: '$' },
-			{ id: 'monthlyContribution', label: 'Monthly addition', type: 'number', min: 0, step: 50, defaultValue: 500, unit: '$' },
-			{ id: 'annualRate', label: 'Annual interest / return rate', type: 'number', min: 0, max: 100, step: 0.1, defaultValue: 8, unit: '%' },
-			{ id: 'years', label: 'Investment period', type: 'number', min: 1, max: 60, step: 1, defaultValue: 10, unit: 'years' },
+			{ id: 'principal', label: 'Initial deposit', type: 'number', min: 0, step: 500, defaultValue: 10000, unit: '$', prefix: '$', colSpan: 'half', helpText: 'Starting capital balance' },
+			{ id: 'monthlyContribution', label: 'Monthly addition', type: 'number', min: 0, step: 50, defaultValue: 500, unit: '$', prefix: '$', colSpan: 'half', helpText: 'Recurring monthly deposit' },
+			{ id: 'annualRate', label: 'Annual interest / return rate', type: 'number', min: 0, max: 100, step: 0.1, defaultValue: 8, unit: '%', suffix: '%', colSpan: 'half' },
+			{ id: 'years', label: 'Investment period', type: 'number', min: 1, max: 60, step: 1, defaultValue: 10, unit: 'years', suffix: 'years', colSpan: 'half' },
+			{ id: 'compoundsPerYear', label: 'Compounding frequency', type: 'select', colSpan: 'half', tier: 'advanced', defaultValue: '12', options: [
+				{ label: 'Monthly (12/yr - Standard)', value: '12' },
+				{ label: 'Daily (365/yr)', value: '365' },
+				{ label: 'Quarterly (4/yr)', value: '4' },
+				{ label: 'Annually (1/yr)', value: '1' },
+			] },
+			{ id: 'inflationRate', label: 'Annual inflation rate', type: 'number', min: 0, max: 15, step: 0.1, defaultValue: 2.5, unit: '%', suffix: '%', colSpan: 'half', tier: 'advanced', helpText: 'Calculates purchasing power in today dollars' },
 		],
-		formula: (values) => {
+		formula: (values): CalculatorDetailedResult => {
 			const principal = getValue(values, 'principal', 10000);
 			const monthly = getValue(values, 'monthlyContribution', 500);
 			const rate = getValue(values, 'annualRate', 8);
 			const years = getValue(values, 'years', 10);
-			const result = calculateCompoundInterest(principal, rate, years, 12, monthly);
-			return result.futureValue;
+			const compounds = Number(values['compoundsPerYear'] || 12);
+			const inflation = getValue(values, 'inflationRate', 2.5);
+
+			const result = calculateCompoundInterest(principal, rate, years, compounds, monthly);
+			const sched = generateCompoundGrowthSchedule(principal, rate, years, compounds, monthly);
+
+			const realPurchasingPower = result.futureValue / Math.pow(1 + inflation / 100, years);
+			const growthMultiplier = result.futureValue / Math.max(result.totalDeposits, 1);
+			const totalDeposited = result.totalDeposits;
+			const totalInterest = result.totalInterest;
+
+			return {
+				primary: {
+					label: 'Future Investment Value',
+					value: result.futureValue,
+					formattedValue: formatCurrency(result.futureValue),
+					subtext: `Grown from ${formatCurrency(totalDeposited)} in deposits over ${years} years`
+				},
+				secondary: [
+					{ id: 'totalDeposited', label: 'Total Cash Deposited', value: totalDeposited, formattedValue: formatCurrency(totalDeposited) },
+					{ id: 'totalInterest', label: 'Compound Interest Earned', value: totalInterest, formattedValue: formatCurrency(totalInterest), badge: `+${((totalInterest / Math.max(totalDeposited, 1)) * 100).toFixed(0)}% return` },
+					{ id: 'realValue', label: 'Inflation-Adjusted Value', value: realPurchasingPower, formattedValue: formatCurrency(realPurchasingPower), badge: `${inflation}% inflation` },
+					{ id: 'multiplier', label: 'Wealth Multiplier', value: growthMultiplier, formattedValue: `${growthMultiplier.toFixed(2)}x` },
+				],
+				breakdown: [
+					{ label: 'Initial Principal', value: principal, formattedValue: formatCurrency(principal) },
+					{ label: 'Recurring Deposits', value: Math.max(totalDeposited - principal, 0), formattedValue: formatCurrency(Math.max(totalDeposited - principal, 0)) },
+					{ label: 'Compound Interest', value: totalInterest, formattedValue: formatCurrency(totalInterest) },
+				],
+				chart: {
+					type: 'donut',
+					title: 'Investment Portfolio Composition',
+					labels: ['Initial Principal', 'Recurring Deposits', 'Compound Interest'],
+					datasets: [{
+						label: 'Asset Breakdown',
+						data: [principal, Math.max(totalDeposited - principal, 0), totalInterest]
+					}],
+					summaryText: `Interest earnings represent ${((totalInterest / Math.max(result.futureValue, 1)) * 100).toFixed(1)}% of your ending balance.`
+				},
+				table: {
+					title: 'Year-by-Year Growth Projection',
+					headers: sched.headers,
+					rows: sched.rows,
+					maxInitialRows: 10
+				}
+			};
 		},
-		resultFormat: (value) => formatCurrency(value),
+		resultFormat: (value) => typeof value === 'object' && 'primary' in value ? value.primary.formattedValue : formatCurrency(value),
+		parametersGuide: [
+			{ id: 'principal', name: 'Initial Deposit', description: 'Starting account balance or lump sum invested at time zero.', whyItMatters: 'Compounds for the longest duration, maximizing compound interest acceleration.', typicalRange: '$1,000 to $100,000+' },
+			{ id: 'monthlyContribution', name: 'Monthly Addition', description: 'Dollar-cost-averaged recurring investment made every month.', whyItMatters: 'Steadily expands the asset base on which future compounding multiplies.', typicalRange: '$100 to $2,500/mo' },
+			{ id: 'annualRate', name: 'Expected Annual Return (Rate)', description: 'Average annual percentage yield or nominal stock market return.', whyItMatters: 'Small differences in return rates compound into vast wealth divergence over 20+ years.', typicalRange: '5% (bonds) to 10% (S&P 500)' },
+			{ id: 'years', name: 'Investment Period', description: 'Total length of time assets remain invested without premature withdrawal.', whyItMatters: 'Time is the single most critical multiplier in compounding math.', typicalRange: '5 to 40 years' },
+		],
 		faq: [
 			{
 				question: 'How do I calculate compound interest with monthly contributions?',
@@ -146,18 +281,61 @@ const calculators: CalculatorConfig[] = [
 		category: 'Finance',
 		metaDescription: 'Calculate simple interest, monthly interest rate, and total repayment amount with our free simple interest loan calculator.',
 		inputs: [
-			{ id: 'principal', label: 'Principal amount', type: 'number', min: 1, step: 100, defaultValue: 5000, unit: '$' },
-			{ id: 'annualRate', label: 'Annual interest rate', type: 'number', min: 0.01, step: 0.1, defaultValue: 5, unit: '%' },
-			{ id: 'years', label: 'Time period', type: 'number', min: 0.1, step: 0.5, defaultValue: 3, unit: 'years' },
+			{ id: 'principal', label: 'Principal amount', type: 'number', min: 1, step: 100, defaultValue: 5000, unit: '$', prefix: '$', colSpan: 'half', helpText: 'Original sum borrowed or loaned' },
+			{ id: 'annualRate', label: 'Annual interest rate', type: 'number', min: 0.01, step: 0.1, defaultValue: 5, unit: '%', suffix: '%', colSpan: 'half' },
+			{ id: 'years', label: 'Time period', type: 'number', min: 0.1, step: 0.5, defaultValue: 3, unit: 'years', suffix: 'years', colSpan: 'half' },
+			{ id: 'timeUnit', label: 'Time duration unit', type: 'select', colSpan: 'half', tier: 'advanced', defaultValue: 'years', options: [
+				{ label: 'Years', value: 'years' },
+				{ label: 'Months', value: 'months' },
+			] },
 		],
-		formula: (values) => {
+		formula: (values): CalculatorDetailedResult => {
 			const principal = getValue(values, 'principal', 5000);
 			const rate = getValue(values, 'annualRate', 5);
-			const years = getValue(values, 'years', 3);
+			const rawPeriod = getValue(values, 'years', 3);
+			const timeUnit = String(values['timeUnit'] || 'years');
+			const years = timeUnit === 'months' ? rawPeriod / 12 : rawPeriod;
+
 			const res = calculateSimpleInterest(principal, rate, years);
-			return res.totalAmount;
+			const totalMonths = Math.max(years * 12, 1);
+			const monthlyInterest = res.interest / totalMonths;
+			const dailyInterest = res.interest / Math.max(years * 365, 1);
+
+			return {
+				primary: {
+					label: 'Total Repayment Amount',
+					value: res.totalAmount,
+					formattedValue: `${formatCurrency(res.totalAmount)} total`,
+					subtext: `Principal ${formatCurrency(principal)} + Interest ${formatCurrency(res.interest)}`
+				},
+				secondary: [
+					{ id: 'totalInterest', label: 'Total Accrued Interest', value: res.interest, formattedValue: formatCurrency(res.interest), badge: `+${((res.interest / Math.max(principal, 1)) * 100).toFixed(1)}%` },
+					{ id: 'monthlyCost', label: 'Monthly Interest Cost', value: monthlyInterest, formattedValue: `${formatCurrency(monthlyInterest)} / mo` },
+					{ id: 'dailyAccrual', label: 'Daily Accrual Rate', value: dailyInterest, formattedValue: `${formatCurrency(dailyInterest, '$', 3)} / day` },
+					{ id: 'effectiveRate', label: 'Cumulative Return', value: rate * years, formattedValue: `${(rate * years).toFixed(1)}%` },
+				],
+				breakdown: [
+					{ label: 'Original Principal', value: principal, formattedValue: formatCurrency(principal) },
+					{ label: 'Total Simple Interest', value: res.interest, formattedValue: formatCurrency(res.interest) },
+				],
+				chart: {
+					type: 'bar',
+					title: 'Principal vs Total Due at Maturity',
+					labels: ['Principal', 'Interest Cost', 'Total Due'],
+					datasets: [{
+						label: 'Amounts ($)',
+						data: [principal, res.interest, res.totalAmount]
+					}],
+					summaryText: `Simple interest adds ${formatCurrency(res.interest)} over the ${rawPeriod} ${timeUnit} loan term.`
+				}
+			};
 		},
-		resultFormat: (value) => `${formatCurrency(value)} total`,
+		resultFormat: (value) => typeof value === 'object' && 'primary' in value ? value.primary.formattedValue : `${formatCurrency(value)} total`,
+		parametersGuide: [
+			{ id: 'principal', name: 'Principal Capital', description: 'Initial face value of the loan or note without accumulated fees.', whyItMatters: 'Direct multiplier for total simple interest accrual.', typicalRange: '$500 to $50,000' },
+			{ id: 'annualRate', name: 'Annual Interest Rate', description: 'Percentage rate per year agreed between debtor and creditor.', whyItMatters: 'Determines the speed of linear interest accrual over time.', typicalRange: '3.0% to 18.0%' },
+			{ id: 'years', name: 'Time Duration', description: 'The contracted repayment interval until maturity.', whyItMatters: 'Unlike compound interest, simple interest scales strictly linearly with duration.', typicalRange: '6 months to 5 years' },
+		],
 		faq: [
 			{
 				question: 'How do I find the simple interest rate calculator formula?',
@@ -190,18 +368,60 @@ const calculators: CalculatorConfig[] = [
 		category: 'Finance',
 		metaDescription: 'Free bill split calculator to calculate tip amounts, split restaurant dining bills among friends, and check total dining cost.',
 		inputs: [
-			{ id: 'billAmount', label: 'Bill amount', type: 'number', min: 0.01, step: 0.5, defaultValue: 85.5, unit: '$' },
-			{ id: 'tipPercent', label: 'Tip percentage', type: 'number', min: 0, max: 100, step: 1, defaultValue: 18, unit: '%' },
-			{ id: 'splitWays', label: 'Split among people', type: 'number', min: 1, max: 50, step: 1, defaultValue: 3, unit: 'people' },
+			{ id: 'billAmount', label: 'Bill amount (pre-tip)', type: 'number', min: 0.01, step: 0.5, defaultValue: 85.5, unit: '$', prefix: '$', colSpan: 'half' },
+			{ id: 'tipPercent', label: 'Tip percentage', type: 'number', min: 0, max: 100, step: 1, defaultValue: 18, unit: '%', suffix: '%', colSpan: 'half' },
+			{ id: 'splitWays', label: 'Split among guests', type: 'number', min: 1, max: 50, step: 1, defaultValue: 3, unit: 'people', suffix: 'people', colSpan: 'half' },
+			{ id: 'taxPercent', label: 'Local dining tax %', type: 'number', min: 0, max: 25, step: 0.25, defaultValue: 0, unit: '%', suffix: '%', colSpan: 'half', tier: 'advanced', helpText: 'Optional if tax is not yet added to subtotal' },
 		],
-		formula: (values) => {
+		formula: (values): CalculatorDetailedResult => {
 			const bill = getValue(values, 'billAmount', 85.5);
-			const tip = getValue(values, 'tipPercent', 18);
-			const split = getValue(values, 'splitWays', 3);
-			const res = calculateTip(bill, tip, split);
-			return res.perPerson;
+			const tipRate = getValue(values, 'tipPercent', 18);
+			const split = Math.max(Math.floor(getValue(values, 'splitWays', 3)), 1);
+			const taxRate = getValue(values, 'taxPercent', 0);
+
+			const taxAmount = bill * (taxRate / 100);
+			const tipAmount = bill * (tipRate / 100);
+			const grandTotal = bill + taxAmount + tipAmount;
+			const perPerson = grandTotal / split;
+			const tipPerPerson = tipAmount / split;
+			const billPerPerson = (bill + taxAmount) / split;
+
+			return {
+				primary: {
+					label: 'Amount Per Person',
+					value: perPerson,
+					formattedValue: `${formatCurrency(perPerson)} / person`,
+					subtext: `Evenly split across ${split} ${split === 1 ? 'person' : 'people'}`
+				},
+				secondary: [
+					{ id: 'totalTip', label: 'Total Gratuity', value: tipAmount, formattedValue: formatCurrency(tipAmount), badge: `${tipRate}% tip` },
+					{ id: 'grandTotal', label: 'Final Bill Total', value: grandTotal, formattedValue: formatCurrency(grandTotal) },
+					{ id: 'tipPerPerson', label: 'Tip Per Person', value: tipPerPerson, formattedValue: formatCurrency(tipPerPerson) },
+					{ id: 'billPerPerson', label: 'Food & Tax Per Person', value: billPerPerson, formattedValue: formatCurrency(billPerPerson) },
+				],
+				breakdown: [
+					{ label: 'Food Subtotal', value: bill, formattedValue: formatCurrency(bill) },
+					...(taxAmount > 0 ? [{ label: 'Sales Tax', value: taxAmount, formattedValue: formatCurrency(taxAmount) }] : []),
+					{ label: 'Gratuity Tip', value: tipAmount, formattedValue: formatCurrency(tipAmount) },
+				],
+				chart: {
+					type: 'donut',
+					title: 'Bill & Gratuity Allocation',
+					labels: ['Food Subtotal', ...(taxAmount > 0 ? ['Sales Tax'] : []), 'Gratuity'],
+					datasets: [{
+						label: 'Share of Bill',
+						data: [bill, ...(taxAmount > 0 ? [taxAmount] : []), tipAmount]
+					}],
+					summaryText: `Gratuity accounts for ${((tipAmount / Math.max(grandTotal, 1)) * 100).toFixed(1)}% of the total checkout bill.`
+				}
+			};
 		},
-		resultFormat: (value) => `${formatCurrency(value)} / person`,
+		resultFormat: (value) => typeof value === 'object' && 'primary' in value ? value.primary.formattedValue : `${formatCurrency(value)} / person`,
+		parametersGuide: [
+			{ id: 'billAmount', name: 'Bill Subtotal', description: 'The cost of food and beverages before tip or additional fees.', whyItMatters: 'The standard baseline upon which fair gratuity percentages are calculated.', typicalRange: '$10 to $500+' },
+			{ id: 'tipPercent', name: 'Tip Percentage', description: 'Discretionary gratuity awarded to service staff.', whyItMatters: 'Standard US dining norms range from 15% (adequate) to 20%+ (exceptional service).', typicalRange: '15% to 22%' },
+			{ id: 'splitWays', name: 'Party Headcount', description: 'Number of diners or party members sharing the payment equally.', whyItMatters: 'Prevents calculation errors and awkward bill splitting among groups.', typicalRange: '1 to 12 people' },
+		],
 		faq: [
 			{
 				question: 'How do I calculate tip on a restaurant bill?',
@@ -230,18 +450,62 @@ const calculators: CalculatorConfig[] = [
 		category: 'Finance',
 		metaDescription: 'Calculate discount prices, retail sale markdowns, net savings, and checkout totals with local sales tax included.',
 		inputs: [
-			{ id: 'originalPrice', label: 'Original price', type: 'number', min: 0.01, step: 1, defaultValue: 120, unit: '$' },
-			{ id: 'discountPercent', label: 'Discount percentage', type: 'number', min: 0, max: 100, step: 1, defaultValue: 25, unit: '%' },
-			{ id: 'taxPercent', label: 'Sales tax rate', type: 'number', min: 0, max: 30, step: 0.25, defaultValue: 8.25, unit: '%' },
+			{ id: 'originalPrice', label: 'Original retail price', type: 'number', min: 0.01, step: 1, defaultValue: 120, unit: '$', prefix: '$', colSpan: 'half' },
+			{ id: 'discountPercent', label: 'Store discount %', type: 'number', min: 0, max: 100, step: 1, defaultValue: 25, unit: '%', suffix: '%', colSpan: 'half' },
+			{ id: 'taxPercent', label: 'Local sales tax %', type: 'number', min: 0, max: 30, step: 0.25, defaultValue: 8.25, unit: '%', suffix: '%', colSpan: 'half' },
+			{ id: 'secondaryDiscount', label: 'Additional coupon %', type: 'number', min: 0, max: 100, step: 1, defaultValue: 0, unit: '%', suffix: '%', colSpan: 'half', tier: 'advanced', helpText: 'Stackable extra coupon or promo code' },
+			{ id: 'quantity', label: 'Quantity purchased', type: 'number', min: 1, max: 1000, step: 1, defaultValue: 1, colSpan: 'half', tier: 'advanced' },
 		],
-		formula: (values) => {
-			const price = getValue(values, 'originalPrice', 120);
-			const discount = getValue(values, 'discountPercent', 25);
-			const tax = getValue(values, 'taxPercent', 8.25);
-			const res = calculateDiscount(price, discount, tax);
-			return res.finalPrice;
+		formula: (values): CalculatorDetailedResult => {
+			const pricePerUnit = getValue(values, 'originalPrice', 120);
+			const d1 = getValue(values, 'discountPercent', 25);
+			const d2 = getValue(values, 'secondaryDiscount', 0);
+			const taxRate = getValue(values, 'taxPercent', 8.25);
+			const qty = Math.max(Math.floor(getValue(values, 'quantity', 1)), 1);
+
+			const subtotalGross = pricePerUnit * qty;
+			const afterFirstDiscount = subtotalGross * (1 - d1 / 100);
+			const afterStackedDiscount = afterFirstDiscount * (1 - d2 / 100);
+			const totalSavings = subtotalGross - afterStackedDiscount;
+			const taxAmount = afterStackedDiscount * (taxRate / 100);
+			const finalTotal = afterStackedDiscount + taxAmount;
+			const effectiveDiscountPct = subtotalGross > 0 ? (totalSavings / subtotalGross) * 100 : 0;
+
+			return {
+				primary: {
+					label: 'Final Checkout Price',
+					value: finalTotal,
+					formattedValue: formatCurrency(finalTotal),
+					subtext: `Includes ${formatCurrency(totalSavings)} in savings and ${formatCurrency(taxAmount)} tax`
+				},
+				secondary: [
+					{ id: 'savings', label: 'Total Savings', value: totalSavings, formattedValue: formatCurrency(totalSavings), badge: `-${effectiveDiscountPct.toFixed(1)}% off` },
+					{ id: 'salePrice', label: 'Discounted Subtotal', value: afterStackedDiscount, formattedValue: formatCurrency(afterStackedDiscount) },
+					{ id: 'taxAmount', label: 'Sales Tax Charged', value: taxAmount, formattedValue: formatCurrency(taxAmount), badge: `${taxRate}% tax` },
+					{ id: 'unitPrice', label: 'Final Cost Per Item', value: finalTotal / qty, formattedValue: formatCurrency(finalTotal / qty) },
+				],
+				breakdown: [
+					{ label: 'Discounted Price', value: afterStackedDiscount, formattedValue: formatCurrency(afterStackedDiscount) },
+					{ label: 'Sales Tax', value: taxAmount, formattedValue: formatCurrency(taxAmount) },
+				],
+				chart: {
+					type: 'bar',
+					title: 'Original Price vs Final Price Breakdown',
+					labels: ['Original Price', 'Your Savings', 'Checkout Price'],
+					datasets: [{
+						label: 'USD ($)',
+						data: [subtotalGross, totalSavings, finalTotal]
+					}],
+					summaryText: `You save ${formatCurrency(totalSavings)} off the original sticker price.`
+				}
+			};
 		},
-		resultFormat: (value) => formatCurrency(value),
+		resultFormat: (value) => typeof value === 'object' && 'primary' in value ? value.primary.formattedValue : formatCurrency(value),
+		parametersGuide: [
+			{ id: 'originalPrice', name: 'Original Price', description: 'The retail manufacturer suggested price (MSRP) before any markdowns.', whyItMatters: 'Reference point for coupon validation and net dollar savings.', typicalRange: '$5 to $2,000+' },
+			{ id: 'discountPercent', name: 'Store Discount Rate', description: 'Promotional percentage slashed from the item cost.', whyItMatters: 'A 30% discount saves substantially more than a $10 coupon on higher-priced goods.', typicalRange: '10% to 75%' },
+			{ id: 'taxPercent', name: 'Sales Tax Rate', description: 'Jurisdictional retail sales tax applied by state/city authorities.', whyItMatters: 'Applied to the discounted sale price in standard retail transactions.', typicalRange: '0% to 11.5%' },
+		],
 		faq: [
 			{
 				question: 'How do I calculate discount prices during store sales?',
@@ -270,18 +534,66 @@ const calculators: CalculatorConfig[] = [
 		category: 'Finance',
 		metaDescription: 'Use our hourly rate converter and wage calculator to convert hourly pay into annual salary, monthly earnings, and weekly milestones.',
 		inputs: [
-			{ id: 'hourlyWage', label: 'Hourly wage', type: 'number', min: 1, step: 0.5, defaultValue: 32.5, unit: '$/hr' },
-			{ id: 'hoursPerWeek', label: 'Hours worked per week', type: 'number', min: 1, max: 100, step: 1, defaultValue: 40, unit: 'hrs' },
-			{ id: 'weeksPerYear', label: 'Paid weeks per year', type: 'number', min: 1, max: 52, step: 1, defaultValue: 52, unit: 'weeks' },
+			{ id: 'hourlyWage', label: 'Hourly base wage', type: 'number', min: 1, step: 0.5, defaultValue: 32.5, unit: '$/hr', prefix: '$', suffix: '$/hr', colSpan: 'half' },
+			{ id: 'hoursPerWeek', label: 'Hours worked per week', type: 'number', min: 1, max: 100, step: 1, defaultValue: 40, unit: 'hrs', suffix: 'hrs/wk', colSpan: 'half' },
+			{ id: 'weeksPerYear', label: 'Paid weeks per year', type: 'number', min: 1, max: 52, step: 1, defaultValue: 52, unit: 'weeks', suffix: 'weeks', colSpan: 'half' },
+			{ id: 'overtimeHours', label: 'Weekly overtime hours (1.5x)', type: 'number', min: 0, max: 50, step: 1, defaultValue: 0, unit: 'hrs', suffix: 'hrs/wk', colSpan: 'half', tier: 'advanced', helpText: 'Paid at time-and-a-half (1.5x base rate)' },
+			{ id: 'annualBonus', label: 'Annual bonus / commissions', type: 'number', min: 0, step: 500, defaultValue: 0, unit: '$', prefix: '$', colSpan: 'half', tier: 'advanced' },
+			{ id: 'paidHolidays', label: 'Paid vacation / PTO days', type: 'number', min: 0, max: 60, step: 1, defaultValue: 15, unit: 'days', suffix: 'days', colSpan: 'half', tier: 'advanced' },
 		],
-		formula: (values) => {
+		formula: (values): CalculatorDetailedResult => {
 			const rate = getValue(values, 'hourlyWage', 32.5);
 			const hours = getValue(values, 'hoursPerWeek', 40);
 			const weeks = getValue(values, 'weeksPerYear', 52);
-			const res = calculateSalary(rate, hours, weeks);
-			return res.annual;
+			const otHours = getValue(values, 'overtimeHours', 0);
+			const bonus = getValue(values, 'annualBonus', 0);
+
+			const baseWeekly = rate * hours;
+			const otWeekly = otHours * (rate * 1.5);
+			const totalWeekly = baseWeekly + otWeekly;
+			const annualGross = (totalWeekly * weeks) + bonus;
+			const monthlyGross = annualGross / 12;
+			const biweeklyGross = annualGross / 26;
+			const dailyGross = annualGross / (weeks * (hours / 8 || 5));
+
+			const conversionRows: Array<Array<string | number>> = [
+				['Hourly Wage (Base)', formatCurrency(rate)],
+				['Daily Pay (8 Hours)', formatCurrency(dailyGross)],
+				['Weekly Gross Pay', formatCurrency(totalWeekly)],
+				['Bi-Weekly Paycheck (26/yr)', formatCurrency(biweeklyGross)],
+				['Semi-Monthly Paycheck (24/yr)', formatCurrency(annualGross / 24)],
+				['Monthly Gross Salary', formatCurrency(monthlyGross)],
+				['Quarterly Compensation', formatCurrency(annualGross / 4)],
+				['Annual Gross Salary', formatCurrency(annualGross)],
+			];
+
+			return {
+				primary: {
+					label: 'Gross Annual Salary',
+					value: annualGross,
+					formattedValue: `${formatCurrency(annualGross, '$', 0)} / year`,
+					subtext: `Based on ${hours} regular hrs/wk across ${weeks} paid weeks`
+				},
+				secondary: [
+					{ id: 'monthly', label: 'Monthly Gross', value: monthlyGross, formattedValue: `${formatCurrency(monthlyGross)} / mo` },
+					{ id: 'biweekly', label: 'Bi-Weekly Paycheck', value: biweeklyGross, formattedValue: formatCurrency(biweeklyGross), badge: 'Every 2 weeks' },
+					{ id: 'weekly', label: 'Weekly Earnings', value: totalWeekly, formattedValue: `${formatCurrency(totalWeekly)} / wk` },
+					{ id: 'daily', label: 'Daily Compensation', value: dailyGross, formattedValue: `${formatCurrency(dailyGross)} / day` },
+				],
+				table: {
+					title: 'Complete Payroll Conversion Schedule',
+					headers: ['Pay Frequency', 'Gross Compensation'],
+					rows: conversionRows,
+					maxInitialRows: 8
+				}
+			};
 		},
-		resultFormat: (value) => `${formatCurrency(value, '$', 0)} / year`,
+		resultFormat: (value) => typeof value === 'object' && 'primary' in value ? value.primary.formattedValue : `${formatCurrency(value, '$', 0)} / year`,
+		parametersGuide: [
+			{ id: 'hourlyWage', name: 'Hourly Wage', description: 'Base pay rate agreed upon per standard hour of work.', whyItMatters: 'Fundamental compensation unit across hourly, contractor, and shift positions.', typicalRange: '$15 to $150/hr' },
+			{ id: 'hoursPerWeek', name: 'Weekly Hours', description: 'Expected working hours scheduled per 7-day period.', whyItMatters: 'Standard full-time employment is defined as 40 hours/week.', typicalRange: '20 to 50 hrs/wk' },
+			{ id: 'weeksPerYear', name: 'Paid Weeks', description: 'Number of paid working and vacation weeks included annually.', whyItMatters: 'Full-time salaried jobs typically provide 52 paid weeks including PTO.', typicalRange: '48 to 52 weeks' },
+		],
 		faq: [
 			{
 				question: 'How does an hourly rate converter work?',
@@ -310,22 +622,77 @@ const calculators: CalculatorConfig[] = [
 		category: 'Finance',
 		metaDescription: 'Estimate monthly car payments and auto financing with our free loan calculator. Factor in vehicle price, down payment, trade-in, and loan rate.',
 		inputs: [
-			{ id: 'vehiclePrice', label: 'Vehicle purchase price', type: 'number', min: 1000, step: 500, defaultValue: 28000, unit: '$' },
-			{ id: 'downPayment', label: 'Down payment', type: 'number', min: 0, step: 500, defaultValue: 4000, unit: '$' },
-			{ id: 'tradeIn', label: 'Trade-in value', type: 'number', min: 0, step: 500, defaultValue: 2000, unit: '$' },
-			{ id: 'interestRate', label: 'Annual loan rate (APR)', type: 'number', min: 0.1, max: 30, step: 0.1, defaultValue: 5.9, unit: '%' },
-			{ id: 'loanTermYears', label: 'Loan duration', type: 'number', min: 1, max: 8, step: 1, defaultValue: 5, unit: 'years' },
+			{ id: 'vehiclePrice', label: 'Vehicle purchase price', type: 'number', min: 1000, step: 500, defaultValue: 28000, unit: '$', prefix: '$', colSpan: 'half' },
+			{ id: 'downPayment', label: 'Cash down payment', type: 'number', min: 0, step: 500, defaultValue: 4000, unit: '$', prefix: '$', colSpan: 'half' },
+			{ id: 'tradeIn', label: 'Trade-in credit', type: 'number', min: 0, step: 500, defaultValue: 2000, unit: '$', prefix: '$', colSpan: 'half' },
+			{ id: 'interestRate', label: 'Annual loan rate (APR)', type: 'number', min: 0.1, max: 30, step: 0.1, defaultValue: 5.9, unit: '%', suffix: '%', colSpan: 'half' },
+			{ id: 'loanTermYears', label: 'Loan duration', type: 'number', min: 1, max: 8, step: 1, defaultValue: 5, unit: 'years', suffix: 'years', colSpan: 'half' },
+			{ id: 'salesTaxRate', label: 'Vehicle sales tax %', type: 'number', min: 0, max: 15, step: 0.1, defaultValue: 6.5, unit: '%', suffix: '%', colSpan: 'half', tier: 'advanced' },
+			{ id: 'dealershipFees', label: 'Dealer fees & registration', type: 'number', min: 0, step: 50, defaultValue: 450, unit: '$', prefix: '$', colSpan: 'half', tier: 'advanced' },
+			{ id: 'extraMonthly', label: 'Extra monthly principal', type: 'number', min: 0, step: 25, defaultValue: 0, unit: '$/mo', prefix: '$', colSpan: 'half', tier: 'advanced' },
 		],
-		formula: (values) => {
+		formula: (values): CalculatorDetailedResult => {
 			const price = getValue(values, 'vehiclePrice', 28000);
 			const down = getValue(values, 'downPayment', 4000);
 			const trade = getValue(values, 'tradeIn', 2000);
 			const rate = getValue(values, 'interestRate', 5.9);
 			const years = getValue(values, 'loanTermYears', 5);
-			const netPrincipal = Math.max(price - down - trade, 0);
-			return calculateLoanMonthlyPayment(netPrincipal, rate, years);
+			const taxRate = getValue(values, 'salesTaxRate', 6.5);
+			const fees = getValue(values, 'dealershipFees', 450);
+			const extra = getValue(values, 'extraMonthly', 0);
+
+			const taxableAmount = Math.max(price - trade, 0);
+			const salesTax = taxableAmount * (taxRate / 100);
+			const netPrincipal = Math.max(price - down - trade + salesTax + fees, 0);
+
+			const baseMonthly = calculateLoanMonthlyPayment(netPrincipal, rate, years);
+			const totalMonthly = baseMonthly + extra;
+			const sched = generateAmortizationSchedule(netPrincipal, rate, years, extra);
+			const totalCarCost = down + trade + (totalMonthly * sched.totalMonths);
+
+			return {
+				primary: {
+					label: 'Estimated Car Payment',
+					value: totalMonthly,
+					formattedValue: `${formatCurrency(totalMonthly)} / month`,
+					subtext: `${years} year loan (${years * 12} months) at ${rate}% APR`
+				},
+				secondary: [
+					{ id: 'netPrincipal', label: 'Amount Financed', value: netPrincipal, formattedValue: formatCurrency(netPrincipal) },
+					{ id: 'totalInterest', label: 'Total Loan Interest', value: sched.totalInterest, formattedValue: formatCurrency(sched.totalInterest), badge: `${((sched.totalInterest / Math.max(netPrincipal, 1)) * 100).toFixed(0)}% finance cost` },
+					{ id: 'salesTax', label: 'Estimated Sales Tax', value: salesTax, formattedValue: formatCurrency(salesTax) },
+					{ id: 'totalCost', label: 'Total Vehicle Cost', value: totalCarCost, formattedValue: formatCurrency(totalCarCost) },
+				],
+				breakdown: [
+					{ label: 'Vehicle Net Price', value: Math.max(price - down - trade, 0), formattedValue: formatCurrency(Math.max(price - down - trade, 0)) },
+					{ label: 'Financing Interest', value: sched.totalInterest, formattedValue: formatCurrency(sched.totalInterest) },
+					{ label: 'Taxes & Fees', value: salesTax + fees, formattedValue: formatCurrency(salesTax + fees) },
+				],
+				chart: {
+					type: 'donut',
+					title: 'Auto Financing Breakdown',
+					labels: ['Net Vehicle Principal', 'Loan Interest', 'Taxes & Fees'],
+					datasets: [{
+						label: 'Total Cost Split',
+						data: [Math.max(price - down - trade, 0), sched.totalInterest, salesTax + fees]
+					}],
+					summaryText: `Vehicle price constitutes ${(((price - down - trade) / Math.max(totalCarCost, 1)) * 100).toFixed(0)}% of your total loan outlay.`
+				},
+				table: {
+					title: 'Vehicle Amortization Schedule',
+					headers: sched.headers,
+					rows: sched.rows,
+					maxInitialRows: 6
+				}
+			};
 		},
-		resultFormat: (value) => `${formatCurrency(value)} / month`,
+		resultFormat: (value) => typeof value === 'object' && 'primary' in value ? value.primary.formattedValue : `${formatCurrency(value)} / month`,
+		parametersGuide: [
+			{ id: 'vehiclePrice', name: 'Vehicle Sticker Price', description: 'Agreed dealer sale price before down payment or incentives.', whyItMatters: 'Base valuation used for auto financing contracts.', typicalRange: '$15,000 to $70,000' },
+			{ id: 'downPayment', name: 'Cash Down Payment', description: 'Upfront money paid directly at the time of purchase.', whyItMatters: 'Reduces the borrowed loan amount and helps avoid being upside down on the car loan.', typicalRange: '$2,000 to $10,000' },
+			{ id: 'tradeIn', name: 'Trade-In Allowance', description: 'Credit offered by dealership for trading in an existing vehicle.', whyItMatters: 'In many US states, trade-in credit reduces the taxable purchase amount.', typicalRange: '$1,000 to $15,000' },
+			{ id: 'interestRate', name: 'Auto Loan APR', description: 'Annual percentage rate determined by credit score and loan tier.', whyItMatters: 'New car rates are typically 2% to 4% lower than used car rates.', typicalRange: '4.5% to 11.0%' },
+		],
 		faq: [
 			{
 				question: 'How do down payments and trade-ins impact my loan calculator monthly payment?',
@@ -354,20 +721,73 @@ const calculators: CalculatorConfig[] = [
 		category: 'Finance',
 		metaDescription: 'Project future investment wealth and portfolio growth with our free compound interest growth calculator and savings projection tool.',
 		inputs: [
-			{ id: 'initialInvestment', label: 'Starting balance', type: 'number', min: 0, step: 500, defaultValue: 25000, unit: '$' },
-			{ id: 'monthlyAdd', label: 'Monthly recurring addition', type: 'number', min: 0, step: 50, defaultValue: 750, unit: '$' },
-			{ id: 'expectedReturn', label: 'Expected annual return', type: 'number', min: 1, max: 40, step: 0.25, defaultValue: 9, unit: '%' },
-			{ id: 'horizonYears', label: 'Time horizon', type: 'number', min: 1, max: 50, step: 1, defaultValue: 15, unit: 'years' },
+			{ id: 'initialInvestment', label: 'Starting portfolio balance', type: 'number', min: 0, step: 500, defaultValue: 25000, unit: '$', prefix: '$', colSpan: 'half' },
+			{ id: 'monthlyAdd', label: 'Monthly recurring addition', type: 'number', min: 0, step: 50, defaultValue: 750, unit: '$', prefix: '$', colSpan: 'half' },
+			{ id: 'expectedReturn', label: 'Expected annual return', type: 'number', min: 1, max: 40, step: 0.25, defaultValue: 9, unit: '%', suffix: '%', colSpan: 'half' },
+			{ id: 'horizonYears', label: 'Time horizon', type: 'number', min: 1, max: 50, step: 1, defaultValue: 15, unit: 'years', suffix: 'years', colSpan: 'half' },
+			{ id: 'inflationRate', label: 'Expected inflation rate', type: 'number', min: 0, max: 15, step: 0.1, defaultValue: 2.5, unit: '%', suffix: '%', colSpan: 'half', tier: 'advanced', helpText: 'Discounts ending sum to real purchasing power' },
+			{ id: 'annualExpenseRatio', label: 'Fund fee / expense ratio', type: 'number', min: 0, max: 3, step: 0.01, defaultValue: 0.05, unit: '%', suffix: '%', colSpan: 'half', tier: 'advanced', helpText: 'Index funds average ~0.05%; active funds ~0.75%' },
 		],
-		formula: (values) => {
+		formula: (values): CalculatorDetailedResult => {
 			const init = getValue(values, 'initialInvestment', 25000);
 			const add = getValue(values, 'monthlyAdd', 750);
-			const ret = getValue(values, 'expectedReturn', 9);
+			const nominalReturn = getValue(values, 'expectedReturn', 9);
+			const fee = getValue(values, 'annualExpenseRatio', 0.05);
+			const effectiveReturn = Math.max(nominalReturn - fee, 0);
 			const yrs = getValue(values, 'horizonYears', 15);
-			const res = calculateCompoundInterest(init, ret, yrs, 12, add);
-			return res.futureValue;
+			const inflation = getValue(values, 'inflationRate', 2.5);
+
+			const res = calculateCompoundInterest(init, effectiveReturn, yrs, 12, add);
+			const sched = generateCompoundGrowthSchedule(init, effectiveReturn, yrs, 12, add);
+
+			const realValue = res.futureValue / Math.pow(1 + inflation / 100, yrs);
+			const multiplier = res.futureValue / Math.max(res.totalDeposits, 1);
+			const totalDeposited = res.totalDeposits;
+			const totalGains = res.totalInterest;
+
+			return {
+				primary: {
+					label: 'Projected Portfolio Value',
+					value: res.futureValue,
+					formattedValue: formatCurrency(res.futureValue),
+					subtext: `After ${yrs} years with ${formatCurrency(add)}/mo consistent contributions`
+				},
+				secondary: [
+					{ id: 'totalContributed', label: 'Total Cash Contributed', value: totalDeposited, formattedValue: formatCurrency(totalDeposited) },
+					{ id: 'totalGains', label: 'Total Investment Gains', value: totalGains, formattedValue: formatCurrency(totalGains), badge: `+${((totalGains / Math.max(totalDeposited, 1)) * 100).toFixed(0)}% profit` },
+					{ id: 'realPower', label: 'Inflation-Adjusted Value', value: realValue, formattedValue: formatCurrency(realValue), badge: 'Purchasing power' },
+					{ id: 'growthMultiple', label: 'Portfolio Multiple', value: multiplier, formattedValue: `${multiplier.toFixed(2)}x` },
+				],
+				breakdown: [
+					{ label: 'Initial Investment', value: init, formattedValue: formatCurrency(init) },
+					{ label: 'Total Contributions', value: Math.max(totalDeposited - init, 0), formattedValue: formatCurrency(Math.max(totalDeposited - init, 0)) },
+					{ label: 'Compounded Returns', value: totalGains, formattedValue: formatCurrency(totalGains) },
+				],
+				chart: {
+					type: 'donut',
+					title: 'Capital Contributed vs Market Gains',
+					labels: ['Initial Capital', 'Monthly Additions', 'Market Gains'],
+					datasets: [{
+						label: 'Ending Wealth ($)',
+						data: [init, Math.max(totalDeposited - init, 0), totalGains]
+					}],
+					summaryText: `Investment growth constitutes ${((totalGains / Math.max(res.futureValue, 1)) * 100).toFixed(1)}% of your ending portfolio balance.`
+				},
+				table: {
+					title: 'Annual Portfolio Growth Projection',
+					headers: sched.headers,
+					rows: sched.rows,
+					maxInitialRows: 10
+				}
+			};
 		},
-		resultFormat: (value) => formatCurrency(value),
+		resultFormat: (value) => typeof value === 'object' && 'primary' in value ? value.primary.formattedValue : formatCurrency(value),
+		parametersGuide: [
+			{ id: 'initialInvestment', name: 'Starting Portfolio', description: 'Initial account capital invested at day one.', whyItMatters: 'Compounds across the full multi-decade horizon.', typicalRange: '$5,000 to $100,000+' },
+			{ id: 'monthlyAdd', name: 'Monthly Investment', description: 'Automated recurring contribution invested every month.', whyItMatters: 'Dollar-cost averaging reduces volatility and steadily expands invested capital.', typicalRange: '$250 to $2,500/mo' },
+			{ id: 'expectedReturn', name: 'Annual Return Rate', description: 'Expected annual compound return of your investment portfolio.', whyItMatters: 'Broad stock market index funds historically return 8% to 10% annually before inflation.', typicalRange: '6% to 11%' },
+			{ id: 'horizonYears', name: 'Time Horizon', description: 'Years until retirement or planned portfolio drawdowns.', whyItMatters: 'The longer the horizon, the larger the proportion of wealth generated purely from compound growth.', typicalRange: '10 to 40 years' },
+		],
 		faq: [
 			{
 				question: 'How does regular dollar-cost averaging accelerate portfolio returns?',
@@ -390,6 +810,7 @@ const calculators: CalculatorConfig[] = [
 		),
 	},
 
+
 	// ==========================================
 	// EDUCATION & GRADES (4 Calculators)
 	// ==========================================
@@ -400,22 +821,93 @@ const calculators: CalculatorConfig[] = [
 		category: 'Education',
 		metaDescription: 'Free GPA calculator to calculate weighted GPA, course credit averages, and semester grades with our fast online academic tool.',
 		inputs: [
-			{ id: 'course1Grade', label: 'Course 1 grade points', type: 'number', min: 0, max: 4.0, step: 0.01, defaultValue: 3.7, unit: 'pts' },
-			{ id: 'course1Credits', label: 'Course 1 credits', type: 'number', min: 0, max: 12, step: 0.5, defaultValue: 3, unit: 'credits' },
-			{ id: 'course2Grade', label: 'Course 2 grade points', type: 'number', min: 0, max: 4.0, step: 0.01, defaultValue: 3.3, unit: 'pts' },
-			{ id: 'course2Credits', label: 'Course 2 credits', type: 'number', min: 0, max: 12, step: 0.5, defaultValue: 3, unit: 'credits' },
-			{ id: 'course3Grade', label: 'Course 3 grade points', type: 'number', min: 0, max: 4.0, step: 0.01, defaultValue: 4.0, unit: 'pts' },
-			{ id: 'course3Credits', label: 'Course 3 credits', type: 'number', min: 0, max: 12, step: 0.5, defaultValue: 4, unit: 'credits' },
+			{ id: 'course1Grade', label: 'Course 1 grade points', type: 'number', min: 0, max: 4.0, step: 0.01, defaultValue: 3.7, unit: 'pts', colSpan: 'half', helpText: 'Standard 4.0 grade point scale (A=4.0, A-=3.7)' },
+			{ id: 'course1Credits', label: 'Course 1 credits', type: 'number', min: 0, max: 12, step: 0.5, defaultValue: 3, unit: 'credits', suffix: 'credits', colSpan: 'half' },
+			{ id: 'course2Grade', label: 'Course 2 grade points', type: 'number', min: 0, max: 4.0, step: 0.01, defaultValue: 3.3, unit: 'pts', colSpan: 'half', helpText: 'B+=3.3, B=3.0, B-=2.7' },
+			{ id: 'course2Credits', label: 'Course 2 credits', type: 'number', min: 0, max: 12, step: 0.5, defaultValue: 3, unit: 'credits', suffix: 'credits', colSpan: 'half' },
+			{ id: 'course3Grade', label: 'Course 3 grade points', type: 'number', min: 0, max: 4.0, step: 0.01, defaultValue: 4.0, unit: 'pts', colSpan: 'half', helpText: 'A=4.0' },
+			{ id: 'course3Credits', label: 'Course 3 credits', type: 'number', min: 0, max: 12, step: 0.5, defaultValue: 4, unit: 'credits', suffix: 'credits', colSpan: 'half' },
+			{ id: 'course4Grade', label: 'Course 4 grade points', type: 'number', min: 0, max: 4.0, step: 0.01, defaultValue: 0, unit: 'pts', colSpan: 'half', tier: 'advanced', helpText: 'Optional additional course' },
+			{ id: 'course4Credits', label: 'Course 4 credits', type: 'number', min: 0, max: 12, step: 0.5, defaultValue: 0, unit: 'credits', suffix: 'credits', colSpan: 'half', tier: 'advanced' },
+			{ id: 'course5Grade', label: 'Course 5 grade points', type: 'number', min: 0, max: 4.0, step: 0.01, defaultValue: 0, unit: 'pts', colSpan: 'half', tier: 'advanced', helpText: 'Optional elective / lab' },
+			{ id: 'course5Credits', label: 'Course 5 credits', type: 'number', min: 0, max: 12, step: 0.5, defaultValue: 0, unit: 'credits', suffix: 'credits', colSpan: 'half', tier: 'advanced' },
 		],
-		formula: (values) => {
-			const pairs: Array<[number, number]> = [
-				[getValue(values, 'course1Grade'), getValue(values, 'course1Credits')],
-				[getValue(values, 'course2Grade'), getValue(values, 'course2Credits')],
-				[getValue(values, 'course3Grade'), getValue(values, 'course3Credits')],
+		formula: (values): CalculatorDetailedResult => {
+			const courses = [
+				{ name: 'Course 1', grade: getValue(values, 'course1Grade', 3.7), credits: getValue(values, 'course1Credits', 3) },
+				{ name: 'Course 2', grade: getValue(values, 'course2Grade', 3.3), credits: getValue(values, 'course2Credits', 3) },
+				{ name: 'Course 3', grade: getValue(values, 'course3Grade', 4.0), credits: getValue(values, 'course3Credits', 4) },
+				{ name: 'Course 4', grade: getValue(values, 'course4Grade', 0), credits: getValue(values, 'course4Credits', 0) },
+				{ name: 'Course 5', grade: getValue(values, 'course5Grade', 0), credits: getValue(values, 'course5Credits', 0) },
 			];
-			return weightedAverage(pairs);
+
+			const activeCourses = courses.filter((c) => c.credits > 0);
+			const totalCredits = activeCourses.reduce((sum, c) => sum + c.credits, 0);
+			const totalQualityPoints = activeCourses.reduce((sum, c) => sum + c.grade * c.credits, 0);
+			const gpa = totalCredits > 0 ? totalQualityPoints / totalCredits : 0;
+
+			let standing = 'Good Standing';
+			let badge = 'Satisfactory';
+			if (gpa >= 3.9) {
+				standing = 'Summa Cum Laude / Highest Honors';
+				badge = 'Highest Honors';
+			} else if (gpa >= 3.7) {
+				standing = 'Magna Cum Laude / Dean\'s Honors';
+				badge = 'High Honors';
+			} else if (gpa >= 3.5) {
+				standing = 'Cum Laude / Dean\'s List';
+				badge = 'Dean\'s List';
+			} else if (gpa >= 3.0) {
+				standing = 'Good Academic Standing (B Average)';
+				badge = 'Good Standing';
+			} else if (gpa >= 2.0) {
+				standing = 'Passing Academic Standing';
+				badge = 'Satisfactory';
+			} else {
+				standing = 'Academic Probation Risk (< 2.0)';
+				badge = 'Warning';
+			}
+
+			const letterEquiv = gpa >= 3.85 ? 'A' : gpa >= 3.5 ? 'A-' : gpa >= 3.15 ? 'B+' : gpa >= 2.85 ? 'B' : gpa >= 2.5 ? 'B-' : gpa >= 2.15 ? 'C+' : gpa >= 1.85 ? 'C' : gpa >= 1.5 ? 'C-' : gpa >= 1.0 ? 'D' : 'F';
+			const approxPct = Math.min(Math.round((gpa / 4.0) * 100), 100);
+
+			return {
+				primary: {
+					label: 'Semester GPA',
+					value: gpa,
+					formattedValue: `${formatNumber(gpa)} GPA`,
+					subtext: `${totalCredits.toFixed(1)} enrolled credit hours completed`
+				},
+				secondary: [
+					{ id: 'qualityPoints', label: 'Quality Points Earned', value: totalQualityPoints, formattedValue: formatNumber(totalQualityPoints) },
+					{ id: 'enrolledCredits', label: 'Total Enrolled Credits', value: totalCredits, formattedValue: `${totalCredits.toFixed(1)} hrs` },
+					{ id: 'academicStanding', label: 'Academic Standing', value: standing, formattedValue: standing, badge },
+					{ id: 'letterGrade', label: 'Grade & % Equivalent', value: letterEquiv, formattedValue: `${letterEquiv} (~${approxPct}%)` },
+				],
+				breakdown: activeCourses.map((c) => ({
+					label: c.name,
+					value: c.grade * c.credits,
+					formattedValue: `${(c.grade * c.credits).toFixed(2)} pts (${c.credits} cr @ ${c.grade.toFixed(2)})`
+				})),
+				chart: {
+					type: 'donut',
+					title: 'Quality Point Distribution by Course',
+					labels: activeCourses.map((c) => c.name),
+					datasets: [{
+						label: 'Quality Points',
+						data: activeCourses.map((c) => Number((c.grade * c.credits).toFixed(2)))
+					}],
+					summaryText: `Your weighted term GPA is ${formatNumber(gpa)} based on ${totalCredits} credit hours.`
+				}
+			};
 		},
-		resultFormat: (value) => `${formatNumber(value)} GPA`,
+		resultFormat: (value) => typeof value === 'object' && 'primary' in value ? value.primary.formattedValue : `${formatNumber(value)} GPA`,
+		parametersGuide: [
+			{ id: 'courseGrade', name: 'Grade Points (4.0 Scale)', description: 'Numeric quality points assigned to letter grades (A=4.0, A-=3.7, B+=3.3, B=3.0, C=2.0).', whyItMatters: 'Higher course grades increase quality points proportionately to course credit weight.', typicalRange: '0.0 to 4.0' },
+			{ id: 'courseCredits', name: 'Course Credit Hours', description: 'Institutional credits or units assigned to the course (typically 3 or 4 credits).', whyItMatters: 'Courses with higher credits exert greater mathematical influence over your GPA.', typicalRange: '1.0 to 5.0 credits' },
+			{ id: 'qualityPoints', name: 'Quality Points', description: 'Course Grade Points multiplied by Course Credit Hours.', whyItMatters: 'The fundamental numerator in collegiate GPA calculations (Total Points ÷ Total Credits).', typicalRange: '0 to 20 per course' },
+			{ id: 'honorsCutoff', name: 'Dean\'s List & Latin Honors', description: 'Institutional benchmarks for academic distinction.', whyItMatters: 'Dean\'s List typically requires a 3.50+ GPA; Magna Cum Laude usually requires 3.70+.', typicalRange: '3.50 to 4.00' },
+		],
 		faq: [
 			{
 				question: 'How does a weighted gpa calculator compute semester scores?',
@@ -448,22 +940,91 @@ const calculators: CalculatorConfig[] = [
 		category: 'Education',
 		metaDescription: 'Calculate cumulative GPA across multiple college terms with our fast, free cumulative gpa calculator and academic tracker.',
 		inputs: [
-			{ id: 'semester1Gpa', label: 'Semester 1 GPA', type: 'number', min: 0, max: 4.0, step: 0.01, defaultValue: 3.5, unit: 'pts' },
-			{ id: 'semester1Credits', label: 'Semester 1 credits', type: 'number', min: 0, max: 40, step: 0.5, defaultValue: 18, unit: 'credits' },
-			{ id: 'semester2Gpa', label: 'Semester 2 GPA', type: 'number', min: 0, max: 4.0, step: 0.01, defaultValue: 3.8, unit: 'pts' },
-			{ id: 'semester2Credits', label: 'Semester 2 credits', type: 'number', min: 0, max: 40, step: 0.5, defaultValue: 18, unit: 'credits' },
-			{ id: 'semester3Gpa', label: 'Semester 3 GPA', type: 'number', min: 0, max: 4.0, step: 0.01, defaultValue: 3.6, unit: 'pts' },
-			{ id: 'semester3Credits', label: 'Semester 3 credits', type: 'number', min: 0, max: 40, step: 0.5, defaultValue: 16, unit: 'credits' },
-			{ id: 'semester4Gpa', label: 'Semester 4 GPA', type: 'number', min: 0, max: 4.0, step: 0.01, defaultValue: 3.9, unit: 'pts' },
-			{ id: 'semester4Credits', label: 'Semester 4 credits', type: 'number', min: 0, max: 40, step: 0.5, defaultValue: 18, unit: 'credits' },
+			{ id: 'semester1Gpa', label: 'Semester 1 GPA', type: 'number', min: 0, max: 4.0, step: 0.01, defaultValue: 3.5, unit: 'pts', colSpan: 'half' },
+			{ id: 'semester1Credits', label: 'Semester 1 credits', type: 'number', min: 0, max: 40, step: 0.5, defaultValue: 18, unit: 'credits', suffix: 'credits', colSpan: 'half' },
+			{ id: 'semester2Gpa', label: 'Semester 2 GPA', type: 'number', min: 0, max: 4.0, step: 0.01, defaultValue: 3.8, unit: 'pts', colSpan: 'half' },
+			{ id: 'semester2Credits', label: 'Semester 2 credits', type: 'number', min: 0, max: 40, step: 0.5, defaultValue: 18, unit: 'credits', suffix: 'credits', colSpan: 'half' },
+			{ id: 'semester3Gpa', label: 'Semester 3 GPA', type: 'number', min: 0, max: 4.0, step: 0.01, defaultValue: 3.6, unit: 'pts', colSpan: 'half' },
+			{ id: 'semester3Credits', label: 'Semester 3 credits', type: 'number', min: 0, max: 40, step: 0.5, defaultValue: 16, unit: 'credits', suffix: 'credits', colSpan: 'half' },
+			{ id: 'semester4Gpa', label: 'Semester 4 GPA', type: 'number', min: 0, max: 4.0, step: 0.01, defaultValue: 3.9, unit: 'pts', colSpan: 'half', tier: 'advanced' },
+			{ id: 'semester4Credits', label: 'Semester 4 credits', type: 'number', min: 0, max: 40, step: 0.5, defaultValue: 18, unit: 'credits', suffix: 'credits', colSpan: 'half', tier: 'advanced' },
+			{ id: 'semester5Gpa', label: 'Semester 5 GPA', type: 'number', min: 0, max: 4.0, step: 0.01, defaultValue: 0, unit: 'pts', colSpan: 'half', tier: 'advanced' },
+			{ id: 'semester5Credits', label: 'Semester 5 credits', type: 'number', min: 0, max: 40, step: 0.5, defaultValue: 0, unit: 'credits', suffix: 'credits', colSpan: 'half', tier: 'advanced' },
+			{ id: 'semester6Gpa', label: 'Semester 6 GPA', type: 'number', min: 0, max: 4.0, step: 0.01, defaultValue: 0, unit: 'pts', colSpan: 'half', tier: 'advanced' },
+			{ id: 'semester6Credits', label: 'Semester 6 credits', type: 'number', min: 0, max: 40, step: 0.5, defaultValue: 0, unit: 'credits', suffix: 'credits', colSpan: 'half', tier: 'advanced' },
 		],
-		formula: (values) => weightedAverage([
-			[getValue(values, 'semester1Gpa'), getValue(values, 'semester1Credits')],
-			[getValue(values, 'semester2Gpa'), getValue(values, 'semester2Credits')],
-			[getValue(values, 'semester3Gpa'), getValue(values, 'semester3Credits')],
-			[getValue(values, 'semester4Gpa'), getValue(values, 'semester4Credits')],
-		]),
-		resultFormat: (value) => `${formatNumber(value)} CGPA`,
+		formula: (values): CalculatorDetailedResult => {
+			const sems = [
+				{ name: 'Semester 1', gpa: getValue(values, 'semester1Gpa', 3.5), credits: getValue(values, 'semester1Credits', 18) },
+				{ name: 'Semester 2', gpa: getValue(values, 'semester2Gpa', 3.8), credits: getValue(values, 'semester2Credits', 18) },
+				{ name: 'Semester 3', gpa: getValue(values, 'semester3Gpa', 3.6), credits: getValue(values, 'semester3Credits', 16) },
+				{ name: 'Semester 4', gpa: getValue(values, 'semester4Gpa', 3.9), credits: getValue(values, 'semester4Credits', 18) },
+				{ name: 'Semester 5', gpa: getValue(values, 'semester5Gpa', 0), credits: getValue(values, 'semester5Credits', 0) },
+				{ name: 'Semester 6', gpa: getValue(values, 'semester6Gpa', 0), credits: getValue(values, 'semester6Credits', 0) },
+			];
+
+			const activeSems = sems.filter((s) => s.credits > 0);
+			const totalCredits = activeSems.reduce((sum, s) => sum + s.credits, 0);
+			const totalQualityPoints = activeSems.reduce((sum, s) => sum + s.gpa * s.credits, 0);
+			const cgpa = totalCredits > 0 ? totalQualityPoints / totalCredits : 0;
+
+			let degreeClass = 'First Class Honours';
+			let badge = 'First Class';
+			if (cgpa >= 3.7) {
+				degreeClass = 'First Class Honours / Distinction';
+				badge = 'First Class';
+			} else if (cgpa >= 3.3) {
+				degreeClass = 'Upper Second Class (2:1 Division)';
+				badge = 'Upper Second';
+			} else if (cgpa >= 3.0) {
+				degreeClass = 'Lower Second Class (2:2 Division)';
+				badge = 'Lower Second';
+			} else if (cgpa >= 2.0) {
+				degreeClass = 'Third Class / Passing Standing';
+				badge = 'Passing';
+			} else {
+				degreeClass = 'Academic Warning (< 2.0)';
+				badge = 'Warning';
+			}
+
+			const approxPct = Math.min(Math.round((cgpa / 4.0) * 100), 100);
+
+			return {
+				primary: {
+					label: 'Cumulative CGPA',
+					value: cgpa,
+					formattedValue: `${formatNumber(cgpa)} CGPA`,
+					subtext: `Across ${activeSems.length} terms and ${totalCredits} total completed credits`
+				},
+				secondary: [
+					{ id: 'cumQualityPoints', label: 'Total Quality Points', value: totalQualityPoints, formattedValue: formatNumber(totalQualityPoints) },
+					{ id: 'cumCredits', label: 'Cumulative Credits', value: totalCredits, formattedValue: `${totalCredits.toFixed(0)} credits` },
+					{ id: 'degreeStanding', label: 'Degree Classification', value: degreeClass, formattedValue: degreeClass, badge },
+					{ id: 'equiv100', label: 'Approximate 100-Point Avg', value: approxPct, formattedValue: `${approxPct}%` },
+				],
+				breakdown: activeSems.map((s) => ({
+					label: s.name,
+					value: s.gpa * s.credits,
+					formattedValue: `${(s.gpa * s.credits).toFixed(1)} pts (${s.credits} cr @ ${s.gpa.toFixed(2)})`
+				})),
+				chart: {
+					type: 'bar',
+					title: 'Semester GPA Progression',
+					labels: activeSems.map((s) => s.name),
+					datasets: [{
+						label: 'Semester GPA',
+						data: activeSems.map((s) => s.gpa)
+					}],
+					summaryText: `Cumulative CGPA stands at ${formatNumber(cgpa)} across ${totalCredits} total credits.`
+				}
+			};
+		},
+		resultFormat: (value) => typeof value === 'object' && 'primary' in value ? value.primary.formattedValue : `${formatNumber(value)} CGPA`,
+		parametersGuide: [
+			{ id: 'semesterGpa', name: 'Semester Term GPA', description: 'Grade point average earned exclusively within a specific single academic term.', whyItMatters: 'Combined with semester credits to determine total quality points.', typicalRange: '2.0 to 4.0' },
+			{ id: 'semesterCredits', name: 'Semester Credit Load', description: 'Total credit units or contact hours taken during that specific term.', whyItMatters: 'Semesters with higher credit loads carry greater proportional weight in the cumulative score.', typicalRange: '12 to 21 credits' },
+			{ id: 'degreeClassification', name: 'Degree Classification', description: 'Graduation honours tiers used across UK, Commonwealth, and international universities.', whyItMatters: 'Dictates postgraduate admission eligibility and honors recognition at graduation.', typicalRange: 'First Class (≥3.7), 2:1 (≥3.3), 2:2 (≥3.0)' },
+		],
 		faq: [
 			{
 				question: 'How is a cumulative gpa calculator different from a single semester GPA calculator?',
@@ -491,15 +1052,72 @@ const calculators: CalculatorConfig[] = [
 		category: 'Math',
 		metaDescription: 'Free percentage calculator to calculate percentages, parts of whole numbers, percentage increase, and conversion ratios with instant results.',
 		inputs: [
-			{ id: 'part', label: 'Part / Score', type: 'number', min: 0, step: 0.01, defaultValue: 42, unit: 'units' },
-			{ id: 'whole', label: 'Whole / Total', type: 'number', min: 0.01, step: 0.01, defaultValue: 50, unit: 'units' },
+			{ id: 'part', label: 'Part / Score', type: 'number', min: 0, step: 0.01, defaultValue: 42, unit: 'units', colSpan: 'half', helpText: 'Numerator or portion' },
+			{ id: 'whole', label: 'Whole / Total', type: 'number', min: 0.01, step: 0.01, defaultValue: 50, unit: 'units', colSpan: 'half', helpText: 'Denominator or total available' },
+			{ id: 'customPrecision', label: 'Decimal precision', type: 'number', min: 0, max: 4, step: 1, defaultValue: 2, unit: 'digits', colSpan: 'half', tier: 'advanced', helpText: 'Output decimal places (0 to 4)' },
 		],
-		formula: (values) => {
+		formula: (values): CalculatorDetailedResult => {
 			const part = getValue(values, 'part', 42);
 			const whole = getValue(values, 'whole', 50);
-			return whole === 0 ? 0 : (part / whole) * 100;
+			const precision = Math.min(Math.max(getValue(values, 'customPrecision', 2), 0), 4);
+			const pct = whole === 0 ? 0 : (part / whole) * 100;
+			const remaining = Math.max(100 - pct, 0);
+			const decimal = whole === 0 ? 0 : part / whole;
+
+			// Helper for greatest common divisor
+			const gcd = (a: number, b: number): number => {
+				a = Math.round(Math.abs(a));
+				b = Math.round(Math.abs(b));
+				while (b) {
+					const t = b;
+					b = a % b;
+					a = t;
+				}
+				return a || 1;
+			};
+
+			const divisor = gcd(part, whole);
+			const simplifiedNum = Math.round(part / divisor);
+			const simplifiedDen = Math.round(whole / divisor);
+			const fractionStr = whole > 0 ? `${simplifiedNum} / ${simplifiedDen}` : 'N/A';
+			const ratioStr = whole > 0 ? `1 : ${(whole / Math.max(part, 0.0001)).toFixed(2)}` : 'N/A';
+
+			return {
+				primary: {
+					label: 'Calculated Percentage',
+					value: pct,
+					formattedValue: `${pct.toFixed(precision)}%`,
+					subtext: `${part} out of ${whole} total units`
+				},
+				secondary: [
+					{ id: 'simplifiedFraction', label: 'Simplified Fraction', value: fractionStr, formattedValue: fractionStr },
+					{ id: 'decimalValue', label: 'Decimal Equivalent', value: decimal, formattedValue: decimal.toFixed(precision + 2) },
+					{ id: 'remainingShare', label: 'Remaining Balance', value: remaining, formattedValue: `${remaining.toFixed(precision)}%` },
+					{ id: 'proportionalRatio', label: 'Proportional Ratio', value: ratioStr, formattedValue: ratioStr },
+				],
+				breakdown: [
+					{ label: 'Calculated Share', value: Math.min(pct, 100), formattedValue: `${pct.toFixed(precision)}%` },
+					{ label: 'Remaining Balance', value: remaining, formattedValue: `${remaining.toFixed(precision)}%` },
+				],
+				chart: {
+					type: 'donut',
+					title: 'Proportional Share vs Remaining Balance',
+					labels: ['Part Share', 'Remaining Balance'],
+					datasets: [{
+						label: 'Percentage (%)',
+						data: [Number(pct.toFixed(1)), Number(remaining.toFixed(1))]
+					}],
+					summaryText: `${part} represents ${pct.toFixed(1)}% of the total quantity ${whole}.`
+				}
+			};
 		},
-		resultFormat: (value) => `${formatNumber(Number(value))}%`,
+		resultFormat: (value) => typeof value === 'object' && 'primary' in value ? value.primary.formattedValue : `${formatNumber(Number(value))}%`,
+		parametersGuide: [
+			{ id: 'part', name: 'Part / Score', description: 'The portion or earned score being measured.', whyItMatters: 'Acts as the numerator in proportional percentage calculations.', typicalRange: 'Any positive number' },
+			{ id: 'whole', name: 'Whole / Total', description: 'The total base or maximum available quantity.', whyItMatters: 'Acts as the denominator representing the 100% baseline.', typicalRange: 'Greater than 0' },
+			{ id: 'decimalEquivalent', name: 'Decimal Equivalent', description: 'The raw fraction value (Part ÷ Whole) prior to multiplying by 100.', whyItMatters: 'Used directly in mathematical and financial equations.', typicalRange: '0.00 to 1.00+' },
+			{ id: 'remainingBalance', name: 'Remaining Share', description: 'The difference between 100% and the calculated percentage.', whyItMatters: 'Helpful for tracking unfinished quotas, remaining marks, or incomplete portions.', typicalRange: '0% to 100%' },
+		],
 		faq: [
 			{
 				question: 'What is the standard percentage calculator formula?',
@@ -527,19 +1145,85 @@ const calculators: CalculatorConfig[] = [
 		category: 'Education',
 		metaDescription: 'Calculate test percentages and letter grades from raw exam scores with our fast online grade calculator.',
 		inputs: [
-			{ id: 'marks', label: 'Marks obtained', type: 'number', min: 0, step: 0.5, defaultValue: 92, unit: 'marks' },
-			{ id: 'totalMarks', label: 'Total marks available', type: 'number', min: 1, step: 0.5, defaultValue: 100, unit: 'marks' },
+			{ id: 'marks', label: 'Marks obtained', type: 'number', min: 0, step: 0.5, defaultValue: 92, unit: 'marks', colSpan: 'half' },
+			{ id: 'totalMarks', label: 'Total marks available', type: 'number', min: 1, step: 0.5, defaultValue: 100, unit: 'marks', colSpan: 'half' },
+			{ id: 'passingCutoff', label: 'Passing cutoff score', type: 'number', min: 1, max: 100, step: 1, defaultValue: 60, unit: '%', suffix: '%', colSpan: 'half', tier: 'advanced', helpText: 'Minimum required percentage to pass (typically 60% or 70%)' },
+			{ id: 'curvePoints', label: 'Curve / Extra credit', type: 'number', min: 0, max: 50, step: 0.5, defaultValue: 0, unit: 'pts', colSpan: 'half', tier: 'advanced', helpText: 'Bonus points added directly to raw score' },
 		],
-		formula: (values) => {
-			const marks = getValue(values, 'marks', 92);
-			const totalMarks = getValue(values, 'totalMarks', 100);
-			return totalMarks === 0 ? 0 : (marks / totalMarks) * 100;
+		formula: (values): CalculatorDetailedResult => {
+			const rawMarks = getValue(values, 'marks', 92);
+			const total = getValue(values, 'totalMarks', 100);
+			const curve = getValue(values, 'curvePoints', 0);
+			const cutoff = getValue(values, 'passingCutoff', 60);
+
+			const effectiveMarks = Math.max(rawMarks + curve, 0);
+			const percent = total > 0 ? (effectiveMarks / total) * 100 : 0;
+
+			let letterGrade = 'F';
+			let gpa = 0.0;
+			if (percent >= 97) { letterGrade = 'A+'; gpa = 4.0; }
+			else if (percent >= 93) { letterGrade = 'A'; gpa = 4.0; }
+			else if (percent >= 90) { letterGrade = 'A-'; gpa = 3.7; }
+			else if (percent >= 87) { letterGrade = 'B+'; gpa = 3.3; }
+			else if (percent >= 83) { letterGrade = 'B'; gpa = 3.0; }
+			else if (percent >= 80) { letterGrade = 'B-'; gpa = 2.7; }
+			else if (percent >= 77) { letterGrade = 'C+'; gpa = 2.3; }
+			else if (percent >= 73) { letterGrade = 'C'; gpa = 2.0; }
+			else if (percent >= 70) { letterGrade = 'C-'; gpa = 1.7; }
+			else if (percent >= 60) { letterGrade = 'D'; gpa = 1.0; }
+			else { letterGrade = 'F'; gpa = 0.0; }
+
+			const passMargin = percent - cutoff;
+			const isPassing = passMargin >= 0;
+			const passStatusText = isPassing
+				? `Passed (+${passMargin.toFixed(1)}% above cutoff)`
+				: `Below passing (-${Math.abs(passMargin).toFixed(1)}% shortage)`;
+			const passBadge = isPassing ? 'Passed' : 'Action Needed';
+			const pointsLost = Math.max(total - effectiveMarks, 0);
+
+			return {
+				primary: {
+					label: 'Final Grade',
+					value: percent,
+					formattedValue: `${formatNumber(percent)}% (${letterGrade})`,
+					subtext: `${effectiveMarks.toFixed(1)} out of ${total.toFixed(1)} marks earned`
+				},
+				secondary: [
+					{ id: 'gpaScale', label: '4.0 GPA Equivalent', value: gpa, formattedValue: `${gpa.toFixed(2)} GPA` },
+					{ id: 'passStatus', label: 'Passing Status', value: passStatusText, formattedValue: passStatusText, badge: passBadge },
+					{ id: 'pointsLost', label: 'Points Deducted', value: pointsLost, formattedValue: `${pointsLost.toFixed(1)} pts` },
+					{ id: 'curveContribution', label: 'Curve Bonus Applied', value: curve, formattedValue: `+${curve.toFixed(1)} pts` },
+				],
+				breakdown: [
+					{ label: 'Marks Earned', value: effectiveMarks, formattedValue: `${effectiveMarks.toFixed(1)} pts` },
+					{ label: 'Marks Deducted', value: pointsLost, formattedValue: `${pointsLost.toFixed(1)} pts` },
+				],
+				chart: {
+					type: 'donut',
+					title: 'Marks Earned vs Marks Deducted',
+					labels: ['Marks Earned', 'Points Lost'],
+					datasets: [{
+						label: 'Marks',
+						data: [Number(effectiveMarks.toFixed(1)), Number(pointsLost.toFixed(1))]
+					}],
+					summaryText: `Your score corresponds to a letter grade of ${letterGrade} and ${gpa.toFixed(2)} on the 4.0 scale.`
+				}
+			};
 		},
 		resultFormat: (value) => {
+			if (typeof value === 'object' && 'primary' in value) {
+				return value.primary.formattedValue;
+			}
 			const percent = Number(value);
 			const grade = percent >= 97 ? 'A+' : percent >= 93 ? 'A' : percent >= 90 ? 'A-' : percent >= 87 ? 'B+' : percent >= 83 ? 'B' : percent >= 80 ? 'B-' : percent >= 77 ? 'C+' : percent >= 73 ? 'C' : percent >= 70 ? 'C-' : percent >= 60 ? 'D' : 'F';
 			return `${formatNumber(percent)}% (${grade})`;
 		},
+		parametersGuide: [
+			{ id: 'marks', name: 'Marks Obtained', description: 'Raw points or score achieved on the assignment, quiz, or examination.', whyItMatters: 'Serves as the basis for calculating percentage performance.', typicalRange: '0 to total marks' },
+			{ id: 'totalMarks', name: 'Total Marks Available', description: 'Maximum potential score for the assessment.', whyItMatters: 'Establishes the 100% scale against which performance is measured.', typicalRange: '10 to 1,000+' },
+			{ id: 'passingCutoff', name: 'Passing Cutoff', description: 'The minimum percentage required by your school or syllabus to pass.', whyItMatters: 'Highlights your safety buffer above academic probation or failing marks.', typicalRange: '50% to 75%' },
+			{ id: 'curvePoints', name: 'Extra Credit / Curve', description: 'Adjustment points added by the professor to elevate class distribution.', whyItMatters: 'Directly raises your percentage and can elevate your letter grade threshold.', typicalRange: '0 to 15 pts' },
+		],
 		faq: [
 			{
 				question: 'Which grading scale is used in this calculator?',

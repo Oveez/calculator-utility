@@ -1,10 +1,11 @@
 ---
 import SiteLayout from '../../layouts/SiteLayout.astro';
 import Icon from '../../components/Icon.astro';
-import { siteName, toAbsoluteUrl, withBasePath } from '../../utils/site';
+import CalculatorParameterGuide from '../../components/calculator/CalculatorParameterGuide.astro';
+import { siteName, toAbsoluteUrl } from '../../utils/site';
 
-const pageTitle = `P-Value Calculator | Z-Score & t-Score Significance · ${siteName}`;
-const pageDesc = 'Calculate exact one-tailed and two-tailed p-values from Z-scores and Student t-test statistics to evaluate statistical significance (α = 0.05, 0.01).';
+const pageTitle = `P-Value Calculator | Z, t, Chi-Square & F-Test Significance · ${siteName}`;
+const pageDesc = 'Calculate exact one-tailed and two-tailed p-values from Z-scores, Student t-test, Chi-Square (χ²), and ANOVA F-test statistics with evidence strength gauges and decision rules.';
 const canonicalUrl = toAbsoluteUrl('/research-tools/p-value-calculator/');
 
 const breadcrumbItems = [
@@ -13,14 +14,86 @@ const breadcrumbItems = [
   { label: 'P-Value Calculator' },
 ];
 
-const faqs = [
+const parameterGuide = [
   {
-    question: 'What is a p-value in statistics?',
-    answer: 'A p-value is the probability of obtaining test results at least as extreme as the observed data, assuming the null hypothesis (H₀) is true. A p-value less than significance level α (typically 0.05) indicates sufficient evidence to reject H₀.',
+    name: 'Statistical Test Distribution',
+    description: 'Select the test distribution matching your experimental design: Standard Normal (Z-test), Student’s t-test, Pearson Chi-Square (χ²), or ANOVA Fisher F-test.',
+    whyItMatters: 'Dictates the probability density function and tail geometry used to evaluate conditional null probability.',
+    typicalRange: 'Z, Student-t, Chi-Square, F-Distribution',
+    unit: 'distribution',
   },
   {
-    question: 'When do I use a one-tailed vs two-tailed test?',
-    answer: 'Use a two-tailed test when testing for any directional difference (Hₐ: μ ≠ μ₀). Use a one-tailed test (left or right) only when you have a pre-registered specific directional hypothesis (e.g. Hₐ: μ > μ₀ or Hₐ: μ < μ₀).',
+    name: 'Test Statistic Value',
+    description: 'The standardized test value computed from your empirical data (e.g. Z = 2.15, t = 2.45, χ² = 7.82, F = 4.12).',
+    whyItMatters: 'Quantifies how many standard units separate observed sample data from the null hypothesis baseline.',
+    typicalRange: 'Real number (Z, t) or Non-negative (χ², F)',
+    unit: 'statistic',
+  },
+  {
+    name: 'Degrees of Freedom (df)',
+    description: 'Number of freely varying independent parameters in estimation (df = n - 1 for one-sample t-test, [r-1][c-1] for Chi-Square contingency tables, df₁ and df₂ for ANOVA).',
+    whyItMatters: 'Shapes the distribution curvature and critical boundary thresholds.',
+    typicalRange: '1 to 1,000+',
+    unit: 'df',
+  },
+  {
+    name: 'Hypothesis Direction (Sidedness)',
+    description: 'Two-tailed (testing for any difference in either direction), Right-tailed (greater than), or Left-tailed (less than).',
+    whyItMatters: 'A one-tailed test concentrates all alpha rejection probability into a single tail.',
+    typicalRange: 'Two-tailed, Right-tailed, Left-tailed',
+    unit: 'direction',
+  },
+  {
+    name: 'Significance Threshold (α)',
+    description: 'The maximum tolerable risk of committing a Type I error (false positive). α = 0.05 is the universal scientific standard.',
+    whyItMatters: 'Defines the decision boundary: if p < α, reject H₀ in favor of H₁.',
+    typicalRange: '0.01, 0.05, 0.10',
+    unit: 'threshold',
+  },
+  {
+    name: 'Calculated p-Value',
+    description: 'The exact conditional probability P(Data | H₀) of observing results at least as extreme as your test statistic assuming the null hypothesis is true.',
+    whyItMatters: 'The central metric for scientific publication and empirical verification.',
+    typicalRange: '0.0000 to 1.0000',
+    unit: 'probability',
+  },
+];
+
+const workedExample = {
+  title: 'Worked Example: Two-Tailed Z-Test (Z = 2.15, α = 0.05)',
+  description: 'Determination of exact two-tailed p-value and hypothesis decision under standard normal curve.',
+  formula: 'p = 2 × [1 - Φ(|Z|)]',
+  steps: [
+    {
+      step: '1. Cumulative Normal Probability',
+      calculation: 'For Z = 2.15: Left Tail Φ(2.15) = 0.98422; Right Tail Area = 1 - 0.98422 = 0.01578',
+      result: 'Right Tail = 0.0158',
+    },
+    {
+      step: '2. Two-Tailed Doubling',
+      calculation: 'p = 2 × 0.01578 = 0.03156 (3.16%)',
+      result: 'p = 0.0316',
+    },
+    {
+      step: '3. Hypothesis Decision Rule',
+      calculation: 'Compare p = 0.0316 against α = 0.05; since 0.0316 < 0.05, reject H₀',
+      result: 'Statistically Significant (p < 0.05)',
+    },
+  ],
+};
+
+const faqs = [
+  {
+    question: 'What is a p-value in statistical hypothesis testing?',
+    answer: 'A p-value is the probability of obtaining test results at least as extreme as the observed sample data, assuming the null hypothesis (H₀) is true. A smaller p-value provides stronger evidence against the null hypothesis.',
+  },
+  {
+    question: 'When should I use a one-tailed vs two-tailed p-value?',
+    answer: 'Use a two-tailed test when testing for any directional deviation (Hₐ: μ ≠ μ₀). Use a one-tailed test only when you have a strong, pre-registered directional prediction (e.g. Hₐ: μ > μ₀). Chi-Square and ANOVA F-tests are inherently right-tailed omnibus tests.',
+  },
+  {
+    question: 'What is the difference between statistical significance and practical significance?',
+    answer: 'Statistical significance (p < 0.05) indicates that an observed effect is unlikely to be pure random sampling chance. Practical significance depends on effect size (e.g. Cohen’s d, Pearson r) and real-world clinical or business impact. With huge sample sizes, tiny trivial differences can become statistically significant.',
   },
 ];
 
@@ -90,7 +163,7 @@ const schemaGraph = [
         P-Value Calculator
       </h1>
       <p class="max-w-3xl text-sm leading-relaxed text-[color:var(--muted)] sm:text-base">
-        Determine statistical significance from your test statistic. Calculate exact one-tailed and two-tailed p-values for standard normal Z-tests and Student's t-tests.
+        Determine statistical significance from your test statistic. Calculate exact p-values for standard normal Z-tests, Student's t-tests, Chi-Square (χ²), and ANOVA F-tests with evidence gauges and decision rules.
       </p>
     </header>
 
@@ -98,7 +171,7 @@ const schemaGraph = [
       class="rounded-[2.5rem] border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-6 shadow-[var(--shadow)] sm:p-10"
       data-pvalue-app
     >
-      <div class="grid gap-8 lg:grid-cols-[1.15fr_0.85fr]">
+      <div class="grid gap-8 lg:grid-cols-[1.1fr_0.9fr]">
         <form class="space-y-5" onsubmit="return false;">
           <div class="flex items-center justify-between">
             <h2 class="text-lg font-bold text-[color:var(--fg)]">Test Configuration</h2>
@@ -108,25 +181,40 @@ const schemaGraph = [
           </div>
 
           <div class="space-y-1.5">
-            <label for="test-type" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Test Type</label>
+            <label for="test-type" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Test Distribution</label>
             <select id="test-type" class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-sm font-semibold text-[color:var(--fg)] outline-none" data-test-type>
               <option value="z" selected>Z-Test (Standard Normal)</option>
               <option value="t">Student's t-Test</option>
+              <option value="chisq">Chi-Square Test (χ²)</option>
+              <option value="f">ANOVA F-Test</option>
             </select>
           </div>
 
           <div class="space-y-1.5">
-            <label for="stat-score" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Test Statistic Value (Z or t Score)</label>
+            <label for="stat-score" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]" data-stat-label>Test Statistic Value (Z-Score)</label>
             <input id="stat-score" type="number" step="any" value="2.15" class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none" data-stat-score />
           </div>
 
+          <!-- Degrees of Freedom (For t and chi-square) -->
           <div class="space-y-1.5" data-df-wrapper hidden>
-            <label for="df-input" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Degrees of Freedom (df = n - 1)</label>
+            <label for="df-input" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Degrees of Freedom (df)</label>
             <input id="df-input" type="number" min="1" value="25" class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none" data-df-input />
           </div>
 
-          <div class="space-y-1.5">
-            <label for="hypo-type" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Alternative Hypothesis Direction</label>
+          <!-- F-Test Dual DF (Hidden by default) -->
+          <div class="grid grid-cols-2 gap-3" data-f-df-wrapper hidden>
+            <div>
+              <label for="df1-input" class="block text-xs font-medium text-[color:var(--muted)]">Numerator df₁ (Groups - 1)</label>
+              <input id="df1-input" type="number" min="1" value="3" class="mt-1 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-df1-input />
+            </div>
+            <div>
+              <label for="df2-input" class="block text-xs font-medium text-[color:var(--muted)]">Denominator df₂ (Error df)</label>
+              <input id="df2-input" type="number" min="1" value="40" class="mt-1 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-df2-input />
+            </div>
+          </div>
+
+          <div class="space-y-1.5" data-hypo-wrapper>
+            <label for="hypo-type" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Hypothesis Direction</label>
             <select id="hypo-type" class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-sm font-semibold text-[color:var(--fg)] outline-none" data-hypo-type>
               <option value="two_tailed" selected>Two-Tailed (Hₐ: μ ≠ μ₀)</option>
               <option value="right_tailed">Right-Tailed (Hₐ: μ &gt; μ₀)</option>
@@ -137,35 +225,97 @@ const schemaGraph = [
           <div class="space-y-1.5">
             <label for="alpha-level" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Significance Threshold (α)</label>
             <select id="alpha-level" class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-sm font-semibold text-[color:var(--fg)] outline-none" data-alpha-level>
-              <option value="0.05" selected>α = 0.05 (95% Confidence)</option>
-              <option value="0.01">α = 0.01 (99% Confidence)</option>
-              <option value="0.10">α = 0.10 (90% Confidence)</option>
+              <option value="0.05" selected>α = 0.05 (Standard 95% Confidence)</option>
+              <option value="0.01">α = 0.01 (High Rigor 99% Confidence)</option>
+              <option value="0.001">α = 0.001 (Very High 99.9% Confidence)</option>
+              <option value="0.10">α = 0.10 (Exploratory 90% Confidence)</option>
             </select>
           </div>
         </form>
 
-        <div class="flex flex-col justify-between space-y-6 rounded-3xl border border-[color:var(--border)] bg-[color:var(--bg)] p-6 sm:p-8">
+        <div class="flex flex-col justify-between space-y-6 rounded-3xl border border-[color:var(--accent)]/30 bg-gradient-to-br from-[color:var(--accent-soft)] via-[color:var(--surface)] to-transparent p-6 sm:p-8 shadow-sm">
           <div class="space-y-5">
             <div class="flex items-center justify-between">
-              <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Result</span>
-              <span class="rounded-full px-3 py-0.5 text-xs font-bold bg-green-500/10 text-green-600 dark:text-green-400 border border-green-500/20" data-sig-badge>
-                Significant
-              </span>
+              <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Evaluation</span>
+              <div class="flex items-center gap-2">
+                <span class="rounded-full px-3 py-0.5 text-xs font-bold bg-cyan-500/10 text-cyan-500 dark:text-cyan-400 border border-cyan-500/20" data-sig-badge>
+                  Significant
+                </span>
+                <button
+                  type="button"
+                  class="inline-flex items-center gap-1.5 rounded-lg border border-[color:var(--border)] bg-[color:var(--surface)] px-2.5 py-1 text-xs font-semibold text-[color:var(--fg)] hover:bg-[color:var(--bg)] transition cursor-pointer"
+                  data-copy-btn
+                >
+                  <Icon name="copy" class="w-3.5 h-3.5" />
+                  <span>Copy</span>
+                </button>
+              </div>
             </div>
 
             <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 text-center">
               <p class="text-xs font-semibold text-[color:var(--muted)]">Calculated p-Value</p>
-              <p class="mt-1 text-5xl font-black tracking-tight text-[color:var(--fg)]" data-res-p>
+              <p class="mt-1 text-4xl sm:text-5xl font-black tracking-tight text-[color:var(--fg)] font-mono" data-res-p>
                 0.0316
               </p>
               <p class="mt-2 text-xs font-medium text-[color:var(--muted)]" data-decision-text>
-                Statistically significant (p &lt; 0.05). Reject the null hypothesis (H₀).
+                Statistically significant (p &lt; 0.05). Reject null hypothesis (H₀).
               </p>
+            </div>
+
+            <!-- Evidence Strength Gauge -->
+            <div class="space-y-2 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-xs font-mono">
+              <div class="flex justify-between">
+                <span class="text-[color:var(--muted)] font-sans">Strength of Evidence:</span>
+                <span class="font-bold text-cyan-500 dark:text-cyan-400" data-evidence-tier>Moderate Evidence against H₀</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-[color:var(--muted)] font-sans">Confidence Level:</span>
+                <span class="font-bold text-[color:var(--fg)]" data-conf-level>96.84%</span>
+              </div>
+              <div class="flex justify-between border-t border-[color:var(--border)] pt-2">
+                <span class="text-[color:var(--muted)] font-sans">Scientific Verdict:</span>
+                <span class="font-bold text-[color:var(--accent)]" data-verdict-tag>Statistically Significant</span>
+              </div>
             </div>
           </div>
         </div>
       </div>
     </div>
+
+    <!-- Mathematical Formulas & Hypothesis Testing Logic -->
+    <section class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 sm:p-8 space-y-4">
+      <div>
+        <p class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Inferential Probability</p>
+        <h2 class="text-xl font-bold text-[color:var(--fg)]">P-Value Equations &amp; Decision Rules</h2>
+      </div>
+
+      <div class="grid gap-4 sm:grid-cols-2 text-xs sm:text-sm">
+        <div class="rounded-2xl bg-[color:var(--bg)] p-4 border border-[color:var(--border)] space-y-2">
+          <p class="font-bold text-[color:var(--fg)]">1. Tail Direction Formulas</p>
+          <div class="rounded-xl bg-[color:var(--surface)] p-3 font-mono text-xs text-[color:var(--fg)] overflow-x-auto space-y-1">
+            <p>Two-Tailed: p = 2 × min[P(T ≤ t), P(T ≥ t)]</p>
+            <p>Right-Tailed: p = P(T ≥ t) = 1 - Φ(t)</p>
+            <p>Left-Tailed: p = P(T ≤ t) = Φ(t)</p>
+          </div>
+          <p class="text-xs text-[color:var(--muted)]">
+            A two-tailed test evaluates extremes in both positive and negative directions, requiring stronger evidence to reach significance.
+          </p>
+        </div>
+
+        <div class="rounded-2xl bg-[color:var(--bg)] p-4 border border-[color:var(--border)] space-y-2">
+          <p class="font-bold text-[color:var(--fg)]">2. Significance Decision Rules</p>
+          <div class="rounded-xl bg-[color:var(--surface)] p-3 font-mono text-xs text-[color:var(--fg)] overflow-x-auto">
+            p &lt; α &implies; Reject H₀ (Statistically Significant)
+          </div>
+          <p class="text-xs text-[color:var(--muted)]">
+            If p ≥ α, data does not provide sufficient evidence to conclude that the observed discrepancy is anything more than random sampling variation.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Parameter Guide & Worked Example -->
+    <CalculatorParameterGuide parameters={parameterGuide} workedExample={workedExample} />
 
     <!-- FAQs -->
     <section class="space-y-4">
@@ -193,49 +343,111 @@ const schemaGraph = [
 
       const inType = root.querySelector('[data-test-type]');
       const inStat = root.querySelector('[data-stat-score]');
+      const statLabel = root.querySelector('[data-stat-label]');
       const inDf = root.querySelector('[data-df-input]');
       const dfWrap = root.querySelector('[data-df-wrapper]');
+      const fDfWrap = root.querySelector('[data-f-df-wrapper]');
+      const inDf1 = root.querySelector('[data-df1-input]');
+      const inDf2 = root.querySelector('[data-df2-input]');
+      const hypoWrap = root.querySelector('[data-hypo-wrapper]');
       const inHypo = root.querySelector('[data-hypo-type]');
       const inAlpha = root.querySelector('[data-alpha-level]');
+
       const outP = root.querySelector('[data-res-p]');
       const outDec = root.querySelector('[data-decision-text]');
       const badge = root.querySelector('[data-sig-badge]');
+      const evidenceTier = root.querySelector('[data-evidence-tier]');
+      const confLevel = root.querySelector('[data-conf-level]');
+      const verdictTag = root.querySelector('[data-verdict-tag]');
+
       const resetBtn = root.querySelector('[data-reset-btn]');
+      const copyBtn = root.querySelector('[data-copy-btn]');
 
       function erf(x) {
-        const sign = x >= 0 ? 1 : -1; const a = Math.abs(x);
+        const sign = x >= 0 ? 1 : -1;
+        const a = Math.abs(x);
         const t1 = 1 / (1 + 0.3275911 * a);
-        return sign * (1 - (((((1.061405429*t1 - 1.453152027)*t1 + 1.421413741)*t1 - 0.284496736)*t1 + 0.254829592)*t1*Math.exp(-a*a)));
+        return sign * (1 - (((((1.061405429 * t1 - 1.453152027) * t1 + 1.421413741) * t1 - 0.284496736) * t1 + 0.254829592) * t1 * Math.exp(-a * a)));
       }
-      function normCdf(z) { return 0.5 * (1 + erf(z / Math.SQRT2)); }
+
+      function normCdf(z) {
+        return 0.5 * (1 + erf(z / Math.SQRT2));
+      }
+
+      // Incomplete Gamma function approximation for Chi-Square CDF
+      function chiSquareCdf(x, k) {
+        if (x <= 0) return 0;
+        // Wilson-Hilferty transformation to standard normal
+        const term = Math.pow(x / k, 1 / 3);
+        const z = (term - (1 - 2 / (9 * k))) / Math.sqrt(2 / (9 * k));
+        return normCdf(z);
+      }
+
+      // F-distribution CDF approximation via Paulson / Peizer transform
+      function fCdf(f, d1, d2) {
+        if (f <= 0) return 0;
+        const x = (d1 * f) / (d1 * f + d2);
+        // Wilson-Hilferty transformation for F to normal Z
+        const z = (Math.pow(f, 1 / 3) * (1 - 2 / (9 * d2)) - (1 - 2 / (9 * d1))) /
+          Math.sqrt(2 / (9 * d1) + Math.pow(f, 2 / 3) * (2 / (9 * d2)));
+        return normCdf(z);
+      }
 
       function update() {
         const test = inType.value;
         const stat = parseFloat(inStat.value || '0');
         const df = Math.max(1, parseInt(inDf?.value || '25', 10));
+        const df1 = Math.max(1, parseInt(inDf1?.value || '3', 10));
+        const df2 = Math.max(1, parseInt(inDf2?.value || '40', 10));
         const hypo = inHypo.value;
         const alpha = parseFloat(inAlpha.value || '0.05');
 
-        if (test === 't') {
-          dfWrap?.removeAttribute('hidden');
-        } else {
-          dfWrap?.setAttribute('hidden', '');
-        }
-
-        let leftTail = 0;
         if (test === 'z') {
-          leftTail = normCdf(stat);
-        } else {
-          const zApprox = stat / Math.sqrt(1 + (stat * stat) / (2 * df));
-          leftTail = normCdf(zApprox);
+          if (statLabel) statLabel.textContent = 'Test Statistic Value (Z-Score)';
+          dfWrap?.setAttribute('hidden', '');
+          fDfWrap?.setAttribute('hidden', '');
+          hypoWrap?.removeAttribute('hidden');
+        } else if (test === 't') {
+          if (statLabel) statLabel.textContent = 'Student’s t-Statistic Value';
+          dfWrap?.removeAttribute('hidden');
+          fDfWrap?.setAttribute('hidden', '');
+          hypoWrap?.removeAttribute('hidden');
+        } else if (test === 'chisq') {
+          if (statLabel) statLabel.textContent = 'Chi-Square (χ²) Statistic Value (≥ 0)';
+          dfWrap?.removeAttribute('hidden');
+          fDfWrap?.setAttribute('hidden', '');
+          hypoWrap?.setAttribute('hidden', '');
+        } else if (test === 'f') {
+          if (statLabel) statLabel.textContent = 'ANOVA F-Statistic Value (≥ 0)';
+          dfWrap?.setAttribute('hidden', '');
+          fDfWrap?.removeAttribute('hidden', '');
+          hypoWrap?.setAttribute('hidden', '');
         }
-
-        const rightTail = 1 - leftTail;
 
         let p = 0;
-        if (hypo === 'left_tailed') p = leftTail;
-        else if (hypo === 'right_tailed') p = rightTail;
-        else p = 2 * Math.min(leftTail, rightTail);
+
+        if (test === 'z') {
+          const leftTail = normCdf(stat);
+          const rightTail = 1 - leftTail;
+          if (hypo === 'left_tailed') p = leftTail;
+          else if (hypo === 'right_tailed') p = rightTail;
+          else p = 2 * Math.min(leftTail, rightTail);
+        } else if (test === 't') {
+          const zApprox = stat / Math.sqrt(1 + (stat * stat) / (2 * df));
+          const leftTail = normCdf(zApprox);
+          const rightTail = 1 - leftTail;
+          if (hypo === 'left_tailed') p = leftTail;
+          else if (hypo === 'right_tailed') p = rightTail;
+          else p = 2 * Math.min(leftTail, rightTail);
+        } else if (test === 'chisq') {
+          // Chi-Square test is right-tailed: P(X ≥ χ²)
+          const cdf = chiSquareCdf(Math.max(0, stat), df);
+          p = Math.max(0, 1 - cdf);
+        } else if (test === 'f') {
+          // ANOVA F-test is right-tailed: P(F ≥ f)
+          const cdf = fCdf(Math.max(0, stat), df1, df2);
+          p = Math.max(0, 1 - cdf);
+        }
 
         p = Math.min(1.0, Math.max(0.00001, p));
 
@@ -244,24 +456,50 @@ const schemaGraph = [
         const isSig = p < alpha;
         if (badge) {
           if (isSig) {
-            badge.className = 'rounded-full px-3 py-0.5 text-xs font-bold bg-green-500/10 text-green-600 dark:text-green-400 border border-green-500/20';
-            badge.textContent = 'Significant (p < α)';
+            badge.className = 'rounded-full px-3 py-0.5 text-xs font-bold bg-cyan-500/10 text-cyan-500 dark:text-cyan-400 border border-cyan-500/20';
+            badge.textContent = `Significant (p < ${alpha})`;
           } else {
-            badge.className = 'rounded-full px-3 py-0.5 text-xs font-bold bg-red-500/10 text-red-600 dark:text-red-400 border border-red-500/20';
-            badge.textContent = 'Not Significant (p ≥ α)';
+            badge.className = 'rounded-full px-3 py-0.5 text-xs font-bold bg-rose-500/10 text-rose-500 border border-rose-500/20';
+            badge.textContent = `Not Significant (p ≥ ${alpha})`;
           }
         }
 
         if (outDec) {
           outDec.textContent = isSig
-            ? `Statistically significant at α = ${alpha}. Reject the null hypothesis (H₀).`
-            : `Not statistically significant at α = ${alpha}. Fail to reject the null hypothesis (H₀).`;
+            ? `Statistically significant at α = ${alpha}. Reject null hypothesis (H₀).`
+            : `Not statistically significant at α = ${alpha}. Fail to reject null hypothesis (H₀).`;
+        }
+
+        if (confLevel) {
+          confLevel.textContent = `${((1 - p) * 100).toFixed(2)}% Confidence`;
+        }
+
+        if (evidenceTier) {
+          if (p < 0.001) {
+            evidenceTier.className = 'font-bold text-cyan-500 dark:text-cyan-400';
+            evidenceTier.textContent = 'Very Strong Evidence against H₀ (p < 0.001)';
+          } else if (p < 0.01) {
+            evidenceTier.className = 'font-bold text-cyan-400';
+            evidenceTier.textContent = 'Strong Evidence against H₀ (p < 0.01)';
+          } else if (p < 0.05) {
+            evidenceTier.className = 'font-bold text-[color:var(--accent)]';
+            evidenceTier.textContent = 'Moderate Evidence against H₀ (p < 0.05)';
+          } else {
+            evidenceTier.className = 'font-bold text-[color:var(--muted)]';
+            evidenceTier.textContent = 'Insufficient Evidence against H₀ (p ≥ 0.05)';
+          }
+        }
+
+        if (verdictTag) {
+          verdictTag.textContent = isSig ? 'Reject H₀' : 'Retain H₀';
         }
       }
 
       inType.addEventListener('change', update);
       inStat.addEventListener('input', update);
       inDf?.addEventListener('input', update);
+      inDf1?.addEventListener('input', update);
+      inDf2?.addEventListener('input', update);
       inHypo.addEventListener('change', update);
       inAlpha.addEventListener('change', update);
 
@@ -270,9 +508,34 @@ const schemaGraph = [
           inType.value = 'z';
           inStat.value = '2.15';
           if (inDf) inDf.value = '25';
+          if (inDf1) inDf1.value = '3';
+          if (inDf2) inDf2.value = '40';
           inHypo.value = 'two_tailed';
           inAlpha.value = '0.05';
           update();
+        });
+      }
+
+      if (copyBtn) {
+        copyBtn.addEventListener('click', async () => {
+          const text = [
+            '--- P-Value Significance Summary ---',
+            `Distribution: ${inType.value.toUpperCase()}`,
+            `Test Statistic: ${inStat.value}`,
+            `Calculated p-Value: ${outP?.textContent || ''}`,
+            `Significance Threshold (α): ${inAlpha.value}`,
+            `Evidence: ${evidenceTier?.textContent || ''}`,
+            `Decision: ${outDec?.textContent || ''}`,
+          ].join('\n');
+
+          try {
+            await navigator.clipboard.writeText(text);
+            const orig = copyBtn.innerHTML;
+            copyBtn.innerHTML = '<span>✓ Copied!</span>';
+            setTimeout(() => { copyBtn.innerHTML = orig; }, 2000);
+          } catch {
+            alert('Failed to copy to clipboard');
+          }
         });
       }
 

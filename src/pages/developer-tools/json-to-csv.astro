@@ -1,10 +1,11 @@
 ---
 import SiteLayout from '../../layouts/SiteLayout.astro';
 import Icon from '../../components/Icon.astro';
+import CalculatorParameterGuide from '../../components/calculator/CalculatorParameterGuide.astro';
 import { siteName, toAbsoluteUrl, withBasePath } from '../../utils/site';
 
-const pageTitle = `JSON to CSV Converter — Free Online Table Exporter · ${siteName}`;
-const pageDesc = 'Convert JSON arrays and objects to CSV tables online. Auto-flattens keys, supports custom delimiters (comma, tab, semicolon), and provides instant Excel download. 100% private in-browser tool.';
+const pageTitle = `JSON to CSV Converter — Online JSON Array to Tabular CSV · ${siteName}`;
+const pageDesc = 'Convert JSON arrays and nested object lists into structured RFC 4180 CSV files. Features nested key flattening, column selection, live table preview, and instant download.';
 const canonicalUrl = toAbsoluteUrl('/developer-tools/json-to-csv/');
 
 const breadcrumbItems = [
@@ -15,12 +16,16 @@ const breadcrumbItems = [
 
 const schemaFaq = [
   {
-    question: 'How does this tool handle nested JSON objects?',
-    answer: 'Nested objects are serialized or flattened into stringified values with appropriate CSV quote escaping according to RFC 4180 standards.',
+    question: 'How are nested JSON objects and arrays converted to CSV columns?',
+    answer: 'Nested objects can be flattened using dot-notation (e.g. `user.address.city`) into separate columns, or serialized into JSON strings inside the column. This converter supports automatic dot-notation flattening.',
   },
   {
-    question: 'Can I download the output as an Excel-ready file?',
-    answer: 'Yes. Click "Download CSV" to save a `.csv` file directly to your device that opens natively in Microsoft Excel, Google Sheets, or Apple Numbers.',
+    question: 'What CSV delimiters are supported?',
+    answer: 'The converter supports Comma (`,`), Semicolon (`;` for European locales), Tab (`\\t` for TSV spreadsheets), and Pipe (`|`).',
+  },
+  {
+    question: 'How are special characters, commas, and quotes escaped in CSV?',
+    answer: 'According to RFC 4180, any field containing delimiters, double quotes, or newlines is wrapped in double quotes, and internal quotes are escaped by doubling them (`""`).',
   },
 ];
 
@@ -86,56 +91,100 @@ const schemaGraph = [
     <header class="space-y-3">
       <div class="inline-flex items-center gap-2 rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1 text-xs font-semibold text-[color:var(--muted)]">
         <span class="inline-block h-2 w-2 rounded-full bg-emerald-500"></span>
-        <span>Local Tabular Transformation</span>
+        <span>RFC 4180 Compliant &bull; Nested Object Flattening</span>
       </div>
       <h1 class="text-2xl sm:text-4xl font-extrabold tracking-tight text-[color:var(--fg)]">
         JSON to CSV Converter
       </h1>
       <p class="max-w-2xl text-xs sm:text-sm text-[color:var(--muted)] leading-relaxed">
-        Convert JSON arrays and object lists into structured, comma-separated values (CSV) ready for Excel, Google Sheets, and SQL databases.
+        Transform JSON arrays and object hierarchies into clean tabular CSV, TSV, or PSV format. Flatten nested objects, filter columns, preview tabular records live, and export to Excel or Google Sheets.
       </p>
     </header>
 
+    <!-- Telemetry Bar -->
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+      <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3 text-center">
+        <p class="text-[10px] font-bold uppercase tracking-wider text-[color:var(--muted)]">Records / Rows</p>
+        <p id="stat-rows" class="mt-1 font-mono text-base font-bold text-cyan-500 dark:text-cyan-400">0</p>
+      </div>
+      <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3 text-center">
+        <p class="text-[10px] font-bold uppercase tracking-wider text-[color:var(--muted)]">Total Columns</p>
+        <p id="stat-cols" class="mt-1 font-mono text-base font-bold text-[color:var(--fg)]">0</p>
+      </div>
+      <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3 text-center">
+        <p class="text-[10px] font-bold uppercase tracking-wider text-[color:var(--muted)]">JSON Size</p>
+        <p id="stat-json-size" class="mt-1 font-mono text-base font-bold text-[color:var(--fg)]">0 B</p>
+      </div>
+      <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3 text-center">
+        <p class="text-[10px] font-bold uppercase tracking-wider text-[color:var(--muted)]">CSV Size</p>
+        <p id="stat-csv-size" class="mt-1 font-mono text-base font-bold text-[color:var(--fg)]">0 B</p>
+      </div>
+    </div>
+
+    <!-- Main Workspace -->
     <div class="grid gap-6 lg:grid-cols-2">
-      <!-- Input -->
+      <!-- Input Panel -->
       <div class="space-y-3">
         <div class="flex items-center justify-between">
           <label for="json-in" class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">
             JSON Array Input
           </label>
           <div class="flex items-center gap-2 text-xs">
-            <button type="button" data-sample-btn class="text-[color:var(--primary)] hover:underline font-semibold">Load Sample Array</button>
+            <button type="button" data-sample-btn class="text-[color:var(--primary)] hover:underline font-semibold">Load Sample</button>
             <span class="text-[color:var(--border)]">|</span>
             <button type="button" data-clear-btn class="text-[color:var(--muted)] hover:text-[color:var(--fg)]">Clear</button>
           </div>
         </div>
+
         <textarea
           id="json-in"
-          rows="16"
+          rows="14"
           class="w-full font-mono text-xs leading-relaxed rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-[color:var(--fg)] focus:border-[color:var(--border-strong)] focus:outline-hidden"
-          placeholder='[{"id": 1, "name": "Alice", "role": "Engineer"}, {"id": 2, "name": "Bob", "role": "Designer"}]'
+          placeholder='[{"id": 1, "name": "Alice", "address": {"city": "New York", "zip": "10001"}}]'
         ></textarea>
-        <div class="flex items-center justify-between gap-3">
-          <div class="flex items-center gap-2">
-            <label for="csv-delim" class="text-xs font-medium text-[color:var(--muted)]">Delimiter:</label>
-            <select id="csv-delim" class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] px-2.5 py-1 text-xs text-[color:var(--fg)]">
-              <option value=",">Comma (,)</option>
-              <option value=";">Semicolon (;)</option>
-              <option value="	">Tab (\t)</option>
-              <option value="|">Pipe (|)</option>
-            </select>
+
+        <!-- Formatting Controls -->
+        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 space-y-3 text-xs">
+          <p class="font-bold uppercase tracking-wider text-[color:var(--muted)] text-[10px]">Transformation Options</p>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div class="flex items-center gap-2">
+              <label for="csv-delim" class="font-medium text-[color:var(--muted)]">Delimiter:</label>
+              <select id="csv-delim" class="rounded-lg border border-[color:var(--border)] bg-[color:var(--bg)] px-2.5 py-1 text-xs text-[color:var(--fg)]">
+                <option value=",">Comma (,)</option>
+                <option value=";">Semicolon (;)</option>
+                <option value="&#9;">Tab (\t)</option>
+                <option value="|">Pipe (|)</option>
+              </select>
+            </div>
+            <div class="flex items-center gap-2">
+              <label for="quote-mode" class="font-medium text-[color:var(--muted)]">Quotes:</label>
+              <select id="quote-mode" class="rounded-lg border border-[color:var(--border)] bg-[color:var(--bg)] px-2.5 py-1 text-xs text-[color:var(--fg)]">
+                <option value="auto">Auto (When needed)</option>
+                <option value="all">Always Quote All</option>
+                <option value="none">Never Quote</option>
+              </select>
+            </div>
+            <label class="flex items-center gap-2 cursor-pointer">
+              <input type="checkbox" id="flatten-check" checked class="rounded accent-[color:var(--fg)]" />
+              <span>Flatten Nested Objects (a.b.c)</span>
+            </label>
+            <label class="flex items-center gap-2 cursor-pointer">
+              <input type="checkbox" id="header-check" checked class="rounded accent-[color:var(--fg)]" />
+              <span>Include Header Row</span>
+            </label>
           </div>
+
           <button
             type="button"
             data-convert-btn
-            class="rounded-xl bg-[color:var(--fg)] px-5 py-2 text-xs font-bold text-[color:var(--bg)] shadow-xs transition hover:opacity-90"
+            class="w-full rounded-xl bg-[color:var(--fg)] py-2.5 text-xs font-bold text-[color:var(--bg)] shadow-xs transition hover:opacity-90"
           >
-            Convert to CSV
+            Convert JSON to CSV
           </button>
         </div>
       </div>
 
-      <!-- Output -->
+      <!-- Output Panel -->
       <div class="space-y-3">
         <div class="flex items-center justify-between">
           <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">CSV Output</span>
@@ -146,19 +195,110 @@ const schemaGraph = [
             </button>
             <span class="text-[color:var(--border)]">|</span>
             <button type="button" data-dl-btn class="text-xs font-bold text-[color:var(--fg)] hover:underline">
-              Download CSV
+              Download .csv
             </button>
           </div>
         </div>
+
         <textarea
           id="csv-out"
-          rows="16"
+          rows="14"
           readonly
           class="w-full font-mono text-xs leading-relaxed rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-4 text-[color:var(--fg)] focus:outline-hidden"
-          placeholder="CSV table rows will appear here..."
+          placeholder="Converted CSV output will appear here..."
         ></textarea>
+
+        <div id="json-err" class="hidden rounded-xl border border-red-500/30 bg-red-500/10 p-3 text-xs text-red-600 dark:text-red-400 font-mono"></div>
+
+        <!-- Column Visibility Filter -->
+        <div id="col-filter-box" class="hidden rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3 text-xs space-y-2">
+          <div class="flex items-center justify-between">
+            <span class="font-bold text-[color:var(--fg)]">Include Columns:</span>
+            <button type="button" id="toggle-all-cols" class="text-[11px] text-[color:var(--primary)] hover:underline">Select All</button>
+          </div>
+          <div id="col-pills" class="flex flex-wrap gap-1.5 max-h-24 overflow-y-auto"></div>
+        </div>
       </div>
     </div>
+
+    <!-- Live Tabular Preview Table -->
+    <div class="space-y-3 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
+      <div class="flex items-center justify-between">
+        <h2 class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Tabular Preview (First 8 Rows)</h2>
+        <span id="preview-badge" class="text-[10px] font-mono text-[color:var(--muted)]">0 records</span>
+      </div>
+      <div class="overflow-x-auto">
+        <table class="w-full text-left text-xs">
+          <thead id="preview-thead" class="border-b border-[color:var(--border)] font-bold text-[color:var(--fg)]"></thead>
+          <tbody id="preview-tbody" class="divide-y divide-[color:var(--border)] font-mono">
+            <tr>
+              <td class="py-4 text-center text-[color:var(--muted)] italic">
+                Converted tabular rows will display here.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Parameter Guide & Worked Example -->
+    <CalculatorParameterGuide
+      title="JSON to CSV Conversion Parameters & RFC Specifications"
+      description="Details on schema unrolling, object flattening, RFC 4180 escaping, and tabular export formats."
+      parameters={[
+        {
+          name: "Object Flattening",
+          type: "Boolean",
+          defaultValue: "true",
+          description: "Recursively unwraps nested JSON properties into dot-delimited column keys (e.g. customer.billing.zip) so deep structures fit flat 2D tables.",
+        },
+        {
+          name: "Delimiter Type",
+          type: "Character (, | ; | \\t | |)",
+          defaultValue: "Comma (,)",
+          description: "Column separator token. Comma is standard worldwide; semicolon is required in regional Windows/Excel locales where comma is used as decimal separator.",
+        },
+        {
+          name: "Quote Policy",
+          type: "Select (Auto | All | None)",
+          defaultValue: "Auto",
+          description: "Auto wraps values containing delimiters or line breaks in double quotes. All wraps every cell in double quotes for strict database importing.",
+        },
+        {
+          name: "Header Row",
+          type: "Boolean",
+          defaultValue: "true",
+          description: "Places the extracted column names in the first line of the CSV export.",
+        },
+      ]}
+      workedExample={{
+        title: "Flattening User Account Records with Nested Geolocation Data",
+        description: "Transform an array of user objects containing nested geo coordinates into flat CSV format for spreadsheet analysis.",
+        formula: "JSON.parse(input) -> Flatten nested keys -> RFC 4180 Serialize",
+        steps: [
+          {
+            step: "Inspect JSON Object Schema",
+            calculation: "Input: [{\"id\": 1, \"user\": \"Ada\", \"geo\": {\"lat\": 40.71, \"lng\": -74.00}}]",
+            result: "Identified nested object 'geo'",
+          },
+          {
+            step: "Flatten Nested Attributes",
+            calculation: "Transform 'geo.lat' and 'geo.lng' into distinct column keys.",
+            result: "Extracted columns: id, user, geo.lat, geo.lng",
+          },
+          {
+            step: "Format Rows & Delimiters",
+            calculation: "Join row values with comma: 1,Ada,40.71,-74.00",
+            result: "Generated valid RFC 4180 CSV",
+          },
+          {
+            step: "Ready for Spreadsheet Export",
+            calculation: "Export with UTF-8 encoding for immediate opening in Excel, Google Sheets, or database copy.",
+            result: "Export ready",
+          },
+        ],
+      }}
+    />
 
     <!-- FAQs -->
     <section class="space-y-4">
@@ -168,7 +308,7 @@ const schemaGraph = [
           <details class="group rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
             <summary class="cursor-pointer list-none font-semibold text-sm sm:text-base text-[color:var(--fg)] flex items-center justify-between gap-4">
               <span>{faq.question}</span>
-              <span class="text-xs text-[color:var(--muted)] group-open:rotate-180 transition-transform">▼</span>
+              <span class="text-xs text-[color:var(--muted)] group-open:rotate-180 transition-transform">&#9660;</span>
             </summary>
             <p class="mt-3 text-xs sm:text-sm leading-relaxed text-[color:var(--muted)]">
               {faq.answer}
@@ -184,74 +324,241 @@ const schemaGraph = [
       const root = document.querySelector('[data-json-csv-app]');
       if (!root) return;
 
-      const input = root.querySelector('#json-in');
-      const output = root.querySelector('#csv-out');
+      const jsonIn = root.querySelector('#json-in');
+      const csvOut = root.querySelector('#csv-out');
       const delimSelect = root.querySelector('#csv-delim');
+      const quoteSelect = root.querySelector('#quote-mode');
+      const flattenCheck = root.querySelector('#flatten-check');
+      const headerCheck = root.querySelector('#header-check');
       const convertBtn = root.querySelector('[data-convert-btn]');
       const sampleBtn = root.querySelector('[data-sample-btn]');
       const clearBtn = root.querySelector('[data-clear-btn]');
       const copyBtn = root.querySelector('[data-copy-btn]');
       const dlBtn = root.querySelector('[data-dl-btn]');
+      const errBox = root.querySelector('#json-err');
 
-      function convert() {
-        const raw = input.value.trim();
+      const statRows = root.querySelector('#stat-rows');
+      const statCols = root.querySelector('#stat-cols');
+      const statJsonSize = root.querySelector('#stat-json-size');
+      const statCsvSize = root.querySelector('#stat-csv-size');
+
+      const colFilterBox = root.querySelector('#col-filter-box');
+      const colPills = root.querySelector('#col-pills');
+      const toggleAllColsBtn = root.querySelector('#toggle-all-cols');
+
+      const previewThead = root.querySelector('#preview-thead');
+      const previewTbody = root.querySelector('#preview-tbody');
+      const previewBadge = root.querySelector('#preview-badge');
+
+      let detectedColumns = [];
+      let activeColumns = new Set();
+      let parsedRecords = [];
+
+      function formatBytes(bytes) {
+        if (bytes === 0) return '0 B';
+        const k = 1024;
+        const sizes = ['B', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+      }
+
+      function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+      }
+
+      function flattenObject(ob, prefix = '') {
+        const toReturn = {};
+        for (const i in ob) {
+          if (!Object.prototype.hasOwnProperty.call(ob, i)) continue;
+          if (typeof ob[i] === 'object' && ob[i] !== null && !Array.isArray(ob[i])) {
+            const flatObject = flattenObject(ob[i], prefix + i + '.');
+            for (const x in flatObject) {
+              if (Object.prototype.hasOwnProperty.call(flatObject, x)) {
+                toReturn[x] = flatObject[x];
+              }
+            }
+          } else {
+            toReturn[prefix + i] = ob[i];
+          }
+        }
+        return toReturn;
+      }
+
+      function escapeCsvCell(val, delim, quoteMode) {
+        if (val === null || val === undefined) return '';
+        let str = typeof val === 'object' ? JSON.stringify(val) : String(val);
+
+        if (quoteMode === 'none') return str;
+        const needsQuote = quoteMode === 'all' || str.includes(delim) || str.includes('"') || str.includes('\n') || str.includes('\r');
+        if (needsQuote) {
+          str = str.replace(/"/g, '""');
+          return `"${str}"`;
+        }
+        return str;
+      }
+
+      function renderColPills() {
+        if (detectedColumns.length === 0) {
+          colFilterBox.classList.add('hidden');
+          return;
+        }
+        colFilterBox.classList.remove('hidden');
+        colPills.innerHTML = detectedColumns.map(col => {
+          const isActive = activeColumns.has(col);
+          return `
+            <button
+              type="button"
+              data-col="${escapeHtml(col)}"
+              class="rounded-lg border px-2 py-0.5 text-[11px] font-mono transition ${isActive ? 'bg-[color:var(--fg)] text-[color:var(--bg)] border-transparent' : 'bg-[color:var(--bg)] text-[color:var(--muted)] border-[color:var(--border)]'}"
+            >
+              ${escapeHtml(col)}
+            </button>
+          `;
+        }).join('');
+
+        colPills.querySelectorAll('[data-col]').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const col = btn.dataset.col;
+            if (activeColumns.has(col)) {
+              if (activeColumns.size > 1) activeColumns.delete(col);
+            } else {
+              activeColumns.add(col);
+            }
+            renderColPills();
+            generateCsvOutput();
+          });
+        });
+      }
+
+      function generateCsvOutput() {
+        const delim = delimSelect.value;
+        const quoteMode = quoteSelect.value;
+        const includeHeader = headerCheck.checked;
+        const cols = detectedColumns.filter(c => activeColumns.has(c));
+
+        let csvLines = [];
+        if (includeHeader) {
+          csvLines.push(cols.map(c => escapeCsvCell(c, delim, quoteMode)).join(delim));
+        }
+
+        parsedRecords.forEach(rec => {
+          const rowVals = cols.map(c => escapeCsvCell(rec[c], delim, quoteMode));
+          csvLines.push(rowVals.join(delim));
+        });
+
+        const csvString = csvLines.join('\n');
+        csvOut.value = csvString;
+        statCsvSize.textContent = formatBytes(new Blob([csvString]).size);
+
+        // Render Table Preview (up to 8 rows)
+        previewBadge.textContent = `${parsedRecords.length} records total`;
+        previewThead.innerHTML = `<tr>${cols.map(c => `<th class="p-2">${escapeHtml(c)}</th>`).join('')}</tr>`;
+
+        const previewRows = parsedRecords.slice(0, 8);
+        previewTbody.innerHTML = previewRows.map(rec => `
+          <tr class="hover:bg-[color:var(--surface-strong)] transition-colors">
+            ${cols.map(c => {
+              const val = rec[c];
+              const display = val === null || val === undefined ? '<span class="text-[color:var(--muted)]">null</span>' : escapeHtml(typeof val === 'object' ? JSON.stringify(val) : String(val));
+              return `<td class="p-2 text-[11px] truncate max-w-40">${display}</td>`;
+            }).join('')}
+          </tr>
+        `).join('');
+      }
+
+      function parseAndConvert() {
+        errBox.classList.add('hidden');
+        const raw = jsonIn.value.trim();
+        statJsonSize.textContent = formatBytes(new Blob([raw]).size);
+
         if (!raw) {
-          output.value = '';
+          csvOut.value = '';
+          statRows.textContent = '0';
+          statCols.textContent = '0';
+          statCsvSize.textContent = '0 B';
+          colFilterBox.classList.add('hidden');
+          previewTbody.innerHTML = '<tr><td class="py-4 text-center text-[color:var(--muted)] italic">Converted tabular rows will display here.</td></tr>';
+          previewThead.innerHTML = '';
           return;
         }
 
         try {
           let data = JSON.parse(raw);
           if (!Array.isArray(data)) {
-            data = [data]; // convert single object to array
-          }
-
-          if (data.length === 0) {
-            output.value = '';
-            return;
-          }
-
-          const delim = delimSelect.value;
-          const headers = Array.from(new Set(data.flatMap(item => typeof item === 'object' && item !== null ? Object.keys(item) : [])));
-
-          function escapeVal(v) {
-            if (v === null || v === undefined) return '';
-            const str = typeof v === 'object' ? JSON.stringify(v) : String(v);
-            if (str.includes(delim) || str.includes('"') || str.includes('\n')) {
-              return '"' + str.replace(/"/g, '""') + '"';
+            if (typeof data === 'object' && data !== null) {
+              data = [data];
+            } else {
+              throw new Error('Input must be a JSON array of objects or a single JSON object.');
             }
-            return str;
           }
 
-          const headLine = headers.map(escapeVal).join(delim);
-          const bodyLines = data.map(row => headers.map(h => escapeVal(row[h])).join(delim));
+          if (flattenCheck.checked) {
+            data = data.map(item => typeof item === 'object' && item !== null ? flattenObject(item) : { value: item });
+          }
 
-          output.value = [headLine, ...bodyLines].join('\n');
+          // Discover all unique keys
+          const keySet = new Set();
+          data.forEach(item => {
+            if (typeof item === 'object' && item !== null) {
+              Object.keys(item).forEach(k => keySet.add(k));
+            }
+          });
+
+          detectedColumns = Array.from(keySet);
+          activeColumns = new Set(detectedColumns);
+          parsedRecords = data;
+
+          statRows.textContent = String(parsedRecords.length);
+          statCols.textContent = String(detectedColumns.length);
+
+          renderColPills();
+          generateCsvOutput();
+
         } catch (e) {
-          output.value = 'Invalid JSON: ' + e.message;
+          errBox.classList.remove('hidden');
+          errBox.textContent = 'JSON Parse Error: ' + e.message;
+          csvOut.value = '';
+          statRows.textContent = '0';
+          statCols.textContent = '0';
         }
       }
 
-      convertBtn.addEventListener('click', convert);
-      delimSelect.addEventListener('change', convert);
+      convertBtn.addEventListener('click', parseAndConvert);
+      delimSelect.addEventListener('change', generateCsvOutput);
+      quoteSelect.addEventListener('change', generateCsvOutput);
+      headerCheck.addEventListener('change', generateCsvOutput);
+      flattenCheck.addEventListener('change', parseAndConvert);
+
+      toggleAllColsBtn.addEventListener('click', () => {
+        if (activeColumns.size === detectedColumns.length) {
+          activeColumns = new Set([detectedColumns[0]]);
+        } else {
+          activeColumns = new Set(detectedColumns);
+        }
+        renderColPills();
+        generateCsvOutput();
+      });
 
       sampleBtn.addEventListener('click', () => {
-        input.value = JSON.stringify([
-          { id: 101, product: "Wireless Mouse", price: 29.99, in_stock: true, department: "Electronics" },
-          { id: 102, product: "Mechanical Keyboard", price: 89.50, in_stock: true, department: "Electronics" },
-          { id: 103, product: "Desk Mat (Large)", price: 19.00, in_stock: false, department: "Office" }
+        jsonIn.value = JSON.stringify([
+          { id: 101, name: "Alice Smith", role: "Lead Architect", address: { city: "New York", zip: "10001" }, salary: 145000, active: true },
+          { id: 102, name: "Bob Jones", role: "DevOps Engineer", address: { city: "Austin", zip: "78701" }, salary: 128000, active: true },
+          { id: 103, name: "Carol Davis", role: "Product Manager", address: { city: "Seattle", zip: "98101" }, salary: 135000, active: false },
+          { id: 104, name: "David Miller", role: "Data Scientist", address: { city: "San Francisco", zip: "94105" }, salary: 152000, active: true }
         ], null, 2);
-        convert();
+        parseAndConvert();
       });
 
       clearBtn.addEventListener('click', () => {
-        input.value = '';
-        output.value = '';
+        jsonIn.value = '';
+        parseAndConvert();
       });
 
       copyBtn.addEventListener('click', () => {
-        if (!output.value) return;
-        navigator.clipboard.writeText(output.value);
+        if (!csvOut.value) return;
+        navigator.clipboard.writeText(csvOut.value);
         const span = copyBtn.querySelector('span');
         const orig = span.textContent;
         span.textContent = 'Copied!';
@@ -259,12 +566,12 @@ const schemaGraph = [
       });
 
       dlBtn.addEventListener('click', () => {
-        if (!output.value) return;
-        const blob = new Blob([output.value], { type: 'text/csv;charset=utf-8;' });
+        if (!csvOut.value) return;
+        const blob = new Blob([csvOut.value], { type: 'text/csv;charset=utf-8;' });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = 'exported_data.csv';
+        a.download = 'export.csv';
         a.click();
         URL.revokeObjectURL(url);
       });

@@ -1,7 +1,17 @@
 ---
 import SiteLayout from '../../layouts/SiteLayout.astro';
 import Icon from '../../components/Icon.astro';
+import CalculatorParameterGuide from '../../components/calculator/CalculatorParameterGuide.astro';
 import { siteName, toAbsoluteUrl, withBasePath } from '../../utils/site';
+
+const parameterGuide = [
+  { id: 'salePrice', name: 'Home Sale Price', description: 'Final contract sale price agreed upon between buyer and seller at real estate closing.', whyItMatters: 'The base valuation from which percentage commissions, transfer taxes, and seller equity are calculated.', typicalRange: '$150,000 to $2,500,000+', unit: '$' },
+  { id: 'commRate', name: 'Total Commission Rate', description: 'Negotiated total percentage paid to real estate brokerages (typically split 50/50 between listing side and buyer side).', whyItMatters: 'The primary transaction service expense incurred when selling residential property.', typicalRange: '4.0% to 6.0%', unit: '%' },
+  { id: 'agentSplit', name: 'Agent / Broker Internal Split', description: 'The percentage of the side commission kept by the individual licensed Realtor vs paid to their sponsoring brokerage.', whyItMatters: 'Determines real agent take-home compensation based on their brokerage contract tier.', typicalRange: '50% to 90%', unit: '%' },
+  { id: 'mortgagePayoff', name: 'Mortgage Payoff Balance', description: 'Outstanding principal loan balance, accrued interest, and escrow payoffs required to release the bank lien.', whyItMatters: 'Must be wired directly to mortgage lenders at closing before equity proceeds release.', typicalRange: '$0 to $1,500,000+', unit: '$' },
+  { id: 'closingFees', name: 'Other Closing Fees & Taxes', description: 'Title company settlement fees, state/county deed transfer taxes, attorney fees, and agreed seller concessions.', whyItMatters: 'Mandatory settlement costs that reduce final cash proceeds.', typicalRange: '$2,000 to $15,000', unit: '$' },
+  { id: 'netProceeds', name: 'Estimated Seller Net Proceeds', description: 'The net liquid cash wired to the seller’s bank account after all commissions, liens, and closing costs.', whyItMatters: 'The ultimate bottom-line figure sellers need for planning their next home purchase or investment.', typicalRange: 'Calculated dynamically', unit: '$' },
+];
 
 const pageTitle = `Real Estate Commission Calculator | Realtor Splits & Seller Net Proceeds · ${siteName}`;
 const pageDesc = 'Calculate real estate agent commissions, listing vs buyer broker splits, and estimated net seller cash proceeds at closing.';
@@ -146,13 +156,23 @@ const schemaGraph = [
           </div>
         </form>
 
-        <div class="flex flex-col justify-between space-y-6 rounded-3xl border border-[color:var(--border)] bg-[color:var(--bg)] p-6 sm:p-8">
+        <div class="flex flex-col justify-between space-y-6 rounded-3xl border border-[color:var(--accent)]/30 bg-gradient-to-br from-[color:var(--accent-soft)] via-[color:var(--surface)] to-transparent p-6 sm:p-8 shadow-sm">
           <div class="space-y-5">
-            <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Transaction Summary</span>
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Transaction Summary</span>
+              <button
+                type="button"
+                class="inline-flex items-center gap-1.5 rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1.5 text-xs font-bold text-[color:var(--fg)] hover:bg-[color:var(--surface-strong)] transition cursor-pointer"
+                data-copy-btn
+              >
+                <Icon name="copy" class="w-3.5 h-3.5" />
+                <span>Copy Summary</span>
+              </button>
+            </div>
 
             <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 text-center">
               <p class="text-xs font-semibold text-[color:var(--muted)]">Estimated Seller Net Proceeds</p>
-              <p class="mt-1 text-4xl sm:text-5xl font-black tracking-tight text-green-600 dark:text-green-400" data-net-proceeds>
+              <p class="mt-1 text-4xl sm:text-5xl font-black tracking-tight text-cyan-600 dark:text-cyan-400 dark:text-cyan-400" data-net-proceeds>
                 $210,750
               </p>
               <p class="mt-2 text-xs font-medium text-[color:var(--muted)]">
@@ -178,6 +198,68 @@ const schemaGraph = [
         </div>
       </div>
     </div>
+
+    <!-- Mathematical Formula & Transaction Mathematics -->
+    <section class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 sm:p-8 space-y-4">
+      <div>
+        <p class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Settlement Mathematics</p>
+        <h2 class="text-xl font-bold text-[color:var(--fg)] flex items-center gap-2"><Icon name="math" class="w-4 h-4 text-[color:var(--accent)]" /><span>How Realtor Commissions &amp; Net Proceeds Are Calculated</span></h2>
+      </div>
+
+      <div class="grid gap-4 sm:grid-cols-2 text-xs sm:text-sm">
+        <div class="rounded-2xl bg-[color:var(--bg)] p-4 border border-[color:var(--border)] space-y-2">
+          <p class="font-bold text-[color:var(--fg)]">1. Seller Net Cash Proceeds</p>
+          <div class="rounded-xl bg-[color:var(--surface)] p-3 font-mono text-xs text-[color:var(--fg)] overflow-x-auto">
+            Proceeds = Sale Price - Total Commission - Mortgage Payoff - Closing Fees
+          </div>
+          <p class="text-xs text-[color:var(--muted)]">
+            Total Commission = Sale Price × (Commission Rate ÷ 100).
+          </p>
+        </div>
+
+        <div class="rounded-2xl bg-[color:var(--bg)] p-4 border border-[color:var(--border)] space-y-2">
+          <p class="font-bold text-[color:var(--fg)]">2. Agent &amp; Broker Split</p>
+          <div class="rounded-xl bg-[color:var(--surface)] p-3 font-mono text-xs text-[color:var(--fg)] overflow-x-auto">
+            Agent Net = (Total Commission ÷ 2) × (Agent Split ÷ 100)
+          </div>
+          <p class="text-xs text-[color:var(--muted)]">
+            Assumes standard 50/50 division between listing and buyer sides before brokerage splits.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Step-by-Step Worked Example -->
+    <section class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 sm:p-8 space-y-4">
+      <div>
+        <p class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Step-By-Step Walkthrough</p>
+        <h2 class="text-xl font-bold text-[color:var(--fg)] flex items-center gap-2"><Icon name="document" class="w-4 h-4 text-[color:var(--accent)]" /><span>Worked Example: $450,000 Sale with 5.5% Commission</span></h2>
+      </div>
+
+      <div class="grid gap-4 sm:grid-cols-3 text-xs sm:text-sm">
+        <div class="rounded-2xl bg-[color:var(--bg)] p-4 border border-[color:var(--border)] space-y-1.5">
+          <p class="font-bold text-[color:var(--fg)]">1. Property &amp; Liens</p>
+          <p class="text-[color:var(--muted)]">Contract Sale Price = $450,000.</p>
+          <p class="text-[color:var(--muted)]">Mortgage payoff = $210,000.</p>
+          <p class="text-[color:var(--muted)]">Closing escrow fees = $4,500.</p>
+        </div>
+        <div class="rounded-2xl bg-[color:var(--bg)] p-4 border border-[color:var(--border)] space-y-1.5">
+          <p class="font-bold text-[color:var(--fg)]">2. Commission Splits</p>
+          <p class="text-[color:var(--muted)]">Total Comm (5.5%): <strong>$24,750</strong>.</p>
+          <p class="text-[color:var(--muted)]">Listing / Buyer sides: $12,375 each.</p>
+          <p class="text-[color:var(--muted)]">Agent Take-Home (70% split): <strong>$8,662.50</strong> each.</p>
+        </div>
+        <div class="rounded-2xl bg-[color:var(--bg)] p-4 border border-[color:var(--border)] space-y-1.5">
+          <p class="font-bold text-[color:var(--fg)]">3. Net Cash at Closing</p>
+          <p class="text-[color:var(--muted)]">Gross Sale: $450,000.</p>
+          <p class="text-[color:var(--muted)]">Total deductions: $239,250.</p>
+          <p class="text-[color:var(--muted)]">Seller Net Proceeds: <strong>$210,750</strong>.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Parameter Guide -->
+    <CalculatorParameterGuide parameters={parameterGuide} />
 
     <!-- FAQs -->
     <section class="space-y-4">
@@ -247,6 +329,23 @@ const schemaGraph = [
           inMortgage.value = '210000';
           inClosing.value = '4500';
           update();
+        });
+      }
+
+      const copyBtn = root.querySelector('[data-copy-btn]');
+      if (copyBtn) {
+        copyBtn.addEventListener('click', async () => {
+          const text = `Real Estate Proceeds Summary:\n• Estimated Seller Net Proceeds: ${outProceeds?.textContent || ''}\n• Total Commission Paid: ${outTotalComm?.textContent || ''}\n• Listing Agent (Side): ${outListing?.textContent || ''}\n• Buyer Agent (Side): ${outBuyer?.textContent || ''}`;
+          try {
+            await navigator.clipboard.writeText(text);
+            const originalText = copyBtn.innerHTML;
+            copyBtn.innerHTML = '<span>Copied!</span>';
+            setTimeout(() => {
+              copyBtn.innerHTML = originalText;
+            }, 2000);
+          } catch (e) {
+            console.error('Clipboard copy failed', e);
+          }
         });
       }
 

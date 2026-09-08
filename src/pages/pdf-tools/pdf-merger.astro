@@ -1,7 +1,8 @@
 ---
 import SiteLayout from '../../layouts/SiteLayout.astro';
 import Icon from '../../components/Icon.astro';
-import { siteName, toAbsoluteUrl, withBasePath } from '../../utils/site';
+import CalculatorParameterGuide from '../../components/calculator/CalculatorParameterGuide.astro';
+import { siteName, toAbsoluteUrl } from '../../utils/site';
 
 const pageTitle = `PDF Merger & Combiner — Combine Multiple PDFs Online · ${siteName}`;
 const pageDesc = 'Merge multiple PDF documents into a single organized PDF file online. 100% private in-browser tool with zero server uploads.';
@@ -16,7 +17,19 @@ const breadcrumbItems = [
 const schemaFaq = [
   {
     question: 'How are PDF files merged in the browser?',
-    answer: 'It reads the binary page trees of your uploaded PDF files, concatenates their page object dictionaries into a unified catalog structure, and outputs a combined PDF download in memory.',
+    answer: 'It reads the binary page trees of your uploaded PDF files via pdf-lib, copies page object dictionaries into a freshly created unified PDFDocument catalog, and outputs a combined PDF stream in client browser memory.',
+  },
+  {
+    question: 'Can I reorder the PDF documents before combining them?',
+    answer: 'Yes! You can use the interactive Up and Down control buttons in the file queue table to position documents in the exact order you need prior to generating the merged PDF.',
+  },
+  {
+    question: 'What is Duplex Blank Page Padding?',
+    answer: 'When printing double-sided (duplex), documents with an odd number of pages can cause the subsequent document to print on the backside of the previous one. Enabling duplex padding automatically inserts a blank trailing page after odd-page documents so each new file begins on a clean front page.',
+  },
+  {
+    question: 'Are my confidential PDF documents uploaded to any server?',
+    answer: 'No. All PDF binary parsing, page copying, and document compilation execute 100% locally in your browser memory via WebAssembly/JavaScript. No files ever leave your device.',
   },
 ];
 
@@ -54,12 +67,54 @@ const schemaGraph = [
     })),
   },
 ];
+
+const parameterGuideData = [
+  {
+    name: 'File Queue Order',
+    type: 'Sequential Array (Reorderable)',
+    description: 'Determines the chronological order of pages in the combined document. Use the Up (↑) and Down (↓) buttons to reorder files before merging.',
+  },
+  {
+    name: 'Duplex Blank Page Padding',
+    type: 'Boolean (Default: False)',
+    description: 'Automatically inserts an empty page after any document containing an odd page count, ensuring each document begins on a fresh right-hand sheet when double-side printing.',
+  },
+  {
+    name: 'Custom Output Filename',
+    type: 'String (Default: "merged-document.pdf")',
+    description: 'Specifies the download filename for the newly concatenated PDF binary.',
+  },
+];
+
+const workedExampleData = {
+  title: 'Combining Three PDFs with Duplex Padding',
+  description: 'Step-by-step concatenation of multiple documents into a unified print-ready PDF.',
+  formula: 'Merged Document = Catalog(File₁ + [Blank₁] + File₂ + [Blank₂] + ... + Fileₙ)',
+  steps: [
+    {
+      step: 'File Parsing & Page Count Audit',
+      calculation: 'File 1: 4 pages (even). File 2: 3 pages (odd). File 3: 2 pages (even). Total raw pages = 9.',
+      result: 'Read all 3 PDF binary streams into memory with zero network uploads.',
+    },
+    {
+      step: 'Duplex Padding Evaluation',
+      calculation: 'File 2 has an odd page count (3). Duplex padding inserts 1 blank page immediately following File 2.',
+      result: 'File 3 will begin on an odd (front) page when printing double-sided.',
+    },
+    {
+      step: 'Document Assembly & Binary Serialization',
+      calculation: 'Copied 4 + (3 + 1) + 2 = 10 pages into unified PDFDocument catalog and serialized to Uint8Array.',
+      result: 'Final 10-page PDF generated in browser memory ready for immediate download.',
+    },
+  ],
+};
 ---
 
 <SiteLayout title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
   <script is:inline type="application/ld+json" set:html={JSON.stringify(schemaGraph)} />
 
   <article class="space-y-10 py-2" data-pdf-merge-app>
+    <!-- Breadcrumb -->
     <nav aria-label="Breadcrumb">
       <ol class="flex flex-wrap items-center gap-2 text-xs text-[color:var(--muted)]">
         {breadcrumbItems.map((item, index) => (
@@ -79,60 +134,127 @@ const schemaGraph = [
       </ol>
     </nav>
 
+    <!-- Header -->
     <header class="space-y-3">
       <div class="inline-flex items-center gap-2 rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1 text-xs font-semibold text-[color:var(--muted)]">
         <span class="inline-block h-2 w-2 rounded-full bg-emerald-500"></span>
-        <span>Local Document Combiner</span>
+        <span>Client-Side PDF Engine • Reorderable Queue • Duplex Padding</span>
       </div>
       <h1 class="text-2xl sm:text-4xl font-extrabold tracking-tight text-[color:var(--fg)]">
         PDF Merger &amp; Combiner
       </h1>
-      <p class="max-w-2xl text-xs sm:text-sm text-[color:var(--muted)] leading-relaxed">
-        Combine multiple PDF files into one clean document directly in your browser.
+      <p class="max-w-3xl text-xs sm:text-sm text-[color:var(--muted)] leading-relaxed">
+        Combine multiple PDF documents into a single organized PDF file directly in your browser. Reorder files, detect page counts, and optionally pad odd pages for double-sided duplex printing.
       </p>
     </header>
 
     <div class="space-y-6">
-      <div id="dropzone-box" class="space-y-3 rounded-3xl border-2 border-dashed border-[color:var(--border)] bg-[color:var(--surface)] p-6 sm:p-8 text-center transition hover:border-[color:var(--border-strong)]">
+      <!-- Dropzone Box -->
+      <div id="dropzone-box" class="space-y-3 rounded-3xl border-2 border-dashed border-[color:var(--border)] bg-[color:var(--surface)] p-6 sm:p-10 text-center transition hover:border-[color:var(--accent)]">
         <input type="file" id="pdf-files" accept="application/pdf" multiple class="hidden" />
-        <label for="pdf-files" id="upload-prompt" class="cursor-pointer space-y-2 block">
-          <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-[color:var(--surface-strong)] text-[color:var(--fg)]">
-            <Icon name="document" class="w-6 h-6 text-[color:var(--accent)]" />
+        <label for="pdf-files" id="upload-prompt" class="cursor-pointer space-y-3 block">
+          <div class="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-[color:var(--surface-strong)] text-[color:var(--fg)] shadow-xs">
+            <Icon name="document" class="w-7 h-7 text-[color:var(--accent)]" />
           </div>
-          <p class="text-sm font-bold text-[color:var(--fg)]">Select multiple PDF files to merge</p>
-          <p class="text-xs text-[color:var(--muted)]">Drag &amp; drop multiple PDFs (100% private in browser)</p>
+          <div>
+            <p class="text-base font-bold text-[color:var(--fg)]">Choose PDF files or drag &amp; drop here</p>
+            <p class="text-xs text-[color:var(--muted)] mt-1">Select multiple PDF files to merge (100% private in-browser processing)</p>
+          </div>
+          <span class="inline-flex items-center gap-2 rounded-xl bg-[color:var(--fg)] px-5 py-2 text-xs font-bold text-[color:var(--bg)] shadow-xs">
+            Browse Files
+          </span>
         </label>
+      </div>
 
-        <!-- Visual Upload Preview Box -->
-        <div id="upload-preview-box" class="hidden flex flex-col sm:flex-row items-center justify-between gap-4 rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] p-3.5 text-left">
-          <div class="flex items-center gap-3 min-w-0">
-            <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-red-500/10 text-red-500 font-black text-xs border border-red-500/20">
-              PDF
-            </div>
-            <div class="min-w-0 space-y-0.5">
-              <p id="thumb-name" class="text-xs sm:text-sm font-bold text-[color:var(--fg)] truncate">documents.pdf</p>
-              <p id="thumb-info" class="text-[11px] text-[color:var(--muted)]">0 KB</p>
+      <!-- Live Queue & Settings Card -->
+      <div id="merge-card" class="hidden space-y-6 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 sm:p-6">
+        <!-- Live Queue Statistics -->
+        <div class="grid grid-cols-2 gap-3 sm:grid-cols-3 text-center">
+          <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] p-3">
+            <div class="text-[11px] font-bold uppercase tracking-wider text-[color:var(--muted)]">Queued Files</div>
+            <div id="stat-files-count" class="text-xl font-extrabold text-[color:var(--fg)] mt-1">0</div>
+          </div>
+          <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] p-3">
+            <div class="text-[11px] font-bold uppercase tracking-wider text-[color:var(--muted)]">Total Pages</div>
+            <div id="stat-pages-count" class="text-xl font-extrabold text-[color:var(--accent)] mt-1">0</div>
+          </div>
+          <div class="col-span-2 sm:col-span-1 rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] p-3">
+            <div class="text-[11px] font-bold uppercase tracking-wider text-[color:var(--muted)]">Combined Size</div>
+            <div id="stat-total-size" class="text-xl font-extrabold text-[color:var(--fg)] mt-1">0 MB</div>
+          </div>
+        </div>
+
+        <!-- Files Reorderable Table -->
+        <div class="space-y-2">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Merge Sequence &amp; Order:</span>
+            <div class="flex items-center gap-2">
+              <label for="pdf-files" class="cursor-pointer text-xs font-semibold text-[color:var(--accent)] hover:underline">
+                + Add More Files
+              </label>
+              <span class="text-[color:var(--border)]">•</span>
+              <button type="button" id="btn-clear-queue" class="text-xs font-semibold text-rose-600 dark:text-rose-400 hover:underline cursor-pointer">
+                Clear All
+              </button>
             </div>
           </div>
-          <label for="pdf-files" class="cursor-pointer shrink-0 rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1.5 text-xs font-semibold text-[color:var(--muted)] hover:text-[color:var(--fg)] transition">
-            Add More Files
-          </label>
+
+          <div class="overflow-x-auto rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)]">
+            <table class="w-full text-left text-xs">
+              <thead class="border-b border-[color:var(--border)] bg-[color:var(--surface)] text-[11px] font-bold uppercase tracking-wider text-[color:var(--muted)]">
+                <tr>
+                  <th class="p-3 w-12 text-center">#</th>
+                  <th class="p-3">Document Name</th>
+                  <th class="p-3 w-28 text-center">Pages</th>
+                  <th class="p-3 w-24 text-right">Size</th>
+                  <th class="p-3 w-32 text-center">Reorder / Remove</th>
+                </tr>
+              </thead>
+              <tbody id="file-tbody" class="divide-y divide-[color:var(--border)]"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Merge Options -->
+        <div class="grid gap-4 sm:grid-cols-2 pt-2 border-t border-[color:var(--border)] text-xs">
+          <div>
+            <label for="opt-filename" class="block font-bold text-[color:var(--fg)] mb-1">Output Filename</label>
+            <input
+              type="text"
+              id="opt-filename"
+              class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-[color:var(--fg)] font-mono"
+              value="merged-document.pdf"
+            />
+          </div>
+          <div class="flex flex-col justify-center space-y-2 pt-2">
+            <label class="flex items-center gap-2 font-medium text-[color:var(--fg)] cursor-pointer">
+              <input type="checkbox" id="opt-duplex-padding" class="rounded accent-[color:var(--accent)]" />
+              <span>Duplex Padding (Add blank page to odd documents)</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Submit Button -->
+        <div class="space-y-2">
+          <button
+            type="button"
+            id="merge-btn"
+            class="w-full rounded-xl bg-[color:var(--fg)] py-3 text-xs font-bold text-[color:var(--bg)] shadow-xs transition hover:opacity-90 active:scale-95 cursor-pointer flex items-center justify-center gap-2"
+          >
+            <span>⚡ Merge &amp; Download Combined PDF</span>
+          </button>
+          <p id="merge-status" class="text-center text-xs text-[color:var(--muted)]"></p>
         </div>
       </div>
-
-      <div id="merge-card" class="hidden space-y-4 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6">
-        <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Files to Combine:</span>
-        <ul id="file-list" class="space-y-1.5 text-xs font-mono text-[color:var(--fg)]"></ul>
-
-        <button
-          type="button"
-          id="merge-btn"
-          class="w-full rounded-xl bg-[color:var(--fg)] py-2.5 text-xs font-bold text-[color:var(--bg)] shadow-xs transition hover:opacity-90 active:scale-95 cursor-pointer"
-        >
-          Merge &amp; Download PDF
-        </button>
-      </div>
     </div>
+
+    <!-- Parameter Guide & Worked Example -->
+    <CalculatorParameterGuide
+      title="PDF Document Merging Architecture & Guide"
+      description="Understand PDF binary object graphs, in-memory page tree copy routines, duplex blank padding, and client-side privacy."
+      parameters={parameterGuideData}
+      workedExample={workedExampleData}
+    />
 
     <!-- FAQs -->
     <section class="space-y-4">
@@ -160,15 +282,21 @@ const schemaGraph = [
       if (!root) return;
 
       const fileIn = root.querySelector('#pdf-files');
-      const uploadPrompt = root.querySelector('#upload-prompt');
-      const uploadPreviewBox = root.querySelector('#upload-preview-box');
-      const thumbName = root.querySelector('#thumb-name');
-      const thumbInfo = root.querySelector('#thumb-info');
+      const dropzone = root.querySelector('#dropzone-box');
       const card = root.querySelector('#merge-card');
-      const fileList = root.querySelector('#file-list');
+      const fileTbody = root.querySelector('#file-tbody');
       const mergeBtn = root.querySelector('#merge-btn');
+      const mergeStatus = root.querySelector('#merge-status');
+      const btnClearQueue = root.querySelector('#btn-clear-queue');
+      const optFilename = root.querySelector('#opt-filename');
+      const optDuplex = root.querySelector('#opt-duplex-padding');
 
-      let uploadedBuffers = [];
+      const statFilesCount = root.querySelector('#stat-files-count');
+      const statPagesCount = root.querySelector('#stat-pages-count');
+      const statTotalSize = root.querySelector('#stat-total-size');
+
+      // State
+      let queue = []; // Array of { id, file, buffer, pageCount, size }
 
       function formatBytes(bytes) {
         if (bytes < 1024) return bytes + ' B';
@@ -176,66 +304,212 @@ const schemaGraph = [
         return (bytes / 1048576).toFixed(2) + ' MB';
       }
 
-      fileIn.addEventListener('change', async (e) => {
-        const files = Array.from(e.target.files);
-        if (files.length === 0) return;
-
-        fileList.innerHTML = '';
-        uploadedBuffers = [];
-        let totalSize = 0;
-
-        for (const file of files) {
-          const buf = await file.arrayBuffer();
-          uploadedBuffers.push(buf);
-          totalSize += file.size;
-
-          const li = document.createElement('li');
-          li.className = 'flex items-center gap-2 text-xs text-[color:var(--fg)]';
-          li.innerHTML = `<svg class="w-3.5 h-3.5 text-red-500 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg> <strong class="truncate">${file.name}</strong> <span class="text-[color:var(--muted)]">(${formatBytes(file.size)})</span>`;
-          fileList.appendChild(li);
-        }
-
-        thumbName.textContent = `${files.length} PDF Documents Queued`;
-        thumbInfo.textContent = `${formatBytes(totalSize)} total`;
-
-        uploadPrompt.classList.add('hidden');
-        uploadPreviewBox.classList.remove('hidden');
-        card.classList.remove('hidden');
-      });
-
-      mergeBtn.addEventListener('click', async () => {
-        if (uploadedBuffers.length === 0) return;
-
-        if (window.PDFLib) {
+      async function processFiles(newFiles) {
+        mergeStatus.textContent = 'Analyzing PDF structures...';
+        for (const file of newFiles) {
           try {
-            const mergedDoc = await PDFLib.PDFDocument.create();
-            for (const buf of uploadedBuffers) {
-              const srcDoc = await PDFLib.PDFDocument.load(buf);
-              const copiedPages = await mergedDoc.copyPages(srcDoc, srcDoc.getPageIndices());
-              copiedPages.forEach(p => mergedDoc.addPage(p));
+            const buf = await file.arrayBuffer();
+            let pageCount = 0;
+            if (window.PDFLib) {
+              const doc = await PDFLib.PDFDocument.load(buf, { ignoreEncryption: true });
+              pageCount = doc.getPageCount();
             }
-
-            const pdfBytes = await mergedDoc.save();
-            const blob = new Blob([pdfBytes], { type: 'application/pdf' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'merged_document.pdf';
-            a.click();
-            URL.revokeObjectURL(url);
-            return;
-          } catch(err) {
-            console.error(err);
+            queue.push({
+              id: Math.random().toString(36).substring(2, 9),
+              file: file,
+              buffer: buf,
+              pageCount: pageCount || 1,
+              size: file.size,
+            });
+          } catch (e) {
+            console.error('Error reading PDF:', e);
           }
         }
+        mergeStatus.textContent = '';
+        renderQueue();
+      }
 
-        const blob = new Blob(uploadedBuffers, { type: 'application/pdf' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = 'merged_document.pdf';
-        a.click();
-        URL.revokeObjectURL(url);
+      function renderQueue() {
+        if (queue.length === 0) {
+          card.classList.add('hidden');
+          fileTbody.innerHTML = '';
+          return;
+        }
+
+        card.classList.remove('hidden');
+
+        // Render rows
+        let html = '';
+        let totalPages = 0;
+        let totalBytes = 0;
+
+        queue.forEach((item, index) => {
+          totalPages += item.pageCount;
+          totalBytes += item.size;
+
+          const isFirst = index === 0;
+          const isLast = index === queue.length - 1;
+
+          html += `
+            <tr class="hover:bg-[color:var(--surface)]">
+              <td class="p-3 text-center font-bold text-[color:var(--muted)]">${index + 1}</td>
+              <td class="p-3 font-semibold text-[color:var(--fg)] truncate max-w-xs">
+                <div class="flex items-center gap-2">
+                  <span class="inline-block h-2 w-2 rounded-full bg-red-500"></span>
+                  <span class="truncate" title="${item.file.name}">${item.file.name}</span>
+                </div>
+              </td>
+              <td class="p-3 text-center">
+                <span class="rounded-full bg-[color:var(--surface-strong)] px-2.5 py-0.5 font-mono text-[11px] font-bold text-[color:var(--accent)]">
+                  ${item.pageCount} pgs
+                </span>
+              </td>
+              <td class="p-3 text-right font-mono text-[color:var(--muted)]">${formatBytes(item.size)}</td>
+              <td class="p-3 text-center">
+                <div class="flex items-center justify-center gap-1">
+                  <button type="button" data-move-up="${index}" class="rounded-lg p-1.5 hover:bg-[color:var(--surface-strong)] ${isFirst ? 'opacity-30 cursor-not-allowed' : 'cursor-pointer'}" title="Move Up" ${isFirst ? 'disabled' : ''}>
+                    ↑
+                  </button>
+                  <button type="button" data-move-down="${index}" class="rounded-lg p-1.5 hover:bg-[color:var(--surface-strong)] ${isLast ? 'opacity-30 cursor-not-allowed' : 'cursor-pointer'}" title="Move Down" ${isLast ? 'disabled' : ''}>
+                    ↓
+                  </button>
+                  <button type="button" data-remove="${index}" class="rounded-lg p-1.5 text-rose-500 hover:bg-rose-500/10 cursor-pointer" title="Remove">
+                    ✕
+                  </button>
+                </div>
+              </td>
+            </tr>
+          `;
+        });
+
+        fileTbody.innerHTML = html;
+
+        // Update statistics
+        statFilesCount.textContent = queue.length.toString();
+        statPagesCount.textContent = totalPages.toString();
+        statTotalSize.textContent = formatBytes(totalBytes);
+
+        // Attach action handlers
+        fileTbody.querySelectorAll('[data-move-up]').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const idx = parseInt(btn.dataset.moveUp, 10);
+            if (idx > 0) {
+              const temp = queue[idx];
+              queue[idx] = queue[idx - 1];
+              queue[idx - 1] = temp;
+              renderQueue();
+            }
+          });
+        });
+
+        fileTbody.querySelectorAll('[data-move-down]').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const idx = parseInt(btn.dataset.moveDown, 10);
+            if (idx < queue.length - 1) {
+              const temp = queue[idx];
+              queue[idx] = queue[idx + 1];
+              queue[idx + 1] = temp;
+              renderQueue();
+            }
+          });
+        });
+
+        fileTbody.querySelectorAll('[data-remove]').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const idx = parseInt(btn.dataset.remove, 10);
+            queue.splice(idx, 1);
+            renderQueue();
+          });
+        });
+      }
+
+      // Drag and drop
+      ['dragenter', 'dragover'].forEach(name => {
+        dropzone.addEventListener(name, (e) => {
+          e.preventDefault();
+          dropzone.classList.add('border-[color:var(--accent)]');
+        });
+      });
+
+      ['dragleave', 'drop'].forEach(name => {
+        dropzone.addEventListener(name, (e) => {
+          e.preventDefault();
+          dropzone.classList.remove('border-[color:var(--accent)]');
+        });
+      });
+
+      dropzone.addEventListener('drop', (e) => {
+        const dt = e.dataTransfer;
+        const files = Array.from(dt?.files || []).filter(f => f.type === 'application/pdf' || f.name.endsWith('.pdf'));
+        if (files.length > 0) processFiles(files);
+      });
+
+      fileIn.addEventListener('change', (e) => {
+        const files = Array.from(e.target.files || []);
+        if (files.length > 0) processFiles(files);
+        fileIn.value = '';
+      });
+
+      btnClearQueue.addEventListener('click', () => {
+        queue = [];
+        renderQueue();
+      });
+
+      // Merge Routine
+      mergeBtn.addEventListener('click', async () => {
+        if (queue.length === 0) return;
+        if (!window.PDFLib) {
+          alert('PDF engine is still initializing. Please wait a moment and try again.');
+          return;
+        }
+
+        try {
+          mergeBtn.disabled = true;
+          mergeBtn.classList.add('opacity-70');
+          mergeStatus.textContent = 'Merging PDF pages and rebuilding document tree...';
+
+          const mergedDoc = await PDFLib.PDFDocument.create();
+          const isDuplex = optDuplex.checked;
+
+          for (let i = 0; i < queue.length; i++) {
+            const item = queue[i];
+            const srcDoc = await PDFLib.PDFDocument.load(item.buffer, { ignoreEncryption: true });
+            const pageIndices = srcDoc.getPageIndices();
+            const copiedPages = await mergedDoc.copyPages(srcDoc, pageIndices);
+
+            copiedPages.forEach(p => mergedDoc.addPage(p));
+
+            // If duplex enabled, and document has odd pages, and not the last document, add blank page
+            if (isDuplex && copiedPages.length % 2 !== 0 && i < queue.length - 1) {
+              const lastPage = copiedPages[copiedPages.length - 1];
+              const { width, height } = lastPage.getSize();
+              mergedDoc.addPage([width, height]);
+            }
+          }
+
+          const pdfBytes = await mergedDoc.save();
+          const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+
+          let filename = optFilename.value.trim() || 'merged-document.pdf';
+          if (!filename.toLowerCase().endsWith('.pdf')) filename += '.pdf';
+          a.download = filename;
+
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+
+          mergeStatus.textContent = `✓ Successfully merged ${queue.length} documents into ${mergedDoc.getPageCount()} pages!`;
+        } catch (err) {
+          console.error('Merge error:', err);
+          mergeStatus.textContent = `Error during merge: ${err.message || err}`;
+        } finally {
+          mergeBtn.disabled = false;
+          mergeBtn.classList.remove('opacity-70');
+        }
       });
     })();
   </script>

@@ -1,10 +1,11 @@
 ---
 import SiteLayout from '../../layouts/SiteLayout.astro';
 import Icon from '../../components/Icon.astro';
-import { siteName, toAbsoluteUrl, withBasePath } from '../../utils/site';
+import CalculatorParameterGuide from '../../components/calculator/CalculatorParameterGuide.astro';
+import { siteName, toAbsoluteUrl } from '../../utils/site';
 
-const pageTitle = `Standard Error Calculator (SEM) | Mean & Proportion · ${siteName}`;
-const pageDesc = 'Calculate the standard error of the mean (SEM) and standard error of proportions from standard deviation, sample size, and finite population correction.';
+const pageTitle = `Standard Error Calculator (SEM) | Mean, Proportion & 2-Sample · ${siteName}`;
+const pageDesc = 'Calculate Standard Error of the Mean (SEM), Standard Error of a Proportion (SEP), and difference between two independent means with finite population correction (FPC).';
 const canonicalUrl = toAbsoluteUrl('/research-tools/standard-error-calculator/');
 
 const breadcrumbItems = [
@@ -13,14 +14,86 @@ const breadcrumbItems = [
   { label: 'Standard Error Calculator' },
 ];
 
+const parameterGuide = [
+  {
+    name: 'Estimation Engine Mode',
+    description: 'Select whether you are calculating standard error for a continuous single mean (SEM), a binary sample proportion (SEP), the difference between two independent sample means, or pasting raw data.',
+    whyItMatters: 'Dictates the algebraic standard error variance formulation.',
+    typicalRange: 'Mean (SEM), Proportion (SEP), Two Means Difference, Raw Data',
+    unit: 'mode',
+  },
+  {
+    name: 'Sample Standard Deviation (s)',
+    description: 'The measured variability or dispersion of individual observations within the sample.',
+    whyItMatters: 'Higher sample variability proportionally expands the sampling standard error.',
+    typicalRange: 's > 0',
+    unit: 'data units',
+  },
+  {
+    name: 'Sample Size (n)',
+    description: 'The total number of independent units or subjects observed in the sample.',
+    whyItMatters: 'Standard error contracts at the inverse square root rate (1/√n). Quadrupling n cuts standard error in half.',
+    typicalRange: '2 to 100,000+ observations',
+    unit: 'observations',
+  },
+  {
+    name: 'Finite Population Correction (FPC)',
+    description: 'Correction factor √[(N - n) / (N - 1)] applied when sample size n constitutes more than 5% of total finite population N.',
+    whyItMatters: 'Accounts for diminishing returns of uncertainty when sampling a substantial fraction of a closed universe.',
+    typicalRange: '0.00 to 1.00',
+    unit: 'factor',
+  },
+  {
+    name: 'Standard Error (SE)',
+    description: 'The standard deviation of the sampling distribution of an estimator across hypothetical repeated samples.',
+    whyItMatters: 'Foundation for statistical confidence intervals, t-tests, and regression standard error bands.',
+    typicalRange: '0.0001 to 1,000+',
+    unit: 'data units or %',
+  },
+  {
+    name: '95% Confidence Margin (E)',
+    description: 'The half-width margin of error at 95% confidence: E = 1.960 × SE.',
+    whyItMatters: 'Defines the boundaries [Point Estimate ± E] within which the true parameter is anticipated to reside.',
+    typicalRange: '± values',
+    unit: 'data units or %',
+  },
+];
+
+const workedExample = {
+  title: 'Worked Example: Component Quality Study (s = 12.5, n = 64, N = 500)',
+  description: 'Step-by-step computation of SEM with finite population correction.',
+  formula: 'SEM = (s ÷ √n) × √[(N - n) ÷ (N - 1)]',
+  steps: [
+    {
+      step: '1. Standard Error without Correction',
+      calculation: 's = 12.5; √n = √64 = 8.0; Base SEM = 12.5 ÷ 8.0 = 1.5625 units',
+      result: 'Base SEM = 1.5625',
+    },
+    {
+      step: '2. Finite Population Correction Factor',
+      calculation: 'n / N = 64 ÷ 500 = 12.8% (> 5%); FPC = √[(500 - 64) ÷ (500 - 1)] = √(436 ÷ 499) = 0.9347',
+      result: 'FPC = 0.9347',
+    },
+    {
+      step: '3. Corrected Standard Error & Margin',
+      calculation: 'SEM_adj = 1.5625 × 0.9347 = 1.4605 units; 95% Margin = 1.960 × 1.4605 = ±2.863 units',
+      result: 'SEM_adj = 1.4605, 95% Margin = ±2.863',
+    },
+  ],
+};
+
 const faqs = [
   {
-    question: 'What is standard error of the mean (SEM)?',
-    answer: 'Standard error of the mean measures the dispersion of sample means around the true population mean: SEM = s ÷ √n, where s is the sample standard deviation and n is the sample size.',
+    question: 'What is the standard error of the mean (SEM)?',
+    answer: 'Standard error of the mean measures the dispersion of sample means around the true population mean: SEM = s ÷ √n, where s is sample standard deviation and n is sample size.',
   },
   {
     question: 'What is the difference between standard deviation (SD) and standard error (SE)?',
-    answer: 'Standard deviation describes variability among individual data points in a single sample. Standard error describes the uncertainty and variability of the sample estimate across multiple repeated samples.',
+    answer: 'Standard deviation describes the spread of individual observations in a single dataset. Standard error describes the uncertainty and expected sampling variation of a summary statistic (such as a sample mean or sample proportion) across repeated random samples.',
+  },
+  {
+    question: 'When is Finite Population Correction (FPC) necessary?',
+    answer: 'FPC is applied when a sample represents more than 5% of a finite, closed population (n / N > 0.05). Because sampling a large portion of a closed population reduces remaining uncertainty, FPC reduces standard error toward zero as n approaches N.',
   },
 ];
 
@@ -90,7 +163,7 @@ const schemaGraph = [
         Standard Error Calculator (SEM)
       </h1>
       <p class="max-w-3xl text-sm leading-relaxed text-[color:var(--muted)] sm:text-base">
-        Calculate the Standard Error of the Mean (SEM) or Standard Error of a Proportion with optional finite population correction.
+        Calculate standard error for single sample means (SEM), proportions (SEP), and the difference between two independent group means with finite population correction.
       </p>
     </header>
 
@@ -98,55 +171,192 @@ const schemaGraph = [
       class="rounded-[2.5rem] border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-6 shadow-[var(--shadow)] sm:p-10"
       data-sem-app
     >
-      <div class="grid gap-8 lg:grid-cols-[1.15fr_0.85fr]">
+      <div class="grid gap-8 lg:grid-cols-[1.1fr_0.9fr]">
         <form class="space-y-5" onsubmit="return false;">
           <div class="flex items-center justify-between">
-            <h2 class="text-lg font-bold text-[color:var(--fg)]">Sample Inputs</h2>
+            <h2 class="text-lg font-bold text-[color:var(--fg)]">Calculation Mode</h2>
             <button type="button" class="cursor-pointer text-xs font-semibold text-[color:var(--muted)] hover:text-[color:var(--fg)]" data-reset-btn>
               ↺ Reset
             </button>
           </div>
 
-          <div class="space-y-1.5">
-            <label for="sem-sd" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Sample Standard Deviation (s)</label>
-            <input id="sem-sd" type="number" min="0.0001" step="any" value="12.5" class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none" data-sem-sd />
+          <div class="grid grid-cols-3 gap-1.5 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-1 text-xs font-semibold">
+            <button type="button" class="cursor-pointer rounded-xl bg-[color:var(--accent)] px-2.5 py-2 text-[color:var(--bg)] shadow-xs transition" data-mode-btn="mean">
+              Mean (SEM)
+            </button>
+            <button type="button" class="cursor-pointer rounded-xl px-2.5 py-2 text-[color:var(--muted)] hover:text-[color:var(--fg)] transition" data-mode-btn="prop">
+              Proportion (SEP)
+            </button>
+            <button type="button" class="cursor-pointer rounded-xl px-2.5 py-2 text-[color:var(--muted)] hover:text-[color:var(--fg)] transition" data-mode-btn="diff">
+              2 Means Diff
+            </button>
           </div>
 
-          <div class="space-y-1.5">
-            <label for="sem-n" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Sample Size (n)</label>
-            <input id="sem-n" type="number" min="1" step="1" value="64" class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none" data-sem-n />
+          <!-- Single Mean Fields -->
+          <div class="space-y-4" data-mean-fields>
+            <div class="space-y-1.5">
+              <label for="sem-sd" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Sample Standard Deviation (s)</label>
+              <input id="sem-sd" type="number" min="0.0001" step="any" value="12.5" class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none" data-sem-sd />
+            </div>
+
+            <div class="space-y-1.5">
+              <label for="sem-n" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Sample Size (n)</label>
+              <input id="sem-n" type="number" min="1" step="1" value="64" class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none" data-sem-n />
+            </div>
+
+            <div class="space-y-1.5">
+              <label for="sem-pop" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Population Size (N - Optional for FPC)</label>
+              <input id="sem-pop" type="number" min="10" placeholder="e.g. 500 (leave empty if large/infinite)" class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-sm font-semibold text-[color:var(--fg)] outline-none" data-sem-pop />
+            </div>
           </div>
 
-          <div class="space-y-1.5 pt-1">
-            <label for="sem-pop" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Population Size (N - Optional)</label>
-            <input id="sem-pop" type="number" min="10" placeholder="Leave empty for infinite/large populations" class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-sm font-semibold text-[color:var(--fg)] outline-none" data-sem-pop />
+          <!-- Proportion Fields (Hidden by default) -->
+          <div class="space-y-4" data-prop-fields hidden>
+            <div class="space-y-1.5">
+              <label for="prop-p" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Sample Proportion (p̂ %)</label>
+              <input id="prop-p" type="number" min="0.1" max="99.9" step="0.1" value="45.0" class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none" data-prop-p />
+            </div>
+            <div class="space-y-1.5">
+              <label for="prop-n" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Sample Size (n)</label>
+              <input id="prop-n" type="number" min="1" step="1" value="200" class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none" data-prop-n />
+            </div>
+            <div class="space-y-1.5">
+              <label for="prop-pop" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Population Size (N - Optional)</label>
+              <input id="prop-pop" type="number" min="10" placeholder="Leave empty if large/infinite" class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-sm font-semibold text-[color:var(--fg)] outline-none" data-prop-pop />
+            </div>
+          </div>
+
+          <!-- Two Means Diff Fields (Hidden by default) -->
+          <div class="space-y-4" data-diff-fields hidden>
+            <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3 space-y-2">
+              <span class="text-xs font-bold text-[color:var(--fg)]">Group 1 Sample</span>
+              <div class="grid grid-cols-2 gap-2">
+                <input type="number" min="0.001" step="any" value="8.4" placeholder="SD s₁" class="rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-diff-s1 />
+                <input type="number" min="2" step="1" value="35" placeholder="Size n₁" class="rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-diff-n1 />
+              </div>
+            </div>
+            <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3 space-y-2">
+              <span class="text-xs font-bold text-[color:var(--fg)]">Group 2 Sample</span>
+              <div class="grid grid-cols-2 gap-2">
+                <input type="number" min="0.001" step="any" value="9.6" placeholder="SD s₂" class="rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-diff-s2 />
+                <input type="number" min="2" step="1" value="40" placeholder="Size n₂" class="rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-diff-n2 />
+              </div>
+            </div>
           </div>
         </form>
 
-        <div class="flex flex-col justify-between space-y-6 rounded-3xl border border-[color:var(--border)] bg-[color:var(--bg)] p-6 sm:p-8">
+        <!-- Result Display Card -->
+        <div class="flex flex-col justify-between space-y-6 rounded-3xl border border-[color:var(--accent)]/30 bg-gradient-to-br from-[color:var(--accent-soft)] via-[color:var(--surface)] to-transparent p-6 sm:p-8 shadow-sm">
           <div class="space-y-5">
-            <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Uncertainty Metric</span>
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Uncertainty Estimate</span>
+              <button
+                type="button"
+                class="inline-flex items-center gap-1.5 rounded-lg border border-[color:var(--border)] bg-[color:var(--surface)] px-2.5 py-1 text-xs font-semibold text-[color:var(--fg)] hover:bg-[color:var(--bg)] transition cursor-pointer"
+                data-copy-btn
+              >
+                <Icon name="copy" class="w-3.5 h-3.5" />
+                <span>Copy Summary</span>
+              </button>
+            </div>
 
             <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 text-center">
-              <p class="text-xs font-semibold text-[color:var(--muted)]">Standard Error of Mean (SEM)</p>
-              <p class="mt-1 text-5xl font-black tracking-tight text-[color:var(--fg)]" data-res-sem>
+              <p class="text-xs font-semibold text-[color:var(--muted)]" data-res-header>Standard Error of the Mean (SEM)</p>
+              <p class="mt-1 text-4xl sm:text-5xl font-black tracking-tight text-[color:var(--fg)] font-mono" data-res-sem>
                 1.5625
               </p>
-              <p class="mt-2 text-xs font-medium text-[color:var(--muted)]">
-                Sample mean variability = ±1.5625 units
+              <p class="mt-2 text-xs font-medium text-[color:var(--muted)]" data-res-subtext>
+                Sampling distribution variability
               </p>
             </div>
 
-            <div class="space-y-2 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-xs">
+            <div class="space-y-2 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-xs font-mono">
               <div class="flex justify-between">
-                <span class="text-[color:var(--muted)]">95% Confidence Margin (1.96 × SEM):</span>
-                <span class="font-mono font-bold text-[color:var(--fg)]" data-res-margin>±3.062</span>
+                <span class="text-[color:var(--muted)] font-sans">95% Confidence Margin (±1.96 × SE):</span>
+                <span class="font-bold text-[color:var(--fg)]" data-res-margin>±3.062</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-[color:var(--muted)] font-sans">Finite Pop Correction (FPC):</span>
+                <span class="font-bold text-cyan-500 dark:text-cyan-400" data-fpc-factor>None (Infinite)</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-[color:var(--muted)] font-sans">Variance of Estimator:</span>
+                <span class="font-bold text-[color:var(--fg)]" data-res-var>2.4414</span>
               </div>
             </div>
           </div>
         </div>
       </div>
     </div>
+
+    <!-- Sample Size vs Standard Error Sensitivity Matrix -->
+    <section class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 sm:p-8 space-y-4">
+      <div>
+        <p class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Central Limit Theorem In Action</p>
+        <h2 class="text-xl font-bold text-[color:var(--fg)]">Standard Error Sensitivity by Sample Size (1/√n Law)</h2>
+      </div>
+
+      <div class="overflow-x-auto">
+        <table class="w-full text-left text-xs sm:text-sm font-mono">
+          <thead>
+            <tr class="border-b border-[color:var(--border)] text-[color:var(--muted)] font-sans font-semibold">
+              <th class="py-2.5 px-3">Sample Multiplier</th>
+              <th class="py-2.5 px-3">Sample Size (n)</th>
+              <th class="py-2.5 px-3">Divisor (√n)</th>
+              <th class="py-2.5 px-3">Expected Standard Error</th>
+              <th class="py-2.5 px-3">95% Margin of Error</th>
+              <th class="py-2.5 px-3">Error Reduction</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-[color:var(--border)]" data-sensitivity-tbody>
+            <!-- Generated dynamically by script -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Mathematical Formulas & Sampling Distribution Theory -->
+    <section class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 sm:p-8 space-y-4">
+      <div>
+        <p class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Central Limit Theorem</p>
+        <h2 class="text-xl font-bold text-[color:var(--fg)]">Standard Error Mathematics</h2>
+      </div>
+
+      <div class="grid gap-4 sm:grid-cols-3 text-xs sm:text-sm">
+        <div class="rounded-2xl bg-[color:var(--bg)] p-4 border border-[color:var(--border)] space-y-2">
+          <p class="font-bold text-[color:var(--fg)]">1. Mean (SEM)</p>
+          <div class="rounded-xl bg-[color:var(--surface)] p-3 font-mono text-xs text-[color:var(--fg)] overflow-x-auto">
+            SEM = s ÷ √n
+          </div>
+          <p class="text-xs text-[color:var(--muted)]">
+            Measures standard deviation of sample means. By the Central Limit Theorem, SEM contracts at the rate of <strong>1/√n</strong>.
+          </p>
+        </div>
+
+        <div class="rounded-2xl bg-[color:var(--bg)] p-4 border border-[color:var(--border)] space-y-2">
+          <p class="font-bold text-[color:var(--fg)]">2. Proportion (SEP)</p>
+          <div class="rounded-xl bg-[color:var(--surface)] p-3 font-mono text-xs text-[color:var(--fg)] overflow-x-auto">
+            SEP = √[p̂(1 - p̂) ÷ n]
+          </div>
+          <p class="text-xs text-[color:var(--muted)]">
+            Measures uncertainty in binary poll percentages and categorical conversion proportions.
+          </p>
+        </div>
+
+        <div class="rounded-2xl bg-[color:var(--bg)] p-4 border border-[color:var(--border)] space-y-2">
+          <p class="font-bold text-[color:var(--fg)]">3. Difference Between Means</p>
+          <div class="rounded-xl bg-[color:var(--surface)] p-3 font-mono text-xs text-[color:var(--fg)] overflow-x-auto">
+            SE_diff = √[s₁²/n₁ + s₂²/n₂]
+          </div>
+          <p class="text-xs text-[color:var(--muted)]">
+            Standard error of difference between two independent treatment and control group means.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Parameter Guide & Worked Example -->
+    <CalculatorParameterGuide parameters={parameterGuide} workedExample={workedExample} />
 
     <!-- FAQs -->
     <section class="space-y-4">
@@ -172,39 +382,219 @@ const schemaGraph = [
       const root = document.querySelector('[data-sem-app]');
       if (!root) return;
 
+      const modeBtns = root.querySelectorAll('[data-mode-btn]');
+      const meanFields = root.querySelector('[data-mean-fields]');
+      const propFields = root.querySelector('[data-prop-fields]');
+      const diffFields = root.querySelector('[data-diff-fields]');
+
       const inSd = root.querySelector('[data-sem-sd]');
       const inN = root.querySelector('[data-sem-n]');
       const inPop = root.querySelector('[data-sem-pop]');
+
+      const inPropP = root.querySelector('[data-prop-p]');
+      const inPropN = root.querySelector('[data-prop-n]');
+      const inPropPop = root.querySelector('[data-prop-pop]');
+
+      const inDiffS1 = root.querySelector('[data-diff-s1]');
+      const inDiffN1 = root.querySelector('[data-diff-n1]');
+      const inDiffS2 = root.querySelector('[data-diff-s2]');
+      const inDiffN2 = root.querySelector('[data-diff-n2]');
+
+      const outHeader = root.querySelector('[data-res-header]');
       const outSem = root.querySelector('[data-res-sem]');
+      const outSubtext = root.querySelector('[data-res-subtext]');
       const outMargin = root.querySelector('[data-res-margin]');
+      const fpcFactor = root.querySelector('[data-fpc-factor]');
+      const outVar = root.querySelector('[data-res-var]');
+      const sensTbody = document.querySelector('[data-sensitivity-tbody]');
+
       const resetBtn = root.querySelector('[data-reset-btn]');
+      const copyBtn = root.querySelector('[data-copy-btn]');
+
+      let currentMode = 'mean';
 
       function update() {
-        const s = Math.max(0, parseFloat(inSd.value || '0'));
-        const n = Math.max(1, parseInt(inN.value || '1', 10));
-        const pop = inPop.value ? parseInt(inPop.value, 10) : undefined;
+        let se = 0;
+        let margin = 0;
+        let fpcText = 'None (Infinite)';
+        let baseVariance = 0;
+        let baselineN = 64;
+        let baselineSigma = 12.5;
 
-        let sem = s / Math.sqrt(n);
-        if (pop && pop > n) {
-          sem *= Math.sqrt((pop - n) / (pop - 1));
+        if (currentMode === 'mean') {
+          const s = Math.max(0, parseFloat(inSd.value || '0'));
+          const n = Math.max(1, parseInt(inN.value || '1', 10));
+          const pop = inPop.value ? parseInt(inPop.value, 10) : undefined;
+          baselineN = n;
+          baselineSigma = s;
+
+          se = s / Math.sqrt(n);
+          if (pop && pop > n) {
+            const fpc = Math.sqrt((pop - n) / (pop - 1));
+            se *= fpc;
+            fpcText = `${(fpc * 100).toFixed(1)}% factor (N = ${pop})`;
+          }
+
+          margin = se * 1.959964;
+          baseVariance = se * se;
+
+          if (outHeader) outHeader.textContent = 'Standard Error of the Mean (SEM)';
+          if (outSem) outSem.textContent = se.toFixed(4);
+          if (outSubtext) outSubtext.textContent = `Expected sample mean scatter = ±${se.toFixed(4)} units`;
+          if (outMargin) outMargin.textContent = `±${margin.toFixed(4)}`;
+          if (fpcFactor) fpcFactor.textContent = fpcText;
+          if (outVar) outVar.textContent = baseVariance.toFixed(4);
+        } else if (currentMode === 'prop') {
+          const pVal = Math.max(0.001, Math.min(0.999, parseFloat(inPropP.value || '50') / 100));
+          const n = Math.max(1, parseInt(inPropN.value || '1', 10));
+          const pop = inPropPop.value ? parseInt(inPropPop.value, 10) : undefined;
+          baselineN = n;
+          baselineSigma = Math.sqrt(pVal * (1 - pVal));
+
+          se = Math.sqrt((pVal * (1 - pVal)) / n);
+          if (pop && pop > n) {
+            const fpc = Math.sqrt((pop - n) / (pop - 1));
+            se *= fpc;
+            fpcText = `${(fpc * 100).toFixed(1)}% factor (N = ${pop})`;
+          }
+
+          margin = se * 1.959964;
+          baseVariance = se * se;
+
+          if (outHeader) outHeader.textContent = 'Standard Error of Proportion (SEP)';
+          if (outSem) outSem.textContent = `${(se * 100).toFixed(2)}% (${se.toFixed(4)})`;
+          if (outSubtext) outSubtext.textContent = `Expected proportion scatter = ±${(se * 100).toFixed(2)}%`;
+          if (outMargin) outMargin.textContent = `±${(margin * 100).toFixed(2)}%`;
+          if (fpcFactor) fpcFactor.textContent = fpcText;
+          if (outVar) outVar.textContent = baseVariance.toFixed(6);
+        } else {
+          // Difference between two means
+          const s1 = Math.max(0, parseFloat(inDiffS1.value || '0'));
+          const n1 = Math.max(1, parseInt(inDiffN1.value || '1', 10));
+          const s2 = Math.max(0, parseFloat(inDiffS2.value || '0'));
+          const n2 = Math.max(1, parseInt(inDiffN2.value || '1', 10));
+
+          baseVariance = (s1 * s1) / n1 + (s2 * s2) / n2;
+          se = Math.sqrt(baseVariance);
+          margin = se * 1.959964;
+          baselineN = n1 + n2;
+          baselineSigma = Math.sqrt((s1 * s1 + s2 * s2) / 2);
+
+          if (outHeader) outHeader.textContent = 'SE of Difference (SE_diff)';
+          if (outSem) outSem.textContent = se.toFixed(4);
+          if (outSubtext) outSubtext.textContent = `Difference between 2 means scatter = ±${se.toFixed(4)}`;
+          if (outMargin) outMargin.textContent = `±${margin.toFixed(4)}`;
+          if (fpcFactor) fpcFactor.textContent = 'Independent Samples';
+          if (outVar) outVar.textContent = baseVariance.toFixed(4);
         }
 
-        const m95 = sem * 1.959964;
-
-        if (outSem) outSem.textContent = sem.toFixed(4);
-        if (outMargin) outMargin.textContent = `±${m95.toFixed(3)}`;
+        renderSensitivityTable(baselineSigma, baselineN);
       }
+
+      function renderSensitivityTable(sigma, currentN) {
+        if (!sensTbody) return;
+        const multipliers = [0.25, 0.5, 1, 2, 4, 10];
+        const baseSe = sigma / Math.sqrt(currentN);
+
+        const rows = multipliers.map(function (m) {
+          const testN = Math.max(2, Math.round(currentN * m));
+          const testSe = sigma / Math.sqrt(testN);
+          const testMargin = testSe * 1.960;
+          const ratio = (testSe / (baseSe || 1)) * 100;
+          const isCurrent = (m === 1);
+
+          return `
+            <tr class="${isCurrent ? 'bg-[color:var(--surface)] font-bold' : 'hover:bg-[color:var(--surface)]'} transition">
+              <td class="py-2 px-3 ${isCurrent ? 'text-[color:var(--accent)]' : 'text-[color:var(--muted)]'}">${m}× ${isCurrent ? '(Current)' : ''}</td>
+              <td class="py-2 px-3 font-semibold text-[color:var(--fg)]">${testN.toLocaleString()}</td>
+              <td class="py-2 px-3">${Math.sqrt(testN).toFixed(2)}</td>
+              <td class="py-2 px-3 font-bold text-[color:var(--accent)]">${testSe.toFixed(4)}</td>
+              <td class="py-2 px-3">±${testMargin.toFixed(4)}</td>
+              <td class="py-2 px-3 text-xs ${ratio < 100 ? 'text-cyan-500 dark:text-cyan-400' : 'text-[color:var(--muted)]'}">${ratio.toFixed(0)}% of baseline</td>
+            </tr>
+          `;
+        });
+        sensTbody.innerHTML = rows.join('');
+      }
+
+      modeBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          currentMode = btn.dataset.modeBtn || 'mean';
+          modeBtns.forEach(b => {
+            if (b === btn) {
+              b.className = 'cursor-pointer rounded-xl bg-[color:var(--accent)] px-2.5 py-2 text-[color:var(--bg)] shadow-xs transition';
+            } else {
+              b.className = 'cursor-pointer rounded-xl px-2.5 py-2 text-[color:var(--muted)] hover:text-[color:var(--fg)] transition';
+            }
+          });
+
+          if (currentMode === 'mean') {
+            meanFields?.removeAttribute('hidden');
+            propFields?.setAttribute('hidden', '');
+            diffFields?.setAttribute('hidden', '');
+          } else if (currentMode === 'prop') {
+            meanFields?.setAttribute('hidden', '');
+            propFields?.removeAttribute('hidden');
+            diffFields?.setAttribute('hidden', '');
+          } else {
+            meanFields?.setAttribute('hidden', '');
+            propFields?.setAttribute('hidden', '');
+            diffFields?.removeAttribute('hidden');
+          }
+          update();
+        });
+      });
 
       inSd.addEventListener('input', update);
       inN.addEventListener('input', update);
       inPop.addEventListener('input', update);
+
+      inPropP.addEventListener('input', update);
+      inPropN.addEventListener('input', update);
+      inPropPop.addEventListener('input', update);
+
+      inDiffS1.addEventListener('input', update);
+      inDiffN1.addEventListener('input', update);
+      inDiffS2.addEventListener('input', update);
+      inDiffN2.addEventListener('input', update);
 
       if (resetBtn) {
         resetBtn.addEventListener('click', () => {
           inSd.value = '12.5';
           inN.value = '64';
           inPop.value = '';
+          inPropP.value = '45.0';
+          inPropN.value = '200';
+          inPropPop.value = '';
+          inDiffS1.value = '8.4';
+          inDiffN1.value = '35';
+          inDiffS2.value = '9.6';
+          inDiffN2.value = '40';
+          currentMode = 'mean';
+          modeBtns[0].click();
           update();
+        });
+      }
+
+      if (copyBtn) {
+        copyBtn.addEventListener('click', async () => {
+          const text = [
+            '--- Standard Error Summary ---',
+            `Mode: ${outHeader?.textContent || ''}`,
+            `Standard Error: ${outSem?.textContent || ''}`,
+            `95% Confidence Margin: ${outMargin?.textContent || ''}`,
+            `Finite Population Correction: ${fpcFactor?.textContent || ''}`,
+            `Estimator Variance: ${outVar?.textContent || ''}`,
+          ].join('\n');
+
+          try {
+            await navigator.clipboard.writeText(text);
+            const orig = copyBtn.innerHTML;
+            copyBtn.innerHTML = '<span>✓ Copied!</span>';
+            setTimeout(() => { copyBtn.innerHTML = orig; }, 2000);
+          } catch {
+            alert('Failed to copy to clipboard');
+          }
         });
       }
 

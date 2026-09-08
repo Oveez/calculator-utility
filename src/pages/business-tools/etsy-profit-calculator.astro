@@ -1,7 +1,18 @@
 ---
 import SiteLayout from '../../layouts/SiteLayout.astro';
 import Icon from '../../components/Icon.astro';
+import CalculatorParameterGuide from '../../components/calculator/CalculatorParameterGuide.astro';
 import { siteName, toAbsoluteUrl, withBasePath } from '../../utils/site';
+
+const parameterGuide = [
+  { id: 'itemPrice', name: 'Item Sale Price', description: 'The retail listing price the buyer pays for your handmade or vintage item.', whyItMatters: 'Primary revenue driver that sets the baseline for percentage transaction and payment fees.', typicalRange: '$5.00 to $200.00+', unit: '$' },
+  { id: 'buyerShip', name: 'Shipping Charged to Buyer', description: 'Postage amount billed to the customer at checkout.', whyItMatters: 'Etsy subjects buyer-paid shipping to both the 6.5% transaction fee and payment processing fee.', typicalRange: '$0.00 (free) to $25.00', unit: '$' },
+  { id: 'itemCogs', name: 'Material / COGS', description: 'Direct out-of-pocket cost for raw materials, blanks, vinyl, packaging liners, or manufacturing.', whyItMatters: 'Forms the direct product cost that must be recovered on every single order.', typicalRange: '$1.00 to $75.00', unit: '$' },
+  { id: 'sellerShip', name: 'Actual Postage Paid', description: 'Real carrier postage rate paid to USPS, UPS, or Royal Mail.', whyItMatters: 'If your actual postage exceeds what the buyer was charged, the shortfall cuts into your profit.', typicalRange: '$3.50 to $25.00', unit: '$' },
+  { id: 'packCost', name: 'Packaging & Mailer Cost', description: 'Cost of padded mailers, rigid boxes, branded thank-you cards, tissue, and thermal shipping labels.', whyItMatters: 'Often overlooked, packaging expenses can cost $1.00 to $3.00+ per shipment.', typicalRange: '$0.50 to $4.00', unit: '$' },
+  { id: 'offsiteAds', name: 'Etsy Offsite Ads', description: 'Etsy’s external search and social advertising program (12% for shops over $10k/yr, 15% optional for smaller shops).', whyItMatters: 'Only deducted when a sale directly originates from an offsite ad click, taking a sizable cut.', typicalRange: '0%, 12%, or 15%', unit: '%' },
+  { id: 'breakevenPrice', name: 'Break-Even Selling Price', description: 'The exact minimum price you must charge to make $0 net profit after all platform fees and costs.', whyItMatters: 'Guarantees you never sell at a financial loss during sales or promotions.', typicalRange: 'Calculated dynamically', unit: '$' },
+];
 
 const pageTitle = `Etsy Fee & Profit Calculator | Seller Pricing & Margins · ${siteName}`;
 const pageDesc = 'Calculate your real Etsy net profit margins, listing fees, 6.5% transaction fees, payment processing, and return on investment (ROI) before setting prices.';
@@ -145,13 +156,23 @@ const schemaGraph = [
           </div>
         </form>
 
-        <div class="flex flex-col justify-between space-y-6 rounded-3xl border border-[color:var(--border)] bg-[color:var(--bg)] p-6 sm:p-8">
+        <div class="flex flex-col justify-between space-y-6 rounded-3xl border border-[color:var(--accent)]/30 bg-gradient-to-br from-[color:var(--accent-soft)] via-[color:var(--surface)] to-transparent p-6 sm:p-8 shadow-sm">
           <div class="space-y-5">
-            <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Profitability Summary</span>
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Profitability Summary</span>
+              <button
+                type="button"
+                class="inline-flex items-center gap-1.5 rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1.5 text-xs font-bold text-[color:var(--fg)] hover:bg-[color:var(--surface-strong)] transition cursor-pointer"
+                data-copy-btn
+              >
+                <Icon name="copy" class="w-3.5 h-3.5" />
+                <span>Copy Summary</span>
+              </button>
+            </div>
 
             <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 text-center">
               <p class="text-xs font-semibold text-[color:var(--muted)]">Net Profit Per Order</p>
-              <p class="mt-1 text-5xl font-black tracking-tight text-green-600 dark:text-green-400" data-net-profit>
+              <p class="mt-1 text-5xl font-black tracking-tight text-cyan-600 dark:text-cyan-400 dark:text-cyan-400" data-net-profit>
                 $17.27
               </p>
               <p class="mt-2 text-xs font-medium text-[color:var(--muted)]" data-margin-pct>
@@ -177,6 +198,70 @@ const schemaGraph = [
         </div>
       </div>
     </div>
+
+    <!-- Mathematical Formula & Platform Deductions -->
+    <section class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 sm:p-8 space-y-4">
+      <div>
+        <p class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Etsy Fee Architecture</p>
+        <h2 class="text-xl font-bold text-[color:var(--fg)]">How Marketplace Fees &amp; Profit Margins Are Computed</h2>
+      </div>
+
+      <div class="grid gap-4 sm:grid-cols-2 text-xs sm:text-sm">
+        <div class="rounded-2xl bg-[color:var(--bg)] p-4 border border-[color:var(--border)] space-y-2">
+          <p class="font-bold text-[color:var(--fg)]">1. Total Marketplace Deductions</p>
+          <div class="rounded-xl bg-[color:var(--surface)] p-3 font-mono text-xs text-[color:var(--fg)] overflow-x-auto">
+            Fees = $0.20 + (Rev × 6.5%) + (Rev × 3.0% + $0.25) + (Rev × Ads%)
+          </div>
+          <p class="text-xs text-[color:var(--muted)]">
+            Where Revenue = Item Price + Buyer Shipping Charged. Both transaction and payment fees apply to shipping charges.
+          </p>
+        </div>
+
+        <div class="rounded-2xl bg-[color:var(--bg)] p-4 border border-[color:var(--border)] space-y-2">
+          <p class="font-bold text-[color:var(--fg)]">2. Net Profit &amp; Break-Even Price</p>
+          <div class="rounded-xl bg-[color:var(--surface)] p-3 font-mono text-xs text-[color:var(--fg)] overflow-x-auto">
+            Break-Even = [COGS + Mailer + Shipping Shortfall + $0.45] ÷ [1 - Fee Rates]
+          </div>
+          <p class="text-xs text-[color:var(--muted)]">
+            Solves for the exact selling price at which Total Revenue minus direct costs and percentage deductions equals zero.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Step-by-Step Worked Example -->
+    <section class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 sm:p-8 space-y-4">
+      <div>
+        <p class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Step-By-Step Walkthrough</p>
+        <h2 class="text-xl font-bold text-[color:var(--fg)] flex items-center gap-2"><Icon name="document" class="w-4 h-4 text-[color:var(--accent)]" /><span>Worked Example: $28.00 Handmade Item with $4.50 Shipping</span></h2>
+      </div>
+
+      <div class="grid gap-4 sm:grid-cols-3 text-xs sm:text-sm">
+        <div class="rounded-2xl bg-[color:var(--bg)] p-4 border border-[color:var(--border)] space-y-1.5">
+          <p class="font-bold text-[color:var(--fg)]">1. Transaction Revenue</p>
+          <p class="text-[color:var(--muted)]">Item price = $28.00.</p>
+          <p class="text-[color:var(--muted)]">Buyer shipping = $4.50.</p>
+          <p class="text-[color:var(--muted)]">Total Revenue = <strong>$32.50</strong>.</p>
+        </div>
+        <div class="rounded-2xl bg-[color:var(--bg)] p-4 border border-[color:var(--border)] space-y-1.5">
+          <p class="font-bold text-[color:var(--fg)]">2. Direct Costs &amp; Fees</p>
+          <p class="text-[color:var(--muted)]">COGS ($6.50) + Postage ($4.25) + Mailer ($1.00) = $11.75.</p>
+          <p class="text-[color:var(--muted)]">Etsy listing: $0.20.</p>
+          <p class="text-[color:var(--muted)]">Transaction (6.5% of $32.50): $2.11.</p>
+          <p class="text-[color:var(--muted)]">Processing (3% + $0.25): $1.23.</p>
+          <p class="text-[color:var(--muted)]">Total Etsy Deductions = <strong>-$3.54</strong>.</p>
+        </div>
+        <div class="rounded-2xl bg-[color:var(--bg)] p-4 border border-[color:var(--border)] space-y-1.5">
+          <p class="font-bold text-[color:var(--fg)]">3. Net Profit &amp; Margin</p>
+          <p class="text-[color:var(--muted)]">Net Profit: $32.50 - $11.75 - $3.54 = <strong>$17.21</strong>.</p>
+          <p class="text-[color:var(--muted)]">Margin: ($17.21 ÷ $32.50) = <strong>53.0%</strong>.</p>
+          <p class="text-[color:var(--muted)]">Break-Even Price: <strong>$13.31</strong>.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Parameter Guide -->
+    <CalculatorParameterGuide parameters={parameterGuide} />
 
     <!-- FAQs -->
     <section class="space-y-4">
@@ -264,6 +349,23 @@ const schemaGraph = [
           inPack.value = '1.00';
           inAds.value = '0';
           update();
+        });
+      }
+
+      const copyBtn = root.querySelector('[data-copy-btn]');
+      if (copyBtn) {
+        copyBtn.addEventListener('click', async () => {
+          const text = `Etsy Profit Breakdown:\n• Net Profit: ${outNet?.textContent || ''}\n• ${outMargin?.textContent || ''}\n• Total Etsy Fees: ${outFees?.textContent || ''}\n• Production & Postage: ${outBase?.textContent || ''}\n• Break-Even Price: ${outBreak?.textContent || ''}`;
+          try {
+            await navigator.clipboard.writeText(text);
+            const originalText = copyBtn.innerHTML;
+            copyBtn.innerHTML = '<span>Copied!</span>';
+            setTimeout(() => {
+              copyBtn.innerHTML = originalText;
+            }, 2000);
+          } catch (e) {
+            console.error('Clipboard copy failed', e);
+          }
         });
       }
 

@@ -1,7 +1,8 @@
 ---
 import SiteLayout from '../../layouts/SiteLayout.astro';
 import Icon from '../../components/Icon.astro';
-import { siteName, toAbsoluteUrl, withBasePath } from '../../utils/site';
+import CalculatorParameterGuide from '../../components/calculator/CalculatorParameterGuide.astro';
+import { siteName, toAbsoluteUrl } from '../../utils/site';
 
 const pageTitle = `Empty Line Remover — Remove Blank Lines Online · ${siteName}`;
 const pageDesc = 'Remove empty lines, blank lines, and whitespace-only lines from text documents and code snippets online. 100% private in-browser tool.';
@@ -16,7 +17,19 @@ const breadcrumbItems = [
 const schemaFaq = [
   {
     question: 'Does this tool remove lines that contain only spaces or tabs?',
-    answer: 'Yes. By default, it trims each line and removes any line that contains zero non-whitespace characters.',
+    answer: 'Yes. By default, it evaluates lines after trimming whitespace, effectively stripping lines that contain only spaces, tabs, or non-breaking spaces.',
+  },
+  {
+    question: 'What is the "Collapse Multiple Empty Lines" option?',
+    answer: 'Instead of removing all blank lines, collapsing condenses sequences of two or more consecutive blank lines into exactly one single empty line. This preserves natural paragraph separation and code readability while removing excessive gaps.',
+  },
+  {
+    question: 'Can I trim leading and trailing spaces from remaining lines?',
+    answer: 'Yes. Enable the "Trim Whitespace on Remaining Lines" checkbox to strip excess space padding around valid lines while eliminating blank lines.',
+  },
+  {
+    question: 'Are my files or text sent to a remote server?',
+    answer: 'No. All processing executes 100% locally inside your browser memory via modern JavaScript string streams. No data ever leaves your computer.',
   },
 ];
 
@@ -54,6 +67,60 @@ const schemaGraph = [
     })),
   },
 ];
+
+const parameterGuideData = [
+  {
+    id: 'clean-mode',
+    name: 'Removal Mode',
+    description: 'Choose whether to remove every empty line completely, collapse consecutive empty lines down to a single blank line, or only strip whitespace-only lines.',
+    whyItMatters: 'Collapsing keeps document paragraphs legible, while full removal produces dense, continuous datasets for scripts.',
+    typicalRange: 'Remove All / Collapse to Single / Whitespace Only',
+  },
+  {
+    id: 'treat-whitespace-as-empty',
+    name: 'Treat Whitespace as Empty',
+    description: 'When enabled, lines containing only spaces or tabs are classified as empty lines.',
+    whyItMatters: 'Prevents lines containing invisible indentation or stray spaces from being preserved.',
+    typicalRange: 'Enabled / Disabled (Default: Enabled)',
+  },
+  {
+    id: 'trim-remaining',
+    name: 'Trim Remaining Lines',
+    description: 'Strips leading and trailing whitespace from lines that are kept in the document.',
+    whyItMatters: 'Cleans up dirty formatting from copy-pasted PDFs and web articles.',
+    typicalRange: 'Enabled / Disabled (Default: Disabled)',
+  },
+  {
+    id: 'trim-document-edges',
+    name: 'Trim Document Edges',
+    description: 'Removes any blank lines at the very top or very bottom of the document.',
+    whyItMatters: 'Ensures the resulting file begins and ends cleanly without dangling newlines.',
+    typicalRange: 'Enabled / Disabled (Default: Enabled)',
+  },
+];
+
+const workedExampleData = {
+  title: 'Sanitizing Copied Source Code',
+  description: 'A code block copied from an online forum contains wide 3-line gaps between functions and stray whitespace lines.',
+  formula: 'Removed Lines = Original Total Lines - Final Lines',
+  steps: [
+    {
+      step: 'Step 1: Ingest Text',
+      calculation: 'Source text with 25 total lines loaded.',
+      result: '25 lines',
+    },
+    {
+      step: 'Step 2: Collapse Multi-Line Gaps',
+      calculation: 'Sequences of 3 empty lines reduced to 1 blank line.',
+      result: '8 excess empty lines removed',
+    },
+    {
+      step: 'Step 3: Trim Whitespace-Only Lines',
+      calculation: '2 lines with invisible spaces stripped.',
+      result: '15 clean lines remaining (40% reduction)',
+    },
+  ],
+};
 ---
 
 <SiteLayout title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
@@ -82,58 +149,138 @@ const schemaGraph = [
     <header class="space-y-3">
       <div class="inline-flex items-center gap-2 rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1 text-xs font-semibold text-[color:var(--muted)]">
         <span class="inline-block h-2 w-2 rounded-full bg-emerald-500"></span>
-        <span>Instant Text Cleanup</span>
+        <span>100% Client-Side • Multiple Cleaning Modes • Instant Real-Time Preview</span>
       </div>
       <h1 class="text-2xl sm:text-4xl font-extrabold tracking-tight text-[color:var(--fg)]">
         Empty Line Remover
       </h1>
       <p class="max-w-2xl text-xs sm:text-sm text-[color:var(--muted)] leading-relaxed">
-        Strip unnecessary blank and empty lines from code blocks, logs, and copied text documents.
+        Strip unnecessary blank and empty lines from code blocks, logs, and copied text documents. Collapse multiple consecutive empty lines into single breaks, or remove all empty lines completely.
       </p>
     </header>
 
+    <!-- Metrics Summary Bar -->
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+      <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-center shadow-xs">
+        <span class="block text-[11px] font-bold uppercase tracking-wider text-[color:var(--muted)]">Original Lines</span>
+        <span id="stat-in-lines" class="mt-1 block text-xl sm:text-2xl font-black text-[color:var(--fg)] font-mono">0</span>
+      </div>
+      <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-center shadow-xs">
+        <span class="block text-[11px] font-bold uppercase tracking-wider text-[color:var(--muted)]">Output Lines</span>
+        <span id="stat-out-lines" class="mt-1 block text-xl sm:text-2xl font-black text-cyan-600 dark:text-cyan-400 dark:text-cyan-400 font-mono">0</span>
+      </div>
+      <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-center shadow-xs">
+        <span class="block text-[11px] font-bold uppercase tracking-wider text-[color:var(--muted)]">Blank Lines Removed</span>
+        <span id="stat-blanks-removed" class="mt-1 block text-xl sm:text-2xl font-black text-rose-600 dark:text-rose-400 font-mono">0</span>
+      </div>
+      <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-center shadow-xs">
+        <span class="block text-[11px] font-bold uppercase tracking-wider text-[color:var(--muted)]">Line Reduction</span>
+        <span id="stat-pct-reduced" class="mt-1 block text-xl sm:text-2xl font-black text-[color:var(--accent)] font-mono">0%</span>
+      </div>
+    </div>
+
+    <!-- Controls Panel -->
+    <div class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 sm:p-6 space-y-4 shadow-sm">
+      <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 text-xs">
+        <div>
+          <label for="opt-clean-mode" class="block font-bold text-[color:var(--fg)] mb-1.5">Removal Mode</label>
+          <select id="opt-clean-mode" class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-[color:var(--fg)] font-semibold">
+            <option value="remove-all">Remove All Empty Lines</option>
+            <option value="collapse">Collapse Consecutive Blank Lines to 1 Line</option>
+            <option value="whitespace-only">Only Remove Lines with Spaces/Tabs</option>
+          </select>
+        </div>
+
+        <div class="space-y-2 pt-1">
+          <label class="flex items-center gap-2 font-medium text-[color:var(--fg)] cursor-pointer">
+            <input type="checkbox" id="opt-treat-ws" checked class="rounded accent-[color:var(--accent)]" />
+            <span>Treat Lines with Only Spaces/Tabs as Empty</span>
+          </label>
+          <label class="flex items-center gap-2 font-medium text-[color:var(--fg)] cursor-pointer">
+            <input type="checkbox" id="opt-trim-remaining" class="rounded accent-[color:var(--accent)]" />
+            <span>Trim Whitespace on Remaining Lines</span>
+          </label>
+        </div>
+
+        <div class="space-y-2 pt-1">
+          <label class="flex items-center gap-2 font-medium text-[color:var(--fg)] cursor-pointer">
+            <input type="checkbox" id="opt-trim-edges" checked class="rounded accent-[color:var(--accent)]" />
+            <span>Strip Blank Lines at Start &amp; End of Document</span>
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <!-- Dual Editor Workspace -->
     <div class="grid gap-6 lg:grid-cols-2">
+      <!-- Left: Source Editor -->
       <div class="space-y-3">
         <div class="flex items-center justify-between">
-          <label for="text-in" class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Original Text</label>
+          <div class="flex items-center gap-2">
+            <label for="text-in" class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Source Text</label>
+            <span id="char-count-in" class="text-[11px] text-[color:var(--muted)]">0 chars</span>
+          </div>
           <div class="flex items-center gap-2 text-xs">
-            <button type="button" data-sample-btn class="text-[color:var(--primary)] hover:underline font-semibold">Load Sample</button>
-            <span class="text-[color:var(--border)]">|</span>
-            <button type="button" data-clear-btn class="text-[color:var(--muted)] hover:text-[color:var(--fg)]">Clear</button>
+            <label for="file-upload" class="cursor-pointer text-[color:var(--accent)] hover:underline font-semibold flex items-center gap-1">
+              <span>Import File</span>
+              <input type="file" id="file-upload" accept=".txt,.md,.py,.js,.html,.css,.csv,.log" class="hidden" />
+            </label>
+            <span class="text-[color:var(--border)]">•</span>
+            <button type="button" id="btn-sample" class="text-[color:var(--accent)] hover:underline font-semibold cursor-pointer">Sample</button>
+            <span class="text-[color:var(--border)]">•</span>
+            <button type="button" id="btn-clear" class="text-rose-600 dark:text-rose-400 hover:underline cursor-pointer">Clear</button>
           </div>
         </div>
         <textarea
           id="text-in"
-          rows="14"
-          class="w-full font-mono text-xs leading-relaxed rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-[color:var(--fg)] focus:border-[color:var(--border-strong)] focus:outline-hidden"
-          placeholder="Paste text with blank lines here..."
+          rows="15"
+          class="w-full font-mono text-xs leading-relaxed rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-[color:var(--fg)] focus:border-[color:var(--accent)] focus:outline-hidden transition shadow-inner"
+          placeholder="Paste text with blank or empty lines here..."
         ></textarea>
-        <button
-          type="button"
-          data-clean-btn
-          class="w-full rounded-xl bg-[color:var(--fg)] py-2.5 text-xs font-bold text-[color:var(--bg)] shadow-xs transition hover:opacity-90"
-        >
-          Remove Blank Lines
-        </button>
       </div>
 
+      <!-- Right: Processed Output -->
       <div class="space-y-3">
         <div class="flex items-center justify-between">
-          <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Cleaned Output</span>
-          <button type="button" data-copy-btn class="inline-flex items-center gap-1 text-xs font-bold text-[color:var(--fg)] hover:underline">
-            <Icon name="copy" class="w-3.5 h-3.5" />
-            <span>Copy</span>
-          </button>
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Cleaned Output</span>
+            <span id="char-count-out" class="text-[11px] text-[color:var(--muted)]">0 chars</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <button
+              type="button"
+              id="btn-copy"
+              class="inline-flex cursor-pointer items-center gap-1.5 rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1.5 text-xs font-bold text-[color:var(--fg)] shadow-xs transition hover:bg-[color:var(--surface-strong)]"
+            >
+              <Icon name="copy" class="w-3.5 h-3.5" />
+              <span id="copy-label">Copy</span>
+            </button>
+            <button
+              type="button"
+              id="btn-download"
+              class="inline-flex cursor-pointer items-center gap-1.5 rounded-xl bg-[color:var(--fg)] px-3 py-1.5 text-xs font-bold text-[color:var(--bg)] shadow-xs transition hover:opacity-90"
+            >
+              <span>Download .txt</span>
+            </button>
+          </div>
         </div>
         <textarea
           id="text-out"
-          rows="16"
+          rows="15"
           readonly
-          class="w-full font-mono text-xs leading-relaxed rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-4 text-[color:var(--fg)] focus:outline-hidden"
-          placeholder="Text without blank lines will appear here..."
+          class="w-full font-mono text-xs leading-relaxed rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-4 text-[color:var(--fg)] focus:outline-hidden transition shadow-inner"
+          placeholder="Text without empty lines will appear here in real-time..."
         ></textarea>
       </div>
     </div>
+
+    <!-- Parameter Guide & Worked Example -->
+    <CalculatorParameterGuide
+      title="How Empty Line Removal Operates"
+      description="Understand the difference between collapsing lines, stripping whitespace-only rows, and edge trimming."
+      parameters={parameterGuideData}
+      workedExample={workedExampleData}
+    />
 
     <!-- FAQs -->
     <section class="space-y-4">
@@ -159,43 +306,173 @@ const schemaGraph = [
       const root = document.querySelector('[data-empty-app]');
       if (!root) return;
 
-      const input = root.querySelector('#text-in');
-      const output = root.querySelector('#text-out');
-      const cleanBtn = root.querySelector('[data-clean-btn]');
-      const sampleBtn = root.querySelector('[data-sample-btn]');
-      const clearBtn = root.querySelector('[data-clear-btn]');
-      const copyBtn = root.querySelector('[data-copy-btn]');
+      const textIn = root.querySelector('#text-in');
+      const textOut = root.querySelector('#text-out');
+      const statInLines = root.querySelector('#stat-in-lines');
+      const statOutLines = root.querySelector('#stat-out-lines');
+      const statBlanksRemoved = root.querySelector('#stat-blanks-removed');
+      const statPctReduced = root.querySelector('#stat-pct-reduced');
+      const charCountIn = root.querySelector('#char-count-in');
+      const charCountOut = root.querySelector('#char-count-out');
 
-      function clean() {
-        const text = input.value;
-        if (!text) { output.value = ''; return; }
-        const lines = text.split('\n').filter(l => l.trim().length > 0);
-        output.value = lines.join('\n');
+      const optCleanMode = root.querySelector('#opt-clean-mode');
+      const optTreatWs = root.querySelector('#opt-treat-ws');
+      const optTrimRemaining = root.querySelector('#opt-trim-remaining');
+      const optTrimEdges = root.querySelector('#opt-trim-edges');
+
+      const btnSample = root.querySelector('#btn-sample');
+      const btnClear = root.querySelector('#btn-clear');
+      const btnCopy = root.querySelector('#btn-copy');
+      const copyLabel = root.querySelector('#copy-label');
+      const btnDownload = root.querySelector('#btn-download');
+      const fileUpload = root.querySelector('#file-upload');
+
+      const SAMPLE_TEXT = `// Database Connection Setup\n\n\nimport { connect } from 'db';\n\n   \n\nconst db = await connect();\n\n\n\n// Query Records\nconst records = await db.query('SELECT * FROM users');\n\n\nconsole.log(records);\n\n`;
+
+      function processText() {
+        const raw = textIn.value;
+        charCountIn.textContent = `${raw.length.toLocaleString()} chars`;
+
+        if (!raw.length) {
+          textOut.value = '';
+          statInLines.textContent = '0';
+          statOutLines.textContent = '0';
+          statBlanksRemoved.textContent = '0';
+          statPctReduced.textContent = '0%';
+          charCountOut.textContent = '0 chars';
+          return;
+        }
+
+        let lines = raw.split(/\r\n|\r|\n/);
+        const totalIn = lines.length;
+        statInLines.textContent = totalIn.toLocaleString();
+
+        const mode = optCleanMode.value;
+        const treatWs = optTreatWs.checked;
+        const trimRemaining = optTrimRemaining.checked;
+        const trimEdges = optTrimEdges.checked;
+
+        function isLineEmpty(l) {
+          return treatWs ? l.trim().length === 0 : l.length === 0;
+        }
+
+        let outputLines = [];
+
+        if (mode === 'collapse') {
+          let wasPrevEmpty = false;
+          for (let i = 0; i < lines.length; i++) {
+            const line = lines[i];
+            const empty = isLineEmpty(line);
+
+            if (empty) {
+              if (!wasPrevEmpty) {
+                outputLines.push('');
+                wasPrevEmpty = true;
+              }
+            } else {
+              outputLines.push(trimRemaining ? line.trim() : line);
+              wasPrevEmpty = false;
+            }
+          }
+        } else if (mode === 'whitespace-only') {
+          // Remove only lines that contain spaces/tabs but NOT pure \n
+          for (let i = 0; i < lines.length; i++) {
+            const line = lines[i];
+            if (line.length > 0 && line.trim().length === 0) {
+              // skip whitespace-only line
+              continue;
+            }
+            outputLines.push(trimRemaining ? line.trim() : line);
+          }
+        } else {
+          // remove-all
+          for (let i = 0; i < lines.length; i++) {
+            const line = lines[i];
+            if (!isLineEmpty(line)) {
+              outputLines.push(trimRemaining ? line.trim() : line);
+            }
+          }
+        }
+
+        // Trim edges (start and end blank lines)
+        if (trimEdges && outputLines.length > 0) {
+          while (outputLines.length > 0 && outputLines[0].trim().length === 0) {
+            outputLines.shift();
+          }
+          while (outputLines.length > 0 && outputLines[outputLines.length - 1].trim().length === 0) {
+            outputLines.pop();
+          }
+        }
+
+        const resultText = outputLines.join('\n');
+        textOut.value = resultText;
+        charCountOut.textContent = `${resultText.length.toLocaleString()} chars`;
+
+        const outCount = outputLines.length;
+        const removed = Math.max(0, totalIn - outCount);
+        const pct = totalIn > 0 ? Math.round((removed / totalIn) * 100) : 0;
+
+        statOutLines.textContent = outCount.toLocaleString();
+        statBlanksRemoved.textContent = removed.toLocaleString();
+        statPctReduced.textContent = `${pct}%`;
       }
 
-      cleanBtn.addEventListener('click', clean);
-      input.addEventListener('input', clean);
+      // Event Listeners
+      textIn.addEventListener('input', processText);
+      optCleanMode.addEventListener('change', processText);
+      optTreatWs.addEventListener('change', processText);
+      optTrimRemaining.addEventListener('change', processText);
+      optTrimEdges.addEventListener('change', processText);
 
-      sampleBtn.addEventListener('click', () => {
-        input.value = `Section 1: Introduction\n\n\n\nThis is paragraph one.\n\n\nThis is paragraph two.\n   \n\nSection 2: Summary\n\nEnd of file.`;
-        clean();
+      btnSample?.addEventListener('click', () => {
+        textIn.value = SAMPLE_TEXT;
+        processText();
       });
 
-      clearBtn.addEventListener('click', () => {
-        input.value = '';
-        output.value = '';
+      btnClear?.addEventListener('click', () => {
+        textIn.value = '';
+        processText();
       });
 
-      copyBtn.addEventListener('click', () => {
-        if (!output.value) return;
-        navigator.clipboard.writeText(output.value);
-        const span = copyBtn.querySelector('span');
-        const orig = span.textContent;
-        span.textContent = 'Copied!';
-        setTimeout(() => span.textContent = orig, 1800);
+      btnCopy?.addEventListener('click', async () => {
+        if (!textOut.value) return;
+        try {
+          await navigator.clipboard.writeText(textOut.value);
+          copyLabel.textContent = 'Copied!';
+          setTimeout(() => { copyLabel.textContent = 'Copy'; }, 2000);
+        } catch (e) {
+          textOut.select();
+          document.execCommand('copy');
+          copyLabel.textContent = 'Copied!';
+          setTimeout(() => { copyLabel.textContent = 'Copy'; }, 2000);
+        }
       });
 
-      sampleBtn.click();
+      btnDownload?.addEventListener('click', () => {
+        if (!textOut.value) return;
+        const blob = new Blob([textOut.value], { type: 'text/plain;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'cleaned_no_empty_lines.txt';
+        a.click();
+        URL.revokeObjectURL(url);
+      });
+
+      fileUpload?.addEventListener('change', (e) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (evt) => {
+          textIn.value = evt.target.result;
+          processText();
+        };
+        reader.readAsText(file);
+      });
+
+      if (textIn.value) {
+        processText();
+      }
     })();
   </script>
 </SiteLayout>

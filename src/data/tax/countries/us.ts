@@ -1,4 +1,122 @@
-import type { CountryTaxProfile } from '../types';
+import type { CountryTaxProfile, TaxBracket, FilingStatusConfig } from '../types';
+
+const singleBrackets2026: TaxBracket[] = [
+  { threshold: 0, upTo: 12400, rate: 0.10, label: '10% Bracket' },
+  { threshold: 12400, upTo: 50400, rate: 0.12, label: '12% Bracket' },
+  { threshold: 50400, upTo: 105700, rate: 0.22, label: '22% Bracket' },
+  { threshold: 105700, upTo: 201775, rate: 0.24, label: '24% Bracket' },
+  { threshold: 201775, upTo: 256225, rate: 0.32, label: '32% Bracket' },
+  { threshold: 256225, upTo: 640600, rate: 0.35, label: '35% Bracket' },
+  { threshold: 640600, rate: 0.37, label: '37% Bracket' },
+];
+
+const mfjBrackets2026: TaxBracket[] = [
+  { threshold: 0, upTo: 24800, rate: 0.10, label: '10% Bracket' },
+  { threshold: 24800, upTo: 100800, rate: 0.12, label: '12% Bracket' },
+  { threshold: 100800, upTo: 211400, rate: 0.22, label: '22% Bracket' },
+  { threshold: 211400, upTo: 403550, rate: 0.24, label: '24% Bracket' },
+  { threshold: 403550, upTo: 512450, rate: 0.32, label: '32% Bracket' },
+  { threshold: 512450, upTo: 768700, rate: 0.35, label: '35% Bracket' },
+  { threshold: 768700, rate: 0.37, label: '37% Bracket' },
+];
+
+const hohBrackets2026: TaxBracket[] = [
+  { threshold: 0, upTo: 17700, rate: 0.10, label: '10% Bracket' },
+  { threshold: 17700, upTo: 67500, rate: 0.12, label: '12% Bracket' },
+  { threshold: 67500, upTo: 105700, rate: 0.22, label: '22% Bracket' },
+  { threshold: 105700, upTo: 201750, rate: 0.24, label: '24% Bracket' },
+  { threshold: 201750, upTo: 256200, rate: 0.32, label: '32% Bracket' },
+  { threshold: 256200, upTo: 640600, rate: 0.35, label: '35% Bracket' },
+  { threshold: 640600, rate: 0.37, label: '37% Bracket' },
+];
+
+const mfsBrackets2026: TaxBracket[] = [
+  { threshold: 0, upTo: 12400, rate: 0.10, label: '10% Bracket' },
+  { threshold: 12400, upTo: 50400, rate: 0.12, label: '12% Bracket' },
+  { threshold: 50400, upTo: 105700, rate: 0.22, label: '22% Bracket' },
+  { threshold: 105700, upTo: 201775, rate: 0.24, label: '24% Bracket' },
+  { threshold: 201775, upTo: 256225, rate: 0.32, label: '32% Bracket' },
+  { threshold: 256225, upTo: 384350, rate: 0.35, label: '35% Bracket' },
+  { threshold: 384350, rate: 0.37, label: '37% Bracket' },
+];
+
+const singleCapGains2026: TaxBracket[] = [
+  { threshold: 0, upTo: 49450, rate: 0.00, label: '0% Long-Term Gains' },
+  { threshold: 49450, upTo: 540800, rate: 0.15, label: '15% Long-Term Gains' },
+  { threshold: 540800, rate: 0.20, label: '20% Long-Term Gains' },
+];
+
+const mfjCapGains2026: TaxBracket[] = [
+  { threshold: 0, upTo: 98900, rate: 0.00, label: '0% Long-Term Gains' },
+  { threshold: 98900, upTo: 608350, rate: 0.15, label: '15% Long-Term Gains' },
+  { threshold: 608350, rate: 0.20, label: '20% Long-Term Gains' },
+];
+
+const hohCapGains2026: TaxBracket[] = [
+  { threshold: 0, upTo: 66250, rate: 0.00, label: '0% Long-Term Gains' },
+  { threshold: 66250, upTo: 574550, rate: 0.15, label: '15% Long-Term Gains' },
+  { threshold: 574550, rate: 0.20, label: '20% Long-Term Gains' },
+];
+
+const mfsCapGains2026: TaxBracket[] = [
+  { threshold: 0, upTo: 49450, rate: 0.00, label: '0% Long-Term Gains' },
+  { threshold: 49450, upTo: 304175, rate: 0.15, label: '15% Long-Term Gains' },
+  { threshold: 304175, rate: 0.20, label: '20% Long-Term Gains' },
+];
+
+const allStates = [
+  { code: 'none', name: 'No State Income Tax (TX, FL, WA, NV, TN, WY, SD, AK, NH)', flatRate: 0 },
+  { code: 'al', name: 'Alabama (Est. 4.5% avg)', additionalTaxRate: 0.045 },
+  { code: 'ak', name: 'Alaska (No State Income Tax)', flatRate: 0 },
+  { code: 'az', name: 'Arizona (Flat 2.50%)', flatRate: 0.025 },
+  { code: 'ar', name: 'Arkansas (Flat/Tier 4.40%)', flatRate: 0.044 },
+  { code: 'ca', name: 'California (Est. Progressive avg 6.0%)', additionalTaxRate: 0.06 },
+  { code: 'co', name: 'Colorado (Flat 4.40%)', flatRate: 0.044 },
+  { code: 'ct', name: 'Connecticut (Est. 5.5% avg)', additionalTaxRate: 0.055 },
+  { code: 'de', name: 'Delaware (Est. 5.2% avg)', additionalTaxRate: 0.052 },
+  { code: 'fl', name: 'Florida (No State Income Tax)', flatRate: 0 },
+  { code: 'ga', name: 'Georgia (Flat 5.39%)', flatRate: 0.0539 },
+  { code: 'hi', name: 'Hawaii (Est. 7.2% avg)', additionalTaxRate: 0.072 },
+  { code: 'id', name: 'Idaho (Flat 5.695%)', flatRate: 0.05695 },
+  { code: 'il', name: 'Illinois (Flat 4.95%)', flatRate: 0.0495 },
+  { code: 'in', name: 'Indiana (Flat 3.00%)', flatRate: 0.03 },
+  { code: 'ia', name: 'Iowa (Flat 3.80%)', flatRate: 0.038 },
+  { code: 'ks', name: 'Kansas (Est. 5.2% avg)', additionalTaxRate: 0.052 },
+  { code: 'ky', name: 'Kentucky (Flat 4.00%)', flatRate: 0.04 },
+  { code: 'la', name: 'Louisiana (Flat/Tier 4.25%)', flatRate: 0.0425 },
+  { code: 'me', name: 'Maine (Est. 6.0% avg)', additionalTaxRate: 0.06 },
+  { code: 'md', name: 'Maryland (Est. 4.75% avg)', additionalTaxRate: 0.0475 },
+  { code: 'ma', name: 'Massachusetts (Flat 5.00%)', flatRate: 0.05 },
+  { code: 'mi', name: 'Michigan (Flat 4.25%)', flatRate: 0.0425 },
+  { code: 'mn', name: 'Minnesota (Est. 6.8% avg)', additionalTaxRate: 0.068 },
+  { code: 'ms', name: 'Mississippi (Flat 4.70%)', flatRate: 0.047 },
+  { code: 'mo', name: 'Missouri (Est. 4.8% avg)', additionalTaxRate: 0.048 },
+  { code: 'mt', name: 'Montana (Flat/Tier 5.50%)', flatRate: 0.055 },
+  { code: 'ne', name: 'Nebraska (Est. 5.8% avg)', additionalTaxRate: 0.058 },
+  { code: 'nv', name: 'Nevada (No State Income Tax)', flatRate: 0 },
+  { code: 'nh', name: 'New Hampshire (No Wage Tax)', flatRate: 0 },
+  { code: 'nj', name: 'New Jersey (Est. 5.5% avg)', additionalTaxRate: 0.055 },
+  { code: 'nm', name: 'New Mexico (Est. 4.9% avg)', additionalTaxRate: 0.049 },
+  { code: 'ny', name: 'New York (Est. Progressive avg 5.5%)', additionalTaxRate: 0.055 },
+  { code: 'nc', name: 'North Carolina (Flat 4.50%)', flatRate: 0.045 },
+  { code: 'nd', name: 'North Dakota (Est. 2.04% avg)', additionalTaxRate: 0.0204 },
+  { code: 'oh', name: 'Ohio (Est. 3.5% avg)', additionalTaxRate: 0.035 },
+  { code: 'ok', name: 'Oklahoma (Est. 4.75% avg)', additionalTaxRate: 0.0475 },
+  { code: 'or', name: 'Oregon (Est. 7.5% avg)', additionalTaxRate: 0.075 },
+  { code: 'pa', name: 'Pennsylvania (Flat 3.07%)', flatRate: 0.0307 },
+  { code: 'ri', name: 'Rhode Island (Est. 4.75% avg)', additionalTaxRate: 0.0475 },
+  { code: 'sc', name: 'South Carolina (Est. 5.0% avg)', additionalTaxRate: 0.05 },
+  { code: 'sd', name: 'South Dakota (No State Income Tax)', flatRate: 0 },
+  { code: 'tn', name: 'Tennessee (No State Income Tax)', flatRate: 0 },
+  { code: 'tx', name: 'Texas (No State Income Tax)', flatRate: 0 },
+  { code: 'ut', name: 'Utah (Flat 4.65%)', flatRate: 0.0465 },
+  { code: 'vt', name: 'Vermont (Est. 6.6% avg)', additionalTaxRate: 0.066 },
+  { code: 'va', name: 'Virginia (Est. 5.0% avg)', additionalTaxRate: 0.05 },
+  { code: 'wa', name: 'Washington (No State Income Tax)', flatRate: 0 },
+  { code: 'wv', name: 'West Virginia (Est. 5.12% avg)', additionalTaxRate: 0.0512 },
+  { code: 'wi', name: 'Wisconsin (Est. 5.3% avg)', additionalTaxRate: 0.053 },
+  { code: 'wy', name: 'Wyoming (No State Income Tax)', flatRate: 0 },
+];
 
 export const usProfile: CountryTaxProfile = {
   id: 'us',
@@ -11,19 +129,27 @@ export const usProfile: CountryTaxProfile = {
   availableTaxYears: ['2026', '2025'],
   hasRegionalTax: true,
   regionalEntityName: 'State',
-  metaDescription: 'Calculate US Federal income tax, FICA (Social Security & Medicare), and take-home pay with official 2026 IRS tax brackets (Rev. Proc. 2025-32) and standard deductions.',
+  metaDescription: 'Calculate US Federal income tax, FICA (Social Security & Medicare), state taxes, refund vs amount owed, and take-home pay with official 2026 IRS tax brackets (Rev. Proc. 2025-32) and all 5 filing statuses.',
   faqItems: [
     {
-      question: 'What is the 2026 standard deduction for single filers in the US?',
-      answer: 'Under IRS Revenue Procedure 2025-32, the standard deduction for the 2026 tax year is $16,100 for Single filers ($32,200 for Married Filing Jointly, and $24,150 for Head of Household).',
+      question: 'What are the 2026 standard deductions for each filing status?',
+      answer: 'Under IRS Revenue Procedure 2025-32, standard deductions for 2026 are: $16,100 for Single and Married Filing Separately; $32,200 for Married Filing Jointly and Qualifying Surviving Spouse; and $24,150 for Head of Household. Taxpayers aged 65 or older receive an additional $2,000 ($1,600 each if married).',
     },
     {
       question: 'What are the 2026 FICA Social Security and Medicare tax rates?',
-      answer: 'Employees pay 6.2% for Social Security on wages up to $184,500 (the 2026 SSA wage base limit) and 1.45% for Medicare on all earnings with no cap. An additional 0.9% Medicare tax applies to earnings above $200,000 for single filers.',
+      answer: 'Employees pay 6.2% for Social Security on wages up to $184,500 (the 2026 SSA statutory wage base limit) and 1.45% for Medicare on all earnings with no cap. An additional 0.9% Medicare tax applies to earned income over $200,000 for single filers ($250,000 for married filing jointly).',
     },
     {
-      question: 'How do US federal marginal tax brackets work in 2026?',
-      answer: 'The US uses a progressive tax system with seven tax brackets (10%, 12%, 22%, 24%, 32%, 35%, and 37%). You only pay each rate on income within that specific bracket after subtracting your standard deduction.',
+      question: 'How does the Child Tax Credit and dependent credit work for 2026?',
+      answer: 'The Child Tax Credit provides up to $2,000 per qualifying child under age 17, subject to phase-outs starting at $200,000 for Single filers and $400,000 for Married Filing Jointly. The Credit for Other Dependents (such as children 17+ or elderly parents) is $500 per dependent.',
+    },
+    {
+      question: 'When should I itemize deductions instead of taking the standard deduction?',
+      answer: 'You should itemize if your total allowable Schedule A deductions—including state & local taxes (SALT, subject to the $10,000 statutory cap), qualifying mortgage interest, charitable donations, and medical expenses exceeding 7.5% of AGI—are greater than your standard deduction. This calculator automatically compares both methods and selects the higher tax savings.',
+    },
+    {
+      question: 'How are qualified dividends and long-term capital gains taxed in 2026?',
+      answer: 'Qualified dividends and long-term capital gains receive preferential federal rates of 0%, 15%, or 20% depending on your taxable income, rather than your ordinary marginal rate. High earners may also be subject to the 3.8% Net Investment Income Tax (NIIT).',
     },
   ],
   years: {
@@ -32,15 +158,55 @@ export const usProfile: CountryTaxProfile = {
       currency: 'USD',
       currencySymbol: '$',
       standardDeduction: 16100,
-      nationalBrackets: [
-        { threshold: 0, upTo: 12400, rate: 0.10, label: '10% Bracket' },
-        { threshold: 12400, upTo: 50400, rate: 0.12, label: '12% Bracket' },
-        { threshold: 50400, upTo: 105700, rate: 0.22, label: '22% Bracket' },
-        { threshold: 105700, upTo: 201775, rate: 0.24, label: '24% Bracket' },
-        { threshold: 201775, upTo: 256225, rate: 0.32, label: '32% Bracket' },
-        { threshold: 256225, upTo: 640600, rate: 0.35, label: '35% Bracket' },
-        { threshold: 640600, rate: 0.37, label: '37% Bracket' },
-      ],
+      nationalBrackets: singleBrackets2026,
+      capitalGainsBrackets: singleCapGains2026,
+      filingStatuses: {
+        single: {
+          id: 'single',
+          label: 'Single',
+          standardDeduction: 16100,
+          seniorAdditionalDeduction: 2000,
+          blindAdditionalDeduction: 2000,
+          brackets: singleBrackets2026,
+          capitalGainsBrackets: singleCapGains2026,
+        },
+        married_joint: {
+          id: 'married_joint',
+          label: 'Married Filing Jointly',
+          standardDeduction: 32200,
+          seniorAdditionalDeduction: 1600,
+          blindAdditionalDeduction: 1600,
+          brackets: mfjBrackets2026,
+          capitalGainsBrackets: mfjCapGains2026,
+        },
+        head_of_household: {
+          id: 'head_of_household',
+          label: 'Head of Household',
+          standardDeduction: 24150,
+          seniorAdditionalDeduction: 2000,
+          blindAdditionalDeduction: 2000,
+          brackets: hohBrackets2026,
+          capitalGainsBrackets: hohCapGains2026,
+        },
+        married_separate: {
+          id: 'married_separate',
+          label: 'Married Filing Separately',
+          standardDeduction: 16100,
+          seniorAdditionalDeduction: 1600,
+          blindAdditionalDeduction: 1600,
+          brackets: mfsBrackets2026,
+          capitalGainsBrackets: mfsCapGains2026,
+        },
+        qualifying_widow: {
+          id: 'qualifying_widow',
+          label: 'Qualifying Surviving Spouse',
+          standardDeduction: 32200,
+          seniorAdditionalDeduction: 1600,
+          blindAdditionalDeduction: 1600,
+          brackets: mfjBrackets2026,
+          capitalGainsBrackets: mfjCapGains2026,
+        },
+      },
       socialContributions: [
         {
           id: 'social_security',
@@ -55,32 +221,24 @@ export const usProfile: CountryTaxProfile = {
           name: 'Medicare (HI)',
           rate: 0.0145,
           employeeRate: 0.0145,
-          description: '1.45% on all earnings with no cap (plus 0.9% additional Medicare on income over $200,000).',
+          description: '1.45% on all earnings with no cap (plus 0.9% additional Medicare on income over $200,000 for single, $250,000 for MFJ).',
         },
       ],
-      regions: [
-        { code: 'none', name: 'No State Income Tax (e.g. TX, FL, WA, NV, TN, WY, SD, AK)', flatRate: 0 },
-        { code: 'ca', name: 'California (Est. Progressive avg)', additionalTaxRate: 0.06 },
-        { code: 'ny', name: 'New York (Est. Progressive avg)', additionalTaxRate: 0.055 },
-        { code: 'tx', name: 'Texas (No State Income Tax)', flatRate: 0 },
-        { code: 'fl', name: 'Florida (No State Income Tax)', flatRate: 0 },
-        { code: 'il', name: 'Illinois (Flat 4.95%)', flatRate: 0.0495 },
-        { code: 'pa', name: 'Pennsylvania (Flat 3.07%)', flatRate: 0.0307 },
-        { code: 'nc', name: 'North Carolina (Flat 4.5%)', flatRate: 0.045 },
-      ],
+      regions: allStates,
       vatConfig: {
         name: 'Sales Tax',
-        standardRate: 0.07, // Typical US combined state/local average
-        reducedRates: [{ name: 'Zero-rated items', rate: 0.0 }],
+        standardRate: 0.07,
+        reducedRates: [{ name: 'Zero-rated grocery/medical', rate: 0.0 }],
       },
       officialSourceName: 'IRS (Internal Revenue Service) - Rev. Proc. 2025-32 & SSA',
       officialSourceUrl: 'https://www.irs.gov',
       lastVerifiedDate: '2026-09-01',
       assumptions: [
-        'Single filing status without dependents',
-        'Standard deduction applied ($16,100)',
-        'Full year resident employee (W-2)',
-        'Does not account for itemized deductions, 401(k) pre-tax contributions, or state-specific credits',
+        'Official 2026 IRS Rev. Proc. 2025-32 tax brackets and inflation adjustments',
+        'Social Security maximum wage base: $184,500 at 6.2%',
+        'Medicare tax 1.45% un-capped plus 0.9% Additional Medicare Tax threshold ($200k Single / $250k MFJ)',
+        'Child Tax Credit up to $2,000 per child under 17 with statutory phase-out thresholds',
+        'Standard vs. itemized deductions comparison with $10,000 SALT cap and 7.5% AGI medical expense threshold',
       ],
     },
     '2025': {
@@ -97,6 +255,93 @@ export const usProfile: CountryTaxProfile = {
         { threshold: 250525, upTo: 626350, rate: 0.35, label: '35% Bracket' },
         { threshold: 626350, rate: 0.37, label: '37% Bracket' },
       ],
+      capitalGainsBrackets: [
+        { threshold: 0, upTo: 48350, rate: 0.00, label: '0% Long-Term Gains' },
+        { threshold: 48350, upTo: 533400, rate: 0.15, label: '15% Long-Term Gains' },
+        { threshold: 533400, rate: 0.20, label: '20% Long-Term Gains' },
+      ],
+      filingStatuses: {
+        single: {
+          id: 'single',
+          label: 'Single',
+          standardDeduction: 15750,
+          seniorAdditionalDeduction: 2000,
+          blindAdditionalDeduction: 2000,
+          brackets: [
+            { threshold: 0, upTo: 11925, rate: 0.10, label: '10% Bracket' },
+            { threshold: 11925, upTo: 48475, rate: 0.12, label: '12% Bracket' },
+            { threshold: 48475, upTo: 103350, rate: 0.22, label: '22% Bracket' },
+            { threshold: 103350, upTo: 197300, rate: 0.24, label: '24% Bracket' },
+            { threshold: 197300, upTo: 250525, rate: 0.32, label: '32% Bracket' },
+            { threshold: 250525, upTo: 626350, rate: 0.35, label: '35% Bracket' },
+            { threshold: 626350, rate: 0.37, label: '37% Bracket' },
+          ],
+        },
+        married_joint: {
+          id: 'married_joint',
+          label: 'Married Filing Jointly',
+          standardDeduction: 31500,
+          seniorAdditionalDeduction: 1600,
+          blindAdditionalDeduction: 1600,
+          brackets: [
+            { threshold: 0, upTo: 23850, rate: 0.10, label: '10% Bracket' },
+            { threshold: 23850, upTo: 96950, rate: 0.12, label: '12% Bracket' },
+            { threshold: 96950, upTo: 206700, rate: 0.22, label: '22% Bracket' },
+            { threshold: 206700, upTo: 394600, rate: 0.24, label: '24% Bracket' },
+            { threshold: 394600, upTo: 501050, rate: 0.32, label: '32% Bracket' },
+            { threshold: 501050, upTo: 751600, rate: 0.35, label: '35% Bracket' },
+            { threshold: 751600, rate: 0.37, label: '37% Bracket' },
+          ],
+        },
+        head_of_household: {
+          id: 'head_of_household',
+          label: 'Head of Household',
+          standardDeduction: 23625,
+          seniorAdditionalDeduction: 2000,
+          blindAdditionalDeduction: 2000,
+          brackets: [
+            { threshold: 0, upTo: 17000, rate: 0.10, label: '10% Bracket' },
+            { threshold: 17000, upTo: 64850, rate: 0.12, label: '12% Bracket' },
+            { threshold: 64850, upTo: 103350, rate: 0.22, label: '22% Bracket' },
+            { threshold: 103350, upTo: 197300, rate: 0.24, label: '24% Bracket' },
+            { threshold: 197300, upTo: 250500, rate: 0.32, label: '32% Bracket' },
+            { threshold: 250500, upTo: 626350, rate: 0.35, label: '35% Bracket' },
+            { threshold: 626350, rate: 0.37, label: '37% Bracket' },
+          ],
+        },
+        married_separate: {
+          id: 'married_separate',
+          label: 'Married Filing Separately',
+          standardDeduction: 15750,
+          seniorAdditionalDeduction: 1600,
+          blindAdditionalDeduction: 1600,
+          brackets: [
+            { threshold: 0, upTo: 11925, rate: 0.10, label: '10% Bracket' },
+            { threshold: 11925, upTo: 48475, rate: 0.12, label: '12% Bracket' },
+            { threshold: 48475, upTo: 103350, rate: 0.22, label: '22% Bracket' },
+            { threshold: 103350, upTo: 197300, rate: 0.24, label: '24% Bracket' },
+            { threshold: 197300, upTo: 250525, rate: 0.32, label: '32% Bracket' },
+            { threshold: 250525, upTo: 375800, rate: 0.35, label: '35% Bracket' },
+            { threshold: 375800, rate: 0.37, label: '37% Bracket' },
+          ],
+        },
+        qualifying_widow: {
+          id: 'qualifying_widow',
+          label: 'Qualifying Surviving Spouse',
+          standardDeduction: 31500,
+          seniorAdditionalDeduction: 1600,
+          blindAdditionalDeduction: 1600,
+          brackets: [
+            { threshold: 0, upTo: 23850, rate: 0.10, label: '10% Bracket' },
+            { threshold: 23850, upTo: 96950, rate: 0.12, label: '12% Bracket' },
+            { threshold: 96950, upTo: 206700, rate: 0.22, label: '22% Bracket' },
+            { threshold: 206700, upTo: 394600, rate: 0.24, label: '24% Bracket' },
+            { threshold: 394600, upTo: 501050, rate: 0.32, label: '32% Bracket' },
+            { threshold: 501050, upTo: 751600, rate: 0.35, label: '35% Bracket' },
+            { threshold: 751600, rate: 0.37, label: '37% Bracket' },
+          ],
+        },
+      },
       socialContributions: [
         {
           id: 'social_security',
@@ -114,9 +359,7 @@ export const usProfile: CountryTaxProfile = {
           description: '1.45% on all earnings with no cap.',
         },
       ],
-      regions: [
-        { code: 'none', name: 'No State Income Tax (e.g. TX, FL, WA, NV, TN, WY, SD, AK)', flatRate: 0 },
-      ],
+      regions: allStates,
       vatConfig: {
         name: 'Sales Tax',
         standardRate: 0.07,

@@ -1,7 +1,18 @@
 ---
 import SiteLayout from '../../layouts/SiteLayout.astro';
 import Icon from '../../components/Icon.astro';
+import CalculatorParameterGuide from '../../components/calculator/CalculatorParameterGuide.astro';
 import { siteName, toAbsoluteUrl, withBasePath } from '../../utils/site';
+
+const parameterGuide = [
+  { id: 'shopPrice', name: 'Retail Selling Price', description: 'Product list price paid by online shoppers at your Shopify storefront checkout.', whyItMatters: 'The gross transaction revenue earned on each fulfilled customer order.', typicalRange: '$15.00 to $300.00+', unit: '$' },
+  { id: 'shopCogs', name: 'Product COGS (Landed Cost)', description: 'Direct unit manufacturing cost plus sea or air freight forwarding and customs import tariffs.', whyItMatters: 'Defines your gross margin before paid digital advertising and fulfillment expenses.', typicalRange: '$3.00 to $80.00', unit: '$' },
+  { id: 'shopAd', name: 'Ad Spend Per Order (CAC)', description: 'Customer Acquisition Cost: blended paid ad spend (Meta, Google Search, TikTok) needed to generate one sale.', whyItMatters: 'Usually the single largest expense line item for modern direct-to-consumer (DTC) brands.', typicalRange: '$5.00 to $60.00+', unit: '$' },
+  { id: 'shopShip', name: 'Net Shipping & Box Cost', description: 'Third-party logistics (3PL) pick-and-pack fee, custom box, and carrier postage minus any shipping charged to buyer.', whyItMatters: 'Unrecovered shipping subsidies directly subtract dollar-for-dollar from net margins.', typicalRange: '$3.00 to $15.00', unit: '$' },
+  { id: 'shopPlan', name: 'Shopify Payments Plan Tier', description: 'Payment processing percentage fee charged on credit card checkouts (Basic: 2.9%, Shopify: 2.7%, Advanced: 2.5% + $0.30).', whyItMatters: 'Higher monthly tier plans yield lower gateway fees, saving substantial money at high order volumes.', typicalRange: '2.5% to 2.9% + $0.30', unit: 'rate' },
+  { id: 'shopOrders', name: 'Monthly Order Volume', description: 'Total monthly orders shipped through your online storefront.', whyItMatters: 'Multiplies per-order unit economics into aggregate monthly store take-home profit.', typicalRange: '50 to 5,000+ orders', unit: 'orders' },
+  { id: 'breakevenPrice', name: 'Break-Even Sale Price', description: 'The absolute lowest retail price required to cover COGS, CAC ad spend, shipping, and credit card gateway fees.', whyItMatters: 'Sets the baseline floor for discounting, flash sales, and wholesale pricing.', typicalRange: 'Calculated dynamically', unit: '$' },
+];
 
 const pageTitle = `Shopify Profit Calculator | Ecommerce Margins & Ad Spend (CAC) · ${siteName}`;
 const pageDesc = 'Calculate your true net profit margin on Shopify factoring in payment gateway fees, Customer Acquisition Cost (ad spend), shipping, and return allowances.';
@@ -145,13 +156,23 @@ const schemaGraph = [
           </div>
         </form>
 
-        <div class="flex flex-col justify-between space-y-6 rounded-3xl border border-[color:var(--border)] bg-[color:var(--bg)] p-6 sm:p-8">
+        <div class="flex flex-col justify-between space-y-6 rounded-3xl border border-[color:var(--accent)]/30 bg-gradient-to-br from-[color:var(--accent-soft)] via-[color:var(--surface)] to-transparent p-6 sm:p-8 shadow-sm">
           <div class="space-y-5">
-            <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Net Profitability</span>
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Net Profitability</span>
+              <button
+                type="button"
+                class="inline-flex items-center gap-1.5 rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1.5 text-xs font-bold text-[color:var(--fg)] hover:bg-[color:var(--surface-strong)] transition cursor-pointer"
+                data-copy-btn
+              >
+                <Icon name="copy" class="w-3.5 h-3.5" />
+                <span>Copy Summary</span>
+              </button>
+            </div>
 
             <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 text-center">
               <p class="text-xs font-semibold text-[color:var(--muted)]">Net Profit Per Order</p>
-              <p class="mt-1 text-5xl font-black tracking-tight text-green-600 dark:text-green-400" data-net-order>
+              <p class="mt-1 text-5xl font-black tracking-tight text-cyan-600 dark:text-cyan-400 dark:text-cyan-400" data-net-order>
                 $13.31
               </p>
               <p class="mt-2 text-xs font-medium text-[color:var(--muted)]" data-margin-label>
@@ -177,6 +198,69 @@ const schemaGraph = [
         </div>
       </div>
     </div>
+
+    <!-- Mathematical Formula & DTC Unit Economics -->
+    <section class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 sm:p-8 space-y-4">
+      <div>
+        <p class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">DTC Unit Economics</p>
+        <h2 class="text-xl font-bold text-[color:var(--fg)] flex items-center gap-2"><Icon name="math" class="w-4 h-4 text-[color:var(--accent)]" /><span>How Shopify Store Margins Are Calculated</span></h2>
+      </div>
+
+      <div class="grid gap-4 sm:grid-cols-2 text-xs sm:text-sm">
+        <div class="rounded-2xl bg-[color:var(--bg)] p-4 border border-[color:var(--border)] space-y-2">
+          <p class="font-bold text-[color:var(--fg)]">1. Net Profit Per Order</p>
+          <div class="rounded-xl bg-[color:var(--surface)] p-3 font-mono text-xs text-[color:var(--fg)] overflow-x-auto">
+            Profit = Retail Price - [COGS + CAC + Net Shipping + Gateway Fee]
+          </div>
+          <p class="text-xs text-[color:var(--muted)]">
+            Where Gateway Fee = (Retail Price × Plan Rate) + $0.30. Fully deducts customer acquisition ad spend.
+          </p>
+        </div>
+
+        <div class="rounded-2xl bg-[color:var(--bg)] p-4 border border-[color:var(--border)] space-y-2">
+          <p class="font-bold text-[color:var(--fg)]">2. Break-Even Retail Price</p>
+          <div class="rounded-xl bg-[color:var(--surface)] p-3 font-mono text-xs text-[color:var(--fg)] overflow-x-auto">
+            Break-Even = [COGS + CAC + Net Shipping + $0.30] ÷ (1 - Plan Rate)
+          </div>
+          <p class="text-xs text-[color:var(--muted)]">
+            Accounts for the variable gateway percentage so every fixed unit cost is completely recovered.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Step-by-Step Worked Example -->
+    <section class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 sm:p-8 space-y-4">
+      <div>
+        <p class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Step-By-Step Walkthrough</p>
+        <h2 class="text-xl font-bold text-[color:var(--fg)] flex items-center gap-2"><Icon name="document" class="w-4 h-4 text-[color:var(--accent)]" /><span>Worked Example: $48.00 DTC Product on Basic Plan</span></h2>
+      </div>
+
+      <div class="grid gap-4 sm:grid-cols-3 text-xs sm:text-sm">
+        <div class="rounded-2xl bg-[color:var(--bg)] p-4 border border-[color:var(--border)] space-y-1.5">
+          <p class="font-bold text-[color:var(--fg)]">1. Unit Economics</p>
+          <p class="text-[color:var(--muted)]">Retail Price: $48.00.</p>
+          <p class="text-[color:var(--muted)]">Product COGS: $12.50.</p>
+          <p class="text-[color:var(--muted)]">CAC (Ad Spend): $15.00.</p>
+          <p class="text-[color:var(--muted)]">Net Shipping &amp; Box: $5.50.</p>
+        </div>
+        <div class="rounded-2xl bg-[color:var(--bg)] p-4 border border-[color:var(--border)] space-y-1.5">
+          <p class="font-bold text-[color:var(--fg)]">2. Gateway &amp; Deductions</p>
+          <p class="text-[color:var(--muted)]">Basic Rate: 2.9% + $0.30.</p>
+          <p class="text-[color:var(--muted)]">Gateway = ($48 × 0.029) + $0.30 = <strong>$1.69</strong>.</p>
+          <p class="text-[color:var(--muted)]">Total Costs = $12.50 + $15.00 + $5.50 + $1.69 = <strong>$34.69</strong>.</p>
+        </div>
+        <div class="rounded-2xl bg-[color:var(--bg)] p-4 border border-[color:var(--border)] space-y-1.5">
+          <p class="font-bold text-[color:var(--fg)]">3. Net Profit &amp; Volume</p>
+          <p class="text-[color:var(--muted)]">Profit/Order: $48 - $34.69 = <strong>$13.31</strong> (27.7%).</p>
+          <p class="text-[color:var(--muted)]">Monthly (250 orders) = 250 × $13.31 = <strong>$3,327.50/mo</strong>.</p>
+          <p class="text-[color:var(--muted)]">Break-Even Price: <strong>$34.69</strong>.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Parameter Guide -->
+    <CalculatorParameterGuide parameters={parameterGuide} />
 
     <!-- FAQs -->
     <section class="space-y-4">
@@ -254,6 +338,23 @@ const schemaGraph = [
           inPlan.value = '2.9';
           inOrders.value = '250';
           update();
+        });
+      }
+
+      const copyBtn = root.querySelector('[data-copy-btn]');
+      if (copyBtn) {
+        copyBtn.addEventListener('click', async () => {
+          const text = `Shopify Economics Summary:\n• Net Profit/Order: ${outNet?.textContent || ''}\n• ${outMargin?.textContent || ''}\n• Monthly Net Store Profit: ${outMoNet?.textContent || ''}\n• Gateway Fee/Order: ${outGateway?.textContent || ''}\n• Break-Even Price: ${outBreak?.textContent || ''}`;
+          try {
+            await navigator.clipboard.writeText(text);
+            const originalText = copyBtn.innerHTML;
+            copyBtn.innerHTML = '<span>Copied!</span>';
+            setTimeout(() => {
+              copyBtn.innerHTML = originalText;
+            }, 2000);
+          } catch (e) {
+            console.error('Clipboard copy failed', e);
+          }
         });
       }
 

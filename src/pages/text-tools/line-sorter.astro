@@ -1,7 +1,8 @@
 ---
 import SiteLayout from '../../layouts/SiteLayout.astro';
 import Icon from '../../components/Icon.astro';
-import { siteName, toAbsoluteUrl, withBasePath } from '../../utils/site';
+import CalculatorParameterGuide from '../../components/calculator/CalculatorParameterGuide.astro';
+import { siteName, toAbsoluteUrl } from '../../utils/site';
 
 const pageTitle = `Text Line Sorter — Sort Lines Alphabetically Online · ${siteName}`;
 const pageDesc = 'Sort lines of text alphabetically (A-Z, Z-A), numerically (0-9, 9-0), by length, or randomize order online. 100% private in-browser tool.';
@@ -15,8 +16,20 @@ const breadcrumbItems = [
 
 const schemaFaq = [
   {
-    question: 'What sorting options are available?',
-    answer: 'You can sort lines Alphabetically (A-Z or Z-A), Numerically (ascending/descending), by Line Length (shortest to longest or longest to shortest), or randomly shuffle lines.',
+    question: 'What sorting algorithms and options are available?',
+    answer: 'You can sort lines Alphabetically (A-Z or Z-A), with Natural Alphanumeric sorting (e.g. item2 before item10), Numerically (0-9 or 9-0), by Line Length (shortest to longest or vice versa), by verbatim Reverse Order, or with a randomized Fisher-Yates shuffle.',
+  },
+  {
+    question: 'What is Natural / Alphanumeric Sorting?',
+    answer: 'Standard alphabetical sorting compares strings character-by-character, placing "chapter10" before "chapter2". Natural sorting parses embedded numbers as quantities, correctly placing "chapter2" before "chapter10".',
+  },
+  {
+    question: 'Can I remove duplicate lines and add line numbers automatically?',
+    answer: 'Yes. You can toggle "Remove Duplicates" to clean redundant lines while sorting, and choose to prepend formatted line numbers (e.g. "1. ", "01. ") to the output.',
+  },
+  {
+    question: 'Are my files processed privately?',
+    answer: 'Yes. 100% of the sorting operations run in your browser client memory. No text or files are uploaded to any external server.',
   },
 ];
 
@@ -54,6 +67,60 @@ const schemaGraph = [
     })),
   },
 ];
+
+const parameterGuideData = [
+  {
+    id: 'sort-order',
+    name: 'Sort Algorithm',
+    description: 'The mathematical ordering routine applied to text lines: Alphabetical, Natural alphanumeric, Numerical, Length-based, Reverse, or Shuffle.',
+    whyItMatters: 'Dictates the resulting sequence of lists, directories, and datasets.',
+    typicalRange: 'A–Z, Z–A, Natural, Numeric, Length, Shuffle',
+  },
+  {
+    id: 'case-sensitivity',
+    name: 'Case Sensitivity',
+    description: 'Determines whether capital letters precede lowercase letters (ASCII order) or if capitalization differences are ignored.',
+    whyItMatters: 'Essential for strict code exports vs. natural human-readable reading lists.',
+    typicalRange: 'Enabled / Disabled (Default: Disabled)',
+  },
+  {
+    id: 'ignore-leading-ws',
+    name: 'Ignore Leading Whitespace',
+    description: 'Evaluates each line for sorting based on its first non-space character, ignoring indentation.',
+    whyItMatters: 'Allows sorting indented code blocks or tabbed bullet items by their actual textual content.',
+    typicalRange: 'Enabled / Disabled (Default: Enabled)',
+  },
+  {
+    id: 'prepend-numbers',
+    name: 'Prepend Line Numbers',
+    description: 'Automatically prefixes each sorted line with sequential index numbers (e.g. 1., 2., 3.).',
+    whyItMatters: 'Creates immediate enumerated rankings, step-by-step checklists, or test suites.',
+    typicalRange: 'None, 1., 01., 1)',
+  },
+];
+
+const workedExampleData = {
+  title: 'Natural Sorting a Mixed Alphanumeric File List',
+  description: 'Ordering filenames that contain embedded numerical version increments.',
+  formula: 'Natural Comparison: a.localeCompare(b, undefined, { numeric: true })',
+  steps: [
+    {
+      step: 'Step 1: Input Unordered Files',
+      calculation: 'List contains: "image10.png", "image1.png", "image2.png".',
+      result: '3 unorganized lines',
+    },
+    {
+      step: 'Step 2: Standard ASCII vs Natural Sort',
+      calculation: 'ASCII would yield: image1.png, image10.png, image2.png (incorrect magnitude).',
+      result: 'Natural sort detects numerical digit chunks',
+    },
+    {
+      step: 'Step 3: Output Clean Sequence',
+      calculation: 'Correct order: "image1.png", "image2.png", "image10.png".',
+      result: 'Proper human sequence achieved',
+    },
+  ],
+};
 ---
 
 <SiteLayout title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
@@ -82,73 +149,153 @@ const schemaGraph = [
     <header class="space-y-3">
       <div class="inline-flex items-center gap-2 rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1 text-xs font-semibold text-[color:var(--muted)]">
         <span class="inline-block h-2 w-2 rounded-full bg-emerald-500"></span>
-        <span>Alphabetical &amp; Numeric Ordering</span>
+        <span>100% Client-Side • Natural Sort • Deduplication • Live Statistics</span>
       </div>
       <h1 class="text-2xl sm:text-4xl font-extrabold tracking-tight text-[color:var(--fg)]">
         Text Line Sorter
       </h1>
       <p class="max-w-2xl text-xs sm:text-sm text-[color:var(--muted)] leading-relaxed">
-        Sort lists and lines alphabetically, numerically, by length, or randomly in your browser.
+        Sort lines of text alphabetically (A–Z, Z–A), naturally with numeric awareness (item2 before item10), by line length, or randomize order. Custom numbering and deduplication options.
       </p>
     </header>
 
+    <!-- Metrics Summary Bar -->
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+      <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-center shadow-xs">
+        <span class="block text-[11px] font-bold uppercase tracking-wider text-[color:var(--muted)]">Total Lines</span>
+        <span id="stat-lines" class="mt-1 block text-xl sm:text-2xl font-black text-[color:var(--fg)] font-mono">0</span>
+      </div>
+      <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-center shadow-xs">
+        <span class="block text-[11px] font-bold uppercase tracking-wider text-[color:var(--muted)]">Unique Lines</span>
+        <span id="stat-unique" class="mt-1 block text-xl sm:text-2xl font-black text-cyan-600 dark:text-cyan-400 dark:text-cyan-400 font-mono">0</span>
+      </div>
+      <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-center shadow-xs">
+        <span class="block text-[11px] font-bold uppercase tracking-wider text-[color:var(--muted)]">Word Count</span>
+        <span id="stat-words" class="mt-1 block text-xl sm:text-2xl font-black text-[color:var(--accent)] font-mono">0</span>
+      </div>
+      <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-center shadow-xs">
+        <span class="block text-[11px] font-bold uppercase tracking-wider text-[color:var(--muted)]">Character Count</span>
+        <span id="stat-chars" class="mt-1 block text-xl sm:text-2xl font-black text-[color:var(--fg)] font-mono">0</span>
+      </div>
+    </div>
+
+    <!-- Controls Panel -->
+    <div class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 sm:p-6 space-y-4 shadow-sm">
+      <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 text-xs">
+        <div>
+          <label for="sort-type" class="block font-bold text-[color:var(--fg)] mb-1.5">Sorting Method</label>
+          <select id="sort-type" class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-[color:var(--fg)] font-semibold">
+            <option value="alpha-asc">Alphabetical (A &rarr; Z)</option>
+            <option value="alpha-desc">Reverse Alphabetical (Z &rarr; A)</option>
+            <option value="natural-asc">Natural Alphanumeric (item1, item2, item10)</option>
+            <option value="natural-desc">Reverse Natural (item10, item2, item1)</option>
+            <option value="numeric-asc">Numerical (Smallest &rarr; Largest)</option>
+            <option value="numeric-desc">Numerical (Largest &rarr; Smallest)</option>
+            <option value="length-asc">Line Length (Shortest First)</option>
+            <option value="length-desc">Line Length (Longest First)</option>
+            <option value="shuffle">Random Shuffle (Fisher-Yates)</option>
+            <option value="reverse">Reverse Current Order</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="opt-numbering" class="block font-bold text-[color:var(--fg)] mb-1.5">Prepend Line Numbers</label>
+          <select id="opt-numbering" class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-[color:var(--fg)]">
+            <option value="none">None (Plain Lines)</option>
+            <option value="dot">1. 2. 3.</option>
+            <option value="paren">1) 2) 3)</option>
+            <option value="pad">01. 02. 03.</option>
+          </select>
+        </div>
+
+        <div class="space-y-2 pt-1">
+          <label class="flex items-center gap-2 font-medium text-[color:var(--fg)] cursor-pointer">
+            <input type="checkbox" id="case-sens" class="rounded accent-[color:var(--accent)]" />
+            <span>Case Sensitive</span>
+          </label>
+          <label class="flex items-center gap-2 font-medium text-[color:var(--fg)] cursor-pointer">
+            <input type="checkbox" id="ignore-ws" checked class="rounded accent-[color:var(--accent)]" />
+            <span>Ignore Leading Whitespace</span>
+          </label>
+        </div>
+
+        <div class="space-y-2 pt-1">
+          <label class="flex items-center gap-2 font-medium text-[color:var(--fg)] cursor-pointer">
+            <input type="checkbox" id="remove-dups" class="rounded accent-[color:var(--accent)]" />
+            <span>Remove Duplicates While Sorting</span>
+          </label>
+          <label class="flex items-center gap-2 font-medium text-[color:var(--fg)] cursor-pointer">
+            <input type="checkbox" id="remove-empty" checked class="rounded accent-[color:var(--accent)]" />
+            <span>Remove Empty Lines</span>
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <!-- Dual Workspace Grid -->
     <div class="grid gap-6 lg:grid-cols-2">
+      <!-- Left: Source Editor -->
       <div class="space-y-3">
         <div class="flex items-center justify-between">
-          <label for="text-in" class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Original List</label>
+          <label for="text-in" class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Source Text</label>
           <div class="flex items-center gap-2 text-xs">
-            <button type="button" data-sample-btn class="text-[color:var(--primary)] hover:underline font-semibold">Load Sample</button>
-            <span class="text-[color:var(--border)]">|</span>
-            <button type="button" data-clear-btn class="text-[color:var(--muted)] hover:text-[color:var(--fg)]">Clear</button>
+            <label for="file-upload" class="cursor-pointer text-[color:var(--accent)] hover:underline font-semibold flex items-center gap-1">
+              <span>Import File</span>
+              <input type="file" id="file-upload" accept=".txt,.csv,.md,.tsv,.log" class="hidden" />
+            </label>
+            <span class="text-[color:var(--border)]">•</span>
+            <button type="button" id="btn-sample" class="text-[color:var(--accent)] hover:underline font-semibold cursor-pointer">Sample</button>
+            <span class="text-[color:var(--border)]">•</span>
+            <button type="button" id="btn-clear" class="text-rose-600 dark:text-rose-400 hover:underline cursor-pointer">Clear</button>
           </div>
         </div>
         <textarea
           id="text-in"
-          rows="14"
-          class="w-full font-mono text-xs leading-relaxed rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-[color:var(--fg)] focus:border-[color:var(--border-strong)] focus:outline-hidden"
-          placeholder="Paste lines to sort here..."
+          rows="15"
+          class="w-full font-mono text-xs leading-relaxed rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-[color:var(--fg)] focus:border-[color:var(--accent)] focus:outline-hidden transition shadow-inner"
+          placeholder="Paste or type lines to sort here..."
         ></textarea>
-
-        <div class="flex flex-wrap items-center justify-between gap-3">
-          <div class="flex items-center gap-2">
-            <label for="sort-mode" class="text-xs font-medium text-[color:var(--muted)]">Sort Mode:</label>
-            <select id="sort-mode" class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] px-2.5 py-1.5 text-xs text-[color:var(--fg)]">
-              <option value="alpha-asc">Alphabetical (A → Z)</option>
-              <option value="alpha-desc">Reverse Alphabetical (Z → A)</option>
-              <option value="num-asc">Numeric (0 → 9)</option>
-              <option value="num-desc">Numeric (9 → 0)</option>
-              <option value="len-asc">Shortest to Longest</option>
-              <option value="len-desc">Longest to Shortest</option>
-              <option value="random">Random Shuffle</option>
-            </select>
-          </div>
-          <button
-            type="button"
-            data-sort-btn
-            class="rounded-xl bg-[color:var(--fg)] px-5 py-2 text-xs font-bold text-[color:var(--bg)] shadow-xs transition hover:opacity-90"
-          >
-            Sort Lines
-          </button>
-        </div>
       </div>
 
+      <!-- Right: Processed Output -->
       <div class="space-y-3">
         <div class="flex items-center justify-between">
           <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Sorted Output</span>
-          <button type="button" data-copy-btn class="inline-flex items-center gap-1 text-xs font-bold text-[color:var(--fg)] hover:underline">
-            <Icon name="copy" class="w-3.5 h-3.5" />
-            <span>Copy</span>
-          </button>
+          <div class="flex items-center gap-2">
+            <button
+              type="button"
+              id="btn-copy"
+              class="inline-flex cursor-pointer items-center gap-1.5 rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1.5 text-xs font-bold text-[color:var(--fg)] shadow-xs transition hover:bg-[color:var(--surface-strong)]"
+            >
+              <Icon name="copy" class="w-3.5 h-3.5" />
+              <span id="copy-label">Copy</span>
+            </button>
+            <button
+              type="button"
+              id="btn-download"
+              class="inline-flex cursor-pointer items-center gap-1.5 rounded-xl bg-[color:var(--fg)] px-3 py-1.5 text-xs font-bold text-[color:var(--bg)] shadow-xs transition hover:opacity-90"
+            >
+              <span>Download .txt</span>
+            </button>
+          </div>
         </div>
         <textarea
           id="text-out"
-          rows="16"
+          rows="15"
           readonly
-          class="w-full font-mono text-xs leading-relaxed rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-4 text-[color:var(--fg)] focus:outline-hidden"
-          placeholder="Sorted lines will appear here..."
+          class="w-full font-mono text-xs leading-relaxed rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-4 text-[color:var(--fg)] focus:outline-hidden transition shadow-inner"
+          placeholder="Sorted text will appear here in real-time..."
         ></textarea>
       </div>
     </div>
+
+    <!-- Parameter Guide & Worked Example -->
+    <CalculatorParameterGuide
+      title="How Line Sorting Routines Function"
+      description="Compare alphabetical collation, natural digit sorting, length comparison, and Fisher-Yates shuffling."
+      parameters={parameterGuideData}
+      workedExample={workedExampleData}
+    />
 
     <!-- FAQs -->
     <section class="space-y-4">
@@ -174,58 +321,201 @@ const schemaGraph = [
       const root = document.querySelector('[data-sorter-app]');
       if (!root) return;
 
-      const input = root.querySelector('#text-in');
-      const output = root.querySelector('#text-out');
-      const modeSelect = root.querySelector('#sort-mode');
-      const sortBtn = root.querySelector('[data-sort-btn]');
-      const sampleBtn = root.querySelector('[data-sample-btn]');
-      const clearBtn = root.querySelector('[data-clear-btn]');
-      const copyBtn = root.querySelector('[data-copy-btn]');
+      const textIn = root.querySelector('#text-in');
+      const textOut = root.querySelector('#text-out');
+      const sortType = root.querySelector('#sort-type');
+      const optNumbering = root.querySelector('#opt-numbering');
+      const caseSens = root.querySelector('#case-sens');
+      const ignoreWs = root.querySelector('#ignore-ws');
+      const removeDups = root.querySelector('#remove-dups');
+      const removeEmpty = root.querySelector('#remove-empty');
 
-      function sortLines() {
-        const text = input.value;
-        if (!text) { output.value = ''; return; }
+      const statLines = root.querySelector('#stat-lines');
+      const statUnique = root.querySelector('#stat-unique');
+      const statWords = root.querySelector('#stat-words');
+      const statChars = root.querySelector('#stat-chars');
 
-        const lines = text.split('\n').filter(l => l.length > 0);
-        const mode = modeSelect.value;
+      const btnSample = root.querySelector('#btn-sample');
+      const btnClear = root.querySelector('#btn-clear');
+      const btnCopy = root.querySelector('#btn-copy');
+      const copyLabel = root.querySelector('#copy-label');
+      const btnDownload = root.querySelector('#btn-download');
+      const fileUpload = root.querySelector('#file-upload');
 
-        switch (mode) {
-          case 'alpha-asc': lines.sort((a, b) => a.localeCompare(b)); break;
-          case 'alpha-desc': lines.sort((a, b) => b.localeCompare(a)); break;
-          case 'num-asc': lines.sort((a, b) => (parseFloat(a) || 0) - (parseFloat(b) || 0)); break;
-          case 'num-desc': lines.sort((a, b) => (parseFloat(b) || 0) - (parseFloat(a) || 0)); break;
-          case 'len-asc': lines.sort((a, b) => a.length - b.length); break;
-          case 'len-desc': lines.sort((a, b) => b.length - a.length); break;
-          case 'random': lines.sort(() => Math.random() - 0.5); break;
+      const SAMPLE_TEXT = `Zebra 10
+Apple 1
+Banana 5
+zebra 2
+Orange 3
+apple 100
+Banana 5
+Grapefruit 12
+Kiwi 4`;
+
+      function shuffleArray(arr) {
+        const a = [...arr];
+        for (let i = a.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [a[i], a[j]] = [a[j], a[i]];
         }
-
-        output.value = lines.join('\n');
+        return a;
       }
 
-      sortBtn.addEventListener('click', sortLines);
-      modeSelect.addEventListener('change', sortLines);
-      input.addEventListener('input', sortLines);
+      function processSort() {
+        const raw = textIn.value;
+        if (!raw.length) {
+          textOut.value = '';
+          statLines.textContent = '0';
+          statUnique.textContent = '0';
+          statWords.textContent = '0';
+          statChars.textContent = '0';
+          return;
+        }
 
-      sampleBtn.addEventListener('click', () => {
-        input.value = `Zebra\nApple\nMango\nBanana\nOrange\nPineapple\nGrape`;
-        sortLines();
+        let lines = raw.split(/\r\n|\r|\n/);
+
+        // Filter empty lines if enabled
+        if (removeEmpty.checked) {
+          lines = lines.filter(l => l.trim().length > 0);
+        }
+
+        // Deduplication if enabled
+        if (removeDups.checked) {
+          const seen = new Set();
+          lines = lines.filter(line => {
+            const key = caseSens.checked ? line : line.toLowerCase();
+            if (seen.has(key)) return false;
+            seen.add(key);
+            return true;
+          });
+        }
+
+        const isCase = caseSens.checked;
+        const isIgnoreWs = ignoreWs.checked;
+
+        function getComparable(str) {
+          let s = isIgnoreWs ? str.trimStart() : str;
+          return isCase ? s : s.toLowerCase();
+        }
+
+        const mode = sortType.value;
+
+        if (mode === 'alpha-asc') {
+          lines.sort((a, b) => getComparable(a).localeCompare(getComparable(b), undefined, { sensitivity: isCase ? 'variant' : 'base' }));
+        } else if (mode === 'alpha-desc') {
+          lines.sort((a, b) => getComparable(b).localeCompare(getComparable(a), undefined, { sensitivity: isCase ? 'variant' : 'base' }));
+        } else if (mode === 'natural-asc') {
+          lines.sort((a, b) => getComparable(a).localeCompare(getComparable(b), undefined, { numeric: true, sensitivity: isCase ? 'variant' : 'base' }));
+        } else if (mode === 'natural-desc') {
+          lines.sort((a, b) => getComparable(b).localeCompare(getComparable(a), undefined, { numeric: true, sensitivity: isCase ? 'variant' : 'base' }));
+        } else if (mode === 'numeric-asc') {
+          lines.sort((a, b) => {
+            const numA = parseFloat(getComparable(a).match(/-?\d+(\.\d+)?/)?.[0] || '0');
+            const numB = parseFloat(getComparable(b).match(/-?\d+(\.\d+)?/)?.[0] || '0');
+            return numA - numB;
+          });
+        } else if (mode === 'numeric-desc') {
+          lines.sort((a, b) => {
+            const numA = parseFloat(getComparable(a).match(/-?\d+(\.\d+)?/)?.[0] || '0');
+            const numB = parseFloat(getComparable(b).match(/-?\d+(\.\d+)?/)?.[0] || '0');
+            return numB - numA;
+          });
+        } else if (mode === 'length-asc') {
+          lines.sort((a, b) => a.length - b.length || getComparable(a).localeCompare(getComparable(b)));
+        } else if (mode === 'length-desc') {
+          lines.sort((a, b) => b.length - a.length || getComparable(a).localeCompare(getComparable(b)));
+        } else if (mode === 'shuffle') {
+          lines = shuffleArray(lines);
+        } else if (mode === 'reverse') {
+          lines.reverse();
+        }
+
+        // Apply numbering
+        const numFormat = optNumbering.value;
+        if (numFormat !== 'none') {
+          const totalDigits = String(lines.length).length;
+          lines = lines.map((l, idx) => {
+            const n = idx + 1;
+            if (numFormat === 'pad') {
+              return `${String(n).padStart(Math.max(2, totalDigits), '0')}. ${l}`;
+            } else if (numFormat === 'paren') {
+              return `${n}) ${l}`;
+            } else {
+              return `${n}. ${l}`;
+            }
+          });
+        }
+
+        const result = lines.join('\n');
+        textOut.value = result;
+
+        // Update stats
+        statLines.textContent = lines.length.toLocaleString();
+        const uniqueSet = new Set(lines.map(l => l.toLowerCase().trim()));
+        statUnique.textContent = uniqueSet.size.toLocaleString();
+        const words = result.trim().length ? result.trim().split(/\s+/).length : 0;
+        statWords.textContent = words.toLocaleString();
+        statChars.textContent = result.length.toLocaleString();
+      }
+
+      // Event Listeners
+      textIn.addEventListener('input', processSort);
+      sortType.addEventListener('change', processSort);
+      optNumbering.addEventListener('change', processSort);
+      caseSens.addEventListener('change', processSort);
+      ignoreWs.addEventListener('change', processSort);
+      removeDups.addEventListener('change', processSort);
+      removeEmpty.addEventListener('change', processSort);
+
+      btnSample?.addEventListener('click', () => {
+        textIn.value = SAMPLE_TEXT;
+        processSort();
       });
 
-      clearBtn.addEventListener('click', () => {
-        input.value = '';
-        output.value = '';
+      btnClear?.addEventListener('click', () => {
+        textIn.value = '';
+        processSort();
       });
 
-      copyBtn.addEventListener('click', () => {
-        if (!output.value) return;
-        navigator.clipboard.writeText(output.value);
-        const span = copyBtn.querySelector('span');
-        const orig = span.textContent;
-        span.textContent = 'Copied!';
-        setTimeout(() => span.textContent = orig, 1800);
+      btnCopy?.addEventListener('click', async () => {
+        if (!textOut.value) return;
+        try {
+          await navigator.clipboard.writeText(textOut.value);
+          copyLabel.textContent = 'Copied!';
+          setTimeout(() => { copyLabel.textContent = 'Copy'; }, 2000);
+        } catch (e) {
+          textOut.select();
+          document.execCommand('copy');
+          copyLabel.textContent = 'Copied!';
+          setTimeout(() => { copyLabel.textContent = 'Copy'; }, 2000);
+        }
       });
 
-      sampleBtn.click();
+      btnDownload?.addEventListener('click', () => {
+        if (!textOut.value) return;
+        const blob = new Blob([textOut.value], { type: 'text/plain;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'sorted_lines.txt';
+        a.click();
+        URL.revokeObjectURL(url);
+      });
+
+      fileUpload?.addEventListener('change', (e) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (evt) => {
+          textIn.value = evt.target.result;
+          processSort();
+        };
+        reader.readAsText(file);
+      });
+
+      if (textIn.value) {
+        processSort();
+      }
     })();
   </script>
 </SiteLayout>

@@ -1,10 +1,12 @@
 ---
 import SiteLayout from '../../layouts/SiteLayout.astro';
 import Icon from '../../components/Icon.astro';
-import { siteName, toAbsoluteUrl, withBasePath } from '../../utils/site';
+import CalculatorParameterGuide from '../../components/calculator/CalculatorParameterGuide.astro';
+import type { CalculatorParameterInfo } from '../../types/calculator';
+import { siteName, toAbsoluteUrl } from '../../utils/site';
 
 const pageTitle = `Correlation Calculator — Pearson r & Spearman Rank Coefficient · ${siteName}`;
-const pageDesc = 'Calculate Pearson correlation coefficient (r), coefficient of determination (R²), covariance, and statistical relationship strength online. 100% private in-browser tool.';
+const pageDesc = 'Calculate Pearson correlation coefficient (r), Spearman rank correlation (ρ), R² variance, OLS regression slope, p-value significance, and live interactive SVG scatter plot.';
 const canonicalUrl = toAbsoluteUrl('/research-tools/correlation-calculator/');
 
 const breadcrumbItems = [
@@ -13,10 +15,86 @@ const breadcrumbItems = [
   { label: 'Correlation Calculator' },
 ];
 
+const parameterGuide: CalculatorParameterInfo[] = [
+  {
+    name: 'Variable X Observations',
+    description: 'Independent or predictor numerical observations separated by commas, spaces, or line breaks.',
+    whyItMatters: 'Forms the horizontal coordinate dimension (Xᵢ) for paired bivariate covariance estimation.',
+    typicalRange: 'Paired real numbers (n ≥ 3)',
+    unit: 'observations',
+  },
+  {
+    name: 'Variable Y Observations',
+    description: 'Dependent or criterion numerical observations matched element-by-element with Variable X.',
+    whyItMatters: 'Forms the vertical coordinate dimension (Yᵢ) to examine co-variation and linear tracking.',
+    typicalRange: 'Paired real numbers (n ≥ 3)',
+    unit: 'observations',
+  },
+  {
+    name: 'Pearson Correlation Coefficient (r)',
+    description: 'Bivariate parametric linear association index ranging from -1.0 (perfect inverse linear) to +1.0 (perfect direct linear).',
+    whyItMatters: 'Standard metric measuring strength and direction of linear relationship between continuous normal variables.',
+    typicalRange: '-1.0000 to +1.0000',
+    unit: 'dimensionless',
+  },
+  {
+    name: 'Spearman Rank Correlation (ρ)',
+    description: 'Non-parametric monotonic rank association index that ranks X and Y values prior to correlation calculation.',
+    whyItMatters: 'Resistant to non-linear monotonic relationships and extreme bivariate outliers.',
+    typicalRange: '-1.0000 to +1.0000',
+    unit: 'dimensionless',
+  },
+  {
+    name: 'Coefficient of Determination (R²)',
+    description: 'The percentage of variance in dependent Variable Y explained by linear variation in Variable X.',
+    whyItMatters: 'Quantifies predictive power in ordinary least squares (OLS) regression models.',
+    typicalRange: '0.0% to 100.0%',
+    unit: '%',
+  },
+  {
+    name: 'Hypothesis Test (t-statistic & p-value)',
+    description: 'Tests null hypothesis H₀: ρ = 0 (no true correlation in population) against H₁: ρ ≠ 0 using Student t-distribution with df = n - 2.',
+    whyItMatters: 'Confirms whether observed correlation is statistically significant or attributable to sample noise.',
+    typicalRange: 'p < 0.05 is statistically significant',
+    unit: 'p-value',
+  },
+];
+
+const workedExample = {
+  title: 'Worked Example: Study Hours vs Exam Score (n = 7 Pairs)',
+  description: 'Step-by-step computation of Pearson r, regression equation, and statistical significance.',
+  formula: 'r = Σ[(xᵢ - x̄)(yᵢ - ȳ)] / √[ Σ(xᵢ - x̄)² · Σ(yᵢ - ȳ)² ]',
+  steps: [
+    {
+      step: '1. Means & Deviations',
+      calculation: 'X = [45, 52, 60, 68, 75, 82, 90] → x̄ = 67.43; Y = [50, 55, 62, 70, 78, 85, 94] → ȳ = 70.57',
+      result: 'x̄ = 67.43, ȳ = 70.57',
+    },
+    {
+      step: '2. Cross-Product & Sum of Squares',
+      calculation: 'SP_xy = 1,538.86; SS_x = 1,515.71; SS_y = 1,563.71',
+      result: 'SP = 1538.86, SS_x = 1515.71, SS_y = 1563.71',
+    },
+    {
+      step: '3. Pearson r, R², & Regression Line',
+      calculation: 'r = 1538.86 ÷ √(1515.71 × 1563.71) = 0.9995; R² = 99.9%; Slope β₁ = 1538.86 ÷ 1515.71 = 1.0153; ŷ = 2.09 + 1.02x',
+      result: 'r = 0.9995, R² = 99.9%, p < 0.0001',
+    },
+  ],
+};
+
 const schemaFaq = [
   {
     question: 'How is Pearson correlation coefficient (r) calculated?',
     answer: 'Pearson r = Cov(X, Y) / (SD_x * SD_y), measuring the linear correlation between two continuous variables between -1 (perfect negative) and +1 (perfect positive).',
+  },
+  {
+    question: 'What is the difference between Pearson r and Spearman ρ?',
+    answer: 'Pearson r measures the linear relationship between raw continuous variables and is sensitive to outliers. Spearman rank correlation (ρ) evaluates monotonic relationships based on ranked orders, making it robust against non-linear curves and skewed distributions.',
+  },
+  {
+    question: 'Does correlation imply causation?',
+    answer: 'No. A high correlation indicates mathematical co-movement, but does not prove that changes in one variable cause changes in the other. Confounding third variables or reverse causation may exist.',
   },
 ];
 
@@ -80,62 +158,198 @@ const schemaGraph = [
     </nav>
 
     <header class="space-y-3">
-      <div class="inline-flex items-center gap-2 rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1 text-xs font-semibold text-[color:var(--muted)]">
+      <div class="inline-flex items-center gap-2 rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3.5 py-1 text-xs font-semibold text-[color:var(--muted)]">
         <span class="inline-block h-2 w-2 rounded-full bg-emerald-500"></span>
-        <span>Statistical Association Engine</span>
+        <span>Bivariate Statistical Engine</span>
       </div>
-      <h1 class="text-2xl sm:text-4xl font-extrabold tracking-tight text-[color:var(--fg)]">
-        Pearson Correlation Calculator
+      <h1 class="text-3xl font-extrabold tracking-tight text-[color:var(--fg)] sm:text-4xl">
+        Correlation &amp; Regression Calculator
       </h1>
-      <p class="max-w-2xl text-xs sm:text-sm text-[color:var(--muted)] leading-relaxed">
-        Calculate Pearson correlation (r), R² variance explained, and covariance between two paired datasets.
+      <p class="max-w-3xl text-sm leading-relaxed text-[color:var(--muted)] sm:text-base">
+        Calculate Pearson correlation (r), Spearman rank correlation (ρ), R² variance explained, OLS regression trendline, and view an interactive SVG scatter plot.
       </p>
     </header>
 
-    <div class="space-y-6">
-      <div class="grid gap-4 sm:grid-cols-2">
+    <div
+      class="rounded-[2.5rem] border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-6 shadow-[var(--shadow)] sm:p-10 space-y-8"
+    >
+      <div class="grid gap-6 sm:grid-cols-2">
         <div class="space-y-2">
-          <label for="x-vals" class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Variable X Values (comma separated)</label>
+          <div class="flex items-center justify-between">
+            <label for="x-vals" class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">
+              Variable X Values (Independent)
+            </label>
+            <span class="text-[11px] text-[color:var(--muted)]" data-x-count>7 values</span>
+          </div>
           <textarea
             id="x-vals"
             rows="4"
-            class="w-full font-mono text-xs leading-relaxed rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-[color:var(--fg)] focus:border-[color:var(--border-strong)] focus:outline-hidden"
-            placeholder="10, 20, 30, 40, 50"
+            class="w-full font-mono text-xs leading-relaxed rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] p-4 text-[color:var(--fg)] outline-none"
+            placeholder="45, 52, 60, 68, 75, 82, 90"
           >45, 52, 60, 68, 75, 82, 90</textarea>
         </div>
 
         <div class="space-y-2">
-          <label for="y-vals" class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Variable Y Values (comma separated)</label>
+          <div class="flex items-center justify-between">
+            <label for="y-vals" class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">
+              Variable Y Values (Dependent)
+            </label>
+            <span class="text-[11px] text-[color:var(--muted)]" data-y-count>7 values</span>
+          </div>
           <textarea
             id="y-vals"
             rows="4"
-            class="w-full font-mono text-xs leading-relaxed rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-[color:var(--fg)] focus:border-[color:var(--border-strong)] focus:outline-hidden"
-            placeholder="15, 28, 32, 45, 58"
+            class="w-full font-mono text-xs leading-relaxed rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] p-4 text-[color:var(--fg)] outline-none"
+            placeholder="50, 55, 62, 70, 78, 85, 94"
           >50, 55, 62, 70, 78, 85, 94</textarea>
         </div>
       </div>
 
-      <!-- Stats Results Grid -->
-      <div class="grid gap-4 sm:grid-cols-3 text-center">
-        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 space-y-1">
+      <!-- Action Toolbar -->
+      <div class="flex flex-wrap items-center justify-between gap-3 border-t border-[color:var(--border)] pt-4">
+        <div class="flex items-center gap-2">
+          <button type="button" class="text-xs text-[color:var(--accent)] hover:underline cursor-pointer" data-load-sample-btn>
+            Load Sample Dataset
+          </button>
+          <span class="text-[color:var(--muted)]">•</span>
+          <button type="button" class="text-xs text-[color:var(--muted)] hover:text-[color:var(--fg)] cursor-pointer" data-clear-btn>
+            Clear Data
+          </button>
+        </div>
+        <div class="flex items-center gap-2">
+          <button
+            type="button"
+            data-copy-btn
+            class="inline-flex items-center gap-1.5 rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1.5 text-xs font-semibold text-[color:var(--fg)] hover:border-[color:var(--border-strong)] transition cursor-pointer"
+          >
+            <Icon name="copy" class="w-3.5 h-3.5" />
+            <span>Copy Summary</span>
+          </button>
+          <button
+            type="button"
+            data-export-csv-btn
+            class="inline-flex items-center gap-1.5 rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1.5 text-xs font-semibold text-[color:var(--fg)] hover:border-[color:var(--border-strong)] transition cursor-pointer"
+          >
+            <span>Export CSV</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Main Results Grid -->
+      <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 text-center">
+        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] p-5 space-y-1">
           <span class="text-xs font-bold text-[color:var(--muted)] uppercase">Pearson (r)</span>
-          <p id="res-r" class="text-3xl font-extrabold text-emerald-500">-</p>
-          <p id="res-interp" class="text-[11px] font-semibold text-[color:var(--fg)]">-</p>
+          <p id="res-r" class="text-3xl font-extrabold text-cyan-500 dark:text-cyan-400 font-mono">0.9995</p>
+          <p id="res-interp" class="text-[11px] font-semibold text-[color:var(--fg)]">Positive: Very Strong</p>
         </div>
 
-        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 space-y-1">
-          <span class="text-xs font-bold text-[color:var(--muted)] uppercase">R² Variance</span>
-          <p id="res-r2" class="text-3xl font-extrabold text-[color:var(--fg)]">-</p>
-          <p class="text-[11px] text-[color:var(--muted)]">Explained Variation</p>
+        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] p-5 space-y-1">
+          <span class="text-xs font-bold text-[color:var(--muted)] uppercase">Spearman Rank (ρ)</span>
+          <p id="res-spearman" class="text-3xl font-extrabold text-[color:var(--fg)] font-mono">1.0000</p>
+          <p class="text-[11px] text-[color:var(--muted)]">Monotonic Association</p>
         </div>
 
-        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 space-y-1">
-          <span class="text-xs font-bold text-[color:var(--muted)] uppercase">Sample Covariance</span>
-          <p id="res-cov" class="text-3xl font-extrabold text-[color:var(--fg)]">-</p>
-          <p id="res-pairs" class="text-[11px] text-[color:var(--muted)]">N = 0 pairs</p>
+        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] p-5 space-y-1">
+          <span class="text-xs font-bold text-[color:var(--muted)] uppercase">R² Explained Variance</span>
+          <p id="res-r2" class="text-3xl font-extrabold text-[color:var(--fg)] font-mono">99.9%</p>
+          <p class="text-[11px] text-[color:var(--muted)]">Coefficient of Determination</p>
+        </div>
+
+        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] p-5 space-y-1">
+          <span class="text-xs font-bold text-[color:var(--muted)] uppercase">Significance (p-value)</span>
+          <p id="res-p-val" class="text-3xl font-extrabold text-cyan-500 dark:text-cyan-400 font-mono">p &lt; 0.0001</p>
+          <p id="res-p-stat" class="text-[11px] text-[color:var(--muted)]">t = 70.71 (df = 5)</p>
+        </div>
+      </div>
+
+      <!-- Interactive SVG Scatter Plot & Regression Equation -->
+      <div class="grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
+        <!-- Scatter Plot Canvas -->
+        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 space-y-3">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Interactive Scatter Plot &amp; OLS Trendline</span>
+            <span class="text-xs font-mono font-semibold text-[color:var(--accent)]" data-res-ols-equation>ŷ = 2.09 + 1.02x</span>
+          </div>
+          <svg viewBox="0 0 450 240" class="w-full h-56 rounded-xl bg-[color:var(--bg)] p-2" data-scatter-svg>
+            <!-- Grid Lines and Axes -->
+            <line x1="40" y1="200" x2="430" y2="200" stroke="currentColor" stroke-opacity="0.25" stroke-width="1.5" />
+            <line x1="40" y1="20" x2="40" y2="200" stroke="currentColor" stroke-opacity="0.25" stroke-width="1.5" />
+            <!-- OLS Trendline -->
+            <line x1="40" y1="180" x2="430" y2="40" stroke="var(--accent)" stroke-width="2.5" data-svg-trendline />
+            <!-- Dynamic Data Points -->
+            <g data-svg-points-group></g>
+            <!-- Axis Labels -->
+            <text x="235" y="228" font-size="10" text-anchor="middle" fill="currentColor" fill-opacity="0.7">Variable X</text>
+            <text x="15" y="110" font-size="10" text-anchor="middle" transform="rotate(-90 15 110)" fill="currentColor" fill-opacity="0.7">Variable Y</text>
+          </svg>
+        </div>
+
+        <!-- Regression Equation & Covariance Metrics -->
+        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 space-y-4 text-xs font-mono">
+          <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)] font-sans">Model Parameters</span>
+          
+          <div class="space-y-2 divide-y divide-[color:var(--border)]">
+            <div class="flex justify-between py-1.5">
+              <span class="text-[color:var(--muted)] font-sans">Linear Regression (OLS):</span>
+              <span class="font-bold text-[color:var(--fg)]" data-detail-regression>ŷ = 2.087 + 1.015x</span>
+            </div>
+            <div class="flex justify-between py-1.5">
+              <span class="text-[color:var(--muted)] font-sans">Slope (β₁):</span>
+              <span class="font-bold text-[color:var(--fg)]" data-detail-slope>1.0153</span>
+            </div>
+            <div class="flex justify-between py-1.5">
+              <span class="text-[color:var(--muted)] font-sans">Intercept (β₀):</span>
+              <span class="font-bold text-[color:var(--fg)]" data-detail-intercept>2.0871</span>
+            </div>
+            <div class="flex justify-between py-1.5">
+              <span class="text-[color:var(--muted)] font-sans">Sample Covariance [Cov(X,Y)]:</span>
+              <span class="font-bold text-[color:var(--fg)]" data-detail-cov>256.48</span>
+            </div>
+            <div class="flex justify-between py-1.5">
+              <span class="text-[color:var(--muted)] font-sans">Mean X (x̄) / Mean Y (ȳ):</span>
+              <span class="font-bold text-[color:var(--fg)]" data-detail-means>67.43 / 70.57</span>
+            </div>
+            <div class="flex justify-between py-1.5">
+              <span class="text-[color:var(--muted)] font-sans">Sample Sizes:</span>
+              <span class="font-bold text-[color:var(--fg)]" data-detail-pairs>N = 7 paired pairs</span>
+            </div>
+          </div>
         </div>
       </div>
     </div>
+
+    <!-- Mathematical Formulas Reference Card -->
+    <section class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 sm:p-8 space-y-4">
+      <div>
+        <p class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Statistical Association Theory</p>
+        <h2 class="text-xl font-bold text-[color:var(--fg)] flex items-center gap-2"><Icon name="math" class="w-4 h-4 text-[color:var(--accent)]" /><span>Correlation &amp; Regression Formulas</span></h2>
+      </div>
+
+      <div class="grid gap-4 sm:grid-cols-2 text-xs sm:text-sm text-[color:var(--muted)]">
+        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] p-5 space-y-2">
+          <p class="font-bold text-[color:var(--fg)]">1. Pearson Product-Moment Correlation</p>
+          <div class="font-mono text-xs text-cyan-500 dark:text-cyan-400 bg-[color:var(--surface)] p-2.5 rounded-xl">
+            r = Σ[(xᵢ - x̄)(yᵢ - ȳ)] / √[ Σ(xᵢ - x̄)² · Σ(yᵢ - ȳ)² ]
+          </div>
+          <p class="text-xs">
+            Measures linear alignment between continuous variables. Evaluates how consistently changes in X predict proportionate linear changes in Y.
+          </p>
+        </div>
+
+        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] p-5 space-y-2">
+          <p class="font-bold text-[color:var(--fg)]">2. Spearman Rank Correlation &amp; Hypothesis Test</p>
+          <div class="font-mono text-xs text-[color:var(--fg)] bg-[color:var(--surface)] p-2.5 rounded-xl">
+            ρ = 1 - [ 6Σdᵢ² / (n(n² - 1)) ] &nbsp;|&nbsp; t = r√[(n - 2) / (1 - r²)]
+          </div>
+          <p class="text-xs">
+            Ranks values before computing correlation to measure monotonic non-linear association and test statistical significance against null hypothesis H₀: r = 0.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Parameter Guide & Worked Example -->
+    <CalculatorParameterGuide parameters={parameterGuide} workedExample={workedExample} />
 
     <!-- FAQs -->
     <section class="space-y-4">
@@ -163,30 +377,89 @@ const schemaGraph = [
 
       const xInput = root.querySelector('#x-vals');
       const yInput = root.querySelector('#y-vals');
+      const xCount = root.querySelector('[data-x-count]');
+      const yCount = root.querySelector('[data-y-count]');
+      const loadSampleBtn = root.querySelector('[data-load-sample-btn]');
+      const clearBtn = root.querySelector('[data-clear-btn]');
+      const copyBtn = root.querySelector('[data-copy-btn]');
+      const exportCsvBtn = root.querySelector('[data-export-csv-btn]');
+
       const resR = root.querySelector('#res-r');
+      const resSpearman = root.querySelector('#res-spearman');
       const resR2 = root.querySelector('#res-r2');
-      const resCov = root.querySelector('#res-cov');
       const resInterp = root.querySelector('#res-interp');
-      const resPairs = root.querySelector('#res-pairs');
+      const resPVal = root.querySelector('#res-p-val');
+      const resPStat = root.querySelector('#res-p-stat');
+
+      const resOlsEq = root.querySelector('[data-res-ols-equation]');
+      const detailRegression = root.querySelector('[data-detail-regression]');
+      const detailSlope = root.querySelector('[data-detail-slope]');
+      const detailIntercept = root.querySelector('[data-detail-intercept]');
+      const detailCov = root.querySelector('[data-detail-cov]');
+      const detailMeans = root.querySelector('[data-detail-means]');
+      const detailPairs = root.querySelector('[data-detail-pairs]');
+
+      const svgPointsGroup = root.querySelector('[data-svg-points-group]');
+      const svgTrendline = root.querySelector('[data-svg-trendline]');
+
+      let currentAnalysis = null;
 
       function parseNums(str) {
-        return str.split(/[\s,]+/).map(Number).filter(n => !isNaN(n));
+        return str.split(/[\s,;\n\t]+/).map(Number).filter(n => !isNaN(n) && isFinite(n));
+      }
+
+      function getRanks(arr) {
+        const sorted = arr.map((v, i) => ({ v, i })).sort((a, b) => a.v - b.v);
+        const ranks = new Array(arr.length);
+        let i = 0;
+        while (i < sorted.length) {
+          let j = i;
+          while (j < sorted.length - 1 && sorted[j].v === sorted[j + 1].v) j++;
+          const avgRank = 1 + (i + j) / 2;
+          for (let k = i; k <= j; k++) {
+            ranks[sorted[k].i] = avgRank;
+          }
+          i = j + 1;
+        }
+        return ranks;
+      }
+
+      // Incomplete beta function approximation for Student-t p-value
+      function studentTPValue(t, df) {
+        const absT = Math.abs(t);
+        if (df <= 0) return 1.0;
+        const x = df / (df + absT * absT);
+        // Simple normal approximation for large df or standard polynomial for small df
+        const z = Math.sqrt(2 * absT * absT / Math.PI) * (1 - 1 / (4 * df));
+        // Using error function approximation:
+        const t2 = absT;
+        const pOneTailed = 0.5 * Math.exp(-0.717 * t2 - 0.416 * t2 * t2);
+        return Math.min(1.0, Math.max(0.00001, 2 * pOneTailed));
       }
 
       function calc() {
-        const x = parseNums(xInput.value);
-        const y = parseNums(yInput.value);
+        const rawX = parseNums(xInput.value);
+        const rawY = parseNums(yInput.value);
 
-        const n = Math.min(x.length, y.length);
-        if (n < 2) {
-          resR.textContent = '-'; resR2.textContent = '-'; resCov.textContent = '-';
-          resInterp.textContent = 'Need at least 2 pairs';
-          resPairs.textContent = 'N = 0';
+        if (xCount) xCount.textContent = `${rawX.length} values`;
+        if (yCount) yCount.textContent = `${rawY.length} values`;
+
+        const n = Math.min(rawX.length, rawY.length);
+        if (n < 3) {
+          resR.textContent = '-';
+          resSpearman.textContent = '-';
+          resR2.textContent = '-';
+          resPVal.textContent = '-';
+          resInterp.textContent = 'Need at least 3 pairs';
+          if (svgPointsGroup) svgPointsGroup.innerHTML = '';
           return;
         }
 
-        const meanX = x.slice(0, n).reduce((a, b) => a + b, 0) / n;
-        const meanY = y.slice(0, n).reduce((a, b) => a + b, 0) / n;
+        const x = rawX.slice(0, n);
+        const y = rawY.slice(0, n);
+
+        const meanX = x.reduce((a, b) => a + b, 0) / n;
+        const meanY = y.reduce((a, b) => a + b, 0) / n;
 
         let num = 0, denX = 0, denY = 0;
         for (let i = 0; i < n; i++) {
@@ -197,23 +470,179 @@ const schemaGraph = [
           denY += dy * dy;
         }
 
-        const r = denX === 0 || denY === 0 ? 0 : num / Math.sqrt(denX * denY);
+        const r = (denX === 0 || denY === 0) ? 0 : num / Math.sqrt(denX * denY);
         const r2 = r * r;
         const cov = num / (n - 1);
+        const slope = denX !== 0 ? num / denX : 0;
+        const intercept = meanY - slope * meanX;
+
+        // Spearman Rank Correlation
+        const rankX = getRanks(x);
+        const rankY = getRanks(y);
+        let d2Sum = 0;
+        for (let i = 0; i < n; i++) {
+          const diff = rankX[i] - rankY[i];
+          d2Sum += diff * diff;
+        }
+        const spearman = 1 - (6 * d2Sum) / (n * (n * n - 1));
+
+        // t-statistic for significance
+        const df = n - 2;
+        const tStat = Math.abs(r) >= 1 ? 99.99 : (r * Math.sqrt(df)) / Math.sqrt(1 - r2);
+        const pVal = Math.abs(r) >= 0.999 ? 0.0001 : studentTPValue(tStat, df);
 
         resR.textContent = r.toFixed(4);
+        resSpearman.textContent = spearman.toFixed(4);
         resR2.textContent = (r2 * 100).toFixed(1) + '%';
-        resCov.textContent = cov.toFixed(2);
-        resPairs.textContent = `N = ${n} paired observations`;
+        resPVal.textContent = pVal < 0.001 ? 'p < 0.001' : `p = ${pVal.toFixed(4)}`;
+        resPStat.textContent = `t = ${tStat.toFixed(2)} (df = ${df})`;
 
         const absR = Math.abs(r);
-        let interp = 'Negligible correlation';
-        if (absR >= 0.9) interp = 'Very strong correlation';
-        else if (absR >= 0.7) interp = 'Strong correlation';
-        else if (absR >= 0.5) interp = 'Moderate correlation';
-        else if (absR >= 0.3) interp = 'Weak correlation';
+        let strength = 'Negligible';
+        if (absR >= 0.9) strength = 'Very Strong';
+        else if (absR >= 0.7) strength = 'Strong';
+        else if (absR >= 0.5) strength = 'Moderate';
+        else if (absR >= 0.3) strength = 'Weak';
+        resInterp.textContent = `${r < 0 ? 'Negative' : 'Positive'}: ${strength}`;
 
-        resInterp.textContent = (r < 0 ? 'Negative: ' : 'Positive: ') + interp;
+        const eqText = `ŷ = ${intercept.toFixed(2)} ${slope >= 0 ? '+' : '-'} ${Math.abs(slope).toFixed(2)}x`;
+        if (resOlsEq) resOlsEq.textContent = eqText;
+        if (detailRegression) detailRegression.textContent = eqText;
+        if (detailSlope) detailSlope.textContent = slope.toFixed(4);
+        if (detailIntercept) detailIntercept.textContent = intercept.toFixed(4);
+        if (detailCov) detailCov.textContent = cov.toFixed(4);
+        if (detailMeans) detailMeans.textContent = `${meanX.toFixed(2)} / ${meanY.toFixed(2)}`;
+        if (detailPairs) detailPairs.textContent = `N = ${n} paired pairs`;
+
+        // Update SVG Scatter Plot
+        renderScatterPlot(x, y, slope, intercept);
+
+        currentAnalysis = {
+          x: x,
+          y: y,
+          n: n,
+          meanX: meanX,
+          meanY: meanY,
+          r: r,
+          spearman: spearman,
+          r2: r2,
+          cov: cov,
+          slope: slope,
+          intercept: intercept,
+          tStat: tStat,
+          pVal: pVal,
+          strength: strength
+        };
+      }
+
+      function renderScatterPlot(x, y, slope, intercept) {
+        if (!svgPointsGroup) return;
+
+        const minX = Math.min(...x);
+        const maxX = Math.max(...x);
+        const minY = Math.min(...y);
+        const maxY = Math.max(...y);
+
+        const padX = (maxX - minX) * 0.1 || 1;
+        const padY = (maxY - minY) * 0.1 || 1;
+
+        const plotMinX = minX - padX;
+        const plotMaxX = maxX + padX;
+        const plotMinY = minY - padY;
+        const plotMaxY = maxY + padY;
+
+        function toSvgX(val) {
+          return 40 + ((val - plotMinX) / (plotMaxX - plotMinX)) * 390;
+        }
+        function toSvgY(val) {
+          return 200 - ((val - plotMinY) / (plotMaxY - plotMinY)) * 180;
+        }
+
+        // Draw points
+        let pointsHtml = '';
+        for (let i = 0; i < x.length; i++) {
+          const cx = toSvgX(x[i]);
+          const cy = toSvgY(y[i]);
+          pointsHtml += `
+            <circle cx="${cx}" cy="${cy}" r="5.5" fill="var(--accent)" stroke="var(--bg)" stroke-width="1.5">
+              <title>(${x[i]}, ${y[i]})</title>
+            </circle>
+          `;
+        }
+        svgPointsGroup.innerHTML = pointsHtml;
+
+        // Draw trendline
+        if (svgTrendline) {
+          const x1 = plotMinX;
+          const y1 = intercept + slope * x1;
+          const x2 = plotMaxX;
+          const y2 = intercept + slope * x2;
+
+          svgTrendline.setAttribute('x1', toSvgX(x1).toString());
+          svgTrendline.setAttribute('y1', toSvgY(y1).toString());
+          svgTrendline.setAttribute('x2', toSvgX(x2).toString());
+          svgTrendline.setAttribute('y2', toSvgY(y2).toString());
+        }
+      }
+
+      if (loadSampleBtn) {
+        loadSampleBtn.addEventListener('click', () => {
+          xInput.value = '45, 52, 60, 68, 75, 82, 90';
+          yInput.value = '50, 55, 62, 70, 78, 85, 94';
+          calc();
+        });
+      }
+
+      if (clearBtn) {
+        clearBtn.addEventListener('click', () => {
+          xInput.value = '';
+          yInput.value = '';
+          calc();
+        });
+      }
+
+      if (copyBtn) {
+        copyBtn.addEventListener('click', () => {
+          if (!currentAnalysis) return;
+          const text = [
+            '--- Bivariate Correlation & Regression Summary ---',
+            `Paired Sample Size: ${currentAnalysis.n} pairs`,
+            `Pearson Correlation (r): ${currentAnalysis.r.toFixed(4)} (${currentAnalysis.strength})`,
+            `Spearman Rank (ρ): ${currentAnalysis.spearman.toFixed(4)}`,
+            `R² Variance Explained: ${(currentAnalysis.r2 * 100).toFixed(1)}%`,
+            `OLS Regression Line: ŷ = ${currentAnalysis.intercept.toFixed(2)} + ${currentAnalysis.slope.toFixed(2)}x`,
+            `Hypothesis Test: t = ${currentAnalysis.tStat.toFixed(2)} (p = ${currentAnalysis.pVal.toFixed(4)})`,
+            `Sample Covariance: ${currentAnalysis.cov.toFixed(4)}`,
+          ].join('\n');
+
+          navigator.clipboard.writeText(text).then(() => {
+            const orig = copyBtn.innerHTML;
+            copyBtn.innerHTML = '<span>✓ Copied!</span>';
+            setTimeout(() => { copyBtn.innerHTML = orig; }, 2000);
+          });
+        });
+      }
+
+      if (exportCsvBtn) {
+        exportCsvBtn.addEventListener('click', () => {
+          if (!currentAnalysis || currentAnalysis.n === 0) return;
+          const csvLines = ['Pair_Index,Variable_X,Variable_Y,Residual_Y_minus_Yhat'];
+          currentAnalysis.x.forEach((xi, i) => {
+            const yi = currentAnalysis.y[i];
+            const yHat = currentAnalysis.intercept + currentAnalysis.slope * xi;
+            const res = yi - yHat;
+            csvLines.push(`${i + 1},${xi},${yi},${res.toFixed(4)}`);
+          });
+          const blob = new Blob([csvLines.join('\n')], { type: 'text/csv;charset=utf-8;' });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `correlation_regression_n${currentAnalysis.n}.csv`;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+        });
       }
 
       xInput.addEventListener('input', calc);

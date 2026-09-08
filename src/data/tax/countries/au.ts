@@ -14,7 +14,7 @@ export const auProfile: CountryTaxProfile = {
   faqItems: [
     {
       question: 'What are the individual resident tax rates in Australia for 2026–27?',
-      answer: 'From 1 July 2026 for the 2026–27 income year, the ATO resident rates are: 0% up to $18,200; 15% from $18,201 to $45,000; 30% from $45,001 to $135,000; 37% from $135,001 to $190,000; and 45% above $190,000.',
+      answer: 'From 1 July 2026 for the 2026–27 income year, the ATO resident rates are: 0% up to $18,200; 16% from $18,201 to $45,000; 30% from $45,001 to $135,000; 37% from $135,001 to $190,000; and 45% above $190,000.',
     },
     {
       question: 'What is the Medicare Levy in Australia?',
@@ -29,7 +29,7 @@ export const auProfile: CountryTaxProfile = {
       standardDeduction: 0, // Tax-free threshold integrated in 0% bracket
       nationalBrackets: [
         { threshold: 0, upTo: 18200, rate: 0.00, label: 'Tax-Free Threshold' },
-        { threshold: 18200, upTo: 45000, rate: 0.15, label: '15% Bracket' },
+        { threshold: 18200, upTo: 45000, rate: 0.16, label: '16% Bracket' },
         { threshold: 45000, upTo: 135000, rate: 0.30, label: '30% Bracket' },
         { threshold: 135000, upTo: 190000, rate: 0.37, label: '37% Bracket' },
         { threshold: 190000, rate: 0.45, label: '45% Top Bracket' },

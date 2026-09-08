@@ -1,10 +1,11 @@
 ---
 import SiteLayout from '../../layouts/SiteLayout.astro';
 import Icon from '../../components/Icon.astro';
-import { siteName, toAbsoluteUrl, withBasePath } from '../../utils/site';
+import CalculatorParameterGuide from '../../components/calculator/CalculatorParameterGuide.astro';
+import { siteName, toAbsoluteUrl } from '../../utils/site';
 
 const pageTitle = `Z-Score Calculator | Standard Normal Score & Percentile Rank · ${siteName}`;
-const pageDesc = 'Calculate Z-score, percentile ranking, and normal distribution probabilities (left-tail, right-tail, two-tailed) from raw test scores, mean, and standard deviation.';
+const pageDesc = 'Calculate Z-score, percentile ranking, and normal distribution probabilities with interactive bell curve graphics, test scale conversions (IQ, SAT, T-Score), and inverse solvers.';
 const canonicalUrl = toAbsoluteUrl('/research-tools/z-score-calculator/');
 
 const breadcrumbItems = [
@@ -13,14 +14,86 @@ const breadcrumbItems = [
   { label: 'Z-Score Calculator' },
 ];
 
+const parameterGuide = [
+  {
+    name: 'Raw Score (X)',
+    description: 'The individual observation, measurement, or test score to be standardized against the reference distribution.',
+    whyItMatters: 'The starting point for normal curve standardization.',
+    typicalRange: 'Any real number (-∞ to +∞)',
+    unit: 'data units',
+  },
+  {
+    name: 'Distribution Mean (μ)',
+    description: 'The arithmetic average or central location of the comparative population or reference group.',
+    whyItMatters: 'Scores equal to μ produce Z = 0.00 (exactly 50th percentile).',
+    typicalRange: 'Any real number',
+    unit: 'data units',
+  },
+  {
+    name: 'Standard Deviation (σ)',
+    description: 'The scale parameter measuring the average spread or dispersion of observations around the mean.',
+    whyItMatters: 'Determines the denominator scale unit for standard deviations. Must be strictly positive.',
+    typicalRange: 'σ > 0',
+    unit: 'data units',
+  },
+  {
+    name: 'Standardized Z-Score',
+    description: 'The number of standard deviations the raw score lies above (+) or below (-) the mean: Z = (X - μ) ÷ σ.',
+    whyItMatters: 'Enables direct, apples-to-apples comparison between completely different scales (e.g., SAT vs ACT).',
+    typicalRange: '-3.00 to +3.00 (99.73% of normal data)',
+    unit: 'standard deviations',
+  },
+  {
+    name: 'Percentile Rank',
+    description: 'The percentage of the reference population scoring equal to or lower than the evaluated score: Φ(Z) × 100%.',
+    whyItMatters: 'Intuitive metric for academic admissions, psychometrics, and clinical percentiles.',
+    typicalRange: '0.01% to 99.99%',
+    unit: '%',
+  },
+  {
+    name: 'Standardized Test Conversions',
+    description: 'Direct mapping of the standard normal score to classical assessment scales such as IQ (μ=100, σ=15) and T-Score (μ=50, σ=10).',
+    whyItMatters: 'Translates abstract Z-scores into recognized psychometric diagnostic metrics.',
+    typicalRange: 'IQ, T-Score, SAT, ACT, Stanine',
+    unit: 'converted scale',
+  },
+];
+
+const workedExample = {
+  title: 'Worked Example: Graduate School Exam (Raw Score X = 85, Mean μ = 70, SD σ = 10)',
+  description: 'Standardization of raw exam performance into standard score, percentile, and equivalent psychometric scales.',
+  formula: 'Z = (X - μ) ÷ σ; Equivalent Scale = μ_new + Z × σ_new',
+  steps: [
+    {
+      step: '1. Compute Z-Score',
+      calculation: 'Deviation = 85 - 70 = +15; Z = 15 ÷ 10 = +1.50',
+      result: 'Z = +1.50',
+    },
+    {
+      step: '2. Cumulative Percentile Rank',
+      calculation: 'Φ(1.50) = 0.5 × [1 + erf(1.50 / √2)] = 0.9332 (93.32%)',
+      result: '93.32th Percentile',
+    },
+    {
+      step: '3. Convert to Psychometric T-Score & IQ',
+      calculation: 'T-Score = 50 + 10(1.50) = 65.0; IQ = 100 + 15(1.50) = 122.5',
+      result: 'T = 65.0, IQ = 122.5',
+    },
+  ],
+};
+
 const faqs = [
   {
     question: 'What is a Z-score and how is it calculated?',
-    answer: 'A Z-score measures how many standard deviations a raw data point X lies above or below the mean μ: Z = (X - μ) ÷ σ. A Z-score of +2.0 means the value is two standard deviations above the population average.',
+    answer: 'A Z-score measures how many standard deviations a raw data point X lies above or below the population mean μ: Z = (X - μ) ÷ σ. A Z-score of +2.0 means the value is two standard deviations above the population average.',
   },
   {
     question: 'How does Z-score convert to a percentile rank?',
     answer: 'The percentile rank is the cumulative probability of the standard normal distribution Φ(Z) multiplied by 100. For instance, a Z-score of 0.0 corresponds to the 50th percentile, while Z = +1.96 corresponds to the 97.5th percentile.',
+  },
+  {
+    question: 'How do you convert a Z-score back to a raw score (Inverse Z)?',
+    answer: 'Rearranging the formula yields: X = μ + Z × σ. For example, if mean μ = 100, standard deviation σ = 15, and Z = 2.0, the corresponding raw score is X = 100 + (2.0 × 15) = 130.',
   },
 ];
 
@@ -90,7 +163,7 @@ const schemaGraph = [
         Z-Score &amp; Percentile Calculator
       </h1>
       <p class="max-w-3xl text-sm leading-relaxed text-[color:var(--muted)] sm:text-base">
-        Transform raw observational data and exam scores into standard normal distribution Z-scores. Instantly view percentile rank and area under the bell curve.
+        Transform raw observational data and test scores into standard normal distribution Z-scores. Features live SVG bell curve visualization, inverse percentile solvers, and standardized psychometric test conversions.
       </p>
     </header>
 
@@ -98,38 +171,78 @@ const schemaGraph = [
       class="rounded-[2.5rem] border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-6 shadow-[var(--shadow)] sm:p-10"
       data-zscore-app
     >
-      <div class="grid gap-8 lg:grid-cols-[1.15fr_0.85fr]">
+      <div class="grid gap-8 lg:grid-cols-[1.1fr_0.9fr]">
         <form class="space-y-5" onsubmit="return false;">
           <div class="flex items-center justify-between">
-            <h2 class="text-lg font-bold text-[color:var(--fg)]">Distribution Data</h2>
+            <h2 class="text-lg font-bold text-[color:var(--fg)]">Calculation Mode</h2>
             <button type="button" class="cursor-pointer text-xs font-semibold text-[color:var(--muted)] hover:text-[color:var(--fg)]" data-reset-btn>
               ↺ Reset
             </button>
           </div>
 
-          <div class="space-y-1.5">
-            <label for="raw-score" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Raw Score (X)</label>
-            <input id="raw-score" type="number" step="any" value="85" class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none" data-raw-score />
+          <div class="grid grid-cols-2 gap-2 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-1 text-xs font-semibold">
+            <button type="button" class="cursor-pointer rounded-xl bg-[color:var(--accent)] px-3 py-2 text-[color:var(--bg)] shadow-xs transition" data-mode-btn="forward">
+              Raw Score → Z-Score
+            </button>
+            <button type="button" class="cursor-pointer rounded-xl px-3 py-2 text-[color:var(--muted)] hover:text-[color:var(--fg)] transition" data-mode-btn="inverse">
+              Z / Percentile → Raw Score
+            </button>
           </div>
 
-          <div class="space-y-1.5">
-            <label for="pop-mean" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Population Mean (μ)</label>
-            <input id="pop-mean" type="number" step="any" value="70" class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none" data-pop-mean />
+          <!-- Forward Mode Inputs -->
+          <div class="space-y-4" data-forward-fields>
+            <div class="space-y-1.5">
+              <label for="raw-score" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Raw Score (X)</label>
+              <input id="raw-score" type="number" step="any" value="85" class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none" data-raw-score />
+            </div>
           </div>
 
-          <div class="space-y-1.5">
-            <label for="pop-sd" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Standard Deviation (σ)</label>
-            <input id="pop-sd" type="number" min="0.0001" step="any" value="10" class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none" data-pop-sd />
+          <!-- Inverse Mode Inputs (Hidden by default) -->
+          <div class="space-y-4" data-inverse-fields hidden>
+            <div class="space-y-1.5">
+              <label for="inv-target" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Target Input Type</label>
+              <select id="inv-target" class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-sm font-semibold text-[color:var(--fg)] outline-none" data-inv-target>
+                <option value="z" selected>Known Z-Score (e.g. +1.96)</option>
+                <option value="percentile">Known Percentile Rank % (e.g. 95%)</option>
+              </select>
+            </div>
+            <div class="space-y-1.5">
+              <label for="inv-val" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]" data-inv-label>Target Z-Score</label>
+              <input id="inv-val" type="number" step="any" value="1.50" class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none" data-inv-val />
+            </div>
+          </div>
+
+          <!-- Distribution Baseline Parameters (Shared) -->
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label for="pop-mean" class="block text-xs font-medium text-[color:var(--muted)]">Population Mean (μ)</label>
+              <input id="pop-mean" type="number" step="any" value="70" class="mt-1 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-pop-mean />
+            </div>
+            <div>
+              <label for="pop-sd" class="block text-xs font-medium text-[color:var(--muted)]">Standard Deviation (σ)</label>
+              <input id="pop-sd" type="number" min="0.0001" step="any" value="10" class="mt-1 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-pop-sd />
+            </div>
           </div>
         </form>
 
-        <div class="flex flex-col justify-between space-y-6 rounded-3xl border border-[color:var(--border)] bg-[color:var(--bg)] p-6 sm:p-8">
+        <!-- Result Box & Bell Curve Visualizer -->
+        <div class="flex flex-col justify-between space-y-6 rounded-3xl border border-[color:var(--accent)]/30 bg-gradient-to-br from-[color:var(--accent-soft)] via-[color:var(--surface)] to-transparent p-6 sm:p-8 shadow-sm">
           <div class="space-y-5">
-            <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Standard Normal Output</span>
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Standard Normal Output</span>
+              <button
+                type="button"
+                class="inline-flex items-center gap-1.5 rounded-lg border border-[color:var(--border)] bg-[color:var(--surface)] px-2.5 py-1 text-xs font-semibold text-[color:var(--fg)] hover:bg-[color:var(--bg)] transition cursor-pointer"
+                data-copy-btn
+              >
+                <Icon name="copy" class="w-3.5 h-3.5" />
+                <span>Copy Summary</span>
+              </button>
+            </div>
 
             <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 text-center">
-              <p class="text-xs font-semibold text-[color:var(--muted)]">Calculated Z-Score</p>
-              <p class="mt-1 text-5xl font-black tracking-tight text-[color:var(--fg)]" data-res-z>
+              <p class="text-xs font-semibold text-[color:var(--muted)]" data-out-primary-label>Calculated Z-Score</p>
+              <p class="mt-1 text-4xl sm:text-5xl font-black tracking-tight text-[color:var(--fg)] font-mono" data-res-z>
                 +1.50
               </p>
               <p class="mt-2 text-xs font-medium text-[color:var(--muted)]" data-res-percentile>
@@ -137,24 +250,124 @@ const schemaGraph = [
               </p>
             </div>
 
-            <div class="space-y-2 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-xs">
+            <!-- SVG Bell Curve Visualizer -->
+            <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3 space-y-1">
+              <div class="flex justify-between text-[11px] font-semibold text-[color:var(--muted)]">
+                <span>Standard Normal Curve N(0, 1)</span>
+                <span class="text-[color:var(--accent)]" data-svg-pct-badge>93.32% Left-Tail</span>
+              </div>
+              <svg viewBox="0 0 400 120" class="w-full h-24 text-[color:var(--fg)]" data-bell-svg>
+                <!-- Base Axis -->
+                <line x1="20" y1="105" x2="380" y2="105" stroke="currentColor" stroke-opacity="0.3" stroke-width="1.5" />
+                <!-- Shaded Area Path -->
+                <path d="" fill="var(--accent)" fill-opacity="0.25" data-svg-shaded />
+                <!-- Bell Curve Outline -->
+                <path d="" fill="none" stroke="currentColor" stroke-width="2" data-svg-curve />
+                <!-- Score Marker Line -->
+                <line x1="260" y1="15" x2="260" y2="105" stroke="var(--accent)" stroke-width="2.5" stroke-dasharray="3 2" data-svg-marker />
+                <!-- Ticks on Axis -->
+                <text x="50" y="118" font-size="9" text-anchor="middle" fill="currentColor" fill-opacity="0.6">-3σ</text>
+                <text x="100" y="118" font-size="9" text-anchor="middle" fill="currentColor" fill-opacity="0.6">-2σ</text>
+                <text x="150" y="118" font-size="9" text-anchor="middle" fill="currentColor" fill-opacity="0.6">-1σ</text>
+                <text x="200" y="118" font-size="9" text-anchor="middle" font-weight="bold" fill="currentColor">0 (μ)</text>
+                <text x="250" y="118" font-size="9" text-anchor="middle" fill="currentColor" fill-opacity="0.6">+1σ</text>
+                <text x="300" y="118" font-size="9" text-anchor="middle" fill="currentColor" fill-opacity="0.6">+2σ</text>
+                <text x="350" y="118" font-size="9" text-anchor="middle" fill="currentColor" fill-opacity="0.6">+3σ</text>
+              </svg>
+            </div>
+
+            <!-- Tail Areas Grid -->
+            <div class="space-y-2 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-xs font-mono">
               <div class="flex justify-between">
-                <span class="text-[color:var(--muted)]">Left Tail Area P(Z &lt; z):</span>
-                <span class="font-mono font-bold text-[color:var(--fg)]" data-p-left>0.9332 (93.32%)</span>
+                <span class="text-[color:var(--muted)] font-sans">Left-Tail P(Z &lt; z):</span>
+                <span class="font-bold text-[color:var(--fg)]" data-p-left>0.9332 (93.32%)</span>
               </div>
               <div class="flex justify-between">
-                <span class="text-[color:var(--muted)]">Right Tail Area P(Z &gt; z):</span>
-                <span class="font-mono font-bold text-[color:var(--fg)]" data-p-right>0.0668 (6.68%)</span>
+                <span class="text-[color:var(--muted)] font-sans">Right-Tail P(Z &gt; z):</span>
+                <span class="font-bold text-[color:var(--fg)]" data-p-right>0.0668 (6.68%)</span>
               </div>
               <div class="flex justify-between">
-                <span class="text-[color:var(--muted)]">Two-Tailed P(|Z| &gt; |z|):</span>
-                <span class="font-mono font-bold text-[color:var(--fg)]" data-p-two>0.1336</span>
+                <span class="text-[color:var(--muted)] font-sans">Two-Tailed P(|Z| &gt; |z|):</span>
+                <span class="font-bold text-[color:var(--accent)]" data-p-two>0.1336</span>
               </div>
             </div>
           </div>
         </div>
       </div>
     </div>
+
+    <!-- Standardized Assessment Scales Conversion Table -->
+    <section class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 sm:p-8 space-y-4">
+      <div>
+        <p class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Cross-Scale Equivalence</p>
+        <h2 class="text-xl font-bold text-[color:var(--fg)]">Equivalent Scores Across Testing Scales</h2>
+      </div>
+
+      <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-5 text-xs font-mono">
+        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] p-4 space-y-1 text-center">
+          <span class="text-[10px] uppercase font-bold text-[color:var(--muted)] font-sans">IQ Score (Wechsler)</span>
+          <p class="text-2xl font-black text-[color:var(--fg)]" data-scale-iq>122.5</p>
+          <p class="text-[10px] text-[color:var(--muted)] font-sans">μ = 100, σ = 15</p>
+        </div>
+
+        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] p-4 space-y-1 text-center">
+          <span class="text-[10px] uppercase font-bold text-[color:var(--muted)] font-sans">Psychometric T-Score</span>
+          <p class="text-2xl font-black text-cyan-500 dark:text-cyan-400" data-scale-t>65.0</p>
+          <p class="text-[10px] text-[color:var(--muted)] font-sans">μ = 50, σ = 10</p>
+        </div>
+
+        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] p-4 space-y-1 text-center">
+          <span class="text-[10px] uppercase font-bold text-[color:var(--muted)] font-sans">SAT Section Scale</span>
+          <p class="text-2xl font-black text-[color:var(--fg)]" data-scale-sat>650</p>
+          <p class="text-[10px] text-[color:var(--muted)] font-sans">μ = 500, σ = 100</p>
+        </div>
+
+        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] p-4 space-y-1 text-center">
+          <span class="text-[10px] uppercase font-bold text-[color:var(--muted)] font-sans">ACT Composite</span>
+          <p class="text-2xl font-black text-[color:var(--fg)]" data-scale-act>29.3</p>
+          <p class="text-[10px] text-[color:var(--muted)] font-sans">μ = 21, σ = 5.5</p>
+        </div>
+
+        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] p-4 space-y-1 text-center">
+          <span class="text-[10px] uppercase font-bold text-[color:var(--muted)] font-sans">Stanine (1–9)</span>
+          <p class="text-2xl font-black text-[color:var(--accent)]" data-scale-stanine>8</p>
+          <p class="text-[10px] text-[color:var(--muted)] font-sans">Standard Nine Scale</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Mathematical Formulas & Normal Distribution Properties -->
+    <section class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 sm:p-8 space-y-4">
+      <div>
+        <p class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Normal Distribution Theory</p>
+        <h2 class="text-xl font-bold text-[color:var(--fg)]">Standard Normal Distribution &amp; Z-Scores</h2>
+      </div>
+
+      <div class="grid gap-4 sm:grid-cols-2 text-xs sm:text-sm">
+        <div class="rounded-2xl bg-[color:var(--bg)] p-4 border border-[color:var(--border)] space-y-2">
+          <p class="font-bold text-[color:var(--fg)]">1. Z-Score Standardization Formula</p>
+          <div class="rounded-xl bg-[color:var(--surface)] p-3 font-mono text-xs text-[color:var(--fg)] overflow-x-auto">
+            Z = (X - μ) ÷ σ &nbsp;|&nbsp; X = μ + Z × σ
+          </div>
+          <p class="text-xs text-[color:var(--muted)]">
+            Subtracts the distribution mean <strong>μ</strong> from raw score <strong>X</strong> and divides by standard deviation <strong>σ</strong>, converting raw values to standard deviations from average.
+          </p>
+        </div>
+
+        <div class="rounded-2xl bg-[color:var(--bg)] p-4 border border-[color:var(--border)] space-y-2">
+          <p class="font-bold text-[color:var(--fg)]">2. Percentile &amp; Empirical 68-95-99.7 Rule</p>
+          <div class="rounded-xl bg-[color:var(--surface)] p-3 font-mono text-xs text-[color:var(--fg)] overflow-x-auto">
+            Percentile = Φ(Z) × 100% = [0.5 × (1 + erf(Z ÷ √2))] × 100%
+          </div>
+          <p class="text-xs text-[color:var(--muted)]">
+            68.27% of observations fall within ±1σ, 95.45% within ±2σ, and 99.73% within ±3σ in any standard normal bell curve.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Parameter Guide & Worked Example -->
+    <CalculatorParameterGuide parameters={parameterGuide} workedExample={workedExample} />
 
     <!-- FAQs -->
     <section class="space-y-4">
@@ -180,15 +393,38 @@ const schemaGraph = [
       const root = document.querySelector('[data-zscore-app]');
       if (!root) return;
 
+      const modeBtns = root.querySelectorAll('[data-mode-btn]');
+      const forwardFields = root.querySelector('[data-forward-fields]');
+      const inverseFields = root.querySelector('[data-inverse-fields]');
       const inRaw = root.querySelector('[data-raw-score]');
+      const inInvTarget = root.querySelector('[data-inv-target]');
+      const inInvVal = root.querySelector('[data-inv-val]');
+      const invLabel = root.querySelector('[data-inv-label]');
       const inMean = root.querySelector('[data-pop-mean]');
       const inSd = root.querySelector('[data-pop-sd]');
+
+      const outPrimaryLabel = root.querySelector('[data-out-primary-label]');
       const outZ = root.querySelector('[data-res-z]');
       const outPct = root.querySelector('[data-res-percentile]');
       const outPLeft = root.querySelector('[data-p-left]');
       const outPRight = root.querySelector('[data-p-right]');
       const outPTwo = root.querySelector('[data-p-two]');
+
+      const svgCurve = root.querySelector('[data-svg-curve]');
+      const svgShaded = root.querySelector('[data-svg-shaded]');
+      const svgMarker = root.querySelector('[data-svg-marker]');
+      const svgPctBadge = root.querySelector('[data-svg-pct-badge]');
+
+      const scaleIq = document.querySelector('[data-scale-iq]');
+      const scaleT = document.querySelector('[data-scale-t]');
+      const scaleSat = document.querySelector('[data-scale-sat]');
+      const scaleAct = document.querySelector('[data-scale-act]');
+      const scaleStanine = document.querySelector('[data-scale-stanine]');
+
       const resetBtn = root.querySelector('[data-reset-btn]');
+      const copyBtn = root.querySelector('[data-copy-btn]');
+
+      let currentMode = 'forward';
 
       function erf(x) {
         const sign = x >= 0 ? 1 : -1;
@@ -203,25 +439,178 @@ const schemaGraph = [
         return 0.5 * (1 + erf(z / Math.SQRT2));
       }
 
+      // Rational approximation for inverse normal CDF (Acklam algorithm)
+      function inverseNormalCdf(p) {
+        if (p <= 0) return -6;
+        if (p >= 1) return 6;
+        const a = [-3.969683028665376e+01,  2.209460984245205e+02, -2.759285104469687e+02,  1.383577518672690e+02, -3.066479806614716e+01,  2.506628277459239e+00];
+        const b = [-5.447609879822406e+01,  1.615858368580409e+02, -1.556989798598866e+02,  6.680131188771972e+01, -1.328068155288572e+01];
+        const c = [-7.784894002430293e-03, -3.223964580411365e-01, -2.400758277161838e+00, -2.549732539343734e+00,  4.374664141464968e+00,  2.938163982698783e+00];
+        const d = [ 7.784695709041462e-03,  3.224671290700398e-01,  2.445134137142996e+00,  3.754408661907416e+00];
+
+        const pLow = 0.02425;
+        const pHigh = 1 - pLow;
+
+        let q, r;
+        if (p < pLow) {
+          q = Math.sqrt(-2 * Math.log(p));
+          return (((((c[0]*q+c[1])*q+c[2])*q+c[3])*q+c[4])*q+c[5]) / ((((d[0]*q+d[1])*q+d[2])*q+d[3])*q+1);
+        } else if (p <= pHigh) {
+          q = p - 0.5;
+          r = q * q;
+          return (((((a[0]*r+a[1])*r+a[2])*r+a[3])*r+a[4])*r+a[5])*q / (((((b[0]*r+b[1])*r+b[2])*r+b[3])*r+b[4])*r+1);
+        } else {
+          q = Math.sqrt(-2 * Math.log(1 - p));
+          return -(((((c[0]*q+c[1])*q+c[2])*q+c[3])*q+c[4])*q+c[5]) / ((((d[0]*q+d[1])*q+d[2])*q+d[3])*q+1);
+        }
+      }
+
       function update() {
-        const x = parseFloat(inRaw.value || '0');
         const m = parseFloat(inMean.value || '0');
         const s = Math.max(0.000001, parseFloat(inSd.value || '1'));
+        let z = 0;
+        let x = 0;
 
-        const z = (x - m) / s;
+        if (currentMode === 'forward') {
+          x = parseFloat(inRaw.value || '0');
+          z = (x - m) / s;
+          if (outPrimaryLabel) outPrimaryLabel.textContent = 'Calculated Z-Score';
+          const zSign = z >= 0 ? `+${z.toFixed(2)}` : z.toFixed(2);
+          if (outZ) outZ.textContent = zSign;
+        } else {
+          const invType = inInvTarget.value || 'z';
+          const invVal = parseFloat(inInvVal.value || '0');
+          if (invType === 'z') {
+            z = invVal;
+            x = m + z * s;
+          } else {
+            const p = Math.min(0.9999, Math.max(0.0001, invVal / 100));
+            z = inverseNormalCdf(p);
+            x = m + z * s;
+          }
+          if (outPrimaryLabel) outPrimaryLabel.textContent = `Calculated Raw Score (X)`;
+          if (outZ) outZ.textContent = x.toFixed(2);
+        }
+
         const left = normalCdf(z);
         const right = 1 - left;
         const two = 2 * Math.min(left, right);
 
-        const zSign = z >= 0 ? `+${z.toFixed(2)}` : z.toFixed(2);
-        if (outZ) outZ.textContent = zSign;
         if (outPct) outPct.textContent = `${(left * 100).toFixed(2)}th Percentile Ranking`;
         if (outPLeft) outPLeft.textContent = `${left.toFixed(4)} (${(left * 100).toFixed(2)}%)`;
         if (outPRight) outPRight.textContent = `${right.toFixed(4)} (${(right * 100).toFixed(2)}%)`;
         if (outPTwo) outPTwo.textContent = two.toFixed(4);
+
+        // Standardized Scales
+        const iq = 100 + 15 * z;
+        const tScore = 50 + 10 * z;
+        const sat = Math.round(Math.min(800, Math.max(200, 500 + 100 * z)));
+        const act = Math.min(36, Math.max(1, 21 + 5.5 * z));
+        const stanine = Math.min(9, Math.max(1, Math.round(5 + 2 * z)));
+
+        if (scaleIq) scaleIq.textContent = iq.toFixed(1);
+        if (scaleT) scaleT.textContent = tScore.toFixed(1);
+        if (scaleSat) scaleSat.textContent = sat.toString();
+        if (scaleAct) scaleAct.textContent = act.toFixed(1);
+        if (scaleStanine) scaleStanine.textContent = stanine.toString();
+
+        // Render Bell Curve SVG
+        renderBellCurve(z, left);
+      }
+
+      function renderBellCurve(z, leftPct) {
+        if (!svgCurve || !svgShaded) return;
+        const width = 400;
+        const height = 120;
+        const baselineY = 105;
+        const peakHeight = 85;
+
+        // X runs from Z = -4 to +4
+        const zMin = -4;
+        const zMax = 4;
+        const step = 0.1;
+
+        let curvePath = '';
+        let shadedPath = '';
+        const zClamped = Math.max(zMin, Math.min(zMax, z));
+        const markerX = 20 + ((zClamped - zMin) / (zMax - zMin)) * 360;
+
+        let first = true;
+        let shadePoints = [];
+
+        for (let zi = zMin; zi <= zMax + 0.001; zi += step) {
+          const px = 20 + ((zi - zMin) / (zMax - zMin)) * 360;
+          const pdf = Math.exp(-0.5 * zi * zi) / Math.sqrt(2 * Math.PI);
+          const py = baselineY - (pdf / 0.3989) * peakHeight;
+
+          if (first) {
+            curvePath += `M ${px} ${py}`;
+            first = false;
+          } else {
+            curvePath += ` L ${px} ${py}`;
+          }
+
+          if (zi <= zClamped) {
+            shadePoints.push(`${px} ${py}`);
+          }
+        }
+
+        if (shadePoints.length > 0) {
+          const firstX = 20;
+          const lastPoint = shadePoints[shadePoints.length - 1].split(' ');
+          shadedPath = `M ${firstX} ${baselineY} L ${shadePoints.join(' L ')} L ${lastPoint[0]} ${baselineY} Z`;
+        }
+
+        svgCurve.setAttribute('d', curvePath);
+        svgShaded.setAttribute('d', shadedPath);
+
+        if (svgMarker) {
+          svgMarker.setAttribute('x1', markerX.toString());
+          svgMarker.setAttribute('x2', markerX.toString());
+        }
+
+        if (svgPctBadge) {
+          svgPctBadge.textContent = `${(leftPct * 100).toFixed(2)}% Cumulative (Z = ${z >= 0 ? '+' : ''}${z.toFixed(2)})`;
+        }
+      }
+
+      modeBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          currentMode = btn.dataset.modeBtn || 'forward';
+          modeBtns.forEach(b => {
+            if (b === btn) {
+              b.className = 'cursor-pointer rounded-xl bg-[color:var(--accent)] px-3 py-2 text-[color:var(--bg)] shadow-xs transition';
+            } else {
+              b.className = 'cursor-pointer rounded-xl px-3 py-2 text-[color:var(--muted)] hover:text-[color:var(--fg)] transition';
+            }
+          });
+
+          if (currentMode === 'forward') {
+            forwardFields?.removeAttribute('hidden');
+            inverseFields?.setAttribute('hidden', '');
+          } else {
+            forwardFields?.setAttribute('hidden', '');
+            inverseFields?.removeAttribute('hidden');
+          }
+          update();
+        });
+      });
+
+      if (inInvTarget) {
+        inInvTarget.addEventListener('change', () => {
+          if (inInvTarget.value === 'z') {
+            if (invLabel) invLabel.textContent = 'Target Z-Score';
+            inInvVal.value = '1.50';
+          } else {
+            if (invLabel) invLabel.textContent = 'Target Percentile Rank (0.1 to 99.9%)';
+            inInvVal.value = '93.32';
+          }
+          update();
+        });
       }
 
       inRaw.addEventListener('input', update);
+      inInvVal.addEventListener('input', update);
       inMean.addEventListener('input', update);
       inSd.addEventListener('input', update);
 
@@ -230,7 +619,37 @@ const schemaGraph = [
           inRaw.value = '85';
           inMean.value = '70';
           inSd.value = '10';
+          inInvVal.value = '1.50';
+          currentMode = 'forward';
+          modeBtns[0].click();
           update();
+        });
+      }
+
+      if (copyBtn) {
+        copyBtn.addEventListener('click', async () => {
+          const text = [
+            '--- Z-Score & Normal Distribution Summary ---',
+            `Mode: ${currentMode === 'forward' ? 'Raw Score to Z' : 'Inverse Solver'}`,
+            `Mean (μ): ${inMean.value}`,
+            `Standard Deviation (σ): ${inSd.value}`,
+            `Result: ${outZ?.textContent || ''}`,
+            `Percentile Rank: ${outPct?.textContent || ''}`,
+            `Left Tail P(Z < z): ${outPLeft?.textContent || ''}`,
+            `Right Tail P(Z > z): ${outPRight?.textContent || ''}`,
+            `Two-Tailed P(|Z| > |z|): ${outPTwo?.textContent || ''}`,
+            `Equivalent IQ: ${scaleIq?.textContent || ''}`,
+            `Equivalent T-Score: ${scaleT?.textContent || ''}`,
+          ].join('\n');
+
+          try {
+            await navigator.clipboard.writeText(text);
+            const orig = copyBtn.innerHTML;
+            copyBtn.innerHTML = '<span>✓ Copied!</span>';
+            setTimeout(() => { copyBtn.innerHTML = orig; }, 2000);
+          } catch {
+            alert('Failed to copy to clipboard');
+          }
         });
       }
 

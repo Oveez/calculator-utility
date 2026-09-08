@@ -1,10 +1,12 @@
 ---
 import SiteLayout from '../../layouts/SiteLayout.astro';
 import Icon from '../../components/Icon.astro';
-import { siteName, toAbsoluteUrl, withBasePath } from '../../utils/site';
+import CalculatorParameterGuide from '../../components/calculator/CalculatorParameterGuide.astro';
+import type { CalculatorParameterInfo } from '../../types/calculator';
+import { siteName, toAbsoluteUrl } from '../../utils/site';
 
 const pageTitle = `Coefficient of Variation Calculator — Relative Standard Deviation (RSD %) · ${siteName}`;
-const pageDesc = 'Calculate Coefficient of Variation (CV %) and Relative Standard Deviation (RSD) from mean and standard deviation or raw datasets online.';
+const pageDesc = 'Calculate Coefficient of Variation (CV %) and Relative Standard Deviation (RSD) from mean and standard deviation or raw datasets online with multi-group precision comparisons.';
 const canonicalUrl = toAbsoluteUrl('/research-tools/coefficient-of-variation-calculator/');
 
 const breadcrumbItems = [
@@ -13,10 +15,72 @@ const breadcrumbItems = [
   { label: 'Coefficient of Variation' },
 ];
 
+const parameterGuide: CalculatorParameterInfo[] = [
+  {
+    name: 'Arithmetic Mean (μ or x̄)',
+    description: 'The average of the dataset or population. Must be strictly non-zero for CV computation.',
+    whyItMatters: 'Acts as the scaling denominator to normalize standard deviation across diverse units and magnitudes.',
+    typicalRange: 'Any real number ≠ 0',
+    unit: 'data units',
+  },
+  {
+    name: 'Standard Deviation (s or σ)',
+    description: 'The absolute dispersion or root-mean-square distance of observations around the mean.',
+    whyItMatters: 'The numerator in relative variability; quantifies absolute scatter.',
+    typicalRange: 's ≥ 0',
+    unit: 'data units',
+  },
+  {
+    name: 'Coefficient of Variation (CV % / RSD)',
+    description: 'Relative Standard Deviation expressed as a percentage: CV = (s / |x̄|) × 100%.',
+    whyItMatters: 'A dimensionless metric allowing fair dispersion comparisons between datasets with entirely different units (e.g. weight in kg vs length in cm).',
+    typicalRange: '0% to 100%+ (<5% excellent, 5–15% good, >25% high)',
+    unit: '%',
+  },
+  {
+    name: 'Analytical Precision Tier',
+    description: 'Empirical classification of repeatability in chemical assays, clinical diagnostics, and investment risk.',
+    whyItMatters: 'Establishes quality control standards for protocol acceptance or rejection.',
+    typicalRange: 'High Precision (<5%), Acceptable (5–15%), Elevated (>20%)',
+    unit: 'tier',
+  },
+];
+
+const workedExample = {
+  title: 'Worked Example: Comparing Drug Assay A (Mean = 50 mg, SD = 2.5 mg) vs Assay B (Mean = 500 mg, SD = 15 mg)',
+  description: 'Demonstrates why raw standard deviation is misleading when comparing datasets with different scales.',
+  formula: 'CV = (s ÷ |x̄|) × 100%',
+  steps: [
+    {
+      step: '1. Compute CV for Assay A',
+      calculation: 'CV_A = (2.5 mg ÷ 50.0 mg) × 100% = 5.00%',
+      result: 'CV_A = 5.00%',
+    },
+    {
+      step: '2. Compute CV for Assay B',
+      calculation: 'CV_B = (15.0 mg ÷ 500.0 mg) × 100% = 3.00%',
+      result: 'CV_B = 3.00%',
+    },
+    {
+      step: '3. Comparative Precision Conclusion',
+      calculation: 'Although Assay B has higher absolute SD (15 vs 2.5), its relative variability is lower (3% vs 5%), proving Assay B has higher analytical repeatability.',
+      result: 'Assay B is 40% more precise',
+    },
+  ],
+};
+
 const schemaFaq = [
   {
     question: 'What is Coefficient of Variation (CV %)?',
-    answer: 'The Coefficient of Variation (CV) measures relative statistical variability: `CV = (Standard Deviation / Mean) * 100%`. It allows direct comparison of dispersion across datasets with different units or scales.',
+    answer: 'The Coefficient of Variation (CV), also known as Relative Standard Deviation (RSD), expresses standard deviation as a percentage of the mean: `CV = (s / x̄) * 100%`. It provides a unit-independent measure of relative dispersion.',
+  },
+  {
+    question: 'Why cannot the mean be zero when calculating CV?',
+    answer: 'Because the mean appears in the denominator (`s / μ`), a mean of zero causes mathematical division by zero. Furthermore, when the mean is extremely close to zero, CV becomes hypersensitive and ceases to be a reliable measure.',
+  },
+  {
+    question: 'What is an acceptable CV in laboratory assays and bioanalytical testing?',
+    answer: 'In bioanalytical testing and clinical pharmacology, FDA/EMA guidelines generally accept an intra-assay precision (CV) under 15% (or under 20% at the lower limit of quantitation). For high-precision automated chemistry, CV < 5% is standard.',
   },
 ];
 
@@ -80,54 +144,190 @@ const schemaGraph = [
     </nav>
 
     <header class="space-y-3">
-      <div class="inline-flex items-center gap-2 rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1 text-xs font-semibold text-[color:var(--muted)]">
+      <div class="inline-flex items-center gap-2 rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3.5 py-1 text-xs font-semibold text-[color:var(--muted)]">
         <span class="inline-block h-2 w-2 rounded-full bg-emerald-500"></span>
-        <span>Relative Precision Metric</span>
+        <span>Relative Precision &amp; Repeatability</span>
       </div>
-      <h1 class="text-2xl sm:text-4xl font-extrabold tracking-tight text-[color:var(--fg)]">
+      <h1 class="text-3xl font-extrabold tracking-tight text-[color:var(--fg)] sm:text-4xl">
         Coefficient of Variation Calculator (CV / RSD)
       </h1>
-      <p class="max-w-2xl text-xs sm:text-sm text-[color:var(--muted)] leading-relaxed">
-        Calculate Relative Standard Deviation (RSD %) to evaluate dataset precision and variability across different measurement units.
+      <p class="max-w-3xl text-sm leading-relaxed text-[color:var(--muted)] sm:text-base">
+        Calculate Relative Standard Deviation (RSD %) from summary statistics or raw observations. Compare multi-group assay precision across differing measurement scales.
       </p>
     </header>
 
-    <div class="space-y-6">
-      <div class="grid gap-4 sm:grid-cols-2 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 text-xs">
-        <div>
-          <label for="mean-val" class="font-bold text-[color:var(--fg)] block mb-1">Mean (μ or x̄):</label>
-          <input
-            type="number"
-            id="mean-val"
-            step="any"
-            value="50"
-            class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-[color:var(--fg)]"
-          />
+    <div
+      class="rounded-[2.5rem] border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-6 shadow-[var(--shadow)] sm:p-10 space-y-8"
+    >
+      <div class="flex items-center justify-between">
+        <div class="grid grid-cols-2 gap-2 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-1 text-xs font-semibold">
+          <button type="button" class="cursor-pointer rounded-xl bg-[color:var(--accent)] px-3 py-2 text-[color:var(--bg)] shadow-xs transition" data-input-mode="summary">
+            Summary Inputs (Mean &amp; SD)
+          </button>
+          <button type="button" class="cursor-pointer rounded-xl px-3 py-2 text-[color:var(--muted)] hover:text-[color:var(--fg)] transition" data-input-mode="raw">
+            Raw Dataset Paste
+          </button>
         </div>
-        <div>
-          <label for="sd-val" class="font-bold text-[color:var(--fg)] block mb-1">Standard Deviation (s or σ):</label>
-          <input
-            type="number"
-            id="sd-val"
-            step="any"
-            value="4.5"
-            class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-[color:var(--fg)]"
-          />
+        <button type="button" class="cursor-pointer text-xs font-semibold text-[color:var(--muted)] hover:text-[color:var(--fg)]" data-reset-btn>
+          ↺ Reset
+        </button>
+      </div>
+
+      <!-- Summary Mode Inputs -->
+      <div class="space-y-4" data-summary-fields>
+        <div class="grid gap-4 sm:grid-cols-2">
+          <div class="space-y-1.5">
+            <label for="mean-val" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Arithmetic Mean (μ or x̄)</label>
+            <input
+              type="number"
+              id="mean-val"
+              step="any"
+              value="50.0"
+              class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none"
+              data-mean-val
+            />
+          </div>
+          <div class="space-y-1.5">
+            <label for="sd-val" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Standard Deviation (s or σ)</label>
+            <input
+              type="number"
+              id="sd-val"
+              step="any"
+              min="0"
+              value="4.5"
+              class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none"
+              data-sd-val
+            />
+          </div>
         </div>
       </div>
 
-      <!-- Result Card -->
-      <div class="grid gap-4 sm:grid-cols-2">
-        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 space-y-2 text-center">
-          <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Coefficient of Variation (CV %)</span>
-          <p id="res-cv" class="text-4xl font-extrabold text-emerald-500">-</p>
+      <!-- Raw Dataset Inputs (Hidden by default) -->
+      <div class="space-y-2" data-raw-fields hidden>
+        <div class="flex items-center justify-between">
+          <label for="raw-data-vals" class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">
+            Paste Raw Numbers (comma, space, or newline separated)
+          </label>
+          <span class="text-[11px] text-[color:var(--muted)]" data-raw-detected>Detected: 8 numbers</span>
         </div>
+        <textarea
+          id="raw-data-vals"
+          rows="3"
+          class="w-full font-mono text-xs leading-relaxed rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] p-4 text-[color:var(--fg)] outline-none"
+          placeholder="52.1, 48.9, 50.4, 51.2, 49.8, 53.0, 47.6, 51.5"
+          data-raw-data-vals
+        >52.1, 48.9, 50.4, 51.2, 49.8, 53.0, 47.6, 51.5</textarea>
+      </div>
+
+      <!-- Action Toolbar -->
+      <div class="flex flex-wrap items-center justify-between gap-3 border-t border-[color:var(--border)] pt-4">
+        <h2 class="text-sm font-bold uppercase tracking-wider text-[color:var(--muted)]">Computed Relative Dispersion</h2>
+        <div class="flex items-center gap-2">
+          <button
+            type="button"
+            data-copy-btn
+            class="inline-flex items-center gap-1.5 rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1.5 text-xs font-semibold text-[color:var(--fg)] hover:border-[color:var(--border-strong)] transition cursor-pointer"
+          >
+            <Icon name="copy" class="w-3.5 h-3.5" />
+            <span>Copy Summary</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Primary Result Display -->
+      <div class="grid gap-4 sm:grid-cols-3">
+        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] p-6 space-y-2 text-center">
+          <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Coefficient of Variation</span>
+          <p id="res-cv" class="text-4xl sm:text-5xl font-extrabold text-cyan-500 dark:text-cyan-400 font-mono" data-res-cv>9.00%</p>
+          <p class="text-[10px] text-[color:var(--muted)]">(s ÷ |x̄|) × 100%</p>
+        </div>
+
         <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 space-y-2 text-center">
-          <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Variability Interpretation</span>
-          <p id="res-interp" class="text-lg font-bold text-[color:var(--fg)]">-</p>
+          <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Precision Quality Tier</span>
+          <p id="res-interp" class="text-xl font-bold text-[color:var(--fg)]" data-res-interp>High Precision (&lt;10%)</p>
+          <p class="text-[10px] text-[color:var(--muted)]" data-res-subtext>Suitable for analytical chemistry and bioassays</p>
+        </div>
+
+        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 space-y-2 text-center">
+          <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Variance-to-Mean Ratio (Fano)</span>
+          <p class="text-2xl font-bold text-[color:var(--fg)] font-mono" data-res-vmr>0.4050</p>
+          <p class="text-[10px] text-[color:var(--muted)]">s² ÷ x̄ (Under-dispersed)</p>
+        </div>
+      </div>
+
+      <!-- Multi-Group Benchmarking Comparator -->
+      <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 space-y-4">
+        <div>
+          <h3 class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Multi-Group Benchmark Comparator</h3>
+          <p class="text-xs text-[color:var(--muted)]">Compare relative repeatability across up to 3 different groups with different units or scales.</p>
+        </div>
+
+        <div class="grid gap-3 sm:grid-cols-3 font-mono text-xs">
+          <!-- Group 1 -->
+          <div class="space-y-2 rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] p-3">
+            <span class="font-bold text-[color:var(--fg)] font-sans">Group A (Current)</span>
+            <div class="flex justify-between text-[color:var(--muted)]">
+              <span>Mean: <span class="text-[color:var(--fg)]" data-g1-mean>50.0</span></span>
+              <span>SD: <span class="text-[color:var(--fg)]" data-g1-sd>4.5</span></span>
+            </div>
+            <p class="text-lg font-bold text-cyan-500 dark:text-cyan-400" data-g1-cv>CV: 9.00%</p>
+          </div>
+
+          <!-- Group 2 -->
+          <div class="space-y-2 rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] p-3">
+            <span class="font-bold text-[color:var(--fg)] font-sans">Group B (Benchmark)</span>
+            <div class="grid grid-cols-2 gap-1.5">
+              <input type="number" step="any" value="500.0" placeholder="Mean" class="rounded-lg border border-[color:var(--border)] bg-[color:var(--surface)] px-2 py-1 text-xs text-[color:var(--fg)] outline-none" data-g2-mean-in />
+              <input type="number" step="any" value="15.0" placeholder="SD" class="rounded-lg border border-[color:var(--border)] bg-[color:var(--surface)] px-2 py-1 text-xs text-[color:var(--fg)] outline-none" data-g2-sd-in />
+            </div>
+            <p class="text-lg font-bold text-[color:var(--fg)]" data-g2-cv>CV: 3.00%</p>
+          </div>
+
+          <!-- Group 3 -->
+          <div class="space-y-2 rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] p-3">
+            <span class="font-bold text-[color:var(--fg)] font-sans">Group C (Alternative)</span>
+            <div class="grid grid-cols-2 gap-1.5">
+              <input type="number" step="any" value="1200.0" placeholder="Mean" class="rounded-lg border border-[color:var(--border)] bg-[color:var(--surface)] px-2 py-1 text-xs text-[color:var(--fg)] outline-none" data-g3-mean-in />
+              <input type="number" step="any" value="180.0" placeholder="SD" class="rounded-lg border border-[color:var(--border)] bg-[color:var(--surface)] px-2 py-1 text-xs text-[color:var(--fg)] outline-none" data-g3-sd-in />
+            </div>
+            <p class="text-lg font-bold text-[color:var(--fg)]" data-g3-cv>CV: 15.00%</p>
+          </div>
         </div>
       </div>
     </div>
+
+    <!-- Mathematical Formulas Reference Card -->
+    <section class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 sm:p-8 space-y-4">
+      <div>
+        <p class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Statistical Dispersion Standards</p>
+        <h2 class="text-xl font-bold text-[color:var(--fg)]">Coefficient of Variation &amp; Precision Tiers</h2>
+      </div>
+
+      <div class="grid gap-4 sm:grid-cols-2 text-xs sm:text-sm text-[color:var(--muted)]">
+        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] p-5 space-y-2">
+          <p class="font-bold text-[color:var(--fg)]">1. Formula Definition</p>
+          <div class="font-mono text-xs text-cyan-500 dark:text-cyan-400 bg-[color:var(--surface)] p-2.5 rounded-xl">
+            CV = (s / |x̄|) × 100% &nbsp;|&nbsp; RSD = (σ / |μ|) × 100%
+          </div>
+          <p class="text-xs">
+            Standard deviation divided by mean, eliminating measurement units for scale-independent comparisons.
+          </p>
+        </div>
+
+        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] p-5 space-y-2">
+          <p class="font-bold text-[color:var(--fg)]">2. Laboratory Precision Benchmarks</p>
+          <ul class="list-disc pl-4 space-y-1 text-xs">
+            <li><strong class="text-[color:var(--fg)]">&lt; 5%:</strong> Stringent analytical chemistry &amp; clinical diagnostic precision</li>
+            <li><strong class="text-[color:var(--fg)]">5% – 15%:</strong> Standard bioassays and immunological ELISA assays</li>
+            <li><strong class="text-[color:var(--fg)]">15% – 30%:</strong> Moderate biological or social sciences field variability</li>
+            <li><strong class="text-[color:var(--fg)]">&gt; 30%:</strong> High variability (Broad dispersion / heterogeneous data)</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- Parameter Guide & Worked Example -->
+    <CalculatorParameterGuide parameters={parameterGuide} workedExample={workedExample} />
 
     <!-- FAQs -->
     <section class="space-y-4">
@@ -153,32 +353,173 @@ const schemaGraph = [
       const root = document.querySelector('[data-cv-app]');
       if (!root) return;
 
-      const meanInput = root.querySelector('#mean-val');
-      const sdInput = root.querySelector('#sd-val');
-      const resCv = root.querySelector('#res-cv');
-      const resInterp = root.querySelector('#res-interp');
+      const modeBtns = root.querySelectorAll('[data-input-mode]');
+      const summaryFields = root.querySelector('[data-summary-fields]');
+      const rawFields = root.querySelector('[data-raw-fields]');
+      const meanInput = root.querySelector('[data-mean-val]');
+      const sdInput = root.querySelector('[data-sd-val]');
+      const rawInput = root.querySelector('[data-raw-data-vals]');
+      const rawDetected = root.querySelector('[data-raw-detected]');
 
-      function calculate() {
-        const mean = parseFloat(meanInput.value);
-        const sd = parseFloat(sdInput.value);
+      const resCv = root.querySelector('[data-res-cv]');
+      const resInterp = root.querySelector('[data-res-interp]');
+      const resSubtext = root.querySelector('[data-res-subtext]');
+      const resVmr = root.querySelector('[data-res-vmr]');
 
-        if (isNaN(mean) || isNaN(sd) || mean === 0) {
+      const g1Mean = root.querySelector('[data-g1-mean]');
+      const g1Sd = root.querySelector('[data-g1-sd]');
+      const g1Cv = root.querySelector('[data-g1-cv]');
+      const g2MeanIn = root.querySelector('[data-g2-mean-in]');
+      const g2SdIn = root.querySelector('[data-g2-sd-in]');
+      const g2Cv = root.querySelector('[data-g2-cv]');
+      const g3MeanIn = root.querySelector('[data-g3-mean-in]');
+      const g3SdIn = root.querySelector('[data-g3-sd-in]');
+      const g3Cv = root.querySelector('[data-g3-cv]');
+
+      const resetBtn = root.querySelector('[data-reset-btn]');
+      const copyBtn = root.querySelector('[data-copy-btn]');
+
+      let currentMode = 'summary';
+
+      function parseNums(str) {
+        return str.split(/[\s,;\n\t]+/).map(Number).filter(n => !isNaN(n) && isFinite(n));
+      }
+
+      function update() {
+        let mean = 0;
+        let sd = 0;
+
+        if (currentMode === 'summary') {
+          mean = parseFloat(meanInput.value || '0');
+          sd = parseFloat(sdInput.value || '0');
+        } else {
+          const numbers = parseNums(rawInput.value || '');
+          if (rawDetected) rawDetected.textContent = `Detected: ${numbers.length} numbers`;
+          if (numbers.length < 2) {
+            resCv.textContent = '-';
+            resInterp.textContent = 'Need ≥ 2 numbers';
+            return;
+          }
+          const n = numbers.length;
+          mean = numbers.reduce((a, b) => a + b, 0) / n;
+          const variance = numbers.reduce((a, b) => a + Math.pow(b - mean, 2), 0) / (n - 1);
+          sd = Math.sqrt(variance);
+        }
+
+        if (mean === 0 || isNaN(mean) || isNaN(sd)) {
           resCv.textContent = '-';
           resInterp.textContent = 'Mean cannot be zero';
+          if (resSubtext) resSubtext.textContent = 'Division by zero is undefined';
           return;
         }
 
         const cv = (Math.abs(sd) / Math.abs(mean)) * 100;
-        resCv.textContent = `${cv.toFixed(2)}%`;
+        const vmr = mean !== 0 ? (sd * sd) / Math.abs(mean) : 0;
 
-        if (cv < 10) resInterp.textContent = 'Low variability (High precision)';
-        else if (cv <= 30) resInterp.textContent = 'Moderate variability';
-        else resInterp.textContent = 'High variability (Wide dispersion)';
+        resCv.textContent = `${cv.toFixed(2)}%`;
+        if (resVmr) resVmr.textContent = vmr.toFixed(4);
+
+        if (cv < 5) {
+          resInterp.textContent = 'Excellent Precision (<5%)';
+          if (resSubtext) resSubtext.textContent = 'Meets stringent clinical & pharmacological assay standards';
+        } else if (cv < 10) {
+          resInterp.textContent = 'High Precision (5–10%)';
+          if (resSubtext) resSubtext.textContent = 'Standard analytical chemistry repeatability';
+        } else if (cv <= 25) {
+          resInterp.textContent = 'Moderate Variability (10–25%)';
+          if (resSubtext) resSubtext.textContent = 'Typical for biological assays and field observations';
+        } else {
+          resInterp.textContent = 'High Dispersion (>25%)';
+          if (resSubtext) resSubtext.textContent = 'Wide data spread or heterogeneous population';
+        }
+
+        // Update Group 1 display
+        if (g1Mean) g1Mean.textContent = mean.toFixed(2);
+        if (g1Sd) g1Sd.textContent = sd.toFixed(2);
+        if (g1Cv) g1Cv.textContent = `CV: ${cv.toFixed(2)}%`;
+
+        // Update Group 2
+        if (g2MeanIn && g2SdIn && g2Cv) {
+          const m2 = parseFloat(g2MeanIn.value || '0');
+          const s2 = parseFloat(g2SdIn.value || '0');
+          const cv2 = m2 !== 0 ? (Math.abs(s2) / Math.abs(m2)) * 100 : 0;
+          g2Cv.textContent = `CV: ${cv2.toFixed(2)}%`;
+        }
+
+        // Update Group 3
+        if (g3MeanIn && g3SdIn && g3Cv) {
+          const m3 = parseFloat(g3MeanIn.value || '0');
+          const s3 = parseFloat(g3SdIn.value || '0');
+          const cv3 = m3 !== 0 ? (Math.abs(s3) / Math.abs(m3)) * 100 : 0;
+          g3Cv.textContent = `CV: ${cv3.toFixed(2)}%`;
+        }
       }
 
-      meanInput.addEventListener('input', calculate);
-      sdInput.addEventListener('input', calculate);
-      calculate();
+      modeBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          currentMode = btn.dataset.inputMode || 'summary';
+          modeBtns.forEach(b => {
+            if (b === btn) {
+              b.className = 'cursor-pointer rounded-xl bg-[color:var(--accent)] px-3 py-2 text-[color:var(--bg)] shadow-xs transition';
+            } else {
+              b.className = 'cursor-pointer rounded-xl px-3 py-2 text-[color:var(--muted)] hover:text-[color:var(--fg)] transition';
+            }
+          });
+
+          if (currentMode === 'summary') {
+            summaryFields?.removeAttribute('hidden');
+            rawFields?.setAttribute('hidden', '');
+          } else {
+            summaryFields?.setAttribute('hidden', '');
+            rawFields?.removeAttribute('hidden');
+          }
+          update();
+        });
+      });
+
+      meanInput.addEventListener('input', update);
+      sdInput.addEventListener('input', update);
+      rawInput.addEventListener('input', update);
+      if (g2MeanIn) g2MeanIn.addEventListener('input', update);
+      if (g2SdIn) g2SdIn.addEventListener('input', update);
+      if (g3MeanIn) g3MeanIn.addEventListener('input', update);
+      if (g3SdIn) g3SdIn.addEventListener('input', update);
+
+      if (resetBtn) {
+        resetBtn.addEventListener('click', () => {
+          meanInput.value = '50.0';
+          sdInput.value = '4.5';
+          if (g2MeanIn) g2MeanIn.value = '500.0';
+          if (g2SdIn) g2SdIn.value = '15.0';
+          if (g3MeanIn) g3MeanIn.value = '1200.0';
+          if (g3SdIn) g3SdIn.value = '180.0';
+          currentMode = 'summary';
+          modeBtns[0].click();
+          update();
+        });
+      }
+
+      if (copyBtn) {
+        copyBtn.addEventListener('click', () => {
+          const text = [
+            '--- Coefficient of Variation (CV % / RSD) Summary ---',
+            `Mode: ${currentMode === 'summary' ? 'Summary (Mean/SD)' : 'Raw Observations'}`,
+            `Mean: ${g1Mean?.textContent || meanInput.value}`,
+            `Standard Deviation: ${g1Sd?.textContent || sdInput.value}`,
+            `Coefficient of Variation (CV %): ${resCv?.textContent || ''}`,
+            `Precision Tier: ${resInterp?.textContent || ''}`,
+            `Fano Factor (VMR): ${resVmr?.textContent || ''}`,
+          ].join('\n');
+
+          navigator.clipboard.writeText(text).then(() => {
+            const orig = copyBtn.innerHTML;
+            copyBtn.innerHTML = '<span>✓ Copied!</span>';
+            setTimeout(() => { copyBtn.innerHTML = orig; }, 2000);
+          });
+        });
+      }
+
+      update();
     })();
   </script>
 </SiteLayout>

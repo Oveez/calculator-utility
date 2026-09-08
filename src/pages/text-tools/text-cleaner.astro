@@ -1,7 +1,8 @@
 ---
 import SiteLayout from '../../layouts/SiteLayout.astro';
 import Icon from '../../components/Icon.astro';
-import { siteName, toAbsoluteUrl, withBasePath } from '../../utils/site';
+import CalculatorParameterGuide from '../../components/calculator/CalculatorParameterGuide.astro';
+import { siteName, toAbsoluteUrl } from '../../utils/site';
 
 const pageTitle = `Text Cleaner & Sanitizer — Free Online Text Formatting · ${siteName}`;
 const pageDesc = 'Clean and sanitize messy text online. Strip HTML tags, remove emojis, normalize line endings, trim extra spaces, and remove punctuation. 100% private in-browser tool.';
@@ -16,7 +17,19 @@ const breadcrumbItems = [
 const schemaFaq = [
   {
     question: 'What clean-up transformations does this tool offer?',
-    answer: 'You can toggle stripping HTML tags, removing emojis, stripping punctuation, converting to ASCII, collapsing whitespaces, and normalizing Windows (CRLF) vs Unix (LF) line breaks.',
+    answer: 'You can toggle stripping HTML tags, removing emojis, converting smart curly quotes to straight quotes, unescaping HTML entities, stripping punctuation, converting to ASCII, collapsing whitespaces, and normalizing Windows (CRLF) vs Unix (LF) line breaks.',
+  },
+  {
+    question: 'Why should I normalize smart curly quotes?',
+    answer: 'Word processors like Microsoft Word and Google Docs replace standard straight quotes (`""`, `\'\'`) with stylized curly quotes (`“”`, `‘’`). When pasted into code editors, command terminals, or JSON files, curly quotes trigger syntax errors. Normalizing converts them back to valid ASCII quotes.',
+  },
+  {
+    question: 'What is HTML Entity Unescaping?',
+    answer: 'When text is scraped from web pages, characters like ampersands and quotes are often encoded as `&amp;`, `&quot;`, or `&#39;`. This tool translates them back into their real, readable characters.',
+  },
+  {
+    question: 'Is my text processed privately in my browser?',
+    answer: 'Yes. 100% of the cleaning pipeline runs locally in your browser memory. No data is stored, logged, or sent across any network.',
   },
 ];
 
@@ -54,6 +67,67 @@ const schemaGraph = [
     })),
   },
 ];
+
+const parameterGuideData = [
+  {
+    id: 'smart-quotes',
+    name: 'Smart Quotes to Straight Quotes',
+    description: 'Converts typographer curly quotation marks (“ ” ‘ ’) into straight ASCII quotation marks (" \').',
+    whyItMatters: 'Essential before pasting into code compilers, JSON payloads, or terminal shell scripts.',
+    typicalRange: 'Enabled / Disabled (Default: Enabled)',
+  },
+  {
+    id: 'strip-html',
+    name: 'Strip HTML/XML Markup',
+    description: 'Removes all opening and closing tags, doctypes, and comments while keeping enclosed textual content.',
+    whyItMatters: 'Converts web source code and rich text paste buffers into pure unformatted text.',
+    typicalRange: 'Enabled / Disabled (Default: Enabled)',
+  },
+  {
+    id: 'unescape-entities',
+    name: 'Unescape HTML Entities',
+    description: 'Translates &amp;, &lt;, &gt;, &quot;, &#39; and numeric entities into plain ASCII characters.',
+    whyItMatters: 'Restores human-readable characters from scraped web text or RSS data.',
+    typicalRange: 'Enabled / Disabled (Default: Enabled)',
+  },
+  {
+    id: 'strip-emojis',
+    name: 'Remove Emojis & Symbols',
+    description: 'Strips 4-byte UTF-8 emojis, pictographs, and decorative Unicode symbols.',
+    whyItMatters: 'Prevents database collation crashes on older utf8 MySQL tables and clean text processing.',
+    typicalRange: 'Enabled / Disabled (Default: Disabled)',
+  },
+  {
+    id: 'duplicate-words',
+    name: 'Remove Duplicate Words',
+    description: 'Finds and removes immediate consecutive repeated words like "the the" or "and and".',
+    whyItMatters: 'Catches common human typing mistakes and manuscript copy-editing errors.',
+    typicalRange: 'Enabled / Disabled (Default: Disabled)',
+  },
+];
+
+const workedExampleData = {
+  title: 'Sanitizing Rich Web Copy for a Markdown Blog',
+  description: 'Cleaning an article excerpt containing HTML formatting tags, curly quotes, and entities.',
+  formula: 'Sanitized Output = StripHTML(UnescapeEntities(NormalizeQuotes(Input)))',
+  steps: [
+    {
+      step: 'Step 1: Input Messy Markup',
+      calculation: '<p>The author said, &ldquo;Hello &amp; welcome!&rdquo;</p>',
+      result: 'Raw markup with tags and entities',
+    },
+    {
+      step: 'Step 2: Strip HTML & Unescape Entities',
+      calculation: 'Remove <p> tags and convert &ldquo;/&rdquo; to standard quotes, &amp; to &.',
+      result: 'The author said, "Hello & welcome!"',
+    },
+    {
+      step: 'Step 3: Normalize Whitespace',
+      calculation: 'Trim leading/trailing margins and verify clean plain text.',
+      result: '100% clean, publish-ready text',
+    },
+  ],
+};
 ---
 
 <SiteLayout title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
@@ -82,81 +156,169 @@ const schemaGraph = [
     <header class="space-y-3">
       <div class="inline-flex items-center gap-2 rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1 text-xs font-semibold text-[color:var(--muted)]">
         <span class="inline-block h-2 w-2 rounded-full bg-emerald-500"></span>
-        <span>Multi-Transformation Sanitizer</span>
+        <span>100% Client-Side • Multi-Transformation Pipeline • Instant Presets</span>
       </div>
       <h1 class="text-2xl sm:text-4xl font-extrabold tracking-tight text-[color:var(--fg)]">
         Text Cleaner &amp; Sanitizer
       </h1>
       <p class="max-w-2xl text-xs sm:text-sm text-[color:var(--muted)] leading-relaxed">
-        Clean messy copy-pastes, remove weird characters, normalize whitespace, and strip unwanted markup.
+        Clean and sanitize messy text online. Strip HTML tags, remove emojis, normalize line endings, trim extra spaces, convert curly quotes, and unescape entities in real-time.
       </p>
     </header>
 
+    <!-- Metrics Summary Bar -->
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+      <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-center shadow-xs">
+        <span class="block text-[11px] font-bold uppercase tracking-wider text-[color:var(--muted)]">Characters Cleaned</span>
+        <span id="stat-chars-diff" class="mt-1 block text-xl sm:text-2xl font-black text-rose-600 dark:text-rose-400 font-mono">0</span>
+      </div>
+      <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-center shadow-xs">
+        <span class="block text-[11px] font-bold uppercase tracking-wider text-[color:var(--muted)]">Words Out</span>
+        <span id="stat-words-out" class="mt-1 block text-xl sm:text-2xl font-black text-cyan-600 dark:text-cyan-400 dark:text-cyan-400 font-mono">0</span>
+      </div>
+      <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-center shadow-xs">
+        <span class="block text-[11px] font-bold uppercase tracking-wider text-[color:var(--muted)]">Lines Out</span>
+        <span id="stat-lines-out" class="mt-1 block text-xl sm:text-2xl font-black text-[color:var(--fg)] font-mono">0</span>
+      </div>
+      <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-center shadow-xs">
+        <span class="block text-[11px] font-bold uppercase tracking-wider text-[color:var(--muted)]">Rules Active</span>
+        <span id="stat-rules-active" class="mt-1 block text-xl sm:text-2xl font-black text-[color:var(--accent)] font-mono">0</span>
+      </div>
+    </div>
+
+    <!-- Presets & Controls Panel -->
+    <div class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 sm:p-6 space-y-4 shadow-sm">
+      <!-- One-Click Presets -->
+      <div class="flex flex-wrap items-center justify-between gap-3 border-b border-[color:var(--border)] pb-3 text-xs">
+        <span class="font-bold text-[color:var(--fg)]">Quick Presets:</span>
+        <div class="flex flex-wrap items-center gap-2">
+          <button type="button" data-preset="web" class="preset-btn cursor-pointer rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] px-3 py-1 font-semibold text-[color:var(--fg)] hover:border-[color:var(--accent)] transition">Web Copy Clean</button>
+          <button type="button" data-preset="code" class="preset-btn cursor-pointer rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] px-3 py-1 font-semibold text-[color:var(--fg)] hover:border-[color:var(--accent)] transition">Code &amp; Logs</button>
+          <button type="button" data-preset="ascii" class="preset-btn cursor-pointer rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] px-3 py-1 font-semibold text-[color:var(--fg)] hover:border-[color:var(--accent)] transition">ASCII Only</button>
+          <button type="button" data-preset="all" class="preset-btn cursor-pointer rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] px-3 py-1 font-semibold text-[color:var(--fg)] hover:border-[color:var(--accent)] transition">Select All</button>
+          <button type="button" data-preset="none" class="preset-btn cursor-pointer rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] px-3 py-1 font-semibold text-rose-500 hover:border-rose-300 transition">Deselect All</button>
+        </div>
+      </div>
+
+      <!-- Transformation Checkboxes Grid -->
+      <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 text-xs text-[color:var(--fg)]">
+        <label class="flex items-center gap-2 font-medium cursor-pointer">
+          <input type="checkbox" id="chk-quotes" checked class="clean-chk rounded accent-[color:var(--accent)]" />
+          <span>Normalize Quotes (“ ” ‘ ’ &rarr; " ')</span>
+        </label>
+        <label class="flex items-center gap-2 font-medium cursor-pointer">
+          <input type="checkbox" id="chk-entities" checked class="clean-chk rounded accent-[color:var(--accent)]" />
+          <span>Unescape HTML Entities (&amp;amp; &rarr; &amp;)</span>
+        </label>
+        <label class="flex items-center gap-2 font-medium cursor-pointer">
+          <input type="checkbox" id="chk-html" checked class="clean-chk rounded accent-[color:var(--accent)]" />
+          <span>Strip HTML / XML Tags (&lt;...&gt;)</span>
+        </label>
+        <label class="flex items-center gap-2 font-medium cursor-pointer">
+          <input type="checkbox" id="chk-spaces" checked class="clean-chk rounded accent-[color:var(--accent)]" />
+          <span>Collapse Extra Whitespaces</span>
+        </label>
+        <label class="flex items-center gap-2 font-medium cursor-pointer">
+          <input type="checkbox" id="chk-empty-lines" checked class="clean-chk rounded accent-[color:var(--accent)]" />
+          <span>Remove Empty Lines</span>
+        </label>
+        <label class="flex items-center gap-2 font-medium cursor-pointer">
+          <input type="checkbox" id="chk-trim-lines" checked class="clean-chk rounded accent-[color:var(--accent)]" />
+          <span>Trim Line Margins</span>
+        </label>
+        <label class="flex items-center gap-2 font-medium cursor-pointer">
+          <input type="checkbox" id="chk-emojis" class="clean-chk rounded accent-[color:var(--accent)]" />
+          <span>Remove Emojis &amp; Symbols</span>
+        </label>
+        <label class="flex items-center gap-2 font-medium cursor-pointer">
+          <input type="checkbox" id="chk-non-ascii" class="clean-chk rounded accent-[color:var(--accent)]" />
+          <span>Strip Non-ASCII Characters</span>
+        </label>
+        <label class="flex items-center gap-2 font-medium cursor-pointer">
+          <input type="checkbox" id="chk-punct" class="clean-chk rounded accent-[color:var(--accent)]" />
+          <span>Strip All Punctuation</span>
+        </label>
+        <label class="flex items-center gap-2 font-medium cursor-pointer">
+          <input type="checkbox" id="chk-dup-words" class="clean-chk rounded accent-[color:var(--accent)]" />
+          <span>Remove Duplicate Words (the the)</span>
+        </label>
+        <label class="flex items-center gap-2 font-medium cursor-pointer">
+          <input type="checkbox" id="chk-crlf" class="clean-chk rounded accent-[color:var(--accent)]" />
+          <span>Normalize Newlines to LF (\n)</span>
+        </label>
+      </div>
+    </div>
+
+    <!-- Dual Workspace Grid -->
     <div class="grid gap-6 lg:grid-cols-2">
-      <!-- Input -->
+      <!-- Left: Source Editor -->
       <div class="space-y-3">
         <div class="flex items-center justify-between">
-          <label for="clean-in" class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Messy Input Text</label>
+          <div class="flex items-center gap-2">
+            <label for="text-in" class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Source Text</label>
+            <span id="char-count-in" class="text-[11px] text-[color:var(--muted)]">0 chars</span>
+          </div>
           <div class="flex items-center gap-2 text-xs">
-            <button type="button" data-sample-btn class="text-[color:var(--primary)] hover:underline font-semibold">Load Sample</button>
-            <span class="text-[color:var(--border)]">|</span>
-            <button type="button" data-clear-btn class="text-[color:var(--muted)] hover:text-[color:var(--fg)]">Clear</button>
+            <label for="file-upload" class="cursor-pointer text-[color:var(--accent)] hover:underline font-semibold flex items-center gap-1">
+              <span>Import File</span>
+              <input type="file" id="file-upload" accept=".txt,.html,.md,.py,.js,.csv,.log" class="hidden" />
+            </label>
+            <span class="text-[color:var(--border)]">•</span>
+            <button type="button" id="btn-sample" class="text-[color:var(--accent)] hover:underline font-semibold cursor-pointer">Sample</button>
+            <span class="text-[color:var(--border)]">•</span>
+            <button type="button" id="btn-clear" class="text-rose-600 dark:text-rose-400 hover:underline cursor-pointer">Clear</button>
           </div>
         </div>
         <textarea
-          id="clean-in"
-          rows="12"
-          class="w-full font-mono text-xs leading-relaxed rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-[color:var(--fg)] focus:border-[color:var(--border-strong)] focus:outline-hidden"
-          placeholder="Paste messy text here..."
+          id="text-in"
+          rows="15"
+          class="w-full font-mono text-xs leading-relaxed rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-[color:var(--fg)] focus:border-[color:var(--accent)] focus:outline-hidden transition shadow-inner"
+          placeholder="Paste messy text with HTML tags, smart quotes, or extra spaces here..."
         ></textarea>
-
-        <!-- Options Checklist -->
-        <div class="grid grid-cols-2 gap-2 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-xs">
-          <label class="flex items-center gap-2 cursor-pointer">
-            <input type="checkbox" id="opt-html" checked class="rounded accent-[color:var(--fg)]" />
-            <span>Strip HTML Tags</span>
-          </label>
-          <label class="flex items-center gap-2 cursor-pointer">
-            <input type="checkbox" id="opt-emojis" class="rounded accent-[color:var(--fg)]" />
-            <span>Remove Emojis</span>
-          </label>
-          <label class="flex items-center gap-2 cursor-pointer">
-            <input type="checkbox" id="opt-spaces" checked class="rounded accent-[color:var(--fg)]" />
-            <span>Collapse Spaces</span>
-          </label>
-          <label class="flex items-center gap-2 cursor-pointer">
-            <input type="checkbox" id="opt-punct" class="rounded accent-[color:var(--fg)]" />
-            <span>Remove Punctuation</span>
-          </label>
-          <label class="flex items-center gap-2 cursor-pointer">
-            <input type="checkbox" id="opt-blank" checked class="rounded accent-[color:var(--fg)]" />
-            <span>Remove Blank Lines</span>
-          </label>
-          <label class="flex items-center gap-2 cursor-pointer">
-            <input type="checkbox" id="opt-ascii" class="rounded accent-[color:var(--fg)]" />
-            <span>ASCII Only</span>
-          </label>
-        </div>
       </div>
 
-      <!-- Output -->
+      <!-- Right: Processed Output -->
       <div class="space-y-3">
         <div class="flex items-center justify-between">
-          <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Cleaned Text</span>
-          <button type="button" data-copy-btn class="inline-flex items-center gap-1 text-xs font-bold text-[color:var(--fg)] hover:underline">
-            <Icon name="copy" class="w-3.5 h-3.5" />
-            <span>Copy</span>
-          </button>
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Sanitized Output</span>
+            <span id="char-count-out" class="text-[11px] text-[color:var(--muted)]">0 chars</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <button
+              type="button"
+              id="btn-copy"
+              class="inline-flex cursor-pointer items-center gap-1.5 rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1.5 text-xs font-bold text-[color:var(--fg)] shadow-xs transition hover:bg-[color:var(--surface-strong)]"
+            >
+              <Icon name="copy" class="w-3.5 h-3.5" />
+              <span id="copy-label">Copy</span>
+            </button>
+            <button
+              type="button"
+              id="btn-download"
+              class="inline-flex cursor-pointer items-center gap-1.5 rounded-xl bg-[color:var(--fg)] px-3 py-1.5 text-xs font-bold text-[color:var(--bg)] shadow-xs transition hover:opacity-90"
+            >
+              <span>Download .txt</span>
+            </button>
+          </div>
         </div>
         <textarea
-          id="clean-out"
-          rows="16"
+          id="text-out"
+          rows="15"
           readonly
-          class="w-full font-mono text-xs leading-relaxed rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-4 text-[color:var(--fg)] focus:outline-hidden"
-          placeholder="Sanitized text will appear here..."
+          class="w-full font-mono text-xs leading-relaxed rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-4 text-[color:var(--fg)] focus:outline-hidden transition shadow-inner"
+          placeholder="Clean sanitized text will appear here in real-time..."
         ></textarea>
       </div>
     </div>
+
+    <!-- Parameter Guide & Worked Example -->
+    <CalculatorParameterGuide
+      title="How Text Sanitization Operates"
+      description="Understand quote normalization, HTML entity decoding, emoji removal, and character encoding safety."
+      parameters={parameterGuideData}
+      workedExample={workedExampleData}
+    />
 
     <!-- FAQs -->
     <section class="space-y-4">
@@ -182,69 +344,255 @@ const schemaGraph = [
       const root = document.querySelector('[data-cleaner-app]');
       if (!root) return;
 
-      const input = root.querySelector('#clean-in');
-      const output = root.querySelector('#clean-out');
-      const optHtml = root.querySelector('#opt-html');
-      const optEmojis = root.querySelector('#opt-emojis');
-      const optSpaces = root.querySelector('#opt-spaces');
-      const optPunct = root.querySelector('#opt-punct');
-      const optBlank = root.querySelector('#opt-blank');
-      const optAscii = root.querySelector('#opt-ascii');
-      const sampleBtn = root.querySelector('[data-sample-btn]');
-      const clearBtn = root.querySelector('[data-clear-btn]');
-      const copyBtn = root.querySelector('[data-copy-btn]');
+      const textIn = root.querySelector('#text-in');
+      const textOut = root.querySelector('#text-out');
 
-      function sanitize() {
-        let text = input.value;
-        if (!text) { output.value = ''; return; }
+      const chkQuotes = root.querySelector('#chk-quotes');
+      const chkEntities = root.querySelector('#chk-entities');
+      const chkHtml = root.querySelector('#chk-html');
+      const chkSpaces = root.querySelector('#chk-spaces');
+      const chkEmptyLines = root.querySelector('#chk-empty-lines');
+      const chkTrimLines = root.querySelector('#chk-trim-lines');
+      const chkEmojis = root.querySelector('#chk-emojis');
+      const chkNonAscii = root.querySelector('#chk-non-ascii');
+      const chkPunct = root.querySelector('#chk-punct');
+      const chkDupWords = root.querySelector('#chk-dup-words');
+      const chkCrlf = root.querySelector('#chk-crlf');
 
-        if (optHtml.checked) {
-          text = text.replace(/<[^>]*>/g, '');
-        }
-        if (optEmojis.checked) {
-          text = text.replace(/[\u{1F600}-\u{1F64F}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{1F700}-\u{1F77F}\u{1F780}-\u{1F7FF}\u{1F800}-\u{1F8FF}\u{1F900}-\u{1F9FF}\u{1FA00}-\u{1FA6F}\u{1FA70}-\u{1FAFF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]/gu, '');
-        }
-        if (optPunct.checked) {
-          text = text.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()?"'’“”]/g, '');
-        }
-        if (optAscii.checked) {
-          text = text.replace(/[^\x00-\x7F]/g, '');
-        }
-        if (optSpaces.checked) {
-          text = text.replace(/ +/g, ' ');
-        }
+      const statCharsDiff = root.querySelector('#stat-chars-diff');
+      const statWordsOut = root.querySelector('#stat-words-out');
+      const statLinesOut = root.querySelector('#stat-lines-out');
+      const statRulesActive = root.querySelector('#stat-rules-active');
+      const charCountIn = root.querySelector('#char-count-in');
+      const charCountOut = root.querySelector('#char-count-out');
 
-        let lines = text.split('\n').map(l => l.trim());
-        if (optBlank.checked) {
-          lines = lines.filter(l => l.length > 0);
-        }
+      const btnSample = root.querySelector('#btn-sample');
+      const btnClear = root.querySelector('#btn-clear');
+      const btnCopy = root.querySelector('#btn-copy');
+      const copyLabel = root.querySelector('#copy-label');
+      const btnDownload = root.querySelector('#btn-download');
+      const fileUpload = root.querySelector('#file-upload');
 
-        output.value = lines.join('\n');
+      const SAMPLE_TEXT = `<h1>Blog Update: &ldquo;Artificial Intelligence in 2026&rdquo;</h1>\n<p class="intro">\n   The tech industry is evolving fast &amp; furiously! 🚀✨   \n   We must ensure the the algorithms remain safe.\n</p>\n\n\n<blockquote>\n   &lsquo;Innovation distinguishes between a leader and a follower.&rsquo; &mdash; Steve Jobs\n</blockquote>`;
+
+      function unescapeEntities(str) {
+        return str
+          .replace(/&amp;/g, '&')
+          .replace(/&lt;/g, '<')
+          .replace(/&gt;/g, '>')
+          .replace(/&quot;/g, '"')
+          .replace(/&#39;/g, "'")
+          .replace(/&apos;/g, "'")
+          .replace(/&ldquo;|&rdquo;/g, '"')
+          .replace(/&lsquo;|&rsquo;/g, "'")
+          .replace(/&mdash;/g, '—')
+          .replace(/&ndash;/g, '–')
+          .replace(/&nbsp;/g, ' ');
       }
 
-      input.addEventListener('input', sanitize);
-      [optHtml, optEmojis, optSpaces, optPunct, optBlank, optAscii].forEach(cb => cb.addEventListener('change', sanitize));
+      function processCleaning() {
+        let text = textIn.value;
+        const inLen = text.length;
+        charCountIn.textContent = `${inLen.toLocaleString()} chars`;
 
-      sampleBtn.addEventListener('click', () => {
-        input.value = `<p>Hello <b>World</b>! 🚀🎉 Welcome to Calculator Utility.</p>\n\n\n   This has   extra    spaces   and (punctuation)?\n<span style="color:red">Goodbye!</span>`;
-        sanitize();
+        if (!text.length) {
+          textOut.value = '';
+          statCharsDiff.textContent = '0';
+          statWordsOut.textContent = '0';
+          statLinesOut.textContent = '0';
+          statRulesActive.textContent = '0';
+          charCountOut.textContent = '0 chars';
+          return;
+        }
+
+        let activeRules = 0;
+
+        // 1. Unescape HTML Entities
+        if (chkEntities.checked) {
+          activeRules++;
+          text = unescapeEntities(text);
+        }
+
+        // 2. Normalize Quotes
+        if (chkQuotes.checked) {
+          activeRules++;
+          text = text
+            .replace(/[\u201C\u201D\u201E\u201F\u00AB\u00BB]/g, '"')
+            .replace(/[\u2018\u2019\u201A\u201B]/g, "'");
+        }
+
+        // 3. Strip HTML Tags
+        if (chkHtml.checked) {
+          activeRules++;
+          text = text.replace(/<[^>]*>/g, '');
+        }
+
+        // 4. Remove Emojis
+        if (chkEmojis.checked) {
+          activeRules++;
+          // Comprehensive unicode emoji regex
+          text = text.replace(/[\u{1F600}-\u{1F64F}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{1F1E0}-\u{1F1FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\u{1F900}-\u{1F9FF}\u{1FA70}-\u{1FAFF}]/gu, '');
+        }
+
+        // 5. Strip Non-ASCII
+        if (chkNonAscii.checked) {
+          activeRules++;
+          text = text.replace(/[^\x00-\x7F]/g, '');
+        }
+
+        // 6. Strip Punctuation
+        if (chkPunct.checked) {
+          activeRules++;
+          text = text.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()?"'\[\]]/g, ' ');
+        }
+
+        // 7. Remove Duplicate Words
+        if (chkDupWords.checked) {
+          activeRules++;
+          text = text.replace(/\b(\w+)\s+\1\b/gi, '$1');
+        }
+
+        // 8. Normalize Newlines
+        if (chkCrlf.checked) {
+          activeRules++;
+          text = text.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+        }
+
+        // 9. Split lines for whitespace, trimming, and empty line handling
+        let lines = text.split(/\r\n|\r|\n/);
+
+        if (chkTrimLines.checked) {
+          activeRules++;
+          lines = lines.map(l => l.trim());
+        }
+
+        if (chkSpaces.checked) {
+          activeRules++;
+          lines = lines.map(l => l.replace(/[ \t]+/g, ' '));
+        }
+
+        if (chkEmptyLines.checked) {
+          activeRules++;
+          lines = lines.filter(l => l.trim().length > 0);
+        }
+
+        const result = lines.join('\n');
+        textOut.value = result;
+        const outLen = result.length;
+        charCountOut.textContent = `${outLen.toLocaleString()} chars`;
+
+        // Update stats
+        const charsSaved = Math.max(0, inLen - outLen);
+        statCharsDiff.textContent = charsSaved.toLocaleString();
+        const words = result.trim().length ? result.trim().split(/\s+/).length : 0;
+        statWordsOut.textContent = words.toLocaleString();
+        statLinesOut.textContent = lines.length.toLocaleString();
+        statRulesActive.textContent = activeRules.toString();
+      }
+
+      // Checkbox listeners
+      const allCheckboxes = root.querySelectorAll('.clean-chk');
+      allCheckboxes.forEach(cb => cb.addEventListener('change', processCleaning));
+      textIn.addEventListener('input', processCleaning);
+
+      // Presets
+      root.querySelectorAll('[data-preset]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const p = btn.getAttribute('data-preset');
+          if (p === 'web') {
+            chkQuotes.checked = true;
+            chkEntities.checked = true;
+            chkHtml.checked = true;
+            chkSpaces.checked = true;
+            chkEmptyLines.checked = true;
+            chkTrimLines.checked = true;
+            chkEmojis.checked = false;
+            chkNonAscii.checked = false;
+            chkPunct.checked = false;
+            chkDupWords.checked = true;
+            chkCrlf.checked = true;
+          } else if (p === 'code') {
+            chkQuotes.checked = true;
+            chkEntities.checked = false;
+            chkHtml.checked = false;
+            chkSpaces.checked = false;
+            chkEmptyLines.checked = false;
+            chkTrimLines.checked = true;
+            chkEmojis.checked = true;
+            chkNonAscii.checked = true;
+            chkPunct.checked = false;
+            chkDupWords.checked = false;
+            chkCrlf.checked = true;
+          } else if (p === 'ascii') {
+            chkQuotes.checked = true;
+            chkEntities.checked = true;
+            chkHtml.checked = false;
+            chkSpaces.checked = true;
+            chkEmptyLines.checked = false;
+            chkTrimLines.checked = true;
+            chkEmojis.checked = true;
+            chkNonAscii.checked = true;
+            chkPunct.checked = false;
+            chkDupWords.checked = false;
+            chkCrlf.checked = true;
+          } else if (p === 'all') {
+            allCheckboxes.forEach(cb => cb.checked = true);
+          } else if (p === 'none') {
+            allCheckboxes.forEach(cb => cb.checked = false);
+          }
+          processCleaning();
+        });
       });
 
-      clearBtn.addEventListener('click', () => {
-        input.value = '';
-        output.value = '';
+      btnSample?.addEventListener('click', () => {
+        textIn.value = SAMPLE_TEXT;
+        processCleaning();
       });
 
-      copyBtn.addEventListener('click', () => {
-        if (!output.value) return;
-        navigator.clipboard.writeText(output.value);
-        const span = copyBtn.querySelector('span');
-        const orig = span.textContent;
-        span.textContent = 'Copied!';
-        setTimeout(() => span.textContent = orig, 1800);
+      btnClear?.addEventListener('click', () => {
+        textIn.value = '';
+        processCleaning();
       });
 
-      sampleBtn.click();
+      btnCopy?.addEventListener('click', async () => {
+        if (!textOut.value) return;
+        try {
+          await navigator.clipboard.writeText(textOut.value);
+          copyLabel.textContent = 'Copied!';
+          setTimeout(() => { copyLabel.textContent = 'Copy'; }, 2000);
+        } catch (e) {
+          textOut.select();
+          document.execCommand('copy');
+          copyLabel.textContent = 'Copied!';
+          setTimeout(() => { copyLabel.textContent = 'Copy'; }, 2000);
+        }
+      });
+
+      btnDownload?.addEventListener('click', () => {
+        if (!textOut.value) return;
+        const blob = new Blob([textOut.value], { type: 'text/plain;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'cleaned_sanitized_text.txt';
+        a.click();
+        URL.revokeObjectURL(url);
+      });
+
+      fileUpload?.addEventListener('change', (e) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (evt) => {
+          textIn.value = evt.target.result;
+          processCleaning();
+        };
+        reader.readAsText(file);
+      });
+
+      if (textIn.value) {
+        processCleaning();
+      }
     })();
   </script>
 </SiteLayout>

@@ -1,7 +1,17 @@
 ---
 import SiteLayout from '../../layouts/SiteLayout.astro';
 import Icon from '../../components/Icon.astro';
-import { siteName, toAbsoluteUrl, withBasePath } from '../../utils/site';
+import CalculatorParameterGuide from '../../components/calculator/CalculatorParameterGuide.astro';
+import { siteName, toAbsoluteUrl } from '../../utils/site';
+
+const parameterGuide = [
+  { id: 'cbmVolume', name: 'Total Cargo Volume (CBM / m³)', description: 'Cubic meter displacement of the total consignment, combining all carton lines.', whyItMatters: 'Primary metric for ocean freight shipping (LCL / FCL) and warehousing storage fees.', typicalRange: '0.1 to 100+ CBM', unit: 'm³' },
+  { id: 'cftVolume', name: 'Total Volume in Cubic Feet (CFT / ft³)', description: 'Imperial volume equivalent (1 CBM = 35.3147 CFT).', whyItMatters: 'Standard volume measurement used in US domestic trucking (LTL) and air cargo handling.', typicalRange: '3.5 to 3,500+ CFT', unit: 'ft³' },
+  { id: 'container20ft', name: '20ft Container Utilization', description: 'Percentage load of a standard 20ft ocean container (usable capacity ~33.2 CBM).', whyItMatters: 'Determines whether your shipment qualifies for full-container load (FCL) or less-than-container load (LCL).', typicalRange: '0% to 100%', unit: '%' },
+  { id: 'container40ft', name: '40ft Container Utilization', description: 'Percentage load of a standard 40ft ocean container (usable capacity ~67.7 CBM).', whyItMatters: 'Ideal for medium to large export consignments balancing volume and payload weight.', typicalRange: '0% to 100%', unit: '%' },
+  { id: 'container40hq', name: '40ft High Cube Utilization', description: 'Percentage load of a 40ft High Cube container with extra 1-foot vertical clearance (~76.3 CBM).', whyItMatters: 'Preferred for lightweight, high-volume, bulky cargo (furniture, apparel, plastics).', typicalRange: '0% to 100%', unit: '%' },
+  { id: 'unitSelector', name: 'Dimension Measurement Units', description: 'Supports centimeters (cm), meters (m), inches (in), or feet (ft).', whyItMatters: 'Ensures precision regardless of whether supplier packing lists use metric or imperial blueprints.', typicalRange: 'cm, m, in, ft', unit: 'unit' },
+];
 
 const pageTitle = `CBM Calculator | Cargo Volume & Container Fit (m³ & ft³) · ${siteName}`;
 const pageDesc = 'Free CBM (Cubic Meter) calculator for freight shipping. Calculate total cargo volume in m³ and ft³, multi-box consignments, and 20ft/40ft/40HQ container load percentages.';
@@ -130,9 +140,19 @@ const schemaGraph = [
         </div>
 
         <!-- Result Box -->
-        <div class="flex flex-col justify-between space-y-6 rounded-3xl border border-[color:var(--border)] bg-[color:var(--bg)] p-6 sm:p-8">
+        <div class="flex flex-col justify-between space-y-6 rounded-3xl border border-[color:var(--accent)]/30 bg-gradient-to-br from-[color:var(--accent-soft)] via-[color:var(--surface)] to-transparent p-6 sm:p-8 shadow-sm">
           <div class="space-y-5">
-            <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Consignment Volume</span>
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Consignment Volume</span>
+              <button
+                type="button"
+                class="inline-flex items-center gap-1.5 rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1.5 text-xs font-bold text-[color:var(--fg)] hover:bg-[color:var(--surface-strong)] transition cursor-pointer"
+                data-copy-btn
+              >
+                <Icon name="copy" class="w-3.5 h-3.5" />
+                <span>Copy Summary</span>
+              </button>
+            </div>
 
             <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 text-center">
               <p class="text-xs font-semibold text-[color:var(--muted)]">Total Cargo Volume</p>
@@ -181,6 +201,68 @@ const schemaGraph = [
         </div>
       </div>
     </div>
+
+    <!-- Mathematical Formula & Conversion Architecture -->
+    <section class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 sm:p-8 space-y-4">
+      <div>
+        <p class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Volume Mathematics</p>
+        <h2 class="text-xl font-bold text-[color:var(--fg)] flex items-center gap-2"><Icon name="math" class="w-4 h-4 text-[color:var(--accent)]" /><span>How Cargo Volume (CBM &amp; CFT) Is Calculated</span></h2>
+      </div>
+
+      <div class="grid gap-4 sm:grid-cols-2 text-xs sm:text-sm">
+        <div class="rounded-2xl bg-[color:var(--bg)] p-4 border border-[color:var(--border)] space-y-2">
+          <p class="font-bold text-[color:var(--fg)]">1. Metric CBM Formulas</p>
+          <div class="rounded-xl bg-[color:var(--surface)] p-3 font-mono text-xs text-[color:var(--fg)] overflow-x-auto">
+            From cm: CBM = (Length × Width × Height ÷ 1,000,000) × Qty
+          </div>
+          <p class="text-xs text-[color:var(--muted)]">
+            When dimensions are in meters: CBM = Length (m) × Width (m) × Height (m) × Quantity.
+          </p>
+        </div>
+
+        <div class="rounded-2xl bg-[color:var(--bg)] p-4 border border-[color:var(--border)] space-y-2">
+          <p class="font-bold text-[color:var(--fg)]">2. Imperial CFT &amp; Container Fit</p>
+          <div class="rounded-xl bg-[color:var(--surface)] p-3 font-mono text-xs text-[color:var(--fg)] overflow-x-auto">
+            CFT = Total CBM × 35.3147 | Fit% = (Total CBM ÷ Capacity) × 100
+          </div>
+          <p class="text-xs text-[color:var(--muted)]">
+            Evaluates against standard usable ocean capacities: 20ft (33.2 m³), 40ft (67.7 m³), 40HQ (76.3 m³).
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Step-by-Step Worked Example -->
+    <section class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 sm:p-8 space-y-4">
+      <div>
+        <p class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Step-By-Step Walkthrough</p>
+        <h2 class="text-xl font-bold text-[color:var(--fg)] flex items-center gap-2"><Icon name="document" class="w-4 h-4 text-[color:var(--accent)]" /><span>Worked Example: 50 Export Cartons (60 × 40 × 40 cm)</span></h2>
+      </div>
+
+      <div class="grid gap-4 sm:grid-cols-3 text-xs sm:text-sm">
+        <div class="rounded-2xl bg-[color:var(--bg)] p-4 border border-[color:var(--border)] space-y-1.5">
+          <p class="font-bold text-[color:var(--fg)]">1. Single Carton Volume</p>
+          <p class="text-[color:var(--muted)]">L = 60 cm, W = 40 cm, H = 40 cm.</p>
+          <p class="text-[color:var(--muted)]">Unit CBM = (60 × 40 × 40) ÷ 1,000,000.</p>
+          <p class="text-[color:var(--muted)]">Unit CBM = <strong>0.0960 m³</strong> per carton.</p>
+        </div>
+        <div class="rounded-2xl bg-[color:var(--bg)] p-4 border border-[color:var(--border)] space-y-1.5">
+          <p class="font-bold text-[color:var(--fg)]">2. Consignment Volume</p>
+          <p class="text-[color:var(--muted)]">Total CBM = 0.0960 × 50 = <strong>4.8000 m³</strong>.</p>
+          <p class="text-[color:var(--muted)]">Total CFT = 4.8000 × 35.3147 = <strong>169.51 ft³</strong>.</p>
+          <p class="text-[color:var(--muted)]">Eligible for Ocean LCL consolidation.</p>
+        </div>
+        <div class="rounded-2xl bg-[color:var(--bg)] p-4 border border-[color:var(--border)] space-y-1.5">
+          <p class="font-bold text-[color:var(--fg)]">3. Container Load Fit</p>
+          <p class="text-[color:var(--muted)]">20ft Container (33.2 m³): <strong>14.5% load</strong>.</p>
+          <p class="text-[color:var(--muted)]">40ft Container (67.7 m³): <strong>7.1% load</strong>.</p>
+          <p class="text-[color:var(--muted)]">40ft High Cube (76.3 m³): <strong>6.3% load</strong>.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Parameter Guide -->
+    <CalculatorParameterGuide parameters={parameterGuide} />
 
     <!-- FAQs -->
     <section class="space-y-4">
@@ -253,7 +335,7 @@ const schemaGraph = [
               <input type="number" min="1" step="1" value="${it.quantity}" class="mt-0.5 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-2.5 py-1.5 text-xs font-semibold text-[color:var(--fg)] outline-none" data-item-q="${idx}" />
             </div>
             <div class="flex items-end pt-3">
-              <button type="button" class="cursor-pointer text-xs text-red-500 hover:text-red-700 px-2 py-1 font-bold" data-remove-row="${idx}">✕</button>
+              <button type="button" class="cursor-pointer text-xs text-rose-500 hover:text-rose-700 hover:bg-rose-500/10 rounded-lg p-1.5 transition" data-remove-row="${idx}" aria-label="Remove row"><svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
             </div>
           </div>
         `).join('');
@@ -325,6 +407,23 @@ const schemaGraph = [
           unitSelect.value = 'cm';
           items = [{ length: 50, width: 40, height: 40, quantity: 60 }];
           render();
+        });
+      }
+
+      const copyBtn = root.querySelector('[data-copy-btn]');
+      if (copyBtn) {
+        copyBtn.addEventListener('click', async () => {
+          const text = `Consignment Cargo Volume:\n• Total Volume: ${outCbm?.textContent || ''} (${outCft?.textContent || ''})\n• 20ft Container Load: ${fit20?.textContent || ''}\n• 40ft Container Load: ${fit40?.textContent || ''}\n• 40HQ Container Load: ${fit40hq?.textContent || ''}`;
+          try {
+            await navigator.clipboard.writeText(text);
+            const originalText = copyBtn.innerHTML;
+            copyBtn.innerHTML = '<span>Copied!</span>';
+            setTimeout(() => {
+              copyBtn.innerHTML = originalText;
+            }, 2000);
+          } catch (e) {
+            console.error('Clipboard copy failed', e);
+          }
         });
       }
 

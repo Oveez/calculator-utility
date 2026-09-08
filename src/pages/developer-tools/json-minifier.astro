@@ -1,10 +1,11 @@
 ---
 import SiteLayout from '../../layouts/SiteLayout.astro';
 import Icon from '../../components/Icon.astro';
+import CalculatorParameterGuide from '../../components/calculator/CalculatorParameterGuide.astro';
 import { siteName, toAbsoluteUrl, withBasePath } from '../../utils/site';
 
-const pageTitle = `JSON Minifier & Compressor — Free Online Tool · ${siteName}`;
-const pageDesc = 'Minify and compress JSON strings online. Strips whitespaces, tabs, and newlines to reduce payload size for web APIs and database storage. 100% private in-browser tool.';
+const pageTitle = `JSON Minifier & Compressor — Instant Byte Savings · ${siteName}`;
+const pageDesc = 'Minify and compress JSON payloads into single-line format. Calculate exact byte savings, strip whitespace, escape unicode, and optimize API bandwidth.';
 const canonicalUrl = toAbsoluteUrl('/developer-tools/json-minifier/');
 
 const breadcrumbItems = [
@@ -15,12 +16,16 @@ const breadcrumbItems = [
 
 const schemaFaq = [
   {
-    question: 'Why should I minify JSON payloads?',
-    answer: 'Minified JSON removes all non-functional formatting characters like line breaks, indentation spaces, and tabs. This reduces payload byte size by 20% to 50%, saving bandwidth and speeding up API network transfers.',
+    question: 'How much bandwidth can JSON minification save?',
+    answer: 'Pretty-printed JSON with 2-space or 4-space indentation often has 20% to 50% of its total file size composed purely of whitespace and newlines. Minification strips these non-functional bytes, dramatically reducing HTTP payload sizes, caching footprints, and network latency.',
   },
   {
-    question: 'Does minification alter data values or numbers?',
-    answer: 'No. Minification strictly strips formatting whitespace outside of string literals. All string values, numbers, booleans, and nulls remain identical.',
+    question: 'Does JSON minification change data types or values?',
+    answer: 'No. Minification parses the payload strictly according to the RFC 8259 JSON specification and recompresses it without any structural or data type modifications. Strings, numbers, arrays, and boolean values remain 100% identical.',
+  },
+  {
+    question: 'Are my JSON payloads securely processed?',
+    answer: 'Yes. All parsing, minification, and byte calculations run 100% locally in your web browser. No JSON files or data ever leave your device.',
   },
 ];
 
@@ -28,7 +33,7 @@ const schemaGraph = [
   {
     '@context': 'https://schema.org',
     '@type': 'WebApplication',
-    name: 'JSON Minifier',
+    name: 'JSON Minifier & Compressor',
     url: canonicalUrl,
     applicationCategory: 'DeveloperApplication',
     operatingSystem: 'All',
@@ -86,45 +91,78 @@ const schemaGraph = [
     <header class="space-y-3">
       <div class="inline-flex items-center gap-2 rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1 text-xs font-semibold text-[color:var(--muted)]">
         <span class="inline-block h-2 w-2 rounded-full bg-emerald-500"></span>
-        <span>Instant Payload Compression</span>
+        <span>Instant Payload Compression &bull; Zero Server Latency</span>
       </div>
       <h1 class="text-2xl sm:text-4xl font-extrabold tracking-tight text-[color:var(--fg)]">
         JSON Minifier &amp; Compressor
       </h1>
       <p class="max-w-2xl text-xs sm:text-sm text-[color:var(--muted)] leading-relaxed">
-        Compress JSON into a compact single line. Calculate exact byte savings and copy minified payloads for production APIs and config storage.
+        Compress formatted JSON payloads into compact single-line strings. Calculate exact byte savings, strip formatting whitespace, and export minified files for production APIs and cache stores.
       </p>
     </header>
 
+    <!-- Telemetry Bar -->
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+      <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3 text-center">
+        <p class="text-[10px] font-bold uppercase tracking-wider text-[color:var(--muted)]">Original Size</p>
+        <p id="stat-orig-size" class="mt-1 font-mono text-base font-bold text-[color:var(--fg)]">0 B</p>
+      </div>
+      <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3 text-center">
+        <p class="text-[10px] font-bold uppercase tracking-wider text-[color:var(--muted)]">Minified Size</p>
+        <p id="stat-min-size" class="mt-1 font-mono text-base font-bold text-cyan-500 dark:text-cyan-400">0 B</p>
+      </div>
+      <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3 text-center">
+        <p class="text-[10px] font-bold uppercase tracking-wider text-[color:var(--muted)]">Bytes Saved</p>
+        <p id="stat-saved-bytes" class="mt-1 font-mono text-base font-bold text-[color:var(--fg)]">0 B</p>
+      </div>
+      <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3 text-center">
+        <p class="text-[10px] font-bold uppercase tracking-wider text-[color:var(--muted)]">Compression %</p>
+        <p id="stat-saved-pct" class="mt-1 font-mono text-base font-bold text-cyan-500 dark:text-cyan-400">0%</p>
+      </div>
+    </div>
+
+    <!-- Main Workspace -->
     <div class="grid gap-6 lg:grid-cols-2">
-      <!-- Input -->
+      <!-- Input Column -->
       <div class="space-y-3">
         <div class="flex items-center justify-between">
           <label for="min-input" class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">
             Formatted JSON Input
           </label>
           <div class="flex items-center gap-2 text-xs">
-            <button type="button" data-sample-btn class="text-[color:var(--primary)] hover:underline font-semibold">Sample</button>
+            <button type="button" data-sample-btn class="text-[color:var(--primary)] hover:underline font-semibold">Load Sample</button>
             <span class="text-[color:var(--border)]">|</span>
             <button type="button" data-clear-btn class="text-[color:var(--muted)] hover:text-[color:var(--fg)]">Clear</button>
           </div>
         </div>
+
         <textarea
           id="min-input"
           rows="16"
           class="w-full font-mono text-xs leading-relaxed rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-[color:var(--fg)] focus:border-[color:var(--border-strong)] focus:outline-hidden"
           placeholder="Paste formatted JSON here to minify..."
         ></textarea>
-        <button
-          type="button"
-          data-minify-btn
-          class="w-full rounded-xl bg-[color:var(--fg)] py-2.5 text-xs font-bold text-[color:var(--bg)] shadow-xs transition hover:opacity-90"
-        >
-          Minify JSON
-        </button>
+
+        <!-- Compression Controls -->
+        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 space-y-3 text-xs">
+          <div class="flex flex-wrap items-center justify-between gap-3">
+            <label class="flex items-center gap-2 cursor-pointer">
+              <input type="checkbox" id="escape-unicode" class="rounded accent-[color:var(--fg)]" />
+              <span>Escape non-ASCII / Unicode (\uXXXX)</span>
+            </label>
+          </div>
+
+          <button
+            type="button"
+            data-minify-btn
+            class="w-full rounded-xl bg-[color:var(--fg)] py-2.5 text-xs font-bold text-[color:var(--bg)] shadow-xs transition hover:opacity-90"
+          >
+            Minify JSON
+          </button>
+        </div>
       </div>
 
-      <!-- Output -->
+      <!-- Output Column -->
       <div class="space-y-3">
         <div class="flex items-center justify-between">
           <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Minified Output</span>
@@ -133,8 +171,13 @@ const schemaGraph = [
               <Icon name="copy" class="w-3.5 h-3.5" />
               <span>Copy</span>
             </button>
+            <span class="text-[color:var(--border)]">|</span>
+            <button type="button" data-dl-btn class="text-xs font-bold text-[color:var(--fg)] hover:underline">
+              Download .min.json
+            </button>
           </div>
         </div>
+
         <textarea
           id="min-output"
           rows="16"
@@ -143,23 +186,62 @@ const schemaGraph = [
           placeholder="Minified single-line JSON will appear here..."
         ></textarea>
 
-        <!-- Stats Bar -->
-        <div data-stats-bar class="grid grid-cols-3 gap-2 rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3 text-center text-xs">
-          <div>
-            <p class="text-[10px] text-[color:var(--muted)]">Original Size</p>
-            <p data-orig-size class="font-mono font-bold text-[color:var(--fg)]">0 B</p>
-          </div>
-          <div>
-            <p class="text-[10px] text-[color:var(--muted)]">Minified Size</p>
-            <p data-min-size class="font-mono font-bold text-[color:var(--fg)]">0 B</p>
-          </div>
-          <div>
-            <p class="text-[10px] text-[color:var(--muted)]">Saved</p>
-            <p data-saved-pct class="font-mono font-bold text-emerald-500">0%</p>
-          </div>
-        </div>
+        <div id="min-err" class="hidden rounded-xl border border-red-500/30 bg-red-500/10 p-3 text-xs text-red-600 dark:text-red-400 font-mono"></div>
       </div>
     </div>
+
+    <!-- Parameter Guide & Worked Example -->
+    <CalculatorParameterGuide
+      title="JSON Minification Mechanics & Network Optimization"
+      description="Understanding whitespace reduction, HTTP compression interplay (Gzip/Brotli), and RFC 8259 compliance."
+      parameters={[
+        {
+          name: "Whitespace Stripping",
+          type: "Parser Routine",
+          defaultValue: "Complete",
+          description: "Removes all structural whitespace characters (spaces, tabs, carriage returns, newlines) outside of quoted string literals.",
+        },
+        {
+          name: "Unicode Escaping (\\uXXXX)",
+          type: "Boolean",
+          defaultValue: "false",
+          description: "Converts UTF-8 characters above ASCII 127 into hexadecimal unicode escape sequences (e.g. \\u00a9 for ©), ensuring compatibility with legacy ASCII-only backends.",
+        },
+        {
+          name: "Interplay with Gzip & Brotli",
+          type: "Network Architecture",
+          defaultValue: "Additive",
+          description: "Minification reduces the initial token count before HTTP compression algorithms (Gzip or Brotli) run, reducing total CPU decompression overhead on mobile clients.",
+        },
+      ]}
+      workedExample={{
+        title: "Minifying API Response Payloads for Mobile Clients",
+        description: "Compress a 4-space formatted JSON API user payload to optimize network transfer sizes.",
+        formula: "JSON.stringify(JSON.parse(payload))",
+        steps: [
+          {
+            step: "Analyze Initial Payload",
+            calculation: "Formatted string contains 12 lines with 4-space indentation (total 248 bytes).",
+            result: "Raw size: 248 B",
+          },
+          {
+            step: "Strip Structural Whitespace",
+            calculation: "Eliminate 11 newline breaks and 36 indentation space characters.",
+            result: "Eliminated 47 whitespace bytes",
+          },
+          {
+            step: "Generate Minified Stream",
+            calculation: "Single-line compacted payload output (142 bytes).",
+            result: "Minified size: 142 B",
+          },
+          {
+            step: "Compute Bandwidth Savings",
+            calculation: "(248 - 142) / 248 = 42.7% reduction in raw payload transmission.",
+            result: "-42.7% saved",
+          },
+        ],
+      }}
+    />
 
     <!-- FAQs -->
     <section class="space-y-4">
@@ -169,7 +251,7 @@ const schemaGraph = [
           <details class="group rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
             <summary class="cursor-pointer list-none font-semibold text-sm sm:text-base text-[color:var(--fg)] flex items-center justify-between gap-4">
               <span>{faq.question}</span>
-              <span class="text-xs text-[color:var(--muted)] group-open:rotate-180 transition-transform">▼</span>
+              <span class="text-xs text-[color:var(--muted)] group-open:rotate-180 transition-transform">&#9660;</span>
             </summary>
             <p class="mt-3 text-xs sm:text-sm leading-relaxed text-[color:var(--muted)]">
               {faq.answer}
@@ -187,47 +269,96 @@ const schemaGraph = [
 
       const input = root.querySelector('#min-input');
       const output = root.querySelector('#min-output');
+      const escapeUnicodeCheck = root.querySelector('#escape-unicode');
       const minifyBtn = root.querySelector('[data-minify-btn]');
       const copyBtn = root.querySelector('[data-copy-btn]');
+      const dlBtn = root.querySelector('[data-dl-btn]');
       const clearBtn = root.querySelector('[data-clear-btn]');
       const sampleBtn = root.querySelector('[data-sample-btn]');
-      const origSize = root.querySelector('[data-orig-size]');
-      const minSize = root.querySelector('[data-min-size]');
-      const savedPct = root.querySelector('[data-saved-pct]');
+      const errBox = root.querySelector('#min-err');
+
+      const statOrigSize = root.querySelector('#stat-orig-size');
+      const statMinSize = root.querySelector('#stat-min-size');
+      const statSavedBytes = root.querySelector('#stat-saved-bytes');
+      const statSavedPct = root.querySelector('#stat-saved-pct');
+
+      function formatBytes(bytes) {
+        if (bytes === 0) return '0 B';
+        const k = 1024;
+        const sizes = ['B', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+      }
+
+      function escapeUnicode(str) {
+        return str.replace(/[\u007f-\uffff]/g, (c) => {
+          return '\\u' + ('0000' + c.charCodeAt(0).toString(16)).slice(-4);
+        });
+      }
 
       function minify() {
+        errBox.classList.add('hidden');
         const raw = input.value.trim();
+
         if (!raw) {
           output.value = '';
-          origSize.textContent = '0 B';
-          minSize.textContent = '0 B';
-          savedPct.textContent = '0%';
+          statOrigSize.textContent = '0 B';
+          statMinSize.textContent = '0 B';
+          statSavedBytes.textContent = '0 B';
+          statSavedPct.textContent = '0%';
           return;
         }
 
         try {
           const parsed = JSON.parse(raw);
-          const minified = JSON.stringify(parsed);
+          let minified = JSON.stringify(parsed);
+
+          if (escapeUnicodeCheck.checked) {
+            minified = escapeUnicode(minified);
+          }
+
           output.value = minified;
 
           const origBytes = new Blob([raw]).size;
           const minBytes = new Blob([minified]).size;
           const diff = origBytes - minBytes;
-          const pct = origBytes > 0 ? Math.round((diff / origBytes) * 100) : 0;
+          const pct = origBytes > 0 ? ((diff / origBytes) * 100).toFixed(1) : 0;
 
-          origSize.textContent = origBytes + ' B';
-          minSize.textContent = minBytes + ' B';
-          savedPct.textContent = pct > 0 ? `-${pct}% (${diff} B)` : '0%';
+          statOrigSize.textContent = formatBytes(origBytes);
+          statMinSize.textContent = formatBytes(minBytes);
+          statSavedBytes.textContent = formatBytes(Math.max(0, diff));
+          statSavedPct.textContent = diff > 0 ? `-${pct}%` : '0%';
+
         } catch (e) {
-          output.value = 'Invalid JSON: ' + e.message;
+          errBox.classList.remove('hidden');
+          errBox.textContent = 'Invalid JSON: ' + e.message;
+          output.value = '';
+          statOrigSize.textContent = formatBytes(new Blob([raw]).size);
+          statMinSize.textContent = '0 B';
+          statSavedBytes.textContent = '0 B';
+          statSavedPct.textContent = '0%';
         }
       }
 
       minifyBtn.addEventListener('click', minify);
       input.addEventListener('input', minify);
+      escapeUnicodeCheck.addEventListener('change', minify);
 
       sampleBtn.addEventListener('click', () => {
-        input.value = `{\n  "name": "Calculator Utility",\n  "tier": "Free",\n  "tools_count": 85,\n  "supported_formats": [\n    "JSON",\n    "CSV",\n    "YAML",\n    "XML"\n  ]\n}`;
+        input.value = JSON.stringify({
+          app_name: "Calculator Utility",
+          version: "2026.9.7",
+          production: true,
+          suite: {
+            developer_tools: 17,
+            data_tools: 6,
+            features: ["No tracking", "Client-side only", "High performance", "Zero latency"]
+          },
+          metadata: {
+            copyright: "© 2026 CalculatorUtility.tech",
+            locale: "en-US"
+          }
+        }, null, 4);
         minify();
       });
 
@@ -244,6 +375,19 @@ const schemaGraph = [
         span.textContent = 'Copied!';
         setTimeout(() => span.textContent = orig, 1800);
       });
+
+      dlBtn.addEventListener('click', () => {
+        if (!output.value) return;
+        const blob = new Blob([output.value], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'payload.min.json';
+        a.click();
+        URL.revokeObjectURL(url);
+      });
+
+      sampleBtn.click();
     })();
   </script>
 </SiteLayout>

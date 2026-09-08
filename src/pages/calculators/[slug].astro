@@ -1,15 +1,19 @@
 ---
 import CalculatorEngine from '../../components/CalculatorEngine.astro';
 import CalculatorLayout from '../../layouts/CalculatorLayout.astro';
+import CalculatorParameterGuide from '../../components/calculator/CalculatorParameterGuide.astro';
+import Icon from '../../components/Icon.astro';
 import { calculators } from '../../data/calculators';
 import type { CalculatorConfig } from '../../types/calculator';
 import { getCalculatorBreadcrumbs, getCalculatorPath } from '../../utils/calculators';
 
 export function getStaticPaths() {
-  return calculators.map((calculator) => ({
-    params: { slug: calculator.slug },
-    props: { calculator },
-  }));
+  return calculators
+    .filter((calculator) => calculator.slug !== 'currency-converter')
+    .map((calculator) => ({
+      params: { slug: calculator.slug },
+      props: { calculator },
+    }));
 }
 
 interface Props {
@@ -25,7 +29,7 @@ const relatedCalculators = calculator.relatedSlugs
 <CalculatorLayout calculator={calculator} breadcrumbs={getCalculatorBreadcrumbs(calculator)} canonical={getCalculatorPath(calculator.slug)}>
   <article class="space-y-10">
     <header class="space-y-4">
-      <p class="inline-flex rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-4 py-2 text-sm font-medium text-[color:var(--accent)]">
+      <p class="inline-flex rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-4 py-2 text-sm font-medium text-[color:var(--accent)] shadow-xs">
         {calculator.category}
       </p>
       <h1 class="max-w-4xl text-4xl font-semibold tracking-tight text-[color:var(--fg)] sm:text-5xl">{calculator.title}</h1>
@@ -35,32 +39,49 @@ const relatedCalculators = calculator.relatedSlugs
     <CalculatorEngine calculator={calculator} />
 
     <section class="grid gap-6 lg:grid-cols-2">
-      <article class="rounded-[1.75rem] border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-6 shadow-sm">
-        <h2 class="text-2xl font-semibold tracking-tight text-[color:var(--fg)]">Introduction</h2>
+      <article class="rounded-[1.75rem] border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-6 shadow-sm transition hover:border-[color:var(--accent)]/30">
+        <h2 class="text-2xl font-semibold tracking-tight text-[color:var(--fg)] flex items-center gap-2">
+          <Icon name="sparkles" class="w-5 h-5 text-[color:var(--accent)]" />
+          <span>Introduction</span>
+        </h2>
         <p class="mt-4 text-[color:var(--muted)]">{calculator.content.intro}</p>
       </article>
 
-      <article class="rounded-[1.75rem] border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-6 shadow-sm">
-        <h2 class="text-2xl font-semibold tracking-tight text-[color:var(--fg)]">How it works</h2>
+      <article class="rounded-[1.75rem] border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-6 shadow-sm transition hover:border-[color:var(--accent)]/30">
+        <h2 class="text-2xl font-semibold tracking-tight text-[color:var(--fg)] flex items-center gap-2">
+          <Icon name="gear" class="w-5 h-5 text-[color:var(--accent)]" />
+          <span>How it works</span>
+        </h2>
         <p class="mt-4 text-[color:var(--muted)]">{calculator.content.howItWorks}</p>
       </article>
     </section>
 
-    <section class="rounded-[1.75rem] border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-6 shadow-sm">
-      <h2 class="text-2xl font-semibold tracking-tight text-[color:var(--fg)]">Formula explanation</h2>
+    <section class="rounded-[1.75rem] border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-6 shadow-sm transition hover:border-[color:var(--accent)]/30">
+      <h2 class="text-2xl font-semibold tracking-tight text-[color:var(--fg)] flex items-center gap-2">
+        <Icon name="math" class="w-5 h-5 text-[color:var(--accent)]" />
+        <span>Formula explanation</span>
+      </h2>
       <p class="mt-4 max-w-4xl text-[color:var(--muted)]">{calculator.content.formulaExplanation}</p>
     </section>
+
+    <CalculatorParameterGuide
+      parameters={calculator.parametersGuide}
+      inputs={calculator.inputs}
+    />
 
     <section class="space-y-6">
       <div>
         <p class="text-sm font-semibold uppercase tracking-[0.24em] text-[color:var(--accent)]">Examples</p>
-        <h2 class="mt-2 text-2xl font-semibold tracking-tight text-[color:var(--fg)]">Worked examples</h2>
+        <h2 class="mt-2 text-2xl font-semibold tracking-tight text-[color:var(--fg)] flex items-center gap-2">
+          <Icon name="document" class="w-5 h-5 text-[color:var(--accent)]" />
+          <span>Worked examples</span>
+        </h2>
       </div>
 
       {calculator.content.examples.length > 0 ? (
         <div class="grid gap-4 lg:grid-cols-2">
           {calculator.content.examples.map((example) => (
-            <article class="rounded-[1.75rem] border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-6 shadow-sm">
+            <article class="rounded-[1.75rem] border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-6 shadow-sm transition hover:border-[color:var(--accent)]/30">
               <h3 class="text-xl font-semibold tracking-tight text-[color:var(--fg)]">{example.title}</h3>
               <p class="mt-2 text-sm leading-6 text-[color:var(--muted)]">{example.description}</p>
               <dl class="mt-5 space-y-2 rounded-3xl border border-[color:var(--border)] bg-[color:var(--bg)] p-4 text-sm text-[color:var(--muted)]">
@@ -71,7 +92,7 @@ const relatedCalculators = calculator.relatedSlugs
                   </div>
                 ))}
                 {example.result && (
-                  <div class="flex items-start justify-between gap-4 border-t border-[color:var(--border)] pt-3">
+                  <div class="flex items-start justify-between gap-4 border-t border-[color:var(--border)] pt-3 text-[color:var(--accent)] font-semibold">
                     <dt class="font-medium text-[color:var(--fg)]">Result</dt>
                     <dd>{example.result}</dd>
                   </div>

@@ -1,7 +1,8 @@
 ---
 import SiteLayout from '../../layouts/SiteLayout.astro';
 import Icon from '../../components/Icon.astro';
-import { siteName, toAbsoluteUrl, withBasePath } from '../../utils/site';
+import CalculatorParameterGuide from '../../components/calculator/CalculatorParameterGuide.astro';
+import { siteName, toAbsoluteUrl } from '../../utils/site';
 
 const pageTitle = `PDF Splitter — Split Multi-Page PDF into Files Online · ${siteName}`;
 const pageDesc = 'Split multi-page PDF documents into individual single-page files or custom page ranges online. 100% private in-browser tool.';
@@ -15,8 +16,20 @@ const breadcrumbItems = [
 
 const schemaFaq = [
   {
-    question: 'Can I split large PDF files without uploading them?',
-    answer: 'Yes. All parsing and splitting operations execute in your browser’s local memory using Web APIs, keeping your files 100% private.',
+    question: 'Can I split large PDF files without uploading them to a cloud server?',
+    answer: 'Yes. All parsing, page tree extraction, and PDF binary partitioning execute directly in your browser’s local memory using client-side JavaScript, ensuring 100% data confidentiality.',
+  },
+  {
+    question: 'What splitting modes are supported?',
+    answer: 'You can split by custom ranges (e.g. 1-3, 5-8), extract all pages into individual single-page PDFs, split by fixed chunk intervals (e.g. every 2 pages), separate into Even vs. Odd page collections, or bisect in half.',
+  },
+  {
+    question: 'Can I preview the split parts before downloading?',
+    answer: 'Yes! The live Partition Preview table visualizes every generated document segment, page counts, and page indices before any file generation begins.',
+  },
+  {
+    question: 'Are my confidential documents uploaded anywhere?',
+    answer: 'No. All PDF binary manipulations run strictly in your web browser memory. No files, metadata, or document data are ever transmitted to any server.',
   },
 ];
 
@@ -54,12 +67,54 @@ const schemaGraph = [
     })),
   },
 ];
+
+const parameterGuideData = [
+  {
+    name: 'Partition Strategy',
+    type: 'Custom Ranges | Fixed N Pages | Single Pages | Even / Odd | Bisect Half',
+    description: 'Controls how the master PDF page catalog is partitioned into target documents. Custom Ranges allows selective extraction of specific sheets.',
+  },
+  {
+    name: 'Custom Range Syntax',
+    type: 'Comma-separated ranges (e.g. 1-3, 5, 8-12)',
+    description: 'Specifies inclusive page bounds. 1-based page indexing is used so "1-3" extracts pages 1, 2, and 3.',
+  },
+  {
+    name: 'Fixed Chunk Interval',
+    type: 'Integer (1 to Total Pages)',
+    description: 'Divides the document into uniform blocks of N pages each. Useful for batch printing or chunked review workflows.',
+  },
+];
+
+const workedExampleData = {
+  title: 'Splitting a 10-Page Document into 3-Page Chunks',
+  description: 'Step-by-step chunked partitioning of a master PDF document into discrete sub-documents.',
+  formula: 'Input Pages [1..N] → Partition Function(Strategy) → Sub-Documents [PDF₁, PDF₂, ... PDFₖ]',
+  steps: [
+    {
+      step: 'Document Catalog Inspection',
+      calculation: 'Master PDF contains 10 total pages. Selected Fixed Chunk Interval = 3 pages.',
+      result: 'Calculated 4 partition segments: [1-3], [4-6], [7-9], [10].',
+    },
+    {
+      step: 'Page Extraction & Tree Replication',
+      calculation: 'Cloned page dictionaries for each segment into isolated PDFDocument instances.',
+      result: 'All internal fonts, annotations, and vector streams preserved for each slice.',
+    },
+    {
+      step: 'Binary Packaging & Preview Generation',
+      calculation: 'Generated 4 distinct PDF blobs with customized filenames (document-part-1.pdf to part-4.pdf).',
+      result: 'Interactive download table populated with file sizes and page ranges.',
+    },
+  ],
+};
 ---
 
 <SiteLayout title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
   <script is:inline type="application/ld+json" set:html={JSON.stringify(schemaGraph)} />
 
   <article class="space-y-10 py-2" data-pdf-split-app>
+    <!-- Breadcrumb -->
     <nav aria-label="Breadcrumb">
       <ol class="flex flex-wrap items-center gap-2 text-xs text-[color:var(--muted)]">
         {breadcrumbItems.map((item, index) => (
@@ -79,36 +134,39 @@ const schemaGraph = [
       </ol>
     </nav>
 
+    <!-- Header -->
     <header class="space-y-3">
       <div class="inline-flex items-center gap-2 rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1 text-xs font-semibold text-[color:var(--muted)]">
         <span class="inline-block h-2 w-2 rounded-full bg-emerald-500"></span>
-        <span>Local Document Partitioning</span>
+        <span>Local PDF Partition Engine • Range Validator • Even/Odd Split</span>
       </div>
       <h1 class="text-2xl sm:text-4xl font-extrabold tracking-tight text-[color:var(--fg)]">
         PDF Splitter
       </h1>
-      <p class="max-w-2xl text-xs sm:text-sm text-[color:var(--muted)] leading-relaxed">
-        Separate multi-page PDF documents into individual page files in your browser.
+      <p class="max-w-3xl text-xs sm:text-sm text-[color:var(--muted)] leading-relaxed">
+        Separate multi-page PDF documents into individual files, custom page ranges, or fixed chunks in your browser with zero remote server data uploads.
       </p>
     </header>
 
     <div class="space-y-6">
-      <!-- Upload Dropzone with Live Visual Preview Window -->
-      <div id="dropzone-container" class="relative overflow-hidden rounded-3xl border-2 border-dashed border-[color:var(--border)] bg-[color:var(--surface)] p-6 sm:p-8 text-center transition hover:border-[color:var(--border-strong)]">
+      <!-- Upload Dropzone -->
+      <div id="dropzone-container" class="relative overflow-hidden rounded-3xl border-2 border-dashed border-[color:var(--border)] bg-[color:var(--surface)] p-6 sm:p-10 text-center transition hover:border-[color:var(--accent)]">
         <input type="file" id="pdf-file" accept="application/pdf" class="hidden" />
-        
-        <!-- Default Empty State -->
+
         <label for="pdf-file" id="upload-prompt" class="cursor-pointer space-y-3 block">
           <div id="upload-icon-box" class="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-[color:var(--surface-strong)] text-[color:var(--fg)] shadow-xs">
             <Icon name="document" class="w-7 h-7 text-[color:var(--accent)]" />
           </div>
           <div>
-            <p class="text-sm font-bold text-[color:var(--fg)]">Choose or Drag &amp; Drop a PDF document to split</p>
-            <p class="text-xs text-[color:var(--muted)] mt-1">100% Private in Browser • Supports Multi-Page Documents</p>
+            <p class="text-base font-bold text-[color:var(--fg)]">Choose a PDF or drag &amp; drop to split</p>
+            <p class="text-xs text-[color:var(--muted)] mt-1">100% Private In-Browser Processing • Supports Multi-Page Documents</p>
           </div>
+          <span class="inline-flex items-center gap-2 rounded-xl bg-[color:var(--fg)] px-5 py-2 text-xs font-bold text-[color:var(--bg)] shadow-xs">
+            Select PDF File
+          </span>
         </label>
 
-        <!-- Visual Upload Preview Window (Shown when file is selected) -->
+        <!-- Visual Upload Preview Window -->
         <div id="file-preview-card" class="hidden flex flex-col sm:flex-row items-center justify-between gap-4 rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] p-4 text-left">
           <div class="flex items-center gap-3.5 min-w-0">
             <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-red-500/10 text-red-500 font-black text-xs border border-red-500/20">
@@ -116,7 +174,7 @@ const schemaGraph = [
             </div>
             <div class="min-w-0 space-y-0.5">
               <p id="doc-name" class="text-xs sm:text-sm font-bold text-[color:var(--fg)] truncate">document.pdf</p>
-              <p class="text-[11px] text-[color:var(--muted)]"><span id="doc-size">-</span> • <strong id="total-pgs" class="text-[color:var(--fg)]">0</strong> pages detected</p>
+              <p class="text-[11px] text-[color:var(--muted)]"><span id="doc-size">-</span> • <strong id="total-pgs" class="text-[color:var(--accent)]">0</strong> pages detected</p>
             </div>
           </div>
           <label for="pdf-file" class="cursor-pointer shrink-0 rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] px-3.5 py-1.5 text-xs font-semibold text-[color:var(--muted)] hover:text-[color:var(--fg)] hover:bg-[color:var(--surface-strong)] transition">
@@ -126,50 +184,97 @@ const schemaGraph = [
       </div>
 
       <!-- Splitting Configuration Card -->
-      <div id="split-card" class="hidden space-y-5 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6">
-        <h3 class="text-sm font-bold text-[color:var(--fg)] border-b border-[color:var(--border)] pb-2.5">
-          Select Splitting Options
-        </h3>
-
-        <div class="space-y-4 text-xs">
+      <div id="split-card" class="hidden space-y-6 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 sm:p-6">
+        <div class="grid gap-4 sm:grid-cols-2 md:grid-cols-3 text-xs">
           <div>
-            <label for="split-mode" class="font-bold text-[color:var(--fg)] block mb-1">Splitting Mode:</label>
-            <select id="split-mode" class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-[color:var(--fg)]">
+            <label for="split-mode" class="font-bold text-[color:var(--fg)] block mb-1.5">Partition Strategy</label>
+            <select id="split-mode" class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-[color:var(--fg)] font-semibold">
               <option value="custom">Custom Page Ranges (e.g. 1-3, 5, 7-10)</option>
-              <option value="single">Split into Individual Single Pages (All Pages)</option>
-              <option value="half">Split in Half (Two Separate PDFs)</option>
+              <option value="fixed">Fixed Chunk Intervals (Every N Pages)</option>
+              <option value="single">Single Pages (Export Each Page Separately)</option>
+              <option value="even-odd">Even vs. Odd Pages (Two Documents)</option>
+              <option value="half">Bisect in Half (Part 1 &amp; Part 2)</option>
             </select>
           </div>
 
-          <!-- Custom Page Range Input (Shown when custom mode is active) -->
-          <div id="custom-range-container" class="space-y-1.5">
-            <label for="page-ranges-input" class="font-bold text-[color:var(--fg)] block">
-              Enter Custom Page Ranges or Numbers:
-            </label>
+          <!-- Custom Page Range Input -->
+          <div id="custom-range-container">
+            <label for="page-ranges-input" class="font-bold text-[color:var(--fg)] block mb-1.5">Page Range Specification</label>
             <input
               type="text"
               id="page-ranges-input"
               placeholder="e.g. 1-3, 5, 7-10"
               value="1-2"
-              class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-[color:var(--fg)] font-mono"
+              class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-[color:var(--fg)] font-mono font-semibold"
             />
-            <p class="text-[11px] text-[color:var(--muted)]">
-              Use commas for individual pages or hyphens for ranges (e.g., <code class="font-mono text-[color:var(--fg)]">1-3, 5, 8-12</code>).
-            </p>
           </div>
 
-          <div id="split-status-alert" class="hidden rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-3 text-xs text-emerald-700 dark:text-emerald-300"></div>
+          <!-- Fixed Chunk Size Input -->
+          <div id="fixed-chunk-container" class="hidden">
+            <label for="chunk-size-input" class="font-bold text-[color:var(--fg)] block mb-1.5">Pages Per File</label>
+            <input
+              type="number"
+              id="chunk-size-input"
+              min="1"
+              value="2"
+              class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-[color:var(--fg)] font-mono font-semibold"
+            />
+          </div>
+
+          <div>
+            <label for="filename-pattern" class="font-bold text-[color:var(--fg)] block mb-1.5">File Naming Suffix</label>
+            <select id="filename-pattern" class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-[color:var(--fg)] font-semibold">
+              <option value="part">_part_1.pdf, _part_2.pdf</option>
+              <option value="pages">_pages_1-3.pdf, _pages_4-6.pdf</option>
+            </select>
+          </div>
         </div>
 
-        <button
-          type="button"
-          id="split-btn"
-          class="w-full rounded-xl bg-[color:var(--fg)] py-3 text-xs font-bold text-[color:var(--bg)] shadow-xs transition hover:opacity-90 active:scale-95 cursor-pointer"
-        >
-          Split &amp; Download PDF
-        </button>
+        <!-- Partition Preview Audit Table -->
+        <div class="space-y-2 pt-2 border-t border-[color:var(--border)]">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Calculated Output Files:</span>
+            <span id="partition-count-badge" class="rounded-full bg-[color:var(--surface-strong)] px-2.5 py-0.5 font-mono text-[11px] font-bold text-[color:var(--accent)]">
+              0 parts
+            </span>
+          </div>
+
+          <div class="overflow-x-auto rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)]">
+            <table class="w-full text-left text-xs">
+              <thead class="border-b border-[color:var(--border)] bg-[color:var(--surface)] text-[11px] font-bold uppercase tracking-wider text-[color:var(--muted)]">
+                <tr>
+                  <th class="p-3 w-12 text-center">#</th>
+                  <th class="p-3">Generated Filename</th>
+                  <th class="p-3">Included Pages</th>
+                  <th class="p-3 w-28 text-center">Page Count</th>
+                </tr>
+              </thead>
+              <tbody id="partition-tbody" class="divide-y divide-[color:var(--border)]"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Action Button & Status -->
+        <div class="space-y-2 pt-2 border-t border-[color:var(--border)]">
+          <button
+            type="button"
+            id="split-btn"
+            class="w-full rounded-xl bg-[color:var(--fg)] py-3 text-xs font-bold text-[color:var(--bg)] shadow-xs transition hover:opacity-90 active:scale-95 cursor-pointer flex items-center justify-center gap-2"
+          >
+            <span>⚡ Split &amp; Download PDF Files</span>
+          </button>
+          <div id="split-status-alert" class="hidden text-center text-xs text-emerald-600 dark:text-emerald-400 font-semibold"></div>
+        </div>
       </div>
     </div>
+
+    <!-- Parameter Guide & Worked Example -->
+    <CalculatorParameterGuide
+      title="PDF Splitting Geometry & Partition Architecture"
+      description="Understand in-memory vector page extraction, dictionary references, subset catalog creation, and range syntax rules."
+      parameters={parameterGuideData}
+      workedExample={workedExampleData}
+    />
 
     <!-- FAQs -->
     <section class="space-y-4">
@@ -199,21 +304,30 @@ const schemaGraph = [
       if (!root) return;
 
       const fileIn = root.querySelector('#pdf-file');
+      const dropzone = root.querySelector('#dropzone-container');
       const uploadPrompt = root.querySelector('#upload-prompt');
       const previewCard = root.querySelector('#file-preview-card');
       const card = root.querySelector('#split-card');
       const docName = root.querySelector('#doc-name');
       const docSize = root.querySelector('#doc-size');
       const totalPgs = root.querySelector('#total-pgs');
+
       const splitMode = root.querySelector('#split-mode');
       const customRangeContainer = root.querySelector('#custom-range-container');
       const pageRangesInput = root.querySelector('#page-ranges-input');
+      const fixedChunkContainer = root.querySelector('#fixed-chunk-container');
+      const chunkSizeInput = root.querySelector('#chunk-size-input');
+      const filenamePatternSelect = root.querySelector('#filename-pattern');
+
+      const partitionTbody = root.querySelector('#partition-tbody');
+      const partitionCountBadge = root.querySelector('#partition-count-badge');
       const splitBtn = root.querySelector('#split-btn');
       const statusAlert = root.querySelector('#split-status-alert');
 
       let currentArrayBuffer = null;
       let originalFilename = 'document.pdf';
       let pageCount = 0;
+      let calculatedChunks = []; // Array of { label, pages: [0, 1...], filename }
 
       function formatBytes(bytes) {
         if (bytes < 1024) return bytes + ' B';
@@ -236,22 +350,94 @@ const schemaGraph = [
               for (let p = start; p <= clampedEnd; p++) {
                 group.push(p - 1); // 0-indexed
               }
-              if (group.length > 0) ranges.push(group);
+              if (group.length > 0) ranges.push({ label: `${start}–${clampedEnd}`, pages: group });
             }
           } else {
             const p = parseInt(part, 10);
             if (!isNaN(p) && p >= 1 && p <= maxPages) {
-              ranges.push([p - 1]);
+              ranges.push({ label: `${p}`, pages: [p - 1] });
             }
           }
         }
         return ranges;
       }
 
-      fileIn.addEventListener('change', async (e) => {
-        const file = e.target.files[0];
-        if (!file) return;
+      function updateCalculatedChunks() {
+        if (!pageCount) return;
 
+        const base = originalFilename.substring(0, originalFilename.lastIndexOf('.')) || 'document';
+        const mode = splitMode.value;
+        const pattern = filenamePatternSelect.value;
+        let chunks = [];
+
+        if (mode === 'custom') {
+          chunks = parsePageRanges(pageRangesInput.value, pageCount);
+        } else if (mode === 'fixed') {
+          const chunkSize = Math.max(1, parseInt(chunkSizeInput.value, 10) || 1);
+          for (let i = 0; i < pageCount; i += chunkSize) {
+            const group = [];
+            const end = Math.min(i + chunkSize, pageCount);
+            for (let j = i; j < end; j++) group.push(j);
+            chunks.push({ label: `${i + 1}–${end}`, pages: group });
+          }
+        } else if (mode === 'single') {
+          for (let i = 0; i < pageCount; i++) {
+            chunks.push({ label: `${i + 1}`, pages: [i] });
+          }
+        } else if (mode === 'even-odd') {
+          const oddPages = [];
+          const evenPages = [];
+          for (let i = 0; i < pageCount; i++) {
+            if ((i + 1) % 2 !== 0) oddPages.push(i);
+            else evenPages.push(i);
+          }
+          if (oddPages.length > 0) chunks.push({ label: 'Odd Pages (1, 3, 5...)', pages: oddPages });
+          if (evenPages.length > 0) chunks.push({ label: 'Even Pages (2, 4, 6...)', pages: evenPages });
+        } else if (mode === 'half') {
+          const mid = Math.ceil(pageCount / 2);
+          const p1 = [];
+          for (let i = 0; i < mid; i++) p1.push(i);
+          const p2 = [];
+          for (let i = mid; i < pageCount; i++) p2.push(i);
+          chunks.push({ label: `1–${mid}`, pages: p1 });
+          if (p2.length > 0) chunks.push({ label: `${mid + 1}–${pageCount}`, pages: p2 });
+        }
+
+        // Attach filenames
+        calculatedChunks = chunks.map((c, idx) => {
+          let suffix = '';
+          if (pattern === 'pages') {
+            suffix = `_pages_${c.label.replace(/[^0-9–-]/g, '')}`;
+          } else {
+            suffix = `_part_${idx + 1}`;
+          }
+          return {
+            ...c,
+            filename: `${base}${suffix}.pdf`,
+          };
+        });
+
+        // Render preview table
+        partitionCountBadge.textContent = `${calculatedChunks.length} parts`;
+        let html = '';
+        calculatedChunks.forEach((c, idx) => {
+          html += `
+            <tr class="hover:bg-[color:var(--surface)]">
+              <td class="p-3 text-center font-bold text-[color:var(--muted)]">${idx + 1}</td>
+              <td class="p-3 font-semibold text-[color:var(--fg)] truncate max-w-xs font-mono text-[11px]">${c.filename}</td>
+              <td class="p-3 font-mono text-[color:var(--muted)]">Page(s) ${c.label}</td>
+              <td class="p-3 text-center">
+                <span class="rounded-full bg-[color:var(--surface-strong)] px-2.5 py-0.5 font-mono text-[11px] font-bold text-[color:var(--accent)]">
+                  ${c.pages.length} pgs
+                </span>
+              </td>
+            </tr>
+          `;
+        });
+        partitionTbody.innerHTML = html;
+      }
+
+      async function handleFile(file) {
         originalFilename = file.name;
         docName.textContent = file.name;
         docSize.textContent = formatBytes(file.size);
@@ -260,12 +446,10 @@ const schemaGraph = [
 
         try {
           if (window.PDFLib) {
-            const pdfDoc = await PDFLib.PDFDocument.load(currentArrayBuffer);
+            const pdfDoc = await PDFLib.PDFDocument.load(currentArrayBuffer, { ignoreEncryption: true });
             pageCount = pdfDoc.getPageCount();
           } else {
-            const text = new TextDecoder('latin1').decode(currentArrayBuffer);
-            const pageMatches = text.match(/\/Type\s*\/Page\b/g);
-            pageCount = pageMatches ? pageMatches.length : 1;
+            pageCount = 1;
           }
         } catch (err) {
           pageCount = 1;
@@ -273,90 +457,98 @@ const schemaGraph = [
 
         totalPgs.textContent = String(pageCount);
         pageRangesInput.value = pageCount > 2 ? `1-${Math.ceil(pageCount / 2)}, ${Math.ceil(pageCount / 2) + 1}-${pageCount}` : `1-${pageCount}`;
+        chunkSizeInput.max = String(pageCount);
 
         uploadPrompt.classList.add('hidden');
         previewCard.classList.remove('hidden');
         card.classList.remove('hidden');
+
+        updateCalculatedChunks();
+      }
+
+      // Drag and drop
+      ['dragenter', 'dragover'].forEach(name => {
+        dropzone.addEventListener(name, (e) => {
+          e.preventDefault();
+          dropzone.classList.add('border-[color:var(--accent)]');
+        });
       });
 
-      splitMode.addEventListener('change', () => {
-        if (splitMode.value === 'custom') {
-          customRangeContainer.classList.remove('hidden');
-        } else {
-          customRangeContainer.classList.add('hidden');
+      ['dragleave', 'drop'].forEach(name => {
+        dropzone.addEventListener(name, (e) => {
+          e.preventDefault();
+          dropzone.classList.remove('border-[color:var(--accent)]');
+        });
+      });
+
+      dropzone.addEventListener('drop', (e) => {
+        const file = e.dataTransfer?.files?.[0];
+        if (file && (file.type === 'application/pdf' || file.name.endsWith('.pdf'))) {
+          handleFile(file);
         }
       });
 
-      splitBtn.addEventListener('click', async () => {
-        if (!currentArrayBuffer) return;
+      fileIn.addEventListener('change', (e) => {
+        const file = e.target.files?.[0];
+        if (file) handleFile(file);
+        fileIn.value = '';
+      });
 
-        const base = originalFilename.substring(0, originalFilename.lastIndexOf('.')) || originalFilename;
+      splitMode.addEventListener('change', () => {
+        const val = splitMode.value;
+        customRangeContainer.classList.toggle('hidden', val !== 'custom');
+        fixedChunkContainer.classList.toggle('hidden', val !== 'fixed');
+        updateCalculatedChunks();
+      });
+
+      pageRangesInput.addEventListener('input', updateCalculatedChunks);
+      chunkSizeInput.addEventListener('input', updateCalculatedChunks);
+      filenamePatternSelect.addEventListener('change', updateCalculatedChunks);
+
+      // Perform Split
+      splitBtn.addEventListener('click', async () => {
+        if (!currentArrayBuffer || calculatedChunks.length === 0) return;
+        if (!window.PDFLib) {
+          alert('PDF-Lib engine is still loading. Please wait a moment and try again.');
+          return;
+        }
 
         splitBtn.disabled = true;
-        splitBtn.textContent = 'Processing PDF...';
+        splitBtn.classList.add('opacity-70');
+        statusAlert.classList.add('hidden');
 
         try {
-          if (!window.PDFLib) {
-            // CDN dynamic loader if not yet ready
-            await new Promise((resolve) => {
-              const s = document.createElement('script');
-              s.src = 'https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js';
-              s.onload = resolve;
-              document.head.appendChild(s);
-            });
-          }
+          const srcDoc = await PDFLib.PDFDocument.load(currentArrayBuffer, { ignoreEncryption: true });
 
-          const srcDoc = await PDFLib.PDFDocument.load(currentArrayBuffer);
-          const total = srcDoc.getPageCount();
+          for (let idx = 0; idx < calculatedChunks.length; idx++) {
+            const chunk = calculatedChunks[idx];
+            splitBtn.textContent = `Generating file ${idx + 1} of ${calculatedChunks.length}...`;
 
-          let chunks = [];
-
-          if (splitMode.value === 'custom') {
-            chunks = parsePageRanges(pageRangesInput.value, total);
-            if (chunks.length === 0) {
-              alert('Please enter valid page numbers or ranges (e.g. 1-2, 3-5).');
-              splitBtn.disabled = false;
-              splitBtn.textContent = 'Split & Download PDF';
-              return;
-            }
-          } else if (splitMode.value === 'single') {
-            for (let i = 0; i < total; i++) {
-              chunks.push([i]);
-            }
-          } else if (splitMode.value === 'half') {
-            const mid = Math.ceil(total / 2);
-            const p1 = [];
-            for (let i = 0; i < mid; i++) p1.push(i);
-            const p2 = [];
-            for (let i = mid; i < total; i++) p2.push(i);
-            chunks = [p1, p2];
-          }
-
-          // Generate each split PDF
-          for (let idx = 0; idx < chunks.length; idx++) {
-            const pageIndices = chunks[idx];
             const newDoc = await PDFLib.PDFDocument.create();
-            const copiedPages = await newDoc.copyPages(srcDoc, pageIndices);
-            copiedPages.forEach((p) => newDoc.addPage(p));
+            const copiedPages = await newDoc.copyPages(srcDoc, chunk.pages);
+            copiedPages.forEach(p => newDoc.addPage(p));
             const pdfBytes = await newDoc.save();
 
             const blob = new Blob([pdfBytes], { type: 'application/pdf' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `${base}_part${idx + 1}.pdf`;
+            a.download = chunk.filename;
+            document.body.appendChild(a);
             a.click();
+            document.body.removeChild(a);
             URL.revokeObjectURL(url);
           }
 
-          statusAlert.textContent = `Successfully split into ${chunks.length} PDF file(s)!`;
+          statusAlert.textContent = `✓ Successfully generated and downloaded ${calculatedChunks.length} PDF file(s)!`;
           statusAlert.classList.remove('hidden');
         } catch (err) {
           console.error('Split error:', err);
           alert('Could not split PDF: ' + (err.message || 'Unknown error'));
         } finally {
           splitBtn.disabled = false;
-          splitBtn.textContent = 'Split & Download PDF';
+          splitBtn.classList.remove('opacity-70');
+          splitBtn.textContent = '⚡ Split & Download PDF Files';
         }
       });
     })();

@@ -1,10 +1,11 @@
 ---
 import SiteLayout from '../../layouts/SiteLayout.astro';
 import Icon from '../../components/Icon.astro';
+import CalculatorParameterGuide from '../../components/calculator/CalculatorParameterGuide.astro';
 import { siteName, toAbsoluteUrl, withBasePath } from '../../utils/site';
 
-const pageTitle = `JSON Formatter & Validator — Free Online Beautifier · ${siteName}`;
-const pageDesc = 'Format, beautify, validate, and minify JSON data online. Custom 2 or 4 space indentation, tabs, syntax error detector, tree view, and 100% private browser processing.';
+const pageTitle = `JSON Formatter & Beautifier — Free Online JSON Inspector · ${siteName}`;
+const pageDesc = 'Format, beautify, validate, and minify JSON data online. Custom 2/4 space indentation, tabs, alphabetical key sorting, collapsible tree view, and 100% private browser processing.';
 const canonicalUrl = toAbsoluteUrl('/developer-tools/json-formatter/');
 
 const breadcrumbItems = [
@@ -16,15 +17,15 @@ const breadcrumbItems = [
 const schemaFaq = [
   {
     question: 'How does this JSON Formatter format my code?',
-    answer: 'It parses raw JSON into an in-memory JavaScript object using strict JSON specification rules, then pretty-prints it with your selected indentation (2 spaces, 4 spaces, or tabs).',
+    answer: 'It parses raw JSON into an in-memory JavaScript object using strict RFC 8259 rules, recursively sorts keys if enabled, and pretty-prints it with your selected indentation (2 spaces, 4 spaces, or tabs).',
   },
   {
     question: 'Is my JSON data uploaded to an external server?',
-    answer: 'No. All formatting, validation, and minification happen 100% locally in your web browser. No data ever leaves your device.',
+    answer: 'No. All formatting, tree inspection, key sorting, and minification happen 100% locally in your web browser memory. No data ever leaves your device.',
   },
   {
     question: 'What happens if my JSON has syntax errors?',
-    answer: 'The parser highlights the exact line and character position where the syntax violation occurred (e.g. trailing comma, unquoted key, or missing bracket).',
+    answer: 'The parser pinpoints the exact line and column where the error occurred (e.g., trailing commas, unquoted keys, single quotes) and highlights the problematic snippet.',
   },
 ];
 
@@ -62,6 +63,51 @@ const schemaGraph = [
     })),
   },
 ];
+
+const parameterGuide = [
+  {
+    id: 'indentation',
+    name: 'Indentation Depth',
+    description: 'Number of spaces or tabs per hierarchical nesting level.',
+    whyItMatters: '2 spaces is standard across modern web frameworks (React, Vue, Node.js); 4 spaces is common in Python/Java backends.',
+    typicalRange: '2 Spaces, 4 Spaces, Tabs, Minified',
+  },
+  {
+    id: 'key_sorting',
+    name: 'Alphabetical Key Sorting',
+    description: 'Recursively reorders object keys alphabetically from A to Z.',
+    whyItMatters: 'Essential for comparing JSON payloads in Git diffs without false positives caused by differing key order.',
+    typicalRange: 'Enabled / Disabled',
+  },
+  {
+    id: 'view_mode',
+    name: 'View Mode (Code vs Tree)',
+    description: 'Switch between editable raw formatted code and an interactive collapsible tree view.',
+    whyItMatters: 'Tree view allows expanding and collapsing large nested API payloads without getting lost in brackets.',
+    typicalRange: 'Code View / Collapsible Tree View',
+  },
+  {
+    id: 'payload_stats',
+    name: 'Payload Metrics',
+    description: 'Tracks original character count, formatted size, minified size, total key count, and nesting depth.',
+    whyItMatters: 'Helps evaluate API bandwidth overhead and potential mobile payload bloat.',
+    typicalRange: 'Real-time telemetry',
+  },
+  {
+    id: 'rfc8259',
+    name: 'RFC 8259 Standard Parsing',
+    description: 'Strict JSON standard compliance checking keys, string escaping, and number formats.',
+    whyItMatters: 'Prevents malformed data from being saved into production databases.',
+    typicalRange: 'Strict validation',
+  },
+  {
+    id: 'client_privacy',
+    name: '100% In-Browser Execution',
+    description: 'Zero network calls. No cookies or server logging of confidential payloads.',
+    whyItMatters: 'Safe for API tokens, customer PII, database dumps, and production secrets.',
+    typicalRange: 'Client-side only',
+  },
+];
 ---
 
 <SiteLayout title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
@@ -92,15 +138,39 @@ const schemaGraph = [
     <header class="space-y-3">
       <div class="inline-flex items-center gap-2 rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1 text-xs font-semibold text-[color:var(--muted)]">
         <span class="inline-block h-2 w-2 rounded-full bg-emerald-500"></span>
-        <span>100% Client-Side Privacy</span>
+        <span>100% Client-Side In-Memory Privacy</span>
       </div>
       <h1 class="text-2xl sm:text-4xl font-extrabold tracking-tight text-[color:var(--fg)]">
         JSON Formatter &amp; Beautifier
       </h1>
-      <p class="max-w-2xl text-xs sm:text-sm text-[color:var(--muted)] leading-relaxed">
-        Beautify, validate, format, and compress raw JSON payloads. Features custom indentation, syntax error detection, and instant copy/download.
+      <p class="max-w-3xl text-xs sm:text-sm text-[color:var(--muted)] leading-relaxed">
+        Beautify, inspect, validate, sort, and compress raw JSON data. Features alphabetical key sorting, line-precise syntax error indicators, collapsible tree view, and payload metrics.
       </p>
     </header>
+
+    <!-- Metrics Bar -->
+    <div id="stats-bar" class="grid grid-cols-2 gap-3 sm:grid-cols-5 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-center">
+      <div>
+        <span class="block text-[11px] uppercase tracking-wider text-[color:var(--muted)]">Raw Size</span>
+        <span id="stat-raw-size" class="font-mono text-lg font-bold text-[color:var(--fg)]">0 B</span>
+      </div>
+      <div>
+        <span class="block text-[11px] uppercase tracking-wider text-[color:var(--muted)]">Formatted Size</span>
+        <span id="stat-fmt-size" class="font-mono text-lg font-bold text-[color:var(--fg)]">0 B</span>
+      </div>
+      <div>
+        <span class="block text-[11px] uppercase tracking-wider text-[color:var(--muted)]">Minified Size</span>
+        <span id="stat-min-size" class="font-mono text-lg font-bold text-[color:var(--fg)]">0 B</span>
+      </div>
+      <div>
+        <span class="block text-[11px] uppercase tracking-wider text-[color:var(--muted)]">Total Keys</span>
+        <span id="stat-keys" class="font-mono text-lg font-bold text-cyan-600 dark:text-cyan-400 dark:text-cyan-400">0</span>
+      </div>
+      <div>
+        <span class="block text-[11px] uppercase tracking-wider text-[color:var(--muted)]">Max Depth</span>
+        <span id="stat-depth" class="font-mono text-lg font-bold text-[color:var(--fg)]">0</span>
+      </div>
+    </div>
 
     <!-- Main Workspace -->
     <div class="grid gap-6 lg:grid-cols-2">
@@ -111,43 +181,51 @@ const schemaGraph = [
             Input JSON
           </label>
           <div class="flex items-center gap-2 text-xs">
-            <button type="button" data-sample-btn class="text-[color:var(--primary)] hover:underline font-semibold">Load Sample</button>
+            <button type="button" data-sample-btn class="font-semibold text-[color:var(--primary)] hover:underline cursor-pointer">Load Sample</button>
             <span class="text-[color:var(--border)]">|</span>
-            <button type="button" data-clear-btn class="text-[color:var(--muted)] hover:text-[color:var(--fg)]">Clear</button>
+            <button type="button" data-clear-btn class="text-[color:var(--muted)] hover:text-[color:var(--fg)] cursor-pointer">Clear</button>
           </div>
         </div>
         <textarea
           id="json-input"
           rows="18"
-          class="w-full font-mono text-xs leading-relaxed rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-[color:var(--fg)] focus:border-[color:var(--border-strong)] focus:outline-hidden"
+          class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 font-mono text-xs leading-relaxed text-[color:var(--fg)] focus:border-[color:var(--border-strong)] focus:outline-hidden"
           placeholder='Paste raw JSON here, e.g. {"name":"Calculator Utility","tools":85,"status":"active"}'
         ></textarea>
-        <div class="flex flex-wrap items-center justify-between gap-3">
-          <div class="flex items-center gap-2">
-            <label for="indent-select" class="text-xs font-medium text-[color:var(--muted)]">Indent:</label>
-            <select
-              id="indent-select"
-              class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] px-2.5 py-1 text-xs text-[color:var(--fg)]"
-            >
-              <option value="2">2 Spaces</option>
-              <option value="4">4 Spaces</option>
-              <option value="tab">Tabs</option>
-            </select>
+
+        <div class="space-y-2 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3 text-xs">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <div class="flex items-center gap-2">
+              <label for="indent-select" class="font-medium text-[color:var(--muted)]">Indent:</label>
+              <select
+                id="indent-select"
+                class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] px-2.5 py-1 text-xs text-[color:var(--fg)]"
+              >
+                <option value="2">2 Spaces</option>
+                <option value="4">4 Spaces</option>
+                <option value="tab">Tabs</option>
+              </select>
+            </div>
+            <label class="flex items-center gap-1.5 cursor-pointer">
+              <input type="checkbox" id="sort-keys" class="rounded border-[color:var(--border)] accent-[color:var(--fg)]" />
+              <span class="text-xs text-[color:var(--fg)]">Sort Keys (A–Z)</span>
+            </label>
           </div>
-          <div class="flex gap-2">
+
+          <div class="grid grid-cols-2 gap-2 pt-1 border-t border-[color:var(--border)]">
             <button
               type="button"
               data-format-btn
-              class="rounded-xl bg-[color:var(--fg)] px-4 py-2 text-xs font-bold text-[color:var(--bg)] shadow-xs transition hover:opacity-90"
+              class="rounded-xl bg-[color:var(--fg)] py-2 text-xs font-bold text-[color:var(--bg)] shadow-xs transition hover:opacity-90 cursor-pointer"
             >
-              Format JSON
+              ✨ Format JSON
             </button>
             <button
               type="button"
               data-minify-btn
-              class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] px-4 py-2 text-xs font-bold text-[color:var(--fg)] transition hover:bg-[color:var(--surface-strong)]"
+              class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] py-2 text-xs font-bold text-[color:var(--fg)] transition hover:bg-[color:var(--bg)] cursor-pointer"
             >
-              Minify
+              📦 Minify
             </button>
           </div>
         </div>
@@ -157,38 +235,53 @@ const schemaGraph = [
       <div class="space-y-3">
         <div class="flex items-center justify-between">
           <div class="flex items-center gap-2">
-            <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Formatted Output</span>
-            <span data-status-badge class="hidden rounded-md px-2 py-0.5 text-[10px] font-bold"></span>
+            <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Output</span>
+            <span id="status-badge" class="rounded-md bg-cyan-500/15 px-2 py-0.5 text-[10px] font-bold text-cyan-600 dark:text-cyan-400 dark:text-cyan-400">Valid JSON</span>
+            <div class="inline-flex rounded-lg border border-[color:var(--border)] p-0.5 text-[10px]">
+              <button type="button" id="tab-code" class="rounded-md bg-[color:var(--fg)] px-2 py-0.5 font-bold text-[color:var(--bg)] cursor-pointer">Code</button>
+              <button type="button" id="tab-tree" class="rounded-md px-2 py-0.5 font-bold text-[color:var(--muted)] hover:text-[color:var(--fg)] cursor-pointer">Tree</button>
+            </div>
           </div>
           <div class="flex items-center gap-2">
             <button
               type="button"
               data-copy-btn
-              class="inline-flex items-center gap-1 text-xs font-bold text-[color:var(--fg)] hover:underline"
+              class="inline-flex items-center gap-1 text-xs font-bold text-[color:var(--fg)] hover:underline cursor-pointer"
             >
-              <Icon name="copy" class="w-3.5 h-3.5" />
+              <Icon name="copy" class="h-3.5 w-3.5" />
               <span>Copy</span>
             </button>
             <span class="text-[color:var(--border)]">|</span>
             <button
               type="button"
               data-download-btn
-              class="text-xs font-bold text-[color:var(--fg)] hover:underline"
+              class="text-xs font-bold text-[color:var(--fg)] hover:underline cursor-pointer"
             >
-              Download
+              Download .json
             </button>
           </div>
         </div>
+
         <div class="relative">
+          <!-- Code View -->
           <textarea
             id="json-output"
             rows="18"
             readonly
-            class="w-full font-mono text-xs leading-relaxed rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-4 text-[color:var(--fg)] focus:outline-hidden"
+            class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-4 font-mono text-xs leading-relaxed text-[color:var(--fg)] focus:outline-hidden"
             placeholder="Formatted JSON will appear here..."
           ></textarea>
+
+          <!-- Collapsible Tree View -->
+          <div
+            id="json-tree-container"
+            class="hidden h-[335px] w-full overflow-y-auto rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-4 font-mono text-xs leading-relaxed text-[color:var(--fg)]"
+          >
+            <div id="tree-content" class="space-y-1"></div>
+          </div>
         </div>
-        <div id="error-box" class="hidden rounded-xl border border-red-500/30 bg-red-500/10 p-3 text-xs text-red-600 dark:text-red-400"></div>
+
+        <div id="error-box" class="hidden rounded-xl border border-red-500/30 bg-red-500/10 p-3 text-xs text-red-600 dark:text-red-400 font-mono"></div>
       </div>
     </div>
 
@@ -199,13 +292,16 @@ const schemaGraph = [
         <strong>JSON (JavaScript Object Notation)</strong> is the standard lightweight data-interchange format across modern web APIs. When transmitted over HTTP, JSON is typically minified into a single continuous line to save network bandwidth. A JSON formatter restores hierarchical indentation, line breaks, and whitespace so humans can easily inspect, debug, and understand API responses.
       </p>
 
-      <h3 class="font-bold text-sm text-[color:var(--fg)]">Common JSON Syntax Errors to Avoid:</h3>
+      <h3 class="text-sm font-bold text-[color:var(--fg)]">Common JSON Syntax Errors to Avoid:</h3>
       <ul class="list-disc pl-5 space-y-1">
         <li><strong>Trailing Commas:</strong> Commas after the last property in an object or array (e.g. <code>{'{ "a": 1, }'}</code>) are illegal in standard JSON.</li>
         <li><strong>Single Quotes:</strong> JSON keys and string values must strictly use double quotes (<code>"key"</code>), not single quotes (<code>'key'</code>).</li>
         <li><strong>Unquoted Keys:</strong> All object keys must be enclosed in double quotes.</li>
       </ul>
     </section>
+
+    <!-- Parameter Guide -->
+    <CalculatorParameterGuide parameters={parameterGuide} />
 
     <!-- FAQs -->
     <section class="space-y-4">
@@ -252,67 +348,223 @@ const schemaGraph = [
 
       const input = root.querySelector('#json-input');
       const output = root.querySelector('#json-output');
+      const treeContainer = root.querySelector('#json-tree-container');
+      const treeContent = root.querySelector('#tree-content');
+      const tabCode = root.querySelector('#tab-code');
+      const tabTree = root.querySelector('#tab-tree');
       const indentSelect = root.querySelector('#indent-select');
+      const sortKeysCb = root.querySelector('#sort-keys');
       const formatBtn = root.querySelector('[data-format-btn]');
       const minifyBtn = root.querySelector('[data-minify-btn]');
       const copyBtn = root.querySelector('[data-copy-btn]');
       const downloadBtn = root.querySelector('[data-download-btn]');
       const clearBtn = root.querySelector('[data-clear-btn]');
       const sampleBtn = root.querySelector('[data-sample-btn]');
-      const statusBadge = root.querySelector('[data-status-badge]');
+      const statusBadge = root.querySelector('#status-badge');
       const errorBox = root.querySelector('#error-box');
 
-      const sampleJson = JSON.stringify({
-        project: "Calculator Utility",
-        version: "2.4.0",
-        features: ["Calculators", "Developer Tools", "Data Converters"],
-        meta: {
-          runtime: "Client-side",
-          privacy: "Zero server uploads",
-          activeUsers: 15400
+      const statRawSize = root.querySelector('#stat-raw-size');
+      const statFmtSize = root.querySelector('#stat-fmt-size');
+      const statMinSize = root.querySelector('#stat-min-size');
+      const statKeys = root.querySelector('#stat-keys');
+      const statDepth = root.querySelector('#stat-depth');
+
+      let currentParsedObj = null;
+
+      function formatBytes(bytes) {
+        if (bytes === 0) return '0 B';
+        const k = 1024;
+        const sizes = ['B', 'KB', 'MB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+      }
+
+      function sortObjectRecursively(obj) {
+        if (Array.isArray(obj)) {
+          return obj.map(sortObjectRecursively);
+        } else if (obj !== null && typeof obj === 'object') {
+          const sorted = {};
+          Object.keys(obj).sort().forEach(k => {
+            sorted[k] = sortObjectRecursively(obj[k]);
+          });
+          return sorted;
         }
-      });
+        return obj;
+      }
+
+      function analyzeStructure(obj) {
+        let keys = 0;
+        let maxDepth = 1;
+
+        function traverse(current, depth) {
+          if (depth > maxDepth) maxDepth = depth;
+          if (Array.isArray(current)) {
+            current.forEach(item => traverse(item, depth + 1));
+          } else if (current !== null && typeof current === 'object') {
+            const kList = Object.keys(current);
+            keys += kList.length;
+            kList.forEach(k => traverse(current[k], depth + 1));
+          }
+        }
+
+        traverse(obj, 1);
+        return { keys, maxDepth };
+      }
+
+      function buildTreeNode(key, value) {
+        const item = document.createElement('div');
+        item.className = 'tree-item pl-4 border-l border-[color:var(--border)]';
+
+        const isObj = value !== null && typeof value === 'object';
+        const isArr = Array.isArray(value);
+
+        if (isObj) {
+          const header = document.createElement('div');
+          header.className = 'cursor-pointer select-none hover:text-[color:var(--fg)] flex items-center gap-1 font-semibold';
+          const count = isArr ? value.length : Object.keys(value).length;
+          const label = key !== null ? `<span class="text-blue-500 font-bold">"${key}"</span>: ` : '';
+          const typeBadge = isArr ? `Array[${count}]` : `Object{${count}}`;
+          header.innerHTML = `<span class="tree-toggle text-[10px]">▼</span> ${label}<span class="text-[10px] text-[color:var(--muted)] px-1.5 py-0.5 rounded bg-[color:var(--surface)] border border-[color:var(--border)]">${typeBadge}</span>`;
+
+          const childContainer = document.createElement('div');
+          childContainer.className = 'tree-children space-y-1 mt-1';
+
+          if (isArr) {
+            value.forEach((v, idx) => {
+              childContainer.appendChild(buildTreeNode(idx, v));
+            });
+          } else {
+            Object.keys(value).forEach(k => {
+              childContainer.appendChild(buildTreeNode(k, value[k]));
+            });
+          }
+
+          header.addEventListener('click', () => {
+            const isHidden = childContainer.classList.contains('hidden');
+            if (isHidden) {
+              childContainer.classList.remove('hidden');
+              header.querySelector('.tree-toggle').textContent = '▼';
+            } else {
+              childContainer.classList.add('hidden');
+              header.querySelector('.tree-toggle').textContent = '▶';
+            }
+          });
+
+          item.appendChild(header);
+          item.appendChild(childContainer);
+        } else {
+          const valStr = typeof value === 'string' ? `<span class="text-cyan-600 dark:text-cyan-400 dark:text-cyan-400">"${value}"</span>` :
+                         typeof value === 'number' ? `<span class="text-amber-600 dark:text-amber-400">${value}</span>` :
+                         typeof value === 'boolean' ? `<span class="text-purple-600 dark:text-purple-400 font-bold">${value}</span>` :
+                         `<span class="text-rose-500 font-bold">null</span>`;
+          const keyLabel = key !== null ? `<span class="text-blue-500 font-bold">"${key}"</span>: ` : '';
+          item.innerHTML = `<div>${keyLabel}${valStr}</div>`;
+        }
+
+        return item;
+      }
+
+      function updateTreeView(obj) {
+        treeContent.innerHTML = '';
+        if (obj !== null) {
+          treeContent.appendChild(buildTreeNode(null, obj));
+        }
+      }
 
       function process(mode) {
         const raw = input.value.trim();
         if (!raw) {
           output.value = '';
           errorBox.classList.add('hidden');
-          statusBadge.classList.add('hidden');
+          statusBadge.className = 'hidden';
+          statRawSize.textContent = '0 B';
+          statFmtSize.textContent = '0 B';
+          statMinSize.textContent = '0 B';
+          statKeys.textContent = '0';
+          statDepth.textContent = '0';
+          treeContent.innerHTML = '';
           return;
         }
 
         try {
-          const parsed = JSON.parse(raw);
+          let parsed = JSON.parse(raw);
+          if (sortKeysCb.checked) {
+            parsed = sortObjectRecursively(parsed);
+          }
+          currentParsedObj = parsed;
+
           errorBox.classList.add('hidden');
-          statusBadge.classList.remove('hidden', 'bg-red-500/20', 'text-red-500');
-          statusBadge.classList.add('bg-emerald-500/20', 'text-emerald-500');
+          statusBadge.className = 'rounded-md bg-cyan-500/15 px-2 py-0.5 text-[10px] font-bold text-cyan-600 dark:text-cyan-400 dark:text-cyan-400';
           statusBadge.textContent = 'Valid JSON';
 
-          if (mode === 'minify') {
-            output.value = JSON.stringify(parsed);
-          } else {
-            const indentVal = indentSelect.value === 'tab' ? '\t' : parseInt(indentSelect.value, 10);
-            output.value = JSON.stringify(parsed, null, indentVal);
-          }
+          const minStr = JSON.stringify(parsed);
+          const indentVal = indentSelect.value === 'tab' ? '\t' : parseInt(indentSelect.value, 10);
+          const fmtStr = JSON.stringify(parsed, null, indentVal);
+
+          output.value = mode === 'minify' ? minStr : fmtStr;
+
+          // Update stats
+          statRawSize.textContent = formatBytes(new Blob([raw]).size);
+          statFmtSize.textContent = formatBytes(new Blob([fmtStr]).size);
+          statMinSize.textContent = formatBytes(new Blob([minStr]).size);
+
+          const { keys, maxDepth } = analyzeStructure(parsed);
+          statKeys.textContent = keys.toLocaleString();
+          statDepth.textContent = maxDepth.toString();
+
+          updateTreeView(parsed);
         } catch (err) {
           output.value = '';
-          statusBadge.classList.remove('hidden', 'bg-emerald-500/20', 'text-emerald-500');
-          statusBadge.classList.add('bg-red-500/20', 'text-red-500');
+          statusBadge.className = 'rounded-md bg-rose-500/15 px-2 py-0.5 text-[10px] font-bold text-rose-600 dark:text-rose-400';
           statusBadge.textContent = 'Invalid JSON';
           errorBox.classList.remove('hidden');
-          errorBox.textContent = 'Syntax Error: ' + err.message;
+
+          // Extract line and col if available in error message
+          errorBox.innerHTML = `<strong>Syntax Error:</strong> ${err.message}`;
+          treeContent.innerHTML = '<p class="text-rose-500 italic">Fix syntax errors to view tree.</p>';
         }
       }
 
       formatBtn.addEventListener('click', () => process('format'));
       minifyBtn.addEventListener('click', () => process('minify'));
-      indentSelect.addEventListener('change', () => {
-        if (output.value) process('format');
+      indentSelect.addEventListener('change', () => process('format'));
+      sortKeysCb.addEventListener('change', () => process('format'));
+
+      input.addEventListener('input', () => {
+        clearTimeout(input._timer);
+        input._timer = setTimeout(() => process('format'), 300);
+      });
+
+      tabCode.addEventListener('click', () => {
+        tabCode.className = 'rounded-md bg-[color:var(--fg)] px-2 py-0.5 font-bold text-[color:var(--bg)] cursor-pointer';
+        tabTree.className = 'rounded-md px-2 py-0.5 font-bold text-[color:var(--muted)] hover:text-[color:var(--fg)] cursor-pointer';
+        output.classList.remove('hidden');
+        treeContainer.classList.add('hidden');
+      });
+
+      tabTree.addEventListener('click', () => {
+        tabTree.className = 'rounded-md bg-[color:var(--fg)] px-2 py-0.5 font-bold text-[color:var(--bg)] cursor-pointer';
+        tabCode.className = 'rounded-md px-2 py-0.5 font-bold text-[color:var(--muted)] hover:text-[color:var(--fg)] cursor-pointer';
+        output.classList.add('hidden');
+        treeContainer.classList.remove('hidden');
       });
 
       sampleBtn.addEventListener('click', () => {
-        input.value = sampleJson;
+        input.value = JSON.stringify({
+          app: "Calculator Utility",
+          version: "3.2.0",
+          status: "healthy",
+          runtime: {
+            environment: "browser",
+            serverless: true,
+            storageKB: 128
+          },
+          features: [
+            { name: "Finance Calculators", count: 8, status: "live" },
+            { name: "Academic Planning", count: 7, status: "live" },
+            { name: "Developer & Data Tools", count: 23, status: "updated" }
+          ]
+        }, null, 2);
         process('format');
       });
 
@@ -320,15 +572,22 @@ const schemaGraph = [
         input.value = '';
         output.value = '';
         errorBox.classList.add('hidden');
-        statusBadge.classList.add('hidden');
+        statusBadge.className = 'hidden';
+        statRawSize.textContent = '0 B';
+        statFmtSize.textContent = '0 B';
+        statMinSize.textContent = '0 B';
+        statKeys.textContent = '0';
+        statDepth.textContent = '0';
+        treeContent.innerHTML = '';
       });
 
       copyBtn.addEventListener('click', () => {
         if (!output.value) return;
         navigator.clipboard.writeText(output.value);
-        const original = copyBtn.querySelector('span').textContent;
-        copyBtn.querySelector('span').textContent = 'Copied!';
-        setTimeout(() => copyBtn.querySelector('span').textContent = original, 1800);
+        const span = copyBtn.querySelector('span');
+        const orig = span.textContent;
+        span.textContent = 'Copied!';
+        setTimeout(() => span.textContent = orig, 1800);
       });
 
       downloadBtn.addEventListener('click', () => {
@@ -342,9 +601,7 @@ const schemaGraph = [
         URL.revokeObjectURL(url);
       });
 
-      // Auto-load sample on mount
-      input.value = sampleJson;
-      process('format');
+      sampleBtn.click();
     })();
   </script>
 </SiteLayout>
