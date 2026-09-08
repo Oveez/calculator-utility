@@ -35,22 +35,22 @@
   --shadow-glass: 0 8px 32px 0 rgba(31, 38, 135, 0.06), 0 1px 2px 0 rgba(0, 0, 0, 0.04);
   --shadow-neon: 0 0 15px rgba(79, 70, 229, 0.22);
 
-  /* Blue Neon Glass Design Tokens for All Website Tabs */
-  --tab-surface: rgba(240, 249, 255, 0.75);
-  --tab-surface-hover: rgba(224, 242, 254, 0.90);
-  --tab-surface-active: rgba(2, 132, 199, 0.12);
-  --tab-surface-active-hover: rgba(2, 132, 199, 0.16);
-  --tab-border: rgba(2, 132, 199, 0.22);
-  --tab-border-hover: rgba(2, 132, 199, 0.50);
-  --tab-border-active: #0284c7;
-  --tab-text: #334155;
-  --tab-text-hover: #0f172a;
-  --tab-text-active: #0369a1;
-  --tab-glow-hover: 0 0 12px rgba(2, 132, 199, 0.24);
-  --tab-glow-active: 0 0 16px rgba(2, 132, 199, 0.30), inset 0 0 8px rgba(2, 132, 199, 0.08);
-  --tab-glow-active-hover: 0 0 20px rgba(2, 132, 199, 0.38), inset 0 0 8px rgba(2, 132, 199, 0.12);
-  --tab-badge-active-bg: rgba(2, 132, 199, 0.18);
-  --tab-badge-active-text: #0369a1;
+  /* Ocean Blue Neon Glass Design Tokens for All Website Tabs */
+  --tab-surface: rgba(255, 255, 255, 0.88);
+  --tab-surface-hover: rgba(245, 247, 255, 0.96);
+  --tab-surface-active: rgba(79, 70, 229, 0.10);
+  --tab-surface-active-hover: rgba(79, 70, 229, 0.16);
+  --tab-border: var(--glass-border);
+  --tab-border-hover: var(--accent);
+  --tab-border-active: var(--accent);
+  --tab-text: #475569;
+  --tab-text-hover: #09090b;
+  --tab-text-active: #3730a3;
+  --tab-glow-hover: 0 0 14px var(--accent-glow);
+  --tab-glow-active: 0 0 16px var(--accent-glow), inset 0 0 8px rgba(79, 70, 229, 0.08);
+  --tab-glow-active-hover: 0 0 20px rgba(79, 70, 229, 0.32), inset 0 0 8px rgba(79, 70, 229, 0.12);
+  --tab-badge-active-bg: rgba(79, 70, 229, 0.16);
+  --tab-badge-active-text: #3730a3;
 }
 
 html[data-theme='dark'] {
@@ -84,21 +84,21 @@ html[data-theme='dark'] {
   --shadow-glass: 0 8px 32px 0 rgba(0, 0, 0, 0.45), inset 0 0 0 1px rgba(255, 255, 255, 0.06);
   --shadow-neon: 0 0 20px rgba(99, 102, 241, 0.35);
 
-  /* Blue Neon Glass Design Tokens for All Website Tabs */
-  --tab-surface: rgba(14, 165, 233, 0.06);
-  --tab-surface-hover: rgba(14, 165, 233, 0.14);
-  --tab-surface-active: rgba(14, 165, 233, 0.20);
-  --tab-surface-active-hover: rgba(14, 165, 233, 0.26);
-  --tab-border: rgba(56, 189, 248, 0.24);
-  --tab-border-hover: rgba(56, 189, 248, 0.52);
-  --tab-border-active: #38bdf8;
+  /* Ocean Blue Neon Glass Design Tokens for All Website Tabs */
+  --tab-surface: rgba(15, 18, 29, 0.75);
+  --tab-surface-hover: rgba(22, 26, 41, 0.90);
+  --tab-surface-active: rgba(99, 102, 241, 0.22);
+  --tab-surface-active-hover: rgba(99, 102, 241, 0.28);
+  --tab-border: var(--glass-border);
+  --tab-border-hover: var(--accent);
+  --tab-border-active: var(--accent);
   --tab-text: #94a3b8;
-  --tab-text-hover: #f1f5f9;
+  --tab-text-hover: #f8fafc;
   --tab-text-active: #ffffff;
-  --tab-glow-hover: 0 0 14px rgba(56, 189, 248, 0.32);
-  --tab-glow-active: 0 0 18px rgba(56, 189, 248, 0.42), inset 0 0 10px rgba(56, 189, 248, 0.14);
-  --tab-glow-active-hover: 0 0 22px rgba(56, 189, 248, 0.52), inset 0 0 10px rgba(56, 189, 248, 0.20);
-  --tab-badge-active-bg: rgba(56, 189, 248, 0.26);
+  --tab-glow-hover: 0 0 16px var(--accent-glow);
+  --tab-glow-active: 0 0 20px var(--accent-glow), inset 0 0 10px rgba(99, 102, 241, 0.16);
+  --tab-glow-active-hover: 0 0 24px rgba(99, 102, 241, 0.48), inset 0 0 10px rgba(99, 102, 241, 0.22);
+  --tab-badge-active-bg: rgba(99, 102, 241, 0.28);
   --tab-badge-active-text: #ffffff;
 }
 
@@ -203,22 +203,30 @@ a {
 }
 
 /* ==========================================================================
-   UNIFIED BLUE NEON GLASS TAB DESIGN SYSTEM
+   UNIFIED OCEAN BLUE NEON GLASS TAB DESIGN SYSTEM
    Applies automatically to all tabs across the website from this single global source.
    ========================================================================== */
 
 /* 1. Base / Inactive Tab Styling across all components */
 [role="tab"]:not([aria-selected="true"]):not([aria-pressed="true"]),
 [data-category-tab]:not([aria-selected="true"]):not([aria-pressed="true"]),
-.filter-tab:not(.active):not([aria-selected="true"]):not([aria-pressed="true"]),
-.mode-tab:not(.active):not([aria-selected="true"]),
-.export-tab:not(.active):not([aria-selected="true"]),
-.cat-btn:not(.active):not([aria-selected="true"]),
-.tab-btn:not(.active):not([aria-selected="true"]):not([class*="accent"]):not([class*="--fg"]),
-[data-engine-tab]:not(.active):not([aria-selected="true"]):not([class*="accent"]),
-.cv-tab-btn:not(.active):not([aria-selected="true"]),
-.search-filter-chip:not(.active):not([aria-selected="true"]),
-.glass-tab:not(.active):not([aria-selected="true"]):not(.glass-tab-active) {
+[data-hero-category],
+.filter-tab:not(.active):not([class*="accent"]),
+[data-filter]:not(.active):not([class*="accent"]),
+.mode-tab:not(.active):not([class*="accent"]),
+.export-tab:not(.active):not([class*="accent"]),
+.cat-btn:not(.active):not([class*="accent"]),
+.tab-btn:not(.active):not([class*="accent"]):not([class*="--fg"]),
+[data-tab]:not(.active):not([class*="accent"]),
+[data-tab-target]:not(.active):not([class*="accent"]),
+[data-engine-tab]:not(.active):not([class*="accent"]),
+.cv-tab-btn:not(.active):not([class*="accent"]),
+.search-filter-chip:not(.active):not([class*="accent"]),
+[data-modal-filter]:not(.active):not([class*="accent"]),
+[id^="tab-"]:not(.active):not([class*="accent"]):not([class*="bg-[color:var(--surface-strong)]"]):not([class*="bg-[color:var(--surface)]"]),
+[id^="mode-"]:not(.active):not([class*="accent"]),
+[id^="view-"]:not(.active):not([class*="accent"]),
+.glass-tab:not(.active):not(.glass-tab-active) {
   background-color: var(--tab-surface) !important;
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
@@ -228,19 +236,28 @@ a {
   transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* 2. Inactive Tab & Nav Hover State with Refined Blue Neon Accent Glow */
+/* 2. Inactive Tab & Nav Hover State with Refined Ocean Blue Neon Accent Glow */
 [role="tab"]:not([aria-selected="true"]):not([aria-pressed="true"]):hover,
 [data-category-tab]:not([aria-selected="true"]):not([aria-pressed="true"]):hover,
-.filter-tab:not(.active):not([aria-selected="true"]):not([aria-pressed="true"]):hover,
-.mode-tab:not(.active):not([aria-selected="true"]):hover,
-.export-tab:not(.active):not([aria-selected="true"]):hover,
-.cat-btn:not(.active):not([aria-selected="true"]):hover,
-.tab-btn:not(.active):not([aria-selected="true"]):not([class*="accent"]):not([class*="--fg"]):hover,
-[data-engine-tab]:not(.active):not([aria-selected="true"]):not([class*="accent"]):hover,
-.cv-tab-btn:not(.active):not([aria-selected="true"]):hover,
-.search-filter-chip:not(.active):not([aria-selected="true"]):hover,
-.glass-tab:not(.active):not([aria-selected="true"]):not(.glass-tab-active):hover,
-nav[aria-label="Primary"] a:hover {
+[data-hero-category]:hover,
+.filter-tab:not(.active):not([class*="accent"]):hover,
+[data-filter]:not(.active):not([class*="accent"]):hover,
+.mode-tab:not(.active):not([class*="accent"]):hover,
+.export-tab:not(.active):not([class*="accent"]):hover,
+.cat-btn:not(.active):not([class*="accent"]):hover,
+.tab-btn:not(.active):not([class*="accent"]):not([class*="--fg"]):hover,
+[data-tab]:not(.active):not([class*="accent"]):hover,
+[data-tab-target]:not(.active):not([class*="accent"]):hover,
+[data-engine-tab]:not(.active):not([class*="accent"]):hover,
+.cv-tab-btn:not(.active):not([class*="accent"]):hover,
+.search-filter-chip:not(.active):not([class*="accent"]):hover,
+[data-modal-filter]:not(.active):not([class*="accent"]):hover,
+[id^="tab-"]:not(.active):not([class*="accent"]):not([class*="bg-[color:var(--surface-strong)]"]):not([class*="bg-[color:var(--surface)]"]):hover,
+[id^="mode-"]:not(.active):not([class*="accent"]):hover,
+[id^="view-"]:not(.active):not([class*="accent"]):hover,
+.glass-tab:not(.active):not(.glass-tab-active):hover,
+nav[aria-label="Primary"] a:hover,
+nav[aria-label="Mobile Bottom Navigation"] a:hover {
   background-color: var(--tab-surface-hover) !important;
   border-color: var(--tab-border-hover) !important;
   box-shadow: var(--tab-glow-hover) !important;
@@ -248,32 +265,45 @@ nav[aria-label="Primary"] a:hover {
   transform: translateY(-0.5px);
 }
 
-/* 3. Active Tab: Prominent Blue Neon Glass Treatment */
+/* 3. Active Tab: Prominent Ocean Blue Neon Glass Treatment */
 [role="tab"][aria-selected="true"],
 [role="tab"][aria-pressed="true"],
 [data-category-tab][aria-selected="true"],
 [data-category-tab][aria-pressed="true"],
 .filter-tab.active,
-.filter-tab[aria-selected="true"],
-.filter-tab[aria-pressed="true"],
+.filter-tab[class*="accent"],
+[data-filter].active,
+[data-filter][class*="accent"],
 .mode-tab.active,
-.mode-tab[aria-selected="true"],
+.mode-tab[class*="accent"],
 .export-tab.active,
-.export-tab[aria-selected="true"],
+.export-tab[class*="accent"],
 .cat-btn.active,
-.cat-btn[aria-selected="true"],
+.cat-btn[class*="accent"],
 .tab-btn.active,
-.tab-btn[aria-selected="true"],
 .tab-btn[class*="accent"],
 .tab-btn[class*="--fg"],
+[data-tab].active,
+[data-tab][class*="accent"],
+[data-tab-target].active,
+[data-tab-target][class*="accent"],
 [data-engine-tab].active,
-[data-engine-tab][aria-selected="true"],
 [data-engine-tab][class*="accent"],
 .cv-tab-btn.active,
-.cv-tab-btn[aria-selected="true"],
+.cv-tab-btn[class*="accent"],
 .search-filter-chip.active,
+.search-filter-chip[class*="accent"],
+[data-modal-filter].active,
+[data-modal-filter][class*="accent"],
+[id^="tab-"].active,
+[id^="tab-"][class*="accent"],
+[id^="tab-"][class*="bg-[color:var(--surface-strong)]"],
+[id^="tab-"][class*="bg-[color:var(--surface)]"],
+[id^="mode-"].active,
+[id^="mode-"][class*="accent"],
+[id^="view-"].active,
+[id^="view-"][class*="accent"],
 .glass-tab.active,
-.glass-tab[aria-selected="true"],
 .glass-tab-active,
 nav[aria-label="Primary"] a.active,
 nav[aria-label="Primary"] a[aria-current="page"] {
@@ -293,19 +323,38 @@ nav[aria-label="Primary"] a[aria-current="page"] {
 [data-category-tab][aria-selected="true"]:hover,
 [data-category-tab][aria-pressed="true"]:hover,
 .filter-tab.active:hover,
-.filter-tab[aria-selected="true"]:hover,
-.filter-tab[aria-pressed="true"]:hover,
+.filter-tab[class*="accent"]:hover,
+[data-filter].active:hover,
+[data-filter][class*="accent"]:hover,
 .mode-tab.active:hover,
+.mode-tab[class*="accent"]:hover,
 .export-tab.active:hover,
+.export-tab[class*="accent"]:hover,
 .cat-btn.active:hover,
+.cat-btn[class*="accent"]:hover,
 .tab-btn.active:hover,
-.tab-btn[aria-selected="true"]:hover,
 .tab-btn[class*="accent"]:hover,
 .tab-btn[class*="--fg"]:hover,
+[data-tab].active:hover,
+[data-tab][class*="accent"]:hover,
+[data-tab-target].active:hover,
+[data-tab-target][class*="accent"]:hover,
 [data-engine-tab].active:hover,
 [data-engine-tab][class*="accent"]:hover,
 .cv-tab-btn.active:hover,
+.cv-tab-btn[class*="accent"]:hover,
 .search-filter-chip.active:hover,
+.search-filter-chip[class*="accent"]:hover,
+[data-modal-filter].active:hover,
+[data-modal-filter][class*="accent"]:hover,
+[id^="tab-"].active:hover,
+[id^="tab-"][class*="accent"]:hover,
+[id^="tab-"][class*="bg-[color:var(--surface-strong)]"]:hover,
+[id^="tab-"][class*="bg-[color:var(--surface)]"]:hover,
+[id^="mode-"].active:hover,
+[id^="mode-"][class*="accent"]:hover,
+[id^="view-"].active:hover,
+[id^="view-"][class*="accent"]:hover,
 .glass-tab.active:hover,
 .glass-tab-active:hover,
 nav[aria-label="Primary"] a.active:hover,
@@ -321,10 +370,12 @@ nav[aria-label="Primary"] a[aria-current="page"]:hover {
 [role="tab"] svg,
 [data-category-tab] svg,
 .filter-tab svg,
+[data-filter] svg,
 .mode-tab svg,
 .export-tab svg,
 .cat-btn svg,
 .tab-btn svg,
+[data-tab] svg,
 [data-engine-tab] svg,
 .cv-tab-btn svg,
 .search-filter-chip svg,
@@ -347,13 +398,18 @@ nav[aria-label="Primary"] a[aria-current="page"]:hover {
 [role="tab"]:focus-visible,
 [data-category-tab]:focus-visible,
 .filter-tab:focus-visible,
+[data-filter]:focus-visible,
 .mode-tab:focus-visible,
 .export-tab:focus-visible,
 .cat-btn:focus-visible,
 .tab-btn:focus-visible,
+[data-tab]:focus-visible,
 [data-engine-tab]:focus-visible,
 .cv-tab-btn:focus-visible,
 .search-filter-chip:focus-visible,
+[id^="tab-"]:focus-visible,
+[id^="mode-"]:focus-visible,
+[id^="view-"]:focus-visible,
 .glass-tab:focus-visible,
 nav[aria-label="Primary"] a:focus-visible {
   outline: none !important;
@@ -364,16 +420,25 @@ nav[aria-label="Primary"] a:focus-visible {
 @media (prefers-reduced-motion: reduce) {
   [role="tab"],
   [data-category-tab],
+  [data-hero-category],
   .filter-tab,
+  [data-filter],
   .mode-tab,
   .export-tab,
   .cat-btn,
   .tab-btn,
+  [data-tab],
+  [data-tab-target],
   [data-engine-tab],
   .cv-tab-btn,
   .search-filter-chip,
+  [data-modal-filter],
+  [id^="tab-"],
+  [id^="mode-"],
+  [id^="view-"],
   .glass-tab,
-  nav[aria-label="Primary"] a {
+  nav[aria-label="Primary"] a,
+  nav[aria-label="Mobile Bottom Navigation"] a {
     transition: none !important;
     transform: none !important;
   }

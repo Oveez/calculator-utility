@@ -2,12 +2,47 @@
 import SiteLayout from '../layouts/SiteLayout.astro';
 import Icon from '../components/Icon.astro';
 import { calculators } from '../data/calculators';
-import { getCalculatorPath, getUniqueCategories } from '../utils/calculators';
+import { allToolsIndex } from '../data/allToolsIndex';
+import { getCalculatorPath } from '../utils/calculators';
 import { siteName, siteTagline, withBasePath } from '../utils/site';
 
-const categories = getUniqueCategories(calculators).map((category) => ({
+// Logical category ordering for the 186 tools directory
+const categoryOrder = [
+  'Finance',
+  'Tax & Finance',
+  'Education',
+  'Academic',
+  'Health',
+  'Math',
+  'Converters',
+  'Time',
+  'Text',
+  'Data',
+  'Developer',
+  'Image',
+  'PDF',
+  'Color',
+  'Generators',
+  'Research',
+  'Business',
+  'Career',
+  'Pricing',
+  'Shipping',
+  'URL',
+];
+
+const uniqueCategories = Array.from(new Set(allToolsIndex.map((t) => t.category))).sort((a, b) => {
+  const ia = categoryOrder.indexOf(a);
+  const ib = categoryOrder.indexOf(b);
+  if (ia !== -1 && ib !== -1) return ia - ib;
+  if (ia !== -1) return -1;
+  if (ib !== -1) return 1;
+  return a.localeCompare(b);
+});
+
+const categories = uniqueCategories.map((category) => ({
   name: category,
-  count: calculators.filter((calculator) => calculator.category === category).length,
+  count: allToolsIndex.filter((tool) => tool.category === category).length,
 }));
 
 // Highlight top high-demand calculators for the popular section
@@ -23,7 +58,7 @@ const popularCalculators = popularSlugs
   .map((slug) => calculators.find((c) => c.slug === slug))
   .filter((c): c is typeof calculators[0] => Boolean(c));
 
-const categoryTabs = [{ name: 'All', count: calculators.length }, ...categories];
+const categoryTabs = [{ name: 'All', count: allToolsIndex.length }, ...categories];
 
 const homeTitle = "Calculator Utility — Free Online Calculator & Smart Tools";
 const homeDescription = "Free online calculator suite with 186+ fast tools and calculators for finance calculator, math calculator, BMI, tax, and developer conversions.";
@@ -383,7 +418,7 @@ const homeDescription = "Free online calculator suite with 186+ fast tools and c
         <div class="flex items-center gap-2 text-xs text-[color:var(--muted)]">
           <span class="font-semibold text-[color:var(--fg)]" data-active-category-label>All Categories</span>
           <span>•</span>
-          <span><strong class="text-[color:var(--fg)]" data-search-count>{calculators.length}</strong> of {calculators.length} tools</span>
+          <span><strong class="text-[color:var(--fg)]" data-search-count>{allToolsIndex.length}</strong> of {allToolsIndex.length} tools</span>
         </div>
       </div>
 
@@ -426,32 +461,32 @@ const homeDescription = "Free online calculator suite with 186+ fast tools and c
       </div>
     </div>
 
-    <!-- Calculator Cards Grid -->
+    <!-- Calculator Cards Grid (186 tools) -->
     <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3" data-calculator-grid>
-      {calculators.map((calculator) => (
+      {allToolsIndex.map((tool) => (
         <article
           class="group flex flex-col justify-between rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 transition hover:border-[color:var(--border-strong)] hover:bg-[color:var(--surface-strong)]"
           data-calculator-card
-          data-calculator-category={calculator.category}
-          data-search-text={`${calculator.title} ${calculator.category} ${calculator.metaDescription} ${calculator.slug}`.toLowerCase()}
+          data-calculator-category={tool.category}
+          data-search-text={`${tool.title} ${tool.category} ${tool.desc} ${tool.url}`.toLowerCase()}
         >
           <div class="space-y-2.5">
             <span class="inline-flex rounded-md bg-[color:var(--surface-strong)] px-2.5 py-0.5 text-[11px] font-semibold text-[color:var(--muted)] border border-[color:var(--border)]">
-              {calculator.category}
+              {tool.category}
             </span>
             <h3 class="text-base font-bold tracking-tight text-[color:var(--fg)] transition-colors">
-              {calculator.title}
+              {tool.title}
             </h3>
             <p class="text-xs leading-relaxed text-[color:var(--muted)] line-clamp-2">
-              {calculator.metaDescription}
+              {tool.desc}
             </p>
           </div>
 
           <a
             class="mt-5 inline-flex items-center justify-center rounded-xl bg-[color:var(--fg)] px-4 py-2 text-xs font-bold text-[color:var(--bg)] shadow-xs transition hover:opacity-90"
-            href={getCalculatorPath(calculator.slug)}
+            href={withBasePath(tool.url)}
           >
-            Launch Calculator →
+            Launch Tool →
           </a>
         </article>
       ))}
@@ -487,6 +522,7 @@ const homeDescription = "Free online calculator suite with 186+ fast tools and c
       const activeFilterBar = document.querySelector('[data-active-filter-bar]');
       const filterSummary = document.querySelector('[data-filter-summary]');
       const emptyState = document.querySelector('[data-search-empty]');
+      const grid = document.querySelector('[data-calculator-grid]');
 
       let activeCategory = '';
       let currentQuery = '';
@@ -501,10 +537,10 @@ const homeDescription = "Free online calculator suite with 186+ fast tools and c
         let visibleCount = 0;
 
         cards.forEach((card) => {
-          const searchableText = card.dataset.searchText || '';
-          const cardCategory = card.dataset.calculatorCategory || '';
+          const searchableText = (card.dataset.searchText || '').toLowerCase();
+          const cardCategory = (card.dataset.calculatorCategory || '').trim();
           const matchesSearch = query.length === 0 || searchableText.includes(query);
-          const matchesCategory = activeCategory.length === 0 || cardCategory === activeCategory;
+          const matchesCategory = activeCategory.length === 0 || cardCategory.toLowerCase() === activeCategory.toLowerCase();
           const isVisible = matchesSearch && matchesCategory;
 
           if (isVisible) {
@@ -554,7 +590,7 @@ const homeDescription = "Free online calculator suite with 186+ fast tools and c
 
         categoryTabs.forEach((tab) => {
           const tabCat = (tab.dataset.categoryName || '').trim();
-          const isSelected = (!activeCategory && !tabCat) || (activeCategory && tabCat === activeCategory);
+          const isSelected = (!activeCategory && !tabCat) || (activeCategory && tabCat.toLowerCase() === activeCategory.toLowerCase());
 
           tab.setAttribute('aria-pressed', String(isSelected));
           tab.setAttribute('aria-selected', String(isSelected));
