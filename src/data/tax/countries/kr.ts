@@ -119,6 +119,7 @@ export const krProfile: CountryTaxProfile = {
       ],
       regions: [
         { code: 'local_tax_included', name: 'Standard Local Income Tax (10% of national tax)', additionalTaxRate: 0.015 },
+        { code: 'national_only', name: 'National Tax Only', flatRate: 0 },
       ],
       vatConfig: {
         name: 'VAT (부가가치세)',

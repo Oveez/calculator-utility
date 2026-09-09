@@ -89,6 +89,7 @@ export const jpProfile: CountryTaxProfile = {
       ],
       regions: [
         { code: 'standard_juminzei', name: 'Standard Resident Tax / Juminzei (10% flat)', additionalTaxRate: 0.10 },
+        { code: 'national_only', name: 'National Income Tax Only', flatRate: 0 },
       ],
       vatConfig: {
         name: 'Consumption Tax',

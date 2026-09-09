@@ -44,9 +44,11 @@ export const seProfile: CountryTaxProfile = {
       ],
       regions: [
         { code: 'stockholm', name: 'Stockholm (~29.82%)', additionalTaxRate: -0.0256 },
-        { code: 'national_avg', name: 'National Average (~32.38%)', flatRate: 0 },
         { code: 'gothenburg', name: 'Göteborg (~32.60%)', additionalTaxRate: 0.0022 },
         { code: 'malmo', name: 'Malmö (~32.42%)', additionalTaxRate: 0.0004 },
+        { code: 'uppsala', name: 'Uppsala (~32.22%)', additionalTaxRate: -0.0016 },
+        { code: 'linkoping', name: 'Linköping (~31.94%)', additionalTaxRate: -0.0044 },
+        { code: 'national_avg', name: 'National Average (~32.38%)', flatRate: 0 },
       ],
       vatConfig: {
         name: 'Moms',
@@ -85,6 +87,11 @@ export const seProfile: CountryTaxProfile = {
         },
       ],
       regions: [
+        { code: 'stockholm', name: 'Stockholm (~29.82%)', additionalTaxRate: -0.0256 },
+        { code: 'gothenburg', name: 'Göteborg (~32.60%)', additionalTaxRate: 0.0022 },
+        { code: 'malmo', name: 'Malmö (~32.42%)', additionalTaxRate: 0.0004 },
+        { code: 'uppsala', name: 'Uppsala (~32.22%)', additionalTaxRate: -0.0016 },
+        { code: 'linkoping', name: 'Linköping (~31.94%)', additionalTaxRate: -0.0044 },
         { code: 'national_avg', name: 'National Average (~32.37%)', flatRate: 0 },
       ],
       vatConfig: {

@@ -44,9 +44,11 @@ export const dkProfile: CountryTaxProfile = {
       ],
       regions: [
         { code: 'copenhagen', name: 'København (~23.60%)', additionalTaxRate: -0.013 },
-        { code: 'national_avg', name: 'National Average Kommune (~24.90%)', flatRate: 0 },
+        { code: 'frederiksberg', name: 'Frederiksberg (~23.20%)', additionalTaxRate: -0.017 },
         { code: 'aarhus', name: 'Aarhus (~24.50%)', additionalTaxRate: -0.004 },
         { code: 'odense', name: 'Odense (~25.50%)', additionalTaxRate: 0.006 },
+        { code: 'aalborg', name: 'Aalborg (~25.10%)', additionalTaxRate: 0.002 },
+        { code: 'national_avg', name: 'National Average Kommune (~24.90%)', flatRate: 0 },
       ],
       vatConfig: {
         name: 'Moms',
@@ -81,6 +83,11 @@ export const dkProfile: CountryTaxProfile = {
         },
       ],
       regions: [
+        { code: 'copenhagen', name: 'København (~23.60%)', additionalTaxRate: -0.013 },
+        { code: 'frederiksberg', name: 'Frederiksberg (~23.20%)', additionalTaxRate: -0.017 },
+        { code: 'aarhus', name: 'Aarhus (~24.50%)', additionalTaxRate: -0.004 },
+        { code: 'odense', name: 'Odense (~25.50%)', additionalTaxRate: 0.006 },
+        { code: 'aalborg', name: 'Aalborg (~25.10%)', additionalTaxRate: 0.002 },
         { code: 'national_avg', name: 'National Average Kommune (~24.90%)', flatRate: 0 },
       ],
       vatConfig: {

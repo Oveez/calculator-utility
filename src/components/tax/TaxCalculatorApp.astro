@@ -235,7 +235,7 @@ const taxParameterGuide: CalculatorParameterInfo[] = [
     <div class="space-y-6">
 
       <!-- SECTION 1: Filing Status, State & Dependents -->
-      <div class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 sm:p-6 space-y-4 shadow-sm">
+      <div class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 sm:p-6 space-y-4 shadow-sm" {...((!profile.hasRegionalTax && profile.id !== 'us') ? {'data-adv-only': true} : {})}>
         <h3 class="text-sm font-bold uppercase tracking-wider text-[color:var(--fg)] flex items-center gap-2">
           <Icon name="user" class="w-4 h-4 text-[color:var(--accent)]" />
           <span>1. Filing Status &amp; Jurisdiction</span>
@@ -243,6 +243,7 @@ const taxParameterGuide: CalculatorParameterInfo[] = [
 
         <div class="grid gap-4 sm:grid-cols-2">
           <!-- Filing Status -->
+          {profile.id === 'us' && (
           <div>
             <label for="adv-filing-status" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">
               Filing Status
@@ -259,8 +260,10 @@ const taxParameterGuide: CalculatorParameterInfo[] = [
               <option value="qualifying_widow">Qualifying Surviving Spouse ($32,200)</option>
             </select>
           </div>
+          )}
 
-          <!-- State / Region -->
+          {/* State / Region — only shown for countries with regional/state tax */}
+          {profile.hasRegionalTax && (defaultYearData.regions || []).length > 0 && (
           <div>
             <label for="adv-region" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">
               {profile.regionalEntityName || 'State / Region'}
@@ -270,15 +273,16 @@ const taxParameterGuide: CalculatorParameterInfo[] = [
               class="mt-1.5 w-full cursor-pointer rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3.5 py-2.5 text-sm font-semibold text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)]"
               data-adv-region
             >
-              {(defaultYearData.regions || []).map((r) => (
-                <option value={r.code}>{r.name}</option>
+              {(defaultYearData.regions || []).map((reg) => (
+                <option value={reg.code}>{reg.name}</option>
               ))}
             </select>
           </div>
+          )}
         </div>
 
         <!-- Dependents & Age Allowances -->
-        <div class="grid gap-4 sm:grid-cols-2 border-t border-[color:var(--border)]/60 pt-4">
+        <div class="grid gap-4 sm:grid-cols-2 border-t border-[color:var(--border)]/60 pt-4" data-adv-only>
           <div>
             <label for="adv-kids" class="block text-xs font-medium text-[color:var(--fg)]">
               Children under 17 ($2,000 CTC each)
@@ -310,7 +314,7 @@ const taxParameterGuide: CalculatorParameterInfo[] = [
         </div>
 
         <!-- Age 65+ and Blindness Bonuses -->
-        <div class="flex flex-wrap gap-4 border-t border-[color:var(--border)]/60 pt-3 text-xs text-[color:var(--muted)]">
+        <div class="flex flex-wrap gap-4 border-t border-[color:var(--border)]/60 pt-3 text-xs text-[color:var(--muted)]" data-adv-only>
           <label class="flex items-center gap-1.5 cursor-pointer">
             <input type="checkbox" data-adv-taxpayer-65 class="rounded border-[color:var(--border)] text-[color:var(--accent)]" />
             <span>Taxpayer Age 65+ (+$2,000)</span>
@@ -333,8 +337,10 @@ const taxParameterGuide: CalculatorParameterInfo[] = [
           <!-- Primary W-2 -->
           <div>
             <div class="flex justify-between items-center text-xs">
-              <label for="adv-w2" class="font-bold text-[color:var(--fg)]">Primary W-2 Wages, Salary &amp; Tips</label>
-              <span class="text-[color:var(--muted)]">W-2 Box 1</span>
+              <label for="adv-w2" class="font-bold text-[color:var(--fg)]">
+                {profile.id === 'us' ? 'Primary W-2 Wages, Salary & Tips' : 'Gross Annual Salary & Wages'}
+              </label>
+              <span class="text-[color:var(--muted)]">{profile.id === 'us' ? 'W-2 Box 1' : 'Annual Base'}</span>
             </div>
             <div class="relative mt-1">
               <span class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-sm font-bold text-[color:var(--muted)]">
@@ -355,8 +361,10 @@ const taxParameterGuide: CalculatorParameterInfo[] = [
           <!-- Spouse W-2 (Visible for MFJ) -->
           <div data-adv-spouse-wrap class="hidden">
             <div class="flex justify-between items-center text-xs">
-              <label for="adv-spouse-w2" class="font-bold text-[color:var(--fg)]">Spouse W-2 Wages &amp; Salary</label>
-              <span class="text-[color:var(--muted)]">W-2 Box 1</span>
+              <label for="adv-spouse-w2" class="font-bold text-[color:var(--fg)]">
+                {profile.id === 'us' ? 'Spouse W-2 Wages & Salary' : 'Spouse Annual Salary & Wages'}
+              </label>
+              <span class="text-[color:var(--muted)]">{profile.id === 'us' ? 'W-2 Box 1' : 'Annual Base'}</span>
             </div>
             <div class="relative mt-1">
               <span class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-sm font-bold text-[color:var(--muted)]">
@@ -375,7 +383,7 @@ const taxParameterGuide: CalculatorParameterInfo[] = [
           </div>
 
           <!-- Business / 1099 Self-Employment Income -->
-          <div class="grid gap-3 sm:grid-cols-2 border-t border-[color:var(--border)]/60 pt-3">
+          <div class="grid gap-3 sm:grid-cols-2 border-t border-[color:var(--border)]/60 pt-3" data-adv-only>
             <div>
               <label for="adv-business" class="block text-xs font-medium text-[color:var(--fg)]">
                 Self-Employment Net Profit (1099/Sched C)
@@ -417,8 +425,7 @@ const taxParameterGuide: CalculatorParameterInfo[] = [
             </div>
           </div>
 
-          <!-- Investment Incomes -->
-          <div class="grid gap-3 sm:grid-cols-2 border-t border-[color:var(--border)]/60 pt-3">
+          <div class="grid gap-3 sm:grid-cols-2 border-t border-[color:var(--border)]/60 pt-3" data-adv-only>
             <div>
               <label for="adv-qualified-div" class="block text-xs font-medium text-[color:var(--fg)]">
                 Qualified Dividends &amp; LT Capital Gains
@@ -465,7 +472,7 @@ const taxParameterGuide: CalculatorParameterInfo[] = [
       </div>
 
       <!-- SECTION 3: Above-the-Line Pre-Tax Deductions (Adjustments) -->
-      <div class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 sm:p-6 space-y-4 shadow-sm">
+      <div class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 sm:p-6 space-y-4 shadow-sm" data-adv-only>
         <h3 class="text-sm font-bold uppercase tracking-wider text-[color:var(--fg)] flex items-center gap-2">
           <Icon name="math" class="w-4 h-4 text-[color:var(--accent)]" />
           <span>3. Pre-Tax Deductions (Adjustments to AGI)</span>
@@ -558,8 +565,7 @@ const taxParameterGuide: CalculatorParameterInfo[] = [
         </div>
       </div>
 
-      <!-- SECTION 4: Standard vs. Itemized Deduction Optimizer -->
-      <div class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 sm:p-6 space-y-4 shadow-sm">
+      <div class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 sm:p-6 space-y-4 shadow-sm" data-adv-only>
         <div class="flex flex-wrap items-center justify-between gap-2">
           <h3 class="text-sm font-bold uppercase tracking-wider text-[color:var(--fg)] flex items-center gap-2">
             <Icon name="scale" class="w-4 h-4 text-[color:var(--accent)]" />
@@ -633,8 +639,7 @@ const taxParameterGuide: CalculatorParameterInfo[] = [
         </div>
       </div>
 
-      <!-- SECTION 5: Taxes Withheld (For Refund/Owed Calculation) -->
-      <div class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 sm:p-6 space-y-4 shadow-sm">
+      <div class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 sm:p-6 space-y-4 shadow-sm" data-adv-only>
         <h3 class="text-sm font-bold uppercase tracking-wider text-[color:var(--fg)] flex items-center gap-2">
           <Icon name="document" class="w-4 h-4 text-[color:var(--accent)]" />
           <span>5. Taxes Already Paid / Withheld (Form W-2 / 1040-ES)</span>
@@ -792,13 +797,13 @@ const taxParameterGuide: CalculatorParameterInfo[] = [
             </span>
           </div>
           <div class="flex justify-between font-semibold text-rose-600 border-t border-[color:var(--border)]/40 pt-1">
-            <span>Net Federal Income Tax</span>
+            <span>{profile.id === 'us' ? 'Net Federal Income Tax' : 'National / Federal Income Tax'}</span>
             <span data-res-net-fed>
               {formatCurrency(initialAdvancedResult.netFederalIncomeTax, profile.defaultCurrency, profile.defaultCurrencySymbol)}
             </span>
           </div>
           <div class="flex justify-between text-indigo-500">
-            <span>FICA (Social Security &amp; Medicare)</span>
+            <span data-res-fica-label>{profile.id === 'us' ? 'FICA (Social Security & Medicare)' : 'Social Insurance & Contributions'}</span>
             <span data-res-fica>
               {formatCurrency(initialAdvancedResult.totalFicaTax, profile.defaultCurrency, profile.defaultCurrencySymbol)}
             </span>
@@ -810,18 +815,18 @@ const taxParameterGuide: CalculatorParameterInfo[] = [
             </span>
           </div>
           <div class="flex justify-between text-purple-500">
-            <span data-res-state-name>State Income Tax</span>
+            <span data-res-state-name>{profile.regionalEntityName ? `${profile.regionalEntityName} Tax` : 'Regional / State Tax'}</span>
             <span data-res-state-tax>
               {formatCurrency(initialAdvancedResult.stateIncomeTax, profile.defaultCurrency, profile.defaultCurrencySymbol)}
             </span>
           </div>
           <div class="flex justify-between font-black text-sm text-[color:var(--fg)] border-t border-[color:var(--border)] pt-2">
-            <span>Total Taxes (Fed + FICA + State)</span>
+            <span>{profile.id === 'us' ? 'Total Taxes (Fed + FICA + State)' : 'Total Taxes & Deductions'}</span>
             <span data-res-total-tax>
               {formatCurrency(initialAdvancedResult.totalAllTaxes, profile.defaultCurrency, profile.defaultCurrencySymbol)}
             </span>
           </div>
-          <div class="flex justify-between text-[color:var(--muted)]">
+          <div class="flex justify-between text-[color:var(--muted)]" data-adv-only>
             <span>Total Withholding &amp; Payments</span>
             <span data-res-withheld>
               {formatCurrency(initialAdvancedResult.totalPaymentsAndWithholdings, profile.defaultCurrency, profile.defaultCurrencySymbol)}
@@ -962,6 +967,9 @@ const taxParameterGuide: CalculatorParameterInfo[] = [
         const statusSelect = app.querySelector('[data-adv-status]') as HTMLSelectElement | null;
         const regionSelect = app.querySelector('[data-adv-region]') as HTMLSelectElement | null;
 
+        // Current mode state
+        let currentMode: 'advanced' | 'quick' = 'advanced';
+
         // Inputs
         const w2Input = app.querySelector('[data-adv-w2]') as HTMLInputElement | null;
         const spouseW2Input = app.querySelector('[data-adv-spouse-w2]') as HTMLInputElement | null;
@@ -1028,9 +1036,12 @@ const taxParameterGuide: CalculatorParameterInfo[] = [
         const resRegularTax = app.querySelector('[data-res-regular-tax]');
         const resCapGainsTax = app.querySelector('[data-res-capgains-tax]');
         const resCredits = app.querySelector('[data-res-credits]');
+        const resCreditsWrap = app.querySelector('[data-res-credits-wrap]') as HTMLElement | null;
         const resNetFed = app.querySelector('[data-res-net-fed]');
         const resFica = app.querySelector('[data-res-fica]');
+        const resFicaLabel = app.querySelector('[data-res-fica-label]');
         const resSe = app.querySelector('[data-res-se]');
+        const resSeWrap = app.querySelector('[data-res-se-wrap]') as HTMLElement | null;
         const resStateName = app.querySelector('[data-res-state-name]');
         const resStateTax = app.querySelector('[data-res-state-tax]');
         const resTotalTax = app.querySelector('[data-res-total-tax]');
@@ -1046,12 +1057,12 @@ const taxParameterGuide: CalculatorParameterInfo[] = [
           try {
             return new Intl.NumberFormat('en-US', {
               style: 'currency',
-              currency: currency || 'USD',
+              currency: currency || profile.defaultCurrency || 'USD',
               minimumFractionDigits: 0,
               maximumFractionDigits: 0,
             }).format(amount);
           } catch (e) {
-            return (symbol || '$') + Math.round(amount).toLocaleString('en-US');
+            return (symbol || profile.defaultCurrencySymbol || '$') + Math.round(amount).toLocaleString('en-US');
           }
         }
 
@@ -1067,18 +1078,18 @@ const taxParameterGuide: CalculatorParameterInfo[] = [
           if (spouseAgeWrap) spouseAgeWrap.className = isJoint ? 'flex items-center gap-1.5 cursor-pointer' : 'hidden';
 
           const primaryW2 = Math.max(0, parseFloat(w2Input?.value || '0') || 0);
-          const spouseW2 = isJoint ? Math.max(0, parseFloat(spouseW2Input?.value || '0') || 0) : 0;
-          const businessNet = Math.max(0, parseFloat(businessInput?.value || '0') || 0);
-          const otherInc = Math.max(0, parseFloat(otherIncInput?.value || '0') || 0);
-          const qualifiedDiv = Math.max(0, parseFloat(qualifiedDivInput?.value || '0') || 0);
-          const interest = Math.max(0, parseFloat(interestInput?.value || '0') || 0);
+          const spouseW2 = (isJoint && currentMode === 'advanced') ? Math.max(0, parseFloat(spouseW2Input?.value || '0') || 0) : 0;
+          const businessNet = currentMode === 'advanced' ? Math.max(0, parseFloat(businessInput?.value || '0') || 0) : 0;
+          const otherInc = currentMode === 'advanced' ? Math.max(0, parseFloat(otherIncInput?.value || '0') || 0) : 0;
+          const qualifiedDiv = currentMode === 'advanced' ? Math.max(0, parseFloat(qualifiedDivInput?.value || '0') || 0) : 0;
+          const interest = currentMode === 'advanced' ? Math.max(0, parseFloat(interestInput?.value || '0') || 0) : 0;
 
           const totalGrossIncome = primaryW2 + spouseW2 + businessNet + otherInc + qualifiedDiv + interest;
 
-          // SE Tax
+          // Self-Employment Tax (SE)
           let selfEmploymentTax = 0;
           let deductibleSE = 0;
-          if (businessNet > 400) {
+          if (profile.id === 'us' && businessNet > 400) {
             const netSE = businessNet * 0.9235;
             const ssaCap = 184500;
             const remainingSSCap = Math.max(0, ssaCap - (primaryW2 + spouseW2));
@@ -1087,42 +1098,60 @@ const taxParameterGuide: CalculatorParameterInfo[] = [
           }
 
           // Pre-tax deductions
-          const ret401k = Math.max(0, parseFloat(ret401kInput?.value || '0') || 0);
-          const tradIra = Math.max(0, parseFloat(iraInput?.value || '0') || 0);
-          const hsa = Math.max(0, parseFloat(hsaInput?.value || '0') || 0);
-          const studentLoan = Math.max(0, parseFloat(studentLoanInput?.value || '0') || 0);
+          const ret401k = currentMode === 'advanced' ? Math.max(0, parseFloat(ret401kInput?.value || '0') || 0) : 0;
+          const tradIra = currentMode === 'advanced' ? Math.max(0, parseFloat(iraInput?.value || '0') || 0) : 0;
+          const hsa = currentMode === 'advanced' ? Math.max(0, parseFloat(hsaInput?.value || '0') || 0) : 0;
+          const studentLoan = currentMode === 'advanced' ? Math.max(0, parseFloat(studentLoanInput?.value || '0') || 0) : 0;
 
           const totalAdjustments = deductibleSE + ret401k + tradIra + hsa + studentLoan;
           const agi = Math.max(0, totalGrossIncome - totalAdjustments);
 
-          // Standard Deduction with bonuses
+          // Standard Deduction / Personal Allowance
           const fsConfig = yearData.filingStatuses?.[status];
-          let stdDeduction = fsConfig?.standardDeduction || yearData.standardDeduction || 16100;
-          const seniorBonus = fsConfig?.seniorAdditionalDeduction || (isJoint ? 1600 : 2000);
-          if (taxpayer65Check?.checked) stdDeduction += seniorBonus;
-          if (isJoint && spouse65Check?.checked) stdDeduction += seniorBonus;
+          let stdDeduction = 0;
+          if (profile.id === 'us') {
+            stdDeduction = fsConfig?.standardDeduction || yearData.standardDeduction || 16100;
+            const seniorBonus = fsConfig?.seniorAdditionalDeduction || (isJoint ? 1600 : 2000);
+            if (taxpayer65Check?.checked) stdDeduction += seniorBonus;
+            if (isJoint && spouse65Check?.checked) stdDeduction += seniorBonus;
+          } else if (profile.id === 'uk') {
+            const grossForTaper = primaryW2 + spouseW2;
+            const pa = yearData.personalAllowance || 12570;
+            if (grossForTaper > 100000) {
+              stdDeduction = Math.max(0, pa - Math.floor((grossForTaper - 100000) / 2));
+            } else {
+              stdDeduction = pa;
+            }
+          } else {
+            stdDeduction = yearData.standardDeduction !== undefined ? yearData.standardDeduction : 0;
+          }
 
-          // Itemized Deductions
-          const mortgage = Math.max(0, parseFloat(mortgageInput?.value || '0') || 0);
-          const salt = Math.min(10000, Math.max(0, parseFloat(saltInput?.value || '0') || 0));
-          const charity = Math.max(0, parseFloat(charityInput?.value || '0') || 0);
-          const medical = Math.max(0, (parseFloat(medicalInput?.value || '0') || 0) - (0.075 * agi));
+          // Itemized Deductions (Schedule A / US)
+          const mortgage = currentMode === 'advanced' ? Math.max(0, parseFloat(mortgageInput?.value || '0') || 0) : 0;
+          const salt = currentMode === 'advanced' ? Math.min(10000, Math.max(0, parseFloat(saltInput?.value || '0') || 0)) : 0;
+          const charity = currentMode === 'advanced' ? Math.max(0, parseFloat(charityInput?.value || '0') || 0) : 0;
+          const medical = currentMode === 'advanced' ? Math.max(0, (parseFloat(medicalInput?.value || '0') || 0) - (0.075 * agi)) : 0;
           const totalItemized = mortgage + salt + charity + medical;
 
           // Auto Optimizer
           let deductionUsed = 'standard';
           let deductionAmount = stdDeduction;
-          if (totalItemized > stdDeduction) {
+          if (profile.id === 'us' && totalItemized > stdDeduction && currentMode === 'advanced') {
             deductionUsed = 'itemized';
             deductionAmount = totalItemized;
           }
 
           const taxableIncome = Math.max(0, agi - deductionAmount);
-          const preferentialTaxable = Math.min(taxableIncome, qualifiedDiv);
+          const preferentialTaxable = profile.id === 'us' ? Math.min(taxableIncome, qualifiedDiv) : 0;
           const ordinaryTaxable = Math.max(0, taxableIncome - preferentialTaxable);
 
-          // Progressive Bracket Calculation
-          const brackets = fsConfig?.brackets || yearData.nationalBrackets;
+          // Regional Jurisdiction Brackets Resolution (e.g. Scotland in UK)
+          const regCode = regionSelect ? regionSelect.value : undefined;
+          const reg = yearData.regions?.find((r: any) => r.code === regCode);
+          const brackets = (reg?.brackets && reg.brackets.length > 0)
+            ? reg.brackets
+            : (fsConfig?.brackets || yearData.nationalBrackets || []);
+
           let regularIncomeTax = 0;
           let marginalRate = 0;
           const bracketBreakdown: any[] = [];
@@ -1142,9 +1171,9 @@ const taxParameterGuide: CalculatorParameterInfo[] = [
             }
           }
 
-          // Preferential Cap Gains Tax (0%, 15%, 20%)
+          // Preferential Cap Gains Tax (US Only)
           let preferentialTax = 0;
-          if (preferentialTaxable > 0) {
+          if (profile.id === 'us' && preferentialTaxable > 0) {
             const capBrackets = fsConfig?.capitalGainsBrackets || [
               { threshold: 0, upTo: 49450, rate: 0.00 },
               { threshold: 49450, upTo: 540800, rate: 0.15 },
@@ -1162,51 +1191,75 @@ const taxParameterGuide: CalculatorParameterInfo[] = [
             }
           }
 
-          // Credits (CTC & Other)
-          const numKids = Math.max(0, parseInt(kidsInput?.value || '0', 10) || 0);
-          const numOther = Math.max(0, parseInt(otherDepsInput?.value || '0', 10) || 0);
-          const ctcLimit = isJoint ? 400000 : 200000;
-          let ctc = numKids * 2000;
-          let odc = numOther * 500;
-          if (agi > ctcLimit) {
-            const chunks = Math.ceil((agi - ctcLimit) / 1000);
-            const red = chunks * 50;
-            ctc = Math.max(0, ctc - red);
-            odc = Math.max(0, odc - Math.max(0, red - (numKids * 2000)));
+          // Tax Credits (US Child Tax Credit & ODC)
+          let totalCredits = 0;
+          if (profile.id === 'us' && currentMode === 'advanced') {
+            const numKids = Math.max(0, parseInt(kidsInput?.value || '0', 10) || 0);
+            const numOther = Math.max(0, parseInt(otherDepsInput?.value || '0', 10) || 0);
+            const ctcLimit = isJoint ? 400000 : 200000;
+            let ctc = numKids * 2000;
+            let odc = numOther * 500;
+            if (agi > ctcLimit) {
+              const chunks = Math.ceil((agi - ctcLimit) / 1000);
+              const red = chunks * 50;
+              ctc = Math.max(0, ctc - red);
+              odc = Math.max(0, odc - Math.max(0, red - (numKids * 2000)));
+            }
+            totalCredits = ctc + odc;
           }
-          const totalCredits = ctc + odc;
           const netFedIncomeTax = Math.max(0, (regularIncomeTax + preferentialTax) - totalCredits);
 
-          // FICA
-          const ssaCap = 184500;
-          const ssTax = (Math.min(primaryW2, ssaCap) * 0.062) + (Math.min(spouseW2, ssaCap) * 0.062);
-          const medTax = (primaryW2 + spouseW2) * 0.0145;
-          const addlMedThreshold = isJoint ? 250000 : 200000;
-          const addlMed = (primaryW2 + spouseW2 + businessNet) > addlMedThreshold ? ((primaryW2 + spouseW2 + businessNet) - addlMedThreshold) * 0.009 : 0;
-          const totalFica = ssTax + medTax + addlMed;
+          // Social Insurance & Mandatory Welfare Contributions
+          let totalFica = 0;
+          if (profile.id === 'us') {
+            const ssaCap = 184500;
+            const ssTax = (Math.min(primaryW2, ssaCap) * 0.062) + (Math.min(spouseW2, ssaCap) * 0.062);
+            const medTax = (primaryW2 + spouseW2) * 0.0145;
+            const addlMedThreshold = isJoint ? 250000 : 200000;
+            const addlMed = (primaryW2 + spouseW2 + businessNet) > addlMedThreshold ? ((primaryW2 + spouseW2 + businessNet) - addlMedThreshold) * 0.009 : 0;
+            totalFica = ssTax + medTax + addlMed;
+          } else if (yearData.socialContributions && yearData.socialContributions.length > 0) {
+            const contribBase = primaryW2 + spouseW2;
+            for (const rule of yearData.socialContributions) {
+              let base = contribBase;
+              if (rule.minThreshold && base < rule.minThreshold) {
+                base = 0;
+              } else if (rule.minThreshold && base >= rule.minThreshold) {
+                if (profile.id === 'uk' || profile.id === 'ca') {
+                  base = base - rule.minThreshold;
+                }
+              }
+              if (rule.capAmount && rule.capAmount > 0) {
+                base = Math.min(base, rule.capAmount);
+              }
+              totalFica += Math.max(0, base * (rule.employeeRate || rule.rate || 0));
+            }
+          }
 
-          // State Tax
+          // State / Provincial / Regional Income Tax
           let stateTax = 0;
-          let stateName = 'State Income Tax';
-          const regCode = regionSelect ? regionSelect.value : undefined;
-          const reg = yearData.regions?.find((r: any) => r.code === regCode);
+          let stateName = profile.regionalEntityName || 'Regional / State Tax';
           if (reg) {
             stateName = reg.name;
-            if (reg.flatRate !== undefined) stateTax = taxableIncome * reg.flatRate;
-            else if (reg.additionalTaxRate !== undefined) stateTax = taxableIncome * reg.additionalTaxRate;
+            if (reg.brackets && reg.brackets.length > 0) {
+              stateTax = 0; // Handled progressively in brackets
+            } else if (reg.flatRate !== undefined) {
+              stateTax = taxableIncome * reg.flatRate;
+            } else if (reg.additionalTaxRate !== undefined) {
+              stateTax = taxableIncome * reg.additionalTaxRate;
+            }
           }
 
           const totalAllTaxes = netFedIncomeTax + totalFica + selfEmploymentTax + stateTax;
 
           // Payments / Withholding & Refund/Owed
-          const fedWithheld = Math.max(0, parseFloat(fedWithheldInput?.value || '0') || 0);
-          const stateWithheld = Math.max(0, parseFloat(stateWithheldInput?.value || '0') || 0);
+          const fedWithheld = currentMode === 'advanced' ? Math.max(0, parseFloat(fedWithheldInput?.value || '0') || 0) : 0;
+          const stateWithheld = currentMode === 'advanced' ? Math.max(0, parseFloat(stateWithheldInput?.value || '0') || 0) : 0;
           const totalWithheld = fedWithheld + stateWithheld;
 
           const federal1040Due = netFedIncomeTax + selfEmploymentTax;
           const federalRefundOrOwed = fedWithheld - federal1040Due;
           const stateRefundOrOwed = stateWithheld - stateTax;
-          const combinedRefundOrOwed = federalRefundOrOwed + stateRefundOrOwed;
 
           const netTakeHome = Math.max(0, totalGrossIncome - totalAllTaxes - (ret401k + tradIra + hsa));
           const effectiveRate = totalGrossIncome > 0 ? (totalAllTaxes / totalGrossIncome) * 100 : 0;
@@ -1216,22 +1269,35 @@ const taxParameterGuide: CalculatorParameterInfo[] = [
             heroAmount.classList.remove('calc-result-updated');
             void (heroAmount as HTMLElement).offsetWidth;
             heroAmount.classList.add('calc-result-updated');
-            if (federalRefundOrOwed >= 0) {
-              heroAmount.textContent = '+' + formatMoney(federalRefundOrOwed, cur, sym);
-              heroAmount.className = 'mt-1 text-3xl font-black tracking-tight sm:text-4xl lg:text-5xl text-cyan-500 dark:text-cyan-400';
+
+            if (currentMode === 'quick') {
               if (heroBadge) {
-                heroBadge.textContent = 'Estimated Refund';
+                heroBadge.textContent = 'Estimated Take-Home Pay';
                 heroBadge.className = 'inline-flex items-center rounded-full bg-cyan-500/10 px-2.5 py-0.5 text-xs font-bold text-cyan-600 dark:text-cyan-400 border border-cyan-500/20';
               }
-              if (heroSubtext) heroSubtext.textContent = `You overpaid by ${formatMoney(federalRefundOrOwed, cur, sym)} in federal tax withholdings.`;
-            } else {
-              heroAmount.textContent = '-' + formatMoney(Math.abs(federalRefundOrOwed), cur, sym);
-              heroAmount.className = 'mt-1 text-3xl font-black tracking-tight sm:text-4xl lg:text-5xl text-rose-500';
-              if (heroBadge) {
-                heroBadge.textContent = 'Balance Owed / Tax Due';
-                heroBadge.className = 'inline-flex items-center rounded-full bg-rose-500/10 px-2.5 py-0.5 text-xs font-bold text-rose-600 dark:text-rose-400';
+              heroAmount.textContent = formatMoney(netTakeHome, cur, sym);
+              heroAmount.className = 'mt-1 text-3xl font-black tracking-tight sm:text-4xl lg:text-5xl text-cyan-500 dark:text-cyan-400';
+              if (heroSubtext) {
+                heroSubtext.textContent = `Annual net take-home pay after taxes and statutory deductions (${formatMoney(netTakeHome / 12, cur, sym)}/month).`;
               }
-              if (heroSubtext) heroSubtext.textContent = `You owe ${formatMoney(Math.abs(federalRefundOrOwed), cur, sym)} to the federal tax authority.`;
+            } else {
+              if (federalRefundOrOwed >= 0) {
+                heroAmount.textContent = '+' + formatMoney(federalRefundOrOwed, cur, sym);
+                heroAmount.className = 'mt-1 text-3xl font-black tracking-tight sm:text-4xl lg:text-5xl text-cyan-500 dark:text-cyan-400';
+                if (heroBadge) {
+                  heroBadge.textContent = 'Estimated Refund';
+                  heroBadge.className = 'inline-flex items-center rounded-full bg-cyan-500/10 px-2.5 py-0.5 text-xs font-bold text-cyan-600 dark:text-cyan-400 border border-cyan-500/20';
+                }
+                if (heroSubtext) heroSubtext.textContent = `You overpaid by ${formatMoney(federalRefundOrOwed, cur, sym)} in tax withholdings.`;
+              } else {
+                heroAmount.textContent = '-' + formatMoney(Math.abs(federalRefundOrOwed), cur, sym);
+                heroAmount.className = 'mt-1 text-3xl font-black tracking-tight sm:text-4xl lg:text-5xl text-rose-500';
+                if (heroBadge) {
+                  heroBadge.textContent = 'Balance Owed / Tax Due';
+                  heroBadge.className = 'inline-flex items-center rounded-full bg-rose-500/10 px-2.5 py-0.5 text-xs font-bold text-rose-600 dark:text-rose-400';
+                }
+                if (heroSubtext) heroSubtext.textContent = `You owe ${formatMoney(Math.abs(federalRefundOrOwed), cur, sym)} in unpaid tax liability.`;
+              }
             }
           }
 
@@ -1244,7 +1310,7 @@ const taxParameterGuide: CalculatorParameterInfo[] = [
               deductionBadge.textContent = `✓ Itemizing Wins (+${formatMoney(diff, cur, sym)} extra deduction)`;
               deductionBadge.className = 'rounded-full bg-blue-500/10 px-2.5 py-0.5 text-xs font-bold text-blue-600 dark:text-blue-400';
             } else {
-              deductionBadge.textContent = `✓ Standard Deduction (${formatMoney(stdDeduction, cur, sym)})`;
+              deductionBadge.textContent = `✓ Standard Deduction / Allowance (${formatMoney(stdDeduction, cur, sym)})`;
               deductionBadge.className = 'rounded-full bg-cyan-500/10 px-2.5 py-0.5 text-xs font-bold text-cyan-600 dark:text-cyan-400 border border-cyan-500/20';
             }
           }
@@ -1275,28 +1341,36 @@ const taxParameterGuide: CalculatorParameterInfo[] = [
           if (resGross) resGross.textContent = formatMoney(totalGrossIncome, cur, sym);
           if (resAdjustments) resAdjustments.textContent = '-' + formatMoney(totalAdjustments, cur, sym);
           if (resAgi) resAgi.textContent = formatMoney(agi, cur, sym);
-          if (resDeductionLabel) resDeductionLabel.textContent = deductionUsed === 'itemized' ? 'Deductions (Itemized Claimed)' : 'Deductions (Standard Claimed)';
+          if (resDeductionLabel) resDeductionLabel.textContent = deductionUsed === 'itemized' ? 'Deductions (Itemized Claimed)' : 'Deductions / Allowance';
           if (resDeduction) resDeduction.textContent = '-' + formatMoney(deductionAmount, cur, sym);
           if (resTaxable) resTaxable.textContent = formatMoney(taxableIncome, cur, sym);
           if (resRegularTax) resRegularTax.textContent = formatMoney(regularIncomeTax, cur, sym);
           if (resCapGainsTax) resCapGainsTax.textContent = formatMoney(preferentialTax, cur, sym);
           if (resCredits) resCredits.textContent = '-' + formatMoney(totalCredits, cur, sym);
+          if (resCreditsWrap) resCreditsWrap.style.display = totalCredits > 0 ? '' : 'none';
           if (resNetFed) resNetFed.textContent = formatMoney(netFedIncomeTax, cur, sym);
+          if (resFicaLabel) resFicaLabel.textContent = profile.id === 'us' ? 'FICA (Social Security & Medicare)' : 'Social Insurance & Contributions';
           if (resFica) resFica.textContent = formatMoney(totalFica, cur, sym);
           if (resSe) resSe.textContent = formatMoney(selfEmploymentTax, cur, sym);
-          if (resStateName) resStateName.textContent = stateName.split('(')[0].trim() || 'State Tax';
+          if (resSeWrap) resSeWrap.style.display = (selfEmploymentTax > 0 || (profile.id === 'us' && currentMode === 'advanced')) ? '' : 'none';
+          if (resStateName) resStateName.textContent = stateName.split('(')[0].trim() || (profile.regionalEntityName ? `${profile.regionalEntityName} Tax` : 'Regional Tax');
           if (resStateTax) resStateTax.textContent = formatMoney(stateTax, cur, sym);
           if (resTotalTax) resTotalTax.textContent = formatMoney(totalAllTaxes, cur, sym);
           if (resWithheld) resWithheld.textContent = formatMoney(totalWithheld, cur, sym);
 
           if (resRefundLabel && resRefundVal) {
-            if (federalRefundOrOwed >= 0) {
-              resRefundLabel.textContent = 'Net Estimated Federal Refund';
+            if (currentMode === 'quick') {
+              resRefundLabel.textContent = 'Annual Net Take-Home Pay';
+              resRefundLabel.className = 'text-cyan-500 dark:text-cyan-400 font-bold';
+              resRefundVal.textContent = formatMoney(netTakeHome, cur, sym);
+              resRefundVal.className = 'text-cyan-500 dark:text-cyan-400 font-mono font-bold';
+            } else if (federalRefundOrOwed >= 0) {
+              resRefundLabel.textContent = 'Net Estimated Refund';
               resRefundLabel.className = 'text-cyan-500 dark:text-cyan-400 font-bold';
               resRefundVal.textContent = '+' + formatMoney(federalRefundOrOwed, cur, sym);
               resRefundVal.className = 'text-cyan-500 dark:text-cyan-400 font-mono font-bold';
             } else {
-              resRefundLabel.textContent = 'Estimated Federal Balance Owed';
+              resRefundLabel.textContent = 'Estimated Balance Owed';
               resRefundLabel.className = 'text-rose-500 font-bold';
               resRefundVal.textContent = '-' + formatMoney(Math.abs(federalRefundOrOwed), cur, sym);
               resRefundVal.className = 'text-rose-500 font-mono font-bold';
@@ -1321,6 +1395,43 @@ const taxParameterGuide: CalculatorParameterInfo[] = [
               )
               .join('');
           }
+        }
+
+        // Mode switcher function
+        function setEngineMode(mode: 'advanced' | 'quick') {
+          currentMode = mode;
+          engineTabs.forEach((t) => {
+            const tabMode = t.getAttribute('data-engine-tab');
+            if (tabMode === mode) {
+              t.className = 'cursor-pointer rounded-xl bg-[color:var(--accent)] px-3 py-1.5 text-[color:var(--accent-fg)] border border-[color:var(--accent)] shadow-[0_0_12px_var(--accent-glow)] transition inline-flex items-center gap-1.5';
+            } else {
+              t.className = 'cursor-pointer rounded-xl px-3 py-1.5 text-[color:var(--muted)] border border-transparent hover:border-[color:var(--accent)] hover:shadow-[0_0_12px_var(--accent-glow)] hover:text-[color:var(--fg)] transition inline-flex items-center gap-1.5';
+            }
+          });
+
+          // Toggle visibility of advanced-only sections
+          const advOnlySections = Array.from(app.querySelectorAll('[data-adv-only]')) as HTMLElement[];
+
+          if (mode === 'quick') {
+            advOnlySections.forEach((el) => { el.style.display = 'none'; });
+            if (businessInput) businessInput.value = '0';
+            if (otherIncInput) otherIncInput.value = '0';
+            if (qualifiedDivInput) qualifiedDivInput.value = '0';
+            if (interestInput) interestInput.value = '0';
+            if (ret401kInput) ret401kInput.value = '0';
+            if (mortgageInput) mortgageInput.value = '0';
+            if (saltInput) saltInput.value = '0';
+            if (charityInput) charityInput.value = '0';
+            if (medicalInput) medicalInput.value = '0';
+            if (fedWithheldInput) fedWithheldInput.value = '0';
+            if (stateWithheldInput) stateWithheldInput.value = '0';
+            if (iraInput) iraInput.value = '0';
+            if (hsaInput) hsaInput.value = '0';
+            if (studentLoanInput) studentLoanInput.value = '0';
+          } else {
+            advOnlySections.forEach((el) => { el.style.display = ''; });
+          }
+          calculate();
         }
 
         // Attach event listeners
@@ -1356,15 +1467,15 @@ const taxParameterGuide: CalculatorParameterInfo[] = [
 
             const text = [
               `═══════════════════════════════════════════════════`,
-              `  ${profile.name} Form 1040 Tax Return Summary (${yr})`,
+              `  ${profile.name} Tax Calculation Summary (${yr})`,
               `═══════════════════════════════════════════════════`,
               `Total Gross Income:             ${gross}`,
               `Adjusted Gross Income (AGI):    ${agi}`,
               `Allowable Deductions:           ${deduction}`,
               `Taxable Income Base:            ${taxable}`,
               `───────────────────────────────────────────────────`,
-              `Net Federal Income Tax:         ${netFed}`,
-              `FICA (Social Security/Medicare): ${fica}`,
+              `National/Federal Income Tax:    ${netFed}`,
+              `Social Contributions & Welfare: ${fica}`,
               `State / Regional Income Tax:    ${state}`,
               `Total Tax Liability:            ${totalTax}`,
               `───────────────────────────────────────────────────`,
@@ -1373,8 +1484,8 @@ const taxParameterGuide: CalculatorParameterInfo[] = [
               `═══════════════════════════════════════════════════`,
               `Annual Net Take-Home Pay:       ${takeHome}`,
               `Effective Overall Tax Rate:     ${effRate}`,
-              `Top Marginal Federal Rate:      ${margRate}`,
-              `Statutory Authority:            ${profile.years[yr]?.officialSourceName || 'IRS'}`,
+              `Top Marginal Tax Rate:          ${margRate}`,
+              `Statutory Authority:            ${profile.years[yr]?.officialSourceName || 'Tax Authority'}`,
               `Verified Date:                  ${profile.years[yr]?.lastVerifiedDate || '2026-09-01'}`,
             ].join('\n');
 
@@ -1389,33 +1500,14 @@ const taxParameterGuide: CalculatorParameterInfo[] = [
         // Engine Tabs Handler
         engineTabs.forEach((tab) => {
           tab.addEventListener('click', () => {
-            const mode = tab.getAttribute('data-engine-tab');
-            engineTabs.forEach((t) => {
-              if (t === tab) {
-                t.className = 'cursor-pointer rounded-xl bg-[color:var(--accent)] px-3 py-1.5 text-[color:var(--accent-fg)] border border-[color:var(--accent)] shadow-[0_0_12px_var(--accent-glow)] transition inline-flex items-center gap-1.5';
-              } else {
-                t.className = 'cursor-pointer rounded-xl px-3 py-1.5 text-[color:var(--muted)] border border-transparent hover:border-[color:var(--accent)] hover:shadow-[0_0_12px_var(--accent-glow)] hover:text-[color:var(--fg)] transition inline-flex items-center gap-1.5';
-              }
-            });
-            // If switched to quick, auto-fill fedWithheld and clear complex items
-            if (mode === 'quick') {
-              if (businessInput) businessInput.value = '0';
-              if (otherIncInput) otherIncInput.value = '0';
-              if (qualifiedDivInput) qualifiedDivInput.value = '0';
-              if (interestInput) interestInput.value = '0';
-              if (ret401kInput) ret401kInput.value = '0';
-              if (mortgageInput) mortgageInput.value = '0';
-              if (saltInput) saltInput.value = '0';
-              if (charityInput) charityInput.value = '0';
-              if (medicalInput) medicalInput.value = '0';
-              calculate();
-            }
+            const mode = (tab.getAttribute('data-engine-tab') === 'quick') ? 'quick' : 'advanced';
+            setEngineMode(mode);
           });
         });
 
         calculate();
       } catch (err) {
-        console.error('Error initializing advanced tax calculator:', err);
+        console.error('Error initializing tax calculator:', err);
       }
     });
   })();

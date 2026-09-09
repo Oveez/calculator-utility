@@ -58,10 +58,13 @@ export const fiProfile: CountryTaxProfile = {
         },
       ],
       regions: [
-        { code: 'helsinki', name: 'Helsinki (5.30% Municipal)', additionalTaxRate: 0.053 },
-        { code: 'national_avg', name: 'National Average Municipal (~7.50%)', additionalTaxRate: 0.075 },
-        { code: 'tampere', name: 'Tampere (7.60% Municipal)', additionalTaxRate: 0.076 },
-        { code: 'turku', name: 'Turku (8.10% Municipal)', additionalTaxRate: 0.081 },
+        { code: 'helsinki', name: 'Helsinki (5.30%)', additionalTaxRate: 0.053 },
+        { code: 'espoo', name: 'Espoo (4.36%)', additionalTaxRate: 0.0436 },
+        { code: 'vantaa', name: 'Vantaa (4.36%)', additionalTaxRate: 0.0436 },
+        { code: 'tampere', name: 'Tampere (7.60%)', additionalTaxRate: 0.076 },
+        { code: 'turku', name: 'Turku (8.10%)', additionalTaxRate: 0.081 },
+        { code: 'oulu', name: 'Oulu (8.00%)', additionalTaxRate: 0.08 },
+        { code: 'national_avg', name: 'National Average (~7.50%)', additionalTaxRate: 0.075 },
       ],
       vatConfig: {
         name: 'ALV',
@@ -113,7 +116,13 @@ export const fiProfile: CountryTaxProfile = {
         },
       ],
       regions: [
-        { code: 'national_avg', name: 'National Average Municipal (~7.50%)', additionalTaxRate: 0.075 },
+        { code: 'helsinki', name: 'Helsinki (5.30%)', additionalTaxRate: 0.053 },
+        { code: 'espoo', name: 'Espoo (4.36%)', additionalTaxRate: 0.0436 },
+        { code: 'vantaa', name: 'Vantaa (4.36%)', additionalTaxRate: 0.0436 },
+        { code: 'tampere', name: 'Tampere (7.60%)', additionalTaxRate: 0.076 },
+        { code: 'turku', name: 'Turku (8.10%)', additionalTaxRate: 0.081 },
+        { code: 'oulu', name: 'Oulu (8.00%)', additionalTaxRate: 0.08 },
+        { code: 'national_avg', name: 'National Average (~7.50%)', additionalTaxRate: 0.075 },
       ],
       vatConfig: {
         name: 'ALV',
