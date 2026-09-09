@@ -1,7 +1,5 @@
 @import 'tailwindcss';
 
-@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *, .dark, .dark *));
-
 [hidden] {
   display: none !important;
 }
@@ -55,16 +53,15 @@
   --tab-badge-active-text: #1E40AF;
 }
 
-html[data-theme='dark'],
-html.dark {
+html[data-theme='dark'] {
   color-scheme: dark;
   --bg: #0F172A;
-  --fg: #FFFFFF;
+  --fg: #F8FAFC;
   --surface: #1E293B;
   --surface-strong: #334155;
-  --muted: #CBD5E1;
+  --muted: #94A3B8;
   --border: #334155;
-  --border-strong: #64748B;
+  --border-strong: #475569;
   --accent: #3B82F6;
   --accent-hover: #60A5FA;
   --accent-strong: #93C5FD;
@@ -75,8 +72,8 @@ html.dark {
   --accent-glow: rgba(59, 130, 246, 0.1);
   --glass-surface: rgba(30, 41, 59, 0.85);
   --glass-surface-hover: rgba(30, 41, 59, 0.95);
-  --glass-border: rgba(255, 255, 255, 0.12);
-  --glass-border-strong: rgba(255, 255, 255, 0.18);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --glass-border-strong: rgba(255, 255, 255, 0.12);
   --success: #34D399;
   --success-glow: rgba(52, 211, 153, 0.1);
   --warning: #FBBF24;
@@ -87,7 +84,7 @@ html.dark {
   --shadow-glass: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
   --shadow-neon: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
 
-  /* Clean SaaS Design Tokens for All Website Tabs (Dark Mode - High Contrast Readability) */
+  /* Clean SaaS Design Tokens for All Website Tabs (Dark Mode) */
   --tab-surface: #1E293B;
   --tab-surface-hover: #334155;
   --tab-surface-active: #1E3A8A;
@@ -95,8 +92,8 @@ html.dark {
   --tab-border: #334155;
   --tab-border-hover: #3B82F6;
   --tab-border-active: #60A5FA;
-  --tab-text: #CBD5E1;
-  --tab-text-hover: #FFFFFF;
+  --tab-text: #94A3B8;
+  --tab-text-hover: #F8FAFC;
   --tab-text-active: #FFFFFF;
   --tab-glow-hover: 0 1px 2px 0 rgba(0, 0, 0, 0.2);
   --tab-glow-active: 0 1px 3px 0 rgba(0, 0, 0, 0.3);
@@ -131,24 +128,6 @@ input,
 select,
 textarea {
   touch-action: manipulation;
-}
-
-/* Ensure all form controls and inputs adopt theme typography */
-input,
-select,
-textarea,
-button {
-  color: var(--fg);
-}
-
-select option {
-  background-color: var(--surface);
-  color: var(--fg);
-}
-
-::placeholder {
-  color: var(--muted);
-  opacity: 0.85;
 }
 
 /* Prevent iOS Safari from auto-zooming when focusing inputs */
@@ -257,7 +236,7 @@ a {
   transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* 2. Inactive Tab & Nav Hover State: Pop up animation with micro-lift and shadow */
+/* 2. Inactive Tab & Nav Hover State with Refined Ocean Blue Neon Accent Glow */
 [role="tab"]:not([aria-selected="true"]):not([aria-pressed="true"]):hover,
 [data-category-tab]:not([aria-selected="true"]):not([aria-pressed="true"]):hover,
 [data-hero-category]:hover,
@@ -281,9 +260,9 @@ nav[aria-label="Primary"] a:hover,
 nav[aria-label="Mobile Bottom Navigation"] a:hover {
   background-color: var(--tab-surface-hover) !important;
   border-color: var(--tab-border-hover) !important;
-  box-shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.08), 0 0 12px var(--accent-glow) !important;
+  box-shadow: var(--tab-glow-hover) !important;
   color: var(--tab-text-hover) !important;
-  transform: translateY(-2px) scale(1.02);
+  transform: translateY(-0.5px);
 }
 
 /* 3. Active Tab: Prominent Ocean Blue Neon Glass Treatment */
@@ -338,7 +317,7 @@ nav[aria-label="Primary"] a[aria-current="page"] {
   transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* 4. Active Tab Hover State: Pop up micro-lift and shadow */
+/* 4. Active Tab Hover State (Subtle luminance increase, keeps active status) */
 [role="tab"][aria-selected="true"]:hover,
 [role="tab"][aria-pressed="true"]:hover,
 [data-category-tab][aria-selected="true"]:hover,
@@ -382,9 +361,9 @@ nav[aria-label="Primary"] a.active:hover,
 nav[aria-label="Primary"] a[aria-current="page"]:hover {
   background-color: var(--tab-surface-active-hover) !important;
   border-color: var(--tab-border-active) !important;
-  box-shadow: 0 6px 16px -2px rgba(0, 0, 0, 0.12), var(--tab-glow-active-hover) !important;
+  box-shadow: var(--tab-glow-active-hover) !important;
   color: var(--tab-text-active) !important;
-  transform: translateY(-2px) scale(1.02);
+  transform: translateY(-0.5px);
 }
 
 /* 5. Icons inside Active and Inactive Tabs */
@@ -465,108 +444,33 @@ nav[aria-label="Primary"] a:focus-visible {
   }
 }
 
-/* Refined Button Micro-Interactions: Pop up spring animation on hover */
+/* Refined Button Micro-Interactions */
 button,
-a[role="button"],
-.btn {
-  transition: transform 220ms cubic-bezier(0.34, 1.56, 0.64, 1),
-              box-shadow 220ms cubic-bezier(0.34, 1.56, 0.64, 1),
+a[role="button"] {
+  transition: transform 180ms cubic-bezier(0.4, 0, 0.2, 1),
+              box-shadow 180ms cubic-bezier(0.4, 0, 0.2, 1),
               border-color 180ms ease,
               background-color 180ms ease,
               color 180ms ease;
 }
 
-/* Pop up animation effect when cursor is placed on any button */
-button:hover:not(:disabled):not(.theme-switch-btn),
-a[role="button"]:hover:not([aria-disabled="true"]),
-button[type="submit"]:hover,
-[data-calculator-submit]:hover,
-.btn:hover {
-  transform: translateY(-2px) scale(1.02);
-  box-shadow: 0 6px 18px -2px rgba(0, 0, 0, 0.1), 0 0 14px var(--accent-glow);
-}
-
 button:active:not(:disabled),
-a[role="button"]:active:not([aria-disabled="true"]),
-button[type="submit"]:active,
-[data-calculator-submit]:active {
-  transform: translateY(0px) scale(0.97);
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+a[role="button"]:active {
+  transform: scale(0.98);
 }
 
-/* ==========================================================================
-   SEGMENTED DUAL-BUTTON THEME SWITCHER (LIGHT & DARK ANIMATED SPRING SLIDER)
-   ========================================================================== */
-.theme-switch-wrapper {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  user-select: none;
+/* Primary Button Neon Polish */
+button[type="submit"],
+[data-calculator-submit] {
+  transition: transform 180ms cubic-bezier(0.4, 0, 0.2, 1),
+              box-shadow 180ms cubic-bezier(0.4, 0, 0.2, 1),
+              background-color 180ms ease;
 }
 
-.theme-switch-slider {
-  left: 2px;
-  width: calc(50% - 2px);
-  transform: translateX(0%);
-  transition: transform 340ms cubic-bezier(0.34, 1.56, 0.64, 1),
-              background-color 200ms ease,
-              border-color 200ms ease,
-              box-shadow 200ms ease;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08), 0 0 8px var(--accent-glow);
-}
-
-/* When dark mode is active, slide indicator smoothly across to Dark button */
-html[data-theme='dark'] .theme-switch-slider,
-html.dark .theme-switch-slider {
-  transform: translateX(100%);
-}
-
-/* Light button active state (in light mode) */
-html:not([data-theme='dark']):not(.dark) [data-set-theme="light"] {
-  color: var(--fg);
-  font-weight: 700;
-}
-html:not([data-theme='dark']):not(.dark) [data-set-theme="light"] .theme-sun-icon {
-  color: #F59E0B;
-  transform: rotate(0deg) scale(1.15);
-  filter: drop-shadow(0 0 6px rgba(245, 158, 11, 0.45));
-}
-html:not([data-theme='dark']):not(.dark) [data-set-theme="dark"] {
-  color: var(--muted);
-}
-html:not([data-theme='dark']):not(.dark) [data-set-theme="dark"] .theme-moon-icon {
-  transform: rotate(-15deg) scale(0.9);
-  color: var(--muted);
-}
-
-/* Dark button active state (in dark mode) */
-html[data-theme='dark'] [data-set-theme="dark"],
-html.dark [data-set-theme="dark"] {
-  color: #FFFFFF;
-  font-weight: 700;
-}
-html[data-theme='dark'] [data-set-theme="dark"] .theme-moon-icon,
-html.dark [data-set-theme="dark"] .theme-moon-icon {
-  color: #60A5FA;
-  transform: rotate(0deg) scale(1.15);
-  filter: drop-shadow(0 0 8px rgba(96, 165, 250, 0.5));
-}
-html[data-theme='dark'] [data-set-theme="light"],
-html.dark [data-set-theme="light"] {
-  color: var(--muted);
-}
-html[data-theme='dark'] [data-set-theme="light"] .theme-sun-icon,
-html.dark [data-set-theme="light"] .theme-sun-icon {
-  transform: rotate(-25deg) scale(0.9);
-  color: var(--muted);
-}
-
-/* Pop up interaction on hovering individual theme buttons */
-.theme-switch-btn:hover {
+button[type="submit"]:hover,
+[data-calculator-submit]:hover {
   transform: translateY(-1px);
-}
-.theme-switch-btn:active {
-  transform: translateY(0) scale(0.95);
+  box-shadow: 0 0 18px var(--accent-glow), 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 /* Luminous Input & Select Focus */
