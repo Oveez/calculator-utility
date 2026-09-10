@@ -1,0 +1,57 @@
+---
+import { getToolIconConfig } from '../utils/toolIcons';
+
+interface Props {
+  slug?: string;
+  url?: string;
+  title?: string;
+  category?: string;
+  class?: string;
+  size?: 'sm' | 'md' | 'lg';
+}
+
+const {
+  slug = '',
+  url = '',
+  title = '',
+  category = '',
+  class: className = '',
+  size = 'md',
+} = Astro.props as Props;
+
+const config = getToolIconConfig(slug || url, title, category);
+
+const sizeClasses = {
+  sm: 'w-7 h-7 rounded-lg p-1.5',
+  md: 'w-9 h-9 rounded-xl p-2',
+  lg: 'w-11 h-11 rounded-2xl p-2.5',
+}[size];
+
+const svgSizes = {
+  sm: 'w-4 h-4',
+  md: 'w-5 h-5',
+  lg: 'w-6 h-6',
+}[size];
+---
+
+<div
+  class:list={[
+    'inline-flex shrink-0 items-center justify-center border shadow-xs transition-transform duration-200 group-hover:scale-105',
+    config.badgeBg,
+    config.badgeBorder,
+    config.iconColor,
+    sizeClasses,
+    className,
+  ]}
+>
+  <svg
+    class:list={[svgSizes, 'stroke-current']}
+    viewBox={config.viewBox || '0 0 24 24'}
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    set:html={config.svgPath}
+  />
+</div>

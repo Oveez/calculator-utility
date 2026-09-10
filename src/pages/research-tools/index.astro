@@ -1,6 +1,7 @@
 ---
 import SiteLayout from '../../layouts/SiteLayout.astro';
 import Icon from '../../components/Icon.astro';
+import ToolIcon from '../../components/ToolIcon.astro';
 import { siteName, toAbsoluteUrl, withBasePath } from '../../utils/site';
 
 const pageTitle = `Research & Statistics Calculators | Sample Size, Z-Score & P-Value · ${siteName}`;
@@ -318,10 +319,8 @@ const schemaGraph = [
             class="tool-card group flex flex-col justify-between rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 transition hover:border-[color:var(--accent)]/40 hover:shadow-[0_0_14px_var(--accent-glow)] shadow-xs"
           >
             <div class="space-y-2.5">
-              <div class="flex items-center justify-between">
-                <div class="flex h-9 w-9 items-center justify-center rounded-xl bg-[color:var(--surface-strong)] border border-[color:var(--border)] text-[color:var(--fg)]">
-                  <Icon name={tool.icon as any} class="w-4 h-4 text-[color:var(--accent)]" />
-                </div>
+              <div class="flex items-center justify-between gap-2">
+                <ToolIcon slug={tool.slug} category="Research & Statistics" size="md" />
                 <span class="rounded-md bg-[color:var(--surface-strong)] border border-[color:var(--border)] px-2 py-0.5 text-[10px] font-bold text-[color:var(--muted)]">
                   {tool.badge}
                 </span>

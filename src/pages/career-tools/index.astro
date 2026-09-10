@@ -1,6 +1,7 @@
 ---
 import SiteLayout from '../../layouts/SiteLayout.astro';
 import Icon from '../../components/Icon.astro';
+import ToolIcon from '../../components/ToolIcon.astro';
 import { siteName, toAbsoluteUrl, withBasePath } from '../../utils/site';
 
 const pageTitle = `Career Tools & Resume Utilities · ${siteName}`;
@@ -128,10 +129,8 @@ const careerTools: Array<{
           class="group rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 space-y-3 transition hover:border-[color:var(--border-strong)] hover:bg-[color:var(--surface-strong)] flex flex-col justify-between"
         >
           <div class="space-y-2.5">
-            <div class="flex items-center justify-between">
-              <div class="flex h-9 w-9 items-center justify-center rounded-xl bg-[color:var(--surface-strong)] border border-[color:var(--border)] text-[color:var(--fg)]">
-                <Icon name={tool.icon} class="w-4 h-4" />
-              </div>
+            <div class="flex items-center justify-between gap-2">
+              <ToolIcon slug={tool.title.toLowerCase().replace(/[^a-z0-9]+/g, '-')} category="Career" size="md" />
               <span class="rounded-md bg-[color:var(--surface-strong)] border border-[color:var(--border)] px-2.5 py-0.5 text-[11px] font-semibold text-[color:var(--muted)]">
                 {tool.badge}
               </span>
