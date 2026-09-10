@@ -11,7 +11,11 @@ function parseInputValue(input: HTMLInputElement | HTMLSelectElement | HTMLTextA
 	) {
 		return input.value;
 	}
-	const val = Number.parseFloat(input.value || '0');
+	const raw = input.value?.trim();
+	if (!raw || raw === '') {
+		return 0;
+	}
+	const val = Number.parseFloat(raw);
 	return Number.isNaN(val) ? 0 : val;
 }
 

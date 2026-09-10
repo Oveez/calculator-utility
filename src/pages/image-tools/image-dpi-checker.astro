@@ -168,11 +168,11 @@ const schemaGraph = [
     </div>
 
     <!-- Mode Selector Tabs -->
-    <div class="flex flex-wrap gap-2 border-b border-[color:var(--border)] pb-2 text-xs font-semibold">
+    <div class="flex items-center gap-2 border-b border-[color:var(--border)] pb-2 text-xs font-semibold overflow-x-auto no-scrollbar sm:flex-wrap">
       <button
         type="button"
         id="tab-mode-pixels"
-        class="tab-btn active rounded-xl bg-[color:var(--accent)] px-4 py-2 text-white transition cursor-pointer"
+        class="tab-btn active shrink-0 min-w-max rounded-xl bg-[color:var(--accent)] px-4 py-2 text-white transition cursor-pointer"
         data-mode="pixels"
       >
         Pixels &rarr; Physical Print Size
@@ -180,7 +180,7 @@ const schemaGraph = [
       <button
         type="button"
         id="tab-mode-physical"
-        class="tab-btn rounded-xl bg-[color:var(--surface)] border border-[color:var(--border)] px-4 py-2 text-[color:var(--muted)] hover:text-[color:var(--fg)] transition cursor-pointer"
+        class="tab-btn shrink-0 min-w-max rounded-xl bg-[color:var(--surface)] border border-[color:var(--border)] px-4 py-2 text-[color:var(--muted)] hover:text-[color:var(--fg)] transition cursor-pointer"
         data-mode="physical"
       >
         Physical Size &rarr; Required Pixels
@@ -188,7 +188,7 @@ const schemaGraph = [
       <button
         type="button"
         id="tab-mode-effective"
-        class="tab-btn rounded-xl bg-[color:var(--surface)] border border-[color:var(--border)] px-4 py-2 text-[color:var(--muted)] hover:text-[color:var(--fg)] transition cursor-pointer"
+        class="tab-btn shrink-0 min-w-max rounded-xl bg-[color:var(--surface)] border border-[color:var(--border)] px-4 py-2 text-[color:var(--muted)] hover:text-[color:var(--fg)] transition cursor-pointer"
         data-mode="effective"
       >
         Calculate Effective DPI / PPI
@@ -206,8 +206,7 @@ const schemaGraph = [
             value="3000"
             min="1"
             max="100000"
-            class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-[color:var(--fg)]"
-          />
+            class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-[color:var(--fg)]" />
         </div>
         <div>
           <label for="px-h" class="font-bold text-[color:var(--fg)] block mb-1">Image Height (Pixels):</label>
@@ -217,8 +216,7 @@ const schemaGraph = [
             value="2000"
             min="1"
             max="100000"
-            class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-[color:var(--fg)]"
-          />
+            class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-[color:var(--fg)]" />
         </div>
         <div>
           <label for="target-dpi" class="font-bold text-[color:var(--fg)] block mb-1">Target Print DPI / PPI:</label>
@@ -273,8 +271,7 @@ const schemaGraph = [
             value="8"
             step="0.1"
             min="0.1"
-            class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-[color:var(--fg)]"
-          />
+            class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-[color:var(--fg)]" />
         </div>
         <div>
           <label for="phy-h" class="font-bold text-[color:var(--fg)] block mb-1">Target Print Height:</label>
@@ -284,8 +281,7 @@ const schemaGraph = [
             value="10"
             step="0.1"
             min="0.1"
-            class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-[color:var(--fg)]"
-          />
+            class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-[color:var(--fg)]" />
         </div>
         <div>
           <label for="phy-unit" class="font-bold text-[color:var(--fg)] block mb-1">Measurement Unit:</label>
@@ -342,8 +338,7 @@ const schemaGraph = [
             id="eff-px-w"
             value="1920"
             min="1"
-            class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-[color:var(--fg)]"
-          />
+            class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-[color:var(--fg)]" />
         </div>
         <div>
           <label for="eff-px-h" class="font-bold text-[color:var(--fg)] block mb-1">Image Height (Pixels):</label>
@@ -352,8 +347,7 @@ const schemaGraph = [
             id="eff-px-h"
             value="1080"
             min="1"
-            class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-[color:var(--fg)]"
-          />
+            class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-[color:var(--fg)]" />
         </div>
         <div>
           <label for="eff-phy-w" class="font-bold text-[color:var(--fg)] block mb-1">Desired Print Width (in):</label>
@@ -363,8 +357,7 @@ const schemaGraph = [
             value="10"
             step="0.1"
             min="0.1"
-            class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-[color:var(--fg)]"
-          />
+            class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-[color:var(--fg)]" />
         </div>
         <div>
           <label for="eff-phy-h" class="font-bold text-[color:var(--fg)] block mb-1">Desired Print Height (in):</label>
@@ -374,8 +367,7 @@ const schemaGraph = [
             value="6"
             step="0.1"
             min="0.1"
-            class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-[color:var(--fg)]"
-          />
+            class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-[color:var(--fg)]" />
         </div>
       </div>
 
@@ -617,9 +609,9 @@ const schemaGraph = [
       }
 
       function calcModeA() {
-        const w = parseFloat(pxW.value) || 0;
-        const h = parseFloat(pxH.value) || 0;
-        const dpi = parseFloat(targetDpi.value) || 300;
+        const w = (pxW.value !== '' && !isNaN(parseFloat(pxW.value)) ? parseFloat(pxW.value) : 0);
+        const h = (pxH.value !== '' && !isNaN(parseFloat(pxH.value)) ? parseFloat(pxH.value) : 0);
+        const dpi = (targetDpi.value !== '' && !isNaN(parseFloat(targetDpi.value)) ? parseFloat(targetDpi.value) : 0);
 
         if (w <= 0 || h <= 0) return;
 
@@ -647,10 +639,10 @@ const schemaGraph = [
       }
 
       function calcModeB() {
-        let w = parseFloat(phyW.value) || 0;
-        let h = parseFloat(phyH.value) || 0;
+        let w = (phyW.value !== '' && !isNaN(parseFloat(phyW.value)) ? parseFloat(phyW.value) : 0);
+        let h = (phyH.value !== '' && !isNaN(parseFloat(phyH.value)) ? parseFloat(phyH.value) : 0);
         const unit = phyUnit.value;
-        const dpi = parseFloat(phyDpi.value) || 300;
+        const dpi = (phyDpi.value !== '' && !isNaN(parseFloat(phyDpi.value)) ? parseFloat(phyDpi.value) : 0);
 
         // Convert to inches
         let inW = w;
@@ -673,10 +665,10 @@ const schemaGraph = [
       }
 
       function calcModeC() {
-        const w = parseFloat(effPxW.value) || 0;
-        const h = parseFloat(effPxH.value) || 0;
-        const inW = parseFloat(effPhyW.value) || 0;
-        const inH = parseFloat(effPhyH.value) || 0;
+        const w = (effPxW.value !== '' && !isNaN(parseFloat(effPxW.value)) ? parseFloat(effPxW.value) : 0);
+        const h = (effPxH.value !== '' && !isNaN(parseFloat(effPxH.value)) ? parseFloat(effPxH.value) : 0);
+        const inW = (effPhyW.value !== '' && !isNaN(parseFloat(effPhyW.value)) ? parseFloat(effPhyW.value) : 0);
+        const inH = (effPhyH.value !== '' && !isNaN(parseFloat(effPhyH.value)) ? parseFloat(effPhyH.value) : 0);
 
         if (w <= 0 || inW <= 0) return;
 

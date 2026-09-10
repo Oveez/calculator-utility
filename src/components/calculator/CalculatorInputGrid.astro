@@ -96,8 +96,7 @@ function getColSpanClass(input: CalculatorInput, totalInTier: number): string {
               max={input.max ?? 100}
               step={input.step ?? 1}
               value={initialValues[input.id]}
-              aria-label={input.label}
-            />
+              aria-label={input.label} />
           ) : (
             <input
               id={`calc-input-${input.id}`}
@@ -111,10 +110,8 @@ function getColSpanClass(input: CalculatorInput, totalInTier: number): string {
               min={input.type === 'text' || input.type === 'date' || input.type === 'datetime-local' ? undefined : input.min}
               max={input.type === 'text' || input.type === 'date' || input.type === 'datetime-local' ? undefined : input.max}
               step={input.type === 'text' || input.type === 'date' || input.type === 'datetime-local' ? undefined : input.step ?? 'any'}
-              placeholder={input.placeholder ?? input.label}
-              value={initialValues[input.id]}
-              aria-label={input.label}
-            />
+              placeholder={input.placeholder ?? (input.defaultValue !== undefined && input.defaultValue !== '' ? `e.g. ${input.defaultValue}` : input.label)}
+              aria-label={input.label} />
           )}
 
           {input.suffix && (
@@ -199,10 +196,8 @@ function getColSpanClass(input: CalculatorInput, totalInTier: number): string {
                   min={input.min}
                   max={input.max}
                   step={input.step ?? 'any'}
-                  placeholder={input.placeholder ?? input.label}
-                  value={initialValues[input.id]}
-                  aria-label={input.label}
-                />
+                  placeholder={input.placeholder ?? (input.defaultValue !== undefined && input.defaultValue !== '' ? `e.g. ${input.defaultValue}` : input.label)}
+                  aria-label={input.label} />
               )}
 
               {input.suffix && (
@@ -251,8 +246,7 @@ function getColSpanClass(input: CalculatorInput, totalInTier: number): string {
               min={input.min}
               max={input.max}
               step={input.step ?? 'any'}
-              value={initialValues[input.id]}
-            />
+              placeholder={input.placeholder ?? (input.defaultValue !== undefined && input.defaultValue !== '' ? `e.g. ${input.defaultValue}` : input.label)} />
           </div>
         ))}
       </div>

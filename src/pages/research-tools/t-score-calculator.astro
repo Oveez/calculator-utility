@@ -180,11 +180,11 @@ const schemaGraph = [
             </button>
           </div>
 
-          <div class="grid grid-cols-2 gap-2 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-1 text-xs font-semibold">
-            <button type="button" class="cursor-pointer rounded-xl bg-[color:var(--accent)] px-3 py-2 text-white shadow-xs transition" data-mode-btn="ttest">
+          <div class="flex items-center gap-2 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-1 text-xs font-semibold overflow-x-auto no-scrollbar sm:grid sm:grid-cols-2">
+            <button type="button" class="shrink-0 min-w-max sm:min-w-0 sm:shrink text-center cursor-pointer rounded-xl bg-[color:var(--accent)] px-3 py-2 text-white shadow-xs transition" data-mode-btn="ttest">
               Student’s t-Test (Sample)
             </button>
-            <button type="button" class="cursor-pointer rounded-xl px-3 py-2 text-[color:var(--muted)] hover:text-[color:var(--fg)] transition" data-mode-btn="psych">
+            <button type="button" class="shrink-0 min-w-max sm:min-w-0 sm:shrink text-center cursor-pointer rounded-xl px-3 py-2 text-[color:var(--muted)] hover:text-[color:var(--fg)] transition" data-mode-btn="psych">
               Psychometric T-Score (50+10Z)
             </button>
           </div>
@@ -193,22 +193,22 @@ const schemaGraph = [
           <div class="space-y-4" data-ttest-fields>
             <div class="space-y-1.5">
               <label for="sample-mean-t" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Sample Mean (x̄)</label>
-              <input id="sample-mean-t" type="number" step="any" value="24.8" class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none" data-sample-mean />
+              <input id="sample-mean-t" type="number" step="any" class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none" data-sample-mean placeholder="e.g. 24.8" />
             </div>
 
             <div class="space-y-1.5">
               <label for="hypo-mean-t" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Hypothesized Population Mean (μ₀)</label>
-              <input id="hypo-mean-t" type="number" step="any" value="20.0" class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none" data-hypo-mean />
+              <input id="hypo-mean-t" type="number" step="any" class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none" data-hypo-mean placeholder="e.g. 20.0" />
             </div>
 
             <div class="grid grid-cols-2 gap-3">
               <div>
                 <label for="sample-sd-t" class="block text-xs font-medium text-[color:var(--muted)]">Sample SD (s)</label>
-                <input id="sample-sd-t" type="number" min="0.0001" step="any" value="5.2" class="mt-1 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-sample-sd />
+                <input id="sample-sd-t" type="number" min="0.0001" step="any" class="mt-1 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-sample-sd placeholder="e.g. 5.2" />
               </div>
               <div>
                 <label for="sample-n-t" class="block text-xs font-medium text-[color:var(--muted)]">Sample Size (n)</label>
-                <input id="sample-n-t" type="number" min="2" step="1" value="16" class="mt-1 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-sample-n />
+                <input id="sample-n-t" type="number" min="2" step="1" class="mt-1 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-sample-n placeholder="e.g. 16" />
               </div>
             </div>
           </div>
@@ -217,16 +217,16 @@ const schemaGraph = [
           <div class="space-y-4" data-psych-fields hidden>
             <div class="space-y-1.5">
               <label for="psych-raw-score" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Raw Individual Score (X)</label>
-              <input id="psych-raw-score" type="number" step="any" value="78" class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none" data-psych-raw />
+              <input id="psych-raw-score" type="number" step="any" class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none" data-psych-raw placeholder="e.g. 78" />
             </div>
             <div class="grid grid-cols-2 gap-3">
               <div>
                 <label for="psych-norm-mean" class="block text-xs font-medium text-[color:var(--muted)]">Normative Mean (μ)</label>
-                <input id="psych-norm-mean" type="number" step="any" value="50" class="mt-1 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-psych-mean />
+                <input id="psych-norm-mean" type="number" step="any" class="mt-1 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-psych-mean placeholder="e.g. 50" />
               </div>
               <div>
                 <label for="psych-norm-sd" class="block text-xs font-medium text-[color:var(--muted)]">Normative SD (σ)</label>
-                <input id="psych-norm-sd" type="number" min="0.0001" step="any" value="12" class="mt-1 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-psych-sd />
+                <input id="psych-norm-sd" type="number" min="0.0001" step="any" class="mt-1 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-psych-sd placeholder="e.g. 12" />
               </div>
             </div>
           </div>
@@ -397,10 +397,10 @@ const schemaGraph = [
 
       function update() {
         if (currentMode === 'ttest') {
-          const x = parseFloat(inMean.value || '0');
-          const mu = parseFloat(inHypo.value || '0');
-          const s = Math.max(0.0001, parseFloat(inSd.value || '1'));
-          const n = Math.max(2, parseInt(inN.value || '10', 10));
+          const x = (inMean.value !== '' && !isNaN(parseFloat(inMean.value)) ? parseFloat(inMean.value) : 0);
+          const mu = (inHypo.value !== '' && !isNaN(parseFloat(inHypo.value)) ? parseFloat(inHypo.value) : 0);
+          const s = Math.max(0.0001, (inSd.value !== '' && !isNaN(parseFloat(inSd.value)) ? parseFloat(inSd.value) : 0));
+          const n = Math.max(2, (inN.value !== '' && !isNaN(parseInt(inN.value, 10)) ? parseInt(inN.value, 10) : 0));
           const df = n - 1;
 
           const se = s / Math.sqrt(n);
@@ -436,9 +436,9 @@ const schemaGraph = [
           renderCritTable(df, absT);
         } else {
           // Psychometric T-score mode
-          const x = parseFloat(inPsychRaw.value || '0');
-          const m = parseFloat(inPsychMean.value || '50');
-          const s = Math.max(0.0001, parseFloat(inPsychSd.value || '10'));
+          const x = (inPsychRaw.value !== '' && !isNaN(parseFloat(inPsychRaw.value)) ? parseFloat(inPsychRaw.value) : 0);
+          const m = (inPsychMean.value !== '' && !isNaN(parseFloat(inPsychMean.value)) ? parseFloat(inPsychMean.value) : 0);
+          const s = Math.max(0.0001, (inPsychSd.value !== '' && !isNaN(parseFloat(inPsychSd.value)) ? parseFloat(inPsychSd.value) : 0));
 
           const z = (x - m) / s;
           const psychT = 50 + 10 * z;
@@ -507,9 +507,9 @@ const schemaGraph = [
           currentMode = btn.dataset.modeBtn || 'ttest';
           modeBtns.forEach(b => {
             if (b === btn) {
-              b.className = 'cursor-pointer rounded-xl bg-[color:var(--accent)] px-3 py-2 text-white shadow-xs transition';
+              b.className = 'shrink-0 min-w-max sm:min-w-0 sm:shrink text-center cursor-pointer rounded-xl bg-[color:var(--accent)] px-3 py-2 text-white shadow-xs transition';
             } else {
-              b.className = 'cursor-pointer rounded-xl px-3 py-2 text-[color:var(--muted)] hover:text-[color:var(--fg)] transition';
+              b.className = 'shrink-0 min-w-max sm:min-w-0 sm:shrink text-center cursor-pointer rounded-xl px-3 py-2 text-[color:var(--muted)] hover:text-[color:var(--fg)] transition';
             }
           });
 
@@ -534,13 +534,13 @@ const schemaGraph = [
 
       if (resetBtn) {
         resetBtn.addEventListener('click', () => {
-          inMean.value = '24.8';
-          inHypo.value = '20.0';
-          inSd.value = '5.2';
-          inN.value = '16';
-          inPsychRaw.value = '78';
-          inPsychMean.value = '50';
-          inPsychSd.value = '12';
+          inMean.value = '';
+          inHypo.value = '';
+          inSd.value = '';
+          inN.value = '';
+          inPsychRaw.value = '';
+          inPsychMean.value = '';
+          inPsychSd.value = '';
           currentMode = 'ttest';
           modeBtns[0].click();
           update();

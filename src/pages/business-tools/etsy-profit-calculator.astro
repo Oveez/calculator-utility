@@ -121,29 +121,29 @@ const schemaGraph = [
           <div class="grid grid-cols-2 gap-3">
             <div>
               <label for="item-price" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Item Sale Price ($)</label>
-              <input id="item-price" type="number" min="0" step="0.5" value="28.00" class="mt-1 w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none" data-item-price />
+              <input id="item-price" type="number" min="0" step="0.5" class="mt-1 w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none" data-item-price placeholder="e.g. 28.00" />
             </div>
             <div>
               <label for="buyer-ship" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Shipping Charged ($)</label>
-              <input id="buyer-ship" type="number" min="0" step="0.5" value="4.50" class="mt-1 w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none" data-buyer-ship />
+              <input id="buyer-ship" type="number" min="0" step="0.5" class="mt-1 w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none" data-buyer-ship placeholder="e.g. 4.50" />
             </div>
           </div>
 
           <div class="grid grid-cols-2 gap-3">
             <div>
               <label for="item-cogs" class="block text-xs font-medium text-[color:var(--muted)]">Item Material/COGS ($)</label>
-              <input id="item-cogs" type="number" min="0" step="0.5" value="6.50" class="mt-1 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-item-cogs />
+              <input id="item-cogs" type="number" min="0" step="0.5" class="mt-1 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-item-cogs placeholder="e.g. 6.50" />
             </div>
             <div>
               <label for="seller-ship" class="block text-xs font-medium text-[color:var(--muted)]">Actual Postage Paid ($)</label>
-              <input id="seller-ship" type="number" min="0" step="0.5" value="4.25" class="mt-1 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-seller-ship />
+              <input id="seller-ship" type="number" min="0" step="0.5" class="mt-1 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-seller-ship placeholder="e.g. 4.25" />
             </div>
           </div>
 
           <div class="grid grid-cols-2 gap-3 pt-1">
             <div>
               <label for="pack-cost" class="block text-xs font-medium text-[color:var(--muted)]">Packaging &amp; Mailer ($)</label>
-              <input id="pack-cost" type="number" min="0" step="0.1" value="1.00" class="mt-1 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-pack-cost />
+              <input id="pack-cost" type="number" min="0" step="0.1" class="mt-1 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-pack-cost placeholder="e.g. 1.00" />
             </div>
             <div>
               <label for="offsite-ads" class="block text-xs font-medium text-[color:var(--muted)]">Etsy Offsite Ads</label>
@@ -301,16 +301,16 @@ const schemaGraph = [
       const resetBtn = root.querySelector('[data-reset-btn]');
 
       function update() {
-        const price = Math.max(0, parseFloat(inPrice.value || '0'));
-        const buyerShip = Math.max(0, parseFloat(inBuyerShip.value || '0'));
+        const price = Math.max(0, (inPrice.value !== '' && !isNaN(parseFloat(inPrice.value)) ? parseFloat(inPrice.value) : 0));
+        const buyerShip = Math.max(0, (inBuyerShip.value !== '' && !isNaN(parseFloat(inBuyerShip.value)) ? parseFloat(inBuyerShip.value) : 0));
         const totalRev = price + buyerShip;
 
-        const cogs = Math.max(0, parseFloat(inCogs.value || '0'));
-        const sellerShip = Math.max(0, parseFloat(inSellerShip.value || '0'));
-        const pack = Math.max(0, parseFloat(inPack.value || '0'));
+        const cogs = Math.max(0, (inCogs.value !== '' && !isNaN(parseFloat(inCogs.value)) ? parseFloat(inCogs.value) : 0));
+        const sellerShip = Math.max(0, (inSellerShip.value !== '' && !isNaN(parseFloat(inSellerShip.value)) ? parseFloat(inSellerShip.value) : 0));
+        const pack = Math.max(0, (inPack.value !== '' && !isNaN(parseFloat(inPack.value)) ? parseFloat(inPack.value) : 0));
         const baseCost = cogs + sellerShip + pack;
 
-        const adRate = parseFloat(inAds.value || '0') / 100;
+        const adRate = (inAds.value !== '' && !isNaN(parseFloat(inAds.value)) ? parseFloat(inAds.value) : 0) / 100;
         const lFee = 0.20;
         const tFee = totalRev * 0.065;
         const pFee = (totalRev * 0.03) + 0.25;
@@ -342,12 +342,12 @@ const schemaGraph = [
 
       if (resetBtn) {
         resetBtn.addEventListener('click', () => {
-          inPrice.value = '28.00';
-          inBuyerShip.value = '4.50';
-          inCogs.value = '6.50';
-          inSellerShip.value = '4.25';
-          inPack.value = '1.00';
-          inAds.value = '0';
+          inPrice.value = '';
+          inBuyerShip.value = '';
+          inCogs.value = '';
+          inSellerShip.value = '';
+          inPack.value = '';
+          inAds.value = '';
           update();
         });
       }

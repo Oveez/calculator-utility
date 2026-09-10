@@ -178,8 +178,7 @@ const parameterGuide = [
           id="hero-uuid"
           readonly
           class="flex-1 rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] px-4 py-2.5 font-mono text-sm sm:text-base font-bold text-[color:var(--fg)] focus:outline-hidden select-all"
-          value="f47ac10b-58cc-4372-a567-0e02b2c3d479"
-        />
+          value="f47ac10b-58cc-4372-a567-0e02b2c3d479" />
         <button
           type="button"
           id="btn-copy-hero"
@@ -214,8 +213,7 @@ const parameterGuide = [
             min="1"
             max="500"
             value="10"
-            class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] px-3 py-1.5 font-mono text-xs text-[color:var(--fg)]"
-          />
+            class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] px-3 py-1.5 font-mono text-xs text-[color:var(--fg)]" />
         </div>
 
         <div>
@@ -406,7 +404,7 @@ const parameterGuide = [
 
       function generateBatch() {
         const ver = versionSelect.value;
-        const count = Math.max(1, Math.min(500, parseInt(bulkCount.value, 10) || 10));
+        const count = Math.max(1, Math.min(500, (bulkCount.value !== '' && !isNaN(parseInt(bulkCount.value, 10)) ? parseInt(bulkCount.value, 10) : 0)));
         const casing = bulkCasing.value;
         const style = bulkFormat.value;
 

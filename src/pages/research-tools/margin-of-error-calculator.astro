@@ -135,11 +135,11 @@ const schemaGraph = [
     </header>
 
     <!-- Mode Selector Tabs -->
-    <div class="flex flex-wrap gap-2 border-b border-[color:var(--border)] pb-2 text-xs font-semibold">
+    <div class="flex items-center gap-2 border-b border-[color:var(--border)] pb-2 text-xs font-semibold overflow-x-auto no-scrollbar sm:flex-wrap">
       <button
         type="button"
         id="tab-mode-prop"
-        class="mode-tab active rounded-xl bg-[color:var(--accent)] px-4 py-2 text-white transition cursor-pointer"
+        class="mode-tab active shrink-0 min-w-max rounded-xl bg-[color:var(--accent)] px-4 py-2 text-white transition cursor-pointer"
         data-mode="proportion"
       >
         Survey Proportion / Percentage Mode (±%)
@@ -147,7 +147,7 @@ const schemaGraph = [
       <button
         type="button"
         id="tab-mode-mean"
-        class="mode-tab rounded-xl bg-[color:var(--surface)] border border-[color:var(--border)] px-4 py-2 text-[color:var(--muted)] hover:text-[color:var(--fg)] transition cursor-pointer"
+        class="mode-tab shrink-0 min-w-max rounded-xl bg-[color:var(--surface)] border border-[color:var(--border)] px-4 py-2 text-[color:var(--muted)] hover:text-[color:var(--fg)] transition cursor-pointer"
         data-mode="mean"
       >
         Continuous Sample Mean Mode (Units)
@@ -155,7 +155,7 @@ const schemaGraph = [
       <button
         type="button"
         id="tab-mode-inv"
-        class="mode-tab rounded-xl bg-[color:var(--surface)] border border-[color:var(--border)] px-4 py-2 text-[color:var(--muted)] hover:text-[color:var(--fg)] transition cursor-pointer"
+        class="mode-tab shrink-0 min-w-max rounded-xl bg-[color:var(--surface)] border border-[color:var(--border)] px-4 py-2 text-[color:var(--muted)] hover:text-[color:var(--fg)] transition cursor-pointer"
         data-mode="inverse"
       >
         Inverse Target MOE &rarr; Required Sample Size
@@ -200,9 +200,7 @@ const schemaGraph = [
                 type="number"
                 min="1"
                 step="1"
-                value="400"
-                class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)]"
-              />
+                class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)]" placeholder="e.g. 400" />
             </div>
 
             <div class="space-y-1.5">
@@ -218,9 +216,7 @@ const schemaGraph = [
                 min="1"
                 max="99"
                 step="1"
-                value="50"
-                class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)]"
-              />
+                class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)]" placeholder="e.g. 50" />
               <p class="text-[11px] text-[color:var(--muted)]">50% gives the most conservative (maximum) margin of error.</p>
             </div>
           </div>
@@ -236,9 +232,7 @@ const schemaGraph = [
                 type="number"
                 min="2"
                 step="1"
-                value="100"
-                class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)]"
-              />
+                class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)]" placeholder="e.g. 100" />
             </div>
 
             <div class="space-y-1.5">
@@ -249,9 +243,7 @@ const schemaGraph = [
                 id="mean-val-input"
                 type="number"
                 step="0.1"
-                value="50.0"
-                class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)]"
-              />
+                class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)]" placeholder="e.g. 50.0" />
             </div>
 
             <div class="space-y-1.5">
@@ -263,9 +255,7 @@ const schemaGraph = [
                 type="number"
                 min="0.001"
                 step="0.1"
-                value="10.0"
-                class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)]"
-              />
+                class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)]" placeholder="e.g. 10.0" />
             </div>
           </div>
 
@@ -281,9 +271,7 @@ const schemaGraph = [
                 min="0.1"
                 max="25"
                 step="0.1"
-                value="3.0"
-                class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)]"
-              />
+                class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)]" placeholder="e.g. 3.0" />
             </div>
 
             <div class="space-y-1.5">
@@ -296,9 +284,7 @@ const schemaGraph = [
                 min="1"
                 max="99"
                 step="1"
-                value="50"
-                class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)]"
-              />
+                class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)]" placeholder="e.g. 50" />
             </div>
           </div>
 
@@ -313,8 +299,7 @@ const schemaGraph = [
               min="10"
               step="1"
               placeholder="Leave blank for infinite / large population"
-              class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-sm font-semibold text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)]"
-            />
+              class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-sm font-semibold text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)]" />
           </div>
         </form>
 
@@ -496,15 +481,15 @@ const schemaGraph = [
       function calculate() {
         const conf = confLevel.value;
         const z = zMap[conf] || 1.960;
-        const pop = parseFloat(popSizeInput.value) || 0;
+        const pop = (popSizeInput.value !== '' && !isNaN(parseFloat(popSizeInput.value)) ? parseFloat(popSizeInput.value) : 0);
 
         calloutConf.textContent = `${conf}%`;
         resCritVal.textContent = `Z = ${z.toFixed(3)}`;
 
         if (currentMode === 'proportion') {
           resLabel.textContent = 'Margin of Error (±%)';
-          const n = Math.max(1, parseFloat(sampleSizeInput.value) || 400);
-          const p = (parseFloat(propInput.value) || 50) / 100;
+          const n = Math.max(1, (sampleSizeInput.value !== '' && !isNaN(parseFloat(sampleSizeInput.value)) ? parseFloat(sampleSizeInput.value) : 0));
+          const p = ((propInput.value !== '' && !isNaN(parseFloat(propInput.value)) ? parseFloat(propInput.value) : 0)) / 100;
           propDisplay.textContent = `${Math.round(p * 100)}%`;
 
           let fpc = 1.0;
@@ -533,9 +518,9 @@ const schemaGraph = [
 
         } else if (currentMode === 'mean') {
           resLabel.textContent = 'Margin of Error (Units)';
-          const n = Math.max(2, parseFloat(meanNInput.value) || 100);
-          const mean = parseFloat(meanValInput.value) || 50;
-          const sd = parseFloat(sdInput.value) || 10;
+          const n = Math.max(2, (meanNInput.value !== '' && !isNaN(parseFloat(meanNInput.value)) ? parseFloat(meanNInput.value) : 0));
+          const mean = (meanValInput.value !== '' && !isNaN(parseFloat(meanValInput.value)) ? parseFloat(meanValInput.value) : 0);
+          const sd = (sdInput.value !== '' && !isNaN(parseFloat(sdInput.value)) ? parseFloat(sdInput.value) : 0);
 
           let fpc = 1.0;
           if (pop > 0 && n < pop) {
@@ -562,8 +547,8 @@ const schemaGraph = [
 
         } else if (currentMode === 'inverse') {
           resLabel.textContent = 'Required Sample Size';
-          const targetMoe = (parseFloat(targetMoeInput.value) || 3) / 100;
-          const p = (parseFloat(invPropInput.value) || 50) / 100;
+          const targetMoe = ((targetMoeInput.value !== '' && !isNaN(parseFloat(targetMoeInput.value)) ? parseFloat(targetMoeInput.value) : 0)) / 100;
+          const p = ((invPropInput.value !== '' && !isNaN(parseFloat(invPropInput.value)) ? parseFloat(invPropInput.value) : 0)) / 100;
 
           let n0 = (Math.pow(z, 2) * p * (1 - p)) / Math.pow(targetMoe, 2);
           let finalN = Math.ceil(n0);
@@ -646,12 +631,12 @@ const schemaGraph = [
       resetBtn?.addEventListener('click', () => {
         confLevel.value = '95';
         sampleSizeInput.value = '400';
-        propInput.value = '50';
+        propInput.value = '';
         meanNInput.value = '100';
         meanValInput.value = '50.0';
-        sdInput.value = '10.0';
+        sdInput.value = '';
         targetMoeInput.value = '3.0';
-        invPropInput.value = '50';
+        invPropInput.value = '';
         popSizeInput.value = '';
         calculate();
       });

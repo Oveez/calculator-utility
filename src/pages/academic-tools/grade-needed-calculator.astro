@@ -128,10 +128,8 @@ const schemaGraph = [
               min="0"
               max="150"
               step="0.5"
-              value="78"
               class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none transition focus:border-[color:var(--accent)]"
-              data-curr-score
-            />
+              data-curr-score placeholder="e.g. 78" />
           </div>
 
           <div class="space-y-1.5">
@@ -144,10 +142,8 @@ const schemaGraph = [
               min="1"
               max="99"
               step="1"
-              value="60"
               class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none transition focus:border-[color:var(--accent)]"
-              data-completed-weight
-            />
+              data-completed-weight placeholder="e.g. 60" />
           </div>
 
           <div class="space-y-1.5">
@@ -160,10 +156,8 @@ const schemaGraph = [
               min="1"
               max="100"
               step="0.5"
-              value="85"
               class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none transition focus:border-[color:var(--accent)]"
-              data-target-grade
-            />
+              data-target-grade placeholder="e.g. 85" />
           </div>
         </form>
 
@@ -238,9 +232,9 @@ const schemaGraph = [
       const resetBtn = root.querySelector('[data-reset-btn]');
 
       function update() {
-        const score = Math.max(0, parseFloat(inScore.value || '0'));
-        const comp = Math.max(1, Math.min(99, parseFloat(inComp.value || '50')));
-        const tar = Math.max(0, parseFloat(inTar.value || '85'));
+        const score = Math.max(0, (inScore.value !== '' && !isNaN(parseFloat(inScore.value)) ? parseFloat(inScore.value) : 0));
+        const comp = Math.max(1, Math.min(99, (inComp.value !== '' && !isNaN(parseFloat(inComp.value)) ? parseFloat(inComp.value) : 0)));
+        const tar = Math.max(0, (inTar.value !== '' && !isNaN(parseFloat(inTar.value)) ? parseFloat(inTar.value) : 0));
         const remWeight = 100 - comp;
 
         const earned = (score / 100) * comp;
@@ -275,9 +269,9 @@ const schemaGraph = [
 
       if (resetBtn) {
         resetBtn.addEventListener('click', () => {
-          inScore.value = '78';
-          inComp.value = '60';
-          inTar.value = '85';
+          inScore.value = '';
+          inComp.value = '';
+          inTar.value = '';
           update();
         });
       }

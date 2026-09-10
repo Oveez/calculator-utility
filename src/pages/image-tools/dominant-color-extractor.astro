@@ -339,7 +339,7 @@ const schemaGraph = [
       function extractPalette() {
         if (!loadedImg) return;
 
-        const count = parseInt(colorCountSelect.value, 10);
+        const count = (colorCountSelect.value !== '' && !isNaN(parseInt(colorCountSelect.value, 10)) ? parseInt(colorCountSelect.value, 10) : 0);
         const canvas = document.createElement('canvas');
         const sampleSize = 100;
         canvas.width = sampleSize;

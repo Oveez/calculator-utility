@@ -406,25 +406,29 @@ export const parseIsoDate = (dateStr: string): Date | null => {
 };
 
 export const dateDiffDaysFromIso = (startStr: string, endStr: string): number => {
-	const start = parseIsoDate(startStr) ?? new Date();
-	const end = parseIsoDate(endStr) ?? new Date();
+	const start = parseIsoDate(startStr);
+	const end = parseIsoDate(endStr);
+	if (!start || !end) return 0;
 	return Math.abs(daysBetween(start, end));
 };
 
 export const ageFromIsoDate = (birthDateStr: string, refDateStr?: string): number => {
-	const birth = parseIsoDate(birthDateStr) ?? new Date(1995, 0, 1);
+	const birth = parseIsoDate(birthDateStr);
+	if (!birth) return 0;
 	const ref = refDateStr ? (parseIsoDate(refDateStr) ?? new Date()) : new Date();
 	return decimalAge(birth, ref);
 };
 
 export const workingDaysFromIso = (startStr: string, endStr: string): number => {
-	const start = parseIsoDate(startStr) ?? new Date();
-	const end = parseIsoDate(endStr) ?? new Date();
+	const start = parseIsoDate(startStr);
+	const end = parseIsoDate(endStr);
+	if (!start || !end) return 0;
 	return workingDaysBetween(start, end);
 };
 
 export const countdownFromIso = (targetStr: string, currentStr?: string): number => {
-	const target = parseIsoDate(targetStr) ?? new Date(Date.now() + 86400000);
+	const target = parseIsoDate(targetStr);
+	if (!target) return 0;
 	const current = currentStr ? (parseIsoDate(currentStr) ?? new Date()) : new Date();
 	return Math.max((target.getTime() - current.getTime()) / 1000, 0);
 };

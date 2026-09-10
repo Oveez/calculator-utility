@@ -101,9 +101,7 @@ const schemaGraph = [
             id="grid-rows"
             min="2"
             max="10"
-            value="4"
-            class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-[color:var(--fg)]"
-          />
+            class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-[color:var(--fg)]" placeholder="e.g. 4" />
         </div>
         <div>
           <label for="grid-cols" class="font-bold text-[color:var(--fg)] block mb-1">Columns (Width):</label>
@@ -112,9 +110,7 @@ const schemaGraph = [
             id="grid-cols"
             min="2"
             max="10"
-            value="5"
-            class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-[color:var(--fg)]"
-          />
+            class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-[color:var(--fg)]" placeholder="e.g. 5" />
         </div>
       </div>
 
@@ -203,8 +199,8 @@ Ava</textarea>
       }
 
       function generate() {
-        const rows = Math.min(10, Math.max(2, parseInt(rowsIn.value, 10) || 4));
-        const cols = Math.min(10, Math.max(2, parseInt(colsIn.value, 10) || 5));
+        const rows = Math.min(10, Math.max(2, (rowsIn.value !== '' && !isNaN(parseInt(rowsIn.value, 10)) ? parseInt(rowsIn.value, 10) : 0)));
+        const cols = Math.min(10, Math.max(2, (colsIn.value !== '' && !isNaN(parseInt(colsIn.value, 10)) ? parseInt(colsIn.value, 10) : 0)));
         const students = studentsIn.value.split('\n').map(s => s.trim()).filter(s => s.length > 0);
 
         const shuffled = shuffle([...students]);

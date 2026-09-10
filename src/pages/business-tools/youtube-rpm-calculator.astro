@@ -125,10 +125,8 @@ const schemaGraph = [
               type="number"
               min="1000"
               step="5000"
-              value="150000"
               class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none"
-              data-monthly-views
-            />
+              data-monthly-views placeholder="e.g. 150,000" />
           </div>
 
           <div class="space-y-1.5">
@@ -160,10 +158,8 @@ const schemaGraph = [
               min="0.01"
               max="50"
               step="0.1"
-              value="4.50"
               class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none"
-              data-rpm-input
-            />
+              data-rpm-input placeholder="e.g. 4.50" />
           </div>
         </form>
 
@@ -302,8 +298,8 @@ const schemaGraph = [
       const resetBtn = root.querySelector('[data-reset-btn]');
 
       function update() {
-        const views = Math.max(0, parseFloat(inViews.value || '0'));
-        const rpm = Math.max(0, parseFloat(inRpm.value || '0'));
+        const views = Math.max(0, (inViews.value !== '' && !isNaN(parseFloat(inViews.value)) ? parseFloat(inViews.value) : 0));
+        const rpm = Math.max(0, (inRpm.value !== '' && !isNaN(parseFloat(inRpm.value)) ? parseFloat(inRpm.value) : 0));
 
         const monthly = (views / 1000) * rpm;
         const annual = monthly * 12;
@@ -331,9 +327,9 @@ const schemaGraph = [
 
       if (resetBtn) {
         resetBtn.addEventListener('click', () => {
-          inViews.value = '150000';
-          inNiche.value = '4.50';
-          inRpm.value = '4.50';
+          inViews.value = '';
+          inNiche.value = '';
+          inRpm.value = '';
           update();
         });
       }

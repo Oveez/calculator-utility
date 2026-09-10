@@ -233,11 +233,11 @@ const parameterGuide = [
 
       <!-- Output Column -->
       <div class="space-y-3">
-        <div class="flex items-center justify-between">
-          <div class="flex items-center gap-2">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <div class="flex flex-wrap items-center gap-2">
             <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Output</span>
-            <span id="status-badge" class="rounded-md bg-cyan-500/15 px-2 py-0.5 text-[10px] font-bold text-cyan-600 dark:text-cyan-400 dark:text-cyan-400">Valid JSON</span>
-            <div class="inline-flex rounded-lg border border-[color:var(--border)] p-0.5 text-[10px]">
+            <span id="status-badge" class="rounded-md bg-cyan-500/15 px-2 py-0.5 text-[10px] font-bold text-cyan-600 dark:text-cyan-400">Valid JSON</span>
+            <div class="inline-flex rounded-lg border border-[color:var(--border)] p-0.5 text-[10px] shrink-0">
               <button type="button" id="tab-code" class="rounded-md bg-[color:var(--accent)] px-2 py-0.5 font-bold text-white cursor-pointer">Code</button>
               <button type="button" id="tab-tree" class="rounded-md px-2 py-0.5 font-bold text-[color:var(--muted)] hover:text-[color:var(--fg)] cursor-pointer">Tree</button>
             </div>
@@ -498,7 +498,7 @@ const parameterGuide = [
           statusBadge.textContent = 'Valid JSON';
 
           const minStr = JSON.stringify(parsed);
-          const indentVal = indentSelect.value === 'tab' ? '\t' : parseInt(indentSelect.value, 10);
+          const indentVal = indentSelect.value === 'tab' ? '\t' : (indentSelect.value !== '' && !isNaN(parseInt(indentSelect.value, 10)) ? parseInt(indentSelect.value, 10) : 0);
           const fmtStr = JSON.stringify(parsed, null, indentVal);
 
           output.value = mode === 'minify' ? minStr : fmtStr;

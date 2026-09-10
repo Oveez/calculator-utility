@@ -475,7 +475,7 @@ const schemaGraph = [
             parsed = sortObjectRecursively(parsed);
           }
 
-          const indentVal = parseInt(indentSelect.value, 10);
+          const indentVal = (indentSelect.value !== '' && !isNaN(parseInt(indentSelect.value, 10)) ? parseInt(indentSelect.value, 10) : 0);
           const jsonString = indentVal === 0 ? JSON.stringify(parsed) : JSON.stringify(parsed, null, indentVal);
           jsonOut.value = jsonString;
 

@@ -182,10 +182,8 @@ const schemaGraph = [
               type="number"
               id="mean-val"
               step="any"
-              value="50.0"
               class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none"
-              data-mean-val
-            />
+              data-mean-val placeholder="e.g. 50.0" />
           </div>
           <div class="space-y-1.5">
             <label for="sd-val" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Standard Deviation (s or σ)</label>
@@ -194,10 +192,8 @@ const schemaGraph = [
               id="sd-val"
               step="any"
               min="0"
-              value="4.5"
               class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none"
-              data-sd-val
-            />
+              data-sd-val placeholder="e.g. 4.5" />
           </div>
         </div>
       </div>
@@ -277,8 +273,8 @@ const schemaGraph = [
           <div class="space-y-2 rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] p-3">
             <span class="font-bold text-[color:var(--fg)] font-sans">Group B (Benchmark)</span>
             <div class="grid grid-cols-2 gap-1.5">
-              <input type="number" step="any" value="500.0" placeholder="Mean" class="rounded-lg border border-[color:var(--border)] bg-[color:var(--surface)] px-2 py-1 text-xs text-[color:var(--fg)] outline-none" data-g2-mean-in />
-              <input type="number" step="any" value="15.0" placeholder="SD" class="rounded-lg border border-[color:var(--border)] bg-[color:var(--surface)] px-2 py-1 text-xs text-[color:var(--fg)] outline-none" data-g2-sd-in />
+              <input type="number" step="any" placeholder="e.g. 500.0" class="rounded-lg border border-[color:var(--border)] bg-[color:var(--surface)] px-2 py-1 text-xs text-[color:var(--fg)] outline-none" data-g2-mean-in />
+              <input type="number" step="any" placeholder="e.g. 15.0" class="rounded-lg border border-[color:var(--border)] bg-[color:var(--surface)] px-2 py-1 text-xs text-[color:var(--fg)] outline-none" data-g2-sd-in />
             </div>
             <p class="text-lg font-bold text-[color:var(--fg)]" data-g2-cv>CV: 3.00%</p>
           </div>
@@ -287,8 +283,8 @@ const schemaGraph = [
           <div class="space-y-2 rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] p-3">
             <span class="font-bold text-[color:var(--fg)] font-sans">Group C (Alternative)</span>
             <div class="grid grid-cols-2 gap-1.5">
-              <input type="number" step="any" value="1200.0" placeholder="Mean" class="rounded-lg border border-[color:var(--border)] bg-[color:var(--surface)] px-2 py-1 text-xs text-[color:var(--fg)] outline-none" data-g3-mean-in />
-              <input type="number" step="any" value="180.0" placeholder="SD" class="rounded-lg border border-[color:var(--border)] bg-[color:var(--surface)] px-2 py-1 text-xs text-[color:var(--fg)] outline-none" data-g3-sd-in />
+              <input type="number" step="any" placeholder="e.g. 1,200" class="rounded-lg border border-[color:var(--border)] bg-[color:var(--surface)] px-2 py-1 text-xs text-[color:var(--fg)] outline-none" data-g3-mean-in />
+              <input type="number" step="any" placeholder="e.g. 180.0" class="rounded-lg border border-[color:var(--border)] bg-[color:var(--surface)] px-2 py-1 text-xs text-[color:var(--fg)] outline-none" data-g3-sd-in />
             </div>
             <p class="text-lg font-bold text-[color:var(--fg)]" data-g3-cv>CV: 15.00%</p>
           </div>
@@ -390,8 +386,8 @@ const schemaGraph = [
         let sd = 0;
 
         if (currentMode === 'summary') {
-          mean = parseFloat(meanInput.value || '0');
-          sd = parseFloat(sdInput.value || '0');
+          mean = (meanInput.value !== '' && !isNaN(parseFloat(meanInput.value)) ? parseFloat(meanInput.value) : 0);
+          sd = (sdInput.value !== '' && !isNaN(parseFloat(sdInput.value)) ? parseFloat(sdInput.value) : 0);
         } else {
           const numbers = parseNums(rawInput.value || '');
           if (rawDetected) rawDetected.textContent = `Detected: ${numbers.length} numbers`;
@@ -440,16 +436,16 @@ const schemaGraph = [
 
         // Update Group 2
         if (g2MeanIn && g2SdIn && g2Cv) {
-          const m2 = parseFloat(g2MeanIn.value || '0');
-          const s2 = parseFloat(g2SdIn.value || '0');
+          const m2 = (g2MeanIn.value !== '' && !isNaN(parseFloat(g2MeanIn.value)) ? parseFloat(g2MeanIn.value) : 0);
+          const s2 = (g2SdIn.value !== '' && !isNaN(parseFloat(g2SdIn.value)) ? parseFloat(g2SdIn.value) : 0);
           const cv2 = m2 !== 0 ? (Math.abs(s2) / Math.abs(m2)) * 100 : 0;
           g2Cv.textContent = `CV: ${cv2.toFixed(2)}%`;
         }
 
         // Update Group 3
         if (g3MeanIn && g3SdIn && g3Cv) {
-          const m3 = parseFloat(g3MeanIn.value || '0');
-          const s3 = parseFloat(g3SdIn.value || '0');
+          const m3 = (g3MeanIn.value !== '' && !isNaN(parseFloat(g3MeanIn.value)) ? parseFloat(g3MeanIn.value) : 0);
+          const s3 = (g3SdIn.value !== '' && !isNaN(parseFloat(g3SdIn.value)) ? parseFloat(g3SdIn.value) : 0);
           const cv3 = m3 !== 0 ? (Math.abs(s3) / Math.abs(m3)) * 100 : 0;
           g3Cv.textContent = `CV: ${cv3.toFixed(2)}%`;
         }
@@ -487,8 +483,8 @@ const schemaGraph = [
 
       if (resetBtn) {
         resetBtn.addEventListener('click', () => {
-          meanInput.value = '50.0';
-          sdInput.value = '4.5';
+          meanInput.value = '';
+          sdInput.value = '';
           if (g2MeanIn) g2MeanIn.value = '500.0';
           if (g2SdIn) g2SdIn.value = '15.0';
           if (g3MeanIn) g3MeanIn.value = '1200.0';

@@ -101,9 +101,7 @@ const schemaGraph = [
             id="exam-rows"
             min="2"
             max="12"
-            value="5"
-            class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-[color:var(--fg)]"
-          />
+            class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-[color:var(--fg)]" placeholder="e.g. 5" />
         </div>
         <div>
           <label for="exam-cols" class="font-bold text-[color:var(--fg)] block mb-1">Hall Columns:</label>
@@ -112,9 +110,7 @@ const schemaGraph = [
             id="exam-cols"
             min="2"
             max="12"
-            value="6"
-            class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-[color:var(--fg)]"
-          />
+            class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-[color:var(--fg)]" placeholder="e.g. 6" />
         </div>
         <div>
           <label for="spacing-mode" class="font-bold text-[color:var(--fg)] block mb-1">Spacing Mode:</label>
@@ -210,8 +206,8 @@ ROLL-115</textarea>
       }
 
       function generate() {
-        const rows = Math.min(12, Math.max(2, parseInt(rowsIn.value, 10) || 5));
-        const cols = Math.min(12, Math.max(2, parseInt(colsIn.value, 10) || 6));
+        const rows = Math.min(12, Math.max(2, (rowsIn.value !== '' && !isNaN(parseInt(rowsIn.value, 10)) ? parseInt(rowsIn.value, 10) : 0)));
+        const cols = Math.min(12, Math.max(2, (colsIn.value !== '' && !isNaN(parseInt(colsIn.value, 10)) ? parseInt(colsIn.value, 10) : 0)));
         const isChecker = spacing.value === 'checkerboard';
         const candidates = shuffle(studentsIn.value.split('\n').map(s => s.trim()).filter(s => s.length > 0));
 

@@ -190,10 +190,8 @@ const schemaGraph = [
               min="0.01"
               max="99"
               step="0.1"
-              value="5.0"
               class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none"
-              data-base-cvr
-            />
+              data-base-cvr placeholder="e.g. 5.0" />
           </div>
 
           <!-- MDE Type Selector & Input -->
@@ -213,10 +211,8 @@ const schemaGraph = [
               min="0.01"
               max="100"
               step="0.1"
-              value="10.0"
               class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none"
-              data-mde-input
-            />
+              data-mde-input placeholder="e.g. 10.0" />
             <p class="text-[11px] text-[color:var(--muted)]" data-mde-explanation>
               A 10.0% relative lift on a 5.00% baseline detects changes up to 5.50% (+0.50% absolute lift).
             </p>
@@ -263,11 +259,11 @@ const schemaGraph = [
           <div class="grid grid-cols-2 gap-3 pt-1">
             <div>
               <label for="ab-variants" class="block text-xs font-medium text-[color:var(--muted)]">Variants Count (incl. Control)</label>
-              <input id="ab-variants" type="number" min="2" max="6" value="2" class="mt-1 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-ab-variants />
+              <input id="ab-variants" type="number" min="2" max="6" class="mt-1 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-ab-variants placeholder="e.g. 2" />
             </div>
             <div>
               <label for="daily-traffic" class="block text-xs font-medium text-[color:var(--muted)]">Daily Total Visitors (Opt)</label>
-              <input id="daily-traffic" type="number" min="1" value="2000" class="mt-1 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-daily-traffic />
+              <input id="daily-traffic" type="number" min="1" class="mt-1 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-daily-traffic placeholder="e.g. 2,000" />
             </div>
           </div>
         </form>
@@ -456,8 +452,8 @@ const schemaGraph = [
       }
 
       function update() {
-        const p1 = Math.max(0.0001, parseFloat(inBase.value || '5.0') / 100);
-        const mdeVal = Math.max(0.01, parseFloat(inMde.value || '10'));
+        const p1 = Math.max(0.0001, (inBase.value !== '' && !isNaN(parseFloat(inBase.value)) ? parseFloat(inBase.value) : 0) / 100);
+        const mdeVal = Math.max(0.01, (inMde.value !== '' && !isNaN(parseFloat(inMde.value)) ? parseFloat(inMde.value) : 0));
         const delta = (mdeType === 'rel') ? (p1 * (mdeVal / 100)) : (mdeVal / 100);
         const p2 = p1 + delta;
 
@@ -473,9 +469,9 @@ const schemaGraph = [
         const isTwoTailed = (inTails.value === '2');
         const zAlpha = (isTwoTailed ? zMapTwoSided : zMapOneSided)[inConf.value] || 1.96;
         const zBeta = powerZMap[inPower.value] || 0.8416;
-        const variants = Math.max(2, parseInt(inVariants.value || '2', 10));
+        const variants = Math.max(2, (inVariants.value !== '' && !isNaN(parseInt(inVariants.value, 10)) ? parseInt(inVariants.value, 10) : 0));
         const splitVal = inSplit.value || '50-50';
-        const daily = dailyInput.value ? Math.max(1, parseInt(dailyInput.value, 10)) : 0;
+        const daily = dailyInput.value ? Math.max(1, (dailyInput.value !== '' && !isNaN(parseInt(dailyInput.value, 10)) ? parseInt(dailyInput.value, 10) : 0)) : 0;
 
         let k = 1.0; // Treatment / Control ratio
         let splitLabel = '50% Control / 50% Treatment';
@@ -579,10 +575,10 @@ const schemaGraph = [
               b.className = 'rounded-lg px-2 py-0.5 text-[color:var(--muted)] hover:text-[color:var(--fg)]';
             }
           });
-          if (mdeType === 'abs' && parseFloat(inMde.value) > 20) {
-            inMde.value = '1.0';
-          } else if (mdeType === 'rel' && parseFloat(inMde.value) < 2) {
-            inMde.value = '10.0';
+          if (mdeType === 'abs' && (inMde.value !== '' && !isNaN(parseFloat(inMde.value)) ? parseFloat(inMde.value) : 0) > 20) {
+            inMde.value = '';
+          } else if (mdeType === 'rel' && (inMde.value !== '' && !isNaN(parseFloat(inMde.value)) ? parseFloat(inMde.value) : 0) < 2) {
+            inMde.value = '';
           }
           update();
         });
@@ -599,14 +595,14 @@ const schemaGraph = [
 
       if (resetBtn) {
         resetBtn.addEventListener('click', () => {
-          inBase.value = '5.0';
-          inMde.value = '10.0';
-          inPower.value = '80';
-          inConf.value = '95';
+          inBase.value = '';
+          inMde.value = '';
+          inPower.value = '';
+          inConf.value = '';
           inSplit.value = '50-50';
-          inTails.value = '2';
-          inVariants.value = '2';
-          dailyInput.value = '2000';
+          inTails.value = '';
+          inVariants.value = '';
+          dailyInput.value = '';
           mdeType = 'rel';
           mdeTypeBtns[0].click();
           update();

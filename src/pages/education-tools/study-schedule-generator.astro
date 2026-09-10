@@ -101,9 +101,7 @@ const schemaGraph = [
             id="daily-hours"
             min="1"
             max="14"
-            value="4"
-            class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-[color:var(--fg)]"
-          />
+            class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-[color:var(--fg)]" placeholder="e.g. 4" />
         </div>
         <div>
           <label for="start-time" class="font-bold text-[color:var(--fg)] block mb-1">Starting Time:</label>
@@ -111,8 +109,7 @@ const schemaGraph = [
             type="time"
             id="start-time"
             value="09:00"
-            class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-[color:var(--fg)]"
-          />
+            class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-[color:var(--fg)]" />
         </div>
       </div>
 
@@ -191,7 +188,7 @@ Organic Chemistry</textarea>
       }
 
       function generate() {
-        const hours = Math.min(14, Math.max(1, parseFloat(dailyHoursIn.value) || 4));
+        const hours = Math.min(14, Math.max(1, (dailyHoursIn.value !== '' && !isNaN(parseFloat(dailyHoursIn.value)) ? parseFloat(dailyHoursIn.value) : 0)));
         const subjects = subjectsIn.value.split('\n').map(s => s.trim()).filter(s => s.length > 0);
         if (subjects.length === 0) return;
 

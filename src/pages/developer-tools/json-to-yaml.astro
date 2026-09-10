@@ -394,7 +394,7 @@ const schemaGraph = [
 
         try {
           const parsed = JSON.parse(raw);
-          const indentSize = parseInt(indentSelect.value, 10);
+          const indentSize = (indentSelect.value !== '' && !isNaN(parseInt(indentSelect.value, 10)) ? parseInt(indentSelect.value, 10) : 0);
           const sortKeys = sortKeysCheck.checked;
 
           const yamlResult = jsonToYaml(parsed, 0, indentSize, sortKeys);

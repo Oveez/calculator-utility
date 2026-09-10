@@ -177,26 +177,26 @@ const schemaGraph = [
           <div class="grid grid-cols-3 gap-3">
             <div>
               <label for="vol-l" class="block text-xs font-medium text-[color:var(--muted)]">Length (cm)</label>
-              <input id="vol-l" type="number" min="0" step="any" value="60" class="mt-1 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-vol-l />
+              <input id="vol-l" type="number" min="0" step="any" class="mt-1 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-vol-l placeholder="e.g. 60" />
             </div>
             <div>
               <label for="vol-w" class="block text-xs font-medium text-[color:var(--muted)]">Width (cm)</label>
-              <input id="vol-w" type="number" min="0" step="any" value="40" class="mt-1 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-vol-w />
+              <input id="vol-w" type="number" min="0" step="any" class="mt-1 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-vol-w placeholder="e.g. 40" />
             </div>
             <div>
               <label for="vol-h" class="block text-xs font-medium text-[color:var(--muted)]">Height (cm)</label>
-              <input id="vol-h" type="number" min="0" step="any" value="40" class="mt-1 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-vol-h />
+              <input id="vol-h" type="number" min="0" step="any" class="mt-1 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-vol-h placeholder="e.g. 40" />
             </div>
           </div>
 
           <div class="grid grid-cols-2 gap-3 pt-1">
             <div>
               <label for="vol-qty" class="block text-xs font-medium text-[color:var(--muted)]">Package Quantity</label>
-              <input id="vol-qty" type="number" min="1" step="1" value="5" class="mt-1 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-vol-qty />
+              <input id="vol-qty" type="number" min="1" step="1" class="mt-1 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-vol-qty placeholder="e.g. 5" />
             </div>
             <div>
               <label for="vol-act-wt" class="block text-xs font-medium text-[color:var(--muted)]">Actual Weight (kg/unit opt)</label>
-              <input id="vol-act-wt" type="number" min="0" step="0.1" value="12" class="mt-1 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-vol-act />
+              <input id="vol-act-wt" type="number" min="0" step="0.1" class="mt-1 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-vol-act placeholder="e.g. 12" />
             </div>
           </div>
         </form>
@@ -218,21 +218,21 @@ const schemaGraph = [
             <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 text-center">
               <p class="text-xs font-semibold text-[color:var(--muted)]">Total Volumetric Weight</p>
               <p class="mt-1 text-5xl font-black tracking-tight text-[color:var(--fg)]" data-res-volkg>
-                96.00 kg
+                0.00 kg
               </p>
               <p class="mt-2 text-xs font-medium text-[color:var(--muted)]" data-res-vollbs>
-                211.64 lbs (19.20 kg / package)
+                0.00 lbs (0.00 kg / package)
               </p>
             </div>
 
             <div class="space-y-2 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-xs">
               <div class="flex justify-between">
                 <span class="text-[color:var(--muted)]">Total Actual Weight:</span>
-                <span class="font-bold text-[color:var(--fg)]" data-disp-act>60.00 kg (132.28 lbs)</span>
+                <span class="font-bold text-[color:var(--fg)]" data-disp-act>0.00 kg (0.00 lbs)</span>
               </div>
               <div class="flex justify-between border-t border-[color:var(--border)] pt-2">
                 <span class="font-bold text-[color:var(--fg)]">Chargeable Weight Basis:</span>
-                <span class="font-bold text-red-500 font-mono" data-disp-basis>Volumetric (96.00 kg)</span>
+                <span class="font-bold text-[color:var(--muted)] font-mono" data-disp-basis>—</span>
               </div>
             </div>
           </div>
@@ -340,19 +340,31 @@ const schemaGraph = [
       const copyBtn = root.querySelector('[data-copy-btn]');
 
       function update() {
-        const div = parseFloat(inDiv.value || '5000');
-        const l = Math.max(0, parseFloat(inL.value || '0'));
-        const w = Math.max(0, parseFloat(inW.value || '0'));
-        const h = Math.max(0, parseFloat(inH.value || '0'));
-        const qty = Math.max(1, parseInt(inQty.value || '1', 10));
-        const actPer = parseFloat(inAct.value || '0');
+        const div = (inDiv.value !== '' && !isNaN(parseFloat(inDiv.value)) ? parseFloat(inDiv.value) : 0);
+        const l = inL.value ? Math.max(0, (inL.value !== '' && !isNaN(parseFloat(inL.value)) ? parseFloat(inL.value) : 0)) : 0;
+        const w = inW.value ? Math.max(0, (inW.value !== '' && !isNaN(parseFloat(inW.value)) ? parseFloat(inW.value) : 0)) : 0;
+        const h = inH.value ? Math.max(0, (inH.value !== '' && !isNaN(parseFloat(inH.value)) ? parseFloat(inH.value) : 0)) : 0;
+        const qty = inQty.value ? Math.max(1, (inQty.value !== '' && !isNaN(parseInt(inQty.value, 10)) ? parseInt(inQty.value, 10) : 0)) : 1;
+        const actPer = inAct.value ? Math.max(0, (inAct.value !== '' && !isNaN(parseFloat(inAct.value)) ? parseFloat(inAct.value) : 0)) : 0;
 
-        const unitVolKg = (l * w * h) / div;
+        const hasDims = l > 0 && w > 0 && h > 0;
+        const unitVolKg = hasDims ? (l * w * h) / div : 0;
         const totalVolKg = unitVolKg * qty;
         const totalVolLbs = totalVolKg * 2.20462;
 
         const totalActKg = actPer * qty;
         const totalActLbs = totalActKg * 2.20462;
+
+        if (!hasDims && totalActKg === 0) {
+          if (outKg) outKg.textContent = '0.00 kg';
+          if (outLbs) outLbs.textContent = '0.00 lbs (0.00 kg / package)';
+          if (outAct) outAct.textContent = '0.00 kg (0.00 lbs)';
+          if (outBasis) {
+            outBasis.textContent = '—';
+            outBasis.className = 'font-bold text-[color:var(--muted)] font-mono';
+          }
+          return;
+        }
 
         if (outKg) outKg.textContent = `${totalVolKg.toFixed(2)} kg`;
         if (outLbs) outLbs.textContent = `${totalVolLbs.toFixed(2)} lbs (${unitVolKg.toFixed(2)} kg / package)`;
@@ -378,12 +390,12 @@ const schemaGraph = [
 
       if (resetBtn) {
         resetBtn.addEventListener('click', () => {
-          inDiv.value = '5000';
-          inL.value = '60';
-          inW.value = '40';
-          inH.value = '40';
-          inQty.value = '5';
-          inAct.value = '12';
+          inDiv.value = '';
+          inL.value = '';
+          inW.value = '';
+          inH.value = '';
+          inQty.value = '';
+          inAct.value = '';
           update();
         });
       }

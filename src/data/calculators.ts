@@ -1171,14 +1171,17 @@ const calculators: CalculatorConfig[] = [
 			else if (percent >= 73) { letterGrade = 'C'; gpa = 2.0; }
 			else if (percent >= 70) { letterGrade = 'C-'; gpa = 1.7; }
 			else if (percent >= 60) { letterGrade = 'D'; gpa = 1.0; }
-			else { letterGrade = 'F'; gpa = 0.0; }
+			else if (total > 0) { letterGrade = 'F'; gpa = 0.0; }
+			else { letterGrade = '—'; gpa = 0.0; }
 
 			const passMargin = percent - cutoff;
-			const isPassing = passMargin >= 0;
-			const passStatusText = isPassing
-				? `Passed (+${passMargin.toFixed(1)}% above cutoff)`
-				: `Below passing (-${Math.abs(passMargin).toFixed(1)}% shortage)`;
-			const passBadge = isPassing ? 'Passed' : 'Action Needed';
+			const isPassing = percent >= cutoff;
+			const passStatusText = total > 0
+				? (isPassing
+					? `Passed (+${passMargin.toFixed(1)}% above cutoff)`
+					: `Below passing (-${Math.abs(passMargin).toFixed(1)}% shortage)`)
+				: 'Awaiting scores';
+			const passBadge = total > 0 ? (isPassing ? 'Passed' : 'Action Needed') : '—';
 			const pointsLost = Math.max(total - effectiveMarks, 0);
 
 			return {
@@ -1255,12 +1258,13 @@ const calculators: CalculatorConfig[] = [
 			{ id: 'heightCm', label: 'Height', type: 'number', min: 50, step: 0.5, defaultValue: 175, unit: 'cm' },
 		],
 		formula: (values) => {
-			const weightKg = getValue(values, 'weightKg', 70);
-			const heightM = getValue(values, 'heightCm', 175) / 100;
+			const weightKg = getValue(values, 'weightKg', 0);
+			const heightM = getValue(values, 'heightCm', 0) / 100;
 			return heightM === 0 ? 0 : weightKg / (heightM * heightM);
 		},
 		resultFormat: (value) => {
 			const bmi = Number(value);
+			if (bmi <= 0) return '0.00 kg/m²';
 			let category = 'Normal';
 			if (bmi < 18.5) category = 'Underweight';
 			else if (bmi < 25) category = 'Normal weight';
@@ -1332,9 +1336,10 @@ const calculators: CalculatorConfig[] = [
 			},
 		],
 		formula: (values) => {
-			const weightKg = getValue(values, 'weightKg', 72);
-			const heightCm = getValue(values, 'heightCm', 178);
-			const ageYears = getValue(values, 'ageYears', 30);
+			const weightKg = getValue(values, 'weightKg', 0);
+			const heightCm = getValue(values, 'heightCm', 0);
+			const ageYears = getValue(values, 'ageYears', 0);
+			if (weightKg <= 0 || heightCm <= 0) return 0;
 			const sex = normalizeToken(getTextValue(values, 'sex', 'male'));
 			const activityLevel = normalizeToken(getTextValue(values, 'activityLevel', 'moderate'));
 			const sexAdjustment = sex.startsWith('f') ? -161 : 5;

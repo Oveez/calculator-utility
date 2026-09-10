@@ -180,11 +180,11 @@ const schemaGraph = [
             </button>
           </div>
 
-          <div class="grid grid-cols-2 gap-2 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-1 text-xs font-semibold">
-            <button type="button" class="cursor-pointer rounded-xl bg-[color:var(--accent)] px-3 py-2 text-white shadow-xs transition" data-mode-btn="forward">
+          <div class="flex items-center gap-2 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-1 text-xs font-semibold overflow-x-auto no-scrollbar sm:grid sm:grid-cols-2">
+            <button type="button" class="shrink-0 min-w-max sm:min-w-0 sm:shrink text-center cursor-pointer rounded-xl bg-[color:var(--accent)] px-3 py-2 text-white shadow-xs transition" data-mode-btn="forward">
               Raw Score → Z-Score
             </button>
-            <button type="button" class="cursor-pointer rounded-xl px-3 py-2 text-[color:var(--muted)] hover:text-[color:var(--fg)] transition" data-mode-btn="inverse">
+            <button type="button" class="shrink-0 min-w-max sm:min-w-0 sm:shrink text-center cursor-pointer rounded-xl px-3 py-2 text-[color:var(--muted)] hover:text-[color:var(--fg)] transition" data-mode-btn="inverse">
               Z / Percentile → Raw Score
             </button>
           </div>
@@ -193,7 +193,7 @@ const schemaGraph = [
           <div class="space-y-4" data-forward-fields>
             <div class="space-y-1.5">
               <label for="raw-score" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Raw Score (X)</label>
-              <input id="raw-score" type="number" step="any" value="85" class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none" data-raw-score />
+              <input id="raw-score" type="number" step="any" class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none" data-raw-score placeholder="e.g. 85" />
             </div>
           </div>
 
@@ -208,7 +208,7 @@ const schemaGraph = [
             </div>
             <div class="space-y-1.5">
               <label for="inv-val" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]" data-inv-label>Target Z-Score</label>
-              <input id="inv-val" type="number" step="any" value="1.50" class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none" data-inv-val />
+              <input id="inv-val" type="number" step="any" class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none" data-inv-val placeholder="e.g. 1.50" />
             </div>
           </div>
 
@@ -216,11 +216,11 @@ const schemaGraph = [
           <div class="grid grid-cols-2 gap-3">
             <div>
               <label for="pop-mean" class="block text-xs font-medium text-[color:var(--muted)]">Population Mean (μ)</label>
-              <input id="pop-mean" type="number" step="any" value="70" class="mt-1 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-pop-mean />
+              <input id="pop-mean" type="number" step="any" class="mt-1 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-pop-mean placeholder="e.g. 70" />
             </div>
             <div>
               <label for="pop-sd" class="block text-xs font-medium text-[color:var(--muted)]">Standard Deviation (σ)</label>
-              <input id="pop-sd" type="number" min="0.0001" step="any" value="10" class="mt-1 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-pop-sd />
+              <input id="pop-sd" type="number" min="0.0001" step="any" class="mt-1 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-pop-sd placeholder="e.g. 10" />
             </div>
           </div>
         </form>
@@ -466,20 +466,20 @@ const schemaGraph = [
       }
 
       function update() {
-        const m = parseFloat(inMean.value || '0');
-        const s = Math.max(0.000001, parseFloat(inSd.value || '1'));
+        const m = (inMean.value !== '' && !isNaN(parseFloat(inMean.value)) ? parseFloat(inMean.value) : 0);
+        const s = Math.max(0.000001, (inSd.value !== '' && !isNaN(parseFloat(inSd.value)) ? parseFloat(inSd.value) : 0));
         let z = 0;
         let x = 0;
 
         if (currentMode === 'forward') {
-          x = parseFloat(inRaw.value || '0');
+          x = (inRaw.value !== '' && !isNaN(parseFloat(inRaw.value)) ? parseFloat(inRaw.value) : 0);
           z = (x - m) / s;
           if (outPrimaryLabel) outPrimaryLabel.textContent = 'Calculated Z-Score';
           const zSign = z >= 0 ? `+${z.toFixed(2)}` : z.toFixed(2);
           if (outZ) outZ.textContent = zSign;
         } else {
           const invType = inInvTarget.value || 'z';
-          const invVal = parseFloat(inInvVal.value || '0');
+          const invVal = (inInvVal.value !== '' && !isNaN(parseFloat(inInvVal.value)) ? parseFloat(inInvVal.value) : 0);
           if (invType === 'z') {
             z = invVal;
             x = m + z * s;
@@ -579,9 +579,9 @@ const schemaGraph = [
           currentMode = btn.dataset.modeBtn || 'forward';
           modeBtns.forEach(b => {
             if (b === btn) {
-              b.className = 'cursor-pointer rounded-xl bg-[color:var(--accent)] px-3 py-2 text-white shadow-xs transition';
+              b.className = 'shrink-0 min-w-max sm:min-w-0 sm:shrink text-center cursor-pointer rounded-xl bg-[color:var(--accent)] px-3 py-2 text-white shadow-xs transition';
             } else {
-              b.className = 'cursor-pointer rounded-xl px-3 py-2 text-[color:var(--muted)] hover:text-[color:var(--fg)] transition';
+              b.className = 'shrink-0 min-w-max sm:min-w-0 sm:shrink text-center cursor-pointer rounded-xl px-3 py-2 text-[color:var(--muted)] hover:text-[color:var(--fg)] transition';
             }
           });
 
@@ -600,10 +600,10 @@ const schemaGraph = [
         inInvTarget.addEventListener('change', () => {
           if (inInvTarget.value === 'z') {
             if (invLabel) invLabel.textContent = 'Target Z-Score';
-            inInvVal.value = '1.50';
+            inInvVal.value = '';
           } else {
             if (invLabel) invLabel.textContent = 'Target Percentile Rank (0.1 to 99.9%)';
-            inInvVal.value = '93.32';
+            inInvVal.value = '';
           }
           update();
         });
@@ -616,10 +616,10 @@ const schemaGraph = [
 
       if (resetBtn) {
         resetBtn.addEventListener('click', () => {
-          inRaw.value = '85';
-          inMean.value = '70';
-          inSd.value = '10';
-          inInvVal.value = '1.50';
+          inRaw.value = '';
+          inMean.value = '';
+          inSd.value = '';
+          inInvVal.value = '';
           currentMode = 'forward';
           modeBtns[0].click();
           update();

@@ -223,8 +223,7 @@ const workedExampleData = {
             id="opt-prefix"
             class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-[color:var(--fg)]"
             placeholder="e.g. /blog/"
-            value="/blog/"
-          />
+            value="/blog/" />
         </div>
       </div>
 
@@ -260,8 +259,7 @@ const workedExampleData = {
           id="title-in"
           class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-sm sm:text-base font-semibold text-[color:var(--fg)] focus:border-[color:var(--accent)] focus:outline-hidden transition shadow-inner"
           placeholder="e.g. 10 Best Online Developer Tools for 2026 &amp; Beyond!"
-          value="10 Best Online Developer Tools for 2026 & Beyond!"
-        />
+          value="10 Best Online Developer Tools for 2026 & Beyond!" />
       </div>
 
       <!-- Generated Slug Output Card -->
@@ -488,7 +486,7 @@ const workedExampleData = {
         let slug = tokens.join(sep);
 
         // Max length trimming at word boundaries if specified
-        const maxLen = parseInt(optMaxLen.value, 10);
+        const maxLen = (optMaxLen.value !== '' && !isNaN(parseInt(optMaxLen.value, 10)) ? parseInt(optMaxLen.value, 10) : 0);
         if (maxLen > 0 && slug.length > maxLen) {
           if (sep) {
             const parts = slug.split(sep);

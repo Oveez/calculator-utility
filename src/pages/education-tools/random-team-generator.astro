@@ -196,7 +196,7 @@ Logan</textarea>
         const players = playersIn.value.split('\n').map(s => s.trim()).filter(s => s.length > 0);
         if (players.length === 0) return;
 
-        const count = parseInt(numTeams.value, 10);
+        const count = (numTeams.value !== '' && !isNaN(parseInt(numTeams.value, 10)) ? parseInt(numTeams.value, 10) : 0);
         const theme = THEMES[themeSelect.value];
         const shuffled = shuffle([...players]);
 

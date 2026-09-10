@@ -108,9 +108,7 @@ const schemaGraph = [
             id="target-num"
             min="2"
             max="50"
-            value="3"
-            class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-[color:var(--fg)]"
-          />
+            class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-[color:var(--fg)]" placeholder="e.g. 3" />
         </div>
       </div>
 
@@ -208,7 +206,7 @@ Evelyn</textarea>
 
         const shuffled = shuffle([...list]);
         const mode = splitBy.value;
-        const target = Math.max(1, parseInt(targetNum.value, 10) || 2);
+        const target = Math.max(1, (targetNum.value !== '' && !isNaN(parseInt(targetNum.value, 10)) ? parseInt(targetNum.value, 10) : 0));
 
         let groupCount = mode === 'groups' ? target : Math.ceil(shuffled.length / target);
         groupCount = Math.min(groupCount, shuffled.length);

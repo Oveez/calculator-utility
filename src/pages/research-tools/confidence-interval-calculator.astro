@@ -180,14 +180,14 @@ const schemaGraph = [
             </button>
           </div>
 
-          <div class="grid grid-cols-3 gap-1.5 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-1 text-xs font-semibold">
-            <button type="button" class="cursor-pointer rounded-xl bg-[color:var(--accent)] px-2.5 py-2 text-white shadow-xs transition" data-mode-btn="mean">
+          <div class="flex items-center gap-1.5 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-1 text-xs font-semibold overflow-x-auto no-scrollbar sm:grid sm:grid-cols-3">
+            <button type="button" class="shrink-0 min-w-max sm:min-w-0 sm:shrink text-center cursor-pointer rounded-xl bg-[color:var(--accent)] px-2.5 py-2 text-white shadow-xs transition" data-mode-btn="mean">
               Mean (Summary)
             </button>
-            <button type="button" class="cursor-pointer rounded-xl px-2.5 py-2 text-[color:var(--muted)] hover:text-[color:var(--fg)] transition" data-mode-btn="raw">
+            <button type="button" class="shrink-0 min-w-max sm:min-w-0 sm:shrink text-center cursor-pointer rounded-xl px-2.5 py-2 text-[color:var(--muted)] hover:text-[color:var(--fg)] transition" data-mode-btn="raw">
               Raw Data Paste
             </button>
-            <button type="button" class="cursor-pointer rounded-xl px-2.5 py-2 text-[color:var(--muted)] hover:text-[color:var(--fg)] transition" data-mode-btn="proportion">
+            <button type="button" class="shrink-0 min-w-max sm:min-w-0 sm:shrink text-center cursor-pointer rounded-xl px-2.5 py-2 text-[color:var(--muted)] hover:text-[color:var(--fg)] transition" data-mode-btn="proportion">
               Proportion (%)
             </button>
           </div>
@@ -196,16 +196,16 @@ const schemaGraph = [
           <div class="space-y-4" data-mean-fields>
             <div class="space-y-1.5">
               <label for="sample-mean" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Sample Mean (x̄)</label>
-              <input id="sample-mean" type="number" step="any" value="105.4" class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none" data-sample-mean />
+              <input id="sample-mean" type="number" step="any" class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none" data-sample-mean placeholder="e.g. 105.4" />
             </div>
             <div class="grid grid-cols-2 gap-3">
               <div>
                 <label for="sample-sd" class="block text-xs font-medium text-[color:var(--muted)]">Standard Deviation (s)</label>
-                <input id="sample-sd" type="number" min="0.0001" step="any" value="14.2" class="mt-1 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-sample-sd />
+                <input id="sample-sd" type="number" min="0.0001" step="any" class="mt-1 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-sample-sd placeholder="e.g. 14.2" />
               </div>
               <div>
                 <label for="sample-n-mean" class="block text-xs font-medium text-[color:var(--muted)]">Sample Size (n)</label>
-                <input id="sample-n-mean" type="number" min="2" step="1" value="45" class="mt-1 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-sample-n-mean />
+                <input id="sample-n-mean" type="number" min="2" step="1" class="mt-1 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-sample-n-mean placeholder="e.g. 45" />
               </div>
             </div>
             <div>
@@ -239,11 +239,11 @@ const schemaGraph = [
           <div class="space-y-4" data-prop-fields hidden>
             <div class="space-y-1.5">
               <label for="success-count" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Observed Successes / Events (x)</label>
-              <input id="success-count" type="number" min="0" value="65" class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none" data-success-count />
+              <input id="success-count" type="number" min="0" class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none" data-success-count placeholder="e.g. 65" />
             </div>
             <div class="space-y-1.5">
               <label for="prop-n" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Total Sample Trials (n)</label>
-              <input id="prop-n" type="number" min="1" value="100" class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none" data-prop-n />
+              <input id="prop-n" type="number" min="1" class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none" data-prop-n placeholder="e.g. 100" />
             </div>
             <div>
               <label for="prop-method" class="block text-xs font-medium text-[color:var(--muted)]">Proportion Interval Method</label>
@@ -520,7 +520,7 @@ const schemaGraph = [
       let lastCalculation = null;
 
       function update() {
-        const confStr = inConf.value || '95';
+        const confStr = inConf.value || inConf.dataset.default || '95';
         const z = zValues[confStr] || 1.96;
         let mean = 0;
         let sd = 1;
@@ -550,9 +550,9 @@ const schemaGraph = [
             sd = stats.sd;
             n = stats.n;
           } else {
-            mean = parseFloat(inMean.value || '0');
-            sd = Math.max(0.0001, parseFloat(inSd.value || '1'));
-            n = Math.max(2, parseInt(inNMean.value || '30', 10));
+            mean = (inMean.value !== '' && !isNaN(parseFloat(inMean.value)) ? parseFloat(inMean.value) : 0);
+            sd = Math.max(0.0001, (inSd.value !== '' && !isNaN(parseFloat(inSd.value)) ? parseFloat(inSd.value) : 0));
+            n = Math.max(2, (inNMean.value !== '' && !isNaN(parseInt(inNMean.value, 10)) ? parseInt(inNMean.value, 10) : 0));
           }
 
           const useT = (currentMode === 'raw') ? true : (inDistType.value === 't');
@@ -572,8 +572,8 @@ const schemaGraph = [
           if (outWidth) outWidth.textContent = `${(high - low).toFixed(2)} units`;
         } else {
           isProportion = true;
-          const x = Math.max(0, parseInt(inSuccess.value || '0', 10));
-          n = Math.max(1, parseInt(inNProp.value || '100', 10));
+          const x = Math.max(0, (inSuccess.value !== '' && !isNaN(parseInt(inSuccess.value, 10)) ? parseInt(inSuccess.value, 10) : 0));
+          n = Math.max(1, (inNProp.value !== '' && !isNaN(parseInt(inNProp.value, 10)) ? parseInt(inNProp.value, 10) : 0));
           p = Math.min(1, x / n);
           const method = inPropMethod.value || 'wilson';
 
@@ -742,9 +742,9 @@ const schemaGraph = [
           currentMode = btn.dataset.modeBtn || 'mean';
           modeBtns.forEach((b) => {
             if (b === btn) {
-              b.className = 'cursor-pointer rounded-xl bg-[color:var(--accent)] px-2.5 py-2 text-white shadow-xs transition';
+              b.className = 'shrink-0 min-w-max sm:min-w-0 sm:shrink text-center cursor-pointer rounded-xl bg-[color:var(--accent)] px-2.5 py-2 text-white shadow-xs transition';
             } else {
-              b.className = 'cursor-pointer rounded-xl px-2.5 py-2 text-[color:var(--muted)] hover:text-[color:var(--fg)] transition';
+              b.className = 'shrink-0 min-w-max sm:min-w-0 sm:shrink text-center cursor-pointer rounded-xl px-2.5 py-2 text-[color:var(--muted)] hover:text-[color:var(--fg)] transition';
             }
           });
 
@@ -784,14 +784,14 @@ const schemaGraph = [
 
       if (resetBtn) {
         resetBtn.addEventListener('click', () => {
-          inMean.value = '105.4';
-          inSd.value = '14.2';
-          inNMean.value = '45';
+          inMean.value = '';
+          inSd.value = '';
+          inNMean.value = '';
           inDistType.value = 't';
-          inSuccess.value = '65';
-          inNProp.value = '100';
+          inSuccess.value = '';
+          inNProp.value = '';
           inPropMethod.value = 'wilson';
-          inConf.value = '95';
+          inConf.value = '';
           update();
         });
       }

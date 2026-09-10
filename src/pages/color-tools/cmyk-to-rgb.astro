@@ -101,7 +101,7 @@ const schemaGraph = [
               <span>Cyan (C):</span>
               <span id="c-txt" class="font-mono text-cyan-500">0%</span>
             </div>
-            <input type="range" id="c-slider" min="0" max="100" value="0" class="w-full accent-cyan-500 cursor-pointer" />
+            <input type="range" id="c-slider" min="0" max="100" class="w-full accent-cyan-500 cursor-pointer" value="0" />
           </div>
 
           <div>
@@ -109,7 +109,7 @@ const schemaGraph = [
               <span>Magenta (M):</span>
               <span id="m-txt" class="font-mono text-pink-500">80%</span>
             </div>
-            <input type="range" id="m-slider" min="0" max="100" value="80" class="w-full accent-pink-500 cursor-pointer" />
+            <input type="range" id="m-slider" min="0" max="100" class="w-full accent-pink-500 cursor-pointer" value="80" />
           </div>
 
           <div>
@@ -117,7 +117,7 @@ const schemaGraph = [
               <span>Yellow (Y):</span>
               <span id="y-txt" class="font-mono text-amber-500">95%</span>
             </div>
-            <input type="range" id="y-slider" min="0" max="100" value="95" class="w-full accent-amber-500 cursor-pointer" />
+            <input type="range" id="y-slider" min="0" max="100" class="w-full accent-amber-500 cursor-pointer" value="95" />
           </div>
 
           <div>
@@ -125,7 +125,7 @@ const schemaGraph = [
               <span>Key / Black (K):</span>
               <span id="k-txt" class="font-mono text-zinc-500">0%</span>
             </div>
-            <input type="range" id="k-slider" min="0" max="100" value="0" class="w-full accent-zinc-700 cursor-pointer" />
+            <input type="range" id="k-slider" min="0" max="100" class="w-full accent-zinc-700 cursor-pointer" value="0" />
           </div>
         </div>
 
@@ -203,10 +203,10 @@ const schemaGraph = [
       }
 
       function update() {
-        const c = parseInt(cSlider.value, 10);
-        const m = parseInt(mSlider.value, 10);
-        const y = parseInt(ySlider.value, 10);
-        const k = parseInt(kSlider.value, 10);
+        const c = (cSlider.value !== '' && !isNaN(parseInt(cSlider.value, 10)) ? parseInt(cSlider.value, 10) : 0);
+        const m = (mSlider.value !== '' && !isNaN(parseInt(mSlider.value, 10)) ? parseInt(mSlider.value, 10) : 0);
+        const y = (ySlider.value !== '' && !isNaN(parseInt(ySlider.value, 10)) ? parseInt(ySlider.value, 10) : 0);
+        const k = (kSlider.value !== '' && !isNaN(parseInt(kSlider.value, 10)) ? parseInt(kSlider.value, 10) : 0);
 
         cTxt.textContent = `${c}%`;
         mTxt.textContent = `${m}%`;

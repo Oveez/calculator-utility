@@ -216,8 +216,7 @@ const schemaGraph = [
               max="100"
               value="95"
               step="1"
-              class="w-full accent-emerald-500 cursor-pointer"
-            />
+              class="w-full accent-emerald-500 cursor-pointer" />
           </div>
           <div>
             <label for="out-scale" class="font-bold text-[color:var(--fg)] block mb-1">Dimension Scaling:</label>
@@ -390,7 +389,7 @@ const schemaGraph = [
       function processSanitization() {
         if (!currentImg) return;
 
-        const scale = parseFloat(outScale.value) || 1;
+        const scale = (outScale.value !== '' && !isNaN(parseFloat(outScale.value)) ? parseFloat(outScale.value) : 0);
         const targetW = Math.max(1, Math.round(currentImg.naturalWidth * scale));
         const targetH = Math.max(1, Math.round(currentImg.naturalHeight * scale));
 
@@ -401,7 +400,7 @@ const schemaGraph = [
         ctx.drawImage(currentImg, 0, 0, targetW, targetH);
 
         const format = outFormat.value;
-        const quality = parseFloat(outQuality.value) / 100;
+        const quality = (outQuality.value !== '' && !isNaN(parseFloat(outQuality.value)) ? parseFloat(outQuality.value) : 0) / 100;
 
         canvas.toBlob((blob) => {
           if (!blob) return;

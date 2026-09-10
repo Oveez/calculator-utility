@@ -128,21 +128,21 @@ const schemaGraph = [
           <div class="grid grid-cols-3 gap-3">
             <div>
               <label for="dim-l" class="block text-xs font-medium text-[color:var(--muted)]">Length (in)</label>
-              <input id="dim-l" type="number" min="0" step="0.5" value="18" class="mt-1 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-dim-l />
+              <input id="dim-l" type="number" min="0" step="0.5" class="mt-1 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-dim-l placeholder="e.g. 18" />
             </div>
             <div>
               <label for="dim-w" class="block text-xs font-medium text-[color:var(--muted)]">Width (in)</label>
-              <input id="dim-w" type="number" min="0" step="0.5" value="14" class="mt-1 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-dim-w />
+              <input id="dim-w" type="number" min="0" step="0.5" class="mt-1 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-dim-w placeholder="e.g. 14" />
             </div>
             <div>
               <label for="dim-h" class="block text-xs font-medium text-[color:var(--muted)]">Height (in)</label>
-              <input id="dim-h" type="number" min="0" step="0.5" value="12" class="mt-1 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-dim-h />
+              <input id="dim-h" type="number" min="0" step="0.5" class="mt-1 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-dim-h placeholder="e.g. 12" />
             </div>
           </div>
 
           <div class="space-y-1.5 pt-1">
             <label for="actual-wt" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Actual Scale Weight (lbs)</label>
-            <input id="actual-wt" type="number" min="0" step="0.1" value="8.0" class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none" data-actual-wt />
+            <input id="actual-wt" type="number" min="0" step="0.1" class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none" data-actual-wt placeholder="e.g. 8.0" />
           </div>
         </form>
 
@@ -163,21 +163,21 @@ const schemaGraph = [
             <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 text-center">
               <p class="text-xs font-semibold text-[color:var(--muted)]">Billed Shipping Weight</p>
               <p class="mt-1 text-5xl font-black tracking-tight text-[color:var(--fg)]" data-res-billed>
-                22 lbs
+                0 lbs
               </p>
-              <p class="mt-2 text-xs font-medium text-red-500" data-billed-summary>
-                Subject to Dimensional Weight pricing (Billed at 22 lbs vs 8 lbs scale weight).
+              <p class="mt-2 text-xs font-medium text-[color:var(--muted)]" data-billed-summary>
+                Enter dimensions or scale weight to evaluate billable weight.
               </p>
             </div>
 
             <div class="space-y-2 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-xs">
               <div class="flex justify-between">
                 <span class="text-[color:var(--muted)]">Cubic Volume:</span>
-                <span class="font-bold text-[color:var(--fg)]" data-cu-vol>3,024 cu in (1.75 cu ft)</span>
+                <span class="font-bold text-[color:var(--fg)]" data-cu-vol>0 cu in (0.00 cu ft)</span>
               </div>
               <div class="flex justify-between">
                 <span class="text-[color:var(--muted)]">Calculated DIM Weight:</span>
-                <span class="font-bold text-[color:var(--fg)]" data-dim-exact>21.76 lbs</span>
+                <span class="font-bold text-[color:var(--fg)]" data-dim-exact>0.00 lbs</span>
               </div>
             </div>
           </div>
@@ -283,19 +283,31 @@ const schemaGraph = [
       const resetBtn = root.querySelector('[data-reset-btn]');
 
       function update() {
-        const divisor = parseFloat(inPreset.value || '139');
-        const l = Math.max(0, parseFloat(inL.value || '0'));
-        const w = Math.max(0, parseFloat(inW.value || '0'));
-        const h = Math.max(0, parseFloat(inH.value || '0'));
-        const act = Math.max(0, parseFloat(inAct.value || '0'));
+        const divisor = (inPreset.value !== '' && !isNaN(parseFloat(inPreset.value)) ? parseFloat(inPreset.value) : 0);
+        const l = inL.value ? Math.max(0, (inL.value !== '' && !isNaN(parseFloat(inL.value)) ? parseFloat(inL.value) : 0)) : 0;
+        const w = inW.value ? Math.max(0, (inW.value !== '' && !isNaN(parseFloat(inW.value)) ? parseFloat(inW.value) : 0)) : 0;
+        const h = inH.value ? Math.max(0, (inH.value !== '' && !isNaN(parseFloat(inH.value)) ? parseFloat(inH.value) : 0)) : 0;
+        const act = inAct.value ? Math.max(0, (inAct.value !== '' && !isNaN(parseFloat(inAct.value)) ? parseFloat(inAct.value) : 0)) : 0;
 
-        const cuIn = l * w * h;
+        const hasDims = l > 0 && w > 0 && h > 0;
+        const cuIn = hasDims ? (l * w * h) : 0;
         const cuFt = cuIn / 1728;
-        const dimExact = cuIn / divisor;
+        const dimExact = cuIn > 0 ? (cuIn / divisor) : 0;
 
         const billedDim = Math.ceil(dimExact);
         const billedAct = Math.ceil(act);
         const finalBilled = Math.max(billedAct, billedDim);
+
+        if (!hasDims && act === 0) {
+          if (outBilled) outBilled.textContent = '0 lbs';
+          if (outCuVol) outCuVol.textContent = '0 cu in (0.00 cu ft)';
+          if (outDimExact) outDimExact.textContent = '0.00 lbs';
+          if (outSummary) {
+            outSummary.textContent = 'Enter dimensions or scale weight to evaluate billable weight.';
+            outSummary.className = 'mt-2 text-xs font-medium text-[color:var(--muted)]';
+          }
+          return;
+        }
 
         if (outBilled) outBilled.textContent = `${finalBilled} lbs`;
         if (outCuVol) outCuVol.textContent = `${cuIn.toLocaleString()} cu in (${cuFt.toFixed(2)} cu ft)`;
@@ -320,11 +332,11 @@ const schemaGraph = [
 
       if (resetBtn) {
         resetBtn.addEventListener('click', () => {
-          inPreset.value = '139';
-          inL.value = '18';
-          inW.value = '14';
-          inH.value = '12';
-          inAct.value = '8.0';
+          inPreset.value = '';
+          inL.value = '';
+          inW.value = '';
+          inH.value = '';
+          inAct.value = '';
           update();
         });
       }

@@ -380,7 +380,7 @@ I would recommend this statistical tool to colleagues in academia.</textarea>
 
       function update() {
         const dim = dimSelect.value;
-        const pts = parseInt(pointsSelect.value, 10);
+        const pts = (pointsSelect.value !== '' && !isNaN(parseInt(pointsSelect.value, 10)) ? parseInt(pointsSelect.value, 10) : 0);
         const coding = codingSelect.value;
         const labels = scaleLibrary[dim]?.[pts] || scaleLibrary.agreement[5];
         const codes = getCodes(pts, coding);
@@ -417,8 +417,7 @@ I would recommend this statistical tool to colleagues in academia.</textarea>
                     type="radio"
                     name="q_${qIdx}"
                     value="${codes[lIdx]}"
-                    class="accent-emerald-500 cursor-pointer h-4 w-4"
-                  />
+                    class="accent-emerald-500 cursor-pointer h-4 w-4" />
                 </td>
               `).join('')}
             </tr>
@@ -440,7 +439,7 @@ I would recommend this statistical tool to colleagues in academia.</textarea>
           questions.forEach((q, qIdx) => {
             formHtml += `  <fieldset class="survey-item mb-4">\n    <legend class="font-bold">${q}</legend>\n    <div class="scale-options flex gap-4">\n`;
             labels.forEach((lbl, lIdx) => {
-              formHtml += `      <label><input type="radio" name="q${qIdx + 1}" value="${codes[lIdx]}"> ${lbl} (${codes[lIdx]})</label>\n`;
+              formHtml += `      <label><input type="radio" name="q${qIdx + 1}" value="${codes[lIdx]}" /> ${lbl} (${codes[lIdx]})</label>\n`;
             });
             formHtml += `    </div>\n  </fieldset>\n`;
           });
@@ -488,7 +487,7 @@ I would recommend this statistical tool to colleagues in academia.</textarea>
 
       dlCsvBtn?.addEventListener('click', () => {
         const dim = dimSelect.value;
-        const pts = parseInt(pointsSelect.value, 10);
+        const pts = (pointsSelect.value !== '' && !isNaN(parseInt(pointsSelect.value, 10)) ? parseInt(pointsSelect.value, 10) : 0);
         const labels = scaleLibrary[dim]?.[pts] || scaleLibrary.agreement[5];
         const codes = getCodes(pts, codingSelect.value);
         const rawQuestions = promptText.value.split('\n').map(q => q.trim()).filter(Boolean);

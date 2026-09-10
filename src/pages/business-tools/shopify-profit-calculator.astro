@@ -121,22 +121,22 @@ const schemaGraph = [
           <div class="grid grid-cols-2 gap-3">
             <div>
               <label for="shop-price" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Retail Price ($)</label>
-              <input id="shop-price" type="number" min="0" step="0.5" value="48.00" class="mt-1 w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none" data-shop-price />
+              <input id="shop-price" type="number" min="0" step="0.5" class="mt-1 w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none" data-shop-price placeholder="e.g. 48.00" />
             </div>
             <div>
               <label for="shop-cogs" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Product COGS ($)</label>
-              <input id="shop-cogs" type="number" min="0" step="0.5" value="12.50" class="mt-1 w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none" data-shop-cogs />
+              <input id="shop-cogs" type="number" min="0" step="0.5" class="mt-1 w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none" data-shop-cogs placeholder="e.g. 12.50" />
             </div>
           </div>
 
           <div class="grid grid-cols-2 gap-3">
             <div>
               <label for="shop-ad" class="block text-xs font-medium text-[color:var(--muted)]">Ad Spend Per Order (CAC $)</label>
-              <input id="shop-ad" type="number" min="0" step="0.5" value="15.00" class="mt-1 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-shop-ad />
+              <input id="shop-ad" type="number" min="0" step="0.5" class="mt-1 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-shop-ad placeholder="e.g. 15.00" />
             </div>
             <div>
               <label for="shop-ship" class="block text-xs font-medium text-[color:var(--muted)]">Net Shipping &amp; Box ($)</label>
-              <input id="shop-ship" type="number" min="0" step="0.5" value="5.50" class="mt-1 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-shop-ship />
+              <input id="shop-ship" type="number" min="0" step="0.5" class="mt-1 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-shop-ship placeholder="e.g. 5.50" />
             </div>
           </div>
 
@@ -151,7 +151,7 @@ const schemaGraph = [
             </div>
             <div>
               <label for="shop-orders" class="block text-xs font-medium text-[color:var(--muted)]">Monthly Order Volume</label>
-              <input id="shop-orders" type="number" min="1" step="25" value="250" class="mt-1 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-shop-orders />
+              <input id="shop-orders" type="number" min="1" step="25" class="mt-1 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-shop-orders placeholder="e.g. 250" />
             </div>
           </div>
         </form>
@@ -300,12 +300,12 @@ const schemaGraph = [
       const resetBtn = root.querySelector('[data-reset-btn]');
 
       function update() {
-        const price = Math.max(0, parseFloat(inPrice.value || '0'));
-        const cogs = Math.max(0, parseFloat(inCogs.value || '0'));
-        const ad = Math.max(0, parseFloat(inAd.value || '0'));
-        const ship = Math.max(0, parseFloat(inShip.value || '0'));
-        const orders = Math.max(1, parseInt(inOrders.value || '100', 10));
-        const rate = parseFloat(inPlan.value || '2.9') / 100;
+        const price = Math.max(0, (inPrice.value !== '' && !isNaN(parseFloat(inPrice.value)) ? parseFloat(inPrice.value) : 0));
+        const cogs = Math.max(0, (inCogs.value !== '' && !isNaN(parseFloat(inCogs.value)) ? parseFloat(inCogs.value) : 0));
+        const ad = Math.max(0, (inAd.value !== '' && !isNaN(parseFloat(inAd.value)) ? parseFloat(inAd.value) : 0));
+        const ship = Math.max(0, (inShip.value !== '' && !isNaN(parseFloat(inShip.value)) ? parseFloat(inShip.value) : 0));
+        const orders = Math.max(1, (inOrders.value !== '' && !isNaN(parseInt(inOrders.value, 10)) ? parseInt(inOrders.value, 10) : 0));
+        const rate = (inPlan.value !== '' && !isNaN(parseFloat(inPlan.value)) ? parseFloat(inPlan.value) : 0) / 100;
 
         const gateway = (price * rate) + 0.30;
         const totalCosts = cogs + ad + ship + gateway;
@@ -331,12 +331,12 @@ const schemaGraph = [
 
       if (resetBtn) {
         resetBtn.addEventListener('click', () => {
-          inPrice.value = '48.00';
-          inCogs.value = '12.50';
-          inAd.value = '15.00';
-          inShip.value = '5.50';
-          inPlan.value = '2.9';
-          inOrders.value = '250';
+          inPrice.value = '';
+          inCogs.value = '';
+          inAd.value = '';
+          inShip.value = '';
+          inPlan.value = '';
+          inOrders.value = '';
           update();
         });
       }

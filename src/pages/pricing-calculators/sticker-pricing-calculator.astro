@@ -191,18 +191,18 @@ const schemaGraph = [
                 <button type="button" class="cursor-pointer rounded bg-[color:var(--surface)] px-1.5 py-0.5 text-[10px] font-bold text-[color:var(--fg)] border border-[color:var(--border)] hover:border-[color:var(--accent)]" data-preset="500">500</button>
               </div>
             </div>
-            <input id="batch-qty" type="number" min="1" step="1" value="100" class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)]" data-batch-qty />
+            <input id="batch-qty" type="number" min="1" step="1" class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)]" data-batch-qty placeholder="e.g. 100" />
           </div>
 
           <div class="grid grid-cols-2 gap-3">
             <div>
               <label for="mat-cost" class="block text-xs font-medium text-[color:var(--muted)]">Total Materials Cost ($)</label>
-              <input id="mat-cost" type="number" min="0" step="0.5" value="32.00" class="mt-1 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)]" data-mat-cost />
+              <input id="mat-cost" type="number" min="0" step="0.5" class="mt-1 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)]" data-mat-cost placeholder="e.g. 32.00" />
               <p class="text-[10px] text-[color:var(--muted)] mt-0.5">Vinyl, laminate, ink, cutter wear</p>
             </div>
             <div>
               <label for="pack-sleeve" class="block text-xs font-medium text-[color:var(--muted)]">Packaging / Cello Bags ($)</label>
-              <input id="pack-sleeve" type="number" min="0" step="0.5" value="8.00" class="mt-1 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)]" data-pack-cost />
+              <input id="pack-sleeve" type="number" min="0" step="0.5" class="mt-1 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)]" data-pack-cost placeholder="e.g. 8.00" />
               <p class="text-[10px] text-[color:var(--muted)] mt-0.5">Bags, backing cards, mailers</p>
             </div>
           </div>
@@ -210,11 +210,11 @@ const schemaGraph = [
           <div class="grid grid-cols-2 gap-3 pt-1">
             <div>
               <label for="labor-hours" class="block text-xs font-medium text-[color:var(--muted)]">Production Labor (Hours)</label>
-              <input id="labor-hours" type="number" min="0" step="0.25" value="1.5" class="mt-1 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)]" data-labor-hrs />
+              <input id="labor-hours" type="number" min="0" step="0.25" class="mt-1 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)]" data-labor-hrs placeholder="e.g. 1.5" />
             </div>
             <div>
               <label for="hourly-wage" class="block text-xs font-medium text-[color:var(--muted)]">Your Hourly Wage ($/hr)</label>
-              <input id="hourly-wage" type="number" min="0" step="1" value="20" class="mt-1 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)]" data-hourly-wage />
+              <input id="hourly-wage" type="number" min="0" step="1" class="mt-1 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)]" data-hourly-wage placeholder="e.g. 20" />
             </div>
           </div>
         </form>
@@ -236,25 +236,25 @@ const schemaGraph = [
             <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 text-center shadow-sm">
               <p class="text-xs font-semibold text-[color:var(--muted)]">Suggested Retail Price (MSRP)</p>
               <p class="mt-1 text-4xl sm:text-5xl font-black tracking-tight text-cyan-600 dark:text-cyan-400" data-res-retail>
-                $3.99
+                $0.00
               </p>
               <p class="mt-2 text-xs font-bold text-[color:var(--muted)]" data-res-wholesale>
-                Wholesale Price (50%): $2.00 / sticker
+                Wholesale Price (50%): $0.00 / sticker
               </p>
             </div>
 
             <div class="space-y-2 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-xs">
               <div class="flex justify-between">
                 <span class="text-[color:var(--muted)]">Unit Production Cost:</span>
-                <span class="font-bold text-[color:var(--fg)]" data-unit-cost>$0.70 / sticker</span>
+                <span class="font-bold text-[color:var(--fg)]" data-unit-cost>$0.00 / sticker</span>
               </div>
               <div class="flex justify-between">
                 <span class="text-[color:var(--muted)]">Single Retail Margin:</span>
-                <span class="font-bold text-cyan-600 dark:text-cyan-400" data-retail-margin>82.5% ($3.29 profit)</span>
+                <span class="font-bold text-cyan-600 dark:text-cyan-400" data-retail-margin>0.0% ($0.00 profit)</span>
               </div>
               <div class="flex justify-between border-t border-[color:var(--border)] pt-2">
                 <span class="text-[color:var(--muted)]">Total Batch Net Profit (at MSRP):</span>
-                <span class="font-black text-sm text-[color:var(--fg)]" data-batch-profit>$329.00</span>
+                <span class="font-black text-sm text-[color:var(--fg)]" data-batch-profit>$0.00</span>
               </div>
             </div>
           </div>
@@ -265,18 +265,18 @@ const schemaGraph = [
             <div class="grid grid-cols-3 gap-2 text-center text-xs">
               <div class="p-2 rounded-xl bg-[color:var(--surface)] border border-[color:var(--border)] shadow-sm">
                 <p class="text-[10px] text-[color:var(--muted)]">10+ Pack (-10%)</p>
-                <p class="font-bold text-[color:var(--fg)] mt-0.5" data-tier-10>$3.59 ea</p>
-                <p class="text-[9px] text-cyan-500 dark:text-cyan-400 font-medium" data-tier-10-profit>$2.89 profit</p>
+                <p class="font-bold text-[color:var(--fg)] mt-0.5" data-tier-10>$0.00 ea</p>
+                <p class="text-[9px] text-cyan-500 dark:text-cyan-400 font-medium" data-tier-10-profit>$0.00 profit</p>
               </div>
               <div class="p-2 rounded-xl bg-[color:var(--surface)] border border-[color:var(--border)] shadow-sm">
                 <p class="text-[10px] text-[color:var(--muted)]">25+ Pack (-20%)</p>
-                <p class="font-bold text-[color:var(--fg)] mt-0.5" data-tier-25>$3.19 ea</p>
-                <p class="text-[9px] text-cyan-500 dark:text-cyan-400 font-medium" data-tier-25-profit>$2.49 profit</p>
+                <p class="font-bold text-[color:var(--fg)] mt-0.5" data-tier-25>$0.00 ea</p>
+                <p class="text-[9px] text-cyan-500 dark:text-cyan-400 font-medium" data-tier-25-profit>$0.00 profit</p>
               </div>
               <div class="p-2 rounded-xl bg-[color:var(--surface)] border border-[color:var(--border)] shadow-sm">
                 <p class="text-[10px] text-[color:var(--muted)]">50+ Bulk (-35%)</p>
-                <p class="font-bold text-[color:var(--fg)] mt-0.5" data-tier-50>$2.59 ea</p>
-                <p class="text-[9px] text-cyan-500 dark:text-cyan-400 font-medium" data-tier-50-profit>$1.89 profit</p>
+                <p class="font-bold text-[color:var(--fg)] mt-0.5" data-tier-50>$0.00 ea</p>
+                <p class="text-[9px] text-cyan-500 dark:text-cyan-400 font-medium" data-tier-50-profit>$0.00 profit</p>
               </div>
             </div>
           </div>
@@ -391,14 +391,31 @@ const schemaGraph = [
       const copyBtn = root.querySelector('[data-copy-summary-btn]');
 
       function update() {
-        const qty = Math.max(1, parseInt(inQty.value || '1', 10));
-        const mat = Math.max(0, parseFloat(inMat.value || '0'));
-        const pack = Math.max(0, parseFloat(inPack.value || '0'));
-        const hrs = Math.max(0, parseFloat(inHrs.value || '0'));
-        const wage = Math.max(0, parseFloat(inWage.value || '0'));
+        const hasInput = inQty.value || inMat.value || inPack.value || inHrs.value || inWage.value;
+        const qty = inQty.value ? Math.max(1, (inQty.value !== '' && !isNaN(parseInt(inQty.value, 10)) ? parseInt(inQty.value, 10) : 0)) : 1;
+        const mat = inMat.value ? Math.max(0, (inMat.value !== '' && !isNaN(parseFloat(inMat.value)) ? parseFloat(inMat.value) : 0)) : 0;
+        const pack = inPack.value ? Math.max(0, (inPack.value !== '' && !isNaN(parseFloat(inPack.value)) ? parseFloat(inPack.value) : 0)) : 0;
+        const hrs = inHrs.value ? Math.max(0, (inHrs.value !== '' && !isNaN(parseFloat(inHrs.value)) ? parseFloat(inHrs.value) : 0)) : 0;
+        const wage = inWage.value ? Math.max(0, (inWage.value !== '' && !isNaN(parseFloat(inWage.value)) ? parseFloat(inWage.value) : 0)) : 0;
 
         const totalLabor = hrs * wage;
         const totalBatchCost = mat + pack + totalLabor;
+
+        if (!hasInput || totalBatchCost === 0) {
+          if (outRetail) outRetail.textContent = '$0.00';
+          if (outWholesale) outWholesale.textContent = 'Wholesale Price (50%): $0.00 / sticker';
+          if (outUnitCost) outUnitCost.textContent = '$0.00 / sticker';
+          if (outMargin) outMargin.textContent = '0.0% ($0.00 profit)';
+          if (outBatchProfit) outBatchProfit.textContent = '$0.00';
+          if (outT10) outT10.textContent = '$0.00 ea';
+          if (outT10Profit) outT10Profit.textContent = '$0.00 profit';
+          if (outT25) outT25.textContent = '$0.00 ea';
+          if (outT25Profit) outT25Profit.textContent = '$0.00 profit';
+          if (outT50) outT50.textContent = '$0.00 ea';
+          if (outT50Profit) outT50Profit.textContent = '$0.00 profit';
+          return;
+        }
+
         const unitCost = totalBatchCost / qty;
 
         // Retail multiplier: minimum $3.50 or 4x unit cost (whichever higher)
@@ -449,11 +466,11 @@ const schemaGraph = [
 
       if (resetBtn) {
         resetBtn.addEventListener('click', () => {
-          inQty.value = '100';
-          inMat.value = '32.00';
-          inPack.value = '8.00';
-          inHrs.value = '1.5';
-          inWage.value = '20';
+          inQty.value = '';
+          inMat.value = '';
+          inPack.value = '';
+          inHrs.value = '';
+          inWage.value = '';
           update();
         });
       }

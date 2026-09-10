@@ -180,14 +180,14 @@ const schemaGraph = [
             </button>
           </div>
 
-          <div class="grid grid-cols-3 gap-1.5 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-1 text-xs font-semibold">
-            <button type="button" class="cursor-pointer rounded-xl bg-[color:var(--accent)] px-2.5 py-2 text-white shadow-xs transition" data-mode-btn="mean">
+          <div class="flex items-center gap-1.5 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-1 text-xs font-semibold overflow-x-auto no-scrollbar sm:grid sm:grid-cols-3">
+            <button type="button" class="shrink-0 min-w-max sm:min-w-0 sm:shrink text-center cursor-pointer rounded-xl bg-[color:var(--accent)] px-2.5 py-2 text-white shadow-xs transition" data-mode-btn="mean">
               Mean (SEM)
             </button>
-            <button type="button" class="cursor-pointer rounded-xl px-2.5 py-2 text-[color:var(--muted)] hover:text-[color:var(--fg)] transition" data-mode-btn="prop">
+            <button type="button" class="shrink-0 min-w-max sm:min-w-0 sm:shrink text-center cursor-pointer rounded-xl px-2.5 py-2 text-[color:var(--muted)] hover:text-[color:var(--fg)] transition" data-mode-btn="prop">
               Proportion (SEP)
             </button>
-            <button type="button" class="cursor-pointer rounded-xl px-2.5 py-2 text-[color:var(--muted)] hover:text-[color:var(--fg)] transition" data-mode-btn="diff">
+            <button type="button" class="shrink-0 min-w-max sm:min-w-0 sm:shrink text-center cursor-pointer rounded-xl px-2.5 py-2 text-[color:var(--muted)] hover:text-[color:var(--fg)] transition" data-mode-btn="diff">
               2 Means Diff
             </button>
           </div>
@@ -196,12 +196,12 @@ const schemaGraph = [
           <div class="space-y-4" data-mean-fields>
             <div class="space-y-1.5">
               <label for="sem-sd" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Sample Standard Deviation (s)</label>
-              <input id="sem-sd" type="number" min="0.0001" step="any" value="12.5" class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none" data-sem-sd />
+              <input id="sem-sd" type="number" min="0.0001" step="any" class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none" data-sem-sd placeholder="e.g. 12.5" />
             </div>
 
             <div class="space-y-1.5">
               <label for="sem-n" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Sample Size (n)</label>
-              <input id="sem-n" type="number" min="1" step="1" value="64" class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none" data-sem-n />
+              <input id="sem-n" type="number" min="1" step="1" class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none" data-sem-n placeholder="e.g. 64" />
             </div>
 
             <div class="space-y-1.5">
@@ -214,11 +214,11 @@ const schemaGraph = [
           <div class="space-y-4" data-prop-fields hidden>
             <div class="space-y-1.5">
               <label for="prop-p" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Sample Proportion (p̂ %)</label>
-              <input id="prop-p" type="number" min="0.1" max="99.9" step="0.1" value="45.0" class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none" data-prop-p />
+              <input id="prop-p" type="number" min="0.1" max="99.9" step="0.1" class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none" data-prop-p placeholder="e.g. 45.0" />
             </div>
             <div class="space-y-1.5">
               <label for="prop-n" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Sample Size (n)</label>
-              <input id="prop-n" type="number" min="1" step="1" value="200" class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none" data-prop-n />
+              <input id="prop-n" type="number" min="1" step="1" class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none" data-prop-n placeholder="e.g. 200" />
             </div>
             <div class="space-y-1.5">
               <label for="prop-pop" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Population Size (N - Optional)</label>
@@ -231,15 +231,15 @@ const schemaGraph = [
             <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3 space-y-2">
               <span class="text-xs font-bold text-[color:var(--fg)]">Group 1 Sample</span>
               <div class="grid grid-cols-2 gap-2">
-                <input type="number" min="0.001" step="any" value="8.4" placeholder="SD s₁" class="rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-diff-s1 />
-                <input type="number" min="2" step="1" value="35" placeholder="Size n₁" class="rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-diff-n1 />
+                <input type="number" min="0.001" step="any" placeholder="e.g. 8.4" class="rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-diff-s1 />
+                <input type="number" min="2" step="1" placeholder="e.g. 35" class="rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-diff-n1 />
               </div>
             </div>
             <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3 space-y-2">
               <span class="text-xs font-bold text-[color:var(--fg)]">Group 2 Sample</span>
               <div class="grid grid-cols-2 gap-2">
-                <input type="number" min="0.001" step="any" value="9.6" placeholder="SD s₂" class="rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-diff-s2 />
-                <input type="number" min="2" step="1" value="40" placeholder="Size n₂" class="rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-diff-n2 />
+                <input type="number" min="0.001" step="any" placeholder="e.g. 9.6" class="rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-diff-s2 />
+                <input type="number" min="2" step="1" placeholder="e.g. 40" class="rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-diff-n2 />
               </div>
             </div>
           </div>
@@ -422,9 +422,9 @@ const schemaGraph = [
         let baselineSigma = 12.5;
 
         if (currentMode === 'mean') {
-          const s = Math.max(0, parseFloat(inSd.value || '0'));
-          const n = Math.max(1, parseInt(inN.value || '1', 10));
-          const pop = inPop.value ? parseInt(inPop.value, 10) : undefined;
+          const s = Math.max(0, (inSd.value !== '' && !isNaN(parseFloat(inSd.value)) ? parseFloat(inSd.value) : 0));
+          const n = Math.max(1, (inN.value !== '' && !isNaN(parseInt(inN.value, 10)) ? parseInt(inN.value, 10) : 0));
+          const pop = inPop.value ? (inPop.value !== '' && !isNaN(parseInt(inPop.value, 10)) ? parseInt(inPop.value, 10) : 0) : undefined;
           baselineN = n;
           baselineSigma = s;
 
@@ -445,9 +445,9 @@ const schemaGraph = [
           if (fpcFactor) fpcFactor.textContent = fpcText;
           if (outVar) outVar.textContent = baseVariance.toFixed(4);
         } else if (currentMode === 'prop') {
-          const pVal = Math.max(0.001, Math.min(0.999, parseFloat(inPropP.value || '50') / 100));
-          const n = Math.max(1, parseInt(inPropN.value || '1', 10));
-          const pop = inPropPop.value ? parseInt(inPropPop.value, 10) : undefined;
+          const pVal = Math.max(0.001, Math.min(0.999, (inPropP.value !== '' && !isNaN(parseFloat(inPropP.value)) ? parseFloat(inPropP.value) : 0) / 100));
+          const n = Math.max(1, (inPropN.value !== '' && !isNaN(parseInt(inPropN.value, 10)) ? parseInt(inPropN.value, 10) : 0));
+          const pop = inPropPop.value ? (inPropPop.value !== '' && !isNaN(parseInt(inPropPop.value, 10)) ? parseInt(inPropPop.value, 10) : 0) : undefined;
           baselineN = n;
           baselineSigma = Math.sqrt(pVal * (1 - pVal));
 
@@ -469,10 +469,10 @@ const schemaGraph = [
           if (outVar) outVar.textContent = baseVariance.toFixed(6);
         } else {
           // Difference between two means
-          const s1 = Math.max(0, parseFloat(inDiffS1.value || '0'));
-          const n1 = Math.max(1, parseInt(inDiffN1.value || '1', 10));
-          const s2 = Math.max(0, parseFloat(inDiffS2.value || '0'));
-          const n2 = Math.max(1, parseInt(inDiffN2.value || '1', 10));
+          const s1 = Math.max(0, (inDiffS1.value !== '' && !isNaN(parseFloat(inDiffS1.value)) ? parseFloat(inDiffS1.value) : 0));
+          const n1 = Math.max(1, (inDiffN1.value !== '' && !isNaN(parseInt(inDiffN1.value, 10)) ? parseInt(inDiffN1.value, 10) : 0));
+          const s2 = Math.max(0, (inDiffS2.value !== '' && !isNaN(parseFloat(inDiffS2.value)) ? parseFloat(inDiffS2.value) : 0));
+          const n2 = Math.max(1, (inDiffN2.value !== '' && !isNaN(parseInt(inDiffN2.value, 10)) ? parseInt(inDiffN2.value, 10) : 0));
 
           baseVariance = (s1 * s1) / n1 + (s2 * s2) / n2;
           se = Math.sqrt(baseVariance);
@@ -522,9 +522,9 @@ const schemaGraph = [
           currentMode = btn.dataset.modeBtn || 'mean';
           modeBtns.forEach(b => {
             if (b === btn) {
-              b.className = 'cursor-pointer rounded-xl bg-[color:var(--accent)] px-2.5 py-2 text-white shadow-xs transition';
+              b.className = 'shrink-0 min-w-max sm:min-w-0 sm:shrink text-center cursor-pointer rounded-xl bg-[color:var(--accent)] px-2.5 py-2 text-white shadow-xs transition';
             } else {
-              b.className = 'cursor-pointer rounded-xl px-2.5 py-2 text-[color:var(--muted)] hover:text-[color:var(--fg)] transition';
+              b.className = 'shrink-0 min-w-max sm:min-w-0 sm:shrink text-center cursor-pointer rounded-xl px-2.5 py-2 text-[color:var(--muted)] hover:text-[color:var(--fg)] transition';
             }
           });
 
@@ -560,16 +560,16 @@ const schemaGraph = [
 
       if (resetBtn) {
         resetBtn.addEventListener('click', () => {
-          inSd.value = '12.5';
-          inN.value = '64';
+          inSd.value = '';
+          inN.value = '';
           inPop.value = '';
-          inPropP.value = '45.0';
-          inPropN.value = '200';
+          inPropP.value = '';
+          inPropN.value = '';
           inPropPop.value = '';
-          inDiffS1.value = '8.4';
-          inDiffN1.value = '35';
-          inDiffS2.value = '9.6';
-          inDiffN2.value = '40';
+          inDiffS1.value = '';
+          inDiffN1.value = '';
+          inDiffS2.value = '';
+          inDiffN2.value = '';
           currentMode = 'mean';
           modeBtns[0].click();
           update();

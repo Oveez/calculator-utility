@@ -148,10 +148,8 @@ const schemaGraph = [
                   min="0"
                   max="4.0"
                   step="0.01"
-                  value="3.45"
                   class="mt-1 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none"
-                  data-prior-gpa
-                />
+                  data-prior-gpa placeholder="e.g. 3.45" />
               </div>
               <div>
                 <label for="prior-credits" class="block text-xs font-medium text-[color:var(--muted)]">Prior Total Credits</label>
@@ -160,10 +158,8 @@ const schemaGraph = [
                   type="number"
                   min="0"
                   step="1"
-                  value="45"
                   class="mt-1 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none"
-                  data-prior-credits
-                />
+                  data-prior-credits placeholder="e.g. 45" />
               </div>
             </div>
           </div>
@@ -264,8 +260,7 @@ const schemaGraph = [
               value="${c.name}"
               placeholder="Course name"
               class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none"
-              data-course-name="${i}"
-            />
+              data-course-name="${i}" />
             <input
               type="number"
               min="0.5"
@@ -274,8 +269,7 @@ const schemaGraph = [
               value="${c.credits}"
               placeholder="Credits"
               class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none"
-              data-course-credits="${i}"
-            />
+              data-course-credits="${i}" />
             <select
               class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none"
               data-course-grade="${i}"
@@ -307,7 +301,7 @@ const schemaGraph = [
         coursesList.querySelectorAll('[data-course-credits]').forEach(input => {
           input.addEventListener('input', (e) => {
             const idx = parseInt(e.target.dataset.courseCredits, 10);
-            courses[idx].credits = parseFloat(e.target.value || '0');
+            courses[idx].credits = parseFloat(e.target.value || target.dataset.default || '0');
             calculate();
           });
         });
@@ -382,8 +376,8 @@ const schemaGraph = [
             { name: 'Physics & Lab', credits: 4, grade: 'B+' },
             { name: 'Academic Writing', credits: 3, grade: 'B' },
           ];
-          if (inPriorGpa) inPriorGpa.value = '3.45';
-          if (inPriorCredits) inPriorCredits.value = '45';
+          if (inPriorGpa) inPriorGpa.value = '';
+          if (inPriorCredits) inPriorCredits.value = '';
           renderCourses();
         });
       }

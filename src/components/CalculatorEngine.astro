@@ -12,7 +12,11 @@ const { calculator } = Astro.props as Props;
 const initialValues = Object.fromEntries(
   calculator.inputs.map((input) => [
     input.id,
-    input.defaultValue ?? (input.type === 'select' ? input.options?.[0]?.value ?? '' : input.type === 'text' || input.type === 'textarea' || input.type === 'date' || input.type === 'datetime-local' ? '' : input.min ?? 0),
+    input.type === 'select'
+      ? input.options?.[0]?.value ?? ''
+      : input.type === 'text' || input.type === 'textarea' || input.type === 'date' || input.type === 'datetime-local'
+        ? ''
+        : 0,
   ]),
 );
 

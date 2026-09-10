@@ -100,7 +100,7 @@ const schemaGraph = [
               <span>Red (R):</span>
               <span id="r-val-txt" class="font-mono text-red-500">99</span>
             </div>
-            <input type="range" id="r-slider" min="0" max="255" value="99" class="w-full accent-red-500 cursor-pointer" />
+            <input type="range" id="r-slider" min="0" max="255" class="w-full accent-red-500 cursor-pointer" value="99" />
           </div>
 
           <div>
@@ -108,7 +108,7 @@ const schemaGraph = [
               <span>Green (G):</span>
               <span id="g-val-txt" class="font-mono text-cyan-500 dark:text-cyan-400">102</span>
             </div>
-            <input type="range" id="g-slider" min="0" max="255" value="102" class="w-full accent-emerald-500 cursor-pointer" />
+            <input type="range" id="g-slider" min="0" max="255" class="w-full accent-emerald-500 cursor-pointer" value="102" />
           </div>
 
           <div>
@@ -116,7 +116,7 @@ const schemaGraph = [
               <span>Blue (B):</span>
               <span id="b-val-txt" class="font-mono text-blue-500">241</span>
             </div>
-            <input type="range" id="b-slider" min="0" max="255" value="241" class="w-full accent-blue-500 cursor-pointer" />
+            <input type="range" id="b-slider" min="0" max="255" class="w-full accent-blue-500 cursor-pointer" value="241" />
           </div>
         </div>
 
@@ -212,9 +212,9 @@ const schemaGraph = [
       }
 
       function update() {
-        const r = parseInt(rSlider.value, 10);
-        const g = parseInt(gSlider.value, 10);
-        const b = parseInt(bSlider.value, 10);
+        const r = (rSlider.value !== '' && !isNaN(parseInt(rSlider.value, 10)) ? parseInt(rSlider.value, 10) : 0);
+        const g = (gSlider.value !== '' && !isNaN(parseInt(gSlider.value, 10)) ? parseInt(gSlider.value, 10) : 0);
+        const b = (bSlider.value !== '' && !isNaN(parseInt(bSlider.value, 10)) ? parseInt(bSlider.value, 10) : 0);
 
         rValTxt.textContent = r;
         gValTxt.textContent = g;

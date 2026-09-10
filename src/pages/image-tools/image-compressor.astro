@@ -155,18 +155,18 @@ const schemaGraph = [
       <div id="comp-wrapper" class="hidden space-y-6">
         <!-- Mode Tabs: Quality Slider vs Target Size -->
         <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 space-y-4 text-xs">
-          <div class="flex items-center gap-2 border-b border-[color:var(--border)] pb-3">
+          <div class="flex items-center gap-2 border-b border-[color:var(--border)] pb-3 overflow-x-auto no-scrollbar">
             <button
               type="button"
               id="tab-quality"
-              class="rounded-xl bg-[color:var(--surface-strong)] border border-[color:var(--border)] px-4 py-2 text-xs font-bold text-[color:var(--fg)] transition cursor-pointer"
+              class="shrink-0 min-w-max rounded-xl bg-[color:var(--surface-strong)] border border-[color:var(--border)] px-4 py-2 text-xs font-bold text-[color:var(--fg)] transition cursor-pointer"
             >
               Quality Slider Mode
             </button>
             <button
               type="button"
               id="tab-target"
-              class="rounded-xl bg-transparent px-4 py-2 text-xs font-medium text-[color:var(--muted)] hover:text-[color:var(--fg)] transition cursor-pointer"
+              class="shrink-0 min-w-max rounded-xl bg-transparent px-4 py-2 text-xs font-medium text-[color:var(--muted)] hover:text-[color:var(--fg)] transition cursor-pointer"
             >
               Target Max File Size Mode
             </button>
@@ -185,8 +185,7 @@ const schemaGraph = [
                 min="5"
                 max="100"
                 value="80"
-                class="w-full accent-[color:var(--fg)] cursor-pointer"
-              />
+                class="w-full accent-[color:var(--fg)] cursor-pointer" />
               <div class="flex justify-between text-[10px] text-[color:var(--muted)] font-mono">
                 <span>Maximum Compression (5%)</span>
                 <span>Balanced (80%)</span>
@@ -215,8 +214,7 @@ const schemaGraph = [
                   value="250"
                   min="10"
                   max="10000"
-                  class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-[color:var(--fg)]"
-                />
+                  class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-[color:var(--fg)]" />
               </div>
               <div class="flex items-end gap-1.5">
                 <button type="button" data-preset-kb="100" class="rounded-lg border border-[color:var(--border)] bg-[color:var(--bg)] px-2.5 py-2 font-medium hover:border-[color:var(--border-strong)]">100 KB</button>
@@ -406,13 +404,13 @@ const schemaGraph = [
       function switchMode(mode) {
         activeMode = mode;
         if (mode === 'quality') {
-          tabQuality.className = 'rounded-xl bg-[color:var(--surface-strong)] border border-[color:var(--border)] px-4 py-2 text-xs font-bold text-[color:var(--fg)] transition cursor-pointer';
-          tabTarget.className = 'rounded-xl bg-transparent px-4 py-2 text-xs font-medium text-[color:var(--muted)] hover:text-[color:var(--fg)] transition cursor-pointer';
+          tabQuality.className = 'shrink-0 min-w-max rounded-xl bg-[color:var(--surface-strong)] border border-[color:var(--border)] px-4 py-2 text-xs font-bold text-[color:var(--fg)] transition cursor-pointer';
+          tabTarget.className = 'shrink-0 min-w-max rounded-xl bg-transparent px-4 py-2 text-xs font-medium text-[color:var(--muted)] hover:text-[color:var(--fg)] transition cursor-pointer';
           panelQuality.classList.remove('hidden');
           panelTarget.classList.add('hidden');
         } else {
-          tabQuality.className = 'rounded-xl bg-transparent px-4 py-2 text-xs font-medium text-[color:var(--muted)] hover:text-[color:var(--fg)] transition cursor-pointer';
-          tabTarget.className = 'rounded-xl bg-[color:var(--surface-strong)] border border-[color:var(--border)] px-4 py-2 text-xs font-bold text-[color:var(--fg)] transition cursor-pointer';
+          tabQuality.className = 'shrink-0 min-w-max rounded-xl bg-transparent px-4 py-2 text-xs font-medium text-[color:var(--muted)] hover:text-[color:var(--fg)] transition cursor-pointer';
+          tabTarget.className = 'shrink-0 min-w-max rounded-xl bg-[color:var(--surface-strong)] border border-[color:var(--border)] px-4 py-2 text-xs font-bold text-[color:var(--fg)] transition cursor-pointer';
           panelQuality.classList.add('hidden');
           panelTarget.classList.remove('hidden');
         }
@@ -451,12 +449,12 @@ const schemaGraph = [
 
       function compress() {
         if (!loadedImg) return;
-        const scale = parseFloat(scaleSelect.value);
+        const scale = (scaleSelect.value !== '' && !isNaN(parseFloat(scaleSelect.value)) ? parseFloat(scaleSelect.value) : 0);
         const canvas = renderCanvas(scale);
         const fmt = outFmt.value;
 
         if (activeMode === 'quality') {
-          const quality = parseInt(qualSlider.value, 10) / 100;
+          const quality = (qualSlider.value !== '' && !isNaN(parseInt(qualSlider.value, 10)) ? parseInt(qualSlider.value, 10) : 0) / 100;
           qualVal.textContent = `${qualSlider.value}%`;
 
           canvas.toBlob((blob) => {
@@ -468,7 +466,7 @@ const schemaGraph = [
 
         } else {
           // Target Max File Size Mode: Binary Search for optimal quality
-          const targetBytes = (parseFloat(targetKb.value) || 250) * 1024;
+          const targetBytes = ((targetKb.value !== '' && !isNaN(parseFloat(targetKb.value)) ? parseFloat(targetKb.value) : 0)) * 1024;
           let low = 0.05;
           let high = 1.0;
           let bestBlob = null;

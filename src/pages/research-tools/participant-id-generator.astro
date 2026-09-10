@@ -143,8 +143,7 @@ const schemaGraph = [
             id="pid-prefix"
             class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)]"
             value="PID-"
-            placeholder="e.g. PID-, SUBJ-, SITE1-"
-          />
+            placeholder="e.g. PID-, SUBJ-, SITE1-" />
         </div>
 
         <div>
@@ -154,9 +153,7 @@ const schemaGraph = [
             id="pid-count"
             min="1"
             max="2000"
-            value="24"
-            class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)]"
-          />
+            class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)]" placeholder="e.g. 24" />
         </div>
 
         <div>
@@ -165,9 +162,7 @@ const schemaGraph = [
             type="number"
             id="pid-start"
             min="1"
-            value="1"
-            class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)]"
-          />
+            class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)]" placeholder="e.g. 1" />
         </div>
 
         <div>
@@ -360,9 +355,9 @@ const schemaGraph = [
 
       function generate() {
         const prefix = prefixInput.value.trim();
-        const count = Math.max(1, Math.min(2000, parseInt(countInput.value, 10) || 24));
-        const start = Math.max(1, parseInt(startInput.value, 10) || 1);
-        const digits = parseInt(digitsSelect.value, 10) || 4;
+        const count = Math.max(1, Math.min(2000, (countInput.value !== '' && !isNaN(parseInt(countInput.value, 10)) ? parseInt(countInput.value, 10) : 0)));
+        const start = Math.max(1, (startInput.value !== '' && !isNaN(parseInt(startInput.value, 10)) ? parseInt(startInput.value, 10) : 0));
+        const digits = (digitsSelect.value !== '' && !isNaN(parseInt(digitsSelect.value, 10)) ? parseInt(digitsSelect.value, 10) : 0);
         const armType = armSelect.value;
         const randMethod = randSelect.value;
         const checkType = checkSelect.value;

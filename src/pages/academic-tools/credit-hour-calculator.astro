@@ -128,10 +128,8 @@ const schemaGraph = [
               min="0"
               max="24"
               step="1"
-              value="12"
               class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none transition focus:border-[color:var(--accent)]"
-              data-lecture-credits
-            />
+              data-lecture-credits placeholder="e.g. 12" />
           </div>
 
           <div class="space-y-1.5">
@@ -144,10 +142,8 @@ const schemaGraph = [
               min="0"
               max="12"
               step="1"
-              value="3"
               class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none transition focus:border-[color:var(--accent)]"
-              data-lab-credits
-            />
+              data-lab-credits placeholder="e.g. 3" />
           </div>
 
           <div class="grid grid-cols-2 gap-3 pt-1">
@@ -156,20 +152,16 @@ const schemaGraph = [
               <input
                 id="deg-total"
                 type="number"
-                value="120"
                 class="mt-1 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none"
-                data-deg-total
-              />
+                data-deg-total placeholder="e.g. 120" />
             </div>
             <div>
               <label for="deg-completed" class="block text-xs font-medium text-[color:var(--muted)]">Completed Credits</label>
               <input
                 id="deg-completed"
                 type="number"
-                value="45"
                 class="mt-1 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none"
-                data-deg-completed
-              />
+                data-deg-completed placeholder="e.g. 45" />
             </div>
           </div>
         </form>
@@ -246,10 +238,10 @@ const schemaGraph = [
       const resetBtn = root.querySelector('[data-reset-btn]');
 
       function update() {
-        const lec = Math.max(0, parseFloat(inLec.value || '0'));
-        const lab = Math.max(0, parseFloat(inLab.value || '0'));
-        const degTot = Math.max(1, parseFloat(inTot.value || '120'));
-        const degComp = Math.max(0, parseFloat(inComp.value || '0'));
+        const lec = Math.max(0, (inLec.value !== '' && !isNaN(parseFloat(inLec.value)) ? parseFloat(inLec.value) : 0));
+        const lab = Math.max(0, (inLab.value !== '' && !isNaN(parseFloat(inLab.value)) ? parseFloat(inLab.value) : 0));
+        const degTot = Math.max(1, (inTot.value !== '' && !isNaN(parseFloat(inTot.value)) ? parseFloat(inTot.value) : 0));
+        const degComp = Math.max(0, (inComp.value !== '' && !isNaN(parseFloat(inComp.value)) ? parseFloat(inComp.value) : 0));
 
         const totalCredits = lec + lab;
         const contactHrs = lec + (lab * 2.5);
@@ -274,10 +266,10 @@ const schemaGraph = [
 
       if (resetBtn) {
         resetBtn.addEventListener('click', () => {
-          inLec.value = '12';
-          inLab.value = '3';
-          inTot.value = '120';
-          inComp.value = '45';
+          inLec.value = '';
+          inLab.value = '';
+          inTot.value = '';
+          inComp.value = '';
           update();
         });
       }

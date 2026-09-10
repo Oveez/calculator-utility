@@ -115,11 +115,9 @@ const faqs = [
             type="number"
             min="0"
             step="any"
-            value={initialAmount}
             class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] py-4 pl-12 pr-4 text-2xl font-extrabold text-[color:var(--fg)] shadow-inner outline-none transition focus:border-[color:var(--accent)] focus:ring-2 focus:ring-[color:var(--accent-soft)]"
             data-amount-input
-            placeholder="Enter amount"
-          />
+            placeholder={`e.g. ${initialAmount.toLocaleString()}`} />
         </div>
       </div>
 
@@ -204,10 +202,10 @@ const faqs = [
           Converted Result
         </p>
         <p class="mt-2 text-3xl font-black tracking-tight text-[color:var(--fg)] sm:text-4xl" data-main-result>
-          Calculating...
+          €0.00
         </p>
         <p class="mt-1 text-sm font-medium text-[color:var(--muted)]" data-sub-result>
-          -
+          0.00 USD = 0.00 EUR
         </p>
       </div>
 
@@ -360,7 +358,8 @@ const faqs = [
       const fromEl = fromSelect as HTMLSelectElement | null;
       const toEl = toSelect as HTMLSelectElement | null;
 
-      const amt = parseFloat(amtEl?.value || '0') || 0;
+      const amtRaw = amtEl?.value?.trim();
+      const amt = amtRaw !== '' && amtRaw !== undefined ? (parseFloat(amtRaw) || 0) : 0;
       const from = fromEl?.value || 'USD';
       const to = toEl?.value || 'EUR';
 

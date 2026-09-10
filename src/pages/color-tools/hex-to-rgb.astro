@@ -109,7 +109,7 @@ const schemaGraph = [
               <span>Alpha Opacity (for RGBA):</span>
               <span id="alpha-val" class="font-mono text-cyan-500 dark:text-cyan-400">1.00</span>
             </div>
-            <input type="range" id="alpha-slider" min="0" max="1" step="0.01" value="1" class="w-full accent-[color:var(--fg)] cursor-pointer" />
+            <input type="range" id="alpha-slider" min="0" max="1" step="0.01" class="w-full accent-[color:var(--fg)] cursor-pointer" value="1" />
           </div>
         </div>
 
@@ -186,7 +186,7 @@ const schemaGraph = [
         const r = (num >> 16) & 255;
         const g = (num >> 8) & 255;
         const b = num & 255;
-        const a = parseFloat(alphaSlider.value);
+        const a = (alphaSlider.value !== '' && !isNaN(parseFloat(alphaSlider.value)) ? parseFloat(alphaSlider.value) : 0);
 
         alphaVal.textContent = a.toFixed(2);
         rVal.textContent = r;

@@ -125,10 +125,8 @@ const schemaGraph = [
               type="number"
               min="0"
               step="1000"
-              value="65000"
               class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none"
-              data-total-sales
-            />
+              data-total-sales placeholder="e.g. 65,000" />
           </div>
 
           <div class="space-y-1.5">
@@ -155,10 +153,8 @@ const schemaGraph = [
               min="0"
               max="50"
               step="0.5"
-              value="8.5"
               class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none"
-              data-flat-rate
-            />
+              data-flat-rate placeholder="e.g. 8.5" />
           </div>
 
           <div class="space-y-1.5 pt-1">
@@ -170,10 +166,8 @@ const schemaGraph = [
               type="number"
               min="0"
               step="500"
-              value="3000"
               class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-sm font-semibold text-[color:var(--fg)] outline-none"
-              data-base-pay
-            />
+              data-base-pay placeholder="e.g. 3,000" />
           </div>
         </form>
 
@@ -315,10 +309,10 @@ const schemaGraph = [
       const resetBtn = root.querySelector('[data-reset-btn]');
 
       function update() {
-        const sales = Math.max(0, parseFloat(inSales.value || '0'));
+        const sales = Math.max(0, (inSales.value !== '' && !isNaN(parseFloat(inSales.value)) ? parseFloat(inSales.value) : 0));
         const structure = inStruct.value;
-        const rate = Math.max(0, parseFloat(inRate.value || '0'));
-        const base = Math.max(0, parseFloat(inBase.value || '0'));
+        const rate = Math.max(0, (inRate.value !== '' && !isNaN(parseFloat(inRate.value)) ? parseFloat(inRate.value) : 0));
+        const base = Math.max(0, (inBase.value !== '' && !isNaN(parseFloat(inBase.value)) ? parseFloat(inBase.value) : 0));
 
         let commission = 0;
         if (structure === 'flat') {
@@ -349,10 +343,10 @@ const schemaGraph = [
 
       if (resetBtn) {
         resetBtn.addEventListener('click', () => {
-          inSales.value = '65000';
+          inSales.value = '';
           inStruct.value = 'flat';
-          inRate.value = '8.5';
-          inBase.value = '3000';
+          inRate.value = '';
+          inBase.value = '';
           update();
         });
       }

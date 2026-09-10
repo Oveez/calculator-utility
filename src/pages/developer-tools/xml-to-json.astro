@@ -420,7 +420,7 @@ const schemaGraph = [
             result[rootNode.nodeName] = rootContent;
           }
 
-          const indent = parseInt(indentOpt.value, 10);
+          const indent = (indentOpt.value !== '' && !isNaN(parseInt(indentOpt.value, 10)) ? parseInt(indentOpt.value, 10) : 0);
           const jsonString = indent === 0 ? JSON.stringify(result) : JSON.stringify(result, null, indent);
           jsonOut.value = jsonString;
 

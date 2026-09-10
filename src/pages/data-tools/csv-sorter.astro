@@ -184,8 +184,7 @@ const parameterGuide = [
             type="file"
             id="csv-file-in"
             accept=".csv,.tsv,.txt"
-            class="w-full text-xs text-[color:var(--muted)] file:mr-3 file:rounded-xl file:border file:border-[color:var(--border)] file:bg-[color:var(--surface)] file:px-3 file:py-1.5 file:text-xs file:font-semibold file:text-[color:var(--fg)] hover:file:bg-[color:var(--surface-strong)]"
-          />
+            class="w-full text-xs text-[color:var(--muted)] file:mr-3 file:rounded-xl file:border file:border-[color:var(--border)] file:bg-[color:var(--surface)] file:px-3 file:py-1.5 file:text-xs file:font-semibold file:text-[color:var(--fg)] hover:file:bg-[color:var(--surface-strong)]" />
           <textarea
             id="csv-in"
             rows="12"
@@ -549,7 +548,7 @@ const parameterGuide = [
       function sortData() {
         if (parsedDataRows.length === 0) return;
 
-        const pIdx = parseInt(sortCol.value, 10) || 0;
+        const pIdx = (sortCol.value !== '' && !isNaN(parseInt(sortCol.value, 10)) ? parseInt(sortCol.value, 10) : 0);
         const pDesc = sortDir.value === 'desc';
         const type = sortType.value;
 

@@ -128,10 +128,8 @@ const schemaGraph = [
               min="1"
               max="24"
               step="1"
-              value="15"
               class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none transition focus:border-[color:var(--accent)]"
-              data-study-credits
-            />
+              data-study-credits placeholder="e.g. 15" />
           </div>
 
           <div class="space-y-1.5">
@@ -171,20 +169,16 @@ const schemaGraph = [
               <input
                 id="work-hrs"
                 type="number"
-                value="10"
                 class="mt-1 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none"
-                data-work-hrs
-              />
+                data-work-hrs placeholder="e.g. 10" />
             </div>
             <div>
               <label for="sleep-hrs" class="block text-xs font-medium text-[color:var(--muted)]">Sleep (hrs/night)</label>
               <input
                 id="sleep-hrs"
                 type="number"
-                value="8"
                 class="mt-1 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none"
-                data-sleep-hrs
-              />
+                data-sleep-hrs placeholder="e.g. 8" />
             </div>
           </div>
         </form>
@@ -269,11 +263,11 @@ const schemaGraph = [
       const resetBtn = root.querySelector('[data-reset-btn]');
 
       function update() {
-        const credits = Math.max(1, parseFloat(inCred.value || '15'));
+        const credits = Math.max(1, (inCred.value !== '' && !isNaN(parseFloat(inCred.value)) ? parseFloat(inCred.value) : 0));
         const diff = inDiff.value;
         const gpa = inGpa.value;
-        const work = Math.max(0, parseFloat(inWork.value || '0'));
-        const sleep = Math.max(0, parseFloat(inSleep.value || '8'));
+        const work = Math.max(0, (inWork.value !== '' && !isNaN(parseFloat(inWork.value)) ? parseFloat(inWork.value) : 0));
+        const sleep = Math.max(0, (inSleep.value !== '' && !isNaN(parseFloat(inSleep.value)) ? parseFloat(inSleep.value) : 0));
 
         let diffMult = 2.0;
         if (diff === 'intro') diffMult = 1.5;
@@ -320,11 +314,11 @@ const schemaGraph = [
 
       if (resetBtn) {
         resetBtn.addEventListener('click', () => {
-          inCred.value = '15';
+          inCred.value = '';
           inDiff.value = 'moderate';
           inGpa.value = 'b_average';
-          inWork.value = '10';
-          inSleep.value = '8';
+          inWork.value = '';
+          inSleep.value = '';
           update();
         });
       }

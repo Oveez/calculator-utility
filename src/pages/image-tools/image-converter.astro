@@ -190,8 +190,7 @@ const schemaGraph = [
                 min="10"
                 max="100"
                 value="90"
-                class="w-full accent-[color:var(--fg)] cursor-pointer"
-              />
+                class="w-full accent-[color:var(--fg)] cursor-pointer" />
             </div>
           </div>
 
@@ -357,7 +356,7 @@ const schemaGraph = [
         if (!loadedImg) return;
 
         const fmt = targetFmt.value;
-        const scale = parseFloat(scaleSelect.value);
+        const scale = (scaleSelect.value !== '' && !isNaN(parseFloat(scaleSelect.value)) ? parseFloat(scaleSelect.value) : 0);
         const targetW = Math.round(loadedImg.naturalWidth * scale);
         const targetH = Math.round(loadedImg.naturalHeight * scale);
         scaleInfo.textContent = `${targetW} × ${targetH} px`;
@@ -369,7 +368,7 @@ const schemaGraph = [
           qualityBox.classList.remove('opacity-50', 'pointer-events-none');
         }
 
-        const quality = parseInt(qualSlider.value, 10) / 100;
+        const quality = (qualSlider.value !== '' && !isNaN(parseInt(qualSlider.value, 10)) ? parseInt(qualSlider.value, 10) : 0) / 100;
         qualVal.textContent = `${qualSlider.value}%`;
 
         const canvas = document.createElement('canvas');

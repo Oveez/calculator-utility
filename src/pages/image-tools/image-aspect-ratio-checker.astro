@@ -163,8 +163,7 @@ const schemaGraph = [
                 id="dim-w"
                 value="1920"
                 min="1"
-                class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-[color:var(--fg)] font-semibold"
-              />
+                class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-[color:var(--fg)] font-semibold" />
             </div>
             <div>
               <label for="dim-h" class="font-bold text-[color:var(--fg)] block mb-1">Height (px):</label>
@@ -173,8 +172,7 @@ const schemaGraph = [
                 id="dim-h"
                 value="1080"
                 min="1"
-                class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-[color:var(--fg)] font-semibold"
-              />
+                class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-[color:var(--fg)] font-semibold" />
             </div>
           </div>
 
@@ -205,8 +203,7 @@ const schemaGraph = [
                 type="number"
                 id="scale-w"
                 placeholder="e.g. 1280"
-                class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-[color:var(--fg)]"
-              />
+                class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-[color:var(--fg)]" />
             </div>
             <div>
               <label for="scale-h" class="font-bold text-[color:var(--fg)] block mb-1">Scaled Result Height (px):</label>
@@ -214,8 +211,7 @@ const schemaGraph = [
                 type="number"
                 id="scale-h"
                 placeholder="Calculated automatically"
-                class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] px-3 py-2 font-mono text-emerald-500 font-bold"
-              />
+                class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] px-3 py-2 font-mono text-emerald-500 font-bold" />
             </div>
           </div>
 
@@ -369,8 +365,8 @@ const schemaGraph = [
       }
 
       function update() {
-        const w = parseInt(dimW.value, 10) || 0;
-        const h = parseInt(dimH.value, 10) || 0;
+        const w = (dimW.value !== '' && !isNaN(parseInt(dimW.value, 10)) ? parseInt(dimW.value, 10) : 0);
+        const h = (dimH.value !== '' && !isNaN(parseInt(dimH.value, 10)) ? parseInt(dimH.value, 10) : 0);
 
         if (w <= 0 || h <= 0) {
           statRatio.textContent = '-';
@@ -430,7 +426,7 @@ const schemaGraph = [
 
         // Update proportional scale if target width present
         if (scaleW.value) {
-          const sw = parseFloat(scaleW.value);
+          const sw = (scaleW.value !== '' && !isNaN(parseFloat(scaleW.value)) ? parseFloat(scaleW.value) : 0);
           if (!isNaN(sw) && sw > 0) {
             scaleH.value = Math.round(sw / dec);
           }
@@ -438,9 +434,9 @@ const schemaGraph = [
       }
 
       scaleW.addEventListener('input', () => {
-        const w = parseInt(dimW.value, 10) || 1;
-        const h = parseInt(dimH.value, 10) || 1;
-        const sw = parseFloat(scaleW.value);
+        const w = (dimW.value !== '' && !isNaN(parseInt(dimW.value, 10)) ? parseInt(dimW.value, 10) : 0);
+        const h = (dimH.value !== '' && !isNaN(parseInt(dimH.value, 10)) ? parseInt(dimH.value, 10) : 0);
+        const sw = (scaleW.value !== '' && !isNaN(parseFloat(scaleW.value)) ? parseFloat(scaleW.value) : 0);
         if (!isNaN(sw) && sw > 0) {
           scaleH.value = Math.round(sw * (h / w));
         } else {
@@ -449,9 +445,9 @@ const schemaGraph = [
       });
 
       scaleH.addEventListener('input', () => {
-        const w = parseInt(dimW.value, 10) || 1;
-        const h = parseInt(dimH.value, 10) || 1;
-        const sh = parseFloat(scaleH.value);
+        const w = (dimW.value !== '' && !isNaN(parseInt(dimW.value, 10)) ? parseInt(dimW.value, 10) : 0);
+        const h = (dimH.value !== '' && !isNaN(parseInt(dimH.value, 10)) ? parseInt(dimH.value, 10) : 0);
+        const sh = (scaleH.value !== '' && !isNaN(parseFloat(scaleH.value)) ? parseFloat(scaleH.value) : 0);
         if (!isNaN(sh) && sh > 0) {
           scaleW.value = Math.round(sh * (w / h));
         } else {

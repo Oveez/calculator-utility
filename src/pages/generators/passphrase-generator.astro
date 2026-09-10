@@ -101,8 +101,7 @@ const schemaGraph = [
             id="pass-display"
             readonly
             class="w-full bg-transparent font-mono text-lg sm:text-2xl font-extrabold text-[color:var(--fg)] focus:outline-hidden select-all"
-            value="Generating..."
-          />
+            value="Generating..." />
           <button
             type="button"
             data-copy-btn
@@ -203,7 +202,7 @@ const schemaGraph = [
       ];
 
       function generate() {
-        const count = parseInt(countSelect.value, 10);
+        const count = (countSelect.value !== '' && !isNaN(parseInt(countSelect.value, 10)) ? parseInt(countSelect.value, 10) : 0);
         const sep = sepSelect.value;
         const casing = caseSelect.value;
 

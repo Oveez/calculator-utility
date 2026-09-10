@@ -189,21 +189,24 @@ const schemaGraph = [
               type="number"
               min="0"
               step="100"
-              value="3500"
+            <input
+              id="fixed-costs"
+              type="number"
+              min="0"
+              step="100"
               class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)]"
-              data-fixed-costs
-            />
+              data-fixed-costs placeholder="e.g. 3,500" />
             <p class="text-[10px] text-[color:var(--muted)]">Rent, software, insurance, base salaries, utilities, subscriptions</p>
           </div>
 
           <div class="grid grid-cols-2 gap-3">
             <div>
               <label for="unit-price" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Selling Price ($ / Unit)</label>
-              <input id="unit-price" type="number" min="0.01" step="0.5" value="45.00" class="mt-1 w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)]" data-unit-price />
+              <input id="unit-price" type="number" min="0.01" step="0.5" class="mt-1 w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)]" data-unit-price placeholder="e.g. 45.00" />
             </div>
             <div>
               <label for="var-cost" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Variable Cost ($ / Unit)</label>
-              <input id="var-cost" type="number" min="0" step="0.5" value="18.00" class="mt-1 w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)]" data-var-cost />
+              <input id="var-cost" type="number" min="0" step="0.5" class="mt-1 w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)]" data-var-cost placeholder="e.g. 18.00" />
             </div>
           </div>
 
@@ -217,10 +220,8 @@ const schemaGraph = [
               type="number"
               min="0"
               step="250"
-              value="2000"
               class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)]"
-              data-target-profit
-            />
+              data-target-profit placeholder="e.g. 2,000" />
             <p class="text-[10px] text-[color:var(--muted)]">Desired net take-home profit after covering all fixed overhead</p>
           </div>
         </form>
@@ -243,41 +244,41 @@ const schemaGraph = [
             <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 text-center shadow-sm">
               <p class="text-xs font-semibold text-[color:var(--muted)]">Break-Even Sales Volume</p>
               <p class="mt-1 text-4xl sm:text-5xl font-black tracking-tight text-[color:var(--fg)]" data-res-units>
-                130 Units
+                0 Units
               </p>
               <p class="mt-2 text-xs font-medium text-[color:var(--muted)]" data-res-rev>
-                Break-Even Monthly Revenue: $5,850.00
+                Break-Even Monthly Revenue: $0.00
               </p>
             </div>
 
             <!-- Target Profit Goal Card -->
             <div class="rounded-2xl border border-cyan-500/30 bg-cyan-500/5 p-4 text-xs space-y-1">
               <div class="flex justify-between items-center">
-                <span class="font-bold text-cyan-600 dark:text-cyan-400">To Earn Target Profit ($2,000/mo):</span>
-                <span class="font-black text-sm text-[color:var(--fg)]" data-target-units>204 Units</span>
+                <span class="font-bold text-cyan-600 dark:text-cyan-400">To Earn Target Profit:</span>
+                <span class="font-black text-sm text-[color:var(--fg)]" data-target-units>0 Units</span>
               </div>
               <div class="flex justify-between text-[color:var(--muted)]">
                 <span>Target Monthly Revenue:</span>
-                <span class="font-bold" data-target-rev>$9,180.00</span>
+                <span class="font-bold" data-target-rev>$0.00</span>
               </div>
             </div>
 
             <div class="space-y-2 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-xs">
               <div class="flex justify-between">
                 <span class="text-[color:var(--muted)]">Unit Contribution Margin ($P - VC$):</span>
-                <span class="font-bold text-cyan-600 dark:text-cyan-400" data-unit-contrib>$27.00 / unit</span>
+                <span class="font-bold text-cyan-600 dark:text-cyan-400" data-unit-contrib>$0.00 / unit</span>
               </div>
               <div class="flex justify-between">
                 <span class="text-[color:var(--muted)]">Contribution Margin Ratio (CMR):</span>
-                <span class="font-bold text-[color:var(--fg)]" data-contrib-ratio>60.0%</span>
+                <span class="font-bold text-[color:var(--fg)]" data-contrib-ratio>0.0%</span>
               </div>
               <div class="flex justify-between border-t border-[color:var(--border)] pt-2">
                 <span class="text-[color:var(--muted)]">Daily Break-Even Run-Rate (30d):</span>
-                <span class="font-bold text-[color:var(--fg)]" data-daily-rate>4.3 units / day ($195.00/day)</span>
+                <span class="font-bold text-[color:var(--fg)]" data-daily-rate>0.0 units / day ($0.00/day)</span>
               </div>
               <div class="flex justify-between">
                 <span class="text-[color:var(--muted)]">Weekly Break-Even Run-Rate (4.3w):</span>
-                <span class="font-bold text-[color:var(--fg)]" data-weekly-rate>30.2 units / week ($1,360.47/wk)</span>
+                <span class="font-bold text-[color:var(--fg)]" data-weekly-rate>0.0 units / week ($0.00/wk)</span>
               </div>
             </div>
           </div>
@@ -384,20 +385,20 @@ const schemaGraph = [
       const copyBtn = root.querySelector('[data-copy-summary-btn]');
 
       function update() {
-        const fixed = Math.max(0, parseFloat(inFixed.value || '0'));
-        const price = Math.max(0.01, parseFloat(inPrice.value || '1'));
-        const varCost = Math.max(0, parseFloat(inVar.value || '0'));
-        const target = Math.max(0, parseFloat(inTarget.value || '0'));
+        const fixed = inFixed.value ? Math.max(0, (inFixed.value !== '' && !isNaN(parseFloat(inFixed.value)) ? parseFloat(inFixed.value) : 0)) : 0;
+        const price = inPrice.value ? Math.max(0, (inPrice.value !== '' && !isNaN(parseFloat(inPrice.value)) ? parseFloat(inPrice.value) : 0)) : 0;
+        const varCost = inVar.value ? Math.max(0, (inVar.value !== '' && !isNaN(parseFloat(inVar.value)) ? parseFloat(inVar.value) : 0)) : 0;
+        const target = inTarget.value ? Math.max(0, (inTarget.value !== '' && !isNaN(parseFloat(inTarget.value)) ? parseFloat(inTarget.value) : 0)) : 0;
 
-        const contrib = price - varCost;
-        const ratio = price > 0 ? (contrib / price) * 100 : 0;
+        const contrib = price > varCost ? (price - varCost) : 0;
+        const ratio = price > 0 && contrib > 0 ? (contrib / price) * 100 : 0;
 
         let units = 0;
         let rev = 0;
         let targetUnits = 0;
         let targetRev = 0;
 
-        if (contrib > 0) {
+        if (contrib > 0 && (fixed > 0 || target > 0)) {
           units = Math.ceil(fixed / contrib);
           rev = units * price;
           targetUnits = Math.ceil((fixed + target) / contrib);
@@ -427,10 +428,10 @@ const schemaGraph = [
 
       if (resetBtn) {
         resetBtn.addEventListener('click', () => {
-          inFixed.value = '3500';
-          inPrice.value = '45.00';
-          inVar.value = '18.00';
-          inTarget.value = '2000';
+          inFixed.value = '';
+          inPrice.value = '';
+          inVar.value = '';
+          inTarget.value = '';
           update();
         });
       }

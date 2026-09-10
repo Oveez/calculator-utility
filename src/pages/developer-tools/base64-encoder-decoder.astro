@@ -122,18 +122,18 @@ const schemaGraph = [
     </div>
 
     <!-- Mode Selector Tabs -->
-    <div class="flex items-center gap-2 border-b border-[color:var(--border)] pb-2">
+    <div class="flex items-center gap-2 border-b border-[color:var(--border)] pb-2 overflow-x-auto no-scrollbar">
       <button
         type="button"
         data-tab="text"
-        class="tab-btn rounded-xl bg-[color:var(--accent)] px-4 py-2 text-xs font-bold text-white border border-[color:var(--accent)] shadow-[0_0_12px_var(--accent-glow)] transition cursor-pointer"
+        class="tab-btn shrink-0 min-w-max rounded-xl bg-[color:var(--accent)] px-4 py-2 text-xs font-bold text-white border border-[color:var(--accent)] shadow-[0_0_12px_var(--accent-glow)] transition cursor-pointer"
       >
         Text Input
       </button>
       <button
         type="button"
         data-tab="file"
-        class="tab-btn rounded-xl bg-[color:var(--surface)] px-4 py-2 text-xs font-medium text-[color:var(--muted)] border border-[color:var(--border)] hover:border-[color:var(--accent)] hover:shadow-[0_0_12px_var(--accent-glow)] hover:text-[color:var(--fg)] transition cursor-pointer"
+        class="tab-btn shrink-0 min-w-max rounded-xl bg-[color:var(--surface)] px-4 py-2 text-xs font-medium text-[color:var(--muted)] border border-[color:var(--border)] hover:border-[color:var(--accent)] hover:shadow-[0_0_12px_var(--accent-glow)] hover:text-[color:var(--fg)] transition cursor-pointer"
       >
         File &amp; Image Upload
       </button>
@@ -408,7 +408,7 @@ const schemaGraph = [
           res = res.replace(/=+$/, '');
         }
         if (lineWrap.value !== 'none') {
-          const wrapWidth = parseInt(lineWrap.value, 10);
+          const wrapWidth = (lineWrap.value !== '' && !isNaN(parseInt(lineWrap.value, 10)) ? parseInt(lineWrap.value, 10) : 0);
           const regex = new RegExp(`.{1,${wrapWidth}}`, 'g');
           res = (res.match(regex) || []).join('\n');
         }
@@ -558,9 +558,9 @@ const schemaGraph = [
         activeTab = tab;
         tabBtns.forEach(btn => {
           if (btn.dataset.tab === tab) {
-            btn.className = 'tab-btn rounded-xl bg-[color:var(--accent)] px-4 py-2 text-xs font-bold text-white border border-[color:var(--accent)] shadow-[0_0_12px_var(--accent-glow)] transition cursor-pointer';
+            btn.className = 'tab-btn shrink-0 min-w-max rounded-xl bg-[color:var(--accent)] px-4 py-2 text-xs font-bold text-white border border-[color:var(--accent)] shadow-[0_0_12px_var(--accent-glow)] transition cursor-pointer';
           } else {
-            btn.className = 'tab-btn rounded-xl bg-[color:var(--surface)] px-4 py-2 text-xs font-medium text-[color:var(--muted)] border border-[color:var(--border)] hover:border-[color:var(--accent)] hover:shadow-[0_0_12px_var(--accent-glow)] hover:text-[color:var(--fg)] transition cursor-pointer';
+            btn.className = 'tab-btn shrink-0 min-w-max rounded-xl bg-[color:var(--surface)] px-4 py-2 text-xs font-medium text-[color:var(--muted)] border border-[color:var(--border)] hover:border-[color:var(--accent)] hover:shadow-[0_0_12px_var(--accent-glow)] hover:text-[color:var(--fg)] transition cursor-pointer';
           }
         });
 

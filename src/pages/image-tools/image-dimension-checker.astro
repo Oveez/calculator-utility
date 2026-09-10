@@ -162,8 +162,7 @@ const schemaGraph = [
                 id="inp-w"
                 value="1920"
                 min="1"
-                class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-[color:var(--fg)] font-semibold"
-              />
+                class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-[color:var(--fg)] font-semibold" />
             </div>
             <div>
               <label for="inp-h" class="font-bold text-[color:var(--fg)] block mb-1">Height (px):</label>
@@ -172,8 +171,7 @@ const schemaGraph = [
                 id="inp-h"
                 value="1080"
                 min="1"
-                class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-[color:var(--fg)] font-semibold"
-              />
+                class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-[color:var(--fg)] font-semibold" />
             </div>
           </div>
 
@@ -344,8 +342,8 @@ const schemaGraph = [
       }
 
       function update() {
-        const w = parseInt(inpW.value, 10) || 0;
-        const h = parseInt(inpH.value, 10) || 0;
+        const w = (inpW.value !== '' && !isNaN(parseInt(inpW.value, 10)) ? parseInt(inpW.value, 10) : 0);
+        const h = (inpH.value !== '' && !isNaN(parseInt(inpH.value, 10)) ? parseInt(inpH.value, 10) : 0);
 
         if (w <= 0 || h <= 0) {
           statDim.textContent = '-';

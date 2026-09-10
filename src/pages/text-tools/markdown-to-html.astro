@@ -99,7 +99,7 @@ const workedExampleData = {
     },
     {
       step: 'Step 2: Generate Semantic HTML',
-      calculation: 'Heading converted to <h1>; task list converted to <ul><input type="checkbox">; table wrapped in overflow <table>.',
+      calculation: 'Heading converted to <h1>; task list converted to <ul><input type="checkbox" />; table wrapped in overflow <table>.',
       result: 'Clean semantic HTML snippet generated with 0 KB network egress',
     },
   ],
@@ -249,25 +249,25 @@ const workedExampleData = {
 
       <!-- Right: Output / Preview Tabs -->
       <div class="space-y-2">
-        <div class="flex items-center justify-between">
-          <div class="flex items-center gap-1 rounded-xl bg-[color:var(--surface-strong)] p-1 text-xs">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <div class="flex items-center gap-1 rounded-xl bg-[color:var(--surface-strong)] p-1 text-xs shrink-0 overflow-x-auto no-scrollbar">
             <button
               type="button"
               id="tab-preview"
-              class="rounded-lg px-3 py-1 font-bold bg-[color:var(--surface)] text-[color:var(--fg)] shadow-xs transition cursor-pointer"
+              class="shrink-0 min-w-max rounded-lg px-3 py-1 font-bold bg-[color:var(--surface)] text-[color:var(--fg)] shadow-xs transition cursor-pointer flex items-center gap-1"
             >
               <svg class="w-3.5 h-3.5 stroke-current text-blue-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg><span>Live Preview</span>
             </button>
             <button
               type="button"
               id="tab-html"
-              class="rounded-lg px-3 py-1 font-semibold text-[color:var(--muted)] hover:text-[color:var(--fg)] transition cursor-pointer"
+              class="shrink-0 min-w-max rounded-lg px-3 py-1 font-semibold text-[color:var(--muted)] hover:text-[color:var(--fg)] transition cursor-pointer"
             >
               &lt;/&gt; Raw HTML
             </button>
           </div>
 
-          <div class="flex items-center gap-2">
+          <div class="flex items-center gap-2 shrink-0">
             <button
               type="button"
               id="btn-copy-html"

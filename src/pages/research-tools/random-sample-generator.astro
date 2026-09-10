@@ -188,11 +188,11 @@ const schemaGraph = [
             <div class="grid grid-cols-2 gap-3">
               <div>
                 <label for="pop-start" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Start Value (Min)</label>
-                <input id="pop-start" type="number" value="1" class="mt-1 w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2.5 text-sm font-semibold text-[color:var(--fg)] outline-none" data-pop-start />
+                <input id="pop-start" type="number" class="mt-1 w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2.5 text-sm font-semibold text-[color:var(--fg)] outline-none" data-pop-start placeholder="e.g. 1" />
               </div>
               <div>
                 <label for="pop-size" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">End Value (N)</label>
-                <input id="pop-size" type="number" min="1" max="500000" value="100" class="mt-1 w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2.5 text-sm font-semibold text-[color:var(--fg)] outline-none" data-pop-size />
+                <input id="pop-size" type="number" min="1" max="500000" class="mt-1 w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2.5 text-sm font-semibold text-[color:var(--fg)] outline-none" data-pop-size placeholder="e.g. 100" />
               </div>
             </div>
           </div>
@@ -217,7 +217,7 @@ const schemaGraph = [
           <div class="grid grid-cols-2 gap-3">
             <div>
               <label for="sample-size" class="block text-xs font-medium text-[color:var(--muted)]">Sample Size (n)</label>
-              <input id="sample-size" type="number" min="1" max="10000" value="15" class="mt-1 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-sample-size />
+              <input id="sample-size" type="number" min="1" max="10000" class="mt-1 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-sample-size placeholder="e.g. 15" />
             </div>
             <div>
               <label for="sampling-method" class="block text-xs font-medium text-[color:var(--muted)]">Sampling Method</label>
@@ -396,8 +396,8 @@ const schemaGraph = [
         const prefix = (customPrefix.value || '').trim();
 
         if (currentSource === 'range') {
-          const start = parseInt(popStart.value, 10) || 1;
-          const end = parseInt(popSize.value, 10) || 100;
+          const start = (popStart.value !== '' && !isNaN(parseInt(popStart.value, 10)) ? parseInt(popStart.value, 10) : 0);
+          const end = (popSize.value !== '' && !isNaN(parseInt(popSize.value, 10)) ? parseInt(popSize.value, 10) : 0);
           const minVal = Math.min(start, end);
           const maxVal = Math.max(start, end);
           const N = maxVal - minVal + 1;
@@ -415,7 +415,7 @@ const schemaGraph = [
 
         const N = population.length;
         const method = samplingMethod.value || 'without';
-        let requestedN = parseInt(sampleSize.value, 10) || 15;
+        let requestedN = (sampleSize.value !== '' && !isNaN(parseInt(sampleSize.value, 10)) ? parseInt(sampleSize.value, 10) : 0);
         if (method !== 'with') {
           requestedN = Math.min(N, Math.max(1, requestedN));
         } else {

@@ -238,8 +238,7 @@ const workedExampleData = {
                 min="40"
                 max="100"
                 value="85"
-                class="w-full accent-[color:var(--accent)]"
-              />
+                class="w-full accent-[color:var(--accent)]" />
             </div>
           </div>
 
@@ -250,8 +249,7 @@ const workedExampleData = {
                 type="text"
                 id="pdf-filename"
                 class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-2 text-[color:var(--fg)] font-mono"
-                value="images-compiled.pdf"
-              />
+                value="images-compiled.pdf" />
             </div>
             <div class="flex items-center pt-4">
               <label class="flex items-center gap-2 font-medium text-[color:var(--fg)] cursor-pointer">
@@ -564,8 +562,8 @@ const workedExampleData = {
           const pdfDoc = await PDFLib.PDFDocument.create();
           const targetSize = pageSizeSelect.value;
           const targetOrient = pageOrientSelect.value;
-          const margin = parseInt(pageMarginSelect.value, 10);
-          const quality = parseInt(imgQualityInput.value, 10) / 100;
+          const margin = (pageMarginSelect.value !== '' && !isNaN(parseInt(pageMarginSelect.value, 10)) ? parseInt(pageMarginSelect.value, 10) : 0);
+          const quality = (imgQualityInput.value !== '' && !isNaN(parseInt(imgQualityInput.value, 10)) ? parseInt(imgQualityInput.value, 10) : 0) / 100;
           const isGray = optGrayscale.checked;
 
           for (let i = 0; i < imageItems.length; i++) {

@@ -205,8 +205,7 @@ const workedExampleData = {
               type="text"
               id="custom-range-in"
               placeholder="e.g. 1-3, 5"
-              class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-[color:var(--fg)] font-semibold"
-            />
+              class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-[color:var(--fg)] font-semibold" />
           </div>
         </div>
 
@@ -228,8 +227,7 @@ const workedExampleData = {
               type="text"
               id="rot-filename"
               class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-[color:var(--fg)] font-mono"
-              value="rotated-document.pdf"
-            />
+              value="rotated-document.pdf" />
           </div>
         </div>
 
@@ -311,7 +309,7 @@ const workedExampleData = {
       }
 
       function updatePreview() {
-        const deg = parseInt(rotDegSelect.value, 10);
+        const deg = (rotDegSelect.value !== '' && !isNaN(parseInt(rotDegSelect.value, 10)) ? parseInt(rotDegSelect.value, 10) : 0);
         previewPageIcon.style.transform = `rotate(${deg}deg)`;
         previewText.textContent = `Rotating ${deg}° ${deg === 180 ? '(Upside Down)' : (deg === 90 ? 'Clockwise' : 'Counter-Clockwise')}`;
 
@@ -418,7 +416,7 @@ const workedExampleData = {
         try {
           const pdfDoc = await PDFLib.PDFDocument.load(currentBytes, { ignoreEncryption: true });
           const pages = pdfDoc.getPages();
-          const angle = parseInt(rotDegSelect.value, 10);
+          const angle = (rotDegSelect.value !== '' && !isNaN(parseInt(rotDegSelect.value, 10)) ? parseInt(rotDegSelect.value, 10) : 0);
           const scope = rotScopeSelect.value;
 
           let targetIndices = new Set();

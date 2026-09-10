@@ -192,24 +192,24 @@ const schemaGraph = [
 
           <div class="space-y-1.5">
             <label for="stat-score" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]" data-stat-label>Test Statistic Value (Z-Score)</label>
-            <input id="stat-score" type="number" step="any" value="2.15" class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none" data-stat-score />
+            <input id="stat-score" type="number" step="any" class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none" data-stat-score placeholder="e.g. 2.15" />
           </div>
 
           <!-- Degrees of Freedom (For t and chi-square) -->
           <div class="space-y-1.5" data-df-wrapper hidden>
             <label for="df-input" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Degrees of Freedom (df)</label>
-            <input id="df-input" type="number" min="1" value="25" class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none" data-df-input />
+            <input id="df-input" type="number" min="1" class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none" data-df-input placeholder="e.g. 25" />
           </div>
 
           <!-- F-Test Dual DF (Hidden by default) -->
           <div class="grid grid-cols-2 gap-3" data-f-df-wrapper hidden>
             <div>
               <label for="df1-input" class="block text-xs font-medium text-[color:var(--muted)]">Numerator df₁ (Groups - 1)</label>
-              <input id="df1-input" type="number" min="1" value="3" class="mt-1 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-df1-input />
+              <input id="df1-input" type="number" min="1" class="mt-1 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-df1-input placeholder="e.g. 3" />
             </div>
             <div>
               <label for="df2-input" class="block text-xs font-medium text-[color:var(--muted)]">Denominator df₂ (Error df)</label>
-              <input id="df2-input" type="number" min="1" value="40" class="mt-1 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-df2-input />
+              <input id="df2-input" type="number" min="1" class="mt-1 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-df2-input placeholder="e.g. 40" />
             </div>
           </div>
 
@@ -395,12 +395,12 @@ const schemaGraph = [
 
       function update() {
         const test = inType.value;
-        const stat = parseFloat(inStat.value || '0');
+        const stat = (inStat.value !== '' && !isNaN(parseFloat(inStat.value)) ? parseFloat(inStat.value) : 0);
         const df = Math.max(1, parseInt(inDf?.value || '25', 10));
         const df1 = Math.max(1, parseInt(inDf1?.value || '3', 10));
         const df2 = Math.max(1, parseInt(inDf2?.value || '40', 10));
         const hypo = inHypo.value;
-        const alpha = parseFloat(inAlpha.value || '0.05');
+        const alpha = (inAlpha.value !== '' && !isNaN(parseFloat(inAlpha.value)) ? parseFloat(inAlpha.value) : 0);
 
         if (test === 'z') {
           if (statLabel) statLabel.textContent = 'Test Statistic Value (Z-Score)';
@@ -506,12 +506,12 @@ const schemaGraph = [
       if (resetBtn) {
         resetBtn.addEventListener('click', () => {
           inType.value = 'z';
-          inStat.value = '2.15';
-          if (inDf) inDf.value = '25';
-          if (inDf1) inDf1.value = '3';
-          if (inDf2) inDf2.value = '40';
+          inStat.value = '';
+          if (inDf) inDf.value = '';
+          if (inDf1) inDf1.value = '';
+          if (inDf2) inDf2.value = '';
           inHypo.value = 'two_tailed';
-          inAlpha.value = '0.05';
+          inAlpha.value = '';
           update();
         });
       }
