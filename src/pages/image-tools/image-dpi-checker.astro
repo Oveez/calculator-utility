@@ -172,7 +172,7 @@ const schemaGraph = [
       <button
         type="button"
         id="tab-mode-pixels"
-        class="tab-btn active rounded-xl bg-[color:var(--fg)] px-4 py-2 text-[color:var(--bg)] transition cursor-pointer"
+        class="tab-btn active rounded-xl bg-[color:var(--accent)] px-4 py-2 text-white transition cursor-pointer"
         data-mode="pixels"
       >
         Pixels &rarr; Physical Print Size
@@ -716,10 +716,10 @@ const schemaGraph = [
       tabBtns.forEach(btn => {
         btn.addEventListener('click', () => {
           tabBtns.forEach(b => {
-            b.classList.remove('bg-[color:var(--fg)]', 'text-[color:var(--bg)]');
+            b.classList.remove('bg-[color:var(--accent)]', 'text-white');
             b.classList.add('bg-[color:var(--surface)]', 'border', 'border-[color:var(--border)]', 'text-[color:var(--muted)]');
           });
-          btn.classList.add('bg-[color:var(--fg)]', 'text-[color:var(--bg)]');
+          btn.classList.add('bg-[color:var(--accent)]', 'text-white');
           btn.classList.remove('bg-[color:var(--surface)]', 'border-[color:var(--border)]', 'text-[color:var(--muted)]');
 
           const mode = btn.dataset.mode;

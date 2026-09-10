@@ -12,7 +12,7 @@ const isCv = currentPath.includes('/career-tools/cv-maker');
 <!-- Fixed App-Style Bottom Navigation Bar (Mobile only) -->
 <nav
   id="mobile-bottom-nav"
-  class="fixed bottom-0 left-0 right-0 z-40 md:hidden border-t border-[color:var(--border)] bg-[color:var(--bg)]/90 backdrop-blur-xl shadow-lg transition-colors"
+  class="fixed bottom-0 left-0 right-0 z-40 md:hidden border-t border-[color:var(--border)] bg-[color:var(--bg)]/95 backdrop-blur-xl shadow-lg transition-colors"
   aria-label="Mobile Bottom Navigation"
   style="padding-bottom: env(safe-area-inset-bottom, 0px);"
 >
@@ -21,12 +21,21 @@ const isCv = currentPath.includes('/career-tools/cv-maker');
     <a
       href={withBasePath('/')}
       class:list={[
-        'flex flex-col items-center justify-center gap-0.5 py-1 text-center transition',
-        isHome ? 'text-[color:var(--accent)] font-bold' : 'text-[color:var(--muted)] hover:text-[color:var(--fg)]',
+        'bottom-nav-tab flex flex-col items-center justify-center gap-0.5 py-1 text-center transition-colors',
+        isHome ? 'text-blue-600 dark:text-blue-400 font-bold' : 'text-[color:var(--muted)] hover:text-[color:var(--fg)] font-medium',
       ]}
       aria-label="Home"
     >
-      <Icon name="calculator" class:list={['w-5 h-5', isHome ? 'drop-shadow-[0_0_8px_var(--accent-glow)]' : '']} />
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect width="16" height="20" x="4" y="2" rx="2" />
+        <line x1="8" x2="16" y1="6" y2="6" />
+        <line x1="16" x2="16" y1="14" y2="14.01" />
+        <line x1="12" x2="12" y1="14" y2="14.01" />
+        <line x1="8" x2="8" y1="14" y2="14.01" />
+        <line x1="16" x2="16" y1="18" y2="18.01" />
+        <line x1="12" x2="12" y1="18" y2="18.01" />
+        <line x1="8" x2="8" y1="18" y2="18.01" />
+      </svg>
       <span class="text-[10px] tracking-tight">Home</span>
     </a>
 
@@ -34,38 +43,36 @@ const isCv = currentPath.includes('/career-tools/cv-maker');
     <a
       href={withBasePath('/tax-calculators/')}
       class:list={[
-        'flex flex-col items-center justify-center gap-0.5 py-1 text-center transition',
-        isTax ? 'text-[color:var(--accent)] font-bold' : 'text-[color:var(--muted)] hover:text-[color:var(--fg)]',
+        'bottom-nav-tab flex flex-col items-center justify-center gap-0.5 py-1 text-center transition-colors',
+        isTax ? 'text-emerald-600 dark:text-emerald-400 font-bold' : 'text-[color:var(--muted)] hover:text-[color:var(--fg)] font-medium',
       ]}
       aria-label="Tax & Salary Suite"
     >
-      <Icon name="finance" class:list={['w-5 h-5', isTax ? 'drop-shadow-[0_0_8px_var(--accent-glow)]' : '']} />
+      <Icon name="finance" class:list={['w-5 h-5 shrink-0', isTax ? 'text-emerald-600 dark:text-emerald-400' : 'text-emerald-500']} />
       <span class="text-[10px] tracking-tight">Tax Hub</span>
     </a>
 
-    <!-- 3. Instant Search Tab (Center Elevated Quick Search) -->
+    <!-- 3. Instant Search Tab -->
     <button
       type="button"
       data-trigger-search
-      class="flex flex-col items-center justify-center gap-0.5 py-1 text-center text-[color:var(--muted)] hover:text-[color:var(--fg)] cursor-pointer transition group"
+      class="bottom-nav-tab flex flex-col items-center justify-center gap-0.5 py-1 text-center text-[color:var(--muted)] hover:text-[color:var(--fg)] cursor-pointer transition-colors"
       aria-label="Search 186 Tools"
     >
-      <div class="flex h-7 w-7 items-center justify-center rounded-xl bg-[color:var(--surface-strong)] border border-[color:var(--border)] text-[color:var(--fg)] shadow-xs transition group-hover:border-[color:var(--accent)] group-hover:shadow-[0_0_12px_var(--accent-glow)]">
-        <Icon name="search" class="w-3.5 h-3.5" />
-      </div>
-      <span class="text-[9px] font-semibold text-[color:var(--fg)]">Search</span>
+      <Icon name="search" class="w-5 h-5 shrink-0 text-blue-500" />
+      <span class="text-[10px] tracking-tight font-medium text-[color:var(--fg)]">Search</span>
     </button>
 
     <!-- 4. Developer Tools Tab -->
     <a
       href={withBasePath('/developer-tools/')}
       class:list={[
-        'flex flex-col items-center justify-center gap-0.5 py-1 text-center transition',
-        isDev ? 'text-[color:var(--accent)] font-bold' : 'text-[color:var(--muted)] hover:text-[color:var(--fg)]',
+        'bottom-nav-tab flex flex-col items-center justify-center gap-0.5 py-1 text-center transition-colors',
+        isDev ? 'text-blue-600 dark:text-blue-400 font-bold' : 'text-[color:var(--muted)] hover:text-[color:var(--fg)] font-medium',
       ]}
       aria-label="Developer Tools"
     >
-      <Icon name="code" class:list={['w-5 h-5', isDev ? 'drop-shadow-[0_0_8px_var(--accent-glow)]' : '']} />
+      <Icon name="code" class:list={['w-5 h-5 shrink-0', isDev ? 'text-blue-600 dark:text-blue-400' : 'text-blue-500']} />
       <span class="text-[10px] tracking-tight">Dev Tools</span>
     </a>
 
@@ -73,13 +80,38 @@ const isCv = currentPath.includes('/career-tools/cv-maker');
     <a
       href={withBasePath('/career-tools/cv-maker/')}
       class:list={[
-        'flex flex-col items-center justify-center gap-0.5 py-1 text-center transition',
-        isCv ? 'text-[color:var(--accent)] font-bold' : 'text-[color:var(--muted)] hover:text-[color:var(--fg)]',
+        'bottom-nav-tab flex flex-col items-center justify-center gap-0.5 py-1 text-center transition-colors',
+        isCv ? 'text-sky-600 dark:text-sky-400 font-bold' : 'text-[color:var(--muted)] hover:text-[color:var(--fg)] font-medium',
       ]}
       aria-label="CV Maker"
     >
-      <Icon name="career" class:list={['w-5 h-5', isCv ? 'drop-shadow-[0_0_8px_var(--accent-glow)]' : '']} />
+      <Icon name="career" class:list={['w-5 h-5 shrink-0', isCv ? 'text-sky-600 dark:text-sky-400' : 'text-sky-500']} />
       <span class="text-[10px] tracking-tight">CV Maker</span>
     </a>
   </div>
 </nav>
+
+<style>
+  #mobile-bottom-nav,
+  #mobile-bottom-nav * {
+    -webkit-tap-highlight-color: transparent !important;
+  }
+  .bottom-nav-tab {
+    background: transparent !important;
+    background-color: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    transform: none !important;
+    outline: none !important;
+  }
+  .bottom-nav-tab:hover,
+  .bottom-nav-tab:active,
+  .bottom-nav-tab:focus {
+    background: transparent !important;
+    background-color: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    transform: none !important;
+    outline: none !important;
+  }
+</style>

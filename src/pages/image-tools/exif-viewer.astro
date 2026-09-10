@@ -223,7 +223,7 @@ const schemaGraph = [
         <!-- Category Filter & Action Bar -->
         <div class="flex flex-wrap items-center justify-between gap-3 border-b border-[color:var(--border)] pb-2 text-xs">
           <div class="flex flex-wrap gap-1.5" id="category-filters">
-            <button type="button" class="cat-btn active rounded-lg bg-[color:var(--fg)] px-3 py-1 font-semibold text-[color:var(--bg)] transition cursor-pointer" data-cat="all">All Tags</button>
+            <button type="button" class="cat-btn active rounded-lg bg-[color:var(--accent)] px-3 py-1 font-semibold text-white transition cursor-pointer" data-cat="all">All Tags</button>
             <button type="button" class="cat-btn rounded-lg bg-[color:var(--surface)] border border-[color:var(--border)] px-3 py-1 font-semibold text-[color:var(--muted)] hover:text-[color:var(--fg)] transition cursor-pointer" data-cat="camera">Camera &amp; Lens</button>
             <button type="button" class="cat-btn rounded-lg bg-[color:var(--surface)] border border-[color:var(--border)] px-3 py-1 font-semibold text-[color:var(--muted)] hover:text-[color:var(--fg)] transition cursor-pointer" data-cat="exposure">Exposure &amp; Optics</button>
             <button type="button" class="cat-btn rounded-lg bg-[color:var(--surface)] border border-[color:var(--border)] px-3 py-1 font-semibold text-[color:var(--muted)] hover:text-[color:var(--fg)] transition cursor-pointer" data-cat="location">GPS Location</button>
@@ -774,10 +774,10 @@ const schemaGraph = [
       catBtns.forEach(btn => {
         btn.addEventListener('click', () => {
           catBtns.forEach(b => {
-            b.classList.remove('bg-[color:var(--fg)]', 'text-[color:var(--bg)]');
+            b.classList.remove('bg-[color:var(--accent)]', 'text-white');
             b.classList.add('bg-[color:var(--surface)]', 'border', 'border-[color:var(--border)]', 'text-[color:var(--muted)]');
           });
-          btn.classList.add('bg-[color:var(--fg)]', 'text-[color:var(--bg)]');
+          btn.classList.add('bg-[color:var(--accent)]', 'text-white');
           btn.classList.remove('bg-[color:var(--surface)]', 'border-[color:var(--border)]', 'text-[color:var(--muted)]');
 
           activeCategory = btn.dataset.cat;

@@ -72,7 +72,7 @@ const { initialTemplate = 'professional' } = Astro.props as Props;
         <button
           type="button"
           id="cv-download-pdf"
-          class="flex-1 sm:flex-none inline-flex cursor-pointer items-center justify-center gap-1.5 rounded-xl bg-[color:var(--fg)] px-4 sm:px-5 py-2 text-xs font-bold text-[color:var(--bg)] shadow-xs transition hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-[color:var(--accent)]"
+          class="flex-1 sm:flex-none inline-flex cursor-pointer items-center justify-center gap-1.5 rounded-xl bg-[color:var(--accent)] px-4 sm:px-5 py-2 text-xs font-bold text-white shadow-xs transition hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-[color:var(--accent)]"
         >
           <span id="cv-btn-label">Download PDF</span>
           <svg id="cv-btn-icon" class="h-3.5 w-3.5 stroke-current" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -90,7 +90,7 @@ const { initialTemplate = 'professional' } = Astro.props as Props;
     <button
       type="button"
       id="cv-mobile-tab-edit"
-      class="flex-1 flex items-center justify-center gap-1.5 rounded-xl bg-[color:var(--fg)] text-[color:var(--bg)] py-2 text-xs font-bold transition shadow-xs cursor-pointer"
+      class="flex-1 flex items-center justify-center gap-1.5 rounded-xl bg-[color:var(--accent)] text-white py-2 text-xs font-bold transition shadow-xs cursor-pointer"
     >
       <svg class="w-3.5 h-3.5 stroke-current" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
         <path d="M12 20h9" />
@@ -306,7 +306,7 @@ const { initialTemplate = 'professional' } = Astro.props as Props;
               <button
                 type="button"
                 id="btn-ai-apply"
-                class="inline-flex cursor-pointer items-center gap-1.5 rounded-xl bg-[color:var(--fg)] px-3.5 py-1.5 text-xs font-bold text-[color:var(--bg)] shadow-xs transition hover:opacity-90"
+                class="inline-flex cursor-pointer items-center gap-1.5 rounded-xl bg-[color:var(--accent)] px-3.5 py-1.5 text-xs font-bold text-white shadow-xs transition hover:opacity-90"
               >
                 <span>Apply to Summary</span>
               </button>
@@ -2217,17 +2217,17 @@ const { initialTemplate = 'professional' } = Astro.props as Props;
         editorColumn.classList.remove('hidden');
         previewColumn.classList.add('hidden');
         previewColumn.classList.remove('block');
-        mobileTabEdit?.classList.add('bg-[color:var(--fg)]', 'text-[color:var(--bg)]');
+        mobileTabEdit?.classList.add('bg-[color:var(--accent)]', 'text-white');
         mobileTabEdit?.classList.remove('text-[color:var(--muted)]');
-        mobileTabPreview?.classList.remove('bg-[color:var(--fg)]', 'text-[color:var(--bg)]');
+        mobileTabPreview?.classList.remove('bg-[color:var(--accent)]', 'text-white');
         mobileTabPreview?.classList.add('text-[color:var(--muted)]');
       } else {
         editorColumn.classList.add('hidden');
         previewColumn.classList.remove('hidden');
         previewColumn.classList.add('block');
-        mobileTabPreview?.classList.add('bg-[color:var(--fg)]', 'text-[color:var(--bg)]');
+        mobileTabPreview?.classList.add('bg-[color:var(--accent)]', 'text-white');
         mobileTabPreview?.classList.remove('text-[color:var(--muted)]');
-        mobileTabEdit?.classList.remove('bg-[color:var(--fg)]', 'text-[color:var(--bg)]');
+        mobileTabEdit?.classList.remove('bg-[color:var(--accent)]', 'text-white');
         mobileTabEdit?.classList.add('text-[color:var(--muted)]');
         // Render & scale immediately upon switching to preview
         renderLivePreview();

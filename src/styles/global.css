@@ -133,13 +133,43 @@ textarea {
   touch-action: manipulation;
 }
 
-/* Ensure all form controls and inputs adopt theme typography */
+/* Ensure form controls adopt theme typography */
 input,
 select,
-textarea,
+textarea {
+  color: var(--fg);
+}
+
+/* Default button typography inherits theme text color for secondary/surface buttons */
 button {
   color: var(--fg);
 }
+
+/* Ensure all blue / accent buttons ALWAYS use crisp white font in both light and dark mode */
+button[class*="bg-[color:var(--accent)]"],
+button[class*="bg-accent"],
+button[class*="bg-blue-"],
+button[class*="bg-indigo-"],
+a[class*="bg-[color:var(--accent)]"],
+a[class*="bg-accent"],
+a[class*="bg-blue-"],
+a[class*="bg-indigo-"],
+.btn-accent,
+.btn-primary {
+  color: #FFFFFF !important;
+}
+
+button[class*="bg-[color:var(--accent)]"] *,
+button[class*="bg-accent"] *,
+button[class*="bg-blue-"] *,
+button[class*="bg-indigo-"] *,
+a[class*="bg-[color:var(--accent)]"] *,
+a[class*="bg-accent"] *,
+a[class*="bg-blue-"] *,
+a[class*="bg-indigo-"] * {
+  color: inherit !important;
+}
+
 
 select option {
   background-color: var(--surface);
@@ -277,8 +307,7 @@ a {
 [id^="mode-"]:not(.active):not([class*="accent"]):hover,
 [id^="view-"]:not(.active):not([class*="accent"]):hover,
 .glass-tab:not(.active):not(.glass-tab-active):hover,
-nav[aria-label="Primary"] a:hover,
-nav[aria-label="Mobile Bottom Navigation"] a:hover {
+nav[aria-label="Primary"] a:hover {
   background-color: var(--tab-surface-hover) !important;
   border-color: var(--tab-border-hover) !important;
   box-shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.08), 0 0 12px var(--accent-glow) !important;

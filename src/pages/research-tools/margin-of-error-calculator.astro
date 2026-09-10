@@ -139,7 +139,7 @@ const schemaGraph = [
       <button
         type="button"
         id="tab-mode-prop"
-        class="mode-tab active rounded-xl bg-[color:var(--fg)] px-4 py-2 text-[color:var(--bg)] transition cursor-pointer"
+        class="mode-tab active rounded-xl bg-[color:var(--accent)] px-4 py-2 text-white transition cursor-pointer"
         data-mode="proportion"
       >
         Survey Proportion / Percentage Mode (±%)
@@ -629,10 +629,10 @@ const schemaGraph = [
       modeTabs.forEach(tab => {
         tab.addEventListener('click', () => {
           modeTabs.forEach(t => {
-            t.classList.remove('bg-[color:var(--fg)]', 'text-[color:var(--bg)]');
+            t.classList.remove('bg-[color:var(--accent)]', 'text-white');
             t.classList.add('bg-[color:var(--surface)]', 'border', 'border-[color:var(--border)]', 'text-[color:var(--muted)]');
           });
-          tab.classList.add('bg-[color:var(--fg)]', 'text-[color:var(--bg)]');
+          tab.classList.add('bg-[color:var(--accent)]', 'text-white');
           tab.classList.remove('bg-[color:var(--surface)]', 'border-[color:var(--border)]', 'text-[color:var(--muted)]');
 
           currentMode = tab.dataset.mode;

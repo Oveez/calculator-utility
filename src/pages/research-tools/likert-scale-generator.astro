@@ -209,7 +209,7 @@ I would recommend this statistical tool to colleagues in academia.</textarea>
       <div class="space-y-4">
         <div class="flex flex-wrap items-center justify-between gap-3 border-b border-[color:var(--border)] pb-2 text-xs">
           <div class="flex flex-wrap gap-1.5" id="export-tabs">
-            <button type="button" class="export-tab active rounded-lg bg-[color:var(--fg)] px-3 py-1 font-bold text-[color:var(--bg)] transition cursor-pointer" data-target="panel-csv">
+            <button type="button" class="export-tab active rounded-lg bg-[color:var(--accent)] px-3 py-1 font-bold text-white transition cursor-pointer" data-target="panel-csv">
               CSV Questionnaire Template
             </button>
             <button type="button" class="export-tab rounded-lg bg-[color:var(--surface)] border border-[color:var(--border)] px-3 py-1 font-bold text-[color:var(--muted)] hover:text-[color:var(--fg)] transition cursor-pointer" data-target="panel-html">
@@ -227,7 +227,7 @@ I would recommend this statistical tool to colleagues in academia.</textarea>
             <button
               type="button"
               id="copy-export-btn"
-              class="rounded-xl bg-[color:var(--fg)] px-3.5 py-1.5 text-xs font-bold text-[color:var(--bg)] hover:opacity-90 transition cursor-pointer"
+              class="rounded-xl bg-[color:var(--accent)] px-3.5 py-1.5 text-xs font-bold text-white hover:opacity-90 transition cursor-pointer"
             >
               Copy Export
             </button>
@@ -467,10 +467,10 @@ I would recommend this statistical tool to colleagues in academia.</textarea>
       exportTabs.forEach(tab => {
         tab.addEventListener('click', () => {
           exportTabs.forEach(t => {
-            t.classList.remove('bg-[color:var(--fg)]', 'text-[color:var(--bg)]');
+            t.classList.remove('bg-[color:var(--accent)]', 'text-white');
             t.classList.add('bg-[color:var(--surface)]', 'border', 'border-[color:var(--border)]', 'text-[color:var(--muted)]');
           });
-          tab.classList.add('bg-[color:var(--fg)]', 'text-[color:var(--bg)]');
+          tab.classList.add('bg-[color:var(--accent)]', 'text-white');
           tab.classList.remove('bg-[color:var(--surface)]', 'border-[color:var(--border)]', 'text-[color:var(--muted)]');
 
           currentExportMode = tab.dataset.target;

@@ -1,12 +1,24 @@
 ---
 import Icon from './Icon.astro';
 import { allToolsIndex } from '../data/allToolsIndex';
-import { getToolIconConfig } from '../utils/toolIcons';
+import { getToolIconConfig, getCategoryIconConfig } from '../utils/toolIcons';
 
 const toolsWithIcons = allToolsIndex.map((t) => ({
   ...t,
   iconConfig: getToolIconConfig(t.url, t.title, t.category),
 }));
+
+const searchCategories = [
+  { label: 'All (186)', filter: '' },
+  { label: 'Dev Tools', filter: 'Developer' },
+  { label: 'PDF', filter: 'PDF' },
+  { label: 'Images', filter: 'Image' },
+  { label: 'Text', filter: 'Text' },
+  { label: 'Finance', filter: 'Finance' },
+  { label: 'Tax', filter: 'Tax' },
+  { label: 'Career', filter: 'Career' },
+  { label: 'Generators', filter: 'Generators' },
+];
 ---
 
 <!-- Global / Mobile Quick Search Modal -->
@@ -48,15 +60,28 @@ const toolsWithIcons = allToolsIndex.map((t) => ({
 
     <!-- Quick Category Filter Pills -->
     <div class="flex items-center gap-1.5 overflow-x-auto p-3 border-b border-[color:var(--border)] bg-[color:var(--surface)] text-xs no-scrollbar">
-      <button type="button" data-modal-filter="" class="search-filter-chip active shrink-0 rounded-lg px-2.5 py-1 font-semibold transition">All (186)</button>
-      <button type="button" data-modal-filter="Developer" class="search-filter-chip shrink-0 rounded-lg px-2.5 py-1 font-semibold transition">Dev Tools</button>
-      <button type="button" data-modal-filter="PDF" class="search-filter-chip shrink-0 rounded-lg px-2.5 py-1 font-semibold transition">PDF</button>
-      <button type="button" data-modal-filter="Image" class="search-filter-chip shrink-0 rounded-lg px-2.5 py-1 font-semibold transition">Images</button>
-      <button type="button" data-modal-filter="Text" class="search-filter-chip shrink-0 rounded-lg px-2.5 py-1 font-semibold transition">Text</button>
-      <button type="button" data-modal-filter="Finance" class="search-filter-chip shrink-0 rounded-lg px-2.5 py-1 font-semibold transition">Finance</button>
-      <button type="button" data-modal-filter="Tax" class="search-filter-chip shrink-0 rounded-lg px-2.5 py-1 font-semibold transition">Tax</button>
-      <button type="button" data-modal-filter="Career" class="search-filter-chip shrink-0 rounded-lg px-2.5 py-1 font-semibold transition">Career</button>
-      <button type="button" data-modal-filter="Generators" class="search-filter-chip shrink-0 rounded-lg px-2.5 py-1 font-semibold transition">Generators</button>
+      {searchCategories.map((cat, idx) => {
+        const catConfig = getCategoryIconConfig(cat.filter || 'All');
+        const activeTextColor = cat.filter ? catConfig.textColor : 'text-[color:var(--fg)]';
+        const activeBgColor = cat.filter ? catConfig.badgeBg : 'bg-[color:var(--surface-strong)]';
+        return (
+          <button
+            type="button"
+            data-modal-filter={cat.filter}
+            data-color-class={activeTextColor}
+            data-bg-class={activeBgColor}
+            class:list={[
+              'search-filter-chip shrink-0 rounded-xl px-2.5 py-1 text-xs transition inline-flex items-center gap-1.5 border',
+              idx === 0
+                ? 'active font-bold border-[color:var(--border-strong)] bg-[color:var(--surface-strong)] text-[color:var(--fg)] shadow-xs'
+                : 'border-[color:var(--border)] bg-[color:var(--bg)] text-[color:var(--muted)] font-medium hover:text-[color:var(--fg)] hover:border-[color:var(--border-strong)]',
+            ]}
+          >
+            <svg class={`w-3.5 h-3.5 stroke-current shrink-0 ${catConfig.textColor}`} viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" set:html={catConfig.svgPath} />
+            <span>{cat.label}</span>
+          </button>
+        );
+      })}
     </div>
 
     <!-- Search Results Container -->
@@ -76,14 +101,7 @@ const toolsWithIcons = allToolsIndex.map((t) => ({
 
 <style>
   .search-filter-chip {
-    color: var(--muted);
-    background-color: var(--bg);
-    border: 1px solid var(--border);
-  }
-  .search-filter-chip.active {
-    color: var(--bg);
-    background-color: var(--fg);
-    border-color: var(--fg);
+    touch-action: manipulation;
   }
 </style>
 
@@ -195,9 +213,21 @@ const toolsWithIcons = allToolsIndex.map((t) => ({
 
     filterChips.forEach((chip) => {
       chip.addEventListener('click', () => {
-        filterChips.forEach((c) => c.classList.remove('active'));
+        filterChips.forEach((c) => {
+          c.classList.remove('active');
+          c.className = 'search-filter-chip shrink-0 rounded-xl px-2.5 py-1 text-xs transition inline-flex items-center gap-1.5 border border-[color:var(--border)] bg-[color:var(--bg)] text-[color:var(--muted)] font-medium hover:text-[color:var(--fg)] hover:border-[color:var(--border-strong)]';
+        });
+
         chip.classList.add('active');
         activeFilter = chip.dataset.modalFilter || '';
+        const colorClass = chip.dataset.colorClass || 'text-[color:var(--fg)]';
+        const bgClass = chip.dataset.bgClass || 'bg-[color:var(--surface-strong)]';
+
+        if (!activeFilter) {
+          chip.className = 'search-filter-chip active shrink-0 rounded-xl px-2.5 py-1 text-xs font-bold transition inline-flex items-center gap-1.5 border border-[color:var(--border-strong)] bg-[color:var(--surface-strong)] text-[color:var(--fg)] shadow-xs';
+        } else {
+          chip.className = `search-filter-chip active shrink-0 rounded-xl px-2.5 py-1 text-xs font-bold transition inline-flex items-center gap-1.5 border border-current ${colorClass} ${bgClass} shadow-xs`;
+        }
         renderResults();
       });
     });

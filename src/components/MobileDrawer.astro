@@ -1,11 +1,13 @@
 ---
 import Icon from './Icon.astro';
+import BrandLogo from './BrandLogo.astro';
 import { siteName, withBasePath } from '../utils/site';
 
 const categoryGroups = [
   {
     name: 'Developer & Data',
     icon: 'code' as const,
+    color: 'text-blue-500',
     links: [
       { href: withBasePath('/developer-tools/'), label: 'Developer Tools (17)' },
       { href: withBasePath('/developer-tools/json-formatter/'), label: 'JSON Formatter' },
@@ -18,6 +20,7 @@ const categoryGroups = [
   {
     name: 'Media & Documents',
     icon: 'image' as const,
+    color: 'text-emerald-500',
     links: [
       { href: withBasePath('/image-tools/'), label: 'Image & Privacy (10)' },
       { href: withBasePath('/image-tools/exif-remover/'), label: 'EXIF Remover' },
@@ -30,6 +33,7 @@ const categoryGroups = [
   {
     name: 'Calculators & Finance',
     icon: 'finance' as const,
+    color: 'text-emerald-600 dark:text-emerald-400',
     links: [
       { href: withBasePath('/#calculators'), label: 'All 30 Core Calculators' },
       { href: withBasePath('/currency-converter/'), label: 'Currency Converter' },
@@ -44,6 +48,7 @@ const categoryGroups = [
   {
     name: 'Study, Research & Design',
     icon: 'education' as const,
+    color: 'text-indigo-500',
     links: [
       { href: withBasePath('/academic-tools/'), label: 'Academic & GPA (7)' },
       { href: withBasePath('/research-tools/'), label: 'Research & Statistics (16)' },
@@ -56,6 +61,7 @@ const categoryGroups = [
   {
     name: 'Career & Resume',
     icon: 'career' as const,
+    color: 'text-sky-500',
     links: [
       { href: withBasePath('/career-tools/cv-maker/'), label: 'ATS CV & Resume Builder' },
       { href: withBasePath('/career-tools/student-cv-maker/'), label: 'Student CV Maker' },
@@ -89,18 +95,7 @@ const categoryGroups = [
     <!-- Drawer Header -->
     <div class="flex items-center justify-between border-b border-[color:var(--border)] p-4 bg-[color:var(--surface)]">
       <a class="flex items-center gap-2.5" href={withBasePath('/')} id="drawer-brand-link">
-        <div class="flex h-7 w-7 items-center justify-center rounded-lg bg-blue-600 shadow-md shrink-0 ring-1 ring-blue-700/20">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <rect width="16" height="20" x="4" y="2" rx="2" />
-            <line x1="8" x2="16" y1="6" y2="6" />
-            <line x1="16" x2="16" y1="14" y2="14.01" />
-            <line x1="12" x2="12" y1="14" y2="14.01" />
-            <line x1="8" x2="8" y1="14" y2="14.01" />
-            <line x1="16" x2="16" y1="18" y2="18.01" />
-            <line x1="12" x2="12" y1="18" y2="18.01" />
-            <line x1="8" x2="8" y1="18" y2="18.01" />
-          </svg>
-        </div>
+        <BrandLogo class="h-8 w-8 shrink-0" />
         <div class="flex flex-col">
           <span class="text-sm font-bold tracking-tight text-[color:var(--fg)] leading-none">{siteName}</span>
           <span class="text-[10px] font-medium text-[color:var(--muted)] mt-0.5">186 In-Browser Tools</span>
@@ -121,9 +116,9 @@ const categoryGroups = [
       <button
         type="button"
         data-trigger-search
-        class="flex w-full items-center gap-2.5 rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] px-3.5 py-2.5 text-xs text-[color:var(--muted)] hover:border-[color:var(--accent)] hover:shadow-[0_0_12px_var(--accent-glow)] hover:text-[color:var(--fg)] transition"
+        class="flex w-full items-center gap-2.5 rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] px-3.5 py-2.5 text-xs text-[color:var(--muted)] hover:border-[color:var(--border-strong)] hover:text-[color:var(--fg)] transition cursor-pointer"
       >
-        <Icon name="search" class="w-3.5 h-3.5" />
+        <Icon name="search" class="w-3.5 h-3.5 text-blue-500" />
         <span>Search all 186 utilities...</span>
       </button>
     </div>
@@ -135,20 +130,31 @@ const categoryGroups = [
         href={withBasePath('/')}
         class="drawer-nav-item flex items-center gap-3 rounded-xl px-3.5 py-2.5 text-xs font-bold text-[color:var(--fg)] bg-[color:var(--surface)] hover:bg-[color:var(--surface-strong)] transition"
       >
-        <Icon name="calculator" class="w-4 h-4 text-[color:var(--accent)]" />
+        <div class="flex h-6 w-6 items-center justify-center rounded-lg bg-blue-500/10 text-blue-600 dark:bg-blue-500/20 dark:text-blue-400 shrink-0">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect width="16" height="20" x="4" y="2" rx="2" />
+            <line x1="8" x2="16" y1="6" y2="6" />
+            <line x1="16" x2="16" y1="14" y2="14.01" />
+            <line x1="12" x2="12" y1="14" y2="14.01" />
+            <line x1="8" x2="8" y1="14" y2="14.01" />
+            <line x1="16" x2="16" y1="18" y2="18.01" />
+            <line x1="12" x2="12" y1="18" y2="18.01" />
+            <line x1="8" x2="8" y1="18" y2="18.01" />
+          </svg>
+        </div>
         <span>Home Dashboard</span>
       </a>
 
       <!-- CV Maker Featured Pill -->
       <a
         href={withBasePath('/career-tools/cv-maker/')}
-        class="drawer-nav-item flex items-center justify-between gap-3 rounded-xl px-3.5 py-2.5 text-xs font-bold text-[color:var(--bg)] bg-[color:var(--fg)] shadow-xs transition hover:opacity-90"
+        class="drawer-nav-item flex items-center justify-between gap-3 rounded-xl px-3.5 py-2.5 text-xs font-bold text-sky-600 dark:text-sky-400 bg-sky-500/10 border border-sky-500/20 shadow-xs transition hover:bg-sky-500/20"
       >
         <div class="flex items-center gap-3">
-          <Icon name="career" class="w-4 h-4" />
+          <Icon name="career" class="w-4 h-4 text-sky-500" />
           <span>ATS CV Maker &amp; PDF</span>
         </div>
-        <span class="rounded-md bg-cyan-500/20 px-2 py-0.5 text-[9px] font-bold text-cyan-300">A4 PDF</span>
+        <span class="rounded-md bg-sky-500/20 px-2 py-0.5 text-[9px] font-bold text-sky-600 dark:text-sky-400">A4 PDF</span>
       </a>
 
       <!-- Category Accordions -->
@@ -158,7 +164,7 @@ const categoryGroups = [
           <details class="drawer-group group rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] overflow-hidden" open={index === 0}>
             <summary class="flex cursor-pointer list-none items-center justify-between p-3 text-xs font-bold text-[color:var(--fg)] select-none hover:bg-[color:var(--surface-strong)] transition">
               <div class="flex items-center gap-2.5">
-                <Icon name={group.icon} class="w-4 h-4 text-[color:var(--muted)] group-open:text-[color:var(--fg)]" />
+                <Icon name={group.icon} class={`w-4 h-4 shrink-0 ${group.color}`} />
                 <span>{group.name}</span>
               </div>
               <span class="text-[10px] text-[color:var(--muted)] group-open:rotate-180 transition-transform">▼</span>

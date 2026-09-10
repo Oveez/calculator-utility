@@ -1,6 +1,7 @@
 ---
 import ThemeToggle from './ThemeToggle.astro';
 import Icon from './Icon.astro';
+import BrandLogo from './BrandLogo.astro';
 import { siteName, withBasePath } from '../utils/site';
 
 const navigationItems = [
@@ -18,18 +19,7 @@ const navigationItems = [
   <div class="mx-auto flex w-full max-w-6xl items-center justify-between gap-4 px-4 py-3 sm:px-6 lg:px-8">
     <!-- Brand Logo + Site Name -->
     <a class="flex items-center gap-2.5 transition hover:opacity-90 shrink-0" href={withBasePath('/')} aria-label={`${siteName} Home`}>
-      <div class="flex h-9 w-9 items-center justify-center rounded-xl bg-blue-600 shadow-md shrink-0 ring-1 ring-blue-700/20">
-        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <rect width="16" height="20" x="4" y="2" rx="2" />
-          <line x1="8" x2="16" y1="6" y2="6" />
-          <line x1="16" x2="16" y1="14" y2="14.01" />
-          <line x1="12" x2="12" y1="14" y2="14.01" />
-          <line x1="8" x2="8" y1="14" y2="14.01" />
-          <line x1="16" x2="16" y1="18" y2="18.01" />
-          <line x1="12" x2="12" y1="18" y2="18.01" />
-          <line x1="8" x2="8" y1="18" y2="18.01" />
-        </svg>
-      </div>
+      <BrandLogo class="h-9 w-9 shrink-0" />
       <div class="flex flex-col">
         <span class="text-sm sm:text-base font-bold tracking-tight text-[color:var(--fg)] leading-none">
           {siteName}
@@ -74,7 +64,7 @@ const navigationItems = [
       <button
         type="button"
         data-trigger-drawer
-        class="flex h-9 w-9 md:hidden items-center justify-center rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] text-[color:var(--fg)] hover:border-[color:var(--accent)] hover:shadow-[0_0_12px_var(--accent-glow)] transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--accent)] cursor-pointer"
+        class="flex h-9 w-9 md:hidden items-center justify-center rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] text-[color:var(--fg)] hover:border-[color:var(--border-strong)] hover:bg-[color:var(--surface-strong)] transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-current cursor-pointer"
         aria-label="Open navigation drawer"
       >
         <svg class="h-4.5 w-4.5 stroke-current" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
