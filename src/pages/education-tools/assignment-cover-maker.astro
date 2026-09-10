@@ -1,0 +1,1920 @@
+---
+import SiteLayout from '../../layouts/SiteLayout.astro';
+import Icon from '../../components/Icon.astro';
+import { siteName, toAbsoluteUrl, withBasePath } from '../../utils/site';
+
+const pageTitle = `Assignment Cover Maker (Free PDF Generator) · ${siteName}`;
+const pageDesc = 'Create professional university assignment covers instantly. Choose from 5 academic templates, custom color themes, search thousands of institutions, and generate a print-ready A4 PDF.';
+const canonicalUrl = toAbsoluteUrl('/education-tools/assignment-cover-maker/');
+
+const breadcrumbItems = [
+  { label: 'Home', href: toAbsoluteUrl('/') },
+  { label: 'Education Tools', href: toAbsoluteUrl('/education-tools/') },
+  { label: 'Assignment Cover Maker' },
+];
+
+const schemaFaq = [
+  {
+    question: 'Are university assignment covers free to download?',
+    answer: 'Yes, 100% free. You can generate and download unlimited high-resolution A4 PDFs without watermarks, registration, or hidden fees.',
+  },
+  {
+    question: 'How do I add my university logo to the cover page?',
+    answer: 'Simply type your university name or acronym (e.g., DU, BUET, KU, NSU, Harvard) in the institution search box to load its verified emblem automatically, or upload your own custom image file using the Upload Custom Logo option.',
+  },
+  {
+    question: 'Is my student data and assignment information secure?',
+    answer: 'Yes. All data processing and PDF compilation occur 100% locally in your web browser. Your names, roll numbers, assignment titles, and grades are never uploaded to any remote server.',
+  },
+  {
+    question: 'Can I add multiple group members to a group assignment cover?',
+    answer: 'Yes. Click the "+ Add Team Member" button to add as many group students as needed, with individual names, student IDs, and section codes.',
+  },
+];
+
+const schemaGraph = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebApplication',
+    name: 'Assignment Cover Maker',
+    url: canonicalUrl,
+    applicationCategory: 'EducationalApplication',
+    operatingSystem: 'All',
+    browserRequirements: 'Requires JavaScript',
+    description: pageDesc,
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: breadcrumbItems.map((item, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      name: item.label,
+      item: item.href,
+    })),
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: schemaFaq.map((item) => ({
+      '@type': 'Question',
+      name: item.question,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: item.answer,
+      },
+    })),
+  },
+];
+---
+
+<SiteLayout title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(schemaGraph)} />
+
+  <style is:inline>
+    /* Dedicated Print Styles for Direct Native Browser Printing */
+    @media print {
+      @page {
+        size: 210mm 297mm;
+        margin: 0mm;
+      }
+      *, *::before, *::after {
+        box-sizing: border-box !important;
+      }
+      html, body {
+        width: 210mm !important;
+        height: 297mm !important;
+        max-width: 210mm !important;
+        max-height: 297mm !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        background: #ffffff !important;
+        overflow: hidden !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+      /* Hide all website chrome, navbars, sidebars, headers, footers */
+      body * {
+        visibility: hidden !important;
+      }
+      /* Reveal only the cover preview page and all its descendants */
+      #cover-preview-page,
+      #cover-preview-page * {
+        visibility: visible !important;
+      }
+      #cover-preview-page {
+        position: fixed !important;
+        left: 0 !important;
+        top: 0 !important;
+        width: 210mm !important;
+        height: 297mm !important;
+        min-width: 210mm !important;
+        min-height: 297mm !important;
+        max-width: 210mm !important;
+        max-height: 297mm !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        border: none !important;
+        box-shadow: none !important;
+        transform: none !important;
+        box-sizing: border-box !important;
+        overflow: hidden !important;
+        page-break-inside: avoid !important;
+        page-break-before: avoid !important;
+        page-break-after: avoid !important;
+        break-inside: avoid !important;
+        break-before: avoid !important;
+        break-after: avoid !important;
+        background: #ffffff !important;
+        z-index: 9999999 !important;
+      }
+      #cover-preview-content {
+        width: 100% !important;
+        height: 100% !important;
+        box-sizing: border-box !important;
+      }
+    }
+  </style>
+
+  <article class="space-y-6 py-2" data-cover-maker-app>
+    <!-- Breadcrumb Navigation -->
+    <nav aria-label="Breadcrumb">
+      <ol class="flex flex-wrap items-center gap-2 text-xs text-[color:var(--muted)]">
+        {breadcrumbItems.map((item, index) => (
+          <li class="flex items-center gap-2">
+            {index > 0 && <span aria-hidden="true">/</span>}
+            {item.href ? (
+              <a class="transition hover:text-[color:var(--fg)]" href={item.href}>
+                {item.label}
+              </a>
+            ) : (
+              <span aria-current="page" class="font-semibold text-[color:var(--fg)]">
+                {item.label}
+              </span>
+            )}
+          </li>
+        ))}
+      </ol>
+    </nav>
+
+    <!-- Header Section -->
+    <header class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between border-b border-[color:var(--border)] pb-5">
+      <div>
+        <div class="flex items-center gap-2 mb-1">
+          <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-[color:var(--accent-soft)] text-[color:var(--accent)]">
+            <Icon name="sparkles" class="w-3.5 h-3.5" />
+            Academic Tool
+          </span>
+          <span class="text-xs text-[color:var(--muted)] font-medium">Standard A4 Format (210 × 297 mm)</span>
+        </div>
+        <h1 class="text-2xl font-bold tracking-tight text-[color:var(--fg)] sm:text-3xl">
+          Assignment Cover Maker
+        </h1>
+        <p class="text-sm text-[color:var(--muted)] mt-1 max-w-2xl leading-relaxed">
+          Create publication-quality university cover pages in seconds. Choose from 5 distinct academic templates, customize color palettes, load institution logos, and export print-ready A4 PDFs.
+        </p>
+      </div>
+
+      <!-- Quick Action Controls -->
+      <div class="flex items-center gap-2 self-start sm:self-auto">
+        <button
+          type="button"
+          id="btn-reset-form"
+          class="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] text-[color:var(--muted)] hover:text-[color:var(--fg)] hover:bg-[color:var(--surface-strong)] transition cursor-pointer"
+          title="Reset all form fields to default"
+        >
+          <Icon name="refresh" class="w-3.5 h-3.5" />
+          <span>Reset</span>
+        </button>
+        <button
+          type="button"
+          id="btn-print-cover"
+          class="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] text-[color:var(--fg)] hover:bg-[color:var(--surface-strong)] transition cursor-pointer shadow-xs"
+        >
+          <Icon name="document" class="w-3.5 h-3.5" />
+          <span>Print</span>
+        </button>
+        <button
+          type="button"
+          id="btn-quick-download"
+          class="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-bold rounded-xl bg-[color:var(--accent)] hover:bg-[color:var(--accent-hover)] text-white transition cursor-pointer shadow-xs"
+        >
+          <Icon name="download" class="w-3.5 h-3.5" />
+          <span>Download PDF</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Workspace: Split Editor & Preview -->
+    <div class="grid grid-cols-1 gap-8 lg:grid-cols-12 lg:items-start">
+      
+      <!-- LEFT COLUMN: Controls & Form Editor (6 cols) -->
+      <section id="editor-controls-column" class="lg:col-span-6 xl:col-span-6 space-y-6">
+        
+        <!-- 1. TEMPLATE SELECTION -->
+        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 shadow-xs space-y-3.5">
+          <div class="flex items-center justify-between">
+            <h2 class="text-sm font-bold text-[color:var(--fg)] flex items-center gap-2">
+              <Icon name="dice" class="w-4 h-4 text-[color:var(--accent)]" />
+              <span>1. Choose Cover Template</span>
+            </h2>
+            <span class="text-xs text-[color:var(--muted)] font-medium" id="current-template-label">Classic Academic</span>
+          </div>
+
+          <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5" id="template-selector-grid">
+            <!-- Template 1: Classic Academic -->
+            <button
+              type="button"
+              data-template="classic"
+              class="template-card relative flex flex-col items-start p-3 rounded-xl border-2 border-[color:var(--accent)] bg-[color:var(--surface-strong)] text-left transition hover:border-[color:var(--accent)] cursor-pointer group"
+            >
+              <div class="w-full aspect-[4/3] rounded-lg bg-white border border-slate-200 p-2 flex flex-col items-center justify-between mb-2 shadow-xs group-hover:scale-[1.02] transition">
+                <div class="w-4 h-4 rounded-full border border-slate-400 bg-slate-100 flex items-center justify-center text-[7px] text-slate-600 font-serif">🏛️</div>
+                <div class="w-12 h-1 bg-slate-800 rounded-full"></div>
+                <div class="w-16 h-0.5 bg-slate-300 rounded-full"></div>
+                <div class="w-full flex justify-between px-1 text-[5px] text-slate-400"><span>•</span><span>•</span></div>
+              </div>
+              <span class="text-xs font-bold text-[color:var(--fg)] leading-tight">Classic</span>
+              <span class="text-[10px] text-[color:var(--muted)] mt-0.5">Formal & Traditional</span>
+              <span class="active-badge absolute top-2 right-2 w-2 h-2 rounded-full bg-[color:var(--accent)]"></span>
+            </button>
+
+            <!-- Template 2: Modern Minimal -->
+            <button
+              type="button"
+              data-template="modern"
+              class="template-card relative flex flex-col items-start p-3 rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] text-left transition hover:border-[color:var(--border-strong)] cursor-pointer group"
+            >
+              <div class="w-full aspect-[4/3] rounded-lg bg-white border border-slate-200 p-2 flex flex-col justify-between mb-2 shadow-xs group-hover:scale-[1.02] transition">
+                <div class="flex justify-between items-center w-full">
+                  <div class="w-8 h-1 bg-blue-600 rounded-full"></div>
+                  <div class="w-3 h-3 rounded-xs bg-slate-200"></div>
+                </div>
+                <div class="space-y-1 my-auto">
+                  <div class="w-14 h-1.5 bg-slate-900 rounded-full"></div>
+                  <div class="w-10 h-0.5 bg-slate-400 rounded-full"></div>
+                </div>
+                <div class="w-12 h-0.5 bg-slate-300 rounded-full"></div>
+              </div>
+              <span class="text-xs font-bold text-[color:var(--fg)] leading-tight">Modern Minimal</span>
+              <span class="text-[10px] text-[color:var(--muted)] mt-0.5">Clean & Contemporary</span>
+              <span class="active-badge absolute top-2 right-2 w-2 h-2 rounded-full bg-[color:var(--accent)] hidden"></span>
+            </button>
+
+            <!-- Template 3: Professional -->
+            <button
+              type="button"
+              data-template="professional"
+              class="template-card relative flex flex-col items-start p-3 rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] text-left transition hover:border-[color:var(--border-strong)] cursor-pointer group"
+            >
+              <div class="w-full aspect-[4/3] rounded-lg bg-white border border-slate-200 p-1.5 flex flex-col justify-between mb-2 shadow-xs group-hover:scale-[1.02] transition">
+                <div class="w-full h-2 bg-slate-100 rounded-xs flex items-center px-1">
+                  <div class="w-10 h-0.5 bg-slate-600 rounded-full"></div>
+                </div>
+                <div class="w-12 h-1 bg-slate-800 rounded-full mx-auto"></div>
+                <div class="grid grid-cols-2 gap-1 w-full">
+                  <div class="h-3.5 rounded-xs bg-slate-50 border border-slate-200"></div>
+                  <div class="h-3.5 rounded-xs bg-slate-50 border border-slate-200"></div>
+                </div>
+              </div>
+              <span class="text-xs font-bold text-[color:var(--fg)] leading-tight">Professional</span>
+              <span class="text-[10px] text-[color:var(--muted)] mt-0.5">Structured Card Grid</span>
+              <span class="active-badge absolute top-2 right-2 w-2 h-2 rounded-full bg-[color:var(--accent)] hidden"></span>
+            </button>
+
+            <!-- Template 4: Elegant -->
+            <button
+              type="button"
+              data-template="elegant"
+              class="template-card relative flex flex-col items-start p-3 rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] text-left transition hover:border-[color:var(--border-strong)] cursor-pointer group"
+            >
+              <div class="w-full aspect-[4/3] rounded-lg bg-white border border-slate-200 p-1.5 flex flex-col justify-between mb-2 shadow-xs group-hover:scale-[1.02] transition">
+                <div class="w-full h-full border border-slate-300 rounded-xs p-1 flex flex-col items-center justify-between">
+                  <div class="w-3 h-3 rounded-full border border-slate-400"></div>
+                  <div class="w-10 h-1 bg-slate-900 rounded-full"></div>
+                  <div class="w-8 h-0.5 bg-slate-400 rounded-full"></div>
+                  <div class="w-6 h-0.5 bg-slate-300 rounded-full"></div>
+                </div>
+              </div>
+              <span class="text-xs font-bold text-[color:var(--fg)] leading-tight">Elegant</span>
+              <span class="text-[10px] text-[color:var(--muted)] mt-0.5">Ornamental Border</span>
+              <span class="active-badge absolute top-2 right-2 w-2 h-2 rounded-full bg-[color:var(--accent)] hidden"></span>
+            </button>
+
+            <!-- Template 5: Bold Academic -->
+            <button
+              type="button"
+              data-template="bold"
+              class="template-card relative flex flex-col items-start p-3 rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] text-left transition hover:border-[color:var(--border-strong)] cursor-pointer group"
+            >
+              <div class="w-full aspect-[4/3] rounded-lg bg-white border border-slate-200 overflow-hidden flex flex-col justify-between mb-2 shadow-xs group-hover:scale-[1.02] transition">
+                <div class="w-full h-3 bg-blue-700 flex items-center px-1">
+                  <div class="w-10 h-0.5 bg-white rounded-full"></div>
+                </div>
+                <div class="px-2 space-y-1">
+                  <div class="w-14 h-1.5 bg-slate-900 rounded-full"></div>
+                  <div class="w-8 h-0.5 bg-slate-400 rounded-full"></div>
+                </div>
+                <div class="w-full h-1.5 bg-slate-200"></div>
+              </div>
+              <span class="text-xs font-bold text-[color:var(--fg)] leading-tight">Bold Academic</span>
+              <span class="text-[10px] text-[color:var(--muted)] mt-0.5">High Impact Banner</span>
+              <span class="active-badge absolute top-2 right-2 w-2 h-2 rounded-full bg-[color:var(--accent)] hidden"></span>
+            </button>
+          </div>
+        </div>
+
+        <!-- 2. THEME COLOR SELECTION -->
+        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 shadow-xs space-y-3">
+          <div class="flex items-center justify-between">
+            <h2 class="text-sm font-bold text-[color:var(--fg)] flex items-center gap-2">
+              <Icon name="color" class="w-4 h-4 text-[color:var(--accent)]" />
+              <span>2. Color Palette</span>
+            </h2>
+            <span class="text-xs text-[color:var(--muted)] font-medium" id="current-theme-label">Classic Slate</span>
+          </div>
+
+          <div class="grid grid-cols-3 sm:grid-cols-6 gap-2" id="theme-selector-grid">
+            <button
+              type="button"
+              data-theme="classic"
+              class="theme-pill flex flex-col items-center gap-1.5 p-2 rounded-xl border-2 border-[color:var(--accent)] bg-[color:var(--surface-strong)] transition cursor-pointer hover:scale-105"
+            >
+              <span class="w-6 h-6 rounded-full bg-slate-900 shadow-xs border border-white"></span>
+              <span class="text-[11px] font-semibold text-[color:var(--fg)]">Classic</span>
+            </button>
+
+            <button
+              type="button"
+              data-theme="blue"
+              class="theme-pill flex flex-col items-center gap-1.5 p-2 rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] transition cursor-pointer hover:scale-105"
+            >
+              <span class="w-6 h-6 rounded-full bg-blue-700 shadow-xs border border-white"></span>
+              <span class="text-[11px] font-semibold text-[color:var(--fg)]">Navy</span>
+            </button>
+
+            <button
+              type="button"
+              data-theme="green"
+              class="theme-pill flex flex-col items-center gap-1.5 p-2 rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] transition cursor-pointer hover:scale-105"
+            >
+              <span class="w-6 h-6 rounded-full bg-emerald-800 shadow-xs border border-white"></span>
+              <span class="text-[11px] font-semibold text-[color:var(--fg)]">Forest</span>
+            </button>
+
+            <button
+              type="button"
+              data-theme="burgundy"
+              class="theme-pill flex flex-col items-center gap-1.5 p-2 rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] transition cursor-pointer hover:scale-105"
+            >
+              <span class="w-6 h-6 rounded-full bg-rose-900 shadow-xs border border-white"></span>
+              <span class="text-[11px] font-semibold text-[color:var(--fg)]">Crimson</span>
+            </button>
+
+            <button
+              type="button"
+              data-theme="dark"
+              class="theme-pill flex flex-col items-center gap-1.5 p-2 rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] transition cursor-pointer hover:scale-105"
+            >
+              <span class="w-6 h-6 rounded-full bg-indigo-950 shadow-xs border border-white"></span>
+              <span class="text-[11px] font-semibold text-[color:var(--fg)]">Midnight</span>
+            </button>
+
+            <button
+              type="button"
+              data-theme="neutral"
+              class="theme-pill flex flex-col items-center gap-1.5 p-2 rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] transition cursor-pointer hover:scale-105"
+            >
+              <span class="w-6 h-6 rounded-full bg-amber-800 shadow-xs border border-white"></span>
+              <span class="text-[11px] font-semibold text-[color:var(--fg)]">Amber</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- 3. INSTITUTION & LOGO DETAILS -->
+        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 shadow-xs space-y-4">
+          <h2 class="text-sm font-bold text-[color:var(--fg)] flex items-center gap-2">
+            <Icon name="education" class="w-4 h-4 text-[color:var(--accent)]" />
+            <span>3. Institution & Department</span>
+          </h2>
+
+          <!-- Institution Search Input with Dropdown -->
+          <div class="relative space-y-1.5">
+            <label for="inst-search" class="block text-xs font-semibold text-[color:var(--fg)]">
+              University / College / School <span class="text-[color:var(--accent)]">*</span>
+            </label>
+            <div class="relative flex items-center">
+              <span class="absolute left-3.5 text-[color:var(--muted)] pointer-events-none">
+                <Icon name="search" class="w-4 h-4" />
+              </span>
+              <input
+                type="text"
+                id="inst-search"
+                placeholder="Search university (e.g., Dhaka, Harvard, Oxford...)"
+                autocomplete="off"
+                class="w-full rounded-xl border border-[color:var(--border-strong)] bg-[color:var(--bg)] pl-10 pr-10 py-2.5 text-sm text-[color:var(--fg)] placeholder-[color:var(--muted)] transition focus:border-[color:var(--accent)] focus:ring-2 focus:ring-[color:var(--accent-glow)] focus:outline-none"
+              />
+              <button
+                type="button"
+                id="btn-clear-inst"
+                class="absolute right-3 text-[color:var(--muted)] hover:text-[color:var(--fg)] p-1 hidden cursor-pointer"
+                title="Clear input"
+              >
+                <Icon name="close" class="w-3.5 h-3.5" />
+              </button>
+            </div>
+
+            <!-- Autocomplete Results Container -->
+            <ul
+              id="inst-results"
+              class="absolute left-0 right-0 top-[100%] mt-1 max-h-64 overflow-y-auto rounded-xl border border-[color:var(--border-strong)] bg-[color:var(--surface)] shadow-xl hidden z-50 divide-y divide-[color:var(--border)]"
+            >
+              <!-- Populated dynamically via JS -->
+            </ul>
+          </div>
+
+          <!-- Logo Upload Fallback Option -->
+          <div class="flex items-center justify-between pt-1">
+            <div class="flex items-center gap-2">
+              <span id="logo-status-indicator" class="inline-flex items-center gap-1.5 text-xs text-[color:var(--muted)]">
+                <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                <span>Institution emblem ready</span>
+              </span>
+            </div>
+
+            <label for="custom-logo-file" class="inline-flex items-center gap-1.5 text-xs font-semibold text-[color:var(--accent)] hover:underline cursor-pointer">
+              <Icon name="image" class="w-3.5 h-3.5" />
+              <span>Upload Custom Logo</span>
+              <input type="file" id="custom-logo-file" accept="image/png,image/jpeg,image/svg+xml,image/webp" class="hidden" />
+            </label>
+          </div>
+
+          <!-- Department / Faculty -->
+          <div class="space-y-1.5">
+            <label for="dept-input" class="block text-xs font-semibold text-[color:var(--fg)]">
+              Department / Faculty / School
+            </label>
+            <input
+              type="text"
+              id="dept-input"
+              placeholder="e.g., Department of Computer Science & Engineering"
+              class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3.5 py-2 text-sm text-[color:var(--fg)] transition focus:border-[color:var(--accent)] focus:outline-none"
+            />
+          </div>
+        </div>
+
+        <!-- 4. ASSIGNMENT & COURSE DETAILS -->
+        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 shadow-xs space-y-4">
+          <h2 class="text-sm font-bold text-[color:var(--fg)] flex items-center gap-2">
+            <Icon name="document" class="w-4 h-4 text-[color:var(--accent)]" />
+            <span>4. Assignment Information</span>
+          </h2>
+
+          <div class="space-y-1.5">
+            <label for="title-input" class="block text-xs font-semibold text-[color:var(--fg)]">
+              Assignment / Report Title <span class="text-[color:var(--accent)]">*</span>
+            </label>
+            <textarea
+              id="title-input"
+              rows="2"
+              placeholder="e.g., Implementation & Performance Analysis of Distributed Graph Algorithms"
+              class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3.5 py-2 text-sm text-[color:var(--fg)] transition focus:border-[color:var(--accent)] focus:outline-none resize-none"
+            ></textarea>
+          </div>
+
+          <div class="space-y-1.5">
+            <label for="subtitle-input" class="block text-xs font-semibold text-[color:var(--fg)]">
+              Subtitle / Topic (Optional)
+            </label>
+            <input
+              type="text"
+              id="subtitle-input"
+              placeholder="e.g., Final Semester Capstone Project - Part 2"
+              class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3.5 py-2 text-sm text-[color:var(--fg)] transition focus:border-[color:var(--accent)] focus:outline-none"
+            />
+          </div>
+
+          <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+            <div class="space-y-1.5">
+              <label for="course-name-input" class="block text-xs font-semibold text-[color:var(--fg)]">Course Title</label>
+              <input
+                type="text"
+                id="course-name-input"
+                placeholder="e.g., Data Structures & Algorithms"
+                class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3.5 py-2 text-sm text-[color:var(--fg)] transition focus:border-[color:var(--accent)] focus:outline-none"
+              />
+            </div>
+            <div class="space-y-1.5">
+              <label for="course-code-input" class="block text-xs font-semibold text-[color:var(--fg)]">Course Code</label>
+              <input
+                type="text"
+                id="course-code-input"
+                placeholder="e.g., CSE-302"
+                class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3.5 py-2 text-sm text-[color:var(--fg)] transition focus:border-[color:var(--accent)] focus:outline-none"
+              />
+            </div>
+          </div>
+        </div>
+
+        <!-- 5. STUDENT(S) & INSTRUCTOR INFORMATION -->
+        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 shadow-xs space-y-4">
+          <div class="flex items-center justify-between">
+            <h2 class="text-sm font-bold text-[color:var(--fg)] flex items-center gap-2">
+              <Icon name="user" class="w-4 h-4 text-[color:var(--accent)]" />
+              <span>5. Student & Instructor Details</span>
+            </h2>
+            <button
+              type="button"
+              id="btn-add-student"
+              class="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-semibold rounded-lg bg-[color:var(--accent-soft)] text-[color:var(--accent)] hover:bg-[color:var(--accent)] hover:text-white transition cursor-pointer"
+            >
+              <span>+ Add Group Member</span>
+            </button>
+          </div>
+
+          <!-- Student List Container -->
+          <div id="students-container" class="space-y-3">
+            <!-- Populated via JS -->
+          </div>
+
+          <div class="h-px w-full bg-[color:var(--border)]"></div>
+
+          <!-- Instructor Details -->
+          <div class="space-y-3">
+            <h3 class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Submitted To (Faculty / Instructor)</h3>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div class="space-y-1">
+                <label for="teacher-name-input" class="block text-xs font-semibold text-[color:var(--fg)]">Instructor Name</label>
+                <input
+                  type="text"
+                  id="teacher-name-input"
+                  placeholder="e.g., Dr. Sarah Jenkins"
+                  class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3.5 py-2 text-sm text-[color:var(--fg)] transition focus:border-[color:var(--accent)] focus:outline-none"
+                />
+              </div>
+              <div class="space-y-1">
+                <label for="teacher-title-input" class="block text-xs font-semibold text-[color:var(--fg)]">Designation / Title</label>
+                <input
+                  type="text"
+                  id="teacher-title-input"
+                  placeholder="e.g., Associate Professor"
+                  class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3.5 py-2 text-sm text-[color:var(--fg)] transition focus:border-[color:var(--accent)] focus:outline-none"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 6. SUBMISSION DATE & TERM -->
+        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 shadow-xs space-y-4">
+          <h2 class="text-sm font-bold text-[color:var(--fg)] flex items-center gap-2">
+            <Icon name="calendar" class="w-4 h-4 text-[color:var(--accent)]" />
+            <span>6. Submission Date & Academic Term</span>
+          </h2>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div class="space-y-1.5">
+              <div class="flex items-center justify-between">
+                <label for="date-input" class="block text-xs font-semibold text-[color:var(--fg)]">Date of Submission</label>
+                <button type="button" id="btn-today-date" class="text-[11px] font-semibold text-[color:var(--accent)] hover:underline cursor-pointer">Set Today</button>
+              </div>
+              <input
+                type="text"
+                id="date-input"
+                class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3.5 py-2 text-sm text-[color:var(--fg)] transition focus:border-[color:var(--accent)] focus:outline-none"
+              />
+            </div>
+
+            <div class="space-y-1.5">
+              <label for="term-input" class="block text-xs font-semibold text-[color:var(--fg)]">Academic Term / Semester</label>
+              <input
+                type="text"
+                id="term-input"
+                placeholder="e.g., Fall Semester 2026"
+                class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3.5 py-2 text-sm text-[color:var(--fg)] transition focus:border-[color:var(--accent)] focus:outline-none"
+              />
+            </div>
+          </div>
+        </div>
+
+        <!-- GENERATE PDF BUTTON (Fixed at bottom of the form, non-floating) -->
+        <div class="pt-2 pb-1 space-y-2">
+          <button
+            type="button"
+            id="generate-pdf-btn"
+            class="w-full inline-flex items-center justify-center gap-2.5 rounded-2xl bg-[color:var(--accent)] hover:bg-[color:var(--accent-hover)] px-6 py-4 text-base font-bold text-white shadow-md shadow-[color:var(--accent-glow)] transition hover:shadow-lg cursor-pointer active:scale-[0.99]"
+          >
+            <Icon name="download" class="w-5 h-5" />
+            <span id="btn-pdf-text">Download Print-Ready A4 PDF</span>
+          </button>
+          <p class="text-center text-[11px] text-[color:var(--muted)]">Free high-resolution vector PDF • Zero watermarks • Standard A4 (210×297mm)</p>
+        </div>
+
+      </section>
+
+      <!-- RIGHT COLUMN: Sticky Live A4 Preview (6 cols) -->
+      <section class="lg:col-span-6 xl:col-span-6 lg:sticky lg:top-6 space-y-4">
+        
+        <!-- Preview Toolbar -->
+        <div id="preview-toolbar" class="flex items-center justify-between rounded-xl bg-[color:var(--surface-strong)] border border-[color:var(--border)] px-4 py-2.5 shadow-xs">
+          <div class="flex items-center gap-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+            <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--fg)]">Live A4 Preview</span>
+          </div>
+
+          <div class="flex items-center gap-2 text-xs text-[color:var(--muted)]">
+            <span id="preview-mode-tag" class="px-2.5 py-0.5 rounded-md bg-[color:var(--surface)] border border-[color:var(--border)] font-semibold text-[color:var(--fg)]">
+              Classic Academic
+            </span>
+          </div>
+        </div>
+
+        <!-- A4 Viewport Container with Dynamic Proportional Scaling -->
+        <div id="cover-viewport-wrapper" class="w-full flex justify-center overflow-hidden pb-4">
+          <div
+            id="cover-viewport"
+            class="w-full max-w-[530px] flex justify-center items-start overflow-hidden transition-all duration-200"
+          >
+            <!-- 
+              STRICT A4 INNER CANVAS (794px x 1123px = 210mm x 297mm at 96 DPI)
+              This exact element is captured 1:1 by html2canvas for PDF generation.
+              On screen, it is dynamically scaled via CSS transform: scale(factor) to fit the viewport perfectly.
+            -->
+            <div
+              id="cover-preview-page"
+              class="bg-white text-slate-900 shadow-2xl rounded-xs border border-slate-300 relative box-border select-none"
+              style="width: 794px; min-width: 794px; height: 1123px; min-height: 1123px; transform-origin: top center; --cov-primary: #0f172a; --cov-secondary: #334155; --cov-soft: #f8fafc; --cov-border: #cbd5e1; --cov-text: #0f172a; --cov-accent: #475569; --cov-badge: #f1f5f9;"
+            >
+              <!-- Dynamic Template Root injected here -->
+              <div id="cover-preview-content" class="w-full h-full flex flex-col justify-between p-14 relative box-border overflow-hidden">
+                <!-- Content rendered dynamically by template engine -->
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="preview-tip" class="text-center text-xs text-[color:var(--muted)] flex items-center justify-center gap-2">
+          <Icon name="info" class="w-3.5 h-3.5" />
+          <span>Pixel-perfect A4 preview. Generated PDF is 100% visually identical to the preview above.</span>
+        </div>
+
+      </section>
+
+    </div>
+
+    <!-- Features & Academic Standards -->
+    <section class="mt-16 space-y-6">
+      <div class="border-t border-[color:var(--border)] pt-12">
+        <p class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Academic Standards</p>
+        <h2 class="mt-1 text-2xl font-bold tracking-tight text-[color:var(--fg)]">Why Use Our Assignment Cover Page Maker?</h2>
+      </div>
+
+      <div class="grid gap-5 sm:grid-cols-3">
+        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 space-y-3">
+          <div class="w-9 h-9 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-500 flex items-center justify-center">
+            <Icon name="document" class="w-4 h-4" />
+          </div>
+          <h3 class="font-bold text-sm text-[color:var(--fg)]">5 Curated Academic Layouts</h3>
+          <p class="text-xs text-[color:var(--muted)] leading-relaxed">
+            Choose from Classic Academic, Modern Minimal, Professional Report, Elegant Framed, and Bold Accent layouts tailored for term papers, lab reports, and theses.
+          </p>
+        </div>
+
+        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 space-y-3">
+          <div class="w-9 h-9 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-500 flex items-center justify-center">
+            <Icon name="image" class="w-4 h-4" />
+          </div>
+          <h3 class="font-bold text-sm text-[color:var(--fg)]">Verified Institutional Emblems</h3>
+          <p class="text-xs text-[color:var(--muted)] leading-relaxed">
+            Search over 10,000 institutions with verified high-resolution emblems or upload your department seal with instant real-time live preview.
+          </p>
+        </div>
+
+        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 space-y-3">
+          <div class="w-9 h-9 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-500 flex items-center justify-center">
+            <Icon name="download" class="w-4 h-4" />
+          </div>
+          <h3 class="font-bold text-sm text-[color:var(--fg)]">Single-Page A4 Vector PDF</h3>
+          <p class="text-xs text-[color:var(--muted)] leading-relaxed">
+            Calibrated strictly to standard international A4 dimensions (210×297mm) with zero margin drift, ensuring crisp vector printouts and submission-ready exports.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Frequently Asked Questions -->
+    <section class="mt-12 space-y-4">
+      <h2 class="text-xl font-bold text-[color:var(--fg)]">Frequently Asked Questions</h2>
+      <div class="space-y-3">
+        {schemaFaq.map((faq) => (
+          <details class="group rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
+            <summary class="cursor-pointer list-none font-semibold text-sm sm:text-base text-[color:var(--fg)] flex items-center justify-between gap-4">
+              <span>{faq.question}</span>
+              <span class="text-xs text-[color:var(--muted)] group-open:rotate-180 transition-transform">▼</span>
+            </summary>
+            <p class="mt-3 text-xs sm:text-sm leading-relaxed text-[color:var(--muted)]">
+              {faq.answer}
+            </p>
+          </details>
+        ))}
+      </div>
+    </section>
+
+    <!-- Related Education & Study Tools -->
+    <section class="mt-12 space-y-5">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Classroom &amp; Study</p>
+          <h2 class="mt-1 text-xl font-bold tracking-tight text-[color:var(--fg)]">Related Education Tools</h2>
+        </div>
+        <a href={withBasePath('/education-tools/')} class="text-xs font-bold text-[color:var(--fg)] hover:underline">
+          View All Education Tools →
+        </a>
+      </div>
+
+      <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <a href={withBasePath('/education-tools/exam-seating-generator/')} class="group rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 transition hover:border-[color:var(--border-strong)] hover:bg-[color:var(--surface-strong)]">
+          <Icon name="education" class="w-5 h-5 text-indigo-500 mb-2" />
+          <h3 class="font-bold text-sm text-[color:var(--fg)]">Exam Hall Seating</h3>
+          <p class="text-xs text-[color:var(--muted)] mt-1">Randomized seating plans with alternating empty desks.</p>
+        </a>
+        <a href={withBasePath('/education-tools/random-group-generator/')} class="group rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 transition hover:border-[color:var(--border-strong)] hover:bg-[color:var(--surface-strong)]">
+          <Icon name="education" class="w-5 h-5 text-purple-500 mb-2" />
+          <h3 class="font-bold text-sm text-[color:var(--fg)]">Random Group Generator</h3>
+          <p class="text-xs text-[color:var(--muted)] mt-1">Split class rosters into balanced study &amp; project teams.</p>
+        </a>
+        <a href={withBasePath('/education-tools/study-schedule-generator/')} class="group rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 transition hover:border-[color:var(--border-strong)] hover:bg-[color:var(--surface-strong)]">
+          <Icon name="education" class="w-5 h-5 text-emerald-500 mb-2" />
+          <h3 class="font-bold text-sm text-[color:var(--fg)]">Study Schedule Planner</h3>
+          <p class="text-xs text-[color:var(--muted)] mt-1">Custom revision timetables and exam study schedules.</p>
+        </a>
+        <a href={withBasePath('/education-tools/random-student-picker/')} class="group rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 transition hover:border-[color:var(--border-strong)] hover:bg-[color:var(--surface-strong)]">
+          <Icon name="education" class="w-5 h-5 text-amber-500 mb-2" />
+          <h3 class="font-bold text-sm text-[color:var(--fg)]">Random Student Picker</h3>
+          <p class="text-xs text-[color:var(--muted)] mt-1">Fair animated selector wheel for classroom questions.</p>
+        </a>
+      </div>
+    </section>
+  </article>
+
+  <!-- Load local self-hosted html2pdf bundle for instant zero-latency client-side PDF export -->
+  <script is:inline src="/js/html2pdf.bundle.min.js"></script>
+
+  <!-- Assignment Cover Maker Client Logic & Template Engine -->
+  <script is:inline>
+    (function () {
+      const appRoot = document.querySelector('[data-cover-maker-app]');
+      if (!appRoot) return;
+
+      // Resilient PDF library getter (handles cached, local, and CDN fallback)
+      function getHtml2Pdf() {
+        if (typeof window.html2pdf === 'function') {
+          return Promise.resolve(window.html2pdf);
+        }
+        return new Promise((resolve, reject) => {
+          const s = document.createElement('script');
+          s.src = '/js/html2pdf.bundle.min.js';
+          s.onload = () => {
+            if (typeof window.html2pdf === 'function') resolve(window.html2pdf);
+            else reject(new Error('html2pdf object not available after load'));
+          };
+          s.onerror = () => {
+            // Secondary fallback to CDN
+            const cdn = document.createElement('script');
+            cdn.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js';
+            cdn.onload = () => {
+              if (typeof window.html2pdf === 'function') resolve(window.html2pdf);
+              else reject(new Error('html2pdf object not available after CDN load'));
+            };
+            cdn.onerror = () => reject(new Error('Failed to load PDF export engine. Please check internet connection.'));
+            document.head.appendChild(cdn);
+          };
+          document.head.appendChild(s);
+        });
+      }
+
+      const CDN_URL = 'https://logos.calculatorutility.tech';
+      const LOGO_VERSION = 'v20260911';
+
+      // 6 Curated Themes
+      const THEMES = {
+        classic: {
+          name: 'Classic Slate',
+          primary: '#0f172a',
+          secondary: '#334155',
+          soft: '#f8fafc',
+          border: '#cbd5e1',
+          text: '#0f172a',
+          accent: '#475569',
+          badge: '#f1f5f9'
+        },
+        blue: {
+          name: 'Blue Academic (Oxford)',
+          primary: '#1e3a8a',
+          secondary: '#1d4ed8',
+          soft: '#eff6ff',
+          border: '#bfdbfe',
+          text: '#172554',
+          accent: '#2563eb',
+          badge: '#dbeafe'
+        },
+        green: {
+          name: 'Green Academic (Dartmouth)',
+          primary: '#065f46',
+          secondary: '#047857',
+          soft: '#ecfdf5',
+          border: '#a7f3d0',
+          text: '#064e3b',
+          accent: '#059669',
+          badge: '#d1fae5'
+        },
+        burgundy: {
+          name: 'Burgundy (Harvard)',
+          primary: '#881337',
+          secondary: '#9f1239',
+          soft: '#fff1f2',
+          border: '#fecdd3',
+          text: '#4c0519',
+          accent: '#be123c',
+          badge: '#ffe4e6'
+        },
+        dark: {
+          name: 'Dark Modern (Midnight)',
+          primary: '#18181b',
+          secondary: '#3f3f46',
+          soft: '#f4f4f5',
+          border: '#d4d4d8',
+          text: '#09090b',
+          accent: '#27272a',
+          badge: '#e4e4e7'
+        },
+        neutral: {
+          name: 'Warm Amber (Parchment)',
+          primary: '#78350f',
+          secondary: '#b45309',
+          soft: '#fffbeb',
+          border: '#fde68a',
+          text: '#451a03',
+          accent: '#d97706',
+          badge: '#fef3c7'
+        }
+      };
+
+      // Application State
+      const state = {
+        template: 'classic', // classic | modern | professional | elegant | bold
+        theme: 'classic',
+        institution: 'University of Dhaka',
+        slug: 'university-of-dhaka',
+        logoUrl: `${CDN_URL}/university-of-dhaka.webp?v=${LOGO_VERSION}`,
+        logoBase64: null,
+        hasCustomLogo: false,
+        department: 'Department of Computer Science & Engineering',
+        title: 'Design and Analysis of Scalable Cloud Microservices',
+        subtitle: 'Final Term Comprehensive Project Report',
+        courseName: 'Distributed Systems & Cloud Computing',
+        courseCode: 'CSE-4101',
+        teacherName: 'Dr. Sarah Rahman',
+        teacherTitle: 'Professor & Head of Department',
+        date: formatDate(new Date()),
+        term: 'Fall Semester 2026',
+        students: [
+          { name: 'Tanvir Ahmed', id: '2026-08149', section: 'Section A' }
+        ]
+      };
+
+      // DOM Elements
+      const instInput = document.getElementById('inst-search');
+      const btnClearInst = document.getElementById('btn-clear-inst');
+      const instResults = document.getElementById('inst-results');
+      const customLogoInput = document.getElementById('custom-logo-file');
+      const logoStatusIndicator = document.getElementById('logo-status-indicator');
+      const deptInput = document.getElementById('dept-input');
+      const titleInput = document.getElementById('title-input');
+      const subtitleInput = document.getElementById('subtitle-input');
+      const courseNameInput = document.getElementById('course-name-input');
+      const courseCodeInput = document.getElementById('course-code-input');
+      const teacherNameInput = document.getElementById('teacher-name-input');
+      const teacherTitleInput = document.getElementById('teacher-title-input');
+      const dateInput = document.getElementById('date-input');
+      const termInput = document.getElementById('term-input');
+      const studentsContainer = document.getElementById('students-container');
+      const btnAddStudent = document.getElementById('btn-add-student');
+      const coverViewport = document.getElementById('cover-viewport');
+      const previewPage = document.getElementById('cover-preview-page');
+      const previewContent = document.getElementById('cover-preview-content');
+      const previewModeTag = document.getElementById('preview-mode-tag');
+      const templateLabel = document.getElementById('current-template-label');
+      const themeLabel = document.getElementById('current-theme-label');
+
+      let institutionsDb = null;
+      let isFetchingDb = false;
+
+      function formatDate(d) {
+        const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+        return `${months[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}`;
+      }
+
+      // Responsive A4 Viewport Scaling Engine
+      function updateViewportScale() {
+        if (!coverViewport || !previewPage) return;
+        const availableWidth = coverViewport.clientWidth;
+        if (availableWidth <= 0) return;
+
+        // 794px is the native unscaled A4 page width
+        const scale = Math.min(availableWidth / 794, 1);
+        previewPage.style.transform = `scale(${scale})`;
+        coverViewport.style.height = `${Math.round(1123 * scale)}px`;
+      }
+
+      window.addEventListener('resize', updateViewportScale);
+
+      // Convert remote image to base64 data URL for zero-CORS canvas safety
+      async function cacheLogoAsBase64(url) {
+        if (!url) return null;
+        if (url.startsWith('data:')) return url;
+        try {
+          const response = await fetch(url, { mode: 'cors' });
+          if (!response.ok) return null;
+          const blob = await response.blob();
+          return new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.onloadend = () => resolve(reader.result);
+            reader.onerror = () => resolve(null);
+            reader.readAsDataURL(blob);
+          });
+        } catch {
+          return null;
+        }
+      }
+
+      // Initial Sync of form fields
+      function syncStateToInputs() {
+        instInput.value = state.institution;
+        deptInput.value = state.department;
+        titleInput.value = state.title;
+        subtitleInput.value = state.subtitle;
+        courseNameInput.value = state.courseName;
+        courseCodeInput.value = state.courseCode;
+        teacherNameInput.value = state.teacherName;
+        teacherTitleInput.value = state.teacherTitle;
+        dateInput.value = state.date;
+        termInput.value = state.term;
+        renderStudentsInput();
+      }
+
+      function renderStudentsInput() {
+        studentsContainer.innerHTML = '';
+        state.students.forEach((student, index) => {
+          const row = document.createElement('div');
+          row.className = 'student-entry grid grid-cols-1 sm:grid-cols-12 gap-2 p-3 rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] relative';
+          row.innerHTML = `
+            <div class="sm:col-span-5 space-y-1">
+              <label class="block text-[10px] font-bold text-[color:var(--muted)] uppercase tracking-wider">Student ${index + 1} Name</label>
+              <input type="text" data-idx="${index}" data-field="name" class="w-full rounded-lg border border-[color:var(--border)] bg-[color:var(--bg)] px-2.5 py-1.5 text-xs text-[color:var(--fg)] focus:outline-none" placeholder="Student Name" value="${escapeHtml(student.name)}" />
+            </div>
+            <div class="sm:col-span-4 space-y-1">
+              <label class="block text-[10px] font-bold text-[color:var(--muted)] uppercase tracking-wider">Student ID</label>
+              <input type="text" data-idx="${index}" data-field="id" class="w-full rounded-lg border border-[color:var(--border)] bg-[color:var(--bg)] px-2.5 py-1.5 text-xs text-[color:var(--fg)] focus:outline-none" placeholder="ID / Roll" value="${escapeHtml(student.id)}" />
+            </div>
+            <div class="sm:col-span-3 space-y-1 flex items-end gap-1">
+              <div class="w-full">
+                <label class="block text-[10px] font-bold text-[color:var(--muted)] uppercase tracking-wider">Section / Batch</label>
+                <input type="text" data-idx="${index}" data-field="section" class="w-full rounded-lg border border-[color:var(--border)] bg-[color:var(--bg)] px-2.5 py-1.5 text-xs text-[color:var(--fg)] focus:outline-none" placeholder="Sec / Batch" value="${escapeHtml(student.section)}" />
+              </div>
+              ${state.students.length > 1 ? `
+                <button type="button" data-remove-idx="${index}" class="p-1.5 text-rose-500 hover:bg-rose-50 rounded-lg cursor-pointer transition mb-0.5" title="Remove member">
+                  <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </button>
+              ` : ''}
+            </div>
+          `;
+          studentsContainer.appendChild(row);
+        });
+
+        // Attach listeners for student input updates
+        studentsContainer.querySelectorAll('input').forEach(inp => {
+          inp.addEventListener('input', (e) => {
+            const idx = parseInt(e.target.getAttribute('data-idx'));
+            const field = e.target.getAttribute('data-field');
+            if (state.students[idx]) {
+              state.students[idx][field] = e.target.value;
+              renderPreview();
+            }
+          });
+        });
+
+        // Attach listeners for student removal
+        studentsContainer.querySelectorAll('[data-remove-idx]').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const idx = parseInt(btn.getAttribute('data-remove-idx'));
+            state.students.splice(idx, 1);
+            renderStudentsInput();
+            renderPreview();
+          });
+        });
+      }
+
+      function escapeHtml(str) {
+        if (!str) return '';
+        return String(str)
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;');
+      }
+
+      // Default Stylized Academic Crest SVG for fallback
+      function getEmblemSvg(color, sizeClass = 'w-24 h-24') {
+        return `
+          <svg class="${sizeClass}" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="50" cy="50" r="46" stroke="${color}" stroke-width="2.5" stroke-dasharray="5 2.5"/>
+            <circle cx="50" cy="50" r="38" stroke="${color}" stroke-width="1.5"/>
+            <path d="M50 18L76 31V53C76 70 50 81 50 81C50 81 24 70 24 53V31L50 18Z" fill="${color}" fill-opacity="0.08" stroke="${color}" stroke-width="2"/>
+            <path d="M50 33L63 40V53C63 62 50 68 50 68C50 68 37 62 37 53V40L50 33Z" stroke="${color}" stroke-width="1.5"/>
+            <path d="M42 48L50 43L58 48L50 53L42 48Z" fill="${color}"/>
+            <path d="M50 53V61M45 50V59M55 50V59" stroke="${color}" stroke-width="1.5"/>
+          </svg>
+        `;
+      }
+
+      // Render Logo Component with zero-CORS DataURL preference
+      function renderLogoHtml(extraClass = '', sizeClass = 'max-h-24 max-w-[200px]') {
+        const activeTheme = THEMES[state.theme] || THEMES.classic;
+        const effectiveSrc = state.logoBase64 || state.logoUrl;
+
+        if (effectiveSrc) {
+          return `
+            <div class="cover-logo-box flex items-center justify-center ${extraClass}">
+              <img
+                src="${escapeHtml(effectiveSrc)}"
+                alt="${escapeHtml(state.institution)} Logo"
+                crossorigin="anonymous"
+                class="${sizeClass} object-contain"
+                onerror="this.parentElement.innerHTML = '${escapeHtml(getEmblemSvg(activeTheme.primary)).replace(/"/g, "'")}'"
+              />
+            </div>
+          `;
+        }
+        return `
+          <div class="cover-logo-box flex items-center justify-center ${extraClass}">
+            ${getEmblemSvg(activeTheme.primary)}
+          </div>
+        `;
+      }
+
+      // ==========================================
+      // 5 DISTINCT TEMPLATE RENDERERS
+      // Calibrated precisely for 794px x 1123px A4 canvas
+      // ==========================================
+
+      // 1. CLASSIC ACADEMIC
+      function renderTemplateClassic() {
+        const s = state;
+        const studentsHtml = s.students.map(st => `
+          <div class="space-y-1">
+            <p class="font-bold text-slate-900 text-sm">${escapeHtml(st.name || 'Student Name')}</p>
+            <p class="text-xs text-slate-700 font-medium">ID: ${escapeHtml(st.id || 'N/A')}</p>
+            ${st.section ? `<p class="text-[11px] text-slate-500">${escapeHtml(st.section)}</p>` : ''}
+          </div>
+        `).join('');
+
+        return `
+          <!-- Header -->
+          <div class="text-center space-y-4 pt-4">
+            ${renderLogoHtml('mb-3', 'max-h-24 max-w-[220px]')}
+            <h1 class="text-2xl font-serif font-bold uppercase tracking-widest text-[var(--cov-primary)] leading-snug px-6 break-words">
+              ${escapeHtml(s.institution || 'Institution Name')}
+            </h1>
+            <p class="text-sm font-serif text-slate-700 tracking-wide break-words border-b-2 border-[var(--cov-border)] pb-3 max-w-lg mx-auto">
+              ${escapeHtml(s.department || 'Department / Faculty')}
+            </p>
+          </div>
+
+          <!-- Assignment Title & Course Info -->
+          <div class="text-center my-auto space-y-6 px-6">
+            <div class="border-t-2 border-b-2 border-[var(--cov-primary)] py-8 max-w-xl mx-auto">
+              <span class="text-xs font-mono tracking-widest text-[var(--cov-accent)] uppercase block mb-2 font-bold">ASSIGNMENT REPORT</span>
+              <h2 class="text-3xl font-serif font-bold text-slate-900 leading-snug break-words">
+                ${escapeHtml(s.title || 'Assignment Title')}
+              </h2>
+              ${s.subtitle ? `<p class="text-sm font-serif italic text-slate-600 mt-2 break-words max-w-lg mx-auto">${escapeHtml(s.subtitle)}</p>` : ''}
+            </div>
+
+            <div class="space-y-1 text-slate-800 pt-2">
+              <p class="text-xs font-serif uppercase tracking-widest text-slate-500 font-bold">Course Details</p>
+              <p class="text-lg font-serif font-bold text-[var(--cov-primary)]">
+                ${s.courseCode ? `<span>${escapeHtml(s.courseCode)}: </span>` : ''}
+                <span>${escapeHtml(s.courseName || 'Course Name')}</span>
+              </p>
+            </div>
+          </div>
+
+          <!-- Bottom Metadata Grid -->
+          <div class="w-full space-y-6 pt-6 border-t-2 border-[var(--cov-border)]">
+            <div class="grid grid-cols-2 gap-10 text-left max-w-xl mx-auto">
+              <div class="space-y-2">
+                <p class="text-xs font-bold font-serif uppercase tracking-widest text-[var(--cov-accent)] border-b border-slate-300 pb-1.5">Submitted To</p>
+                <p class="font-bold text-slate-900 text-base">${escapeHtml(s.teacherName || 'Instructor Name')}</p>
+                <p class="text-xs text-slate-700">${escapeHtml(s.teacherTitle || 'Designation')}</p>
+                ${s.department ? `<p class="text-xs text-slate-500 pt-0.5">${escapeHtml(s.department)}</p>` : ''}
+              </div>
+              <div class="space-y-2 text-right">
+                <p class="text-xs font-bold font-serif uppercase tracking-widest text-[var(--cov-accent)] border-b border-slate-300 pb-1.5">Submitted By</p>
+                <div class="space-y-3">
+                  ${studentsHtml}
+                </div>
+              </div>
+            </div>
+
+            <!-- Footer: Date & Term -->
+            <div class="text-center pt-3">
+              <p class="text-xs font-serif text-slate-600">
+                <span>Date of Submission: <strong class="text-slate-900 font-bold">${escapeHtml(s.date)}</strong></span>
+                ${s.term ? `<span class="mx-2">•</span><span>${escapeHtml(s.term)}</span>` : ''}
+              </p>
+            </div>
+          </div>
+        `;
+      }
+
+      // 2. MODERN MINIMAL
+      function renderTemplateModern() {
+        const s = state;
+        const studentsHtml = s.students.map(st => `
+          <div class="space-y-1">
+            <p class="font-bold text-slate-900 text-sm">${escapeHtml(st.name || 'Student Name')}</p>
+            <p class="text-xs text-slate-600 font-mono">${escapeHtml(st.id || 'N/A')}</p>
+            ${st.section ? `<p class="text-[11px] text-slate-500">${escapeHtml(st.section)}</p>` : ''}
+          </div>
+        `).join('');
+
+        return `
+          <!-- Top Row -->
+          <div class="w-full flex items-start justify-between border-b-2 border-slate-900 pb-6 pt-2">
+            <div class="space-y-1 max-w-[65%] text-left">
+              <p class="text-sm font-black tracking-widest text-[var(--cov-primary)] uppercase">
+                ${escapeHtml(s.institution || 'INSTITUTION NAME')}
+              </p>
+              <p class="text-xs text-slate-500 font-medium break-words">
+                ${escapeHtml(s.department || 'Department / School')}
+              </p>
+            </div>
+            ${renderLogoHtml('h-16 w-auto', 'max-h-16 max-w-[180px]')}
+          </div>
+
+          <!-- Asymmetric Hero Title -->
+          <div class="my-auto text-left space-y-6 py-8">
+            <div class="space-y-3">
+              <div class="inline-block px-3 py-1 rounded-full bg-[var(--cov-badge)] text-[var(--cov-primary)] text-xs font-bold tracking-wider uppercase">
+                ${escapeHtml(s.courseCode || 'COURSE ASSIGNMENT')}
+              </div>
+              <h1 class="text-4xl font-black text-slate-900 tracking-tight leading-tight break-words">
+                ${escapeHtml(s.title || 'Assignment Title')}
+              </h1>
+              ${s.subtitle ? `<p class="text-base text-slate-600 font-normal leading-relaxed break-words max-w-xl">${escapeHtml(s.subtitle)}</p>` : ''}
+            </div>
+
+            <div class="pt-3 border-l-4 border-[var(--cov-primary)] pl-4">
+              <p class="text-xs font-bold text-slate-400 uppercase tracking-widest">Course</p>
+              <p class="text-base font-bold text-slate-800">${escapeHtml(s.courseName || 'Course Name')}</p>
+            </div>
+          </div>
+
+          <!-- Bottom Clean Metadata -->
+          <div class="w-full pt-6 space-y-6">
+            <div class="grid grid-cols-2 gap-10 text-left border-t border-slate-200 pt-6">
+              <div class="space-y-3">
+                <p class="text-xs font-bold uppercase tracking-widest text-[var(--cov-primary)]">Prepared By</p>
+                <div class="space-y-3">
+                  ${studentsHtml}
+                </div>
+              </div>
+              <div class="space-y-3">
+                <p class="text-xs font-bold uppercase tracking-widest text-[var(--cov-primary)]">Supervised By</p>
+                <div class="space-y-1">
+                  <p class="font-bold text-slate-900 text-sm">${escapeHtml(s.teacherName || 'Instructor Name')}</p>
+                  <p class="text-xs text-slate-600">${escapeHtml(s.teacherTitle || 'Designation')}</p>
+                  ${s.department ? `<p class="text-xs text-slate-400 pt-1">${escapeHtml(s.department)}</p>` : ''}
+                </div>
+              </div>
+            </div>
+
+            <div class="flex justify-between items-center text-xs text-slate-500 border-t border-slate-100 pt-3 font-mono">
+              <span>Date: ${escapeHtml(s.date)}</span>
+              <span>${escapeHtml(s.term)}</span>
+            </div>
+          </div>
+        `;
+      }
+
+      // 3. PROFESSIONAL
+      function renderTemplateProfessional() {
+        const s = state;
+        const studentsHtml = s.students.map(st => `
+          <div class="flex justify-between items-baseline py-1.5 border-b border-slate-100 last:border-none">
+            <span class="font-bold text-slate-900 text-xs">${escapeHtml(st.name || 'Student Name')}</span>
+            <span class="text-xs font-mono text-slate-600">${escapeHtml(st.id || '')}</span>
+          </div>
+        `).join('');
+
+        return `
+          <!-- Header Banner -->
+          <div class="w-full rounded-2xl bg-[var(--cov-soft)] border border-[var(--cov-border)] p-6 flex items-center justify-between">
+            <div class="space-y-1 text-left max-w-[70%]">
+              <p class="text-sm font-bold uppercase tracking-wider text-[var(--cov-primary)]">${escapeHtml(s.institution || 'INSTITUTION NAME')}</p>
+              <p class="text-xs text-slate-600 break-words">${escapeHtml(s.department || 'Department')}</p>
+            </div>
+            ${renderLogoHtml('h-16 w-auto', 'max-h-16 max-w-[180px]')}
+          </div>
+
+          <!-- Main Document Title Card -->
+          <div class="my-auto space-y-6 text-center py-6">
+            <div class="inline-block px-4 py-1.5 rounded-lg bg-[var(--cov-primary)] text-white text-xs font-bold tracking-widest uppercase">
+              Academic Submission Report
+            </div>
+            <h1 class="text-3xl font-bold text-slate-900 leading-snug px-6 break-words">
+              ${escapeHtml(s.title || 'Assignment Title')}
+            </h1>
+            ${s.subtitle ? `<p class="text-sm text-slate-600 max-w-lg mx-auto break-words">${escapeHtml(s.subtitle)}</p>` : ''}
+            
+            <div class="inline-flex items-center gap-3 px-6 py-2 rounded-xl bg-slate-100 text-slate-800 text-sm font-medium">
+              <span class="font-bold text-[var(--cov-primary)]">${escapeHtml(s.courseCode)}</span>
+              <span>•</span>
+              <span>${escapeHtml(s.courseName || 'Course Title')}</span>
+            </div>
+          </div>
+
+          <!-- Structured Metadata Boxes -->
+          <div class="w-full space-y-4">
+            <div class="grid grid-cols-2 gap-4 text-left">
+              <!-- Student Box -->
+              <div class="rounded-xl border border-slate-200 bg-white p-4 shadow-xs space-y-3">
+                <p class="text-xs font-bold uppercase tracking-wider text-[var(--cov-primary)] border-b border-slate-200 pb-1.5">Student Details</p>
+                <div class="space-y-1">
+                  ${studentsHtml}
+                </div>
+              </div>
+
+              <!-- Instructor Box -->
+              <div class="rounded-xl border border-slate-200 bg-white p-4 shadow-xs space-y-3">
+                <p class="text-xs font-bold uppercase tracking-wider text-[var(--cov-primary)] border-b border-slate-200 pb-1.5">Evaluated By</p>
+                <div class="space-y-1">
+                  <p class="font-bold text-slate-900 text-sm">${escapeHtml(s.teacherName || 'Instructor Name')}</p>
+                  <p class="text-xs text-slate-600">${escapeHtml(s.teacherTitle || 'Designation')}</p>
+                  <p class="text-xs text-slate-500 pt-1">${escapeHtml(s.department)}</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Bottom Row -->
+            <div class="rounded-xl bg-[var(--cov-soft)] px-6 py-3 flex justify-between items-center text-xs text-slate-700 font-medium border border-[var(--cov-border)]">
+              <span>Date: <strong>${escapeHtml(s.date)}</strong></span>
+              <span>${escapeHtml(s.term)}</span>
+            </div>
+          </div>
+        `;
+      }
+
+      // 4. ELEGANT (Framed Luxury Academic)
+      function renderTemplateElegant() {
+        const s = state;
+        const studentsHtml = s.students.map(st => `
+          <div class="space-y-0.5 text-center">
+            <p class="font-bold font-serif text-slate-900 text-sm">${escapeHtml(st.name || 'Student Name')}</p>
+            <p class="text-xs font-serif text-slate-600">Roll/ID: ${escapeHtml(st.id || 'N/A')}</p>
+          </div>
+        `).join('');
+
+        return `
+          <!-- Ornamental Double Inset Frame -->
+          <div class="absolute inset-5 border-2 border-[var(--cov-primary)] pointer-events-none rounded-xs"></div>
+          <div class="absolute inset-7 border border-[var(--cov-border)] pointer-events-none rounded-xs"></div>
+
+          <!-- Header -->
+          <div class="text-center space-y-3 pt-6 z-10">
+            ${renderLogoHtml('mb-2', 'max-h-20 max-w-[200px]')}
+            <h1 class="text-xl font-serif font-bold uppercase tracking-widest text-[var(--cov-primary)] px-8 break-words">
+              ${escapeHtml(s.institution || 'INSTITUTION NAME')}
+            </h1>
+            <div class="flex items-center justify-center gap-3 text-slate-400 text-sm">
+              <span class="w-12 h-px bg-slate-300"></span>
+              <span class="text-xs font-serif italic text-slate-600">${escapeHtml(s.department || 'Faculty')}</span>
+              <span class="w-12 h-px bg-slate-300"></span>
+            </div>
+          </div>
+
+          <!-- Elegant Centerpiece -->
+          <div class="text-center my-auto space-y-4 z-10 px-8">
+            <span class="text-sm text-slate-400 font-serif">✦ ◆ ✦</span>
+            <h2 class="text-3xl font-serif font-bold text-slate-900 leading-snug break-words">
+              ${escapeHtml(s.title || 'Assignment Title')}
+            </h2>
+            ${s.subtitle ? `<p class="text-sm font-serif italic text-slate-600 max-w-md mx-auto break-words">${escapeHtml(s.subtitle)}</p>` : ''}
+            
+            <div class="pt-3">
+              <p class="text-xs font-serif uppercase tracking-widest text-slate-500">In Fulfillment of the Course</p>
+              <p class="text-sm font-serif font-bold text-[var(--cov-primary)] mt-1">
+                ${escapeHtml(s.courseCode)} — ${escapeHtml(s.courseName)}
+              </p>
+            </div>
+          </div>
+
+          <!-- Bottom Footer Details -->
+          <div class="text-center space-y-6 pb-6 z-10">
+            <div class="grid grid-cols-2 gap-6 text-center max-w-sm mx-auto border-t border-b border-slate-200 py-4">
+              <div class="space-y-1.5 border-r border-slate-200 pr-3">
+                <p class="text-[10px] font-serif font-bold uppercase tracking-widest text-[var(--cov-accent)]">Submitted To</p>
+                <p class="font-bold font-serif text-slate-900 text-sm">${escapeHtml(s.teacherName || 'Instructor Name')}</p>
+                <p class="text-xs font-serif text-slate-600">${escapeHtml(s.teacherTitle || 'Title')}</p>
+              </div>
+              <div class="space-y-1.5 pl-3">
+                <p class="text-[10px] font-serif font-bold uppercase tracking-widest text-[var(--cov-accent)]">Submitted By</p>
+                ${studentsHtml}
+              </div>
+            </div>
+
+            <p class="text-xs font-serif text-slate-500 tracking-wider">
+              ${escapeHtml(s.date)} ${s.term ? `• ${escapeHtml(s.term)}` : ''}
+            </p>
+          </div>
+        `;
+      }
+
+      // 5. BOLD ACADEMIC (Full Banner)
+      function renderTemplateBold() {
+        const s = state;
+        const studentsHtml = s.students.map(st => `
+          <div class="space-y-1">
+            <p class="font-black text-slate-900 text-sm">${escapeHtml(st.name || 'Student Name')}</p>
+            <p class="text-xs text-slate-600 font-mono">ID: ${escapeHtml(st.id || 'N/A')}</p>
+            ${st.section ? `<p class="text-[11px] text-slate-500">${escapeHtml(st.section)}</p>` : ''}
+          </div>
+        `).join('');
+
+        return `
+          <!-- Full Header Accent Block -->
+          <div class="w-full -mx-14 -mt-14 p-8 bg-[var(--cov-primary)] text-white flex items-center justify-between">
+            <div class="space-y-1.5 max-w-[70%] text-left">
+              <span class="text-[10px] uppercase tracking-widest font-black opacity-80 block">OFFICIAL ACADEMIC SUBMISSION</span>
+              <h1 class="text-xl font-black uppercase tracking-tight leading-tight break-words text-white">
+                ${escapeHtml(s.institution || 'INSTITUTION NAME')}
+              </h1>
+              <p class="text-xs opacity-90 break-words">${escapeHtml(s.department || 'Department')}</p>
+            </div>
+            <div class="bg-white p-2.5 rounded-2xl shadow-lg">
+              ${renderLogoHtml('h-16 w-auto', 'max-h-16 max-w-[160px]')}
+            </div>
+          </div>
+
+          <!-- Main Impact Area -->
+          <div class="my-auto space-y-6 text-left py-8">
+            <div class="border-l-6 border-[var(--cov-primary)] pl-6 space-y-3">
+              <span class="px-3 py-1 rounded-md bg-slate-900 text-white text-xs font-black uppercase tracking-wider">
+                ${escapeHtml(s.courseCode || 'TERM PAPER')}
+              </span>
+              <h2 class="text-4xl font-black text-slate-900 leading-tight tracking-tight break-words">
+                ${escapeHtml(s.title || 'Assignment Title')}
+              </h2>
+              ${s.subtitle ? `<p class="text-sm text-slate-600 font-medium break-words max-w-xl">${escapeHtml(s.subtitle)}</p>` : ''}
+            </div>
+
+            <div class="pl-6 pt-1">
+              <p class="text-sm font-bold text-slate-800">${escapeHtml(s.courseName || 'Course Title')}</p>
+            </div>
+          </div>
+
+          <!-- Bottom Grid & Colored Stripe -->
+          <div class="w-full space-y-6">
+            <div class="grid grid-cols-2 gap-10 text-left border-t-2 border-slate-900 pt-6">
+              <div class="space-y-3">
+                <span class="text-xs font-black uppercase tracking-widest text-[var(--cov-primary)]">Presented By</span>
+                <div class="space-y-3">
+                  ${studentsHtml}
+                </div>
+              </div>
+              <div class="space-y-3">
+                <span class="text-xs font-black uppercase tracking-widest text-[var(--cov-primary)]">Submitted To</span>
+                <div class="space-y-1">
+                  <p class="font-black text-slate-900 text-sm">${escapeHtml(s.teacherName || 'Instructor Name')}</p>
+                  <p class="text-xs text-slate-600 font-medium">${escapeHtml(s.teacherTitle || 'Designation')}</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Footer Bar -->
+            <div class="w-full -mx-14 -mb-14 px-8 py-3.5 bg-slate-100 flex justify-between items-center text-xs font-bold text-slate-700">
+              <span>Date: ${escapeHtml(s.date)}</span>
+              <span>${escapeHtml(s.term)}</span>
+            </div>
+          </div>
+        `;
+      }
+
+      // Master Preview Renderer
+      function renderPreview() {
+        const activeTheme = THEMES[state.theme] || THEMES.classic;
+
+        // Apply Theme CSS variables to preview container
+        previewPage.style.setProperty('--cov-primary', activeTheme.primary);
+        previewPage.style.setProperty('--cov-secondary', activeTheme.secondary);
+        previewPage.style.setProperty('--cov-soft', activeTheme.soft);
+        previewPage.style.setProperty('--cov-border', activeTheme.border);
+        previewPage.style.setProperty('--cov-text', activeTheme.text);
+        previewPage.style.setProperty('--cov-accent', activeTheme.accent);
+        previewPage.style.setProperty('--cov-badge', activeTheme.badge);
+
+        // Render appropriate template
+        let html = '';
+        switch (state.template) {
+          case 'modern':
+            html = renderTemplateModern();
+            break;
+          case 'professional':
+            html = renderTemplateProfessional();
+            break;
+          case 'elegant':
+            html = renderTemplateElegant();
+            break;
+          case 'bold':
+            html = renderTemplateBold();
+            break;
+          case 'classic':
+          default:
+            html = renderTemplateClassic();
+            break;
+        }
+
+        previewContent.innerHTML = html;
+        previewModeTag.textContent = `${getTemplateDisplayName(state.template)} • ${activeTheme.name}`;
+
+        // Re-calculate responsive viewport scale
+        updateViewportScale();
+      }
+
+      function getTemplateDisplayName(key) {
+        const map = {
+          classic: 'Classic Academic',
+          modern: 'Modern Minimal',
+          professional: 'Professional',
+          elegant: 'Elegant',
+          bold: 'Bold Academic'
+        };
+        return map[key] || 'Classic Academic';
+      }
+
+      // ==========================================
+      // TEMPLATE & THEME SWITCHING LISTENERS
+      // ==========================================
+      document.querySelectorAll('#template-selector-grid .template-card').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const selected = btn.getAttribute('data-template');
+          if (!selected) return;
+          state.template = selected;
+
+          // Update active styling
+          document.querySelectorAll('#template-selector-grid .template-card').forEach(card => {
+            card.classList.remove('border-[color:var(--accent)]', 'border-2', 'bg-[color:var(--surface-strong)]');
+            card.classList.add('border-[color:var(--border)]', 'bg-[color:var(--surface)]');
+            const badge = card.querySelector('.active-badge');
+            if (badge) badge.classList.add('hidden');
+          });
+
+          btn.classList.remove('border-[color:var(--border)]', 'bg-[color:var(--surface)]');
+          btn.classList.add('border-[color:var(--accent)]', 'border-2', 'bg-[color:var(--surface-strong)]');
+          const activeBadge = btn.querySelector('.active-badge');
+          if (activeBadge) activeBadge.classList.remove('hidden');
+
+          templateLabel.textContent = getTemplateDisplayName(selected);
+          renderPreview();
+        });
+      });
+
+      document.querySelectorAll('#theme-selector-grid .theme-pill').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const selected = btn.getAttribute('data-theme');
+          if (!selected || !THEMES[selected]) return;
+          state.theme = selected;
+
+          // Update active styling
+          document.querySelectorAll('#theme-selector-grid .theme-pill').forEach(pill => {
+            pill.classList.remove('border-[color:var(--accent)]', 'border-2', 'bg-[color:var(--surface-strong)]');
+            pill.classList.add('border-[color:var(--border)]', 'bg-[color:var(--surface)]');
+          });
+
+          btn.classList.remove('border-[color:var(--border)]', 'bg-[color:var(--surface)]');
+          btn.classList.add('border-[color:var(--accent)]', 'border-2', 'bg-[color:var(--surface-strong)]');
+
+          themeLabel.textContent = THEMES[selected].name;
+          renderPreview();
+        });
+      });
+
+      // ==========================================
+      // INSTITUTION SEARCH & AUTOCOMPLETE
+      // ==========================================
+      async function fetchInstitutionsDb() {
+        if (institutionsDb || isFetchingDb) return;
+        isFetchingDb = true;
+        try {
+          const res = await fetch('/data/institutions.json?v=' + LOGO_VERSION);
+          institutionsDb = await res.json();
+        } catch (err) {
+          console.error('Failed to load institutions DB', err);
+        }
+      }
+
+      instInput.addEventListener('focus', fetchInstitutionsDb);
+
+      instInput.addEventListener('input', (e) => {
+        const query = e.target.value.toLowerCase().trim();
+        instResults.innerHTML = '';
+
+        if (query.length > 0) {
+          btnClearInst.classList.remove('hidden');
+        } else {
+          btnClearInst.classList.add('hidden');
+        }
+
+        state.institution = e.target.value.trim() || 'Institution Name';
+
+        if (!institutionsDb || query.length < 2) {
+          instResults.classList.add('hidden');
+          renderPreview();
+          return;
+        }
+
+        // Smart search matches with exact acronym and prefix priority
+        const matches = institutionsDb.filter(item => {
+          const name = item[0].toLowerCase();
+          const slug = item[1] ? item[1].toLowerCase() : '';
+          const acros = item[3] ? item[3].toLowerCase().split(/\s+/) : [];
+          return name.includes(query) || slug.includes(query) || acros.some(a => a === query || a.startsWith(query));
+        }).sort((a, b) => {
+          // 1. Exact acronym match (e.g. 'DU', 'KU', 'BUET', 'NU')
+          const aExactAcro = a[3] && a[3].toLowerCase().split(/\s+/).includes(query);
+          const bExactAcro = b[3] && b[3].toLowerCase().split(/\s+/).includes(query);
+          if (aExactAcro && !bExactAcro) return -1;
+          if (!aExactAcro && bExactAcro) return 1;
+          if (aExactAcro && bExactAcro) {
+            if ((b[4] || 0) !== (a[4] || 0)) return (b[4] || 0) - (a[4] || 0);
+            if (a[2] === 'BD' && b[2] !== 'BD') return -1;
+            if (a[2] !== 'BD' && b[2] === 'BD') return 1;
+          }
+
+          // 2. Name starts with query (prefix match)
+          const aStarts = a[0].toLowerCase().startsWith(query);
+          const bStarts = b[0].toLowerCase().startsWith(query);
+          if (aStarts && !bStarts) return -1;
+          if (!aStarts && bStarts) return 1;
+
+          // 3. Priority for universities with verified logos
+          if ((b[4] || 0) !== (a[4] || 0)) return (b[4] || 0) - (a[4] || 0);
+
+          // 4. Priority for Bangladeshi institutions to avoid foreign name collisions
+          const aIsBd = a[2] === 'BD';
+          const bIsBd = b[2] === 'BD';
+          if (aIsBd && !bIsBd) return -1;
+          if (!aIsBd && bIsBd) return 1;
+
+          return a[0].localeCompare(b[0]);
+        }).slice(0, 14);
+
+        if (matches.length > 0) {
+          matches.forEach(match => {
+            const [name, slug, country, acronym, hasLogo] = match;
+            const primaryAcro = acronym ? acronym.split(' ')[0] : null;
+            const li = document.createElement('li');
+            li.className = 'px-4 py-2.5 hover:bg-[color:var(--surface-active)] cursor-pointer text-xs text-[color:var(--fg)] flex justify-between items-center transition border-b border-[color:var(--border)] last:border-none';
+            li.innerHTML = `
+              <div class="flex items-center gap-2 overflow-hidden">
+                ${primaryAcro ? `<span class="text-[10px] font-bold font-mono px-1.5 py-0.5 rounded bg-[color:var(--accent-soft)] text-[color:var(--accent)] shrink-0">${escapeHtml(primaryAcro)}</span>` : ''}
+                <span class="font-medium truncate">${escapeHtml(name)}</span>
+              </div>
+              <div class="flex items-center gap-1.5 shrink-0">
+                ${hasLogo === 1 ? `<span class="inline-flex items-center gap-1 text-[10px] font-semibold px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20"><svg class="w-3 h-3 text-emerald-500" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg> Logo</span>` : ''}
+                <span class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-[color:var(--surface-strong)] text-[color:var(--muted)] border border-[color:var(--border)]">${escapeHtml(country || 'GL')}</span>
+              </div>
+            `;
+
+            li.addEventListener('click', async () => {
+              instInput.value = name;
+              state.institution = name;
+              state.slug = slug;
+              state.hasCustomLogo = false;
+
+              if (hasLogo === 1) {
+                // Instantly clear old cached base64 so previous university logo is not kept
+                state.logoBase64 = null;
+                state.logoUrl = `${CDN_URL}/${slug}.webp?v=${LOGO_VERSION}`;
+                logoStatusIndicator.innerHTML = `
+                  <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                  <span>Official R2 Seal Loaded (${escapeHtml(name)})</span>
+                `;
+                renderPreview();
+
+                // Pre-cache as Base64 for instant zero-CORS PDF export
+                const b64 = await cacheLogoAsBase64(state.logoUrl);
+                if (b64 && state.slug === slug) {
+                  state.logoBase64 = b64;
+                  renderPreview();
+                }
+              } else {
+                state.logoUrl = '';
+                state.logoBase64 = null;
+                logoStatusIndicator.innerHTML = `
+                  <span class="w-2 h-2 rounded-full bg-amber-400"></span>
+                  <span>Academic Crest Active (Upload custom logo if desired)</span>
+                `;
+                renderPreview();
+              }
+
+              instResults.classList.add('hidden');
+            });
+
+            instResults.appendChild(li);
+          });
+          instResults.classList.remove('hidden');
+        } else {
+          instResults.classList.add('hidden');
+        }
+
+        renderPreview();
+      });
+
+      btnClearInst.addEventListener('click', () => {
+        instInput.value = '';
+        state.institution = '';
+        state.slug = '';
+        state.logoUrl = '';
+        state.logoBase64 = null;
+        state.hasCustomLogo = false;
+        btnClearInst.classList.add('hidden');
+        instResults.classList.add('hidden');
+        logoStatusIndicator.innerHTML = `
+          <span class="w-2 h-2 rounded-full bg-amber-400"></span>
+          <span>Default academic emblem</span>
+        `;
+        renderPreview();
+      });
+
+      // Close dropdown on outside click
+      document.addEventListener('click', (e) => {
+        if (!instInput.contains(e.target) && !instResults.contains(e.target)) {
+          instResults.classList.add('hidden');
+        }
+      });
+
+      // Custom Logo File Upload
+      customLogoInput.addEventListener('change', (e) => {
+        const file = e.target.files && e.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = (evt) => {
+          state.logoUrl = evt.target.result;
+          state.logoBase64 = evt.target.result;
+          state.hasCustomLogo = true;
+          logoStatusIndicator.innerHTML = `
+            <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+            <span>Custom logo uploaded: ${escapeHtml(file.name.slice(0, 20))}</span>
+          `;
+          renderPreview();
+        };
+        reader.readAsDataURL(file);
+      });
+
+      // Other Form Field Listeners
+      deptInput.addEventListener('input', (e) => { state.department = e.target.value; renderPreview(); });
+      titleInput.addEventListener('input', (e) => { state.title = e.target.value; renderPreview(); });
+      subtitleInput.addEventListener('input', (e) => { state.subtitle = e.target.value; renderPreview(); });
+      courseNameInput.addEventListener('input', (e) => { state.courseName = e.target.value; renderPreview(); });
+      courseCodeInput.addEventListener('input', (e) => { state.courseCode = e.target.value; renderPreview(); });
+      teacherNameInput.addEventListener('input', (e) => { state.teacherName = e.target.value; renderPreview(); });
+      teacherTitleInput.addEventListener('input', (e) => { state.teacherTitle = e.target.value; renderPreview(); });
+      dateInput.addEventListener('input', (e) => { state.date = e.target.value; renderPreview(); });
+      termInput.addEventListener('input', (e) => { state.term = e.target.value; renderPreview(); });
+
+      document.getElementById('btn-today-date').addEventListener('click', () => {
+        state.date = formatDate(new Date());
+        dateInput.value = state.date;
+        renderPreview();
+      });
+
+      // Add Student Button
+      btnAddStudent.addEventListener('click', () => {
+        if (state.students.length >= 6) {
+          alert('Maximum 6 students supported for assignment cover.');
+          return;
+        }
+        state.students.push({ name: '', id: '', section: '' });
+        renderStudentsInput();
+        renderPreview();
+      });
+
+      // Reset Button
+      document.getElementById('btn-reset-form').addEventListener('click', () => {
+        if (!confirm('Reset all fields to default?')) return;
+        state.institution = 'University of Dhaka';
+        state.slug = 'university-of-dhaka';
+        state.logoUrl = `${CDN_URL}/university-of-dhaka.webp?v=${LOGO_VERSION}`;
+        state.logoBase64 = null;
+        state.hasCustomLogo = false;
+        state.department = 'Department of Computer Science & Engineering';
+        state.title = 'Design and Analysis of Scalable Cloud Microservices';
+        state.subtitle = 'Final Term Comprehensive Project Report';
+        state.courseName = 'Distributed Systems & Cloud Computing';
+        state.courseCode = 'CSE-4101';
+        state.teacherName = 'Dr. Sarah Rahman';
+        state.teacherTitle = 'Professor & Head of Department';
+        state.date = formatDate(new Date());
+        state.term = 'Fall Semester 2026';
+        state.students = [{ name: 'Tanvir Ahmed', id: '2026-08149', section: 'Section A' }];
+        syncStateToInputs();
+        renderPreview();
+      });
+
+      // Direct Print Button
+      document.getElementById('btn-print-cover').addEventListener('click', () => {
+        window.print();
+      });
+
+      // Quick Download Button (in header bar)
+      const btnQuickDownload = document.getElementById('btn-quick-download');
+      if (btnQuickDownload) {
+        btnQuickDownload.addEventListener('click', () => {
+          document.getElementById('generate-pdf-btn').click();
+        });
+      }
+
+      // ==========================================
+      // ROCK-SOLID HIGH-DPI A4 PDF EXPORT
+      // 100% Visual Parity with Live Preview
+      // ==========================================
+      const genPdfBtn = document.getElementById('generate-pdf-btn');
+      const btnPdfText = document.getElementById('btn-pdf-text');
+
+      // Convert modern CSS oklch(...) colors to standard sRGB for html2canvas compatibility
+      function oklchToRgb(oklchStr) {
+        const match = oklchStr.match(/oklch\(\s*([\d\.]+%?)\s+([\d\.]+)\s+([\d\.]+)(?:\s*\/\s*([\d\.]+%?))?\s*\)/i);
+        if (!match) return oklchStr;
+        let L = parseFloat(match[1]);
+        if (match[1].endsWith('%')) L /= 100;
+        let C = parseFloat(match[2]);
+        let H = parseFloat(match[3]);
+        const alpha = match[4] ? (match[4].endsWith('%') ? parseFloat(match[4]) / 100 : parseFloat(match[4])) : 1;
+
+        const hRad = (H * Math.PI) / 180;
+        const a_ = C * Math.cos(hRad);
+        const b_ = C * Math.sin(hRad);
+
+        const l_ = L + 0.3963377774 * a_ + 0.2158037573 * b_;
+        const m_ = L - 0.1055613458 * a_ - 0.0638541728 * b_;
+        const s_ = L - 0.0894841775 * a_ - 1.2914855480 * b_;
+
+        const l = l_ * l_ * l_;
+        const m = m_ * m_ * m_;
+        const s = s_ * s_ * s_;
+
+        const rLin = +4.0767434770 * l - 3.3077115913 * m + 0.2309699292 * s;
+        const gLin = -1.2684380046 * l + 2.6097574011 * m - 0.3413193965 * s;
+        const bLin = -0.0041960863 * l - 0.7034186147 * m + 1.7076147010 * s;
+
+        const toGamma = (x) => {
+          const clamped = Math.max(0, Math.min(1, x));
+          return clamped <= 0.0031308 ? 12.92 * clamped : 1.055 * Math.pow(clamped, 1 / 2.4) - 0.055;
+        };
+
+        const r = Math.round(toGamma(rLin) * 255);
+        const g = Math.round(toGamma(gLin) * 255);
+        const b = Math.round(toGamma(bLin) * 255);
+
+        if (alpha < 1) return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+        return `rgb(${r}, ${g}, ${b})`;
+      }
+
+      function sanitizeOklchColors(container, win = window) {
+        if (!container) return;
+        const COLOR_PROPS = [
+          'color',
+          'backgroundColor',
+          'borderColor',
+          'borderTopColor',
+          'borderBottomColor',
+          'borderLeftColor',
+          'borderRightColor',
+          'outlineColor'
+        ];
+
+        const elements = [container, ...container.querySelectorAll('*')];
+        for (const el of elements) {
+          const computed = win.getComputedStyle(el);
+          for (const prop of COLOR_PROPS) {
+            const val = computed[prop];
+            if (val && val.includes('oklch')) {
+              const converted = val.replace(/oklch\([^)]+\)/gi, match => oklchToRgb(match));
+              el.style[prop] = converted;
+            }
+          }
+        }
+      }
+
+      genPdfBtn.addEventListener('click', async () => {
+        const originalText = btnPdfText.textContent;
+        btnPdfText.textContent = 'Generating Crisp A4 PDF...';
+        genPdfBtn.style.opacity = '0.75';
+        genPdfBtn.disabled = true;
+
+        const origTransform = previewPage.style.transform;
+        const origHeight = previewPage.style.height;
+        const origMinHeight = previewPage.style.minHeight;
+        const origViewportWidth = coverViewport.style.width;
+        const origViewportOverflow = coverViewport.style.overflow;
+
+        try {
+          // Pre-cache logo as Base64 if not already cached to prevent CORS canvas tainting
+          if (state.logoUrl && !state.logoBase64) {
+            state.logoBase64 = await cacheLogoAsBase64(state.logoUrl);
+            renderPreview();
+          }
+
+          // Lock viewport dimensions during capture to prevent any screen jump
+          coverViewport.style.width = `${coverViewport.clientWidth}px`;
+          coverViewport.style.overflow = 'hidden';
+
+          // Set preview page to native unscaled A4 dimensions (794px × 1120px)
+          // 1120px ensures 100% exact 1-page fit inside standard 297mm A4 with 0 overflow
+          previewPage.style.transform = 'none';
+          previewPage.style.height = '1120px';
+          previewPage.style.minHeight = '1120px';
+
+          // Ensure any image tags have crossorigin set
+          previewPage.querySelectorAll('img').forEach(img => {
+            img.crossOrigin = 'anonymous';
+          });
+
+          // Sanitize any computed oklch colors on the preview elements
+          sanitizeOklchColors(previewPage, window);
+
+          // Wait a tick for layout and image paint
+          await new Promise(r => setTimeout(r, 100));
+
+          const safeFilename = `${(state.title || 'Assignment_Cover').slice(0, 32).replace(/[^a-zA-Z0-9_-]/g, '_')}_Cover.pdf`;
+
+          const opt = {
+            margin: 0,
+            filename: safeFilename,
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: {
+              scale: 2, // 2x scale = 300+ DPI vector sharpness
+              useCORS: true,
+              allowTaint: true,
+              logging: false,
+              scrollX: 0,
+              scrollY: 0
+            },
+            jsPDF: {
+              unit: 'mm',
+              format: 'a4',
+              orientation: 'portrait'
+            },
+            pagebreak: { mode: 'avoid-all' }
+          };
+
+          const html2pdfLib = await getHtml2Pdf();
+          await html2pdfLib().set(opt).from(previewPage).save();
+        } catch (err) {
+          console.error('PDF generation error:', err);
+          alert('Could not generate PDF: ' + (err.message || 'Unknown error') + '\n\nYou can also click the "Print Cover" button in the top bar to print or save as PDF directly.');
+        } finally {
+          // Restore live preview responsive scaling and layout instantly
+          previewPage.style.transform = origTransform;
+          previewPage.style.height = origHeight;
+          previewPage.style.minHeight = origMinHeight;
+          coverViewport.style.width = origViewportWidth;
+          coverViewport.style.overflow = origViewportOverflow;
+          updateViewportScale();
+
+          btnPdfText.textContent = originalText;
+          genPdfBtn.style.opacity = '1';
+          genPdfBtn.disabled = false;
+        }
+      });
+
+      // Initial Viewport & Preview Mount
+      syncStateToInputs();
+      renderPreview();
+      updateViewportScale();
+
+      // Pre-cache default logo for zero-CORS instant PDF export
+      if (state.logoUrl) {
+        cacheLogoAsBase64(state.logoUrl).then(b64 => {
+          if (b64) {
+            state.logoBase64 = b64;
+            renderPreview();
+          }
+        });
+      }
+    })();
+  </script>
+</SiteLayout>

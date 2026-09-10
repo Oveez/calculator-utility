@@ -218,7 +218,8 @@ export const allToolsIndex: ToolIndexItem[] = [
   { title: 'CSS Box Shadow Generator', category: 'Color', url: '/color-tools/css-box-shadow-generator/', desc: 'Generate multi-layer elevation and inset CSS box shadows.' },
   { title: 'CSS Border Radius Generator (Organic Blobs)', category: 'Color', url: '/color-tools/css-border-radius-generator/', desc: 'Create custom 8-point asymmetric border-radius organic shapes.' },
 
-  // 21. Education & Classroom (6)
+  // 21. Education & Classroom (7)
+  { title: 'Assignment Cover Page Maker', category: 'Education', url: '/education-tools/assignment-cover-maker/', desc: 'Design professional academic assignment covers with official university logos and instant A4 PDF export.' },
   { title: 'Random Student Picker Wheel', category: 'Education', url: '/education-tools/random-student-picker/', desc: 'Fair cold-calling student selector wheel with drawn-name removal.' },
   { title: 'Random Group Generator', category: 'Education', url: '/education-tools/random-group-generator/', desc: 'Divide student rosters into balanced groups by count or group size.' },
   { title: 'Random Team Generator', category: 'Education', url: '/education-tools/random-team-generator/', desc: 'Allocate sports rosters and classroom projects into balanced teams.' },

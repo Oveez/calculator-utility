@@ -474,6 +474,13 @@ const specificToolIcons: Record<string, ToolIconConfig> = {
     iconColor: 'text-sky-600 dark:text-sky-400',
     // Cargo Shipping Container
     svgPath: '<rect x="1" y="4" width="22" height="16" rx="2"></rect><line x1="6" y1="4" x2="6" y2="20"></line><line x1="10" y1="4" x2="10" y2="20"></line><line x1="14" y1="4" x2="14" y2="20"></line><line x1="18" y1="4" x2="18" y2="20"></line>',
+  },
+  'assignment-cover-maker': {
+    badgeBg: 'bg-indigo-500/10',
+    badgeBorder: 'border-indigo-500/20',
+    iconColor: 'text-indigo-600 dark:text-indigo-400',
+    // Academic Assignment Cover Book Emblem
+    svgPath: '<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path><path d="M12 6h4"></path><path d="M12 10h4"></path><circle cx="9" cy="8" r="1.5"></circle>',
   }
 };
 
@@ -544,6 +551,10 @@ export function getToolIconConfig(slugOrUrl: string, title?: string, category?: 
 
   if (normalized.includes('resume') || normalized.includes('cv') || normalized.includes('job') || normalized.includes('career')) {
     return specificToolIcons['cv-maker'];
+  }
+
+  if (normalized.includes('cover') || normalized.includes('assignment')) {
+    return specificToolIcons['assignment-cover-maker'];
   }
 
   // 3. Fallback to Category Icon
