@@ -1528,7 +1528,7 @@ const schemaGraph = [
       }
 
       const CDN_URL = 'https://logos.calculatorutility.tech';
-      const LOGO_VERSION = 'v20260911';
+      const LOGO_VERSION = 'v20260913';
 
       // 6 Curated Themes
       const THEMES = {
@@ -1690,19 +1690,106 @@ const schemaGraph = [
         }
       }
 
+      // Browser Storage Persistence (Survives Refresh)
+      const STORAGE_KEY = 'assignment_cover_maker_user_state_v1';
+
+      function saveStateToStorage() {
+        try {
+          const toSave = {
+            template: state.template,
+            theme: state.theme,
+            logoMode: state.logoMode,
+            institution: state.institution,
+            activeStoredName: state.activeStoredName,
+            slug: state.slug,
+            logoUrl: state.logoUrl,
+            customLogoBase64: state.customLogoBase64,
+            department: state.department,
+            title: state.title,
+            subtitle: state.subtitle,
+            courseName: state.courseName,
+            courseCode: state.courseCode,
+            teacherName: state.teacherName,
+            teacherTitle: state.teacherTitle,
+            date: state.date,
+            term: state.term,
+            students: state.students
+          };
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(toSave));
+        } catch (e) {
+          console.warn('Could not save cover state to localStorage:', e);
+        }
+      }
+
+      function loadStateFromStorage() {
+        try {
+          const raw = localStorage.getItem(STORAGE_KEY);
+          if (!raw) return false;
+          const saved = JSON.parse(raw);
+          if (saved && typeof saved === 'object') {
+            Object.assign(state, saved);
+            if (!Array.isArray(state.students) || state.students.length === 0) {
+              state.students = [{ name: '', id: '', section: '' }];
+            }
+            return true;
+          }
+        } catch (e) {
+          console.warn('Could not load cover state from localStorage:', e);
+        }
+        return false;
+      }
+
       // Initial Sync of form fields
       function syncStateToInputs() {
-        instInput.value = state.institution;
-        deptInput.value = state.department;
-        titleInput.value = state.title;
-        subtitleInput.value = state.subtitle;
-        courseNameInput.value = state.courseName;
-        courseCodeInput.value = state.courseCode;
-        teacherNameInput.value = state.teacherName;
-        teacherTitleInput.value = state.teacherTitle;
-        dateInput.value = state.date;
-        termInput.value = state.term;
+        instInput.value = state.institution || '';
+        if (state.institution && state.institution.trim().length > 0) {
+          btnClearInst.classList.remove('hidden');
+        } else {
+          btnClearInst.classList.add('hidden');
+        }
+        deptInput.value = state.department || '';
+        titleInput.value = state.title || '';
+        subtitleInput.value = state.subtitle || '';
+        courseNameInput.value = state.courseName || '';
+        courseCodeInput.value = state.courseCode || '';
+        teacherNameInput.value = state.teacherName || '';
+        teacherTitleInput.value = state.teacherTitle || '';
+        dateInput.value = state.date || '';
+        termInput.value = state.term || '';
         renderStudentsInput();
+      }
+
+      function syncTemplateAndThemeButtons() {
+        // Sync Template Card visual state
+        document.querySelectorAll('#template-selector-grid .template-card').forEach(card => {
+          const t = card.getAttribute('data-template');
+          const isSelected = t === state.template;
+          const badge = card.querySelector('.active-badge');
+          if (isSelected) {
+            card.classList.remove('border-[color:var(--border-strong)]', 'bg-[color:var(--surface)]');
+            card.classList.add('border-[color:var(--accent)]', 'border-2', 'bg-[color:var(--surface-strong)]');
+            if (badge) badge.classList.remove('hidden');
+          } else {
+            card.classList.remove('border-[color:var(--accent)]', 'border-2', 'bg-[color:var(--surface-strong)]');
+            card.classList.add('border-[color:var(--border-strong)]', 'bg-[color:var(--surface)]');
+            if (badge) badge.classList.add('hidden');
+          }
+        });
+        if (templateLabel) templateLabel.textContent = getTemplateDisplayName(state.template);
+
+        // Sync Theme Pill visual state
+        document.querySelectorAll('#theme-selector-grid .theme-pill').forEach(pill => {
+          const th = pill.getAttribute('data-theme');
+          const isSelected = th === state.theme;
+          if (isSelected) {
+            pill.classList.remove('border-[color:var(--border-strong)]', 'bg-[color:var(--surface)]');
+            pill.classList.add('border-[color:var(--accent)]', 'border-2', 'bg-[color:var(--surface-strong)]');
+          } else {
+            pill.classList.remove('border-[color:var(--accent)]', 'border-2', 'bg-[color:var(--surface-strong)]');
+            pill.classList.add('border-[color:var(--border-strong)]', 'bg-[color:var(--surface)]');
+          }
+        });
+        if (themeLabel && THEMES[state.theme]) themeLabel.textContent = THEMES[state.theme].name;
       }
 
       function renderStudentsInput() {
@@ -2237,6 +2324,9 @@ const schemaGraph = [
 
         // Re-calculate responsive viewport scale
         updateViewportScale();
+
+        // Persist state in browser storage
+        saveStateToStorage();
       }
 
       function getTemplateDisplayName(key) {
@@ -2657,6 +2747,11 @@ const schemaGraph = [
       // Reset Button (Returns to Clean Blank State)
       document.getElementById('btn-reset-form').addEventListener('click', () => {
         if (!confirm('Clear all form fields?')) return;
+        try {
+          localStorage.removeItem(STORAGE_KEY);
+        } catch (e) {}
+        state.template = 'classic';
+        state.theme = 'classic';
         state.institution = '';
         state.activeStoredName = '';
         state.slug = '';
@@ -2674,8 +2769,11 @@ const schemaGraph = [
         state.date = '';
         state.term = '';
         state.students = [{ name: '', id: '', section: '' }];
+        if (customLogoFilename) customLogoFilename.textContent = '';
+        if (customLogoInput) customLogoInput.value = '';
         syncStateToInputs();
         syncLogoModeButtons();
+        syncTemplateAndThemeButtons();
         renderPreview();
       });
 
@@ -2814,10 +2912,17 @@ const schemaGraph = [
       }
 
       // Initial Viewport & Preview Mount
+      loadStateFromStorage();
       syncStateToInputs();
       syncLogoModeButtons();
+      syncTemplateAndThemeButtons();
       renderPreview();
       updateViewportScale();
+
+      // Flush latest state before page refresh
+      window.addEventListener('beforeunload', () => {
+        saveStateToStorage();
+      });
     })();
   </script>
 </SiteLayout>
