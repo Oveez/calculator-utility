@@ -665,11 +665,11 @@ const schemaGraph = [
             <button
               type="button"
               id="btn-merge-assignment"
-              class="w-full inline-flex items-center justify-center gap-2 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white dark:bg-slate-800 dark:hover:bg-slate-700 border-2 border-slate-900 dark:border-slate-600 px-5 py-3.5 text-sm sm:text-base font-bold transition shadow-xs cursor-pointer active:scale-[0.99]"
+              class="w-full inline-flex items-center justify-center gap-2 rounded-2xl bg-slate-900 hover:bg-slate-800 !text-white text-white dark:bg-slate-800 dark:hover:bg-slate-700 border-2 border-slate-900 dark:border-slate-600 px-5 py-3.5 text-sm sm:text-base font-bold transition shadow-xs cursor-pointer active:scale-[0.99] disabled:!text-white disabled:text-white disabled:opacity-90"
               title="Combine this cover page directly with your assignment PDF in PDF Merger"
             >
-              <Icon name="layers" class="w-5 h-5 text-white" />
-              <span id="btn-merge-text">Merge with Assignment</span>
+              <Icon name="layers" class="w-5 h-5 !text-white text-white" />
+              <span id="btn-merge-text" class="!text-white text-white font-bold">Merge with Assignment</span>
             </button>
           </div>
           <div class="flex flex-col sm:flex-row items-center justify-between gap-1 text-[11px] text-[color:var(--muted)] px-1">
@@ -879,6 +879,78 @@ const schemaGraph = [
         return PDFLib.rgb(fallback.r, fallback.g, fallback.b);
       }
 
+      // Academic Title Case Engine (preserves prepositions/articles in lowercase)
+      const LOWERCASE_TITLE_WORDS = new Set([
+        // Articles
+        'a', 'an', 'the',
+        // Coordinating Conjunctions
+        'and', 'but', 'or', 'nor', 'for', 'yet', 'so',
+        // Prepositions
+        'about', 'above', 'across', 'after', 'against', 'along', 'among', 'around', 'at',
+        'before', 'behind', 'below', 'beneath', 'beside', 'between', 'beyond', 'by',
+        'down', 'during', 'except', 'for', 'from', 'in', 'inside', 'into', 'like',
+        'near', 'of', 'off', 'on', 'onto', 'out', 'outside', 'over', 'past', 'round',
+        'since', 'through', 'throughout', 'till', 'to', 'toward', 'towards', 'under',
+        'underneath', 'until', 'unto', 'up', 'upon', 'with', 'within', 'without',
+        'as', 'per', 'via'
+      ]);
+
+      function toAcademicTitleCase(str) {
+        if (!str || typeof str !== 'string') return '';
+        return str.replace(/([^\s:—–-]+)/g, (match, word, offset) => {
+          const lower = word.toLowerCase();
+          const prevSub = str.slice(0, offset).trim();
+          const prevChar = prevSub.length > 0 ? prevSub.charAt(prevSub.length - 1) : '';
+          const isFirstWord = offset === 0 || prevChar === ':' || prevChar === '—' || prevChar === '–';
+          const remaining = str.slice(offset + word.length).trim();
+          const isLastWord = remaining.length === 0;
+
+          // Preserve uppercase acronyms (e.g. MIS, CSE, BBA, AI, IT, II, III, IV) or internal caps (e.g. PhD, B.Sc.)
+          if (word.length > 1 && !LOWERCASE_TITLE_WORDS.has(lower)) {
+            if (word === word.toUpperCase() || /[a-z][A-Z]/.test(word) || /\.[A-Z]/.test(word)) {
+              return word;
+            }
+          }
+
+          // Do not capitalize prepositions, articles, conjunctions unless first or last word
+          if (!isFirstWord && !isLastWord && LOWERCASE_TITLE_WORDS.has(lower)) {
+            return lower;
+          }
+
+          // Capitalize first character
+          let capitalized = lower.charAt(0).toUpperCase() + lower.slice(1);
+
+          // Handle special name prefixes: O'Connor, D'Angelo, McDonald
+          if (/^[OD]['’][a-z]/i.test(capitalized)) {
+            capitalized = capitalized.slice(0, 2) + capitalized.charAt(2).toUpperCase() + capitalized.slice(3);
+          } else if (/^Mc[a-z]/i.test(capitalized)) {
+            capitalized = capitalized.slice(0, 2) + capitalized.charAt(2).toUpperCase() + capitalized.slice(3);
+          }
+
+          return capitalized;
+        });
+      }
+
+      function getFormattedData(s = state) {
+        if (!s) return s;
+        return {
+          ...s,
+          institution: toAcademicTitleCase(s.institution),
+          department: toAcademicTitleCase(s.department),
+          title: toAcademicTitleCase(s.title),
+          subtitle: toAcademicTitleCase(s.subtitle),
+          courseName: toAcademicTitleCase(s.courseName),
+          teacherName: toAcademicTitleCase(s.teacherName),
+          teacherTitle: toAcademicTitleCase(s.teacherTitle),
+          term: toAcademicTitleCase(s.term),
+          students: (s.students || []).map(st => ({
+            ...st,
+            name: toAcademicTitleCase(st.name),
+            section: toAcademicTitleCase(st.section)
+          }))
+        };
+      }
+
       function wrapText(font, text, size, maxWidth) {
         if (!text) return [];
         const words = text.split(' ');
@@ -898,7 +970,7 @@ const schemaGraph = [
         return lines;
       }
 
-      function drawCenteredText(page, font, text, y, size, color, maxWidth = 500) {
+      function drawCenteredTextAt(page, font, text, centerX, y, size, color, maxWidth = 500) {
         if (!text) return y;
         const lines = wrapText(font, text, size, maxWidth);
         const lineHeight = size * 1.35;
@@ -906,7 +978,7 @@ const schemaGraph = [
         for (const line of lines) {
           const width = font.widthOfTextAtSize(line, size);
           page.drawText(line, {
-            x: (595.28 - width) / 2,
+            x: centerX - (width / 2),
             y: currentY,
             size,
             font,
@@ -915,6 +987,10 @@ const schemaGraph = [
           currentY -= lineHeight;
         }
         return currentY;
+      }
+
+      function drawCenteredText(page, font, text, y, size, color, maxWidth = 500) {
+        return drawCenteredTextAt(page, font, text, 595.28 / 2, y, size, color, maxWidth);
       }
 
       function drawLeftText(page, font, text, x, y, size, color, maxWidth = 400) {
@@ -976,7 +1052,7 @@ const schemaGraph = [
           }
         }
 
-        const s = state;
+        const s = getFormattedData(state);
         const instText = (s.institution || 'INSTITUTION NAME').toUpperCase();
         const deptText = s.department || 'Department / Faculty';
         const titleText = s.title || 'Assignment Title';
@@ -1218,23 +1294,48 @@ const schemaGraph = [
           const fullCourse = courseCodeText ? `${courseCodeText} — ${courseNameText}` : courseNameText;
           drawCenteredText(page, fontSerifBold, fullCourse, titleY - 42, 13, colPrimary);
 
-          page.drawLine({ start: { x: 120, y: 210 }, end: { x: W - 120, y: 210 }, thickness: 0.5, color: colBorder });
-          page.drawLine({ start: { x: 120, y: 115 }, end: { x: W - 120, y: 115 }, thickness: 0.5, color: colBorder });
-          page.drawLine({ start: { x: W / 2, y: 205 }, end: { x: W / 2, y: 120 }, thickness: 0.5, color: colBorder });
+          const boxLeft = 110;
+          const boxRight = W - 110;
+          const midDividerX = W / 2;
+          const leftColCenter = (boxLeft + midDividerX) / 2;
+          const rightColCenter = (midDividerX + boxRight) / 2;
 
-          drawCenteredText(page, fontSerifBold, 'SUBMITTED TO', 195, 8.5, colSecondary);
-          drawCenteredText(page, fontSerifBold, teacherNameText, 175, 11, colDark);
-          drawCenteredText(page, fontSerif, teacherTitleText, 160, 9.5, colMuted);
+          const topBoxY = 210;
+          let botBoxY = 115;
 
-          const st0 = s.students[0] || { name: 'Student Name', id: '' };
-          drawCenteredText(page, fontSerifBold, 'SUBMITTED BY', 195, 8.5, colSecondary);
-          drawCenteredText(page, fontSerifBold, st0.name || 'Student Name', 175, 11, colDark);
-          if (st0.id) {
-            drawCenteredText(page, fontSerif, `Roll/ID: ${st0.id}`, 160, 9.5, colMuted);
+          // Left Column: SUBMITTED TO (Instructor)
+          drawCenteredTextAt(page, fontSerifBold, 'SUBMITTED TO', leftColCenter, topBoxY - 15, 8.5, colSecondary, 150);
+          let insY = drawCenteredTextAt(page, fontSerifBold, teacherNameText, leftColCenter, topBoxY - 35, 11, colDark, 150);
+          drawCenteredTextAt(page, fontSerif, teacherTitleText, leftColCenter, insY - 4, 9.5, colMuted, 150);
+
+          // Right Column: SUBMITTED BY (Student / Team)
+          drawCenteredTextAt(page, fontSerifBold, 'SUBMITTED BY', rightColCenter, topBoxY - 15, 8.5, colSecondary, 150);
+          let stuY = topBoxY - 35;
+          const numStudents = Math.min(s.students.length, 4);
+          const nameSize = numStudents > 2 ? 9.5 : 11;
+          const idSize = numStudents > 2 ? 8.5 : 9.5;
+
+          for (let i = 0; i < numStudents; i++) {
+            const st = s.students[i];
+            const sName = st.name || 'Student Name';
+            stuY = drawCenteredTextAt(page, fontSerifBold, sName, rightColCenter, stuY, nameSize, colDark, 150);
+            if (st.id) {
+              stuY = drawCenteredTextAt(page, fontSerif, `Roll/ID: ${st.id}`, rightColCenter, stuY - 2, idSize, colMuted, 150);
+            }
+            stuY -= 4;
           }
 
+          if (stuY < botBoxY) {
+            botBoxY = stuY - 5;
+          }
+
+          page.drawLine({ start: { x: boxLeft, y: topBoxY }, end: { x: boxRight, y: topBoxY }, thickness: 0.5, color: colBorder });
+          page.drawLine({ start: { x: boxLeft, y: botBoxY }, end: { x: boxRight, y: botBoxY }, thickness: 0.5, color: colBorder });
+          page.drawLine({ start: { x: midDividerX, y: topBoxY - 5 }, end: { x: midDividerX, y: botBoxY + 5 }, thickness: 0.5, color: colBorder });
+
+          const footerY = Math.min(70, botBoxY - 35);
           const footerText = termText ? `${s.date || ''}   •   ${termText}` : (s.date || '');
-          drawCenteredText(page, fontSerif, footerText, 70, 9, colMuted);
+          drawCenteredText(page, fontSerif, footerText, footerY, 9, colMuted);
 
         } else if (template === 'bold') {
           // 5. BOLD ACADEMIC BANNER TEMPLATE
@@ -1643,6 +1744,17 @@ const schemaGraph = [
               renderPreview();
             }
           });
+
+          inp.addEventListener('blur', (e) => {
+            const idx = parseInt(e.target.getAttribute('data-idx'));
+            const field = e.target.getAttribute('data-field');
+            if (field === 'name' && state.students[idx] && e.target.value.trim()) {
+              const formatted = toAcademicTitleCase(e.target.value.trim());
+              e.target.value = formatted;
+              state.students[idx].name = formatted;
+              renderPreview();
+            }
+          });
         });
 
         // Attach listeners for student removal
@@ -1745,7 +1857,7 @@ const schemaGraph = [
 
       // 1. CLASSIC ACADEMIC
       function renderTemplateClassic() {
-        const s = state;
+        const s = getFormattedData(state);
         const studentsHtml = s.students.map(st => `
           <div class="space-y-1">
             <p class="font-bold text-slate-900 text-sm">${escapeHtml(st.name || 'Student Name')}</p>
@@ -1815,7 +1927,7 @@ const schemaGraph = [
 
       // 2. MODERN MINIMAL
       function renderTemplateModern() {
-        const s = state;
+        const s = getFormattedData(state);
         const studentsHtml = s.students.map(st => `
           <div class="space-y-1">
             <p class="font-bold text-slate-900 text-sm">${escapeHtml(st.name || 'Student Name')}</p>
@@ -1885,7 +1997,7 @@ const schemaGraph = [
 
       // 3. PROFESSIONAL
       function renderTemplateProfessional() {
-        const s = state;
+        const s = getFormattedData(state);
         const studentsHtml = s.students.map(st => `
           <div class="flex justify-between items-baseline py-1.5 border-b border-slate-100 last:border-none">
             <span class="font-bold text-slate-900 text-xs">${escapeHtml(st.name || 'Student Name')}</span>
@@ -1953,7 +2065,7 @@ const schemaGraph = [
 
       // 4. ELEGANT (Framed Luxury Academic)
       function renderTemplateElegant() {
-        const s = state;
+        const s = getFormattedData(state);
         const studentsHtml = s.students.map(st => `
           <div class="space-y-0.5 text-center">
             <p class="font-bold font-serif text-slate-900 text-sm">${escapeHtml(st.name || 'Student Name')}</p>
@@ -2018,7 +2130,7 @@ const schemaGraph = [
 
       // 5. BOLD ACADEMIC (Full Banner)
       function renderTemplateBold() {
-        const s = state;
+        const s = getFormattedData(state);
         const studentsHtml = s.students.map(st => `
           <div class="space-y-1">
             <p class="font-black text-slate-900 text-sm">${escapeHtml(st.name || 'Student Name')}</p>
@@ -2467,6 +2579,30 @@ const schemaGraph = [
       dateInput.addEventListener('input', (e) => { state.date = e.target.value; renderPreview(); });
       termInput.addEventListener('input', (e) => { state.term = e.target.value; renderPreview(); });
 
+      // Auto-convert fields to Academic Title Case on blur
+      const academicTitleCaseInputs = [
+        { el: titleInput, key: 'title' },
+        { el: subtitleInput, key: 'subtitle' },
+        { el: courseNameInput, key: 'courseName' },
+        { el: deptInput, key: 'department' },
+        { el: teacherNameInput, key: 'teacherName' },
+        { el: teacherTitleInput, key: 'teacherTitle' },
+        { el: termInput, key: 'term' },
+        { el: instInput, key: 'institution' }
+      ];
+
+      academicTitleCaseInputs.forEach(({ el, key }) => {
+        if (!el) return;
+        el.addEventListener('blur', () => {
+          if (el.value && el.value.trim()) {
+            const formatted = toAcademicTitleCase(el.value.trim());
+            el.value = formatted;
+            state[key] = formatted;
+            renderPreview();
+          }
+        });
+      });
+
       document.getElementById('btn-today-date').addEventListener('click', () => {
         state.date = formatDate(new Date());
         dateInput.value = state.date;
@@ -2605,7 +2741,7 @@ const schemaGraph = [
           const pdfBytes = await compileVectorCoverPdf();
           const blob = new Blob([pdfBytes], { type: 'application/pdf' });
           const url = URL.createObjectURL(blob);
-          const safeFilename = `${(state.title || 'Assignment_Cover').slice(0, 32).replace(/[^a-zA-Z0-9_-]/g, '_')}_Cover.pdf`;
+          const safeFilename = `${(toAcademicTitleCase(state.title) || 'Assignment_Cover').slice(0, 32).replace(/[^a-zA-Z0-9_-]/g, '_')}_Cover.pdf`;
 
           const a = document.createElement('a');
           a.href = url;
@@ -2625,16 +2761,32 @@ const schemaGraph = [
       });
 
       // Merge with Assignment Handler (preloads cover into PDF Merger)
+      function resetMergeButton() {
+        if (btnMergeAssignment && btnMergeText) {
+          btnMergeText.textContent = 'Merge with Assignment';
+          btnMergeText.style.color = '#ffffff';
+          btnMergeAssignment.style.color = '#ffffff';
+          btnMergeAssignment.style.opacity = '1';
+          btnMergeAssignment.disabled = false;
+        }
+      }
+
+      // Reset merge button when navigating back via browser back button (bfcache restoration)
+      window.addEventListener('pageshow', () => {
+        resetMergeButton();
+      });
+
       if (btnMergeAssignment) {
         btnMergeAssignment.addEventListener('click', async () => {
-          const originalText = btnMergeText.textContent;
           btnMergeText.textContent = 'Preparing Cover...';
-          btnMergeAssignment.style.opacity = '0.75';
+          btnMergeText.style.color = '#ffffff';
+          btnMergeAssignment.style.color = '#ffffff';
+          btnMergeAssignment.style.opacity = '0.9';
           btnMergeAssignment.disabled = true;
 
           try {
             const pdfBytes = await compileVectorCoverPdf();
-            const safeFilename = `${(state.title || 'Assignment_Cover').slice(0, 32).replace(/[^a-zA-Z0-9_-]/g, '_')}_Cover.pdf`;
+            const safeFilename = `${(toAcademicTitleCase(state.title) || 'Assignment_Cover').slice(0, 32).replace(/[^a-zA-Z0-9_-]/g, '_')}_Cover.pdf`;
 
             let binary = '';
             const len = pdfBytes.byteLength;
@@ -2648,13 +2800,15 @@ const schemaGraph = [
               data: base64Data
             }));
 
+            setTimeout(() => {
+              resetMergeButton();
+            }, 400);
+
             window.location.href = '/pdf-tools/pdf-merger/';
           } catch (err) {
             console.error('Merge preparation error:', err);
             alert('Could not prepare cover for PDF merger: ' + (err.message || 'Unknown error'));
-            btnMergeText.textContent = originalText;
-            btnMergeAssignment.style.opacity = '1';
-            btnMergeAssignment.disabled = false;
+            resetMergeButton();
           }
         });
       }
