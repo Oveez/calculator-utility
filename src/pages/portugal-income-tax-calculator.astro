@@ -3,7 +3,6 @@ import SiteLayout from '../layouts/SiteLayout.astro';
 import TaxCalculatorApp from '../components/tax/TaxCalculatorApp.astro';
 import TaxFaqSection from '../components/tax/TaxFaqSection.astro';
 import CountryTaxSelector from '../components/tax/CountryTaxSelector.astro';
-import AdSlot from '../components/tax/AdSlot.astro';
 import { ptProfile } from '../data/tax/countries/pt';
 
 const profile = ptProfile;
@@ -38,14 +37,8 @@ const defaultYear = profile.years[profile.defaultTaxYear];
       </p>
     </header>
 
-    <!-- Top Monetization / Ad Area -->
-    <AdSlot slotId="portugal-top" position="top" />
-
     <!-- Flagship Interactive Calculator App -->
     <TaxCalculatorApp profile={profile} />
-
-    <!-- Middle Monetization / Ad Area -->
-    <AdSlot slotId="portugal-mid" position="middle" />
 
     <!-- Informational / Educational Content Section -->
     <section class="space-y-6 rounded-[2rem] border border-[color:var(--border)] bg-[color:var(--surface)] p-6 sm:p-8" aria-labelledby="how-it-works-heading">
