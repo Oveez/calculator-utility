@@ -11,8 +11,8 @@ const defaultYear = profile.years[profile.defaultTaxYear];
 ---
 
 <SiteLayout
-  title="Canada Income Tax Calculator 2026 | Federal & Provincial CRA Tax Brackets"
-  description={`${profile.name} Income Tax Calculator for tax year ${defaultYear.taxYear}. Compute your take-home pay, progressive tax brackets, social security deductions, and effective tax rate using official government rates.`}
+  title="Canada Income Tax Calculator 2026 — CRA Tax Brackets & Revenue Canada Pay Calculator"
+  description={`Free Canada income tax calculator and CRA salary calculator for tax year ${defaultYear.taxYear}. Calculate federal and provincial tax brackets (Ontario, BC, Alberta, Quebec), CPP, EI, and take home pay.`}
 >
   <div class="mx-auto max-w-5xl space-y-10">
     <!-- Breadcrumb & Header -->
@@ -31,7 +31,7 @@ const defaultYear = profile.years[profile.defaultTaxYear];
         <span>Official {profile.name} Tax Engine • Tax Year {defaultYear.taxYear}</span>
       </div>
       <h1 class="text-3xl font-extrabold tracking-tight text-[color:var(--fg)] sm:text-4xl lg:text-5xl">
-        {profile.name} Income Tax &amp; Salary Calculator
+        Canada Income Tax Calculator — CRA &amp; Revenue Canada Pay Calculator ({defaultYear.taxYear})
       </h1>
       <p class="max-w-3xl text-base leading-relaxed text-[color:var(--muted)] sm:text-lg">
         {profile.metaDescription}
@@ -49,27 +49,64 @@ const defaultYear = profile.years[profile.defaultTaxYear];
 
     <!-- Informational / Educational Content Section -->
     <section class="space-y-6 rounded-[2rem] border border-[color:var(--border)] bg-[color:var(--surface)] p-6 sm:p-8" aria-labelledby="how-it-works-heading">
-      <h2 id="how-it-works-heading" class="text-2xl font-bold tracking-tight text-[color:var(--fg)]">
-        How {profile.name} Income Tax is Calculated ({defaultYear.taxYear})
-      </h2>
-      <div class="space-y-4 text-sm leading-relaxed text-[color:var(--muted)]">
-        <p>
-          Income tax in {profile.name} is determined using a progressive marginal bracket system. Taxpayers only pay each bracket's specific rate on the slice of taxable income falling within that tier.
+      <div class="space-y-2">
+        <h2 id="how-it-works-heading" class="text-2xl font-bold tracking-tight text-[color:var(--fg)]">
+          How Canada Income Tax &amp; CRA Payroll Deductions are Calculated ({defaultYear.taxYear})
+        </h2>
+        <p class="text-sm leading-relaxed text-[color:var(--muted)]">
+          Income taxation in Canada operates through a dual-tiered progressive system governed by the Canada Revenue Agency (CRA) and provincial revenue authorities. Your final take home pay reflects federal tax brackets, provincial income tax rates, and statutory CPP and EI contributions.
         </p>
-        <div class="grid gap-4 sm:grid-cols-3">
-          <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] p-4">
-            <p class="font-bold text-[color:var(--fg)]">1. Gross Income</p>
-            <p class="mt-1 text-xs">Total annual salary, wages, and earned employment compensation.</p>
-          </div>
-          <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] p-4">
-            <p class="font-bold text-[color:var(--fg)]">2. Allowances &amp; Deductions</p>
-            <p class="mt-1 text-xs">Standard statutory allowances and tax-free thresholds subtracted from gross earnings.</p>
-          </div>
-          <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] p-4">
-            <p class="font-bold text-[color:var(--fg)]">3. Progressive Tax Slices</p>
-            <p class="mt-1 text-xs">Progressive rates applied sequentially to arrive at net take-home salary.</p>
-          </div>
+      </div>
+
+      <div class="grid gap-4 sm:grid-cols-3">
+        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] p-4">
+          <p class="font-bold text-[color:var(--fg)]">1. Gross Employment Earnings</p>
+          <p class="mt-1 text-xs text-[color:var(--muted)]">Annual salary, hourly wages, bonuses, overtime, and self-employment income before payroll deductions.</p>
         </div>
+        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] p-4">
+          <p class="font-bold text-[color:var(--fg)]">2. Basic Personal Amount &amp; Credits</p>
+          <p class="mt-1 text-xs text-[color:var(--muted)]">Federal BPA ($16,452 for 2026) and provincial personal tax credits applied to reduce baseline tax payable.</p>
+        </div>
+        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] p-4">
+          <p class="font-bold text-[color:var(--fg)]">3. Combined Marginal Taxes &amp; Net Pay</p>
+          <p class="mt-1 text-xs text-[color:var(--muted)]">Progressive federal and provincial tax brackets, plus CPP and EI withholdings, deducted to calculate take-home pay.</p>
+        </div>
+      </div>
+
+      <div class="grid gap-6 pt-2 md:grid-cols-2 text-sm text-[color:var(--muted)]">
+        <div class="space-y-3 rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] p-5">
+          <h3 class="font-bold text-base text-[color:var(--fg)]">2026 CRA Federal Income Tax Brackets</h3>
+          <p class="text-xs leading-relaxed">
+            For 2026, the CRA enforces five progressive federal income tax tiers. Taxpayers only pay the marginal rate applicable to the portion of taxable income falling within that tier:
+          </p>
+          <ul class="list-disc list-inside text-xs space-y-1 text-[color:var(--muted)]">
+            <li><strong>14.0%</strong> on the first $58,523 of taxable income</li>
+            <li><strong>20.5%</strong> over $58,523 up to $117,045</li>
+            <li><strong>26.0%</strong> over $117,045 up to $181,440</li>
+            <li><strong>29.0%</strong> over $181,440 up to $258,482</li>
+            <li><strong>33.0%</strong> on taxable income exceeding $258,482</li>
+          </ul>
+        </div>
+
+        <div class="space-y-3 rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] p-5">
+          <h3 class="font-bold text-base text-[color:var(--fg)]">Provincial Tax Rates Across Canada</h3>
+          <p class="text-xs leading-relaxed">
+            In addition to federal taxes, each province and territory levies separate provincial income tax:
+          </p>
+          <ul class="list-disc list-inside text-xs space-y-1 text-[color:var(--muted)]">
+            <li><strong>Ontario:</strong> Progressive brackets from 5.05% to 13.16%, plus Ontario surtax on higher earners.</li>
+            <li><strong>British Columbia:</strong> Progressive rates starting at 5.06% up to 20.5%.</li>
+            <li><strong>Alberta:</strong> Provincial tax starting at 10% flat on personal taxable earnings.</li>
+            <li><strong>Quebec:</strong> Separate provincial return administered by Revenu Québec (14% to 25.75%) with federal abatement.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="space-y-2 pt-2 text-sm text-[color:var(--muted)]">
+        <h3 class="font-bold text-base text-[color:var(--fg)]">Mandatory CPP &amp; EI Payroll Contributions</h3>
+        <p class="text-xs leading-relaxed">
+          Every Canadian employee paycheck includes deductions for the Canada Pension Plan (CPP) and Employment Insurance (EI). For 2026, employee CPP is 5.95% on pensionable earnings above the $3,500 basic exemption up to the maximum of $74,600 (maximum annual contribution $4,230.45). Employment Insurance is 1.63% up to maximum insurable earnings of $68,900 (maximum $1,123.07). Our CRA pay calculator automatically accounts for these withholdings so you can estimate your exact take-home salary or project your tax refund.
+        </p>
       </div>
     </section>
 

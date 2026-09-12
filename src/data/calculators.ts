@@ -48,11 +48,11 @@ const calculators: CalculatorConfig[] = [
 	// FINANCE & MONEY (8 Calculators)
 	// ==========================================
 	{
-		metaTitle: 'Loan Calculator — Monthly Payment & Interest Rate Calculator',
+		metaTitle: 'Loan Calculator & Mortgage Calculator — Monthly Payment & Interest Rate',
 		slug: 'mortgage-calculator',
 		title: 'Loan Calculator & Mortgage Payment Calculator',
 		category: 'Finance',
-		metaDescription: 'Free online loan calculator to calculate loan payment amounts, interest charges, monthly loan rate schedule, and total payoff terms.',
+		metaDescription: 'Free online loan calculator and mortgage calculator. Compute loan payments, calculate monthly mortgage costs, estimate interest rates, down payments, and amortization schedules.',
 		inputs: [
 			{ id: 'homePrice', label: 'Home / Loan amount', type: 'number', min: 1000, step: 5000, defaultValue: 400000, unit: '$', prefix: '$', colSpan: 'half', helpText: 'Purchase price or total loan sum' },
 			{ id: 'downPayment', label: 'Down payment', type: 'number', min: 0, step: 1000, defaultValue: 80000, unit: '$', prefix: '$', colSpan: 'half', helpText: '20% down ($80,000) eliminates Private Mortgage Insurance (PMI)' },
@@ -143,25 +143,25 @@ const calculators: CalculatorConfig[] = [
 		faq: [
 			{
 				question: 'How do I calculate loan payment and monthly interest?',
-				answer: 'Our loan payment calculator computes your exact monthly loan calculator payment by amortizing the principal over your term at the specified annual rate. It acts as an all-in-one loan and interest calculator.'
+				answer: 'Our loan payment calculator computes your exact monthly payment by amortizing the principal over your loan term at the contracted annual interest rate. It functions as an all-in-one loan and interest calculator for home loans and mortgages.'
 			},
 			{
-				question: 'What factors determine my monthly payment and interest charges?',
-				answer: 'Your loan calculator monthly payment depends on three factors: total borrowed principal, the loan term calculator duration in years, and the loan interest rate calculator figure. A higher rate or longer term increases the total interest over time.'
+				question: 'What factors determine my monthly mortgage payment and interest charges?',
+				answer: 'Your loan monthly payment depends on borrowed principal, loan duration in years, and annual interest rate. Factoring in down payments, property taxes, and homeowners insurance provides an accurate estimate on mortgage payment totals.'
 			},
 			{
-				question: 'How does a loan term calculator help reduce total finance costs?',
-				answer: 'Shortening your repayment window with a monthly loan calculator lowers cumulative borrowing expenses. Comparing loan tables across 15-year and 30-year terms reveals thousands in interest savings.'
+				question: 'How does down payment impact loan payment and mortgage calculations?',
+				answer: 'A higher down payment directly decreases the principal borrowed, lowering your monthly loan calculator payment and lifetime finance interest costs. Putting down at least 20% also eliminates private mortgage insurance (PMI).'
 			},
 			{
-				question: 'Can I use this as a finance loan calculator for personal or mortgage loans?',
-				answer: 'Yes! This browser-based finance loan calculator functions as an accurate loan calculator tool for mortgages, personal notes, student financing, and home equity loans.'
+				question: 'How do I view my loan payment schedule and amortization table?',
+				answer: 'This free mortgage loan calculator automatically generates an annual amortization schedule showing principal reduction, cumulative interest charges, and remaining loan balance across the entire repayment schedule.'
 			},
 		],
 		relatedSlugs: ['compound-interest-calculator', 'auto-loan-calculator', 'simple-interest-calculator'],
 		content: makeContent(
-			'This comprehensive loan calculator helps you estimate financing costs, plan home mortgages, and evaluate repayment schedules. Whether you need a monthly payment calculator, a loan and interest rate calculator, or a finance loan calculator to analyze borrowing options, this tool delivers instant, private projections. Plan your personal loan calendar and make confident borrowing decisions with zero server data tracking.',
-			'The calculator uses the standard fixed-rate amortization loan calculator formula. It converts the annual percentage into a monthly loan rate calculator figure, dividing the principal and interest evenly across the total loan term calculator months for a predictable monthly loan calculator payment.',
+			'This comprehensive loan calculator and online mortgage calculator helps you estimate financing costs, compute loan payments, and evaluate repayment schedules. Whether you need a monthly payment calculator, a home loan calculator with down payment options, or a finance loan calculator to analyze borrowing choices, this tool delivers instant, private projections. Plan your payoff schedule and make confident borrowing decisions with zero server tracking.',
+			'The calculator uses the standard fixed-rate amortization loan formula. It converts the annual percentage into a monthly rate, dividing principal and interest evenly across total term months for a predictable monthly payment schedule.',
 			'Formula: Monthly Payment M = P [ i(1 + i)^n ] / [ (1 + i)^n – 1 ], where P is Principal, i is monthly interest rate, and n is total months in the loan term.',
 			[
 				{ title: 'Standard 30-Year Loan', description: 'A $300,000 mortgage at 6.5% interest over a 30-year term.', values: { principal: 300000, interestRate: 6.5, loanTermYears: 30 }, result: '$1,896.20 / month' },
@@ -170,11 +170,11 @@ const calculators: CalculatorConfig[] = [
 		),
 	},
 	{
-		metaTitle: 'Compound Interest Calculator — Investment & Savings Growth',
+		metaTitle: 'Compound Interest Calculator — Estimate Compound Interest & Growth',
 		slug: 'compound-interest-calculator',
 		title: 'Compound Interest Calculator',
 		category: 'Finance',
-		metaDescription: 'Free compound interest calculator to estimate compound interest, cumulative interest, monthly growth, and future investment returns over time.',
+		metaDescription: 'Free online compound interest calculator to calculate compound interest, estimate investment growth, compare annual interest rates, and project monthly savings returns.',
 		inputs: [
 			{ id: 'principal', label: 'Initial deposit', type: 'number', min: 0, step: 500, defaultValue: 10000, unit: '$', prefix: '$', colSpan: 'half', helpText: 'Starting capital balance' },
 			{ id: 'monthlyContribution', label: 'Monthly addition', type: 'number', min: 0, step: 50, defaultValue: 500, unit: '$', prefix: '$', colSpan: 'half', helpText: 'Recurring monthly deposit' },
@@ -250,25 +250,25 @@ const calculators: CalculatorConfig[] = [
 		faq: [
 			{
 				question: 'How do I calculate compound interest with monthly contributions?',
-				answer: 'Our compound interest calculator monthly models your initial deposit plus regular additions. By applying the compound interest formula calculator at each monthly interval, your cumulative interest calculator balance accelerates over time.'
+				answer: 'Our compound interest calculator monthly models your starting principal plus regular additions. By applying the compound interest formula at each monthly interval, your investment growth accelerates over time.'
 			},
 			{
-				question: 'What is the difference in simple interest and compound interest calculator results?',
-				answer: 'A simple interest calculator computes returns solely on the original principal. In contrast, a compound growth calculator adds earned interest back into the balance, enabling exponential wealth building.'
+				question: 'What is the difference between simple interest and compound interest?',
+				answer: 'A simple interest calculator computes returns exclusively on original principal. In contrast, an online compound interest calculator adds earned interest back into the principal balance, generating exponential growth.'
 			},
 			{
-				question: 'Can I use this as a compound loan calculator?',
-				answer: 'Yes! While designed for investment growth, this tool also operates as a compound loan calculator to evaluate compounding debt balances and interest compound interest calculator projections.'
+				question: 'How can I estimate compound interest growth over 10, 20, or 30 years?',
+				answer: 'Enter your initial deposit, monthly addition, expected return rate, and time horizon. The compound calculator generates a year-by-year schedule illustrating cumulative interest gains and inflation-adjusted purchasing power.'
 			},
 			{
-				question: 'How does the compound interest rate calculator factor in compounding frequency?',
-				answer: 'This compound interest rate calculator assumes monthly compounding (12 times per year), which matches standard high-yield savings accounts, index funds, and brokerage investment products.'
+				question: 'How does compounding frequency affect my effective return rate?',
+				answer: 'More frequent compounding (monthly vs quarterly or annually) generates slightly higher overall yield because earned interest starts generating its own returns sooner.'
 			},
 		],
 		relatedSlugs: ['mortgage-calculator', 'investment-calculator', 'simple-interest-calculator'],
 		content: makeContent(
-			'This compound interest calculator demonstrates the exponential power of financial compounding. Whether planning retirement, building a rainy-day fund, or simulating stock market returns, use our compound calculator to estimate compound interest growth across multi-year horizons. Regular monthly additions multiply your cumulative interest earnings without active trading.',
-			'The compound interest growth calculator applies monthly compounding to your starting balance while simultaneously compounding the annuity of your regular monthly deposits. The engine computes both principal accumulation and cumulative interest over time.',
+			'This compound interest calculator demonstrates the exponential power of financial compounding. Whether planning retirement, building a rainy-day fund, or forecasting market returns, use our online compound interest calculator to estimate compound interest and long-term wealth accumulation across multi-year horizons.',
+			'The compound interest growth calculator applies monthly compounding to your starting balance while compounding the annuity of regular monthly deposits. The engine computes both principal accumulation and cumulative interest over time.',
 			'Formula: Future Value = P(1 + r/n)^(nt) + PMT × [ ((1 + r/n)^(nt) - 1) / (r/n) ], where P is initial deposit, PMT is monthly contribution, r is annual compound rate, n is compounding frequency per year, and t is time in years.',
 			[
 				{ title: '10-Year Growth Plan', description: '$10,000 starting deposit with $500/month at 8% annual return.', values: { principal: 10000, monthlyContribution: 500, annualRate: 8, years: 10 }, result: '$113,866.49' },
@@ -530,11 +530,11 @@ const calculators: CalculatorConfig[] = [
 		),
 	},
 	{
-		metaTitle: 'Salary Calculator — Hourly Rate Converter & Wage Calculator',
+		metaTitle: 'Salary Calculator — Take Home Pay & Paycheck Calculator',
 		slug: 'salary-calculator',
-		title: 'Salary & Hourly Wage Calculator',
+		title: 'Salary Calculator & Take Home Pay Calculator',
 		category: 'Finance',
-		metaDescription: 'Use our hourly rate converter and wage calculator to convert hourly pay into annual salary, monthly earnings, and weekly milestones.',
+		metaDescription: 'Free online salary calculator and paycheck calculator. Compute take home pay, annual wage, monthly earnings, gross income, and hourly payroll conversion.',
 		inputs: [
 			{ id: 'hourlyWage', label: 'Hourly base wage', type: 'number', min: 1, step: 0.5, defaultValue: 32.5, unit: '$/hr', prefix: '$', suffix: '$/hr', colSpan: 'half' },
 			{ id: 'hoursPerWeek', label: 'Hours worked per week', type: 'number', min: 1, max: 100, step: 1, defaultValue: 40, unit: 'hrs', suffix: 'hrs/wk', colSpan: 'half' },
@@ -598,19 +598,23 @@ const calculators: CalculatorConfig[] = [
 		],
 		faq: [
 			{
-				question: 'How does an hourly rate converter work?',
-				answer: 'An hourly rate converter multiplies your base wage by weekly working hours and annual paid weeks (typically 52) to compute your gross annual salary.'
+				question: 'How does an annual salary calculator compute take home pay and gross wage?',
+				answer: 'Our salary calculator multiplies your base hourly rate by hours worked per week and annual paid weeks (typically 52), breaking down compensation into annual income, monthly pay, and bi-weekly paycheck figures.'
 			},
 			{
-				question: 'How do hourly rates calculator conversions help evaluate job offers?',
-				answer: 'Comparing contracts with an hourly rates calculator reveals the annualized compensation equivalent, clarifying differences between hourly freelance gigs and salaried employment.'
+				question: 'What is the difference between gross income and take home pay?',
+				answer: 'Gross income represents total earnings before any payroll withholding. Take home pay (net income) is the actual wage received after statutory tax deductions and social contributions.'
+			},
+			{
+				question: 'How do I convert an hourly wage to an annual salary?',
+				answer: 'Multiply your hourly pay rate by weekly working hours (e.g. 40 hours) and total working weeks per year (typically 52 weeks). For example, $32.50/hr × 40 hrs × 52 weeks = $67,600 annual salary.'
 			},
 		],
 		relatedSlugs: ['tip-calculator', 'mortgage-calculator', 'compound-interest-calculator'],
 		content: makeContent(
-			'This salary and wage calculator functions as an intuitive hourly rate converter, translating hourly wages into equivalent annual, monthly, and biweekly compensation. Perfect for freelancers, contractors, and job candidates comparing employment offers.',
-			'The tool calculates total gross earnings by multiplying your hourly rate by the weekly hours worked, scaled across total annual paid weeks.',
-			'Formula: Annual Salary = Hourly Wage × Hours per Week × Weeks per Year; Monthly Salary = Annual Salary ÷ 12.',
+			'This salary calculator and paycheck calculator provides complete compensation analysis, converting hourly wages into gross annual salary, monthly earnings, and take home pay estimates. Perfect for evaluating job offers, understanding payroll deductions, and planning household budgets.',
+			'The salary wage engine multiplies your contracted hourly rate by weekly working hours and annual paid weeks, generating a full breakdown across all standard payroll payment frequencies.',
+			'Formula: Annual Salary = Hourly Wage × Hours per Week × Weeks per Year; Monthly Pay = Annual Salary ÷ 12; Bi-Weekly Pay = Annual Salary ÷ 26.',
 			[
 				{ title: 'Full-Time $32.50/hr', description: '40 hours per week, 52 paid weeks.', values: { hourlyWage: 32.5, hoursPerWeek: 40, weeksPerYear: 52 }, result: '$67,600 / year' },
 				{ title: 'Part-Time Work', description: '$20.00/hr, 25 hours per week.', values: { hourlyWage: 20, hoursPerWeek: 25, weeksPerYear: 52 }, result: '$26,000 / year' },
@@ -618,11 +622,11 @@ const calculators: CalculatorConfig[] = [
 		),
 	},
 	{
-		metaTitle: 'Auto Loan Calculator — Monthly Car Payment & Financing Tool',
+		metaTitle: 'Auto Loan Calculator — Car Payment & Vehicle Finance Calculator',
 		slug: 'auto-loan-calculator',
-		title: 'Auto Loan Calculator',
+		title: 'Auto Loan Calculator & Vehicle Finance Calculator',
 		category: 'Finance',
-		metaDescription: 'Estimate monthly car payments and auto financing with our free loan calculator. Factor in vehicle price, down payment, trade-in, and loan rate.',
+		metaDescription: 'Free online auto loan calculator to compute loan payments, vehicle finance rates, car interest charges, down payments, and monthly loan payment schedules.',
 		inputs: [
 			{ id: 'vehiclePrice', label: 'Vehicle purchase price', type: 'number', min: 1000, step: 500, defaultValue: 28000, unit: '$', prefix: '$', colSpan: 'half' },
 			{ id: 'downPayment', label: 'Cash down payment', type: 'number', min: 0, step: 500, defaultValue: 4000, unit: '$', prefix: '$', colSpan: 'half' },
@@ -697,19 +701,23 @@ const calculators: CalculatorConfig[] = [
 		],
 		faq: [
 			{
-				question: 'How do down payments and trade-ins impact my loan calculator monthly payment?',
-				answer: 'Down payments and trade-ins directly reduce the net financed principal, lowering both monthly payment obligations and lifetime interest costs.'
+				question: 'How do I compute auto loan payments and interest charges?',
+				answer: 'Our auto loan payment calculator calculates your exact monthly payment by amortizing the financed amount (vehicle sticker price minus down payment and trade-in value) over your loan term at the contracted APR.'
 			},
 			{
-				question: 'What is the optimal term on an auto loan calculator?',
-				answer: 'Most buyers choose 3 to 5 years (36 to 60 months). Shorter terms have higher monthly payments but save substantially on total loan interest charges.'
+				question: 'How do down payment and trade-in credit reduce my car loan costs?',
+				answer: 'Down payments and trade-in credits directly lower the net principal financed, reducing your monthly payment and total lifetime vehicle loan interest expenses.'
+			},
+			{
+				question: 'What is the recommended duration on an auto loan calculator?',
+				answer: 'Typical auto loan terms range from 36 to 60 months (3 to 5 years). Shorter terms have higher monthly payments but save significantly on vehicle loan interest charges compared to 72 or 84-month terms.'
 			},
 		],
 		relatedSlugs: ['mortgage-calculator', 'compound-interest-calculator', 'simple-interest-calculator'],
 		content: makeContent(
-			'The auto loan calculator helps you budget vehicle purchases and compare dealership financing offers. Adjust down payment amounts, trade-in equity, and interest rates to find an affordable monthly payment.',
-			'The calculator subtracts your down payment and trade-in credit from the sticker price to establish net financed principal, then applies standard amortization across the chosen loan duration.',
-			'Formula: Net Financed Principal = Purchase Price – Down Payment – Trade-In; Monthly Payment = P [ i(1 + i)^n ] / [ (1 + i)^n – 1 ].',
+			'This auto loan calculator and vehicle finance calculator helps you estimate monthly car payments, evaluate dealership financing offers, and compute total loan costs. Adjust cash down payments, trade-in values, sales tax, and interest rates to plan an affordable auto loan payment.',
+			'The vehicle loan calculator subtracts your down payment and trade-in value from the purchase price to calculate the net financed principal, then applies standard amortization across the chosen loan duration.',
+			'Formula: Net Financed Principal = Purchase Price – Down Payment – Trade-In + Taxes & Fees; Monthly Payment = P [ i(1 + i)^n ] / [ (1 + i)^n – 1 ].',
 			[
 				{ title: 'New Sedan Purchase', description: '$28,000 car with $4,000 down and $2,000 trade-in at 5.9% for 5 years.', values: { vehiclePrice: 28000, downPayment: 4000, tradeIn: 2000, interestRate: 5.9, loanTermYears: 5 }, result: '$424.32 / month' },
 				{ title: '3-Year Short Loan', description: '$20,000 financed over 36 months at 4.5%.', values: { vehiclePrice: 20000, downPayment: 0, tradeIn: 0, interestRate: 4.5, loanTermYears: 3 }, result: '$594.86 / month' },
@@ -717,11 +725,11 @@ const calculators: CalculatorConfig[] = [
 		),
 	},
 	{
-		metaTitle: 'Investment Growth Calculator — Portfolio Returns & Wealth Projection',
+		metaTitle: 'Investment Calculator — Investment Growth & Finance Calculator',
 		slug: 'investment-calculator',
-		title: 'Investment Growth Calculator',
+		title: 'Investment Calculator & Portfolio Growth Tool',
 		category: 'Finance',
-		metaDescription: 'Project future investment wealth and portfolio growth with our free compound interest growth calculator and savings projection tool.',
+		metaDescription: 'Free online investment calculator and finance calculator. Forecast stock portfolio growth, compound returns, monthly contributions, and future wealth.',
 		inputs: [
 			{ id: 'initialInvestment', label: 'Starting portfolio balance', type: 'number', min: 0, step: 500, defaultValue: 25000, unit: '$', prefix: '$', colSpan: 'half' },
 			{ id: 'monthlyAdd', label: 'Monthly recurring addition', type: 'number', min: 0, step: 50, defaultValue: 750, unit: '$', prefix: '$', colSpan: 'half' },
@@ -792,18 +800,22 @@ const calculators: CalculatorConfig[] = [
 		],
 		faq: [
 			{
-				question: 'How does regular dollar-cost averaging accelerate portfolio returns?',
-				answer: 'Regular monthly additions steadily increase your invested capital base, allowing future compound interest growth to multiply exponentially over long time horizons.'
+				question: 'How does an online investment calculator project future portfolio value?',
+				answer: 'Our investment calculator models your initial investment plus recurring monthly additions, compounding them at your estimated annual return rate while factoring in expense ratios and inflation.'
 			},
 			{
-				question: 'What expected return rate should I use in this calculator?',
-				answer: 'Historically, diversified broad-market index funds (such as the S&P 500) have returned approximately 8% to 10% annually before inflation over multi-decade periods.'
+				question: 'What expected annual return rate should I enter for stocks and index funds?',
+				answer: 'Historically, diversified broad-market stock index funds (such as the S&P 500) have returned roughly 8% to 10% annually before inflation over multi-decade investing periods.'
+			},
+			{
+				question: 'How do regular monthly contributions accelerate investment growth?',
+				answer: 'Consistently adding to your portfolio leverages dollar-cost averaging and continually expands the capital balance, supercharging the compound calculator growth effect.'
 			},
 		],
 		relatedSlugs: ['compound-interest-calculator', 'mortgage-calculator', 'salary-calculator'],
 		content: makeContent(
-			'The investment growth calculator models the long-term compounding of your investment portfolio. See how starting capital combined with consistent monthly contributions builds financial independence over 10, 20, or 30 years.',
-			'The tool computes compound growth on your initial lump sum and adds the accumulated future value of recurring monthly investments.',
+			'This online investment calculator and finance calculator models long-term portfolio growth and compound returns. Explore how starting capital and consistent monthly contributions accumulate into substantial wealth over 10, 20, or 30 years.',
+			'The investment tool computes compound growth on your starting balance and accumulates the future value of recurring monthly contributions over your selected time horizon.',
 			'Formula: Future Portfolio = Initial Principal × (1 + r/12)^(12t) + Monthly Addition × [ ((1 + r/12)^(12t) – 1) / (r/12) ].',
 			[
 				{ title: '15-Year Wealth Plan', description: '$25,000 starting sum with $750/month at 9% return over 15 years.', values: { initialInvestment: 25000, monthlyAdd: 750, expectedReturn: 9, horizonYears: 15 }, result: '$378,574.65' },
@@ -817,11 +829,11 @@ const calculators: CalculatorConfig[] = [
 	// EDUCATION & GRADES (4 Calculators)
 	// ==========================================
 	{
-		metaTitle: 'GPA Calculator — Calculate Weighted Semester GPA Online',
+		metaTitle: 'GPA Calculator — College GPA & Grading Calculator Online',
 		slug: 'gpa-calculator',
-		title: 'GPA Calculator',
+		title: 'GPA Calculator & Grading Calculator',
 		category: 'Education',
-		metaDescription: 'Free weighted GPA calculator. Calculate semester grade point average across any number of courses and credits on 4.0, 5.0, 10.0, or custom grading scales.',
+		metaDescription: 'Free online GPA calculator and grading calculator. Calculate weighted semester grade point average across courses and credit hours on 4.0, 5.0, or 10.0 scales.',
 		inputs: [
 			{ id: 'course1Grade', label: 'Course 1 grade points', type: 'number', min: 0, max: 100, step: 0.01, placeholder: 'e.g. 3.75', defaultValue: 3.7, unit: 'pts', colSpan: 'half', helpText: 'Grade points earned (e.g. 3.7 on 4.0 scale)' },
 			{ id: 'course1Credits', label: 'Course 1 credits', type: 'number', min: 0.5, max: 30, step: 0.5, placeholder: 'e.g. 3', defaultValue: 3, unit: 'credits', suffix: 'credits', colSpan: 'half' },
@@ -1048,11 +1060,11 @@ const calculators: CalculatorConfig[] = [
 		),
 	},
 	{
-		metaTitle: 'Percentage Calculator — Percentage Formula & Converter Tool',
+		metaTitle: 'Percentage Calculator — Free Math Calculator & Percentage Tool',
 		slug: 'percentage-calculator',
-		title: 'Percentage Calculator',
+		title: 'Percentage Calculator & Math Tool',
 		category: 'Math',
-		metaDescription: 'Free percentage calculator to calculate percentages, parts of whole numbers, percentage increase, and conversion ratios with instant results.',
+		metaDescription: 'Free online percentage calculator and math calculator. Calculate percentages, parts of whole numbers, ratio proportions, and verify calculations with our instant math checker.',
 		inputs: [
 			{ id: 'part', label: 'Part / Score', type: 'number', min: 0, step: 0.01, defaultValue: 42, unit: 'units', colSpan: 'half', helpText: 'Numerator or portion' },
 			{ id: 'whole', label: 'Whole / Total', type: 'number', min: 0.01, step: 0.01, defaultValue: 50, unit: 'units', colSpan: 'half', helpText: 'Denominator or total available' },
@@ -1141,11 +1153,11 @@ const calculators: CalculatorConfig[] = [
 		),
 	},
 	{
-		metaTitle: 'Grade Calculator — Universal Test Score & Percentage Converter',
+		metaTitle: 'Grade Calculator & Grading Calculator — Test Score & Marks Converter',
 		slug: 'grade-calculator',
-		title: 'Grade Calculator',
+		title: 'Grade Calculator & Grading Calculator',
 		category: 'Education',
-		metaDescription: 'Calculate test percentages, passing thresholds, and academic letter grades across universal, US 4.0, Canadian OMSAS, UK Honours, or custom grading systems.',
+		metaDescription: 'Free grading calculator and score calculator. Convert test marks and raw exam scores into course percentages, letter grades, and academic standing.',
 		inputs: [
 			{ id: 'marks', label: 'Marks obtained', type: 'number', min: 0, step: 0.5, placeholder: 'e.g. 80', defaultValue: 80, unit: 'marks', colSpan: 'half' },
 			{ id: 'totalMarks', label: 'Total marks available', type: 'number', min: 1, step: 0.5, placeholder: 'e.g. 100', defaultValue: 100, unit: 'marks', colSpan: 'half' },
@@ -1283,11 +1295,11 @@ const calculators: CalculatorConfig[] = [
 	// HEALTH & WELLNESS (3 Calculators)
 	// ==========================================
 	{
-		metaTitle: 'BMI Calculator — Body Mass Index Calculator (US & Metric Units)',
+		metaTitle: 'BMI Calculator — Body Mass Index & Healthy Weight Calculator',
 		slug: 'bmi-calculator',
 		title: 'BMI Calculator & Body Mass Index Calculator',
 		category: 'Health',
-		metaDescription: 'Free online BMI calculator with US units (lbs, ft, in) and Metric units (kg, cm). Calculate your BMI score, healthy weight target range, and evidence-based health tips.',
+		metaDescription: 'Free online BMI calculator. Calculate your body mass index, determine healthy body weight target range, evaluate BMI score, and check height-to-weight status in US and Metric units.',
 		inputs: [
 			{
 				id: 'unitSystem',
@@ -1534,29 +1546,29 @@ const calculators: CalculatorConfig[] = [
 		faq: [
 			{
 				question: 'How do you calculate BMI in US units vs Metric units?',
-				answer: 'In US units, multiply weight in pounds by 703 and divide by total height in inches squared: BMI = 703 × (lbs ÷ in²). In Metric units, divide weight in kilograms by height in meters squared: BMI = kg ÷ m². Both methods yield the exact same standard BMI index value.'
+				answer: 'In US units, multiply body weight in pounds by 703 and divide by height in inches squared: BMI = 703 × (lbs ÷ in²). In Metric units, divide weight in kilograms by height in meters squared: BMI = kg ÷ m². Both methods determine BMI accurately on the standard World Health Organization body mass index scale.'
+			},
+			{
+				question: 'How does a healthy body weight calculator determine your ideal range?',
+				answer: 'A healthy body weight calculator computes the weight boundaries that correspond to a normal BMI between 18.5 and 24.9 kg/m² for your exact height, establishing a healthy weight baseline for wellness and nutrition planning.'
 			},
 			{
 				question: 'Why does maintaining a healthy weight matter for long-term health?',
-				answer: 'Maintaining a normal BMI (18.5–24.9 kg/m²) significantly reduces lifetime risks of cardiovascular disease, hypertension, type 2 diabetes, stroke, sleep apnea, joint osteoarthritis, and at least 13 types of obesity-related cancers.'
+				answer: 'Maintaining a normal BMI (18.5–24.9 kg/m²) significantly reduces lifetime risks of cardiovascular disease, hypertension, type 2 diabetes, stroke, sleep apnea, joint osteoarthritis, and obesity-related conditions.'
 			},
 			{
 				question: 'What are the health risks of being underweight (BMI < 18.5)?',
 				answer: 'Being underweight carries serious health risks including malnutrition, vitamin deficiencies, compromised immune response, osteoporosis and bone fractures, anemia, hypothermia, and reproductive complications.'
 			},
 			{
-				question: 'What are evidence-based health tips to achieve and maintain a healthy weight?',
-				answer: 'Key evidence-based strategies include: 1) Eating nutrient-dense whole foods with adequate lean protein and dietary fiber; 2) Getting at least 150–300 minutes of moderate aerobic activity and 2+ days of strength training weekly; 3) Sleeping 7–9 hours nightly to balance appetite hormones; and 4) Staying well-hydrated with 2–3 liters of water daily.'
-			},
-			{
 				question: 'What are the limitations of the BMI calculator?',
-				answer: 'BMI is an effective population screening tool, but it does not differentiate between lean muscle mass, bone density, and body fat. Muscular athletes often register as "overweight" or "obese" despite low body fat, while older adults with age-related muscle loss (sarcopenia) may test as "normal" despite carrying unhealthy visceral fat. Waist circumference and body fat percentage offer valuable complementary insights.'
+				answer: 'BMI is an effective population screening tool, but it does not differentiate between lean muscle mass, bone density, and body fat. Muscular athletes often register as "overweight" or "obese" despite low body fat, while older adults with muscle loss may test as "normal" despite carrying visceral fat. Waist circumference and body fat percentage provide valuable additional context.'
 			},
 		],
 		relatedSlugs: ['calorie-calculator', 'water-intake-calculator', 'age-calculator'],
 		content: makeContent(
-			'This comprehensive BMI Calculator computes body mass index using both US Customary units (pounds, feet, inches) and Metric units (kilograms, centimeters). Developed by Belgian statistician Adolphe Quetelet and standardized by the World Health Organization (WHO) and the U.S. Centers for Disease Control and Prevention (CDC), BMI evaluates body mass relative to height to assess health risk tiers and guide wellness planning.',
-			'The calculator converts your height and weight into standard scientific units, calculates the body mass index, and evaluates it against WHO clinical categories. It computes your personalized healthy weight target range (BMI 18.5–24.9 kg/m²), measures the exact weight difference needed to attain a normal category, and generates complete comparative analytics.',
+			'This comprehensive BMI calculator computes body mass index and healthy body weight ranges using both US Customary units (pounds, feet, inches) and Metric units (kilograms, centimeters). Developed to evaluate body mass relative to height, this body mass index calculator helps you assess health categories, plan fitness targets, and calculate healthy weight goals.',
+			'The calculator converts your height and weight into standard scientific units, calculates your exact BMI score, and evaluates it against WHO clinical categories. It computes your personalized healthy target weight range (BMI 18.5–24.9 kg/m²) and measures the exact weight difference needed to achieve a normal category.',
 			'Formulas: US Units: BMI = 703 × [Weight (lbs) ÷ (Height (inches))²]; Metric Units: BMI = Weight (kg) ÷ [Height (m)]². Healthy Weight Range: Minimum Weight = 18.5 × [Height (m)]²; Maximum Weight = 24.9 × [Height (m)]².',
 			[
 				{ title: 'Standard Adult (US Units)', description: '5 feet 10 inches tall, weighing 160 pounds.', values: { unitSystem: 'us', heightFeet: 5, heightInches: 10, weightLbs: 160 }, result: '23.0 kg/m² (Normal weight)' },
@@ -1779,11 +1791,11 @@ const calculators: CalculatorConfig[] = [
 		),
 	},
 	{
-		metaTitle: 'Average Calculator — Mean Calculator for Numbers Online',
+		metaTitle: 'Average Calculator — Statistics Calculator & Mean Calculator Online',
 		slug: 'average-calculator',
 		title: 'Average Calculator & Mean Calculator',
 		category: 'Math',
-		metaDescription: 'Free average calculator and mean calculator to find the arithmetic mean, statistical average, and sum of numbers quickly.',
+		metaDescription: 'Free online average calculator and statistics calculator. Compute the arithmetic mean, central tendency, statistical average, and total sum of numbers quickly.',
 		inputs: [
 			{ id: 'value1', label: 'Number 1', type: 'number', step: 0.01, defaultValue: 78, unit: 'val' },
 			{ id: 'value2', label: 'Number 2', type: 'number', step: 0.01, defaultValue: 84, unit: 'val' },
@@ -1850,11 +1862,11 @@ const calculators: CalculatorConfig[] = [
 		),
 	},
 	{
-		metaTitle: 'Date Difference Calculator — Days Between Dates Tool',
+		metaTitle: 'Date Calculator — Days Calculator & Date Difference Tool',
 		slug: 'date-difference-calculator',
-		title: 'Date Difference Calculator',
+		title: 'Date Calculator & Days Difference Calculator',
 		category: 'Date & Time',
-		metaDescription: 'Measure how many days separate two calendar dates with our fast date calculator and date counter tool.',
+		metaDescription: 'Free online date calculator and days calculator. Measure the exact number of days, weeks, and time between any two calendar dates with our calendar calculator.',
 		inputs: [
 			{ id: 'startDate', label: 'Start date', type: 'date', defaultValue: '2026-01-01' },
 			{ id: 'endDate', label: 'End date', type: 'date', defaultValue: '2026-12-31' },
@@ -1866,13 +1878,14 @@ const calculators: CalculatorConfig[] = [
 		},
 		resultFormat: (value) => `${formatInteger(value)} days`,
 		faq: [
-			{ question: 'Does order of dates matter?', answer: 'No. The calculator automatically computes the absolute difference between both dates.' },
+			{ question: 'How do you calculate the exact number of days between two dates?', answer: 'Our days calculator computes the elapsed time in milliseconds between UTC midnight of both calendar dates and divides by 86,400,000 to determine whole days.' },
+			{ question: 'Does the order of dates matter in this calendar calculator?', answer: 'No. The date calculator automatically computes the absolute difference between both dates, whether counting forward or backward.' },
 		],
 		relatedSlugs: ['age-calculator', 'countdown-calculator', 'working-days-calculator'],
 		content: makeContent(
-			'The Date Difference Calculator measures the total number of whole calendar days between any two dates.',
-			'The formula calculates the difference between timestamps at UTC midnight.',
-			'Formula: Days = |End Date – Start Date| in milliseconds ÷ 86,400,000.',
+			'This fast date calculator and days calculator measures the exact duration between any two calendar dates. Whether calculating milestones, planning projects, or tracking event timelines, our calendar calculator provides instant, client-side precision.',
+			'The days calculator converts both selected calendar dates to UTC midnight timestamps and computes the absolute difference.',
+			'Formula: Elapsed Days = |End Date – Start Date| in milliseconds ÷ 86,400,000 ms/day.',
 			[
 				{ title: 'Full Year Span', description: 'Jan 1 to Dec 31, 2026.', values: { startDate: '2026-01-01', endDate: '2026-12-31' }, result: '364 days' },
 			],
@@ -1908,11 +1921,11 @@ const calculators: CalculatorConfig[] = [
 		),
 	},
 	{
-		metaTitle: 'Working Days Calculator — Business Days & Workday Counter',
+		metaTitle: 'Working Days Calculator — Business Days & Work Hours Calculator',
 		slug: 'working-days-calculator',
 		title: 'Working Days Calculator & Business Days Calculator',
 		category: 'Date & Time',
-		metaDescription: 'Count working days and business days between dates excluding weekends with our fast work calculator.',
+		metaDescription: 'Free work calculator and business days calculator. Count working days, business days, and work hours between dates excluding weekends.',
 		inputs: [
 			{ id: 'startDate', label: 'Start date', type: 'date', defaultValue: '2026-09-01' },
 			{ id: 'endDate', label: 'End date', type: 'date', defaultValue: '2026-09-30' },
@@ -1926,14 +1939,18 @@ const calculators: CalculatorConfig[] = [
 		faq: [
 			{
 				question: 'How does a business days calculator exclude weekends?',
-				answer: 'Our business days calculator loops through every date in the selected range and counts only Monday through Friday workdays.'
+				answer: 'Our business days calculator loops through every date in the selected range and counts only Monday through Friday workdays, skipping Saturdays and Sundays.'
+			},
+			{
+				question: 'How do I convert working days to total work hours?',
+				answer: 'Multiply total working days by your standard daily working hours (typically 8 hours per workday). For example, 22 working days × 8 hours = 176 work hours.'
 			},
 		],
 		relatedSlugs: ['date-difference-calculator', 'countdown-calculator', 'age-calculator'],
 		content: makeContent(
-			'This working days calculator and business days calculator computes total professional workdays between milestone dates for project planning, payroll cycles, and sprint deadlines.',
-			'The work calculator engine iterates day-by-day between the start date and end date, counting business days while filtering out Saturdays and Sundays.',
-			'Formula: Working Days = Σ(Weekdays in Range).',
+			'This working days calculator and work calculator computes total professional workdays and business days between milestone dates for project planning, sprint deadlines, and payroll cycles.',
+			'The work calculator engine iterates day-by-day between the start date and end date, counting business days while filtering out weekends.',
+			'Formula: Working Days = Σ(Weekdays in Range); Total Work Hours = Working Days × Daily Work Hours.',
 			[
 				{ title: 'September 2026 Workdays', description: 'Month of September.', values: { startDate: '2026-09-01', endDate: '2026-09-30' }, result: '22 working days' },
 			],
@@ -2034,11 +2051,11 @@ const calculators: CalculatorConfig[] = [
 	// CONVERTERS & UNITS (5 Calculators)
 	// ==========================================
 	{
-		metaTitle: 'Currency Converter — Real-Time Currency Exchange Rate Calculator',
+		metaTitle: 'Currency Converter — Live Currency Exchange Rates & Forex Calculator',
 		slug: 'currency-converter',
 		title: 'Currency Converter & Exchange Rate Calculator',
 		category: 'Converters',
-		metaDescription: 'Free currency converter to calculate currency exchange rate, live rates, and conversions for 160+ world currencies with real time data.',
+		metaDescription: 'Free online currency converter and exchange rate calculator. Convert foreign currencies with real-time currency exchange rates, live forex calculators, and instant money converter tools.',
 		inputs: [
 			{ id: 'amount', label: 'Amount', type: 'number', min: 0, step: 1, defaultValue: 100, unit: 'val' },
 			{
@@ -2097,8 +2114,8 @@ const calculators: CalculatorConfig[] = [
 		resultFormat: (value) => `${formatNumber(Number(value))} Converted`,
 		faq: [
 			{
-				question: 'How does this currency exchange rate calculator work?',
-				answer: 'Our free currency converter uses live mid-market exchange rates without retail markups. Enter your amount to calculate currency conversion rate calculator figures instantly.'
+				question: 'How often are currency exchange rates updated?',
+				answer: 'Our free currency converter uses updated daily central bank exchange rates to estimate live market conversion values.'
 			},
 			{
 				question: 'Can I use this currency calculator tool for international travel and commerce?',
@@ -2117,11 +2134,11 @@ const calculators: CalculatorConfig[] = [
 		),
 	},
 	{
-		metaTitle: 'Length Converter — Unit Converter & Metric Calculator',
+		metaTitle: 'Length Converter — Unit Converter & Distance Conversion Calculator',
 		slug: 'length-converter',
 		title: 'Length Converter & Unit Converter',
 		category: 'Converters',
-		metaDescription: 'Free length converter and unit converter calculator to convert metric and imperial distances across meters, feet, inches, kilometers, and miles.',
+		metaDescription: 'Free length converter and unit converter calculator. Convert metric and imperial distances across meters, feet, inches, kilometers, miles, and size converter units.',
 		inputs: [
 			{ id: 'value', label: 'Measurement value', type: 'number', min: 0, step: 0.01, defaultValue: 10, unit: 'val' },
 			{
@@ -2183,11 +2200,11 @@ const calculators: CalculatorConfig[] = [
 		),
 	},
 	{
-		metaTitle: 'Weight Converter — Metric & Imperial Weight Calculator',
+		metaTitle: 'Weight Converter — Weight Calculator & Unit Converter Tool',
 		slug: 'weight-converter',
 		title: 'Weight Converter & Weight Calculator',
 		category: 'Converters',
-		metaDescription: 'Free weight converter and weight calculator to convert pounds, kilograms, grams, ounces, and stones with instant precision.',
+		metaDescription: 'Free weight converter and weight calculator. Convert pounds, kilograms, grams, ounces, and stones with our instant unit conversion calculator.',
 		inputs: [
 			{ id: 'value', label: 'Weight value', type: 'number', min: 0, step: 0.01, defaultValue: 150, unit: 'val' },
 			{

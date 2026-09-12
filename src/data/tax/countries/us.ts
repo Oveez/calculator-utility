@@ -129,15 +129,31 @@ export const usProfile: CountryTaxProfile = {
   availableTaxYears: ['2026', '2025'],
   hasRegionalTax: true,
   regionalEntityName: 'State',
-  metaDescription: 'Calculate US Federal income tax, FICA (Social Security & Medicare), state taxes, refund vs amount owed, and take-home pay with official 2026 IRS tax brackets (Rev. Proc. 2025-32) and all 5 filing statuses.',
+  metaDescription: 'Free USA IRS tax calculator and federal income tax calculator for 2026. Calculate 2026 federal tax brackets, state income tax, FICA, taxable income, and estimate take home pay or refund tax.',
   faqItems: [
+    {
+      question: 'What are the official 2026 federal tax brackets and tax rates?',
+      answer: 'For tax year 2026, the USA IRS enforces seven progressive federal tax brackets: 10%, 12%, 22%, 24%, 32%, 35%, and 37%. The income thresholds for each tax tier depend on your federal income tax filing status (Single, Married Filing Jointly, Head of Household, or Married Filing Separately). You only pay each bracket’s specific rate on the slice of taxable income falling within that tier, not on your total gross income.',
+    },
     {
       question: 'What are the 2026 standard deductions for each filing status?',
       answer: 'Under IRS Revenue Procedure 2025-32, standard deductions for 2026 are: $16,100 for Single and Married Filing Separately; $32,200 for Married Filing Jointly and Qualifying Surviving Spouse; and $24,150 for Head of Household. Taxpayers aged 65 or older receive an additional $2,000 ($1,600 each if married).',
     },
     {
+      question: 'How does this federal and state tax calculator estimate my take home pay?',
+      answer: 'Our salary calculator and take home pay calculator starts with your gross income, subtracts your standard or itemized deductions to determine federal taxable income, applies 2026 federal tax brackets and state income tax rates by state, and accounts for FICA payroll withholdings (6.2% Social Security and 1.45% Medicare) to compute your exact net pay per paycheck, month, and year.',
+    },
+    {
+      question: 'How do I calculate whether I will receive an IRS tax refund or owe taxes?',
+      answer: 'To estimate your tax return refund or amount owed, enter your cumulative federal and state withholding taxes already deducted from your W-2 paychecks. If your tax withholdings plus allowable tax credits exceed your calculated tax liability, you receive a federal income tax refund. If total withholdings are lower, you will owe an IRS tax balance.',
+    },
+    {
       question: 'What are the 2026 FICA Social Security and Medicare tax rates?',
       answer: 'Employees pay 6.2% for Social Security on wages up to $184,500 (the 2026 SSA statutory wage base limit) and 1.45% for Medicare on all earnings with no cap. An additional 0.9% Medicare tax applies to earned income over $200,000 for single filers ($250,000 for married filing jointly).',
+    },
+    {
+      question: 'Which US states have no state income tax in 2026?',
+      answer: 'Nine states do not levy an individual state income tax on earned wages: Alaska, Florida, Nevada, New Hampshire, South Dakota, Tennessee, Texas, Washington, and Wyoming. Selecting any of these states in our state income tax calculator applies a 0% state tax rate.',
     },
     {
       question: 'How does the Child Tax Credit and dependent credit work for 2026?',

@@ -11,8 +11,8 @@ const defaultYear = profile.years[profile.defaultTaxYear];
 ---
 
 <SiteLayout
-  title="France Income Tax Calculator 2026 | Impôt sur le Revenu & Net Salary"
-  description={`${profile.name} Income Tax Calculator for tax year ${defaultYear.taxYear}. Compute your take-home pay, progressive tax brackets, social security deductions, and effective tax rate using official government rates.`}
+  title="France Income Tax Calculator 2026 — Salary Calculator France, Gross to Net Tax"
+  description={`Free France income tax calculator and salary calculator France for tax year ${defaultYear.taxYear}. Calculate French tax brackets (0%–45%), CSG/CRDS social security deductions, gross to net salary, and take home pay.`}
 >
   <div class="mx-auto max-w-5xl space-y-10">
     <!-- Breadcrumb & Header -->
@@ -31,7 +31,7 @@ const defaultYear = profile.years[profile.defaultTaxYear];
         <span>Official {profile.name} Tax Engine • Tax Year {defaultYear.taxYear}</span>
       </div>
       <h1 class="text-3xl font-extrabold tracking-tight text-[color:var(--fg)] sm:text-4xl lg:text-5xl">
-        {profile.name} Income Tax &amp; Salary Calculator
+        France Income Tax Calculator — Salary &amp; Gross to Net Tax ({defaultYear.taxYear})
       </h1>
       <p class="max-w-3xl text-base leading-relaxed text-[color:var(--muted)] sm:text-lg">
         {profile.metaDescription}
@@ -49,27 +49,64 @@ const defaultYear = profile.years[profile.defaultTaxYear];
 
     <!-- Informational / Educational Content Section -->
     <section class="space-y-6 rounded-[2rem] border border-[color:var(--border)] bg-[color:var(--surface)] p-6 sm:p-8" aria-labelledby="how-it-works-heading">
-      <h2 id="how-it-works-heading" class="text-2xl font-bold tracking-tight text-[color:var(--fg)]">
-        How {profile.name} Income Tax is Calculated ({defaultYear.taxYear})
-      </h2>
-      <div class="space-y-4 text-sm leading-relaxed text-[color:var(--muted)]">
-        <p>
-          Income tax in {profile.name} is determined using a progressive marginal bracket system. Taxpayers only pay each bracket's specific rate on the slice of taxable income falling within that tier.
+      <div class="space-y-2">
+        <h2 id="how-it-works-heading" class="text-2xl font-bold tracking-tight text-[color:var(--fg)]">
+          How France Income Tax &amp; Gross to Net Salary are Calculated ({defaultYear.taxYear})
+        </h2>
+        <p class="text-sm leading-relaxed text-[color:var(--muted)]">
+          Taxation in France combines mandatory social security contributions (cotisations sociales) and progressive income tax (impôt sur le revenu). Under the prélèvement à la source (withholding tax) system, your employer deducts taxes directly from your monthly paycheck to determine your net take home salary.
         </p>
-        <div class="grid gap-4 sm:grid-cols-3">
-          <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] p-4">
-            <p class="font-bold text-[color:var(--fg)]">1. Gross Income</p>
-            <p class="mt-1 text-xs">Total annual salary, wages, and earned employment compensation.</p>
-          </div>
-          <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] p-4">
-            <p class="font-bold text-[color:var(--fg)]">2. Allowances &amp; Deductions</p>
-            <p class="mt-1 text-xs">Standard statutory allowances and tax-free thresholds subtracted from gross earnings.</p>
-          </div>
-          <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] p-4">
-            <p class="font-bold text-[color:var(--fg)]">3. Progressive Tax Slices</p>
-            <p class="mt-1 text-xs">Progressive rates applied sequentially to arrive at net take-home salary.</p>
-          </div>
+      </div>
+
+      <div class="grid gap-4 sm:grid-cols-3">
+        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] p-4">
+          <p class="font-bold text-[color:var(--fg)]">1. Gross Salary (Salaire Brut)</p>
+          <p class="mt-1 text-xs text-[color:var(--muted)]">Total agreed employment compensation before social security deductions and income tax withholdings.</p>
         </div>
+        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] p-4">
+          <p class="font-bold text-[color:var(--fg)]">2. Social Security Deductions</p>
+          <p class="mt-1 text-xs text-[color:var(--muted)]">Employee contributions (CSG/CRDS 9.7%, state pension, and Agirc-Arrco) subtracted to reach taxable net income.</p>
+        </div>
+        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] p-4">
+          <p class="font-bold text-[color:var(--fg)]">3. Progressive Tax Tiers (0%–45%)</p>
+          <p class="mt-1 text-xs text-[color:var(--muted)]">Statutory tax brackets and quotient familial applied to compute final net salary after tax (salaire net après impôt).</p>
+        </div>
+      </div>
+
+      <div class="grid gap-6 pt-2 md:grid-cols-2 text-sm text-[color:var(--muted)]">
+        <div class="space-y-3 rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] p-5">
+          <h3 class="font-bold text-base text-[color:var(--fg)]">2026 Progressive Income Tax Brackets (Barème Progressif)</h3>
+          <p class="text-xs leading-relaxed">
+            The DGFiP enforces five statutory tax brackets for individual income in France. Only the portion of taxable income inside each tier is taxed at that specific marginal rate:
+          </p>
+          <ul class="list-disc list-inside text-xs space-y-1 text-[color:var(--muted)]">
+            <li><strong>0%:</strong> Up to €11,600 (Tax-free allowance tranche)</li>
+            <li><strong>11%:</strong> From €11,601 to €29,579</li>
+            <li><strong>30%:</strong> From €29,580 to €84,577</li>
+            <li><strong>41%:</strong> From €84,578 to €181,917</li>
+            <li><strong>45%:</strong> On taxable income exceeding €181,917</li>
+          </ul>
+        </div>
+
+        <div class="space-y-3 rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] p-5">
+          <h3 class="font-bold text-base text-[color:var(--fg)]">Social Security &amp; Withholding Tax (Prélèvement à la Source)</h3>
+          <p class="text-xs leading-relaxed">
+            Every French paycheck reflects essential statutory deductions:
+          </p>
+          <ul class="list-disc list-inside text-xs space-y-1 text-[color:var(--muted)]">
+            <li><strong>CSG / CRDS:</strong> 9.7% total contribution applied to 98.25% of gross earnings.</li>
+            <li><strong>Retraite de Base:</strong> 7.3% on gross wages up to the 2026 PASS ceiling of €48,060 (€4,005/month).</li>
+            <li><strong>Agirc-Arrco:</strong> Mandatory complementary pension scheme contribution (approx. 5%).</li>
+            <li><strong>Frais Professionnels:</strong> Automatic standard 10% deduction for employment expenses applied before income tax.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="space-y-2 pt-2 text-sm text-[color:var(--muted)]">
+        <h3 class="font-bold text-base text-[color:var(--fg)]">Calculating Net Salary &amp; Take-Home Pay in France</h3>
+        <p class="text-xs leading-relaxed">
+          Wondering how much you will take home each month? As a general rule of thumb in France, employee social security contributions represent approximately 20% to 23% of gross salary for non-cadre / cadre workers. Our salary calculator France computes your exact net salary before tax (net imposable) and deducts your personalized income tax withholding rate so you can evaluate job offers, plan annual budgets, and verify your monthly payslip.
+        </p>
       </div>
     </section>
 

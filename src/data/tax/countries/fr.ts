@@ -10,15 +10,31 @@ export const frProfile: CountryTaxProfile = {
   defaultTaxYear: '2026',
   availableTaxYears: ['2026', '2025'],
   hasRegionalTax: false,
-  metaDescription: 'Calculate French income tax (Impôt sur le Revenu), CSG/CRDS, and social security deductions with official 2026 DGFiP & Service-Public.fr tax scale data.',
+  metaDescription: 'Free France income tax calculator and salary calculator France for 2026. Calculate French tax brackets (0%–45%), CSG/CRDS, gross to net salary, and take home pay.',
   faqItems: [
     {
-      question: 'What is the 2026 income tax scale in France?',
-      answer: 'The French progressive tax scale (barème progressif) for 2026: Up to €11,600 at 0%; €11,601 to €29,579 at 11%; €29,580 to €84,577 at 30%; €84,578 to €181,917 at 41%; and above €181,917 at 45%.',
+      question: 'What are the official 2026 income tax brackets in France?',
+      answer: 'The French progressive income tax scale (barème progressif de l’impôt sur le revenu) for 2026: Up to €11,600 at 0%; €11,601 to €29,579 at 11%; €29,580 to €84,577 at 30%; €84,578 to €181,917 at 41%; and above €181,917 at 45%. You only pay each rate on the slice of taxable income within that tier.',
+    },
+    {
+      question: 'How do you calculate gross to net salary in France (brut en net)?',
+      answer: 'To calculate net salary from gross salary in France, mandatory employee social security contributions (cotisations sociales, typically around 20% to 23% of gross salary for non-cadre / cadre employees) are deducted to determine net salary before tax (salaire net avant impôt). Then, withholding tax (prélèvement à la source) is applied to determine your final take-home salary.',
+    },
+    {
+      question: 'How does withholding tax (prélèvement à la source - PAS) work in France?',
+      answer: 'Under the French prélèvement à la source (PAS) system, income tax is deducted directly each month from your paycheck by your employer based on your personalized tax rate calculated by the DGFiP. An annual tax return is filed in spring to adjust for deductions and credits.',
+    },
+    {
+      question: 'What are the mandatory social security contributions in France for 2026?',
+      answer: 'Employee social contributions include: CSG and CRDS (9.7% applied to 98.25% of gross earnings); basic state pension (Retraite de Base at 7.3% on earnings up to the PASS cap of €48,060); and complementary pension (Agirc-Arrco at 5.0%). Employer contributions are paid separately on top of gross salary.',
     },
     {
       question: 'What is the Plafond Annuel de la Sécurité Sociale (PASS) in 2026?',
-      answer: 'The PASS for 2026 is €48,060 (€4,005 per month), which serves as the base ceiling for social security pension contributions.',
+      answer: 'The PASS for 2026 is €48,060 (€4,005 per month), which serves as the statutory base ceiling for social security pension contributions.',
+    },
+    {
+      question: 'How does the quotient familial reduce income tax for families in France?',
+      answer: 'The French quotient familial divides your total household taxable income by a number of parts (1 part for single adults, 2 parts for married couples, +0.5 for each of the first two children, and +1.0 for each subsequent child). This reduces the income amount exposed to higher marginal tax brackets, delivering substantial tax savings for families.',
     },
   ],
   years: {

@@ -11,19 +11,35 @@ export const caProfile: CountryTaxProfile = {
   availableTaxYears: ['2026', '2025'],
   hasRegionalTax: true,
   regionalEntityName: 'Province / Territory',
-  metaDescription: 'Calculate Canadian federal and provincial income tax, CPP, and EI deductions with official 2026 CRA rates, 14% lowest tax tier, and Basic Personal Amount ($16,452).',
+  metaDescription: 'Free Canada income tax calculator and CRA salary calculator for 2026. Calculate federal and provincial tax brackets, CPP/EI payroll deductions, and estimate take home pay or refund.',
   faqItems: [
     {
-      question: 'What is the 2026 Canada Basic Personal Amount (BPA)?',
-      answer: 'The federal Basic Personal Amount for 2026 is $16,452, which acts as a non-refundable tax credit reducing taxable federal income.',
+      question: 'What are the official federal income tax brackets in Canada for 2026?',
+      answer: 'For tax year 2026, the Canada Revenue Agency (CRA) federal tax brackets are: 14.0% on taxable income up to $58,523; 20.5% between $58,523 and $117,045; 26.0% between $117,045 and $181,440; 29.0% between $181,440 and $258,482; and 33.0% on taxable income exceeding $258,482. You only pay each bracket’s specific rate on the income portion within that tier.',
+    },
+    {
+      question: 'How do provincial tax brackets work alongside federal income tax in Canada?',
+      answer: 'Canadian taxpayers pay both federal income tax and provincial income tax. Each province and territory (such as Ontario, British Columbia, Alberta, and Quebec) sets its own progressive tax brackets and rates. Our Canada tax calculator combines federal and provincial rates according to your selected province to compute your total tax payable.',
+    },
+    {
+      question: 'How does this Canada pay calculator estimate my take home pay?',
+      answer: 'Our salary calculator and take home pay calculator starts with your gross annual salary or wage, deducts your federal and provincial income taxes (accounting for the Basic Personal Amount), and subtracts mandatory CPP and EI payroll withholdings to determine your exact net take-home pay per paycheck, month, and year.',
     },
     {
       question: 'What are the 2026 CPP and EI contribution rates in Canada?',
-      answer: 'The employee CPP (Canada Pension Plan) contribution rate is 5.95% on pensionable earnings between $3,500 and $74,600 (maximum $4,230.45), plus second CPP (CPP2) on higher earnings. The Employment Insurance (EI) premium is 1.63% up to maximum insurable earnings of $68,900 (maximum $1,123.07).',
+      answer: 'The employee CPP (Canada Pension Plan) contribution rate is 5.95% on pensionable earnings between $3,500 and the Year’s Maximum Pensionable Earnings (YMPE) of $74,600 (maximum $4,230.45), plus second-tier CPP2 on earnings up to the second ceiling. The Employment Insurance (EI) premium is 1.63% up to maximum insurable earnings of $68,900 (maximum $1,123.07).',
     },
     {
-      question: 'What are the federal income tax brackets in Canada for 2026?',
-      answer: 'The federal brackets for 2026 are: 14.0% up to $58,523; 20.5% from $58,523 to $117,045; 26.0% from $117,045 to $181,440; 29.0% from $181,440 to $258,482; and 33.0% over $258,482.',
+      question: 'What is the 2026 Canada Basic Personal Amount (BPA)?',
+      answer: 'The federal Basic Personal Amount for 2026 is $16,452, which provides a non-refundable tax credit calculated at the lowest federal bracket rate (14%), reducing your net federal tax liability.',
+    },
+    {
+      question: 'How are capital gains taxed in Canada?',
+      answer: 'In Canada, capital gains are not taxed as standard income. Instead, an inclusion rate applies—typically 50% of the net capital gain is added to your taxable income and taxed at your marginal federal and provincial tax rates.',
+    },
+    {
+      question: 'How do I know if I will receive a CRA tax refund or have taxes due in Canada?',
+      answer: 'To estimate whether you will receive a CRA tax refund or owe taxes, compare your total calculated federal and provincial tax liability against the total income tax, CPP, and EI already withheld by your employer on your T4 tax slip. If your total withholdings and refundable tax credits exceed your tax liability, you receive a Canada Revenue Agency tax refund.',
     },
   ],
   years: {

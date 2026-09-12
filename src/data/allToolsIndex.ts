@@ -7,23 +7,23 @@ export interface ToolIndexItem {
 
 export const allToolsIndex: ToolIndexItem[] = [
   // 1. Finance (8)
-  { title: 'Mortgage Calculator', category: 'Finance', url: '/calculators/mortgage-calculator/', desc: 'Calculate monthly loan payments, amortizations, and interest costs.' },
-  { title: 'Compound Interest Calculator', category: 'Finance', url: '/calculators/compound-interest-calculator/', desc: 'Forecast future investment growth with monthly contributions and compounding.' },
+  { title: 'Mortgage Calculator', category: 'Finance', url: '/calculators/mortgage-calculator/', desc: 'Calculate monthly loan payments, home loan interest, and estimate mortgage payoff.' },
+  { title: 'Compound Interest Calculator', category: 'Finance', url: '/calculators/compound-interest-calculator/', desc: 'Estimate compound interest and calculate compound returns with monthly deposits.' },
   { title: 'Simple Interest Calculator', category: 'Finance', url: '/calculators/simple-interest-calculator/', desc: 'Calculate interest on short-term promissory notes and loans.' },
   { title: 'Tip & Bill Split Calculator', category: 'Finance', url: '/calculators/tip-calculator/', desc: 'Calculate tip percentages, total dining bills, and per-person splits.' },
   { title: 'Discount & Sales Tax Calculator', category: 'Finance', url: '/calculators/discount-calculator/', desc: 'Compute clearance discounts, net savings, and sales tax totals.' },
-  { title: 'Salary & Wage Calculator', category: 'Finance', url: '/calculators/salary-calculator/', desc: 'Convert hourly wages into annual, monthly, and paycheck totals.' },
-  { title: 'Auto Loan Calculator', category: 'Finance', url: '/calculators/auto-loan-calculator/', desc: 'Estimate vehicle loan payments with down payment and trade-in value.' },
-  { title: 'Investment Growth Calculator', category: 'Finance', url: '/calculators/investment-calculator/', desc: 'Project long-term stock portfolio wealth and compound returns.' },
+  { title: 'Salary & Wage Calculator', category: 'Finance', url: '/calculators/salary-calculator/', desc: 'Take home pay calculator to convert hourly wages to annual and paycheck totals.' },
+  { title: 'Auto Loan Calculator', category: 'Finance', url: '/calculators/auto-loan-calculator/', desc: 'Auto loan payment calculator to estimate vehicle financing and loan payments.' },
+  { title: 'Investment Growth Calculator', category: 'Finance', url: '/calculators/investment-calculator/', desc: 'Online investment calculator and finance calculator for long-term compound growth.' },
 
   // 2. Education (4)
-  { title: 'GPA Calculator', category: 'Education', url: '/calculators/gpa-calculator/', desc: 'Weighted grade point average calculator from course credits.' },
+  { title: 'GPA Calculator', category: 'Education', url: '/calculators/gpa-calculator/', desc: 'Weighted grade point average and grading calculator from course credits.' },
   { title: 'CGPA Calculator', category: 'Education', url: '/calculators/cgpa-calculator/', desc: 'Cumulative grade point average across college semesters.' },
-  { title: 'Grade Calculator', category: 'Education', url: '/calculators/grade-calculator/', desc: 'Convert raw test marks into percentages and letter grades.' },
-  { title: 'Percentage Calculator', category: 'Math', url: '/calculators/percentage-calculator/', desc: 'Work out what percentage one number is of a whole.' },
+  { title: 'Grade Calculator', category: 'Education', url: '/calculators/grade-calculator/', desc: 'Grading calculator and score calculator to convert test marks into percentages.' },
+  { title: 'Percentage Calculator', category: 'Math', url: '/calculators/percentage-calculator/', desc: 'Math calculator to work out what percentage one number is of a whole.' },
 
   // 3. Health (3)
-  { title: 'BMI Calculator', category: 'Health', url: '/calculators/bmi-calculator/', desc: 'Body Mass Index calculator with WHO & CDC categories.' },
+  { title: 'BMI Calculator', category: 'Health', url: '/calculators/bmi-calculator/', desc: 'Body mass index calculator and healthy body weight calculator for all adults.' },
   { title: 'Daily Calorie & TDEE Calculator', category: 'Health', url: '/calculators/calorie-calculator/', desc: 'Mifflin-St Jeor daily energy expenditure and maintenance calories.' },
   { title: 'Daily Water Intake Calculator', category: 'Health', url: '/calculators/water-intake-calculator/', desc: 'Calculate optimal fluid targets by body weight and activity.' },
 
@@ -31,36 +31,36 @@ export const allToolsIndex: ToolIndexItem[] = [
   { title: 'Percentage Difference', category: 'Math', url: '/calculators/percentage-difference/', desc: 'Compare two values and see their relative percentage gap.' },
   { title: 'Ratio Calculator', category: 'Math', url: '/calculators/ratio-calculator/', desc: 'Simplify and scale ratios between numbers.' },
   { title: 'Fraction Calculator', category: 'Math', url: '/calculators/fraction-calculator/', desc: 'Add, subtract, multiply, and simplify fractional numbers.' },
-  { title: 'Average Calculator', category: 'Math', url: '/calculators/average-calculator/', desc: 'Compute mean, median, mode, and total sum for data sets.' },
+  { title: 'Average Calculator', category: 'Math', url: '/calculators/average-calculator/', desc: 'Statistics calculator to compute mean, median, mode, and average of numbers.' },
   { title: 'Storage Unit Converter', category: 'Converters', url: '/calculators/storage-unit-converter/', desc: 'Convert bytes, KB, MB, GB, TB, and petabytes.' },
 
   // 5. Date, Time & Text (6)
   { title: 'Age Calculator', category: 'Time', url: '/calculators/age-calculator/', desc: 'Exact chronological age in years, months, days, and hours.' },
-  { title: 'Date Difference Calculator', category: 'Time', url: '/calculators/date-difference-calculator/', desc: 'Calculate exact elapsed calendar days between two dates.' },
+  { title: 'Date Difference Calculator', category: 'Time', url: '/calculators/date-difference-calculator/', desc: 'Date calculator and days calculator to count exact calendar days between dates.' },
   { title: 'Countdown Calculator', category: 'Time', url: '/calculators/countdown-calculator/', desc: 'Live countdown timer to future milestones and events.' },
-  { title: 'Working Days Calculator', category: 'Time', url: '/calculators/working-days-calculator/', desc: 'Count business workdays excluding weekends and holidays.' },
+  { title: 'Working Days Calculator', category: 'Time', url: '/calculators/working-days-calculator/', desc: 'Work calculator to count business days and working hours excluding holidays.' },
   { title: 'Word Counter', category: 'Text', url: '/calculators/word-counter/', desc: 'Accurate word count, reading time, and speaking time.' },
   { title: 'Character Counter', category: 'Text', url: '/calculators/character-counter/', desc: 'Character count with and without whitespace.' },
 
   // 6. Converters (4)
   { title: 'Case Converter', category: 'Text', url: '/calculators/case-converter/', desc: 'Convert text to UPPERCASE, lowercase, Title Case, and camelCase.' },
-  { title: 'Length Converter', category: 'Converters', url: '/calculators/length-converter/', desc: 'Convert meters, feet, inches, kilometers, and miles.' },
-  { title: 'Weight Converter', category: 'Converters', url: '/calculators/weight-converter/', desc: 'Convert kilograms, pounds, ounces, grams, and stone.' },
+  { title: 'Length Converter', category: 'Converters', url: '/calculators/length-converter/', desc: 'Unit converter for length: convert meters, feet, inches, kilometers, and miles.' },
+  { title: 'Weight Converter', category: 'Converters', url: '/calculators/weight-converter/', desc: 'Weight converter and mass calculator: convert kilograms, pounds, ounces, and grams.' },
   { title: 'Temperature Converter', category: 'Converters', url: '/calculators/temperature-converter/', desc: 'Convert Celsius, Fahrenheit, and Kelvin instantly.' },
 
   // 7. International Tax Suite (28)
-  { title: 'Currency Converter', category: 'Tax & Finance', url: '/currency-converter/', desc: 'Live multi-currency exchange rates with zero commission math.' },
-  { title: 'Global VAT & Sales Tax Calculator', category: 'Tax & Finance', url: '/tax-calculators/vat-calculator/', desc: 'Calculate inclusive and exclusive VAT/GST for any tax rate.' },
-  { title: 'Salary to Hourly Calculator', category: 'Tax & Finance', url: '/tax-calculators/salary-to-hourly/', desc: 'Convert annual compensation to exact hourly wage rates.' },
-  { title: 'Hourly to Salary Calculator', category: 'Tax & Finance', url: '/tax-calculators/hourly-to-salary/', desc: 'Convert hourly rate into full-time annual salary.' },
-  { title: 'United States Tax Calculator', category: 'Tax & Finance', url: '/us-income-tax-calculator/', desc: 'US IRS federal tax brackets, FICA, standard deduction.' },
-  { title: 'United Kingdom Salary Calculator', category: 'Tax & Finance', url: '/uk-income-tax-calculator/', desc: 'HMRC PAYE income tax, National Insurance, and take-home pay.' },
-  { title: 'Canada Income Tax Calculator', category: 'Tax & Finance', url: '/canada-income-tax-calculator/', desc: 'CRA federal and provincial tax brackets, CPP and EI.' },
-  { title: 'Australia Income Tax Calculator', category: 'Tax & Finance', url: '/australia-income-tax-calculator/', desc: 'ATO resident tax brackets and Medicare levy.' },
-  { title: 'Germany Salary Calculator', category: 'Tax & Finance', url: '/germany-income-tax-calculator/', desc: 'German BMF income tax, solidarity surcharge, and social insurance.' },
+  { title: 'Currency Converter', category: 'Tax & Finance', url: '/currency-converter/', desc: 'Currency converter and forex calculator with live currency exchange rates.' },
+  { title: 'Global VAT & Sales Tax Calculator', category: 'Tax & Finance', url: '/tax-calculators/vat-calculator/', desc: 'Sales tax calculator and VAT tax calculator for inclusive and exclusive rates.' },
+  { title: 'Salary to Hourly Calculator', category: 'Tax & Finance', url: '/tax-calculators/salary-to-hourly/', desc: 'Salary to hourly calculator to convert annual compensation to hourly wage.' },
+  { title: 'Hourly to Salary Calculator', category: 'Tax & Finance', url: '/tax-calculators/hourly-to-salary/', desc: 'Hourly to salary calculator to convert hourly wages into full annual salary.' },
+  { title: 'United States Tax Calculator', category: 'Tax & Finance', url: '/us-income-tax-calculator/', desc: 'US federal income tax calculator with IRS tax brackets by income and FICA.' },
+  { title: 'United Kingdom Salary Calculator', category: 'Tax & Finance', url: '/uk-income-tax-calculator/', desc: 'UK income tax calculator and salary tax calculator uk for take home pay.' },
+  { title: 'Canada Income Tax Calculator', category: 'Tax & Finance', url: '/canada-income-tax-calculator/', desc: 'Income tax Canada calculator with CRA federal and provincial tax brackets.' },
+  { title: 'Australia Income Tax Calculator', category: 'Tax & Finance', url: '/australia-income-tax-calculator/', desc: 'Australia income tax calculator and salary tax calculator with Medicare levy.' },
+  { title: 'Germany Salary Calculator', category: 'Tax & Finance', url: '/germany-income-tax-calculator/', desc: 'Tax calculator Germany and salary calculator with social security contributions.' },
   { title: 'France Income Tax Calculator', category: 'Tax & Finance', url: '/france-income-tax-calculator/', desc: 'French DGFiP quotient familial, CSG/CRDS, and net salary.' },
-  { title: 'Ireland Salary Calculator', category: 'Tax & Finance', url: '/ireland-income-tax-calculator/', desc: 'Irish Revenue PAYE standard rate cutoff, USC, and PRSI.' },
-  { title: 'Netherlands Tax Calculator', category: 'Tax & Finance', url: '/netherlands-income-tax-calculator/', desc: 'Dutch Box 1 income tax brackets and labor tax credits.' },
+  { title: 'Ireland Salary Calculator', category: 'Tax & Finance', url: '/ireland-income-tax-calculator/', desc: 'Ireland salary calculator and Ireland tax calculator with PAYE, USC, and PRSI.' },
+  { title: 'Netherlands Tax Calculator', category: 'Tax & Finance', url: '/netherlands-income-tax-calculator/', desc: 'Netherlands tax calculator with Box 1 income tax brackets and labor credits.' },
   { title: 'Spain Salary Calculator', category: 'Tax & Finance', url: '/spain-income-tax-calculator/', desc: 'Spanish AEAT IRPF progressive brackets and Social Security.' },
   { title: 'Italy Income Tax Calculator', category: 'Tax & Finance', url: '/italy-income-tax-calculator/', desc: 'Italian IRPEF national progressive rates and INPS.' },
   { title: 'Switzerland Salary Calculator', category: 'Tax & Finance', url: '/switzerland-income-tax-calculator/', desc: 'Swiss direct federal tax and cantonal estimates.' },
@@ -79,16 +79,16 @@ export const allToolsIndex: ToolIndexItem[] = [
   { title: 'Portugal Salary Calculator', category: 'Tax & Finance', url: '/portugal-income-tax-calculator/', desc: 'Portuguese IRS progressive escalation rates and Social Security.' },
 
   // 8. Academic & Student Tools (7)
-  { title: 'Attendance Calculator', category: 'Academic', url: '/academic-tools/attendance-calculator/', desc: 'Check if attendance meets 75% or 80% college requirements.' },
+  { title: 'Attendance Calculator', category: 'Academic', url: '/academic-tools/attendance-calculator/', desc: 'Attendance calculator to track percentage and safe bunks for college requirements.' },
   { title: 'Safe Bunk Calculator', category: 'Academic', url: '/academic-tools/bunk-calculator/', desc: 'Calculate how many classes you can skip without failing attendance.' },
-  { title: 'Final Grade Calculator', category: 'Academic', url: '/academic-tools/final-grade-calculator/', desc: 'Find the exact score needed on your final exam to secure a course grade.' },
+  { title: 'Final Grade Calculator', category: 'Academic', url: '/academic-tools/final-grade-calculator/', desc: 'Grading calculator and score calculator to find exam scores needed for a target grade.' },
   { title: 'Grade Needed Calculator', category: 'Academic', url: '/academic-tools/grade-needed-calculator/', desc: 'Determine minimum scores required on remaining assignments.' },
   { title: 'Semester GPA Calculator', category: 'Academic', url: '/academic-tools/semester-gpa-calculator/', desc: 'Compute dynamic semester grade points across courses.' },
   { title: 'Credit Hour Calculator', category: 'Academic', url: '/academic-tools/credit-hour-calculator/', desc: 'Calculate weekly study hours per enrolled credit hour.' },
   { title: 'Weekly Study Hours Calculator', category: 'Academic', url: '/academic-tools/study-hours-calculator/', desc: 'Build an optimized semester study allocation schedule.' },
 
   // 9. Research & Statistics (16)
-  { title: 'Sample Size Calculator', category: 'Research', url: '/research-tools/sample-size-calculator/', desc: 'Determine statistically valid sample sizes with confidence levels.' },
+  { title: 'Sample Size Calculator', category: 'Research', url: '/research-tools/sample-size-calculator/', desc: 'Sample size calculator and statistics calculator for research and surveys.' },
   { title: 'Margin of Error Calculator', category: 'Research', url: '/research-tools/margin-of-error-calculator/', desc: 'Compute survey precision percentage from sample data.' },
   { title: 'Confidence Interval Calculator', category: 'Research', url: '/research-tools/confidence-interval-calculator/', desc: 'Find lower and upper estimation bounds for sample means.' },
   { title: 'Z-Score Calculator', category: 'Research', url: '/research-tools/z-score-calculator/', desc: 'Convert raw test observations to standard normal Z scores.' },
@@ -102,7 +102,7 @@ export const allToolsIndex: ToolIndexItem[] = [
   { title: 'Participant ID Generator', category: 'Research', url: '/research-tools/participant-id-generator/', desc: 'Generate randomized, IRB-compliant research subject identifiers.' },
   { title: 'Likert Scale Survey Matrix Designer', category: 'Research', url: '/research-tools/likert-scale-generator/', desc: 'Generate 5-point and 7-point psychometric survey rating matrices.' },
   { title: 'Correlation & Covariance Calculator', category: 'Research', url: '/research-tools/correlation-calculator/', desc: 'Compute Pearson r, coefficient of determination R², and covariance.' },
-  { title: 'Standard Deviation Calculator', category: 'Research', url: '/research-tools/standard-deviation-calculator/', desc: 'Calculate sample and population standard deviation, variance, and mean.' },
+  { title: 'Standard Deviation Calculator', category: 'Research', url: '/research-tools/standard-deviation-calculator/', desc: 'Standard deviation calculator and statistics calculator for sample and population data.' },
   { title: 'Coefficient of Variation Calculator', category: 'Research', url: '/research-tools/coefficient-of-variation-calculator/', desc: 'Calculate Relative Standard Deviation (CV / RSD %) across data sets.' },
 
   // 10. Business & Freelance (6)
@@ -114,8 +114,8 @@ export const allToolsIndex: ToolIndexItem[] = [
   { title: 'Real Estate Commission Calculator', category: 'Business', url: '/business-tools/real-estate-commission-calculator/', desc: 'Calculate realtor commission splits between listing and buyer agents.' },
 
   // 11. Shipping & Freight Logistics (5)
-  { title: 'CBM (Cubic Meters) Calculator', category: 'Shipping', url: '/shipping-calculators/cbm-calculator/', desc: 'Calculate cubic meter volume and package count for freight shipments.' },
-  { title: 'Volumetric Weight Calculator', category: 'Shipping', url: '/shipping-calculators/volumetric-weight-calculator/', desc: 'Calculate dimensional weight for air, courier, and ocean freight.' },
+  { title: 'CBM (Cubic Meters) Calculator', category: 'Shipping', url: '/shipping-calculators/cbm-calculator/', desc: 'Volume calculator and cubic meter calculator for shipping and freight.' },
+  { title: 'Volumetric Weight Calculator', category: 'Shipping', url: '/shipping-calculators/volumetric-weight-calculator/', desc: 'Volumetric weight calculator and shipping calculator for air and ocean freight.' },
   { title: 'Dimensional Weight Calculator', category: 'Shipping', url: '/shipping-calculators/dimensional-weight-calculator/', desc: 'Compute billable dimensional weight using IATA and domestic divisors.' },
   { title: 'Chargeable Weight Calculator', category: 'Shipping', url: '/shipping-calculators/chargeable-weight-calculator/', desc: 'Determine billable freight weight by comparing actual vs volumetric weight.' },
   { title: 'Container Capacity Calculator', category: 'Shipping', url: '/shipping-calculators/container-capacity-calculator/', desc: 'Estimate how many cartons fit in 20ft, 40ft, and 40ft High Cube containers.' },
@@ -123,7 +123,7 @@ export const allToolsIndex: ToolIndexItem[] = [
   // 12. Product & Craft Pricing (3)
   { title: 'Custom Sticker Pricing Calculator', category: 'Pricing', url: '/pricing-calculators/sticker-pricing-calculator/', desc: 'Calculate sticker sheet material costs, machine time, and retail price.' },
   { title: 'Handmade Product Pricing Calculator', category: 'Pricing', url: '/pricing-calculators/handmade-product-pricing-calculator/', desc: 'Calculate wholesale and retail markups for craft and handmade goods.' },
-  { title: 'Break-Even Unit Calculator', category: 'Pricing', url: '/pricing-calculators/break-even-calculator/', desc: 'Find unit sales volume required to cover fixed overhead and variable costs.' },
+  { title: 'Break-Even Unit Calculator', category: 'Pricing', url: '/pricing-calculators/break-even-calculator/', desc: 'Profit margin calculator and break-even unit sales calculator for business overhead.' },
 
   // 13. Career & Resume Tools (8)
   { title: 'CV & Resume Maker (ATS-Standard)', category: 'Career', url: '/career-tools/cv-maker/', desc: 'Professional Harvard & Wall Street standard resume builder with PDF export.' },
@@ -136,7 +136,7 @@ export const allToolsIndex: ToolIndexItem[] = [
   { title: 'Resume Length & Density Checker', category: 'Career', url: '/career-tools/resume-length-checker/', desc: 'Audit resume word count, bullet density, and 1-page/2-page sweet spot.' },
 
   // 14. Developer Tools (17)
-  { title: 'JSON Formatter & Beautifier', category: 'Developer', url: '/developer-tools/json-formatter/', desc: 'Format and prettify raw JSON with customizable indentation and tree viewing.' },
+  { title: 'JSON Formatter & Beautifier', category: 'Developer', url: '/developer-tools/json-formatter/', desc: 'Format JSON online and convert JSON with indentation, tree view, and validation.' },
   { title: 'JSON Validator & Linter', category: 'Developer', url: '/developer-tools/json-validator/', desc: 'Validate JSON syntax and pinpoint exact line and column errors.' },
   { title: 'JSON Minifier & Compressor', category: 'Developer', url: '/developer-tools/json-minifier/', desc: 'Strip all whitespace and line breaks from JSON payloads for production.' },
   { title: 'JSON Diff Comparator', category: 'Developer', url: '/developer-tools/json-diff/', desc: 'Compare two JSON objects side-by-side and highlight additions and deletions.' },

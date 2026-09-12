@@ -11,8 +11,8 @@ const defaultYear = profile.years[profile.defaultTaxYear];
 ---
 
 <SiteLayout
-  title="US Federal Income Tax Calculator 2026 | IRS Brackets & Take-Home Pay"
-  description={`${profile.name} Income Tax Calculator for tax year ${defaultYear.taxYear}. Compute your take-home pay, progressive tax brackets, social security deductions, and effective tax rate using official government rates.`}
+  title="USA IRS Tax Calculator 2026 — Federal & State Income Tax Calculator, 2026 Tax Brackets"
+  description={`Free USA IRS tax calculator and federal income tax calculator for tax year ${defaultYear.taxYear}. Calculate 2026 federal tax brackets, state income tax by state, FICA payroll taxes, taxable income, and estimate take home pay or refund tax.`}
 >
   <div class="mx-auto max-w-5xl space-y-10">
     <!-- Breadcrumb & Header -->
@@ -31,7 +31,7 @@ const defaultYear = profile.years[profile.defaultTaxYear];
         <span>Official {profile.name} Tax Engine • Tax Year {defaultYear.taxYear}</span>
       </div>
       <h1 class="text-3xl font-extrabold tracking-tight text-[color:var(--fg)] sm:text-4xl lg:text-5xl">
-        {profile.name} Income Tax &amp; Salary Calculator
+        USA IRS Tax Calculator — Federal &amp; State Income Tax Calculator ({defaultYear.taxYear})
       </h1>
       <p class="max-w-3xl text-base leading-relaxed text-[color:var(--muted)] sm:text-lg">
         {profile.metaDescription}
@@ -49,27 +49,61 @@ const defaultYear = profile.years[profile.defaultTaxYear];
 
     <!-- Informational / Educational Content Section -->
     <section class="space-y-6 rounded-[2rem] border border-[color:var(--border)] bg-[color:var(--surface)] p-6 sm:p-8" aria-labelledby="how-it-works-heading">
-      <h2 id="how-it-works-heading" class="text-2xl font-bold tracking-tight text-[color:var(--fg)]">
-        How {profile.name} Income Tax is Calculated ({defaultYear.taxYear})
-      </h2>
-      <div class="space-y-4 text-sm leading-relaxed text-[color:var(--muted)]">
-        <p>
-          Income tax in {profile.name} is determined using a progressive marginal bracket system. Taxpayers only pay each bracket's specific rate on the slice of taxable income falling within that tier.
+      <div class="space-y-2">
+        <h2 id="how-it-works-heading" class="text-2xl font-bold tracking-tight text-[color:var(--fg)]">
+          How the USA IRS Federal &amp; State Tax Calculator Works ({defaultYear.taxYear})
+        </h2>
+        <p class="text-sm leading-relaxed text-[color:var(--muted)]">
+          The USA IRS operates on a progressive tax tier structure. When you compute federal income tax and state income tax, you do not pay a single flat percentage on your entire gross income. Instead, each portion of your taxable income is taxed at its corresponding 2026 federal tax bracket rate.
         </p>
-        <div class="grid gap-4 sm:grid-cols-3">
-          <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] p-4">
-            <p class="font-bold text-[color:var(--fg)]">1. Gross Income</p>
-            <p class="mt-1 text-xs">Total annual salary, wages, and earned employment compensation.</p>
-          </div>
-          <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] p-4">
-            <p class="font-bold text-[color:var(--fg)]">2. Allowances &amp; Deductions</p>
-            <p class="mt-1 text-xs">Standard statutory allowances and tax-free thresholds subtracted from gross earnings.</p>
-          </div>
-          <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] p-4">
-            <p class="font-bold text-[color:var(--fg)]">3. Progressive Tax Slices</p>
-            <p class="mt-1 text-xs">Progressive rates applied sequentially to arrive at net take-home salary.</p>
-          </div>
+      </div>
+
+      <div class="grid gap-4 sm:grid-cols-3">
+        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] p-4">
+          <p class="font-bold text-[color:var(--fg)]">1. Gross Income &amp; Wages</p>
+          <p class="mt-1 text-xs text-[color:var(--muted)]">Includes annual salary, hourly wages, bonuses, 1099 freelance earnings, and tips before any payroll withholdings.</p>
         </div>
+        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] p-4">
+          <p class="font-bold text-[color:var(--fg)]">2. Allowances &amp; Deductions</p>
+          <p class="mt-1 text-xs text-[color:var(--muted)]">Standard deduction ($16,100 single, $32,200 married filing jointly) or itemized deductions subtracted to find taxable income.</p>
+        </div>
+        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] p-4">
+          <p class="font-bold text-[color:var(--fg)]">3. Progressive Tax Tiers &amp; FICA</p>
+          <p class="mt-1 text-xs text-[color:var(--muted)]">Marginal tax brackets (10%–37%), state income tax, and FICA (Social Security &amp; Medicare) applied to determine net take home pay.</p>
+        </div>
+      </div>
+
+      <div class="grid gap-6 pt-2 md:grid-cols-2 text-sm text-[color:var(--muted)]">
+        <div class="space-y-3 rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] p-5">
+          <h3 class="font-bold text-base text-[color:var(--fg)]">2026 Federal Tax Brackets &amp; Marginal Rates</h3>
+          <p class="text-xs leading-relaxed">
+            Under IRS Revenue Procedure 2025-32, the seven statutory federal income tax brackets are <strong>10%, 12%, 22%, 24%, 32%, 35%, and 37%</strong>. As your income crosses each threshold, only the earnings inside that specific tier are taxed at the higher marginal rate. Our tax bracket calculator accurately determines your exact federal tax amount and effective tax percentage.
+          </p>
+          <ul class="list-disc list-inside text-xs space-y-1 text-[color:var(--muted)]">
+            <li><strong>Single Filers:</strong> 10% on first $12,400 up to 37% over $647,850.</li>
+            <li><strong>Married Filing Jointly:</strong> 10% on first $24,800 up to 37% over $777,400.</li>
+            <li><strong>Head of Household:</strong> 10% on first $17,700 up to 37% over $647,850.</li>
+          </ul>
+        </div>
+
+        <div class="space-y-3 rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] p-5">
+          <h3 class="font-bold text-base text-[color:var(--fg)]">FICA Payroll Taxes &amp; State Income Tax</h3>
+          <p class="text-xs leading-relaxed">
+            Every W-2 paycheck includes mandatory federal payroll taxes under the Federal Insurance Contributions Act (FICA):
+          </p>
+          <ul class="list-disc list-inside text-xs space-y-1 text-[color:var(--muted)]">
+            <li><strong>Social Security:</strong> 6.2% on taxable wages up to the 2026 wage base cap of $184,500.</li>
+            <li><strong>Medicare:</strong> 1.45% on all earnings, plus 0.9% Additional Medicare on high earners over $200,000 (single) or $250,000 (married).</li>
+            <li><strong>State Income Tax by State:</strong> Ranging from 0% in tax-free states (TX, FL, WA, TN, NV) up to progressive state rates over 10% in high-tax jurisdictions.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="space-y-2 pt-2 text-sm text-[color:var(--muted)]">
+        <h3 class="font-bold text-base text-[color:var(--fg)]">Estimating Tax Returns, Refunds &amp; Paycheck Withholdings</h3>
+        <p class="text-xs leading-relaxed">
+          Wondering whether you will receive an IRS tax refund or owe federal tax? Your tax return status depends on the total federal withholding tax deducted from your paychecks throughout the year compared against your final calculated tax liability. If your cumulative tax payments exceed what you owe after claiming credits (such as the Child Tax Credit), you receive an IRS tax refund rebate. If you under-withheld, you can use our tax calculator to forecast your payment and adjust your W-4 allowances.
+        </p>
       </div>
     </section>
 
