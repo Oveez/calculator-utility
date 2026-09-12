@@ -176,28 +176,37 @@ const schemaGraph = [
       </div>
 
       <!-- Quick Action Controls -->
-      <div class="flex items-center gap-2 self-start sm:self-auto">
+      <div class="flex items-center gap-2 self-start sm:self-auto flex-wrap">
+        <button
+          type="button"
+          id="btn-sample-data"
+          class="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold rounded-xl border border-[color:var(--border-strong)] bg-[color:var(--surface)] text-[color:var(--fg)] hover:bg-[color:var(--surface-strong)] hover:border-[color:var(--accent)] transition cursor-pointer shadow-xs"
+          title="Populate form with University of Dhaka sample data"
+        >
+          <Icon name="sparkles" class="w-3.5 h-3.5 text-[color:var(--accent)]" />
+          <span>Use Sample Data</span>
+        </button>
         <button
           type="button"
           id="btn-reset-form"
-          class="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] text-[color:var(--muted)] hover:text-[color:var(--fg)] hover:bg-[color:var(--surface-strong)] transition cursor-pointer"
-          title="Reset all form fields to default"
+          class="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold rounded-xl border border-[color:var(--border-strong)] bg-[color:var(--surface)] text-[color:var(--fg)] hover:text-rose-600 dark:hover:text-rose-400 hover:border-rose-500/50 hover:bg-[color:var(--surface-strong)] transition cursor-pointer shadow-xs"
+          title="Reset all form fields"
         >
-          <Icon name="refresh" class="w-3.5 h-3.5" />
+          <Icon name="refresh" class="w-3.5 h-3.5 text-[color:var(--muted)]" />
           <span>Reset</span>
         </button>
         <button
           type="button"
           id="btn-print-cover"
-          class="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] text-[color:var(--fg)] hover:bg-[color:var(--surface-strong)] transition cursor-pointer shadow-xs"
+          class="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold rounded-xl border border-[color:var(--border-strong)] bg-[color:var(--surface)] text-[color:var(--fg)] hover:bg-[color:var(--surface-strong)] hover:border-[color:var(--accent)] transition cursor-pointer shadow-xs"
         >
-          <Icon name="document" class="w-3.5 h-3.5" />
+          <Icon name="document" class="w-3.5 h-3.5 text-[color:var(--muted)]" />
           <span>Print</span>
         </button>
         <button
           type="button"
           id="btn-quick-download"
-          class="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-bold rounded-xl bg-[color:var(--accent)] hover:bg-[color:var(--accent-hover)] text-white transition cursor-pointer shadow-xs"
+          class="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-bold rounded-xl bg-[color:var(--accent)] hover:bg-[color:var(--accent-hover)] text-white transition cursor-pointer shadow-xs focus:ring-2 focus:ring-[color:var(--accent-glow)]"
         >
           <Icon name="download" class="w-3.5 h-3.5" />
           <span>Download PDF</span>
@@ -245,7 +254,7 @@ const schemaGraph = [
             <button
               type="button"
               data-template="modern"
-              class="template-card relative flex flex-col items-start p-3 rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] text-left transition hover:border-[color:var(--border-strong)] cursor-pointer group"
+              class="template-card relative flex flex-col items-start p-3 rounded-xl border border-[color:var(--border-strong)] bg-[color:var(--surface)] text-left transition hover:border-[color:var(--accent)] cursor-pointer group"
             >
               <div class="w-full aspect-[4/3] rounded-lg bg-white border border-slate-200 p-2 flex flex-col justify-between mb-2 shadow-xs group-hover:scale-[1.02] transition">
                 <div class="flex justify-between items-center w-full">
@@ -259,7 +268,7 @@ const schemaGraph = [
                 <div class="w-12 h-0.5 bg-slate-300 rounded-full"></div>
               </div>
               <span class="text-xs font-bold text-[color:var(--fg)] leading-tight">Modern Minimal</span>
-              <span class="text-[10px] text-[color:var(--muted)] mt-0.5">Clean & Contemporary</span>
+              <span class="text-[10px] text-[color:var(--muted)] group-hover:text-[color:var(--fg)] mt-0.5 font-medium">Clean & Contemporary</span>
               <span class="active-badge absolute top-2 right-2 w-2 h-2 rounded-full bg-[color:var(--accent)] hidden"></span>
             </button>
 
@@ -267,7 +276,7 @@ const schemaGraph = [
             <button
               type="button"
               data-template="professional"
-              class="template-card relative flex flex-col items-start p-3 rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] text-left transition hover:border-[color:var(--border-strong)] cursor-pointer group"
+              class="template-card relative flex flex-col items-start p-3 rounded-xl border border-[color:var(--border-strong)] bg-[color:var(--surface)] text-left transition hover:border-[color:var(--accent)] cursor-pointer group"
             >
               <div class="w-full aspect-[4/3] rounded-lg bg-white border border-slate-200 p-1.5 flex flex-col justify-between mb-2 shadow-xs group-hover:scale-[1.02] transition">
                 <div class="w-full h-2 bg-slate-100 rounded-xs flex items-center px-1">
@@ -280,7 +289,7 @@ const schemaGraph = [
                 </div>
               </div>
               <span class="text-xs font-bold text-[color:var(--fg)] leading-tight">Professional</span>
-              <span class="text-[10px] text-[color:var(--muted)] mt-0.5">Structured Card Grid</span>
+              <span class="text-[10px] text-[color:var(--muted)] group-hover:text-[color:var(--fg)] mt-0.5 font-medium">Structured Card Grid</span>
               <span class="active-badge absolute top-2 right-2 w-2 h-2 rounded-full bg-[color:var(--accent)] hidden"></span>
             </button>
 
@@ -288,7 +297,7 @@ const schemaGraph = [
             <button
               type="button"
               data-template="elegant"
-              class="template-card relative flex flex-col items-start p-3 rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] text-left transition hover:border-[color:var(--border-strong)] cursor-pointer group"
+              class="template-card relative flex flex-col items-start p-3 rounded-xl border border-[color:var(--border-strong)] bg-[color:var(--surface)] text-left transition hover:border-[color:var(--accent)] cursor-pointer group"
             >
               <div class="w-full aspect-[4/3] rounded-lg bg-white border border-slate-200 p-1.5 flex flex-col justify-between mb-2 shadow-xs group-hover:scale-[1.02] transition">
                 <div class="w-full h-full border border-slate-300 rounded-xs p-1 flex flex-col items-center justify-between">
@@ -299,7 +308,7 @@ const schemaGraph = [
                 </div>
               </div>
               <span class="text-xs font-bold text-[color:var(--fg)] leading-tight">Elegant</span>
-              <span class="text-[10px] text-[color:var(--muted)] mt-0.5">Ornamental Border</span>
+              <span class="text-[10px] text-[color:var(--muted)] group-hover:text-[color:var(--fg)] mt-0.5 font-medium">Ornamental Border</span>
               <span class="active-badge absolute top-2 right-2 w-2 h-2 rounded-full bg-[color:var(--accent)] hidden"></span>
             </button>
 
@@ -307,7 +316,7 @@ const schemaGraph = [
             <button
               type="button"
               data-template="bold"
-              class="template-card relative flex flex-col items-start p-3 rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] text-left transition hover:border-[color:var(--border-strong)] cursor-pointer group"
+              class="template-card relative flex flex-col items-start p-3 rounded-xl border border-[color:var(--border-strong)] bg-[color:var(--surface)] text-left transition hover:border-[color:var(--accent)] cursor-pointer group"
             >
               <div class="w-full aspect-[4/3] rounded-lg bg-white border border-slate-200 overflow-hidden flex flex-col justify-between mb-2 shadow-xs group-hover:scale-[1.02] transition">
                 <div class="w-full h-3 bg-blue-700 flex items-center px-1">
@@ -320,7 +329,7 @@ const schemaGraph = [
                 <div class="w-full h-1.5 bg-slate-200"></div>
               </div>
               <span class="text-xs font-bold text-[color:var(--fg)] leading-tight">Bold Academic</span>
-              <span class="text-[10px] text-[color:var(--muted)] mt-0.5">High Impact Banner</span>
+              <span class="text-[10px] text-[color:var(--muted)] group-hover:text-[color:var(--fg)] mt-0.5 font-medium">High Impact Banner</span>
               <span class="active-badge absolute top-2 right-2 w-2 h-2 rounded-full bg-[color:var(--accent)] hidden"></span>
             </button>
           </div>
@@ -349,7 +358,7 @@ const schemaGraph = [
             <button
               type="button"
               data-theme="blue"
-              class="theme-pill flex flex-col items-center gap-1.5 p-2 rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] transition cursor-pointer hover:scale-105"
+              class="theme-pill flex flex-col items-center gap-1.5 p-2 rounded-xl border border-[color:var(--border-strong)] bg-[color:var(--surface)] transition cursor-pointer hover:scale-105 hover:border-[color:var(--accent)]"
             >
               <span class="w-6 h-6 rounded-full bg-blue-700 shadow-xs border border-white"></span>
               <span class="text-[11px] font-semibold text-[color:var(--fg)]">Navy</span>
@@ -358,7 +367,7 @@ const schemaGraph = [
             <button
               type="button"
               data-theme="green"
-              class="theme-pill flex flex-col items-center gap-1.5 p-2 rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] transition cursor-pointer hover:scale-105"
+              class="theme-pill flex flex-col items-center gap-1.5 p-2 rounded-xl border border-[color:var(--border-strong)] bg-[color:var(--surface)] transition cursor-pointer hover:scale-105 hover:border-[color:var(--accent)]"
             >
               <span class="w-6 h-6 rounded-full bg-emerald-800 shadow-xs border border-white"></span>
               <span class="text-[11px] font-semibold text-[color:var(--fg)]">Forest</span>
@@ -367,7 +376,7 @@ const schemaGraph = [
             <button
               type="button"
               data-theme="burgundy"
-              class="theme-pill flex flex-col items-center gap-1.5 p-2 rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] transition cursor-pointer hover:scale-105"
+              class="theme-pill flex flex-col items-center gap-1.5 p-2 rounded-xl border border-[color:var(--border-strong)] bg-[color:var(--surface)] transition cursor-pointer hover:scale-105 hover:border-[color:var(--accent)]"
             >
               <span class="w-6 h-6 rounded-full bg-rose-900 shadow-xs border border-white"></span>
               <span class="text-[11px] font-semibold text-[color:var(--fg)]">Crimson</span>
@@ -376,7 +385,7 @@ const schemaGraph = [
             <button
               type="button"
               data-theme="dark"
-              class="theme-pill flex flex-col items-center gap-1.5 p-2 rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] transition cursor-pointer hover:scale-105"
+              class="theme-pill flex flex-col items-center gap-1.5 p-2 rounded-xl border border-[color:var(--border-strong)] bg-[color:var(--surface)] transition cursor-pointer hover:scale-105 hover:border-[color:var(--accent)]"
             >
               <span class="w-6 h-6 rounded-full bg-indigo-950 shadow-xs border border-white"></span>
               <span class="text-[11px] font-semibold text-[color:var(--fg)]">Midnight</span>
@@ -385,7 +394,7 @@ const schemaGraph = [
             <button
               type="button"
               data-theme="neutral"
-              class="theme-pill flex flex-col items-center gap-1.5 p-2 rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] transition cursor-pointer hover:scale-105"
+              class="theme-pill flex flex-col items-center gap-1.5 p-2 rounded-xl border border-[color:var(--border-strong)] bg-[color:var(--surface)] transition cursor-pointer hover:scale-105 hover:border-[color:var(--accent)]"
             >
               <span class="w-6 h-6 rounded-full bg-amber-800 shadow-xs border border-white"></span>
               <span class="text-[11px] font-semibold text-[color:var(--fg)]">Amber</span>
@@ -412,14 +421,14 @@ const schemaGraph = [
               <input
                 type="text"
                 id="inst-search"
-                placeholder="Search university (e.g., Dhaka, Harvard, Oxford...)"
+                placeholder="e.g. University of Dhaka"
                 autocomplete="off"
                 class="w-full rounded-xl border border-[color:var(--border-strong)] bg-[color:var(--bg)] pl-10 pr-10 py-2.5 text-sm text-[color:var(--fg)] placeholder-[color:var(--muted)] transition focus:border-[color:var(--accent)] focus:ring-2 focus:ring-[color:var(--accent-glow)] focus:outline-none"
               />
               <button
                 type="button"
                 id="btn-clear-inst"
-                class="absolute right-3 text-[color:var(--muted)] hover:text-[color:var(--fg)] p-1 hidden cursor-pointer"
+                class="absolute right-3 text-[color:var(--fg)]/60 hover:text-[color:var(--fg)] hover:bg-[color:var(--surface-strong)] rounded-lg p-1 hidden cursor-pointer transition"
                 title="Clear input"
               >
                 <Icon name="close" class="w-3.5 h-3.5" />
@@ -435,20 +444,62 @@ const schemaGraph = [
             </ul>
           </div>
 
-          <!-- Logo Upload Fallback Option -->
-          <div class="flex items-center justify-between pt-1">
-            <div class="flex items-center gap-2">
-              <span id="logo-status-indicator" class="inline-flex items-center gap-1.5 text-xs text-[color:var(--muted)]">
-                <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
-                <span>Institution emblem ready</span>
-              </span>
+          <!-- Logo Mode Selection (4 Explicit Choices) -->
+          <div class="space-y-2 pt-1">
+            <label class="block text-xs font-semibold text-[color:var(--fg)]">Logo Option</label>
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2" id="logo-mode-selector">
+              <button
+                type="button"
+                data-logo-mode="stored"
+                class="logo-mode-btn flex flex-col items-center justify-center p-2.5 rounded-xl border-2 border-[color:var(--accent)] bg-[color:var(--surface-strong)] text-[color:var(--fg)] transition cursor-pointer text-center"
+              >
+                <Icon name="search" class="w-4 h-4 text-[color:var(--accent)] mb-1" />
+                <span class="text-[11px] font-bold leading-tight">University Logo</span>
+              </button>
+              <button
+                type="button"
+                data-logo-mode="custom"
+                class="logo-mode-btn flex flex-col items-center justify-center p-2.5 rounded-xl border border-[color:var(--border-strong)] bg-[color:var(--surface)] text-[color:var(--fg)] hover:border-[color:var(--accent)] transition cursor-pointer text-center group"
+              >
+                <Icon name="image" class="w-4 h-4 text-[color:var(--muted)] group-hover:text-[color:var(--fg)] mb-1" />
+                <span class="text-[11px] font-semibold leading-tight">Custom Logo</span>
+              </button>
+              <button
+                type="button"
+                data-logo-mode="emblem"
+                class="logo-mode-btn flex flex-col items-center justify-center p-2.5 rounded-xl border border-[color:var(--border-strong)] bg-[color:var(--surface)] text-[color:var(--fg)] hover:border-[color:var(--accent)] transition cursor-pointer text-center group"
+              >
+                <Icon name="landmark" class="w-4 h-4 text-[color:var(--muted)] group-hover:text-[color:var(--fg)] mb-1" />
+                <span class="text-[11px] font-semibold leading-tight">Default Emblem</span>
+              </button>
+              <button
+                type="button"
+                data-logo-mode="none"
+                class="logo-mode-btn flex flex-col items-center justify-center p-2.5 rounded-xl border border-[color:var(--border-strong)] bg-[color:var(--surface)] text-[color:var(--fg)] hover:border-[color:var(--accent)] transition cursor-pointer text-center group"
+              >
+                <Icon name="close" class="w-4 h-4 text-[color:var(--muted)] group-hover:text-[color:var(--fg)] mb-1" />
+                <span class="text-[11px] font-semibold leading-tight">No Logo</span>
+              </button>
             </div>
 
-            <label for="custom-logo-file" class="inline-flex items-center gap-1.5 text-xs font-semibold text-[color:var(--accent)] hover:underline cursor-pointer">
-              <Icon name="image" class="w-3.5 h-3.5" />
-              <span>Upload Custom Logo</span>
-              <input type="file" id="custom-logo-file" accept="image/png,image/jpeg,image/svg+xml,image/webp" class="hidden" />
-            </label>
+            <!-- Custom Logo File Input -->
+            <input type="file" id="custom-logo-file" accept="image/png,image/jpeg,image/svg+xml,image/webp" class="hidden" />
+
+            <!-- Custom Logo Upload Prompt (revealed when custom mode active) -->
+            <div id="custom-logo-prompt" class="hidden pt-1">
+              <label for="custom-logo-file" class="inline-flex items-center gap-2 px-3 py-2.5 rounded-xl border-2 border-dashed border-[color:var(--accent)] bg-[color:var(--surface)] hover:bg-[color:var(--accent-soft)] text-xs font-bold text-[color:var(--fg)] transition cursor-pointer w-full justify-center group shadow-xs">
+                <Icon name="image" class="w-4 h-4 text-[color:var(--accent)]" />
+                <span id="custom-logo-filename">Choose PNG, JPG, or SVG file...</span>
+              </label>
+            </div>
+
+            <!-- Logo Status Indicator -->
+            <div class="flex items-center gap-2 pt-0.5">
+              <span id="logo-status-indicator" class="inline-flex items-center gap-1.5 text-xs text-[color:var(--muted)]">
+                <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                <span id="logo-status-text">Default academic crest emblem active</span>
+              </span>
+            </div>
           </div>
 
           <!-- Department / Faculty -->
@@ -459,7 +510,7 @@ const schemaGraph = [
             <input
               type="text"
               id="dept-input"
-              placeholder="e.g., Department of Computer Science & Engineering"
+              placeholder="e.g. Management Information Systems"
               class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3.5 py-2 text-sm text-[color:var(--fg)] transition focus:border-[color:var(--accent)] focus:outline-none"
             />
           </div>
@@ -479,7 +530,7 @@ const schemaGraph = [
             <textarea
               id="title-input"
               rows="2"
-              placeholder="e.g., Implementation & Performance Analysis of Distributed Graph Algorithms"
+              placeholder="e.g. Supply Chain Management"
               class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3.5 py-2 text-sm text-[color:var(--fg)] transition focus:border-[color:var(--accent)] focus:outline-none resize-none"
             ></textarea>
           </div>
@@ -491,7 +542,7 @@ const schemaGraph = [
             <input
               type="text"
               id="subtitle-input"
-              placeholder="e.g., Final Semester Capstone Project - Part 2"
+              placeholder="e.g. Final Term Comprehensive Project Report"
               class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3.5 py-2 text-sm text-[color:var(--fg)] transition focus:border-[color:var(--accent)] focus:outline-none"
             />
           </div>
@@ -502,7 +553,7 @@ const schemaGraph = [
               <input
                 type="text"
                 id="course-name-input"
-                placeholder="e.g., Data Structures & Algorithms"
+                placeholder="e.g. Management Information Systems"
                 class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3.5 py-2 text-sm text-[color:var(--fg)] transition focus:border-[color:var(--accent)] focus:outline-none"
               />
             </div>
@@ -511,7 +562,7 @@ const schemaGraph = [
               <input
                 type="text"
                 id="course-code-input"
-                placeholder="e.g., CSE-302"
+                placeholder="e.g. MIS 301"
                 class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3.5 py-2 text-sm text-[color:var(--fg)] transition focus:border-[color:var(--accent)] focus:outline-none"
               />
             </div>
@@ -528,7 +579,7 @@ const schemaGraph = [
             <button
               type="button"
               id="btn-add-student"
-              class="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-semibold rounded-lg bg-[color:var(--accent-soft)] text-[color:var(--accent)] hover:bg-[color:var(--accent)] hover:text-white transition cursor-pointer"
+              class="inline-flex items-center gap-1 px-3.5 py-1.5 text-xs font-bold rounded-lg bg-[color:var(--accent)] hover:bg-[color:var(--accent-hover)] text-white shadow-xs transition cursor-pointer"
             >
               <span>+ Add Group Member</span>
             </button>
@@ -550,7 +601,7 @@ const schemaGraph = [
                 <input
                   type="text"
                   id="teacher-name-input"
-                  placeholder="e.g., Dr. Sarah Jenkins"
+                  placeholder="e.g. Dr. Rahman"
                   class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3.5 py-2 text-sm text-[color:var(--fg)] transition focus:border-[color:var(--accent)] focus:outline-none"
                 />
               </div>
@@ -559,7 +610,7 @@ const schemaGraph = [
                 <input
                   type="text"
                   id="teacher-title-input"
-                  placeholder="e.g., Associate Professor"
+                  placeholder="e.g. Professor & Chairman"
                   class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3.5 py-2 text-sm text-[color:var(--fg)] transition focus:border-[color:var(--accent)] focus:outline-none"
                 />
               </div>
@@ -578,11 +629,12 @@ const schemaGraph = [
             <div class="space-y-1.5">
               <div class="flex items-center justify-between">
                 <label for="date-input" class="block text-xs font-semibold text-[color:var(--fg)]">Date of Submission</label>
-                <button type="button" id="btn-today-date" class="text-[11px] font-semibold text-[color:var(--accent)] hover:underline cursor-pointer">Set Today</button>
+                <button type="button" id="btn-today-date" class="text-[11px] font-bold text-[color:var(--accent)] dark:text-blue-400 hover:underline cursor-pointer">Set Today</button>
               </div>
               <input
                 type="text"
                 id="date-input"
+                placeholder="e.g. 15 October 2026"
                 class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3.5 py-2 text-sm text-[color:var(--fg)] transition focus:border-[color:var(--accent)] focus:outline-none"
               />
             </div>
@@ -592,24 +644,41 @@ const schemaGraph = [
               <input
                 type="text"
                 id="term-input"
-                placeholder="e.g., Fall Semester 2026"
+                placeholder="e.g. Fall Semester 2026"
                 class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3.5 py-2 text-sm text-[color:var(--fg)] transition focus:border-[color:var(--accent)] focus:outline-none"
               />
             </div>
           </div>
         </div>
 
-        <!-- GENERATE PDF BUTTON (Fixed at bottom of the form, non-floating) -->
-        <div class="pt-2 pb-1 space-y-2">
-          <button
-            type="button"
-            id="generate-pdf-btn"
-            class="w-full inline-flex items-center justify-center gap-2.5 rounded-2xl bg-[color:var(--accent)] hover:bg-[color:var(--accent-hover)] px-6 py-4 text-base font-bold text-white shadow-md shadow-[color:var(--accent-glow)] transition hover:shadow-lg cursor-pointer active:scale-[0.99]"
-          >
-            <Icon name="download" class="w-5 h-5" />
-            <span id="btn-pdf-text">Download Print-Ready A4 PDF</span>
-          </button>
-          <p class="text-center text-[11px] text-[color:var(--muted)]">Free high-resolution vector PDF • Zero watermarks • Standard A4 (210×297mm)</p>
+        <!-- GENERATE PDF & MERGE BUTTONS (Fixed at bottom of the form, non-floating) -->
+        <div class="pt-2 pb-1 space-y-3">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <button
+              type="button"
+              id="generate-pdf-btn"
+              class="w-full inline-flex items-center justify-center gap-2 rounded-2xl bg-[color:var(--accent)] hover:bg-[color:var(--accent-hover)] px-5 py-3.5 text-sm sm:text-base font-bold text-white shadow-md shadow-[color:var(--accent-glow)] transition hover:shadow-lg cursor-pointer active:scale-[0.99]"
+            >
+              <Icon name="download" class="w-5 h-5" />
+              <span id="btn-pdf-text">Download Print-Ready PDF</span>
+            </button>
+            <button
+              type="button"
+              id="btn-merge-assignment"
+              class="w-full inline-flex items-center justify-center gap-2 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white dark:bg-slate-800 dark:hover:bg-slate-700 border-2 border-slate-900 dark:border-slate-600 px-5 py-3.5 text-sm sm:text-base font-bold transition shadow-xs cursor-pointer active:scale-[0.99]"
+              title="Combine this cover page directly with your assignment PDF in PDF Merger"
+            >
+              <Icon name="layers" class="w-5 h-5 text-white" />
+              <span id="btn-merge-text">Merge with Assignment</span>
+            </button>
+          </div>
+          <div class="flex flex-col sm:flex-row items-center justify-between gap-1 text-[11px] text-[color:var(--muted)] px-1">
+            <span>Free vector PDF • Zero watermarks • Standard A4 (210×297mm)</span>
+            <a href={withBasePath('/pdf-tools/pdf-merger/')} class="font-semibold text-[color:var(--accent)] hover:underline inline-flex items-center gap-1">
+              <span>Go to PDF Merger</span>
+              <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </a>
+          </div>
         </div>
 
       </section>
@@ -759,8 +828,8 @@ const schemaGraph = [
     </section>
   </article>
 
-  <!-- Load local self-hosted html2pdf bundle for instant zero-latency client-side PDF export -->
-  <script is:inline src="/js/html2pdf.bundle.min.js"></script>
+  <!-- Load local self-hosted pdf-lib bundle for instant zero-latency client-side vector PDF compilation -->
+  <script is:inline src="/js/pdf-lib.min.js"></script>
 
   <!-- Assignment Cover Maker Client Logic & Template Engine -->
   <script is:inline>
@@ -768,30 +837,592 @@ const schemaGraph = [
       const appRoot = document.querySelector('[data-cover-maker-app]');
       if (!appRoot) return;
 
-      // Resilient PDF library getter (handles cached, local, and CDN fallback)
-      function getHtml2Pdf() {
-        if (typeof window.html2pdf === 'function') {
-          return Promise.resolve(window.html2pdf);
+      // Resilient PDFLib getter
+      function getPDFLib() {
+        if (typeof window.PDFLib !== 'undefined') {
+          return Promise.resolve(window.PDFLib);
         }
         return new Promise((resolve, reject) => {
           const s = document.createElement('script');
-          s.src = '/js/html2pdf.bundle.min.js';
+          s.src = '/js/pdf-lib.min.js';
           s.onload = () => {
-            if (typeof window.html2pdf === 'function') resolve(window.html2pdf);
-            else reject(new Error('html2pdf object not available after load'));
+            if (typeof window.PDFLib !== 'undefined') resolve(window.PDFLib);
+            else reject(new Error('PDFLib object not available after script load'));
           };
           s.onerror = () => {
-            // Secondary fallback to CDN
             const cdn = document.createElement('script');
-            cdn.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js';
+            cdn.src = 'https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js';
             cdn.onload = () => {
-              if (typeof window.html2pdf === 'function') resolve(window.html2pdf);
-              else reject(new Error('html2pdf object not available after CDN load'));
+              if (typeof window.PDFLib !== 'undefined') resolve(window.PDFLib);
+              else reject(new Error('PDFLib object not available after CDN load'));
             };
-            cdn.onerror = () => reject(new Error('Failed to load PDF export engine. Please check internet connection.'));
+            cdn.onerror = () => reject(new Error('Failed to load vector PDF library. Please check your internet connection.'));
             document.head.appendChild(cdn);
           };
           document.head.appendChild(s);
+        });
+      }
+
+      // ==========================================
+      // VECTOR PDF COMPILER (A4 595.28 x 841.89 pt)
+      // Real Selectable Text & Sharp Vector Primitives
+      // ==========================================
+      function hexToRgbColor(PDFLib, hex, fallback = { r: 0.1, g: 0.1, b: 0.1 }) {
+        if (!hex || typeof hex !== 'string') return PDFLib.rgb(fallback.r, fallback.g, fallback.b);
+        const cleaned = hex.replace('#', '');
+        if (cleaned.length === 6) {
+          const r = parseInt(cleaned.substring(0, 2), 16) / 255;
+          const g = parseInt(cleaned.substring(2, 4), 16) / 255;
+          const b = parseInt(cleaned.substring(4, 6), 16) / 255;
+          return PDFLib.rgb(r, g, b);
+        }
+        return PDFLib.rgb(fallback.r, fallback.g, fallback.b);
+      }
+
+      function wrapText(font, text, size, maxWidth) {
+        if (!text) return [];
+        const words = text.split(' ');
+        const lines = [];
+        let currentLine = words[0] || '';
+        for (let i = 1; i < words.length; i++) {
+          const testLine = currentLine + ' ' + words[i];
+          const width = font.widthOfTextAtSize(testLine, size);
+          if (width <= maxWidth) {
+            currentLine = testLine;
+          } else {
+            lines.push(currentLine);
+            currentLine = words[i];
+          }
+        }
+        if (currentLine) lines.push(currentLine);
+        return lines;
+      }
+
+      function drawCenteredText(page, font, text, y, size, color, maxWidth = 500) {
+        if (!text) return y;
+        const lines = wrapText(font, text, size, maxWidth);
+        const lineHeight = size * 1.35;
+        let currentY = y;
+        for (const line of lines) {
+          const width = font.widthOfTextAtSize(line, size);
+          page.drawText(line, {
+            x: (595.28 - width) / 2,
+            y: currentY,
+            size,
+            font,
+            color
+          });
+          currentY -= lineHeight;
+        }
+        return currentY;
+      }
+
+      function drawLeftText(page, font, text, x, y, size, color, maxWidth = 400) {
+        if (!text) return y;
+        const lines = wrapText(font, text, size, maxWidth);
+        const lineHeight = size * 1.35;
+        let currentY = y;
+        for (const line of lines) {
+          page.drawText(line, {
+            x,
+            y: currentY,
+            size,
+            font,
+            color
+          });
+          currentY -= lineHeight;
+        }
+        return currentY;
+      }
+
+      function drawRightText(page, font, text, rightX, y, size, color) {
+        if (!text) return;
+        const width = font.widthOfTextAtSize(text, size);
+        page.drawText(text, {
+          x: rightX - width,
+          y,
+          size,
+          font,
+          color
+        });
+      }
+
+      async function renderVectorCoverPdf(PDFLib, state, theme, logoPngBytes = null) {
+        const pdfDoc = await PDFLib.PDFDocument.create();
+        const page = pdfDoc.addPage([595.28, 841.89]); // Standard A4 in points
+        const W = 595.28;
+        const H = 841.89;
+
+        const fontSerif = await pdfDoc.embedFont(PDFLib.StandardFonts.TimesRoman);
+        const fontSerifBold = await pdfDoc.embedFont(PDFLib.StandardFonts.TimesRomanBold);
+        const fontSerifItalic = await pdfDoc.embedFont(PDFLib.StandardFonts.TimesRomanItalic);
+        const fontSans = await pdfDoc.embedFont(PDFLib.StandardFonts.Helvetica);
+        const fontSansBold = await pdfDoc.embedFont(PDFLib.StandardFonts.HelveticaBold);
+
+        const colPrimary = hexToRgbColor(PDFLib, theme.primary, { r: 0.06, g: 0.09, b: 0.16 });
+        const colSecondary = hexToRgbColor(PDFLib, theme.secondary, { r: 0.2, g: 0.25, b: 0.35 });
+        const colSoft = hexToRgbColor(PDFLib, theme.soft, { r: 0.97, g: 0.98, b: 0.99 });
+        const colBorder = hexToRgbColor(PDFLib, theme.border, { r: 0.8, g: 0.83, b: 0.88 });
+        const colMuted = PDFLib.rgb(0.4, 0.45, 0.5);
+        const colDark = PDFLib.rgb(0.06, 0.09, 0.16);
+        const colWhite = PDFLib.rgb(1, 1, 1);
+
+        let embeddedLogo = null;
+        if (logoPngBytes && state.logoMode !== 'none') {
+          try {
+            embeddedLogo = await pdfDoc.embedPng(logoPngBytes);
+          } catch (e) {
+            console.warn('Could not embed PNG logo:', e);
+          }
+        }
+
+        const s = state;
+        const instText = (s.institution || 'INSTITUTION NAME').toUpperCase();
+        const deptText = s.department || 'Department / Faculty';
+        const titleText = s.title || 'Assignment Title';
+        const subtitleText = s.subtitle || '';
+        const courseCodeText = s.courseCode || '';
+        const courseNameText = s.courseName || 'Course Name';
+        const teacherNameText = s.teacherName || 'Instructor Name';
+        const teacherTitleText = s.teacherTitle || 'Designation';
+        const dateText = s.date ? `Date of Submission: ${s.date}` : '';
+        const termText = s.term || '';
+
+        const template = s.template || 'classic';
+
+        if (template === 'modern') {
+          // 2. MODERN MINIMAL TEMPLATE
+          const topY = H - 55;
+          const maxLogoW = 110;
+          const maxLogoH = 50;
+
+          if (embeddedLogo) {
+            const aspect = embeddedLogo.width / embeddedLogo.height;
+            let actualLogoW = maxLogoW;
+            let actualLogoH = maxLogoW / aspect;
+            if (actualLogoH > maxLogoH) {
+              actualLogoH = maxLogoH;
+              actualLogoW = maxLogoH * aspect;
+            }
+            page.drawImage(embeddedLogo, {
+              x: W - 55 - actualLogoW,
+              y: topY - actualLogoH,
+              width: actualLogoW,
+              height: actualLogoH
+            });
+          }
+
+          page.drawText(instText, { x: 55, y: topY - 14, size: 14, font: fontSansBold, color: colPrimary });
+          page.drawText(deptText, { x: 55, y: topY - 30, size: 10, font: fontSans, color: colMuted });
+
+          const lineY = topY - 62;
+          page.drawLine({ start: { x: 55, y: lineY }, end: { x: W - 55, y: lineY }, thickness: 2, color: colPrimary });
+
+          const titleStartY = lineY - 80;
+          if (courseCodeText) {
+            const codeWidth = fontSansBold.widthOfTextAtSize(courseCodeText, 9.5);
+            page.drawRectangle({
+              x: 55,
+              y: titleStartY,
+              width: codeWidth + 18,
+              height: 20,
+              color: colSoft,
+              borderColor: colBorder,
+              borderWidth: 1
+            });
+            page.drawText(courseCodeText, { x: 64, y: titleStartY + 6, size: 9.5, font: fontSansBold, color: colPrimary });
+          }
+
+          let tY = titleStartY - 28;
+          tY = drawLeftText(page, fontSansBold, titleText, 55, tY, 26, colDark, 480);
+          if (subtitleText) {
+            tY -= 4;
+            tY = drawLeftText(page, fontSans, subtitleText, 55, tY, 12, colMuted, 480);
+          }
+
+          const courseBlockY = tY - 35;
+          page.drawLine({ start: { x: 55, y: courseBlockY + 28 }, end: { x: 55, y: courseBlockY - 8 }, thickness: 3.5, color: colPrimary });
+          page.drawText('COURSE', { x: 68, y: courseBlockY + 16, size: 8, font: fontSansBold, color: colMuted });
+          page.drawText(courseNameText, { x: 68, y: courseBlockY, size: 13, font: fontSansBold, color: colDark });
+
+          const botLineY = 210;
+          page.drawLine({ start: { x: 55, y: botLineY }, end: { x: W - 55, y: botLineY }, thickness: 1, color: colBorder });
+
+          let prepY = botLineY - 22;
+          page.drawText('PREPARED BY', { x: 55, y: prepY, size: 9, font: fontSansBold, color: colPrimary });
+          prepY -= 18;
+          for (const st of s.students) {
+            page.drawText(st.name || 'Student Name', { x: 55, y: prepY, size: 11, font: fontSansBold, color: colDark });
+            prepY -= 14;
+            if (st.id) {
+              page.drawText(`ID: ${st.id}`, { x: 55, y: prepY, size: 9.5, font: fontSans, color: colMuted });
+              prepY -= 13;
+            }
+            if (st.section) {
+              page.drawText(st.section, { x: 55, y: prepY, size: 9, font: fontSans, color: colMuted });
+              prepY -= 13;
+            }
+            prepY -= 4;
+          }
+
+          const supX = W / 2 + 25;
+          let supY = botLineY - 22;
+          page.drawText('SUPERVISED BY', { x: supX, y: supY, size: 9, font: fontSansBold, color: colPrimary });
+          supY -= 18;
+          page.drawText(teacherNameText, { x: supX, y: supY, size: 11, font: fontSansBold, color: colDark });
+          supY -= 14;
+          page.drawText(teacherTitleText, { x: supX, y: supY, size: 9.5, font: fontSans, color: colMuted });
+          supY -= 13;
+          if (deptText) {
+            page.drawText(deptText, { x: supX, y: supY, size: 9, font: fontSans, color: colMuted });
+          }
+
+          page.drawLine({ start: { x: 55, y: 70 }, end: { x: W - 55, y: 70 }, thickness: 0.5, color: colBorder });
+          page.drawText(s.date || '', { x: 55, y: 55, size: 9, font: fontSans, color: colMuted });
+          if (termText) {
+            drawRightText(page, fontSans, termText, W - 55, 55, 9, colMuted);
+          }
+
+        } else if (template === 'professional') {
+          // 3. PROFESSIONAL CARD GRID TEMPLATE
+          page.drawRectangle({
+            x: 50,
+            y: H - 125,
+            width: W - 100,
+            height: 75,
+            color: colSoft,
+            borderColor: colBorder,
+            borderWidth: 1
+          });
+
+          page.drawText(instText, { x: 70, y: H - 82, size: 13, font: fontSansBold, color: colPrimary });
+          page.drawText(deptText, { x: 70, y: H - 102, size: 10, font: fontSans, color: colMuted });
+
+          if (embeddedLogo) {
+            const maxLogoW = 90;
+            const maxLogoH = 50;
+            const aspect = embeddedLogo.width / embeddedLogo.height;
+            let logoW = maxLogoW;
+            let logoH = maxLogoW / aspect;
+            if (logoH > maxLogoH) {
+              logoH = maxLogoH;
+              logoW = maxLogoH * aspect;
+            }
+            page.drawImage(embeddedLogo, {
+              x: W - 70 - logoW,
+              y: H - 87 - (logoH / 2),
+              width: logoW,
+              height: logoH
+            });
+          }
+
+          const badgeText = 'ACADEMIC SUBMISSION REPORT';
+          const bWidth = fontSansBold.widthOfTextAtSize(badgeText, 8.5);
+          page.drawRectangle({
+            x: (W - bWidth - 24) / 2,
+            y: 520,
+            width: bWidth + 24,
+            height: 22,
+            color: colPrimary
+          });
+          page.drawText(badgeText, { x: (W - bWidth) / 2, y: 527, size: 8.5, font: fontSansBold, color: colWhite });
+
+          let tY = drawCenteredText(page, fontSansBold, titleText, 480, 24, colDark, 440);
+          if (subtitleText) {
+            tY -= 4;
+            tY = drawCenteredText(page, fontSans, subtitleText, tY, 11, colMuted, 420);
+          }
+
+          const coursePill = courseCodeText ? `${courseCodeText}   •   ${courseNameText}` : courseNameText;
+          const cpWidth = fontSans.widthOfTextAtSize(coursePill, 10.5);
+          page.drawRectangle({
+            x: (W - cpWidth - 32) / 2,
+            y: tY - 30,
+            width: cpWidth + 32,
+            height: 26,
+            color: PDFLib.rgb(0.95, 0.96, 0.98),
+            borderColor: colBorder,
+            borderWidth: 1
+          });
+          page.drawText(coursePill, { x: (W - cpWidth) / 2, y: tY - 22, size: 10.5, font: fontSansBold, color: colPrimary });
+
+          const boxW = (W - 120) / 2;
+          const boxH = 140;
+          const boxY = 150;
+
+          // Student Box
+          page.drawRectangle({ x: 50, y: boxY, width: boxW, height: boxH, color: colWhite, borderColor: colBorder, borderWidth: 1 });
+          page.drawText('STUDENT DETAILS', { x: 65, y: boxY + boxH - 22, size: 9, font: fontSansBold, color: colPrimary });
+          page.drawLine({ start: { x: 65, y: boxY + boxH - 28 }, end: { x: 50 + boxW - 15, y: boxY + boxH - 28 }, thickness: 0.5, color: colBorder });
+          let sY = boxY + boxH - 46;
+          for (const st of s.students.slice(0, 4)) {
+            page.drawText(st.name || 'Student Name', { x: 65, y: sY, size: 10.5, font: fontSansBold, color: colDark });
+            if (st.id) {
+              drawRightText(page, fontSans, st.id, 50 + boxW - 15, sY, 9.5, colSecondary);
+            }
+            sY -= 18;
+          }
+
+          // Instructor Box
+          const insX = 50 + boxW + 20;
+          page.drawRectangle({ x: insX, y: boxY, width: boxW, height: boxH, color: colWhite, borderColor: colBorder, borderWidth: 1 });
+          page.drawText('EVALUATED BY', { x: insX + 15, y: boxY + boxH - 22, size: 9, font: fontSansBold, color: colPrimary });
+          page.drawLine({ start: { x: insX + 15, y: boxY + boxH - 28 }, end: { x: insX + boxW - 15, y: boxY + boxH - 28 }, thickness: 0.5, color: colBorder });
+          page.drawText(teacherNameText, { x: insX + 15, y: boxY + boxH - 46, size: 11, font: fontSansBold, color: colDark });
+          page.drawText(teacherTitleText, { x: insX + 15, y: boxY + boxH - 62, size: 9.5, font: fontSans, color: colSecondary });
+          if (deptText) {
+            page.drawText(deptText, { x: insX + 15, y: boxY + boxH - 77, size: 9, font: fontSans, color: colMuted });
+          }
+
+          // Bottom Date Card
+          page.drawRectangle({ x: 50, y: 90, width: W - 100, height: 35, color: colSoft, borderColor: colBorder, borderWidth: 1 });
+          page.drawText(`Date: ${s.date || ''}`, { x: 70, y: 103, size: 9.5, font: fontSansBold, color: colDark });
+          if (termText) {
+            drawRightText(page, fontSans, termText, W - 70, 103, 9.5, colSecondary);
+          }
+
+        } else if (template === 'elegant') {
+          // 4. ELEGANT ORNAMENTAL FRAME TEMPLATE
+          page.drawRectangle({ x: 28, y: 28, width: W - 56, height: H - 56, borderColor: colPrimary, borderWidth: 2 });
+          page.drawRectangle({ x: 36, y: 36, width: W - 72, height: H - 72, borderColor: colBorder, borderWidth: 0.75 });
+
+          let curY = H - 85;
+          if (embeddedLogo) {
+            const maxLogoW = 110;
+            const maxLogoH = 55;
+            const aspect = embeddedLogo.width / embeddedLogo.height;
+            let logoW = maxLogoW;
+            let logoH = maxLogoW / aspect;
+            if (logoH > maxLogoH) {
+              logoH = maxLogoH;
+              logoW = maxLogoH * aspect;
+            }
+            page.drawImage(embeddedLogo, { x: (W - logoW) / 2, y: curY - logoH, width: logoW, height: logoH });
+            curY -= (logoH + 20);
+          } else {
+            curY -= 15;
+          }
+
+          curY = drawCenteredText(page, fontSerifBold, instText, curY, 17, colPrimary, 440);
+          curY -= 4;
+          curY = drawCenteredText(page, fontSerifItalic, deptText, curY, 11, colSecondary, 400);
+
+          drawCenteredText(page, fontSerif, '+   *   +', 490, 14, colBorder);
+          let titleY = drawCenteredText(page, fontSerifBold, titleText, 450, 24, colDark, 420);
+          if (subtitleText) {
+            titleY -= 4;
+            titleY = drawCenteredText(page, fontSerifItalic, subtitleText, titleY, 11, colMuted, 380);
+          }
+
+          drawCenteredText(page, fontSerif, 'In Fulfillment of the Course', titleY - 25, 9.5, colMuted);
+          const fullCourse = courseCodeText ? `${courseCodeText} — ${courseNameText}` : courseNameText;
+          drawCenteredText(page, fontSerifBold, fullCourse, titleY - 42, 13, colPrimary);
+
+          page.drawLine({ start: { x: 120, y: 210 }, end: { x: W - 120, y: 210 }, thickness: 0.5, color: colBorder });
+          page.drawLine({ start: { x: 120, y: 115 }, end: { x: W - 120, y: 115 }, thickness: 0.5, color: colBorder });
+          page.drawLine({ start: { x: W / 2, y: 205 }, end: { x: W / 2, y: 120 }, thickness: 0.5, color: colBorder });
+
+          drawCenteredText(page, fontSerifBold, 'SUBMITTED TO', 195, 8.5, colSecondary);
+          drawCenteredText(page, fontSerifBold, teacherNameText, 175, 11, colDark);
+          drawCenteredText(page, fontSerif, teacherTitleText, 160, 9.5, colMuted);
+
+          const st0 = s.students[0] || { name: 'Student Name', id: '' };
+          drawCenteredText(page, fontSerifBold, 'SUBMITTED BY', 195, 8.5, colSecondary);
+          drawCenteredText(page, fontSerifBold, st0.name || 'Student Name', 175, 11, colDark);
+          if (st0.id) {
+            drawCenteredText(page, fontSerif, `Roll/ID: ${st0.id}`, 160, 9.5, colMuted);
+          }
+
+          const footerText = termText ? `${s.date || ''}   •   ${termText}` : (s.date || '');
+          drawCenteredText(page, fontSerif, footerText, 70, 9, colMuted);
+
+        } else if (template === 'bold') {
+          // 5. BOLD ACADEMIC BANNER TEMPLATE
+          const bannerH = 95;
+          page.drawRectangle({ x: 0, y: H - bannerH, width: W, height: bannerH, color: colPrimary });
+
+          page.drawText('OFFICIAL ACADEMIC SUBMISSION', { x: 50, y: H - 35, size: 8, font: fontSansBold, color: PDFLib.rgb(0.8, 0.85, 0.95) });
+          page.drawText(instText, { x: 50, y: H - 56, size: 16, font: fontSansBold, color: colWhite });
+          page.drawText(deptText, { x: 50, y: H - 74, size: 10, font: fontSans, color: PDFLib.rgb(0.9, 0.92, 0.96) });
+
+          if (embeddedLogo) {
+            const logoBoxW = 75;
+            const logoBoxH = 65;
+            page.drawRectangle({ x: W - 50 - logoBoxW, y: H - bannerH + 15, width: logoBoxW, height: logoBoxH, color: colWhite });
+            const aspect = embeddedLogo.width / embeddedLogo.height;
+            let logoW = logoBoxW - 16;
+            let logoH = (logoBoxW - 16) / aspect;
+            if (logoH > logoBoxH - 16) {
+              logoH = logoBoxH - 16;
+              logoW = (logoBoxH - 16) * aspect;
+            }
+            page.drawImage(embeddedLogo, {
+              x: W - 50 - logoBoxW + (logoBoxW - logoW) / 2,
+              y: H - bannerH + 15 + (logoBoxH - logoH) / 2,
+              width: logoW,
+              height: logoH
+            });
+          }
+
+          const midY = 480;
+          page.drawLine({ start: { x: 50, y: midY + 50 }, end: { x: 50, y: midY - 60 }, thickness: 6, color: colPrimary });
+
+          if (courseCodeText) {
+            const codeWidth = fontSansBold.widthOfTextAtSize(courseCodeText, 9.5);
+            page.drawRectangle({ x: 68, y: midY + 40, width: codeWidth + 16, height: 20, color: colDark });
+            page.drawText(courseCodeText, { x: 76, y: midY + 46, size: 9.5, font: fontSansBold, color: colWhite });
+          }
+
+          let tY = midY + 15;
+          tY = drawLeftText(page, fontSansBold, titleText, 68, tY, 26, colDark, 460);
+          if (subtitleText) {
+            tY -= 4;
+            tY = drawLeftText(page, fontSans, subtitleText, 68, tY, 12, colMuted, 440);
+          }
+          page.drawText(courseNameText, { x: 68, y: tY - 20, size: 13, font: fontSansBold, color: colSecondary });
+
+          const botLineY = 200;
+          page.drawLine({ start: { x: 50, y: botLineY }, end: { x: W - 50, y: botLineY }, thickness: 2, color: colDark });
+
+          page.drawText('PRESENTED BY', { x: 50, y: botLineY - 20, size: 9, font: fontSansBold, color: colPrimary });
+          let stY = botLineY - 38;
+          for (const st of s.students) {
+            page.drawText(st.name || 'Student Name', { x: 50, y: stY, size: 11, font: fontSansBold, color: colDark });
+            stY -= 14;
+            if (st.id) {
+              page.drawText(`ID: ${st.id}`, { x: 50, y: stY, size: 9.5, font: fontSans, color: colMuted });
+              stY -= 13;
+            }
+            stY -= 4;
+          }
+
+          const supX = W / 2 + 30;
+          page.drawText('SUBMITTED TO', { x: supX, y: botLineY - 20, size: 9, font: fontSansBold, color: colPrimary });
+          page.drawText(teacherNameText, { x: supX, y: botLineY - 38, size: 11, font: fontSansBold, color: colDark });
+          page.drawText(teacherTitleText, { x: supX, y: botLineY - 52, size: 9.5, font: fontSans, color: colMuted });
+
+          page.drawRectangle({ x: 0, y: 0, width: W, height: 42, color: PDFLib.rgb(0.94, 0.95, 0.97) });
+          page.drawText(`Date: ${s.date || ''}`, { x: 50, y: 17, size: 9.5, font: fontSansBold, color: colDark });
+          if (termText) {
+            drawRightText(page, fontSansBold, termText, W - 50, 17, 9.5, colSecondary);
+          }
+
+        } else {
+          // 1. CLASSIC ACADEMIC TEMPLATE (Default)
+          let curY = H - 65;
+          if (embeddedLogo) {
+            const maxLogoW = 120;
+            const maxLogoH = 60;
+            const aspect = embeddedLogo.width / embeddedLogo.height;
+            let logoW = maxLogoW;
+            let logoH = maxLogoW / aspect;
+            if (logoH > maxLogoH) {
+              logoH = maxLogoH;
+              logoW = maxLogoH * aspect;
+            }
+            page.drawImage(embeddedLogo, { x: (W - logoW) / 2, y: curY - logoH, width: logoW, height: logoH });
+            curY -= (logoH + 20);
+          } else {
+            curY -= 15;
+          }
+
+          curY = drawCenteredText(page, fontSerifBold, instText, curY, 18, colPrimary, 480);
+          curY -= 6;
+          curY = drawCenteredText(page, fontSerif, deptText, curY, 11, colSecondary, 450);
+
+          page.drawLine({ start: { x: W / 2 - 120, y: curY - 10 }, end: { x: W / 2 + 120, y: curY - 10 }, thickness: 1, color: colBorder });
+
+          const midBoxY = 475;
+          page.drawLine({ start: { x: 75, y: midBoxY + 50 }, end: { x: W - 75, y: midBoxY + 50 }, thickness: 2, color: colPrimary });
+          drawCenteredText(page, fontSansBold, 'ASSIGNMENT REPORT', midBoxY + 32, 9, colSecondary);
+
+          let titleY = drawCenteredText(page, fontSerifBold, titleText, midBoxY + 12, 22, colDark, 420);
+          if (subtitleText) {
+            titleY -= 4;
+            titleY = drawCenteredText(page, fontSerifItalic, subtitleText, titleY, 11, colMuted, 400);
+          }
+
+          page.drawLine({ start: { x: 75, y: midBoxY - 55 }, end: { x: W - 75, y: midBoxY - 55 }, thickness: 2, color: colPrimary });
+
+          const courseY = midBoxY - 85;
+          drawCenteredText(page, fontSansBold, 'COURSE DETAILS', courseY, 8, colMuted);
+          const fullCourseText = courseCodeText ? `${courseCodeText}: ${courseNameText}` : courseNameText;
+          drawCenteredText(page, fontSerifBold, fullCourseText, courseY - 16, 14, colPrimary, 460);
+
+          const metaTopY = 220;
+          page.drawLine({ start: { x: 75, y: metaTopY }, end: { x: W - 75, y: metaTopY }, thickness: 1, color: colBorder });
+
+          const leftX = 75;
+          let leftY = metaTopY - 20;
+          page.drawText('SUBMITTED TO', { x: leftX, y: leftY, size: 9, font: fontSansBold, color: colSecondary });
+          page.drawLine({ start: { x: leftX, y: leftY - 4 }, end: { x: leftX + 180, y: leftY - 4 }, thickness: 0.5, color: colBorder });
+          leftY -= 20;
+          leftY = drawLeftText(page, fontSerifBold, teacherNameText, leftX, leftY, 12, colDark);
+          leftY -= 2;
+          leftY = drawLeftText(page, fontSerif, teacherTitleText, leftX, leftY, 10, colSecondary);
+          if (deptText) {
+            leftY -= 2;
+            drawLeftText(page, fontSerif, deptText, leftX, leftY, 9, colMuted, 200);
+          }
+
+          const rightX = W - 75;
+          let rightY = metaTopY - 20;
+          drawRightText(page, fontSansBold, 'SUBMITTED BY', rightX, rightY, 9, colSecondary);
+          page.drawLine({ start: { x: rightX - 180, y: rightY - 4 }, end: { x: rightX, y: rightY - 4 }, thickness: 0.5, color: colBorder });
+          rightY -= 20;
+
+          for (const st of s.students) {
+            const sName = st.name || 'Student Name';
+            const sId = st.id ? `ID: ${st.id}` : '';
+            const sSec = st.section ? st.section : '';
+            drawRightText(page, fontSerifBold, sName, rightX, rightY, 11, colDark);
+            rightY -= 14;
+            if (sId) {
+              drawRightText(page, fontSerif, sId, rightX, rightY, 9.5, colSecondary);
+              rightY -= 13;
+            }
+            if (sSec) {
+              drawRightText(page, fontSerif, sSec, rightX, rightY, 9, colMuted);
+              rightY -= 13;
+            }
+            rightY -= 4;
+          }
+
+          const footerText = termText ? `${dateText}   •   ${termText}` : dateText;
+          drawCenteredText(page, fontSerif, footerText, 60, 9.5, colMuted);
+        }
+
+        return await pdfDoc.save();
+      }
+
+      async function getLogoPngBytes(source) {
+        if (!source) return null;
+        return new Promise((resolve) => {
+          const img = new Image();
+          img.crossOrigin = 'anonymous';
+          img.onload = () => {
+            try {
+              const canvas = document.createElement('canvas');
+              canvas.width = img.naturalWidth || img.width || 200;
+              canvas.height = img.naturalHeight || img.height || 200;
+              const ctx = canvas.getContext('2d');
+              ctx.drawImage(img, 0, 0);
+              canvas.toBlob((blob) => {
+                if (!blob) { resolve(null); return; }
+                const reader = new FileReader();
+                reader.onloadend = () => {
+                  const arr = new Uint8Array(reader.result);
+                  resolve(arr);
+                };
+                reader.onerror = () => resolve(null);
+                reader.readAsArrayBuffer(blob);
+              }, 'image/png');
+            } catch (e) {
+              resolve(null);
+            }
+          };
+          img.onerror = () => resolve(null);
+          img.src = source;
         });
       }
 
@@ -862,26 +1493,28 @@ const schemaGraph = [
         }
       };
 
-      // Application State
+      // Application State - Clean Initial Form (Empty Defaults)
       const state = {
         template: 'classic', // classic | modern | professional | elegant | bold
         theme: 'classic',
-        institution: 'University of Dhaka',
-        slug: 'university-of-dhaka',
-        logoUrl: `${CDN_URL}/university-of-dhaka.webp?v=${LOGO_VERSION}`,
+        logoMode: 'stored', // 'stored' | 'custom' | 'emblem' | 'none'
+        institution: '',
+        activeStoredName: '',
+        slug: '',
+        logoUrl: '',
         logoBase64: null,
-        hasCustomLogo: false,
-        department: 'Department of Computer Science & Engineering',
-        title: 'Design and Analysis of Scalable Cloud Microservices',
-        subtitle: 'Final Term Comprehensive Project Report',
-        courseName: 'Distributed Systems & Cloud Computing',
-        courseCode: 'CSE-4101',
-        teacherName: 'Dr. Sarah Rahman',
-        teacherTitle: 'Professor & Head of Department',
-        date: formatDate(new Date()),
-        term: 'Fall Semester 2026',
+        customLogoBase64: null,
+        department: '',
+        title: '',
+        subtitle: '',
+        courseName: '',
+        courseCode: '',
+        teacherName: '',
+        teacherTitle: '',
+        date: '',
+        term: '',
         students: [
-          { name: 'Tanvir Ahmed', id: '2026-08149', section: 'Section A' }
+          { name: '', id: '', section: '' }
         ]
       };
 
@@ -890,7 +1523,10 @@ const schemaGraph = [
       const btnClearInst = document.getElementById('btn-clear-inst');
       const instResults = document.getElementById('inst-results');
       const customLogoInput = document.getElementById('custom-logo-file');
+      const customLogoPrompt = document.getElementById('custom-logo-prompt');
+      const customLogoFilename = document.getElementById('custom-logo-filename');
       const logoStatusIndicator = document.getElementById('logo-status-indicator');
+      const logoStatusText = document.getElementById('logo-status-text');
       const deptInput = document.getElementById('dept-input');
       const titleInput = document.getElementById('title-input');
       const subtitleInput = document.getElementById('subtitle-input');
@@ -908,6 +1544,9 @@ const schemaGraph = [
       const previewModeTag = document.getElementById('preview-mode-tag');
       const templateLabel = document.getElementById('current-template-label');
       const themeLabel = document.getElementById('current-theme-label');
+      const btnSampleData = document.getElementById('btn-sample-data');
+      const btnMergeAssignment = document.getElementById('btn-merge-assignment');
+      const btnMergeText = document.getElementById('btn-merge-text');
 
       let institutionsDb = null;
       let isFetchingDb = false;
@@ -931,7 +1570,7 @@ const schemaGraph = [
 
       window.addEventListener('resize', updateViewportScale);
 
-      // Convert remote image to base64 data URL for zero-CORS canvas safety
+      // Convert remote image to base64 data URL for zero-CORS safety
       async function cacheLogoAsBase64(url) {
         if (!url) return null;
         if (url.startsWith('data:')) return url;
@@ -973,19 +1612,19 @@ const schemaGraph = [
           row.innerHTML = `
             <div class="sm:col-span-5 space-y-1">
               <label class="block text-[10px] font-bold text-[color:var(--muted)] uppercase tracking-wider">Student ${index + 1} Name</label>
-              <input type="text" data-idx="${index}" data-field="name" class="w-full rounded-lg border border-[color:var(--border)] bg-[color:var(--bg)] px-2.5 py-1.5 text-xs text-[color:var(--fg)] focus:outline-none" placeholder="Student Name" value="${escapeHtml(student.name)}" />
+              <input type="text" data-idx="${index}" data-field="name" class="w-full rounded-lg border border-[color:var(--border)] bg-[color:var(--bg)] px-2.5 py-1.5 text-xs text-[color:var(--fg)] focus:outline-none" placeholder="e.g. Tanvir Islam" value="${escapeHtml(student.name)}" />
             </div>
             <div class="sm:col-span-4 space-y-1">
               <label class="block text-[10px] font-bold text-[color:var(--muted)] uppercase tracking-wider">Student ID</label>
-              <input type="text" data-idx="${index}" data-field="id" class="w-full rounded-lg border border-[color:var(--border)] bg-[color:var(--bg)] px-2.5 py-1.5 text-xs text-[color:var(--fg)] focus:outline-none" placeholder="ID / Roll" value="${escapeHtml(student.id)}" />
+              <input type="text" data-idx="${index}" data-field="id" class="w-full rounded-lg border border-[color:var(--border)] bg-[color:var(--bg)] px-2.5 py-1.5 text-xs text-[color:var(--fg)] focus:outline-none" placeholder="e.g. 2022515229" value="${escapeHtml(student.id)}" />
             </div>
             <div class="sm:col-span-3 space-y-1 flex items-end gap-1">
               <div class="w-full">
                 <label class="block text-[10px] font-bold text-[color:var(--muted)] uppercase tracking-wider">Section / Batch</label>
-                <input type="text" data-idx="${index}" data-field="section" class="w-full rounded-lg border border-[color:var(--border)] bg-[color:var(--bg)] px-2.5 py-1.5 text-xs text-[color:var(--fg)] focus:outline-none" placeholder="Sec / Batch" value="${escapeHtml(student.section)}" />
+                <input type="text" data-idx="${index}" data-field="section" class="w-full rounded-lg border border-[color:var(--border)] bg-[color:var(--bg)] px-2.5 py-1.5 text-xs text-[color:var(--fg)] focus:outline-none" placeholder="e.g. Section A" value="${escapeHtml(student.section)}" />
               </div>
               ${state.students.length > 1 ? `
-                <button type="button" data-remove-idx="${index}" class="p-1.5 text-rose-500 hover:bg-rose-50 rounded-lg cursor-pointer transition mb-0.5" title="Remove member">
+                <button type="button" data-remove-idx="${index}" class="p-1.5 text-rose-600 dark:text-rose-400 hover:bg-rose-100 dark:hover:bg-rose-950/60 rounded-lg cursor-pointer transition mb-0.5" title="Remove member">
                   <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
                 </button>
               ` : ''}
@@ -1040,17 +1679,50 @@ const schemaGraph = [
         `;
       }
 
-      // Render Logo Component with zero-CORS DataURL preference
+      // Render Logo Component with 4 Explicit Modes
       function renderLogoHtml(extraClass = '', sizeClass = 'max-h-24 max-w-[200px]') {
         const activeTheme = THEMES[state.theme] || THEMES.classic;
-        const effectiveSrc = state.logoBase64 || state.logoUrl;
 
+        if (state.logoMode === 'none') {
+          return '';
+        }
+
+        if (state.logoMode === 'emblem') {
+          return `
+            <div class="cover-logo-box flex items-center justify-center ${extraClass}">
+              ${getEmblemSvg(activeTheme.primary)}
+            </div>
+          `;
+        }
+
+        if (state.logoMode === 'custom') {
+          if (state.customLogoBase64) {
+            return `
+              <div class="cover-logo-box flex items-center justify-center ${extraClass}">
+                <img
+                  src="${escapeHtml(state.customLogoBase64)}"
+                  alt="Custom Logo"
+                  class="${sizeClass} object-contain"
+                  onerror="this.parentElement.innerHTML = '${escapeHtml(getEmblemSvg(activeTheme.primary)).replace(/"/g, "'")}'"
+                />
+              </div>
+            `;
+          }
+          return `
+            <div class="cover-logo-box flex items-center justify-center ${extraClass}">
+              ${getEmblemSvg(activeTheme.primary)}
+            </div>
+          `;
+        }
+
+        // 'stored' mode:
+        const effectiveSrc = state.logoBase64 || state.logoUrl;
         if (effectiveSrc) {
           return `
             <div class="cover-logo-box flex items-center justify-center ${extraClass}">
               <img
                 src="${escapeHtml(effectiveSrc)}"
-                alt="${escapeHtml(state.institution)} Logo"
+                alt="${escapeHtml(state.institution || 'Institution')} Logo"
                 crossorigin="anonymous"
                 class="${sizeClass} object-contain"
                 onerror="this.parentElement.innerHTML = '${escapeHtml(getEmblemSvg(activeTheme.primary)).replace(/"/g, "'")}'"
@@ -1058,6 +1730,7 @@ const schemaGraph = [
             </div>
           `;
         }
+
         return `
           <div class="cover-logo-box flex items-center justify-center ${extraClass}">
             ${getEmblemSvg(activeTheme.primary)}
@@ -1132,7 +1805,7 @@ const schemaGraph = [
             <!-- Footer: Date & Term -->
             <div class="text-center pt-3">
               <p class="text-xs font-serif text-slate-600">
-                <span>Date of Submission: <strong class="text-slate-900 font-bold">${escapeHtml(s.date)}</strong></span>
+                <span>Date of Submission: <strong class="text-slate-900 font-bold">${escapeHtml(s.date || 'Submission Date')}</strong></span>
                 ${s.term ? `<span class="mx-2">•</span><span>${escapeHtml(s.term)}</span>` : ''}
               </p>
             </div>
@@ -1203,7 +1876,7 @@ const schemaGraph = [
             </div>
 
             <div class="flex justify-between items-center text-xs text-slate-500 border-t border-slate-100 pt-3 font-mono">
-              <span>Date: ${escapeHtml(s.date)}</span>
+              <span>Date: ${escapeHtml(s.date || 'Submission Date')}</span>
               <span>${escapeHtml(s.term)}</span>
             </div>
           </div>
@@ -1271,7 +1944,7 @@ const schemaGraph = [
 
             <!-- Bottom Row -->
             <div class="rounded-xl bg-[var(--cov-soft)] px-6 py-3 flex justify-between items-center text-xs text-slate-700 font-medium border border-[var(--cov-border)]">
-              <span>Date: <strong>${escapeHtml(s.date)}</strong></span>
+              <span>Date: <strong>${escapeHtml(s.date || 'Submission Date')}</strong></span>
               <span>${escapeHtml(s.term)}</span>
             </div>
           </div>
@@ -1337,7 +2010,7 @@ const schemaGraph = [
             </div>
 
             <p class="text-xs font-serif text-slate-500 tracking-wider">
-              ${escapeHtml(s.date)} ${s.term ? `• ${escapeHtml(s.term)}` : ''}
+              ${escapeHtml(s.date || 'Submission Date')} ${s.term ? `• ${escapeHtml(s.term)}` : ''}
             </p>
           </div>
         `;
@@ -1406,7 +2079,7 @@ const schemaGraph = [
 
             <!-- Footer Bar -->
             <div class="w-full -mx-14 -mb-14 px-8 py-3.5 bg-slate-100 flex justify-between items-center text-xs font-bold text-slate-700">
-              <span>Date: ${escapeHtml(s.date)}</span>
+              <span>Date: ${escapeHtml(s.date || 'Submission Date')}</span>
               <span>${escapeHtml(s.term)}</span>
             </div>
           </div>
@@ -1477,12 +2150,12 @@ const schemaGraph = [
           // Update active styling
           document.querySelectorAll('#template-selector-grid .template-card').forEach(card => {
             card.classList.remove('border-[color:var(--accent)]', 'border-2', 'bg-[color:var(--surface-strong)]');
-            card.classList.add('border-[color:var(--border)]', 'bg-[color:var(--surface)]');
+            card.classList.add('border-[color:var(--border-strong)]', 'bg-[color:var(--surface)]');
             const badge = card.querySelector('.active-badge');
             if (badge) badge.classList.add('hidden');
           });
 
-          btn.classList.remove('border-[color:var(--border)]', 'bg-[color:var(--surface)]');
+          btn.classList.remove('border-[color:var(--border-strong)]', 'bg-[color:var(--surface)]');
           btn.classList.add('border-[color:var(--accent)]', 'border-2', 'bg-[color:var(--surface-strong)]');
           const activeBadge = btn.querySelector('.active-badge');
           if (activeBadge) activeBadge.classList.remove('hidden');
@@ -1501,15 +2174,131 @@ const schemaGraph = [
           // Update active styling
           document.querySelectorAll('#theme-selector-grid .theme-pill').forEach(pill => {
             pill.classList.remove('border-[color:var(--accent)]', 'border-2', 'bg-[color:var(--surface-strong)]');
-            pill.classList.add('border-[color:var(--border)]', 'bg-[color:var(--surface)]');
+            pill.classList.add('border-[color:var(--border-strong)]', 'bg-[color:var(--surface)]');
           });
 
-          btn.classList.remove('border-[color:var(--border)]', 'bg-[color:var(--surface)]');
+          btn.classList.remove('border-[color:var(--border-strong)]', 'bg-[color:var(--surface)]');
           btn.classList.add('border-[color:var(--accent)]', 'border-2', 'bg-[color:var(--surface-strong)]');
 
           themeLabel.textContent = THEMES[selected].name;
           renderPreview();
         });
+      });
+
+      // ==========================================
+      // INSTITUTION SEARCH & AUTOCOMPLETE
+      // ==========================================
+      async function fetchInstitutionsDb() {
+        if (institutionsDb || isFetchingDb) return;
+        isFetchingDb = true;
+        try {
+          const res = await fetch('/data/institutions.json?v=' + LOGO_VERSION);
+          institutionsDb = await res.json();
+        } catch (err) {
+          console.error('Failed to load institutions DB', err);
+        }
+      }
+
+      instInput.addEventListener('focus', fetchInstitutionsDb);
+
+      function updateLogoStatusText(overrideText, overrideColor) {
+        if (!logoStatusIndicator || !logoStatusText) return;
+        const dot = logoStatusIndicator.querySelector('span:first-child');
+        if (!dot) return;
+
+        if (overrideText) {
+          logoStatusText.textContent = overrideText;
+          dot.className = `w-2 h-2 rounded-full ${overrideColor === 'emerald' ? 'bg-emerald-500' : overrideColor === 'slate' ? 'bg-slate-400' : 'bg-amber-400'}`;
+          return;
+        }
+
+        if (state.logoMode === 'none') {
+          dot.className = 'w-2 h-2 rounded-full bg-slate-400';
+          logoStatusText.textContent = 'No logo will appear on the cover';
+        } else if (state.logoMode === 'emblem') {
+          dot.className = 'w-2 h-2 rounded-full bg-emerald-500';
+          logoStatusText.textContent = 'Default academic crest emblem active';
+        } else if (state.logoMode === 'custom') {
+          if (state.customLogoBase64) {
+            dot.className = 'w-2 h-2 rounded-full bg-emerald-500';
+            logoStatusText.textContent = 'Custom logo active';
+          } else {
+            dot.className = 'w-2 h-2 rounded-full bg-amber-400';
+            logoStatusText.textContent = 'No file chosen yet (using default emblem)';
+          }
+        } else {
+          // 'stored'
+          if (state.logoBase64 || state.logoUrl) {
+            dot.className = 'w-2 h-2 rounded-full bg-emerald-500';
+            logoStatusText.textContent = `Official seal loaded (${state.activeStoredName || state.institution})`;
+          } else {
+            dot.className = 'w-2 h-2 rounded-full bg-amber-400';
+            logoStatusText.textContent = state.institution ? 'University logo not found in database; using default emblem' : 'Default academic crest emblem active';
+          }
+        }
+      }
+
+      function syncLogoModeButtons() {
+        document.querySelectorAll('#logo-mode-selector .logo-mode-btn').forEach(btn => {
+          const mode = btn.getAttribute('data-logo-mode');
+          const icon = btn.querySelector('svg');
+          if (mode === state.logoMode) {
+            btn.classList.remove('border-[color:var(--border-strong)]', 'bg-[color:var(--surface)]');
+            btn.classList.add('border-2', 'border-[color:var(--accent)]', 'bg-[color:var(--surface-strong)]');
+            if (icon) {
+              icon.classList.remove('text-[color:var(--muted)]');
+              icon.classList.add('text-[color:var(--accent)]');
+            }
+          } else {
+            btn.classList.remove('border-2', 'border-[color:var(--accent)]', 'bg-[color:var(--surface-strong)]');
+            btn.classList.add('border-[color:var(--border-strong)]', 'bg-[color:var(--surface)]');
+            if (icon) {
+              icon.classList.remove('text-[color:var(--accent)]');
+              icon.classList.add('text-[color:var(--muted)]');
+            }
+          }
+        });
+
+        if (customLogoPrompt) {
+          if (state.logoMode === 'custom') {
+            customLogoPrompt.classList.remove('hidden');
+          } else {
+            customLogoPrompt.classList.add('hidden');
+          }
+        }
+
+        updateLogoStatusText();
+      }
+
+      // Logo Mode Selector Click Listeners
+      document.querySelectorAll('#logo-mode-selector .logo-mode-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const mode = btn.getAttribute('data-logo-mode');
+          state.logoMode = mode;
+          syncLogoModeButtons();
+          if (mode === 'custom' && !state.customLogoBase64) {
+            customLogoInput.click();
+          }
+          renderPreview();
+        });
+      });
+
+      // Custom Logo File Upload Listener
+      customLogoInput.addEventListener('change', (e) => {
+        const file = e.target.files && e.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = (evt) => {
+          state.customLogoBase64 = evt.target.result;
+          state.logoMode = 'custom';
+          if (customLogoFilename) {
+            customLogoFilename.textContent = `Selected: ${file.name.slice(0, 24)}`;
+          }
+          syncLogoModeButtons();
+          renderPreview();
+        };
+        reader.readAsDataURL(file);
       });
 
       // ==========================================
@@ -1538,7 +2327,20 @@ const schemaGraph = [
           btnClearInst.classList.add('hidden');
         }
 
-        state.institution = e.target.value.trim() || 'Institution Name';
+        state.institution = e.target.value;
+
+        // CRITICAL BUG FIX: If user edits or types a university name that does NOT match
+        // the currently active stored university, immediately invalidate the old logo!
+        if (state.slug || state.logoUrl || state.logoBase64) {
+          const activeName = (state.activeStoredName || '').toLowerCase().trim();
+          if (query !== activeName) {
+            state.slug = '';
+            state.logoUrl = '';
+            state.logoBase64 = null;
+            state.activeStoredName = '';
+            updateLogoStatusText();
+          }
+        }
 
         if (!institutionsDb || query.length < 2) {
           instResults.classList.add('hidden');
@@ -1553,7 +2355,6 @@ const schemaGraph = [
           const acros = item[3] ? item[3].toLowerCase().split(/\s+/) : [];
           return name.includes(query) || slug.includes(query) || acros.some(a => a === query || a.startsWith(query));
         }).sort((a, b) => {
-          // 1. Exact acronym match (e.g. 'DU', 'KU', 'BUET', 'NU')
           const aExactAcro = a[3] && a[3].toLowerCase().split(/\s+/).includes(query);
           const bExactAcro = b[3] && b[3].toLowerCase().split(/\s+/).includes(query);
           if (aExactAcro && !bExactAcro) return -1;
@@ -1564,16 +2365,13 @@ const schemaGraph = [
             if (a[2] !== 'BD' && b[2] === 'BD') return 1;
           }
 
-          // 2. Name starts with query (prefix match)
           const aStarts = a[0].toLowerCase().startsWith(query);
           const bStarts = b[0].toLowerCase().startsWith(query);
           if (aStarts && !bStarts) return -1;
           if (!aStarts && bStarts) return 1;
 
-          // 3. Priority for universities with verified logos
           if ((b[4] || 0) !== (a[4] || 0)) return (b[4] || 0) - (a[4] || 0);
 
-          // 4. Priority for Bangladeshi institutions to avoid foreign name collisions
           const aIsBd = a[2] === 'BD';
           const bIsBd = b[2] === 'BD';
           if (aIsBd && !bIsBd) return -1;
@@ -1590,44 +2388,38 @@ const schemaGraph = [
             li.className = 'px-4 py-2.5 hover:bg-[color:var(--surface-active)] cursor-pointer text-xs text-[color:var(--fg)] flex justify-between items-center transition border-b border-[color:var(--border)] last:border-none';
             li.innerHTML = `
               <div class="flex items-center gap-2 overflow-hidden">
-                ${primaryAcro ? `<span class="text-[10px] font-bold font-mono px-1.5 py-0.5 rounded bg-[color:var(--accent-soft)] text-[color:var(--accent)] shrink-0">${escapeHtml(primaryAcro)}</span>` : ''}
+                ${primaryAcro ? `<span class="text-[10px] font-bold font-mono px-1.5 py-0.5 rounded bg-[color:var(--accent-soft)] text-[color:var(--accent)] dark:text-blue-300 border border-[color:var(--accent)]/30 shrink-0">${escapeHtml(primaryAcro)}</span>` : ''}
                 <span class="font-medium truncate">${escapeHtml(name)}</span>
               </div>
               <div class="flex items-center gap-1.5 shrink-0">
                 ${hasLogo === 1 ? `<span class="inline-flex items-center gap-1 text-[10px] font-semibold px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20"><svg class="w-3 h-3 text-emerald-500" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg> Logo</span>` : ''}
-                <span class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-[color:var(--surface-strong)] text-[color:var(--muted)] border border-[color:var(--border)]">${escapeHtml(country || 'GL')}</span>
+                <span class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-[color:var(--surface-strong)] text-[color:var(--fg)]/80 border border-[color:var(--border-strong)]">${escapeHtml(country || 'GL')}</span>
               </div>
             `;
 
             li.addEventListener('click', async () => {
               instInput.value = name;
               state.institution = name;
+              state.activeStoredName = name;
               state.slug = slug;
-              state.hasCustomLogo = false;
+              state.logoMode = 'stored';
+              syncLogoModeButtons();
 
               if (hasLogo === 1) {
-                // Instantly clear old cached base64 so previous university logo is not kept
                 state.logoBase64 = null;
                 state.logoUrl = `${CDN_URL}/${slug}.webp?v=${LOGO_VERSION}`;
-                logoStatusIndicator.innerHTML = `
-                  <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
-                  <span>Official R2 Seal Loaded (${escapeHtml(name)})</span>
-                `;
+                updateLogoStatusText(`Official seal loaded (${name})`, 'emerald');
                 renderPreview();
 
-                // Pre-cache as Base64 for instant zero-CORS PDF export
                 const b64 = await cacheLogoAsBase64(state.logoUrl);
-                if (b64 && state.slug === slug) {
+                if (b64 && state.slug === slug && state.logoMode === 'stored') {
                   state.logoBase64 = b64;
                   renderPreview();
                 }
               } else {
                 state.logoUrl = '';
                 state.logoBase64 = null;
-                logoStatusIndicator.innerHTML = `
-                  <span class="w-2 h-2 rounded-full bg-amber-400"></span>
-                  <span>Academic Crest Active (Upload custom logo if desired)</span>
-                `;
+                updateLogoStatusText(`University logo not found in database; using default emblem`, 'amber');
                 renderPreview();
               }
 
@@ -1647,16 +2439,13 @@ const schemaGraph = [
       btnClearInst.addEventListener('click', () => {
         instInput.value = '';
         state.institution = '';
+        state.activeStoredName = '';
         state.slug = '';
         state.logoUrl = '';
         state.logoBase64 = null;
-        state.hasCustomLogo = false;
         btnClearInst.classList.add('hidden');
         instResults.classList.add('hidden');
-        logoStatusIndicator.innerHTML = `
-          <span class="w-2 h-2 rounded-full bg-amber-400"></span>
-          <span>Default academic emblem</span>
-        `;
+        updateLogoStatusText();
         renderPreview();
       });
 
@@ -1665,25 +2454,6 @@ const schemaGraph = [
         if (!instInput.contains(e.target) && !instResults.contains(e.target)) {
           instResults.classList.add('hidden');
         }
-      });
-
-      // Custom Logo File Upload
-      customLogoInput.addEventListener('change', (e) => {
-        const file = e.target.files && e.target.files[0];
-        if (!file) return;
-
-        const reader = new FileReader();
-        reader.onload = (evt) => {
-          state.logoUrl = evt.target.result;
-          state.logoBase64 = evt.target.result;
-          state.hasCustomLogo = true;
-          logoStatusIndicator.innerHTML = `
-            <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
-            <span>Custom logo uploaded: ${escapeHtml(file.name.slice(0, 20))}</span>
-          `;
-          renderPreview();
-        };
-        reader.readAsDataURL(file);
       });
 
       // Other Form Field Listeners
@@ -1714,25 +2484,62 @@ const schemaGraph = [
         renderPreview();
       });
 
-      // Reset Button
+      // Use Sample Data Button (University of Dhaka Demo)
+      if (btnSampleData) {
+        btnSampleData.addEventListener('click', async () => {
+          state.institution = 'University of Dhaka';
+          state.activeStoredName = 'University of Dhaka';
+          state.slug = 'university-of-dhaka';
+          state.logoMode = 'stored';
+          state.logoUrl = `${CDN_URL}/university-of-dhaka.webp?v=${LOGO_VERSION}`;
+          state.logoBase64 = null;
+          state.department = 'Department of Management Information Systems';
+          state.title = 'Supply Chain Management & Enterprise Logistics';
+          state.subtitle = 'A Strategic Analysis of Global Operations';
+          state.courseName = 'Management Information Systems';
+          state.courseCode = 'MIS 301';
+          state.teacherName = 'Dr. Rahman';
+          state.teacherTitle = 'Professor & Chairman';
+          state.date = formatDate(new Date());
+          state.term = 'Fall Semester 2026';
+          state.students = [
+            { name: 'Tanvir Islam', id: '2022515229', section: 'Section A' }
+          ];
+
+          syncStateToInputs();
+          syncLogoModeButtons();
+          renderPreview();
+
+          const b64 = await cacheLogoAsBase64(state.logoUrl);
+          if (b64 && state.slug === 'university-of-dhaka' && state.logoMode === 'stored') {
+            state.logoBase64 = b64;
+            renderPreview();
+          }
+        });
+      }
+
+      // Reset Button (Returns to Clean Blank State)
       document.getElementById('btn-reset-form').addEventListener('click', () => {
-        if (!confirm('Reset all fields to default?')) return;
-        state.institution = 'University of Dhaka';
-        state.slug = 'university-of-dhaka';
-        state.logoUrl = `${CDN_URL}/university-of-dhaka.webp?v=${LOGO_VERSION}`;
+        if (!confirm('Clear all form fields?')) return;
+        state.institution = '';
+        state.activeStoredName = '';
+        state.slug = '';
+        state.logoUrl = '';
         state.logoBase64 = null;
-        state.hasCustomLogo = false;
-        state.department = 'Department of Computer Science & Engineering';
-        state.title = 'Design and Analysis of Scalable Cloud Microservices';
-        state.subtitle = 'Final Term Comprehensive Project Report';
-        state.courseName = 'Distributed Systems & Cloud Computing';
-        state.courseCode = 'CSE-4101';
-        state.teacherName = 'Dr. Sarah Rahman';
-        state.teacherTitle = 'Professor & Head of Department';
-        state.date = formatDate(new Date());
-        state.term = 'Fall Semester 2026';
-        state.students = [{ name: 'Tanvir Ahmed', id: '2026-08149', section: 'Section A' }];
+        state.customLogoBase64 = null;
+        state.logoMode = 'stored';
+        state.department = '';
+        state.title = '';
+        state.subtitle = '';
+        state.courseName = '';
+        state.courseCode = '';
+        state.teacherName = '';
+        state.teacherTitle = '';
+        state.date = '';
+        state.term = '';
+        state.students = [{ name: '', id: '', section: '' }];
         syncStateToInputs();
+        syncLogoModeButtons();
         renderPreview();
       });
 
@@ -1750,173 +2557,113 @@ const schemaGraph = [
       }
 
       // ==========================================
-      // ROCK-SOLID HIGH-DPI A4 PDF EXPORT
-      // 100% Visual Parity with Live Preview
+      // VECTOR PDF COMPILER & EXPORT ENGINE
+      // Real Selectable Text & Zoom Sharpness
       // ==========================================
       const genPdfBtn = document.getElementById('generate-pdf-btn');
       const btnPdfText = document.getElementById('btn-pdf-text');
 
-      // Convert modern CSS oklch(...) colors to standard sRGB for html2canvas compatibility
-      function oklchToRgb(oklchStr) {
-        const match = oklchStr.match(/oklch\(\s*([\d\.]+%?)\s+([\d\.]+)\s+([\d\.]+)(?:\s*\/\s*([\d\.]+%?))?\s*\)/i);
-        if (!match) return oklchStr;
-        let L = parseFloat(match[1]);
-        if (match[1].endsWith('%')) L /= 100;
-        let C = parseFloat(match[2]);
-        let H = parseFloat(match[3]);
-        const alpha = match[4] ? (match[4].endsWith('%') ? parseFloat(match[4]) / 100 : parseFloat(match[4])) : 1;
+      async function compileVectorCoverPdf() {
+        const PDFLib = await getPDFLib();
+        const activeTheme = THEMES[state.theme] || THEMES.classic;
+        let logoPngBytes = null;
 
-        const hRad = (H * Math.PI) / 180;
-        const a_ = C * Math.cos(hRad);
-        const b_ = C * Math.sin(hRad);
-
-        const l_ = L + 0.3963377774 * a_ + 0.2158037573 * b_;
-        const m_ = L - 0.1055613458 * a_ - 0.0638541728 * b_;
-        const s_ = L - 0.0894841775 * a_ - 1.2914855480 * b_;
-
-        const l = l_ * l_ * l_;
-        const m = m_ * m_ * m_;
-        const s = s_ * s_ * s_;
-
-        const rLin = +4.0767434770 * l - 3.3077115913 * m + 0.2309699292 * s;
-        const gLin = -1.2684380046 * l + 2.6097574011 * m - 0.3413193965 * s;
-        const bLin = -0.0041960863 * l - 0.7034186147 * m + 1.7076147010 * s;
-
-        const toGamma = (x) => {
-          const clamped = Math.max(0, Math.min(1, x));
-          return clamped <= 0.0031308 ? 12.92 * clamped : 1.055 * Math.pow(clamped, 1 / 2.4) - 0.055;
-        };
-
-        const r = Math.round(toGamma(rLin) * 255);
-        const g = Math.round(toGamma(gLin) * 255);
-        const b = Math.round(toGamma(bLin) * 255);
-
-        if (alpha < 1) return `rgba(${r}, ${g}, ${b}, ${alpha})`;
-        return `rgb(${r}, ${g}, ${b})`;
-      }
-
-      function sanitizeOklchColors(container, win = window) {
-        if (!container) return;
-        const COLOR_PROPS = [
-          'color',
-          'backgroundColor',
-          'borderColor',
-          'borderTopColor',
-          'borderBottomColor',
-          'borderLeftColor',
-          'borderRightColor',
-          'outlineColor'
-        ];
-
-        const elements = [container, ...container.querySelectorAll('*')];
-        for (const el of elements) {
-          const computed = win.getComputedStyle(el);
-          for (const prop of COLOR_PROPS) {
-            const val = computed[prop];
-            if (val && val.includes('oklch')) {
-              const converted = val.replace(/oklch\([^)]+\)/gi, match => oklchToRgb(match));
-              el.style[prop] = converted;
-            }
+        if (state.logoMode === 'none') {
+          logoPngBytes = null;
+        } else if (state.logoMode === 'emblem') {
+          const svgDataUrl = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(getEmblemSvg(activeTheme.primary));
+          logoPngBytes = await getLogoPngBytes(svgDataUrl);
+        } else if (state.logoMode === 'custom') {
+          if (state.customLogoBase64) {
+            logoPngBytes = await getLogoPngBytes(state.customLogoBase64);
+          } else {
+            const svgDataUrl = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(getEmblemSvg(activeTheme.primary));
+            logoPngBytes = await getLogoPngBytes(svgDataUrl);
+          }
+        } else {
+          // 'stored' mode
+          const effectiveSrc = state.logoBase64 || state.logoUrl;
+          if (effectiveSrc) {
+            logoPngBytes = await getLogoPngBytes(effectiveSrc);
+          }
+          if (!logoPngBytes) {
+            const svgDataUrl = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(getEmblemSvg(activeTheme.primary));
+            logoPngBytes = await getLogoPngBytes(svgDataUrl);
           }
         }
+
+        return await renderVectorCoverPdf(PDFLib, state, activeTheme, logoPngBytes);
       }
 
       genPdfBtn.addEventListener('click', async () => {
         const originalText = btnPdfText.textContent;
-        btnPdfText.textContent = 'Generating Crisp A4 PDF...';
+        btnPdfText.textContent = 'Generating Crisp Vector PDF...';
         genPdfBtn.style.opacity = '0.75';
         genPdfBtn.disabled = true;
 
-        const origTransform = previewPage.style.transform;
-        const origHeight = previewPage.style.height;
-        const origMinHeight = previewPage.style.minHeight;
-        const origViewportWidth = coverViewport.style.width;
-        const origViewportOverflow = coverViewport.style.overflow;
-
         try {
-          // Pre-cache logo as Base64 if not already cached to prevent CORS canvas tainting
-          if (state.logoUrl && !state.logoBase64) {
-            state.logoBase64 = await cacheLogoAsBase64(state.logoUrl);
-            renderPreview();
-          }
-
-          // Lock viewport dimensions during capture to prevent any screen jump
-          coverViewport.style.width = `${coverViewport.clientWidth}px`;
-          coverViewport.style.overflow = 'hidden';
-
-          // Set preview page to native unscaled A4 dimensions (794px × 1120px)
-          // 1120px ensures 100% exact 1-page fit inside standard 297mm A4 with 0 overflow
-          previewPage.style.transform = 'none';
-          previewPage.style.height = '1120px';
-          previewPage.style.minHeight = '1120px';
-
-          // Ensure any image tags have crossorigin set
-          previewPage.querySelectorAll('img').forEach(img => {
-            img.crossOrigin = 'anonymous';
-          });
-
-          // Sanitize any computed oklch colors on the preview elements
-          sanitizeOklchColors(previewPage, window);
-
-          // Wait a tick for layout and image paint
-          await new Promise(r => setTimeout(r, 100));
-
+          const pdfBytes = await compileVectorCoverPdf();
+          const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+          const url = URL.createObjectURL(blob);
           const safeFilename = `${(state.title || 'Assignment_Cover').slice(0, 32).replace(/[^a-zA-Z0-9_-]/g, '_')}_Cover.pdf`;
 
-          const opt = {
-            margin: 0,
-            filename: safeFilename,
-            image: { type: 'jpeg', quality: 0.98 },
-            html2canvas: {
-              scale: 2, // 2x scale = 300+ DPI vector sharpness
-              useCORS: true,
-              allowTaint: true,
-              logging: false,
-              scrollX: 0,
-              scrollY: 0
-            },
-            jsPDF: {
-              unit: 'mm',
-              format: 'a4',
-              orientation: 'portrait'
-            },
-            pagebreak: { mode: 'avoid-all' }
-          };
-
-          const html2pdfLib = await getHtml2Pdf();
-          await html2pdfLib().set(opt).from(previewPage).save();
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = safeFilename;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
         } catch (err) {
           console.error('PDF generation error:', err);
-          alert('Could not generate PDF: ' + (err.message || 'Unknown error') + '\n\nYou can also click the "Print Cover" button in the top bar to print or save as PDF directly.');
+          alert('Could not generate PDF: ' + (err.message || 'Unknown error') + '\n\nYou can also click the "Print" button in the top bar to print or save as PDF.');
         } finally {
-          // Restore live preview responsive scaling and layout instantly
-          previewPage.style.transform = origTransform;
-          previewPage.style.height = origHeight;
-          previewPage.style.minHeight = origMinHeight;
-          coverViewport.style.width = origViewportWidth;
-          coverViewport.style.overflow = origViewportOverflow;
-          updateViewportScale();
-
           btnPdfText.textContent = originalText;
           genPdfBtn.style.opacity = '1';
           genPdfBtn.disabled = false;
         }
       });
 
-      // Initial Viewport & Preview Mount
-      syncStateToInputs();
-      renderPreview();
-      updateViewportScale();
+      // Merge with Assignment Handler (preloads cover into PDF Merger)
+      if (btnMergeAssignment) {
+        btnMergeAssignment.addEventListener('click', async () => {
+          const originalText = btnMergeText.textContent;
+          btnMergeText.textContent = 'Preparing Cover...';
+          btnMergeAssignment.style.opacity = '0.75';
+          btnMergeAssignment.disabled = true;
 
-      // Pre-cache default logo for zero-CORS instant PDF export
-      if (state.logoUrl) {
-        cacheLogoAsBase64(state.logoUrl).then(b64 => {
-          if (b64) {
-            state.logoBase64 = b64;
-            renderPreview();
+          try {
+            const pdfBytes = await compileVectorCoverPdf();
+            const safeFilename = `${(state.title || 'Assignment_Cover').slice(0, 32).replace(/[^a-zA-Z0-9_-]/g, '_')}_Cover.pdf`;
+
+            let binary = '';
+            const len = pdfBytes.byteLength;
+            for (let i = 0; i < len; i++) {
+              binary += String.fromCharCode(pdfBytes[i]);
+            }
+            const base64Data = btoa(binary);
+
+            sessionStorage.setItem('pending_merge_cover', JSON.stringify({
+              name: safeFilename,
+              data: base64Data
+            }));
+
+            window.location.href = '/pdf-tools/pdf-merger/';
+          } catch (err) {
+            console.error('Merge preparation error:', err);
+            alert('Could not prepare cover for PDF merger: ' + (err.message || 'Unknown error'));
+            btnMergeText.textContent = originalText;
+            btnMergeAssignment.style.opacity = '1';
+            btnMergeAssignment.disabled = false;
           }
         });
       }
+
+      // Initial Viewport & Preview Mount
+      syncStateToInputs();
+      syncLogoModeButtons();
+      renderPreview();
+      updateViewportScale();
     })();
   </script>
 </SiteLayout>

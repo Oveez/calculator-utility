@@ -511,6 +511,26 @@ const workedExampleData = {
           mergeBtn.classList.remove('opacity-70');
         }
       });
+
+      // Automatically preload cover page if coming from Assignment Cover Maker
+      try {
+        const pendingCoverRaw = sessionStorage.getItem('pending_merge_cover');
+        if (pendingCoverRaw) {
+          sessionStorage.removeItem('pending_merge_cover');
+          const item = JSON.parse(pendingCoverRaw);
+          if (item && item.data) {
+            const byteCharacters = atob(item.data);
+            const byteNumbers = new Uint8Array(byteCharacters.length);
+            for (let i = 0; i < byteCharacters.length; i++) {
+              byteNumbers[i] = byteCharacters.charCodeAt(i);
+            }
+            const file = new File([byteNumbers], item.name || 'Assignment_Cover.pdf', { type: 'application/pdf' });
+            processFiles([file]);
+          }
+        }
+      } catch (e) {
+        console.error('Failed to load pending cover from session:', e);
+      }
     })();
   </script>
 </SiteLayout>
