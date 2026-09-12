@@ -126,14 +126,14 @@ export const allToolsIndex: ToolIndexItem[] = [
   { title: 'Break-Even Unit Calculator', category: 'Pricing', url: '/pricing-calculators/break-even-calculator/', desc: 'Profit margin calculator and break-even unit sales calculator for business overhead.' },
 
   // 13. Career & Resume Tools (8)
-  { title: 'CV & Resume Maker (ATS-Standard)', category: 'Career', url: '/career-tools/cv-maker/', desc: 'Professional Harvard & Wall Street standard resume builder with PDF export.' },
-  { title: 'Student CV Maker', category: 'Career', url: '/career-tools/student-cv-maker/', desc: 'Ivy League early career resume template tailored for university students.' },
-  { title: 'Fresher Resume Maker', category: 'Career', url: '/career-tools/fresher-resume-maker/', desc: 'Modern resume template optimized for entry-level candidates and interns.' },
-  { title: 'ATS-Friendly Resume Guide', category: 'Career', url: '/career-tools/ats-friendly-resume-guide/', desc: 'Comprehensive guide to beating Applicant Tracking Systems.' },
-  { title: 'Resume Action Verb & Keyword Checker', category: 'Career', url: '/career-tools/resume-keyword-checker/', desc: 'Scan resume text for strong action verbs, quantifiable metrics, and impact.' },
+  { title: 'Free CV Maker & ATS Resume Builder', category: 'Career', url: '/career-tools/cv-maker/', desc: 'Create an ATS friendly resume and curriculum vitae online with free vector PDF export.' },
+  { title: 'Student CV Maker & Resume Builder', category: 'Career', url: '/career-tools/student-cv-maker/', desc: 'Free student resume builder tailored for university internships and first applications.' },
+  { title: 'Fresher Resume Maker', category: 'Career', url: '/career-tools/fresher-resume-maker/', desc: 'Free resume builder for freshers optimized for entry-level candidates and first jobs.' },
+  { title: 'ATS-Friendly Resume Guide & Advice', category: 'Career', url: '/career-tools/ats-friendly-resume-guide/', desc: 'Actionable resume advice and guidelines to format an ATS friendly resume.' },
+  { title: 'ATS Resume Keyword Checker', category: 'Career', url: '/career-tools/resume-keyword-checker/', desc: 'Scan keywords for a resume, analyze action verbs, and check ATS readability.' },
   { title: 'Job Description Keyword Extractor', category: 'Career', url: '/career-tools/job-description-keyword-extractor/', desc: 'Extract key technical skills and requirements from job postings.' },
-  { title: 'Resume-to-Job ATS Matcher', category: 'Career', url: '/career-tools/resume-job-matcher/', desc: 'Calculate ATS overlap percentage and identify missing keywords.' },
-  { title: 'Resume Length & Density Checker', category: 'Career', url: '/career-tools/resume-length-checker/', desc: 'Audit resume word count, bullet density, and 1-page/2-page sweet spot.' },
+  { title: 'Resume Match with Job Description', category: 'Career', url: '/career-tools/resume-job-matcher/', desc: 'Compare your resume against any job description to calculate ATS match score %.' },
+  { title: 'Resume Length & 1-Page Checker', category: 'Career', url: '/career-tools/resume-length-checker/', desc: 'Audit resume word count, bullet density, and check the 1 page resume sweet spot.' },
 
   // 14. Developer Tools (17)
   { title: 'JSON Formatter & Beautifier', category: 'Developer', url: '/developer-tools/json-formatter/', desc: 'Format JSON online and convert JSON with indentation, tree view, and validation.' },
@@ -197,16 +197,16 @@ export const allToolsIndex: ToolIndexItem[] = [
   { title: 'Image Format Converter (PNG, JPG, WebP)', category: 'Image', url: '/image-tools/image-converter/', desc: 'Convert between PNG, JPEG, and WebP image formats.' },
 
   // 19. PDF Tools (10)
-  { title: 'PDF Page Counter', category: 'PDF', url: '/pdf-tools/pdf-page-counter/', desc: 'Fast binary inspection of total page count in PDF documents.' },
-  { title: 'PDF Metadata Viewer', category: 'PDF', url: '/pdf-tools/pdf-metadata-viewer/', desc: 'Inspect author, title, creation date, and software producer metadata.' },
-  { title: 'PDF Metadata Remover', category: 'PDF', url: '/pdf-tools/pdf-metadata-remover/', desc: 'Wipe sensitive document creator names and PDF software tags.' },
-  { title: 'PDF Page Extractor', category: 'PDF', url: '/pdf-tools/pdf-page-extractor/', desc: 'Extract specific page numbers or custom page ranges into a new PDF.' },
-  { title: 'PDF Page Reorderer', category: 'PDF', url: '/pdf-tools/pdf-page-reorderer/', desc: 'Rearrange and resequence pages in PDF documents.' },
-  { title: 'PDF Splitter (Custom Ranges & Pages)', category: 'PDF', url: '/pdf-tools/pdf-splitter/', desc: 'Split multi-page PDFs into single pages or custom range parts.' },
-  { title: 'PDF Merger (Combine PDFs)', category: 'PDF', url: '/pdf-tools/pdf-merger/', desc: 'Combine multiple PDF files into one unified document.' },
-  { title: 'Images to PDF Converter', category: 'PDF', url: '/pdf-tools/images-to-pdf/', desc: 'Compile JPG and PNG photos into a standardized paginated PDF.' },
-  { title: 'PDF to Images Rasterizer', category: 'PDF', url: '/pdf-tools/pdf-to-images/', desc: 'Rasterize PDF pages into high-resolution PNG or JPG images.' },
-  { title: 'PDF Page Rotator', category: 'PDF', url: '/pdf-tools/pdf-rotate/', desc: 'Rotate PDF pages 90, 180, or 270 degrees permanently.' },
+  { title: 'PDF Page Counter', category: 'PDF', url: '/pdf-tools/pdf-page-counter/', desc: 'Count total pages and inspect document structure across single or multiple PDF files.' },
+  { title: 'PDF Metadata Viewer', category: 'PDF', url: '/pdf-tools/pdf-metadata-viewer/', desc: 'View PDF details, Title, Author, Subject, Keywords, Creator tool, and timestamps.' },
+  { title: 'PDF Metadata Remover', category: 'PDF', url: '/pdf-tools/pdf-metadata-remover/', desc: 'Strip sensitive author names, software footprints, and revision timestamps privately.' },
+  { title: 'PDF Page Extractor', category: 'PDF', url: '/pdf-tools/pdf-page-extractor/', desc: 'Extract specific pages to PDF or split page ranges into separate files.' },
+  { title: 'PDF Page Reorderer', category: 'PDF', url: '/pdf-tools/pdf-page-reorderer/', desc: 'Rearrange, organize, reverse, and rotate pages in PDF documents.' },
+  { title: 'PDF Splitter (Free PDF Page Splitter)', category: 'PDF', url: '/pdf-tools/pdf-splitter/', desc: 'Free PDF splitter tool to split multi-page PDF documents into single pages or ranges.' },
+  { title: 'PDF Merger (Merge PDF to PDF)', category: 'PDF', url: '/pdf-tools/pdf-merger/', desc: 'Merge PDF to PDF and combine multiple PDF files into one document free.' },
+  { title: 'Images to PDF Converter', category: 'PDF', url: '/pdf-tools/images-to-pdf/', desc: 'Convert photo and images to PDF online free with custom page sizes and margins.' },
+  { title: 'PDF to Images Converter', category: 'PDF', url: '/pdf-tools/pdf-to-images/', desc: 'Convert PDF to images and extract pages as high-resolution JPG or PNG files.' },
+  { title: 'PDF Page Rotator', category: 'PDF', url: '/pdf-tools/pdf-rotate/', desc: 'Rotate PDF pages 90, 180, or 270 degrees permanently for print-ready files.' },
 
   // 20. Color & Accessibility (8)
   { title: 'Color Contrast Checker (WCAG 2.1)', category: 'Color', url: '/color-tools/color-contrast-checker/', desc: 'Test text and background contrast ratios against AA and AAA standards.' },
