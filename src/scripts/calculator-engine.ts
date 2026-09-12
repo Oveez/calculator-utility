@@ -27,7 +27,8 @@ function collectValues(form: HTMLFormElement): Record<string, number | string> {
 				element instanceof HTMLSelectElement ||
 				element instanceof HTMLTextAreaElement
 			) ||
-			!element.name
+			!element.name ||
+			element.disabled
 		) {
 			return values;
 		}
@@ -35,6 +36,53 @@ function collectValues(form: HTMLFormElement): Record<string, number | string> {
 		values[element.name] = parseInputValue(element);
 		return values;
 	}, {});
+}
+
+function updateConditionalInputs(form: HTMLFormElement): void {
+	const wrappers = form.querySelectorAll<HTMLElement>('[data-show-when-field]');
+	if (wrappers.length === 0) return;
+
+	const allValues: Record<string, string> = {};
+	Array.from(form.elements).forEach((el) => {
+		if (
+			(el instanceof HTMLInputElement ||
+				el instanceof HTMLSelectElement ||
+				el instanceof HTMLTextAreaElement) &&
+			el.name
+		) {
+			allValues[el.name] = String(el.value ?? '');
+		}
+	});
+
+	wrappers.forEach((wrapper) => {
+		const field = wrapper.getAttribute('data-show-when-field');
+		const expectedVal = wrapper.getAttribute('data-show-when-value');
+		if (!field || !expectedVal) return;
+
+		const currentVal = allValues[field] ?? '';
+		const expectedList = expectedVal.split(',').map((s) => s.trim());
+		const shouldShow = expectedList.includes(currentVal);
+
+		if (shouldShow) {
+			wrapper.style.display = '';
+			wrapper
+				.querySelectorAll<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>(
+					'input, select, textarea',
+				)
+				.forEach((input) => {
+					input.disabled = false;
+				});
+		} else {
+			wrapper.style.display = 'none';
+			wrapper
+				.querySelectorAll<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>(
+					'input, select, textarea',
+				)
+				.forEach((input) => {
+					input.disabled = true;
+				});
+		}
+	});
 }
 
 // Render dynamic SVG chart
@@ -196,7 +244,94 @@ function setupRoot(root: HTMLElement): void {
 		return;
 	}
 
+	const toggleBtns = form.querySelectorAll<HTMLButtonElement>('[data-unit-toggle-btn]');
+	toggleBtns.forEach((btn) => {
+		btn.addEventListener('click', () => {
+			const targetVal = btn.dataset.unitToggleBtn;
+			const targetSelectId = btn.dataset.targetSelect;
+			if (!targetVal || !targetSelectId) return;
+
+			const targetSelect = form.querySelector<HTMLSelectElement>(`#${targetSelectId}`);
+			if (!targetSelect) return;
+
+			if (targetSelect.value !== targetVal) {
+				targetSelect.value = targetVal;
+				targetSelect.dispatchEvent(new Event('change', { bubbles: true }));
+			}
+		});
+	});
+
+	const updateToggleBtnStyles = (): void => {
+		toggleBtns.forEach((btn) => {
+			const targetVal = btn.dataset.unitToggleBtn;
+			const targetSelectId = btn.dataset.targetSelect;
+			if (!targetVal || !targetSelectId) return;
+			const targetSelect = form.querySelector<HTMLSelectElement>(`#${targetSelectId}`);
+			if (!targetSelect) return;
+
+			const isActive = targetSelect.value === targetVal;
+			btn.setAttribute('aria-selected', String(isActive));
+			if (isActive) {
+				btn.classList.add('bg-[color:var(--accent)]', 'text-white', 'shadow-sm', 'font-black');
+				btn.classList.remove('text-[color:var(--muted)]', 'hover:bg-[color:var(--surface-strong)]', 'font-semibold');
+			} else {
+				btn.classList.remove('bg-[color:var(--accent)]', 'text-white', 'shadow-sm', 'font-black');
+				btn.classList.add('text-[color:var(--muted)]', 'hover:bg-[color:var(--surface-strong)]', 'font-semibold');
+			}
+		});
+	};
+
+	const unitSystemSelect = form.querySelector<HTMLSelectElement>('select[name="unitSystem"]');
+	if (unitSystemSelect && slug === 'bmi-calculator') {
+		let previousUnit = unitSystemSelect.value;
+		unitSystemSelect.addEventListener('change', () => {
+			const newUnit = unitSystemSelect.value;
+			if (newUnit === previousUnit) return;
+
+			const heightFeetInput = form.querySelector<HTMLInputElement>('input[name="heightFeet"]');
+			const heightInchesInput = form.querySelector<HTMLInputElement>('input[name="heightInches"]');
+			const weightLbsInput = form.querySelector<HTMLInputElement>('input[name="weightLbs"]');
+			const heightCmInput = form.querySelector<HTMLInputElement>('input[name="heightCm"]');
+			const weightKgInput = form.querySelector<HTMLInputElement>('input[name="weightKg"]');
+
+			if (newUnit === 'metric' && previousUnit === 'us') {
+				const ft = Number.parseFloat(heightFeetInput?.value || '') || 0;
+				const inches = Number.parseFloat(heightInchesInput?.value || '') || 0;
+				const lbs = Number.parseFloat(weightLbsInput?.value || '') || 0;
+
+				const totalInches = (ft * 12) + inches;
+				if (totalInches > 0 && heightCmInput) {
+					heightCmInput.value = String(Math.round(totalInches * 2.54));
+				}
+				if (lbs > 0 && weightKgInput) {
+					weightKgInput.value = String(Math.round(lbs * 0.45359237 * 10) / 10);
+				}
+			} else if (newUnit === 'us' && previousUnit === 'metric') {
+				const cm = Number.parseFloat(heightCmInput?.value || '') || 0;
+				const kg = Number.parseFloat(weightKgInput?.value || '') || 0;
+
+				if (cm > 0) {
+					const totalInches = cm / 2.54;
+					const ft = Math.floor(totalInches / 12);
+					const inches = Math.round((totalInches % 12) * 10) / 10;
+					if (heightFeetInput) heightFeetInput.value = String(ft);
+					if (heightInchesInput) heightInchesInput.value = String(inches);
+				}
+				if (kg > 0 && weightLbsInput) {
+					weightLbsInput.value = String(Math.round((kg / 0.45359237) * 10) / 10);
+				}
+			}
+
+			previousUnit = newUnit;
+			updateConditionalInputs(form);
+			updateToggleBtnStyles();
+		});
+	}
+
 	const updateResult = (): string => {
+		updateConditionalInputs(form);
+		updateToggleBtnStyles();
+
 		const values = collectValues(form);
 		let formulaOutput: any;
 

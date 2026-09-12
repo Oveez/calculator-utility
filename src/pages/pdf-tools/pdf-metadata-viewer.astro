@@ -190,21 +190,21 @@ const workedExampleData = {
             <button
               type="button"
               id="btn-copy-json"
-              class="rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-1.5 font-semibold text-[color:var(--fg)] hover:border-[color:var(--accent)] transition cursor-pointer"
+              class="inline-flex items-center gap-1.5 rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-1.5 font-semibold text-[color:var(--fg)] hover:border-[color:var(--accent)] transition cursor-pointer"
             >
               <Icon name="copy" class="w-3.5 h-3.5 text-blue-500" /><span>Copy JSON</span>
             </button>
             <button
               type="button"
               id="btn-copy-md"
-              class="rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-1.5 font-semibold text-[color:var(--fg)] hover:border-[color:var(--accent)] transition cursor-pointer"
+              class="inline-flex items-center gap-1.5 rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-1.5 font-semibold text-[color:var(--fg)] hover:border-[color:var(--accent)] transition cursor-pointer"
             >
               <Icon name="document" class="w-3.5 h-3.5 text-indigo-500" /><span>Copy Markdown Table</span>
             </button>
             <button
               type="button"
               id="btn-download-json"
-              class="rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-1.5 font-semibold text-[color:var(--accent)] hover:underline cursor-pointer"
+              class="inline-flex items-center gap-1.5 rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-1.5 font-semibold text-[color:var(--accent)] hover:underline cursor-pointer"
             >
               <svg class="w-3.5 h-3.5 stroke-current text-emerald-500" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg><span>Download .json</span>
             </button>
@@ -241,7 +241,7 @@ const workedExampleData = {
           <details class="group rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
             <summary class="cursor-pointer list-none font-semibold text-sm sm:text-base text-[color:var(--fg)] flex items-center justify-between gap-4">
               <span>{faq.question}</span>
-              <span class="text-xs text-[color:var(--muted)] group-open:rotate-180 transition-transform">▼</span>
+              <svg class="w-4 h-4 text-[color:var(--muted)] group-open:rotate-180 transition-transform shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg>
             </summary>
             <p class="mt-3 text-xs sm:text-sm leading-relaxed text-[color:var(--muted)]">
               {faq.answer}
@@ -420,9 +420,9 @@ const workedExampleData = {
         if (!currentMetadata.fileName) return;
         try {
           await navigator.clipboard.writeText(JSON.stringify(currentMetadata, null, 2));
-          const orig = btnCopyJson.textContent;
-          btnCopyJson.textContent = '✓ Copied JSON!';
-          setTimeout(() => { btnCopyJson.textContent = orig; }, 1800);
+          const orig = btnCopyJson.innerHTML;
+          btnCopyJson.innerHTML = `<svg class="w-3.5 h-3.5 inline-block text-emerald-500 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"></polyline></svg><span>Copied JSON!</span>`;
+          setTimeout(() => { btnCopyJson.innerHTML = orig; }, 1800);
         } catch (e) {
           console.error(e);
         }
@@ -437,9 +437,9 @@ const workedExampleData = {
         }
         try {
           await navigator.clipboard.writeText(md);
-          const orig = btnCopyMd.textContent;
-          btnCopyMd.textContent = '✓ Copied Table!';
-          setTimeout(() => { btnCopyMd.textContent = orig; }, 1800);
+          const orig = btnCopyMd.innerHTML;
+          btnCopyMd.innerHTML = `<svg class="w-3.5 h-3.5 inline-block text-emerald-500 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"></polyline></svg><span>Copied Table!</span>`;
+          setTimeout(() => { btnCopyMd.innerHTML = orig; }, 1800);
         } catch (e) {
           console.error(e);
         }

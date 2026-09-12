@@ -2,6 +2,7 @@
 import CalculatorEngine from '../../components/CalculatorEngine.astro';
 import CalculatorLayout from '../../layouts/CalculatorLayout.astro';
 import CalculatorParameterGuide from '../../components/calculator/CalculatorParameterGuide.astro';
+import AcademicGradingGuide from '../../components/calculator/AcademicGradingGuide.astro';
 import Icon from '../../components/Icon.astro';
 import { calculators } from '../../data/calculators';
 import type { CalculatorConfig } from '../../types/calculator';
@@ -68,6 +69,10 @@ const relatedCalculators = calculator.relatedSlugs
       parameters={calculator.parametersGuide}
       inputs={calculator.inputs}
     />
+
+    {['gpa-calculator', 'cgpa-calculator', 'grade-calculator'].includes(calculator.slug) && (
+      <AcademicGradingGuide />
+    )}
 
     <section class="space-y-6">
       <div>

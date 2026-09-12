@@ -79,6 +79,34 @@ export const weightedAverage = (grades: Array<[number, number]>): number => {
 	return totalCredits === 0 ? 0 : weightedPoints / totalCredits;
 };
 
+/**
+ * Scale-relative percentage ratio for a 4.0 GPA.
+ * Note: Academic percentage conversion is institution-specific and should be evaluated
+ * using official grading standards rather than an assumed mathematical formula.
+ */
+export const gpaToPercentage = (gpa: number): number => {
+	const clamped = Math.max(0, Math.min(gpa, 4.0));
+	return Math.round((clamped / 4.0) * 100);
+};
+
+/**
+ * Returns reference letter grade on standard US 4.0 plus/minus scale.
+ */
+export const gpaToLetterGrade = (gpa: number): string => {
+	if (gpa >= 3.85) return 'A';
+	if (gpa >= 3.50) return 'A-';
+	if (gpa >= 3.15) return 'B+';
+	if (gpa >= 2.85) return 'B';
+	if (gpa >= 2.50) return 'B-';
+	if (gpa >= 2.15) return 'C+';
+	if (gpa >= 1.85) return 'C';
+	if (gpa >= 1.50) return 'C-';
+	if (gpa >= 1.15) return 'D+';
+	if (gpa >= 0.85) return 'D';
+	return 'F';
+};
+
+
 export const countWords = (text: string): number => text.trim().match(/\S+/g)?.length ?? 0;
 
 export const countCharacters = (text: string): number => text.length;

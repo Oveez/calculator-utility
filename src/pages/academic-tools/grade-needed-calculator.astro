@@ -165,28 +165,28 @@ const schemaGraph = [
         <div class="flex flex-col justify-between space-y-6 rounded-3xl border border-[color:var(--accent)]/30 bg-gradient-to-br from-[color:var(--accent-soft)] via-[color:var(--surface)] to-transparent p-6 sm:p-8 shadow-sm">
           <div class="space-y-5">
             <div class="flex items-center justify-between">
-              <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Requirement</span>
-              <span class="rounded-full px-3 py-0.5 text-xs font-bold bg-blue-500/10 text-[color:var(--primary)] dark:text-blue-400 border border-blue-500/20" data-letter-badge>Grade B</span>
+              <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Target Feasibility</span>
+              <span class="rounded-full px-3 py-0.5 text-xs font-bold bg-gray-500/10 text-gray-500 border border-gray-500/20" data-letter-badge>Awaiting Input</span>
             </div>
 
             <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 text-center">
               <p class="text-xs font-semibold text-[color:var(--muted)]">Required Score on Remaining Work</p>
               <p class="mt-1 text-5xl font-black tracking-tight text-[color:var(--fg)]" data-res-score>
-                95.50%
+                --%
               </p>
               <p class="mt-2 text-xs font-medium text-[color:var(--muted)]" data-res-summary>
-                You must average 95.50% on the remaining 40% of the syllabus.
+                Enter your completed course parameters and target grade above.
               </p>
             </div>
 
             <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 space-y-2 text-xs">
               <div class="flex justify-between">
                 <span class="text-[color:var(--muted)]">Points Earned So Far:</span>
-                <span class="font-bold text-[color:var(--fg)]" data-pts-earned>46.80 / 60</span>
+                <span class="font-bold text-[color:var(--fg)]" data-pts-earned>--</span>
               </div>
               <div class="flex justify-between">
-                <span class="text-[color:var(--muted)]">Points Needed from Remaining 40%:</span>
-                <span class="font-bold text-[color:var(--fg)]" data-pts-needed>38.20 / 40</span>
+                <span class="text-[color:var(--muted)]">Points Needed from Remaining:</span>
+                <span class="font-bold text-[color:var(--fg)]" data-pts-needed>--</span>
               </div>
             </div>
           </div>
@@ -232,9 +232,21 @@ const schemaGraph = [
       const resetBtn = root.querySelector('[data-reset-btn]');
 
       function update() {
-        const score = Math.max(0, (inScore.value !== '' && !isNaN(parseFloat(inScore.value)) ? parseFloat(inScore.value) : 0));
-        const comp = Math.max(1, Math.min(99, (inComp.value !== '' && !isNaN(parseFloat(inComp.value)) ? parseFloat(inComp.value) : 0)));
-        const tar = Math.max(0, (inTar.value !== '' && !isNaN(parseFloat(inTar.value)) ? parseFloat(inTar.value) : 0));
+        if (!inScore.value || !inComp.value || !inTar.value) {
+          if (resScore) resScore.textContent = '--%';
+          if (letterBadge) {
+            letterBadge.className = 'rounded-full px-3 py-0.5 text-xs font-bold bg-gray-500/10 text-gray-500 border border-gray-500/20';
+            letterBadge.textContent = 'Awaiting Input';
+          }
+          if (resSummary) resSummary.textContent = 'Enter your course parameters and target grade above.';
+          if (ptsEarned) ptsEarned.textContent = '--';
+          if (ptsNeeded) ptsNeeded.textContent = '--';
+          return;
+        }
+
+        const score = Math.max(0, parseFloat(inScore.value) || 0);
+        const comp = Math.max(1, Math.min(99, parseFloat(inComp.value) || 0));
+        const tar = Math.max(0, parseFloat(inTar.value) || 0);
         const remWeight = 100 - comp;
 
         const earned = (score / 100) * comp;
@@ -244,7 +256,7 @@ const schemaGraph = [
         if (resScore) resScore.textContent = `${reqScore.toFixed(2)}%`;
         if (resSummary) {
           resSummary.textContent = reqScore > 100
-            ? `Requires over 100% (bonus points needed) on the remaining ${remWeight}% of coursework.`
+            ? `Requires over 100% (bonus points or curve needed) on the remaining ${remWeight}% of coursework.`
             : `You must average ${reqScore.toFixed(2)}% across the remaining ${remWeight}% of the course.`;
         }
 
@@ -252,14 +264,22 @@ const schemaGraph = [
         if (ptsNeeded) ptsNeeded.textContent = `${needed.toFixed(2)} / ${remWeight}`;
 
         if (letterBadge) {
-          let letter = 'F';
-          if (reqScore >= 93) letter = 'Solid A';
-          else if (reqScore >= 90) letter = 'A-';
-          else if (reqScore >= 80) letter = 'Grade B';
-          else if (reqScore >= 70) letter = 'Grade C';
-          else if (reqScore >= 60) letter = 'Grade D';
-          else letter = 'Easy Pass';
-          letterBadge.textContent = letter;
+          if (reqScore <= 50) {
+            letterBadge.className = 'rounded-full px-3 py-0.5 text-xs font-bold bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 border border-cyan-500/20';
+            letterBadge.textContent = 'Comfortable Target';
+          } else if (reqScore <= 75) {
+            letterBadge.className = 'rounded-full px-3 py-0.5 text-xs font-bold bg-blue-500/10 text-[color:var(--primary)] dark:text-blue-400 border border-blue-500/20';
+            letterBadge.textContent = 'Moderate Target';
+          } else if (reqScore <= 90) {
+            letterBadge.className = 'rounded-full px-3 py-0.5 text-xs font-bold bg-yellow-500/10 text-yellow-600 dark:text-yellow-400 border border-yellow-500/20';
+            letterBadge.textContent = 'Challenging Target';
+          } else if (reqScore <= 100) {
+            letterBadge.className = 'rounded-full px-3 py-0.5 text-xs font-bold bg-orange-500/10 text-orange-600 dark:text-orange-400 border border-orange-500/20';
+            letterBadge.textContent = 'Demanding Target (>90%)';
+          } else {
+            letterBadge.className = 'rounded-full px-3 py-0.5 text-xs font-bold bg-red-500/10 text-red-600 dark:text-red-400 border border-red-500/20';
+            letterBadge.textContent = 'Requires Extra Credit';
+          }
         }
       }
 

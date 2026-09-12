@@ -1,0 +1,574 @@
+---
+import Icon from '../Icon.astro';
+import { GRADING_STANDARDS, findStandardById, type GradingStandard } from '../../data/gradingStandards';
+import type { CalculatorConfig } from '../../types/calculator';
+
+interface Props {
+  calculator: CalculatorConfig;
+}
+
+const { calculator } = Astro.props as Props;
+---
+
+<section
+  class="overflow-hidden rounded-[2rem] border border-[color:var(--border)] bg-[color:var(--surface-strong)] shadow-[var(--shadow)] transition-all"
+  data-gpa-calculator-app
+>
+  <div class="grid gap-8 xl:grid-cols-[1.35fr_0.85fr]">
+    <!-- Courses and Settings Column -->
+    <div class="space-y-6 p-6 sm:p-8">
+      <!-- Header Bar -->
+      <div class="flex flex-wrap items-center justify-between gap-3 border-b border-[color:var(--border)] pb-4">
+        <div>
+          <p class="text-xs font-bold uppercase tracking-[0.24em] text-[color:var(--accent)]">Universal Academic Tool</p>
+          <h2 class="mt-1 text-2xl font-bold tracking-tight text-[color:var(--fg)]">Weighted GPA Calculator</h2>
+        </div>
+        <div class="flex items-center gap-2">
+          <button
+            type="button"
+            class="inline-flex items-center gap-1.5 rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1.5 text-xs font-medium text-[color:var(--muted)] hover:text-[color:var(--fg)] hover:border-[color:var(--border-strong)] transition cursor-pointer"
+            data-load-sample-btn
+          >
+            <span>Load Example</span>
+          </button>
+          <button
+            type="button"
+            class="inline-flex items-center gap-1.5 rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1.5 text-xs font-medium text-[color:var(--fg)] transition hover:border-[color:var(--accent)] hover:bg-[color:var(--surface-strong)] cursor-pointer"
+            data-reset-btn
+          >
+            <Icon name="refresh" class="w-3.5 h-3.5" />
+            <span>Reset</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Grading Standard Selector -->
+      <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5 space-y-2">
+        <div class="flex items-center justify-between">
+          <label for="gpa-standard-select" class="text-xs font-bold uppercase tracking-wider text-[color:var(--fg)]">
+            Grading Scale / System
+          </label>
+          <span class="rounded-md bg-[color:var(--surface-strong)] px-2 py-0.5 text-[11px] font-bold text-[color:var(--accent)] border border-[color:var(--border)]" data-scale-badge>
+            Scale: 4.00
+          </span>
+        </div>
+        <select
+          id="gpa-standard-select"
+          class="w-full cursor-pointer rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3.5 py-2.5 text-sm font-medium text-[color:var(--fg)] outline-none transition focus:border-[color:var(--accent)] focus:ring-2 focus:ring-[color:var(--accent-soft)]"
+          data-standard-select
+        >
+          {GRADING_STANDARDS.filter(s => s.id !== 'uk-honours').map((std) => (
+            <option value={std.id} selected={std.id === 'us-4.0'}>
+              {std.name}
+            </option>
+          ))}
+          <option value="universal">Universal (Direct Grade Points, Any Scale)</option>
+        </select>
+        <p class="text-[11px] text-[color:var(--muted)]" data-standard-desc>
+          Standard North American 4.0 collegiate scale with plus/minus quality point differentiations.
+        </p>
+
+        <!-- Custom Scale Input (visible when universal or custom) -->
+        <div class="hidden pt-2 border-t border-[color:var(--border)] flex items-center justify-between gap-4" data-custom-scale-row>
+          <label for="custom-max-scale" class="text-xs font-medium text-[color:var(--muted)]">Maximum GPA Scale Limit:</label>
+          <div class="flex items-center gap-1.5">
+            <input
+              id="custom-max-scale"
+              type="number"
+              min="1"
+              max="100"
+              step="any"
+              value="4.0"
+              class="w-20 rounded-lg border border-[color:var(--border)] bg-[color:var(--bg)] px-2.5 py-1 text-xs font-bold text-[color:var(--fg)] outline-none"
+              data-custom-scale-input
+            />
+            <span class="text-xs text-[color:var(--muted)]">pts</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Dynamic Courses Section -->
+      <div class="space-y-3">
+        <div class="flex items-center justify-between">
+          <h3 class="text-sm font-bold uppercase tracking-wider text-[color:var(--fg)] flex items-center gap-2">
+            <span>Course Enrolments</span>
+            <span class="rounded-full bg-[color:var(--accent-soft)] text-[color:var(--accent)] px-2 py-0.5 text-xs font-mono font-bold" data-course-count-badge>
+              3 courses
+            </span>
+          </h3>
+          <button
+            type="button"
+            class="inline-flex items-center gap-1.5 rounded-xl bg-[color:var(--accent)] px-3.5 py-2 text-xs font-bold text-white shadow-xs transition hover:bg-[color:var(--accent-hover)] active:scale-98 cursor-pointer"
+            data-add-course-btn
+          >
+            <span>+ Add Course</span>
+          </button>
+        </div>
+
+        <!-- Table Header -->
+        <div class="hidden sm:grid grid-cols-[2fr_1.2fr_1.5fr_40px] gap-2 px-3 text-[11px] font-bold uppercase tracking-wider text-[color:var(--muted)]">
+          <span>Course Title / Code (Optional)</span>
+          <span>Credits</span>
+          <span>Grade / Grade Point</span>
+          <span class="text-right">Action</span>
+        </div>
+
+        <!-- Courses List Container -->
+        <div class="space-y-2.5" data-courses-container>
+          <!-- Dynamically populated via JavaScript -->
+        </div>
+
+        <button
+          type="button"
+          class="w-full py-2.5 rounded-xl border border-dashed border-[color:var(--border)] text-xs font-semibold text-[color:var(--muted)] hover:text-[color:var(--accent)] hover:border-[color:var(--accent)] transition cursor-pointer"
+          data-add-course-bottom-btn
+        >
+          + Add Another Course
+        </button>
+      </div>
+    </div>
+
+    <!-- Live GPA Results Panel -->
+    <div class="flex flex-col justify-between space-y-6 rounded-b-[2rem] xl:rounded-b-none xl:rounded-r-[2rem] border-t xl:border-t-0 xl:border-l border-[color:var(--border)] bg-[color:var(--surface)]/40 p-6 sm:p-8">
+      <div class="space-y-6">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Term Standing</span>
+          <button
+            type="button"
+            class="cursor-pointer text-xs font-semibold text-[color:var(--accent)] hover:underline flex items-center gap-1"
+            data-copy-result-btn
+          >
+            <Icon name="document" class="w-3.5 h-3.5" />
+            <span data-copy-text>Copy Results</span>
+          </button>
+        </div>
+
+        <!-- Primary Weighted GPA Score -->
+        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 text-center shadow-xs">
+          <p class="text-xs font-semibold uppercase tracking-wider text-[color:var(--muted)]">Weighted Term GPA</p>
+          <div class="mt-2 flex items-baseline justify-center gap-1">
+            <span class="text-5xl font-black tracking-tight text-[color:var(--fg)]" data-res-gpa>—</span>
+            <span class="text-lg font-bold text-[color:var(--muted)]" data-res-scale-max>/ 4.00</span>
+          </div>
+          <p class="mt-2 text-xs font-medium text-[color:var(--muted)]" data-res-subtext>
+            Enter course credits and grades to calculate GPA
+          </p>
+        </div>
+
+        <!-- Degree Standing / Honors (Only displayed if standard defines it) -->
+        <div class="hidden rounded-2xl border border-[color:var(--accent)]/30 bg-gradient-to-br from-[color:var(--accent-soft)] via-[color:var(--surface)] to-transparent p-4 space-y-1" data-classification-box>
+          <div class="flex items-center justify-between">
+            <span class="text-[10px] font-bold uppercase tracking-wider text-[color:var(--muted)]">Academic Distinction</span>
+            <span class="rounded-full px-2 py-0.5 text-[11px] font-bold border border-[color:var(--accent)]/30 bg-[color:var(--surface)] text-[color:var(--accent)]" data-standing-badge>
+              Honors
+            </span>
+          </div>
+          <p class="text-xs font-bold text-[color:var(--fg)]" data-standing-title>Dean's List</p>
+          <p class="text-[11px] text-[color:var(--muted)]" data-standing-desc></p>
+        </div>
+
+        <!-- Key Metrics Cards -->
+        <div class="grid grid-cols-2 gap-3">
+          <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3.5 text-center">
+            <span class="block text-[10px] font-bold uppercase tracking-wider text-[color:var(--muted)]">Total Credits</span>
+            <span class="mt-1 block text-2xl font-black text-[color:var(--fg)]" data-res-credits>0</span>
+          </div>
+          <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3.5 text-center">
+            <span class="block text-[10px] font-bold uppercase tracking-wider text-[color:var(--muted)]">Quality Points</span>
+            <span class="mt-1 block text-2xl font-black text-[color:var(--fg)]" data-res-points>0.00</span>
+          </div>
+        </div>
+
+        <!-- Course Performance Table -->
+        <div class="space-y-2">
+          <span class="text-xs font-bold text-[color:var(--fg)]">Course Quality Point Breakdown</span>
+          <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] overflow-hidden">
+            <table class="w-full text-left text-xs">
+              <thead class="border-b border-[color:var(--border)] bg-[color:var(--surface-strong)] text-[color:var(--muted)]">
+                <tr>
+                  <th class="px-3 py-2">Course</th>
+                  <th class="px-3 py-2">Credits</th>
+                  <th class="px-3 py-2">Grade</th>
+                  <th class="px-3 py-2 text-right">Points</th>
+                </tr>
+              </thead>
+              <tbody data-breakdown-tbody>
+                <!-- Injected via JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <p class="text-[11px] text-center text-[color:var(--muted)] pt-4 border-t border-[color:var(--border)]">
+        Formula: <code class="font-mono text-[color:var(--fg)]">GPA = Σ(Grade Points × Credits) ÷ Total Credits</code>
+      </p>
+    </div>
+  </div>
+
+  <script>
+    import { GRADING_STANDARDS, findStandardById, getDegreeClassification, type GradingStandard } from '../../data/gradingStandards';
+
+    interface CourseItem {
+      id: string;
+      name: string;
+      credits: number | string;
+      gradePoint: number | string;
+      letterGrade?: string;
+    }
+
+    function initGpaCalculator() {
+      const root = document.querySelector('[data-gpa-calculator-app]');
+      if (!root) return;
+
+      const standardSelect = root.querySelector<HTMLSelectElement>('[data-standard-select]');
+      const standardDesc = root.querySelector<HTMLElement>('[data-standard-desc]');
+      const scaleBadge = root.querySelector<HTMLElement>('[data-scale-badge]');
+      const customScaleRow = root.querySelector<HTMLElement>('[data-custom-scale-row]');
+      const customScaleInput = root.querySelector<HTMLInputElement>('[data-custom-scale-input]');
+
+      const coursesContainer = root.querySelector<HTMLElement>('[data-courses-container]');
+      const countBadge = root.querySelector<HTMLElement>('[data-course-count-badge]');
+      const addBtn = root.querySelector<HTMLButtonElement>('[data-add-course-btn]');
+      const addBottomBtn = root.querySelector<HTMLButtonElement>('[data-add-course-bottom-btn]');
+      const resetBtn = root.querySelector<HTMLButtonElement>('[data-reset-btn]');
+      const loadSampleBtn = root.querySelector<HTMLButtonElement>('[data-load-sample-btn]');
+      const copyBtn = root.querySelector<HTMLButtonElement>('[data-copy-result-btn]');
+
+      const resGpa = root.querySelector<HTMLElement>('[data-res-gpa]');
+      const resScaleMax = root.querySelector<HTMLElement>('[data-res-scale-max]');
+      const resSubtext = root.querySelector<HTMLElement>('[data-res-subtext]');
+      const resCredits = root.querySelector<HTMLElement>('[data-res-credits]');
+      const resPoints = root.querySelector<HTMLElement>('[data-res-points]');
+      const classBox = root.querySelector<HTMLElement>('[data-classification-box]');
+      const standingBadge = root.querySelector<HTMLElement>('[data-standing-badge]');
+      const standingTitle = root.querySelector<HTMLElement>('[data-standing-title]');
+      const standingDesc = root.querySelector<HTMLElement>('[data-standing-desc]');
+      const breakdownTbody = root.querySelector<HTMLTableSectionElement>('[data-breakdown-tbody]');
+
+      if (!standardSelect || !coursesContainer) return;
+
+      let courses: CourseItem[] = [
+        { id: 'c1', name: '', credits: '', gradePoint: '' },
+        { id: 'c2', name: '', credits: '', gradePoint: '' },
+        { id: 'c3', name: '', credits: '', gradePoint: '' },
+      ];
+
+      function getActiveStandard(): GradingStandard {
+        const stdId = standardSelect ? standardSelect.value : 'us-4.0';
+        if (stdId === 'universal') {
+          const maxScale = customScaleInput ? parseFloat(customScaleInput.value) || 4.0 : 4.0;
+          return {
+            id: 'universal',
+            name: 'Universal Standard',
+            shortName: 'Universal',
+            description: 'Direct grade point calculation with customizable maximum scale.',
+            gpaScale: maxScale,
+            hasPercentageMapping: false,
+            hasGpaMapping: false,
+            gradeBands: [],
+          };
+        }
+        return findStandardById(stdId);
+      }
+
+      function renderCourses() {
+        const standard = getActiveStandard();
+        if (!coursesContainer) return;
+
+        coursesContainer.innerHTML = courses.map((course, idx) => {
+          const isLetterStandard = standard.hasGpaMapping && standard.gradeBands && standard.gradeBands.length > 0;
+
+          const gradeInputHtml = isLetterStandard
+            ? `
+              <select data-course-grade="${idx}" class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-2.5 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none transition focus:border-[color:var(--accent)]">
+                <option value="" ${course.gradePoint === '' ? 'selected' : ''}>Select Grade...</option>
+                ${standard.gradeBands.map((band) => `
+                  <option value="${band.gradePoint ?? 0}" ${String(course.gradePoint) === String(band.gradePoint) && course.letterGrade === band.letter ? 'selected' : ''}>
+                    ${band.letter} (${(band.gradePoint ?? 0).toFixed(2)})
+                  </option>
+                `).join('')}
+              </select>
+            `
+            : `
+              <input
+                type="number"
+                min="0"
+                max="${standard.gpaScale ?? 100}"
+                step="0.01"
+                placeholder="e.g. 3.75"
+                value="${course.gradePoint}"
+                data-course-point="${idx}"
+                class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-2.5 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none transition focus:border-[color:var(--accent)]"
+              />
+            `;
+
+          return `
+            <div class="grid grid-cols-1 sm:grid-cols-[2fr_1.2fr_1.5fr_40px] gap-2 p-2.5 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] items-center transition hover:border-[color:var(--border-strong)]" data-course-row="${course.id}">
+              <div>
+                <input
+                  type="text"
+                  placeholder="e.g. Course ${idx + 1}"
+                  value="${course.name}"
+                  data-course-name="${idx}"
+                  class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-medium text-[color:var(--fg)] outline-none transition focus:border-[color:var(--accent)]"
+                />
+              </div>
+              <div class="flex items-center gap-1">
+                <input
+                  type="number"
+                  min="0.5"
+                  max="30"
+                  step="0.5"
+                  placeholder="e.g. 3"
+                  value="${course.credits}"
+                  data-course-credits="${idx}"
+                  class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-bold text-[color:var(--fg)] outline-none transition focus:border-[color:var(--accent)]"
+                />
+                <span class="text-[10px] text-[color:var(--muted)] font-medium">cr</span>
+              </div>
+              <div>
+                ${gradeInputHtml}
+              </div>
+              <div class="text-right">
+                <button
+                  type="button"
+                  class="cursor-pointer rounded-lg p-2 text-rose-500 hover:bg-rose-500/10 transition font-bold"
+                  data-remove-course="${idx}"
+                  title="Remove Course"
+                  aria-label="Remove Course"
+                  ${courses.length <= 1 ? 'disabled style="opacity:0.3;cursor:not-allowed"' : ''}
+                >
+                  <svg class="w-4 h-4 mx-auto" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </button>
+              </div>
+            </div>
+          `;
+        }).join('');
+
+        if (countBadge) {
+          countBadge.textContent = `${courses.length} course${courses.length === 1 ? '' : 's'}`;
+        }
+
+        // Attach event listeners to course inputs
+        coursesContainer.querySelectorAll<HTMLInputElement>('[data-course-name]').forEach((el) => {
+          el.addEventListener('input', (e) => {
+            const idx = parseInt((e.target as HTMLElement).dataset.courseName || '0', 10);
+            if (courses[idx]) courses[idx].name = el.value;
+          });
+        });
+
+        coursesContainer.querySelectorAll<HTMLInputElement>('[data-course-credits]').forEach((el) => {
+          el.addEventListener('input', (e) => {
+            const idx = parseInt((e.target as HTMLElement).dataset.courseCredits || '0', 10);
+            if (courses[idx]) courses[idx].credits = el.value;
+            calculate();
+          });
+        });
+
+        coursesContainer.querySelectorAll<HTMLSelectElement>('[data-course-grade]').forEach((el) => {
+          el.addEventListener('change', (e) => {
+            const idx = parseInt((e.target as HTMLElement).dataset.courseGrade || '0', 10);
+            const selectedOpt = el.options[el.selectedIndex];
+            if (courses[idx]) {
+              courses[idx].gradePoint = el.value;
+              courses[idx].letterGrade = selectedOpt ? selectedOpt.text.split(' ')[0] : '';
+            }
+            calculate();
+          });
+        });
+
+        coursesContainer.querySelectorAll<HTMLInputElement>('[data-course-point]').forEach((el) => {
+          el.addEventListener('input', (e) => {
+            const idx = parseInt((e.target as HTMLElement).dataset.coursePoint || '0', 10);
+            if (courses[idx]) courses[idx].gradePoint = el.value;
+            calculate();
+          });
+        });
+
+        coursesContainer.querySelectorAll<HTMLButtonElement>('[data-remove-course]').forEach((el) => {
+          el.addEventListener('click', (e) => {
+            const idx = parseInt((e.target as HTMLElement).dataset.removeCourse || '0', 10);
+            if (courses.length > 1) {
+              courses.splice(idx, 1);
+              renderCourses();
+              calculate();
+            }
+          });
+        });
+      }
+
+      function addCourse() {
+        courses.push({
+          id: `c_${Date.now()}_${Math.random().toString(36).substr(2, 4)}`,
+          name: '',
+          credits: '',
+          gradePoint: '',
+        });
+        renderCourses();
+        calculate();
+      }
+
+      function calculate() {
+        const standard = getActiveStandard();
+        const maxScale = standard.gpaScale ?? 4.0;
+
+        let totalCredits = 0;
+        let totalPoints = 0;
+        const validCourses: { name: string; credits: number; grade: number; points: number; letter?: string }[] = [];
+
+        courses.forEach((c, idx) => {
+          const cr = typeof c.credits === 'number' ? c.credits : parseFloat(String(c.credits));
+          const gr = typeof c.gradePoint === 'number' ? c.gradePoint : parseFloat(String(c.gradePoint));
+
+          if (!isNaN(cr) && cr > 0 && !isNaN(gr) && gr >= 0) {
+            const clampedGrade = Math.min(gr, maxScale);
+            const qualityPoints = clampedGrade * cr;
+            totalCredits += cr;
+            totalPoints += qualityPoints;
+            validCourses.push({
+              name: c.name.trim() || `Course ${idx + 1}`,
+              credits: cr,
+              grade: clampedGrade,
+              points: qualityPoints,
+              letter: c.letterGrade,
+            });
+          }
+        });
+
+        if (resScaleMax) resScaleMax.textContent = `/ ${maxScale.toFixed(2)}`;
+
+        if (totalCredits <= 0) {
+          if (resGpa) resGpa.textContent = '—';
+          if (resCredits) resCredits.textContent = '0';
+          if (resPoints) resPoints.textContent = '0.00';
+          if (resSubtext) resSubtext.textContent = 'Enter course credits and grades to calculate GPA';
+          if (classBox) classBox.classList.add('hidden');
+          if (breakdownTbody) {
+            breakdownTbody.innerHTML = `
+              <tr>
+                <td colspan="4" class="px-3 py-4 text-center text-[color:var(--muted)]">
+                  No completed course credits entered yet.
+                </td>
+              </tr>
+            `;
+          }
+          return;
+        }
+
+        const gpa = totalPoints / totalCredits;
+
+        if (resGpa) resGpa.textContent = gpa.toFixed(2);
+        if (resCredits) resCredits.textContent = totalCredits.toFixed(totalCredits % 1 === 0 ? 0 : 1);
+        if (resPoints) resPoints.textContent = totalPoints.toFixed(2);
+        if (resSubtext) {
+          resSubtext.textContent = `Based on ${validCourses.length} active course${validCourses.length === 1 ? '' : 's'} and ${totalCredits} total credits`;
+        }
+
+        // Academic Classification (only if standard defines degree classifications)
+        const classification = getDegreeClassification(gpa, standard, true);
+        if (classification && classBox) {
+          classBox.classList.remove('hidden');
+          if (standingBadge) standingBadge.textContent = classification.badge || 'Distinction';
+          if (standingTitle) standingTitle.textContent = classification.name;
+          if (standingDesc) standingDesc.textContent = classification.description || `Benchmark according to ${standard.name}.`;
+        } else if (classBox) {
+          classBox.classList.add('hidden');
+        }
+
+        // Breakdown Table
+        if (breakdownTbody) {
+          breakdownTbody.innerHTML = validCourses.map((vc) => `
+            <tr class="border-b border-[color:var(--border)] hover:bg-[color:var(--surface-strong)]/50 transition">
+              <td class="px-3 py-2 font-medium text-[color:var(--fg)]">${vc.name}</td>
+              <td class="px-3 py-2 font-mono text-[color:var(--muted)]">${vc.credits} cr</td>
+              <td class="px-3 py-2 font-mono font-bold text-[color:var(--fg)]">
+                ${vc.grade.toFixed(2)} ${vc.letter ? `(${vc.letter})` : ''}
+              </td>
+              <td class="px-3 py-2 text-right font-mono font-bold text-[color:var(--accent)]">
+                ${vc.points.toFixed(2)} pts
+              </td>
+            </tr>
+          `).join('');
+        }
+      }
+
+      function onStandardChange() {
+        const standard = getActiveStandard();
+        if (standardDesc) standardDesc.textContent = standard.description;
+        if (scaleBadge) {
+          scaleBadge.textContent = standard.gpaScale !== undefined ? `Scale: ${standard.gpaScale.toFixed(2)}` : 'Custom Scale';
+        }
+
+        if (customScaleRow) {
+          if (standard.id === 'universal') {
+            customScaleRow.classList.remove('hidden');
+          } else {
+            customScaleRow.classList.add('hidden');
+          }
+        }
+
+        // Re-render course rows with updated grade dropdowns/inputs
+        renderCourses();
+        calculate();
+      }
+
+      // Event listeners
+      standardSelect.addEventListener('change', onStandardChange);
+      if (customScaleInput) customScaleInput.addEventListener('input', () => { onStandardChange(); });
+      if (addBtn) addBtn.addEventListener('click', addCourse);
+      if (addBottomBtn) addBottomBtn.addEventListener('click', addCourse);
+
+      if (resetBtn) {
+        resetBtn.addEventListener('click', () => {
+          courses = [
+            { id: 'c1', name: '', credits: '', gradePoint: '' },
+            { id: 'c2', name: '', credits: '', gradePoint: '' },
+            { id: 'c3', name: '', credits: '', gradePoint: '' },
+          ];
+          renderCourses();
+          calculate();
+        });
+      }
+
+      if (loadSampleBtn) {
+        loadSampleBtn.addEventListener('click', () => {
+          courses = [
+            { id: 'c1', name: 'Calculus I', credits: 4, gradePoint: 4.0, letterGrade: 'A' },
+            { id: 'c2', name: 'Intro to Computer Science', credits: 4, gradePoint: 3.7, letterGrade: 'A-' },
+            { id: 'c3', name: 'General Chemistry', credits: 3, gradePoint: 3.3, letterGrade: 'B+' },
+            { id: 'c4', name: 'Academic Writing', credits: 3, gradePoint: 3.0, letterGrade: 'B' },
+          ];
+          renderCourses();
+          calculate();
+        });
+      }
+
+      if (copyBtn) {
+        copyBtn.addEventListener('click', async () => {
+          const gpaVal = resGpa ? resGpa.textContent : '';
+          const maxScale = resScaleMax ? resScaleMax.textContent : '';
+          const crVal = resCredits ? resCredits.textContent : '';
+          const ptsVal = resPoints ? resPoints.textContent : '';
+          const standard = getActiveStandard();
+
+          const text = `Weighted GPA: ${gpaVal} ${maxScale}\nTotal Credits: ${crVal}\nTotal Quality Points: ${ptsVal}\nGrading Standard: ${standard.name}`;
+          try {
+            await navigator.clipboard.writeText(text);
+            const span = root.querySelector<HTMLElement>('[data-copy-text]');
+            if (span) {
+              const orig = span.textContent;
+              span.textContent = 'Copied!';
+              setTimeout(() => { span.textContent = orig; }, 2000);
+            }
+          } catch {}
+        });
+      }
+
+      // Initialize
+      onStandardChange();
+    }
+
+    initGpaCalculator();
+  </script>
+</section>

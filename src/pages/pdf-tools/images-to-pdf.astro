@@ -267,7 +267,8 @@ const workedExampleData = {
             id="compile-btn"
             class="w-full rounded-xl bg-[color:var(--accent)] py-3 text-xs font-bold text-white shadow-xs transition hover:opacity-90 active:scale-95 cursor-pointer flex items-center justify-center gap-2"
           >
-            <span>⚡ Compile &amp; Download PDF</span>
+            <Icon name="document" class="w-4 h-4" />
+            <span>Compile &amp; Download PDF</span>
           </button>
           <p id="compile-status" class="text-center text-xs text-[color:var(--muted)]"></p>
         </div>
@@ -400,18 +401,18 @@ const workedExampleData = {
               </div>
               <div class="mt-2 flex items-center justify-between border-t border-[color:var(--border)] pt-2 text-xs">
                 <div class="flex items-center gap-1">
-                  <button type="button" data-move-up="${idx}" class="rounded p-1 hover:bg-[color:var(--surface-strong)] ${isFirst ? 'opacity-30 cursor-not-allowed' : 'cursor-pointer'}" title="Move Left" ${isFirst ? 'disabled' : ''}>
-                    ←
+                  <button type="button" data-move-up="${idx}" class="rounded p-1 hover:bg-[color:var(--surface-strong)] ${isFirst ? 'opacity-30 cursor-not-allowed' : 'cursor-pointer'}" title="Move Left" aria-label="Move Left" ${isFirst ? 'disabled' : ''}>
+                    <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
                   </button>
-                  <button type="button" data-move-down="${idx}" class="rounded p-1 hover:bg-[color:var(--surface-strong)] ${isLast ? 'opacity-30 cursor-not-allowed' : 'cursor-pointer'}" title="Move Right" ${isLast ? 'disabled' : ''}>
-                    →
+                  <button type="button" data-move-down="${idx}" class="rounded p-1 hover:bg-[color:var(--surface-strong)] ${isLast ? 'opacity-30 cursor-not-allowed' : 'cursor-pointer'}" title="Move Right" aria-label="Move Right" ${isLast ? 'disabled' : ''}>
+                    <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
                   </button>
-                  <button type="button" data-rotate="${idx}" class="rounded p-1 text-[color:var(--accent)] hover:bg-[color:var(--surface-strong)] cursor-pointer" title="Rotate 90°">
-                    ↻
+                  <button type="button" data-rotate="${idx}" class="rounded p-1 text-[color:var(--accent)] hover:bg-[color:var(--surface-strong)] cursor-pointer" title="Rotate 90°" aria-label="Rotate 90°">
+                    <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"></path></svg>
                   </button>
                 </div>
-                <button type="button" data-remove="${idx}" class="rounded p-1 text-rose-500 hover:bg-rose-500/10 cursor-pointer" title="Remove">
-                  ✕
+                <button type="button" data-remove="${idx}" class="rounded p-1 text-rose-500 hover:bg-rose-500/10 cursor-pointer" title="Remove" aria-label="Remove">
+                  <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
                 </button>
               </div>
             </div>
@@ -650,7 +651,7 @@ const workedExampleData = {
           document.body.removeChild(a);
           URL.revokeObjectURL(url);
 
-          compileStatus.textContent = `✓ Successfully compiled ${imageItems.length} images into a ${pdfDoc.getPageCount()}-page PDF!`;
+          compileStatus.innerHTML = `<span class="inline-flex items-center gap-1.5 text-emerald-500 font-semibold"><svg class="w-4 h-4 inline shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"></polyline></svg> Successfully compiled ${imageItems.length} images into a ${pdfDoc.getPageCount()}-page PDF!</span>`;
         } catch (err) {
           console.error('Compilation error:', err);
           compileStatus.textContent = `Error during compilation: ${err.message || err}`;

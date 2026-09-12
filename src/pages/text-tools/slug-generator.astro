@@ -611,9 +611,9 @@ const workedExampleData = {
         if (!text || text === '-') return;
         try {
           await navigator.clipboard.writeText(text);
-          const orig = btnCopySlug.textContent;
-          btnCopySlug.textContent = '✓ Copied Slug!';
-          setTimeout(() => { btnCopySlug.textContent = orig; }, 1800);
+          const orig = btnCopySlug.innerHTML;
+          btnCopySlug.innerHTML = '<span class="inline-flex items-center gap-1"><svg class="w-3.5 h-3.5 inline shrink-0 text-emerald-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"></polyline></svg><span>Copied Slug!</span></span>';
+          setTimeout(() => { btnCopySlug.innerHTML = orig; }, 1800);
         } catch (e) {
           console.error(e);
         }
@@ -627,9 +627,9 @@ const workedExampleData = {
         const fullUrl = `https://yourdomain.com${prefix}${slug}`;
         try {
           await navigator.clipboard.writeText(fullUrl);
-          const orig = btnCopyUrl.textContent;
-          btnCopyUrl.textContent = '✓ Copied URL!';
-          setTimeout(() => { btnCopyUrl.textContent = orig; }, 1800);
+          const orig = btnCopyUrl.innerHTML;
+          btnCopyUrl.innerHTML = '<span class="inline-flex items-center gap-1"><svg class="w-3.5 h-3.5 inline shrink-0 text-emerald-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"></polyline></svg><span>Copied URL!</span></span>';
+          setTimeout(() => { btnCopyUrl.innerHTML = orig; }, 1800);
         } catch (e) {
           console.error(e);
         }
@@ -639,9 +639,9 @@ const workedExampleData = {
         if (!batchOut.value) return;
         try {
           await navigator.clipboard.writeText(batchOut.value);
-          const orig = btnCopyBatch.textContent;
-          btnCopyBatch.textContent = '✓ Copied Batch!';
-          setTimeout(() => { btnCopyBatch.textContent = orig; }, 1800);
+          const orig = btnCopyBatch.innerHTML;
+          btnCopyBatch.innerHTML = '<span class="inline-flex items-center gap-1"><svg class="w-3.5 h-3.5 inline shrink-0 text-emerald-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"></polyline></svg><span>Copied Batch!</span></span>';
+          setTimeout(() => { btnCopyBatch.innerHTML = orig; }, 1800);
         } catch (e) {
           console.error(e);
         }

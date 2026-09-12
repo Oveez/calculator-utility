@@ -195,7 +195,7 @@ const parameterGuide = [
         <div class="flex flex-wrap items-center justify-between gap-3">
           <div>
             <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Interactive Column Picker &amp; Reorderer</span>
-            <p class="text-[11px] text-[color:var(--muted)] mt-0.5">Toggle checkboxes to include columns. Use ◀ ▶ buttons to reorder columns.</p>
+            <p class="text-[11px] text-[color:var(--muted)] mt-0.5">Toggle checkboxes to include columns. Use arrow buttons to reorder columns.</p>
           </div>
           <div class="flex items-center gap-3 text-xs">
             <button type="button" data-select-all class="font-semibold text-[color:var(--primary)] hover:underline cursor-pointer">Select All</button>
@@ -240,8 +240,9 @@ const parameterGuide = [
     <!-- Live Table Preview Section -->
     <section class="space-y-3 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5">
       <div class="flex items-center justify-between">
-        <h2 class="text-sm font-bold uppercase tracking-wider text-[color:var(--fg)]">
-          📊 Extracted Table Preview (First 8 Rows)
+        <h2 class="text-sm font-bold uppercase tracking-wider text-[color:var(--fg)] flex items-center gap-2">
+          <Icon name="chart" class="w-4 h-4 text-[color:var(--accent)]" />
+          <span>Extracted Table Preview (First 8 Rows)</span>
         </h2>
         <span id="preview-badge" class="text-xs text-[color:var(--muted)]">Live Data View</span>
       </div>
@@ -401,12 +402,16 @@ const parameterGuide = [
 
         colContainer.innerHTML = columnOrder.map((col, idx) => `
           <div class="flex items-center gap-1.5 rounded-xl border ${col.selected ? 'border-[color:var(--fg)] bg-[color:var(--surface-strong)]' : 'border-[color:var(--border)] bg-[color:var(--bg)]'} px-3 py-1.5 transition">
-            <button type="button" class="btn-move-left px-1 text-[10px] text-[color:var(--muted)] hover:text-[color:var(--fg)] cursor-pointer" data-idx="${idx}" title="Move Left">◀</button>
+            <button type="button" class="btn-move-left p-1 text-[color:var(--muted)] hover:text-[color:var(--fg)] cursor-pointer flex items-center justify-center" data-idx="${idx}" title="Move Left" aria-label="Move Left">
+              <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+            </button>
             <label class="flex items-center gap-1.5 cursor-pointer select-none">
               <input type="checkbox" class="col-cb rounded accent-[color:var(--fg)]" data-idx="${idx}" ${col.selected ? 'checked' : ''} />
               <span class="font-bold ${col.selected ? 'text-[color:var(--fg)]' : 'text-[color:var(--muted)]'}">${escapeHtml(col.name)}</span>
             </label>
-            <button type="button" class="btn-move-right px-1 text-[10px] text-[color:var(--muted)] hover:text-[color:var(--fg)] cursor-pointer" data-idx="${idx}" title="Move Right">▶</button>
+            <button type="button" class="btn-move-right p-1 text-[color:var(--muted)] hover:text-[color:var(--fg)] cursor-pointer flex items-center justify-center" data-idx="${idx}" title="Move Right" aria-label="Move Right">
+              <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+            </button>
           </div>
         `).join('');
 

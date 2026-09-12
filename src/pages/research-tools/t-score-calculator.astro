@@ -486,7 +486,7 @@ const schemaGraph = [
           const tOne = getTCrit(item.zOne, df);
           const passesTwo = absT >= tTwo;
           const status = passesTwo
-            ? '<span class="text-cyan-500 dark:text-cyan-400 font-bold">✓ Significant (|t| ≥ t*)</span>'
+            ? '<span class="text-cyan-500 dark:text-cyan-400 font-bold inline-flex items-center gap-1"><svg class="w-3.5 h-3.5 inline shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"></polyline></svg><span>Significant (|t| ≥ t*)</span></span>'
             : '<span class="text-[color:var(--muted)]">Not Significant</span>';
 
           return `
@@ -562,7 +562,7 @@ const schemaGraph = [
           try {
             await navigator.clipboard.writeText(text);
             const orig = copyBtn.innerHTML;
-            copyBtn.innerHTML = '<span>✓ Copied!</span>';
+            copyBtn.innerHTML = '<span class="inline-flex items-center gap-1"><svg class="w-3.5 h-3.5 inline shrink-0 text-emerald-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"></polyline></svg><span>Copied!</span></span>';
             setTimeout(() => { copyBtn.innerHTML = orig; }, 2000);
           } catch {
             alert('Failed to copy to clipboard');

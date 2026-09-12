@@ -559,8 +559,9 @@ const taxParameterGuide: CalculatorParameterInfo[] = [
             <Icon name="scale" class="w-4 h-4 text-[color:var(--accent)]" />
             <span>4. Deductions Optimizer: Standard vs. Itemized</span>
           </h3>
-          <span data-deduction-badge class="rounded-full bg-cyan-500/10 px-2.5 py-0.5 text-xs font-bold text-cyan-600 dark:text-cyan-400 border border-cyan-500/20">
-            ✓ Auto-Selected: Standard ($16,100)
+          <span data-deduction-badge class="rounded-full bg-cyan-500/10 px-2.5 py-0.5 text-xs font-bold text-cyan-600 dark:text-cyan-400 border border-cyan-500/20 inline-flex items-center gap-1.5">
+            <Icon name="check" class="w-3.5 h-3.5" />
+            <span>Auto-Selected: Standard ($16,100)</span>
           </span>
         </div>
 
@@ -1301,13 +1302,14 @@ const taxParameterGuide: CalculatorParameterInfo[] = [
           if (heroEffectiveRate) heroEffectiveRate.textContent = effectiveRate.toFixed(1) + '%';
 
           if (deductionBadge) {
+            const checkSvg = `<svg class="w-3.5 h-3.5 inline-block shrink-0 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
             if (deductionUsed === 'itemized') {
               const diff = totalItemized - stdDeduction;
-              deductionBadge.textContent = `✓ Itemizing Wins (+${formatMoney(diff, cur, sym)} extra deduction)`;
-              deductionBadge.className = 'rounded-full bg-blue-500/10 px-2.5 py-0.5 text-xs font-bold text-blue-600 dark:text-blue-400';
+              deductionBadge.innerHTML = `${checkSvg}<span>Itemizing Wins (+${formatMoney(diff, cur, sym)} extra deduction)</span>`;
+              deductionBadge.className = 'rounded-full bg-blue-500/10 px-2.5 py-0.5 text-xs font-bold text-blue-600 dark:text-blue-400 inline-flex items-center';
             } else {
-              deductionBadge.textContent = `✓ Standard Deduction / Allowance (${formatMoney(stdDeduction, cur, sym)})`;
-              deductionBadge.className = 'rounded-full bg-cyan-500/10 px-2.5 py-0.5 text-xs font-bold text-cyan-600 dark:text-cyan-400 border border-cyan-500/20';
+              deductionBadge.innerHTML = `${checkSvg}<span>Standard Deduction / Allowance (${formatMoney(stdDeduction, cur, sym)})</span>`;
+              deductionBadge.className = 'rounded-full bg-cyan-500/10 px-2.5 py-0.5 text-xs font-bold text-cyan-600 dark:text-cyan-400 border border-cyan-500/20 inline-flex items-center';
             }
           }
 
@@ -1486,9 +1488,9 @@ const taxParameterGuide: CalculatorParameterInfo[] = [
             ].join('\n');
 
             navigator.clipboard.writeText(text).then(() => {
-              const orig = copySummaryBtn.textContent;
-              copySummaryBtn.textContent = '✓ Copied!';
-              setTimeout(() => { copySummaryBtn.textContent = orig; }, 2000);
+              const orig = copySummaryBtn.innerHTML;
+              copySummaryBtn.innerHTML = `<svg class="w-3.5 h-3.5 inline-block shrink-0 mr-1 text-emerald-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"></polyline></svg><span>Copied!</span>`;
+              setTimeout(() => { copySummaryBtn.innerHTML = orig; }, 2000);
             });
           });
         }

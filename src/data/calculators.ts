@@ -23,6 +23,8 @@ import {
 	generateCompoundGrowthSchedule,
 	getTextValue,
 	getValue,
+	gpaToLetterGrade,
+	gpaToPercentage,
 	normalizeToken,
 	weightedAverage,
 	workingDaysFromIso,
@@ -819,70 +821,64 @@ const calculators: CalculatorConfig[] = [
 		slug: 'gpa-calculator',
 		title: 'GPA Calculator',
 		category: 'Education',
-		metaDescription: 'Free GPA calculator to calculate weighted GPA, course credit averages, and semester grades with our fast online academic tool.',
+		metaDescription: 'Free weighted GPA calculator. Calculate semester grade point average across any number of courses and credits on 4.0, 5.0, 10.0, or custom grading scales.',
 		inputs: [
-			{ id: 'course1Grade', label: 'Course 1 grade points', type: 'number', min: 0, max: 4.0, step: 0.01, defaultValue: 3.7, unit: 'pts', colSpan: 'half', helpText: 'Standard 4.0 grade point scale (A=4.0, A-=3.7)' },
-			{ id: 'course1Credits', label: 'Course 1 credits', type: 'number', min: 0, max: 12, step: 0.5, defaultValue: 3, unit: 'credits', suffix: 'credits', colSpan: 'half' },
-			{ id: 'course2Grade', label: 'Course 2 grade points', type: 'number', min: 0, max: 4.0, step: 0.01, defaultValue: 3.3, unit: 'pts', colSpan: 'half', helpText: 'B+=3.3, B=3.0, B-=2.7' },
-			{ id: 'course2Credits', label: 'Course 2 credits', type: 'number', min: 0, max: 12, step: 0.5, defaultValue: 3, unit: 'credits', suffix: 'credits', colSpan: 'half' },
-			{ id: 'course3Grade', label: 'Course 3 grade points', type: 'number', min: 0, max: 4.0, step: 0.01, defaultValue: 4.0, unit: 'pts', colSpan: 'half', helpText: 'A=4.0' },
-			{ id: 'course3Credits', label: 'Course 3 credits', type: 'number', min: 0, max: 12, step: 0.5, defaultValue: 4, unit: 'credits', suffix: 'credits', colSpan: 'half' },
-			{ id: 'course4Grade', label: 'Course 4 grade points', type: 'number', min: 0, max: 4.0, step: 0.01, defaultValue: 0, unit: 'pts', colSpan: 'half', tier: 'advanced', helpText: 'Optional additional course' },
-			{ id: 'course4Credits', label: 'Course 4 credits', type: 'number', min: 0, max: 12, step: 0.5, defaultValue: 0, unit: 'credits', suffix: 'credits', colSpan: 'half', tier: 'advanced' },
-			{ id: 'course5Grade', label: 'Course 5 grade points', type: 'number', min: 0, max: 4.0, step: 0.01, defaultValue: 0, unit: 'pts', colSpan: 'half', tier: 'advanced', helpText: 'Optional elective / lab' },
-			{ id: 'course5Credits', label: 'Course 5 credits', type: 'number', min: 0, max: 12, step: 0.5, defaultValue: 0, unit: 'credits', suffix: 'credits', colSpan: 'half', tier: 'advanced' },
+			{ id: 'course1Grade', label: 'Course 1 grade points', type: 'number', min: 0, max: 100, step: 0.01, placeholder: 'e.g. 3.75', defaultValue: 3.7, unit: 'pts', colSpan: 'half', helpText: 'Grade points earned (e.g. 3.7 on 4.0 scale)' },
+			{ id: 'course1Credits', label: 'Course 1 credits', type: 'number', min: 0.5, max: 30, step: 0.5, placeholder: 'e.g. 3', defaultValue: 3, unit: 'credits', suffix: 'credits', colSpan: 'half' },
+			{ id: 'course2Grade', label: 'Course 2 grade points', type: 'number', min: 0, max: 100, step: 0.01, placeholder: 'e.g. 3.30', defaultValue: 3.3, unit: 'pts', colSpan: 'half', helpText: 'Grade points earned' },
+			{ id: 'course2Credits', label: 'Course 2 credits', type: 'number', min: 0.5, max: 30, step: 0.5, placeholder: 'e.g. 3', defaultValue: 3, unit: 'credits', suffix: 'credits', colSpan: 'half' },
+			{ id: 'course3Grade', label: 'Course 3 grade points', type: 'number', min: 0, max: 100, step: 0.01, placeholder: 'e.g. 4.00', defaultValue: 4.0, unit: 'pts', colSpan: 'half', helpText: 'Grade points earned' },
+			{ id: 'course3Credits', label: 'Course 3 credits', type: 'number', min: 0.5, max: 30, step: 0.5, placeholder: 'e.g. 4', defaultValue: 4, unit: 'credits', suffix: 'credits', colSpan: 'half' },
 		],
 		formula: (values): CalculatorDetailedResult => {
-			const courses = [
-				{ name: 'Course 1', grade: getValue(values, 'course1Grade', 3.7), credits: getValue(values, 'course1Credits', 3) },
-				{ name: 'Course 2', grade: getValue(values, 'course2Grade', 3.3), credits: getValue(values, 'course2Credits', 3) },
-				{ name: 'Course 3', grade: getValue(values, 'course3Grade', 4.0), credits: getValue(values, 'course3Credits', 4) },
-				{ name: 'Course 4', grade: getValue(values, 'course4Grade', 0), credits: getValue(values, 'course4Credits', 0) },
-				{ name: 'Course 5', grade: getValue(values, 'course5Grade', 0), credits: getValue(values, 'course5Credits', 0) },
+			const rawCourses = [
+				{ name: 'Course 1', grade: getValue(values, 'course1Grade', 0), credits: getValue(values, 'course1Credits', 0) },
+				{ name: 'Course 2', grade: getValue(values, 'course2Grade', 0), credits: getValue(values, 'course2Credits', 0) },
+				{ name: 'Course 3', grade: getValue(values, 'course3Grade', 0), credits: getValue(values, 'course3Credits', 0) },
 			];
 
-			const activeCourses = courses.filter((c) => c.credits > 0);
+			const activeCourses = rawCourses.filter((c) => c.credits > 0 && c.grade >= 0);
 			const totalCredits = activeCourses.reduce((sum, c) => sum + c.credits, 0);
 			const totalQualityPoints = activeCourses.reduce((sum, c) => sum + c.grade * c.credits, 0);
-			const gpa = totalCredits > 0 ? totalQualityPoints / totalCredits : 0;
 
-			let standing = 'Good Standing';
-			let badge = 'Satisfactory';
-			if (gpa >= 3.9) {
-				standing = 'Summa Cum Laude / Highest Honors';
-				badge = 'Highest Honors';
-			} else if (gpa >= 3.7) {
-				standing = 'Magna Cum Laude / Dean\'s Honors';
-				badge = 'High Honors';
-			} else if (gpa >= 3.5) {
-				standing = 'Cum Laude / Dean\'s List';
-				badge = 'Dean\'s List';
-			} else if (gpa >= 3.0) {
-				standing = 'Good Academic Standing (B Average)';
-				badge = 'Good Standing';
-			} else if (gpa >= 2.0) {
-				standing = 'Passing Academic Standing';
-				badge = 'Satisfactory';
-			} else {
-				standing = 'Academic Probation Risk (< 2.0)';
-				badge = 'Warning';
+			if (totalCredits <= 0) {
+				return {
+					primary: {
+						label: 'Semester GPA',
+						value: 0,
+						formattedValue: '0.00 GPA',
+						subtext: 'Enter course grades and course credits above'
+					},
+					secondary: [
+						{ id: 'qualityPoints', label: 'Quality Points Earned', value: 0, formattedValue: '0.00 pts' },
+						{ id: 'enrolledCredits', label: 'Total Credits', value: 0, formattedValue: '0 credits' },
+					],
+					breakdown: [],
+					chart: {
+						type: 'donut',
+						title: 'Quality Point Distribution by Course',
+						labels: ['No Courses'],
+						datasets: [{
+							label: 'Quality Points',
+							data: [1]
+						}],
+						summaryText: 'Enter completed course credits to evaluate semester GPA.'
+					}
+				};
 			}
 
-			const letterEquiv = gpa >= 3.85 ? 'A' : gpa >= 3.5 ? 'A-' : gpa >= 3.15 ? 'B+' : gpa >= 2.85 ? 'B' : gpa >= 2.5 ? 'B-' : gpa >= 2.15 ? 'C+' : gpa >= 1.85 ? 'C' : gpa >= 1.5 ? 'C-' : gpa >= 1.0 ? 'D' : 'F';
-			const approxPct = Math.min(Math.round((gpa / 4.0) * 100), 100);
+			const gpa = totalQualityPoints / totalCredits;
 
 			return {
 				primary: {
 					label: 'Semester GPA',
 					value: gpa,
 					formattedValue: `${formatNumber(gpa)} GPA`,
-					subtext: `${totalCredits.toFixed(1)} enrolled credit hours completed`
+					subtext: `${totalCredits.toFixed(totalCredits % 1 === 0 ? 0 : 1)} total credits completed`
 				},
 				secondary: [
-					{ id: 'qualityPoints', label: 'Quality Points Earned', value: totalQualityPoints, formattedValue: formatNumber(totalQualityPoints) },
-					{ id: 'enrolledCredits', label: 'Total Enrolled Credits', value: totalCredits, formattedValue: `${totalCredits.toFixed(1)} hrs` },
-					{ id: 'academicStanding', label: 'Academic Standing', value: standing, formattedValue: standing, badge },
-					{ id: 'letterGrade', label: 'Grade & % Equivalent', value: letterEquiv, formattedValue: `${letterEquiv} (~${approxPct}%)` },
+					{ id: 'qualityPoints', label: 'Quality Points Earned', value: totalQualityPoints, formattedValue: `${formatNumber(totalQualityPoints)} pts` },
+					{ id: 'enrolledCredits', label: 'Total Credits', value: totalCredits, formattedValue: `${totalCredits.toFixed(totalCredits % 1 === 0 ? 0 : 1)} credits` },
 				],
 				breakdown: activeCourses.map((c) => ({
 					label: c.name,
@@ -897,110 +893,108 @@ const calculators: CalculatorConfig[] = [
 						label: 'Quality Points',
 						data: activeCourses.map((c) => Number((c.grade * c.credits).toFixed(2)))
 					}],
-					summaryText: `Your weighted term GPA is ${formatNumber(gpa)} based on ${totalCredits} credit hours.`
+					summaryText: `Your weighted term GPA is ${formatNumber(gpa)} across ${totalCredits.toFixed(totalCredits % 1 === 0 ? 0 : 1)} total credits.`
 				}
 			};
 		},
 		resultFormat: (value) => typeof value === 'object' && 'primary' in value ? value.primary.formattedValue : `${formatNumber(value)} GPA`,
 		parametersGuide: [
-			{ id: 'courseGrade', name: 'Grade Points (4.0 Scale)', description: 'Numeric quality points assigned to letter grades (A=4.0, A-=3.7, B+=3.3, B=3.0, C=2.0).', whyItMatters: 'Higher course grades increase quality points proportionately to course credit weight.', typicalRange: '0.0 to 4.0' },
-			{ id: 'courseCredits', name: 'Course Credit Hours', description: 'Institutional credits or units assigned to the course (typically 3 or 4 credits).', whyItMatters: 'Courses with higher credits exert greater mathematical influence over your GPA.', typicalRange: '1.0 to 5.0 credits' },
-			{ id: 'qualityPoints', name: 'Quality Points', description: 'Course Grade Points multiplied by Course Credit Hours.', whyItMatters: 'The fundamental numerator in collegiate GPA calculations (Total Points ÷ Total Credits).', typicalRange: '0 to 20 per course' },
-			{ id: 'honorsCutoff', name: 'Dean\'s List & Latin Honors', description: 'Institutional benchmarks for academic distinction.', whyItMatters: 'Dean\'s List typically requires a 3.50+ GPA; Magna Cum Laude usually requires 3.70+.', typicalRange: '3.50 to 4.00' },
+			{ id: 'courseGrade', name: 'Course Grade Points', description: 'Numeric quality points assigned to letter grades or course marks on your institution\'s scale (e.g. 4.0, 5.0, 10.0, or custom).', whyItMatters: 'Higher course grade points increase quality points proportionately to credit weight.', typicalRange: '0.0 to Scale Maximum' },
+			{ id: 'courseCredits', name: 'Course Credits / Units', description: 'Institutional credits, units, or contact hours assigned to the course.', whyItMatters: 'Courses with higher credits exert greater mathematical influence over your GPA.', typicalRange: '1 to 6 credits' },
+			{ id: 'qualityPoints', name: 'Quality Points', description: 'Course Grade Points multiplied by Course Credits.', whyItMatters: 'The fundamental numerator in collegiate GPA calculations (Total Points ÷ Total Credits).', typicalRange: '0 to 24 per course' },
+			{ id: 'academicStanding', name: 'Academic Standing & Honors', description: 'Institutional benchmarks for semester academic distinction.', whyItMatters: 'Dean\'s list, honors standing, and graduation distinctions are defined by your specific academic standard.', typicalRange: 'Institution specific' },
 		],
 		faq: [
 			{
-				question: 'How does a weighted gpa calculator compute semester scores?',
-				answer: 'A weighted gpa calculator multiplies each course grade by its credit hours, sums the quality points, and divides by total credits to determine your exact semester gpa calculator rating.'
+				question: 'How is weighted GPA calculated across different courses?',
+				answer: 'Weighted GPA multiplies each course’s numeric grade point by its credit weight, sums all quality points, and divides by total completed credits: GPA = Σ(Grade Points × Credits) ÷ Total Credits.'
 			},
 			{
-				question: 'How can I get an accurate gpa estimate before final grades?',
-				answer: 'Enter your projected grades and credit units into this tool to get an immediate gpa estimate of your semester standing.'
+				question: 'Which grading standard should I select?',
+				answer: 'Check your official transcript or university academic regulations for your institution’s exact grade-to-point table. Do not choose a standard solely because it is commonly used in your country. If your institution uses a grading scale not listed, select the Custom Standard.'
 			},
 			{
-				question: 'Can I do a gpa convert from percentage scores?',
-				answer: 'Yes, if your school grades on a 100-point scale, convert percentage marks to standard 4.0 grade points before calculating.'
+				question: 'Does an 80% mark automatically equal the same GPA everywhere?',
+				answer: 'No. An 80% mark does not automatically equal the same letter grade or GPA at every institution. Percentage-to-grade and percentage-to-GPA conversions depend on the grading policy being used. Always refer to your university\'s published grading scheme.'
+			},
+			{
+				question: 'What is the difference between Credits and Credit Hours?',
+				answer: 'In most universities, credits, units, and credit hours are used interchangeably to denote the academic weight of a course. Our tool computes weighted results based on your program\'s exact credit inputs.'
 			},
 		],
 		relatedSlugs: ['cgpa-calculator', 'grade-calculator', 'percentage-calculator'],
 		content: makeContent(
-			'This online GPA calculator provides accurate weighted grade point average calculations for high school, college, and university students. Whether you need a semester gpa calculator or a weighted gpa calculator to evaluate academic standing and honors eligibility, our tool delivers instant results.',
-			'The calculator computes your weighted average by multiplying each grade point by its course credits, summing total grade points, and dividing by total enrolled credits.',
-			'Formula: GPA = Σ(Course Grade Points × Course Credits) ÷ Total Credits.',
+			'This universal GPA calculator provides weighted grade point average calculations across any number of courses and credits. Grading systems vary by country, university, institution, and sometimes program; when possible, use the grading scale shown on your official transcript or your institution’s academic regulations.',
+			'The calculator computes your weighted average by multiplying each course’s grade points by its credit units, summing total quality points, and dividing by total enrolled credits.',
+			'Formula: GPA = Σ(Course Grade Points × Course Credits) ÷ Total Credits. Remember that grading standards and percentage-to-GPA conversions are not universal.',
 			[
-				{ title: 'Balanced Term Workload', description: 'Three courses with balanced weight and strong performance.', values: { course1Grade: 3.7, course1Credits: 3, course2Grade: 3.3, course2Credits: 3, course3Grade: 4.0, course3Credits: 4 }, result: '3.70 GPA' },
-				{ title: 'Mixed Credit Workload', description: 'A heavy 5-credit core lecture balancing lighter elective classes.', values: { course1Grade: 3.0, course1Credits: 2, course2Grade: 3.8, course2Credits: 5, course3Grade: 2.7, course3Credits: 1 }, result: '3.46 GPA' },
+				{ title: 'Balanced Term Workload', description: 'Three courses with balanced credit weights.', values: { course1Grade: 3.7, course1Credits: 3, course2Grade: 3.3, course2Credits: 3, course3Grade: 4.0, course3Credits: 4 }, result: '3.70 GPA' },
 			],
 		),
 	},
 	{
-		metaTitle: 'CGPA Calculator — Cumulative GPA Across Semesters',
+		metaTitle: 'CGPA Calculator — Cumulative GPA Across Semesters & Terms',
 		slug: 'cgpa-calculator',
 		title: 'CGPA Calculator',
 		category: 'Education',
-		metaDescription: 'Calculate cumulative GPA across multiple college terms with our fast, free cumulative gpa calculator and academic tracker.',
+		metaDescription: 'Calculate cumulative grade point average (CGPA) across multiple terms with our free, credit-weighted academic tracker. Supports any number of semesters and scales.',
 		inputs: [
-			{ id: 'semester1Gpa', label: 'Semester 1 GPA', type: 'number', min: 0, max: 4.0, step: 0.01, defaultValue: 3.5, unit: 'pts', colSpan: 'half' },
-			{ id: 'semester1Credits', label: 'Semester 1 credits', type: 'number', min: 0, max: 40, step: 0.5, defaultValue: 18, unit: 'credits', suffix: 'credits', colSpan: 'half' },
-			{ id: 'semester2Gpa', label: 'Semester 2 GPA', type: 'number', min: 0, max: 4.0, step: 0.01, defaultValue: 3.8, unit: 'pts', colSpan: 'half' },
-			{ id: 'semester2Credits', label: 'Semester 2 credits', type: 'number', min: 0, max: 40, step: 0.5, defaultValue: 18, unit: 'credits', suffix: 'credits', colSpan: 'half' },
-			{ id: 'semester3Gpa', label: 'Semester 3 GPA', type: 'number', min: 0, max: 4.0, step: 0.01, defaultValue: 3.6, unit: 'pts', colSpan: 'half' },
-			{ id: 'semester3Credits', label: 'Semester 3 credits', type: 'number', min: 0, max: 40, step: 0.5, defaultValue: 16, unit: 'credits', suffix: 'credits', colSpan: 'half' },
-			{ id: 'semester4Gpa', label: 'Semester 4 GPA', type: 'number', min: 0, max: 4.0, step: 0.01, defaultValue: 3.9, unit: 'pts', colSpan: 'half', tier: 'advanced' },
-			{ id: 'semester4Credits', label: 'Semester 4 credits', type: 'number', min: 0, max: 40, step: 0.5, defaultValue: 18, unit: 'credits', suffix: 'credits', colSpan: 'half', tier: 'advanced' },
-			{ id: 'semester5Gpa', label: 'Semester 5 GPA', type: 'number', min: 0, max: 4.0, step: 0.01, defaultValue: 0, unit: 'pts', colSpan: 'half', tier: 'advanced' },
-			{ id: 'semester5Credits', label: 'Semester 5 credits', type: 'number', min: 0, max: 40, step: 0.5, defaultValue: 0, unit: 'credits', suffix: 'credits', colSpan: 'half', tier: 'advanced' },
-			{ id: 'semester6Gpa', label: 'Semester 6 GPA', type: 'number', min: 0, max: 4.0, step: 0.01, defaultValue: 0, unit: 'pts', colSpan: 'half', tier: 'advanced' },
-			{ id: 'semester6Credits', label: 'Semester 6 credits', type: 'number', min: 0, max: 40, step: 0.5, defaultValue: 0, unit: 'credits', suffix: 'credits', colSpan: 'half', tier: 'advanced' },
+			{ id: 'semester1Gpa', label: 'Semester 1 GPA', type: 'number', min: 0, max: 100, step: 0.01, placeholder: 'e.g. 3.50', defaultValue: 3.5, unit: 'pts', colSpan: 'half' },
+			{ id: 'semester1Credits', label: 'Semester 1 credits', type: 'number', min: 1, max: 60, step: 0.5, placeholder: 'e.g. 18', defaultValue: 18, unit: 'credits', suffix: 'credits', colSpan: 'half' },
+			{ id: 'semester2Gpa', label: 'Semester 2 GPA', type: 'number', min: 0, max: 100, step: 0.01, placeholder: 'e.g. 3.80', defaultValue: 3.8, unit: 'pts', colSpan: 'half' },
+			{ id: 'semester2Credits', label: 'Semester 2 credits', type: 'number', min: 1, max: 60, step: 0.5, placeholder: 'e.g. 18', defaultValue: 18, unit: 'credits', suffix: 'credits', colSpan: 'half' },
+			{ id: 'semester3Gpa', label: 'Semester 3 GPA', type: 'number', min: 0, max: 100, step: 0.01, placeholder: 'e.g. 3.60', defaultValue: 3.6, unit: 'pts', colSpan: 'half' },
+			{ id: 'semester3Credits', label: 'Semester 3 credits', type: 'number', min: 1, max: 60, step: 0.5, placeholder: 'e.g. 16', defaultValue: 16, unit: 'credits', suffix: 'credits', colSpan: 'half' },
 		],
 		formula: (values): CalculatorDetailedResult => {
-			const sems = [
-				{ name: 'Semester 1', gpa: getValue(values, 'semester1Gpa', 3.5), credits: getValue(values, 'semester1Credits', 18) },
-				{ name: 'Semester 2', gpa: getValue(values, 'semester2Gpa', 3.8), credits: getValue(values, 'semester2Credits', 18) },
-				{ name: 'Semester 3', gpa: getValue(values, 'semester3Gpa', 3.6), credits: getValue(values, 'semester3Credits', 16) },
-				{ name: 'Semester 4', gpa: getValue(values, 'semester4Gpa', 3.9), credits: getValue(values, 'semester4Credits', 18) },
-				{ name: 'Semester 5', gpa: getValue(values, 'semester5Gpa', 0), credits: getValue(values, 'semester5Credits', 0) },
-				{ name: 'Semester 6', gpa: getValue(values, 'semester6Gpa', 0), credits: getValue(values, 'semester6Credits', 0) },
+			const rawSems = [
+				{ name: 'Semester 1', gpa: getValue(values, 'semester1Gpa', 0), credits: getValue(values, 'semester1Credits', 0) },
+				{ name: 'Semester 2', gpa: getValue(values, 'semester2Gpa', 0), credits: getValue(values, 'semester2Credits', 0) },
+				{ name: 'Semester 3', gpa: getValue(values, 'semester3Gpa', 0), credits: getValue(values, 'semester3Credits', 0) },
 			];
 
-			const activeSems = sems.filter((s) => s.credits > 0);
+			const activeSems = rawSems.filter((s) => s.credits > 0 && s.gpa >= 0);
 			const totalCredits = activeSems.reduce((sum, s) => sum + s.credits, 0);
 			const totalQualityPoints = activeSems.reduce((sum, s) => sum + s.gpa * s.credits, 0);
-			const cgpa = totalCredits > 0 ? totalQualityPoints / totalCredits : 0;
 
-			let degreeClass = 'First Class Honours';
-			let badge = 'First Class';
-			if (cgpa >= 3.7) {
-				degreeClass = 'First Class Honours / Distinction';
-				badge = 'First Class';
-			} else if (cgpa >= 3.3) {
-				degreeClass = 'Upper Second Class (2:1 Division)';
-				badge = 'Upper Second';
-			} else if (cgpa >= 3.0) {
-				degreeClass = 'Lower Second Class (2:2 Division)';
-				badge = 'Lower Second';
-			} else if (cgpa >= 2.0) {
-				degreeClass = 'Third Class / Passing Standing';
-				badge = 'Passing';
-			} else {
-				degreeClass = 'Academic Warning (< 2.0)';
-				badge = 'Warning';
+			if (totalCredits <= 0) {
+				return {
+					primary: {
+						label: 'Cumulative CGPA',
+						value: 0,
+						formattedValue: '0.00 CGPA',
+						subtext: 'Enter semester GPAs and credit hours above'
+					},
+					secondary: [
+						{ id: 'cumQualityPoints', label: 'Total Quality Points', value: 0, formattedValue: '0.00 pts' },
+						{ id: 'cumCredits', label: 'Cumulative Credits', value: 0, formattedValue: '0 credits' },
+					],
+					breakdown: [],
+					chart: {
+						type: 'bar',
+						title: 'Semester GPA Progression',
+						labels: ['No Terms'],
+						datasets: [{
+							label: 'Semester GPA',
+							data: [0]
+						}],
+						summaryText: 'Enter semester records to track your cumulative CGPA progression.'
+					}
+				};
 			}
 
-			const approxPct = Math.min(Math.round((cgpa / 4.0) * 100), 100);
+			const cgpa = totalQualityPoints / totalCredits;
 
 			return {
 				primary: {
 					label: 'Cumulative CGPA',
 					value: cgpa,
 					formattedValue: `${formatNumber(cgpa)} CGPA`,
-					subtext: `Across ${activeSems.length} terms and ${totalCredits} total completed credits`
+					subtext: `Across ${activeSems.length} term${activeSems.length === 1 ? '' : 's'} and ${totalCredits.toFixed(0)} total completed credits`
 				},
 				secondary: [
-					{ id: 'cumQualityPoints', label: 'Total Quality Points', value: totalQualityPoints, formattedValue: formatNumber(totalQualityPoints) },
+					{ id: 'cumQualityPoints', label: 'Total Quality Points', value: totalQualityPoints, formattedValue: `${formatNumber(totalQualityPoints)} pts` },
 					{ id: 'cumCredits', label: 'Cumulative Credits', value: totalCredits, formattedValue: `${totalCredits.toFixed(0)} credits` },
-					{ id: 'degreeStanding', label: 'Degree Classification', value: degreeClass, formattedValue: degreeClass, badge },
-					{ id: 'equiv100', label: 'Approximate 100-Point Avg', value: approxPct, formattedValue: `${approxPct}%` },
 				],
 				breakdown: activeSems.map((s) => ({
 					label: s.name,
@@ -1015,31 +1009,39 @@ const calculators: CalculatorConfig[] = [
 						label: 'Semester GPA',
 						data: activeSems.map((s) => s.gpa)
 					}],
-					summaryText: `Cumulative CGPA stands at ${formatNumber(cgpa)} across ${totalCredits} total credits.`
+					summaryText: `Cumulative CGPA stands at ${formatNumber(cgpa)} across ${totalCredits.toFixed(0)} total credits.`
 				}
 			};
 		},
 		resultFormat: (value) => typeof value === 'object' && 'primary' in value ? value.primary.formattedValue : `${formatNumber(value)} CGPA`,
 		parametersGuide: [
-			{ id: 'semesterGpa', name: 'Semester Term GPA', description: 'Grade point average earned exclusively within a specific single academic term.', whyItMatters: 'Combined with semester credits to determine total quality points.', typicalRange: '2.0 to 4.0' },
-			{ id: 'semesterCredits', name: 'Semester Credit Load', description: 'Total credit units or contact hours taken during that specific term.', whyItMatters: 'Semesters with higher credit loads carry greater proportional weight in the cumulative score.', typicalRange: '12 to 21 credits' },
-			{ id: 'degreeClassification', name: 'Degree Classification', description: 'Graduation honours tiers used across UK, Commonwealth, and international universities.', whyItMatters: 'Dictates postgraduate admission eligibility and honors recognition at graduation.', typicalRange: 'First Class (≥3.7), 2:1 (≥3.3), 2:2 (≥3.0)' },
+			{ id: 'semesterGpa', name: 'Semester Term GPA', description: 'Grade point average earned exclusively within a specific single academic term.', whyItMatters: 'Combined with semester credits to determine total quality points.', typicalRange: '0.0 to Scale Maximum' },
+			{ id: 'semesterCredits', name: 'Semester Credit Load', description: 'Total credit units or contact hours taken during that specific term.', whyItMatters: 'Semesters with higher credit loads carry greater proportional weight in the cumulative score.', typicalRange: '12 to 24 credits' },
+			{ id: 'degreeClassification', name: 'Degree Classification & Standing', description: 'Graduation honors tiers (e.g. Summa Cum Laude, First Class Honours, Distinction).', whyItMatters: 'Determined exclusively by the official rules of your institution\'s selected academic standard.', typicalRange: 'Standard specific' },
 		],
 		faq: [
 			{
-				question: 'How is a cumulative gpa calculator different from a single semester GPA calculator?',
-				answer: 'A semester GPA evaluates one academic term, whereas a cumulative gpa calculator combines all completed terms weighted by credit hours into an overall graduation CGPA.'
+				question: 'How is cumulative CGPA calculated across multiple semesters?',
+				answer: 'Cumulative GPA weights each semester by the number of credit units completed in that term: CGPA = Σ(Semester GPA × Semester Credits) ÷ Total Cumulative Credits. This accurately accounts for varying semester workloads.'
 			},
 			{
-				question: 'How do I calculate CGPA when semesters have different credit loads?',
-				answer: 'Our tool automatically weights each semester GPA by the number of credit units taken in that specific term.'
+				question: 'Which grading standard should I select for CGPA?',
+				answer: 'Check the grading scale shown on your official transcript or your institution’s academic regulations. Do not choose a grading standard solely because it is commonly used in your country. If your institution uses an unlisted scale, select Custom Standard.'
+			},
+			{
+				question: 'Can I calculate CGPA using my prior CGPA and a new semester?',
+				answer: 'Yes. Select Mode B (\'Prior CGPA + New Term\') to instantly combine your historical cumulative standing with your current term without re-entering past courses.'
+			},
+			{
+				question: 'Is there a universal formula to convert CGPA to percentage?',
+				answer: 'No. Percentage-to-CGPA and CGPA-to-percentage conversions are not universal. Some universities provide official conversion multipliers (e.g. in India, certain institutions prescribe specific conversion formulas), but these depend strictly on institutional policy.'
 			},
 		],
 		relatedSlugs: ['gpa-calculator', 'grade-calculator', 'percentage-calculator'],
 		content: makeContent(
-			'This online CGPA calculator helps university and college students compute their overall cumulative grade point average across multiple terms. Our cumulative gpa calculator weights each semester score proportionally by credit load.',
-			'The calculator multiplies each semester GPA by enrolled credit hours, sums all weighted scores, and divides by total cumulative credits completed.',
-			'Formula: CGPA = Σ(Semester GPA × Semester Credits) ÷ Total Cumulative Credits.',
+			'This universal CGPA calculator computes cumulative grade point averages across multiple terms and credit loads. Grading systems vary by country, university, institution, and program; when possible, use the grading scale shown on your official transcript or academic regulations.',
+			'The calculator multiplies each semester GPA by enrolled credit hours, sums all weighted scores, and divides by total cumulative credits completed. It also supports updating your standing using prior CGPA and new term credits.',
+			'Formula: CGPA = Σ(Semester GPA × Semester Credits) ÷ Total Cumulative Credits. Degree classifications (e.g., First Class or Cum Laude) are displayed only when officially defined by your selected academic standard.',
 			[
 				{ title: 'Four-Term Academic Record', description: 'Academic performance across four consecutive college semesters.', values: { semester1Gpa: 3.5, semester1Credits: 18, semester2Gpa: 3.8, semester2Credits: 18, semester3Gpa: 3.6, semester3Credits: 16, semester4Gpa: 3.9, semester4Credits: 18 }, result: '3.70 CGPA' },
 			],
@@ -1139,77 +1141,94 @@ const calculators: CalculatorConfig[] = [
 		),
 	},
 	{
-		metaTitle: 'Grade Calculator — Test Marks & Letter Grade Converter',
+		metaTitle: 'Grade Calculator — Universal Test Score & Percentage Converter',
 		slug: 'grade-calculator',
 		title: 'Grade Calculator',
 		category: 'Education',
-		metaDescription: 'Calculate test percentages and letter grades from raw exam scores with our fast online grade calculator.',
+		metaDescription: 'Calculate test percentages, passing thresholds, and academic letter grades across universal, US 4.0, Canadian OMSAS, UK Honours, or custom grading systems.',
 		inputs: [
-			{ id: 'marks', label: 'Marks obtained', type: 'number', min: 0, step: 0.5, defaultValue: 92, unit: 'marks', colSpan: 'half' },
-			{ id: 'totalMarks', label: 'Total marks available', type: 'number', min: 1, step: 0.5, defaultValue: 100, unit: 'marks', colSpan: 'half' },
-			{ id: 'passingCutoff', label: 'Passing cutoff score', type: 'number', min: 1, max: 100, step: 1, defaultValue: 60, unit: '%', suffix: '%', colSpan: 'half', tier: 'advanced', helpText: 'Minimum required percentage to pass (typically 60% or 70%)' },
-			{ id: 'curvePoints', label: 'Curve / Extra credit', type: 'number', min: 0, max: 50, step: 0.5, defaultValue: 0, unit: 'pts', colSpan: 'half', tier: 'advanced', helpText: 'Bonus points added directly to raw score' },
+			{ id: 'marks', label: 'Marks obtained', type: 'number', min: 0, step: 0.5, placeholder: 'e.g. 80', defaultValue: 80, unit: 'marks', colSpan: 'half' },
+			{ id: 'totalMarks', label: 'Total marks available', type: 'number', min: 1, step: 0.5, placeholder: 'e.g. 100', defaultValue: 100, unit: 'marks', colSpan: 'half' },
+			{ id: 'passingCutoff', label: 'Passing cutoff score', type: 'number', min: 0, max: 100, step: 1, placeholder: 'e.g. 50', defaultValue: 50, unit: '%', suffix: '%', colSpan: 'half', tier: 'advanced', helpText: 'Minimum required percentage to pass (e.g. 40%, 50%, or 60%)' },
+			{ id: 'curvePoints', label: 'Curve / Extra credit', type: 'number', min: 0, max: 50, step: 0.5, placeholder: 'e.g. 0', defaultValue: 0, unit: 'pts', colSpan: 'half', tier: 'advanced', helpText: 'Optional bonus points added directly to raw score' },
 		],
 		formula: (values): CalculatorDetailedResult => {
-			const rawMarks = getValue(values, 'marks', 92);
+			const rawMarks = getValue(values, 'marks', 80);
 			const total = getValue(values, 'totalMarks', 100);
 			const curve = getValue(values, 'curvePoints', 0);
-			const cutoff = getValue(values, 'passingCutoff', 60);
+			const cutoff = getValue(values, 'passingCutoff', 50);
 
-			const effectiveMarks = Math.max(rawMarks + curve, 0);
-			const percent = total > 0 ? (effectiveMarks / total) * 100 : 0;
+			if (!Number.isFinite(total) || total <= 0) {
+				return {
+					primary: {
+						label: 'Final Grade',
+						value: 0,
+						formattedValue: 'Invalid Total Marks',
+						subtext: 'Total marks available must be greater than 0'
+					},
+					secondary: [
+						{ id: 'passStatus', label: 'Passing Status', value: 'Invalid total', formattedValue: 'Total marks must be > 0', badge: 'Error' },
+						{ id: 'marksRemaining', label: 'Marks Remaining', value: 0, formattedValue: '—' },
+					],
+					breakdown: [],
+					chart: {
+						type: 'donut',
+						title: 'Marks Distribution',
+						labels: ['Invalid'],
+						datasets: [{
+							label: 'Marks',
+							data: [1]
+						}],
+						summaryText: 'Please enter a valid total marks number greater than 0.'
+					}
+				};
+			}
 
-			let letterGrade = 'F';
-			let gpa = 0.0;
-			if (percent >= 97) { letterGrade = 'A+'; gpa = 4.0; }
-			else if (percent >= 93) { letterGrade = 'A'; gpa = 4.0; }
-			else if (percent >= 90) { letterGrade = 'A-'; gpa = 3.7; }
-			else if (percent >= 87) { letterGrade = 'B+'; gpa = 3.3; }
-			else if (percent >= 83) { letterGrade = 'B'; gpa = 3.0; }
-			else if (percent >= 80) { letterGrade = 'B-'; gpa = 2.7; }
-			else if (percent >= 77) { letterGrade = 'C+'; gpa = 2.3; }
-			else if (percent >= 73) { letterGrade = 'C'; gpa = 2.0; }
-			else if (percent >= 70) { letterGrade = 'C-'; gpa = 1.7; }
-			else if (percent >= 60) { letterGrade = 'D'; gpa = 1.0; }
-			else if (total > 0) { letterGrade = 'F'; gpa = 0.0; }
-			else { letterGrade = '—'; gpa = 0.0; }
+			const safeMarks = Math.max(0, Number.isFinite(rawMarks) ? rawMarks : 0);
+			const safeCurve = Math.max(0, Number.isFinite(curve) ? curve : 0);
+			const safeCutoff = Math.max(0, Math.min(100, Number.isFinite(cutoff) ? cutoff : 50));
 
-			const passMargin = percent - cutoff;
-			const isPassing = percent >= cutoff;
-			const passStatusText = total > 0
-				? (isPassing
-					? `Passed (+${passMargin.toFixed(1)}% above cutoff)`
-					: `Below passing (-${Math.abs(passMargin).toFixed(1)}% shortage)`)
-				: 'Awaiting scores';
-			const passBadge = total > 0 ? (isPassing ? 'Passed' : 'Action Needed') : '—';
-			const pointsLost = Math.max(total - effectiveMarks, 0);
+			const effectiveMarks = safeMarks + safeCurve;
+			const percent = (effectiveMarks / total) * 100;
+
+			const passMargin = percent - safeCutoff;
+			const isPassing = percent >= safeCutoff;
+			const passStatusText = isPassing
+				? `Passed (+${passMargin.toFixed(1)} percentage points above passing mark)`
+				: `Below passing (-${Math.abs(passMargin).toFixed(1)} percentage points below passing mark)`;
+			const passBadge = isPassing ? 'Passed' : 'Below Passing';
+			const marksRemaining = Math.max(total - effectiveMarks, 0);
+
+			const secondaries: { id: string; label: string; value: number | string; formattedValue: string; badge?: string }[] = [
+				{ id: 'passStatus', label: 'Passing Status', value: passStatusText, formattedValue: passStatusText, badge: passBadge },
+				{ id: 'marksRemaining', label: 'Marks Remaining to Max', value: marksRemaining, formattedValue: `${marksRemaining.toFixed(1)} pts` },
+			];
+
+			if (safeCurve > 0) {
+				secondaries.push({ id: 'curveContribution', label: 'Curve Bonus Applied', value: safeCurve, formattedValue: `+${safeCurve.toFixed(1)} pts` });
+			}
 
 			return {
 				primary: {
-					label: 'Final Grade',
+					label: 'Calculated Grade',
 					value: percent,
-					formattedValue: `${formatNumber(percent)}% (${letterGrade})`,
+					formattedValue: `${formatNumber(percent)}%`,
 					subtext: `${effectiveMarks.toFixed(1)} out of ${total.toFixed(1)} marks earned`
 				},
-				secondary: [
-					{ id: 'gpaScale', label: '4.0 GPA Equivalent', value: gpa, formattedValue: `${gpa.toFixed(2)} GPA` },
-					{ id: 'passStatus', label: 'Passing Status', value: passStatusText, formattedValue: passStatusText, badge: passBadge },
-					{ id: 'pointsLost', label: 'Points Deducted', value: pointsLost, formattedValue: `${pointsLost.toFixed(1)} pts` },
-					{ id: 'curveContribution', label: 'Curve Bonus Applied', value: curve, formattedValue: `+${curve.toFixed(1)} pts` },
-				],
+				secondary: secondaries,
 				breakdown: [
 					{ label: 'Marks Earned', value: effectiveMarks, formattedValue: `${effectiveMarks.toFixed(1)} pts` },
-					{ label: 'Marks Deducted', value: pointsLost, formattedValue: `${pointsLost.toFixed(1)} pts` },
+					{ label: 'Marks Remaining', value: marksRemaining, formattedValue: `${marksRemaining.toFixed(1)} pts` },
 				],
 				chart: {
 					type: 'donut',
-					title: 'Marks Earned vs Marks Deducted',
-					labels: ['Marks Earned', 'Points Lost'],
+					title: 'Marks Earned vs Marks Remaining',
+					labels: ['Marks Earned', 'Marks Remaining'],
 					datasets: [{
 						label: 'Marks',
-						data: [Number(effectiveMarks.toFixed(1)), Number(pointsLost.toFixed(1))]
+						data: [Number(effectiveMarks.toFixed(1)), Number(marksRemaining.toFixed(1))]
 					}],
-					summaryText: `Your score corresponds to a letter grade of ${letterGrade} and ${gpa.toFixed(2)} on the 4.0 scale.`
+					summaryText: `Your score is ${formatNumber(percent)}% based on ${effectiveMarks.toFixed(1)} of ${total.toFixed(1)} points.`
 				}
 			};
 		},
@@ -1218,28 +1237,44 @@ const calculators: CalculatorConfig[] = [
 				return value.primary.formattedValue;
 			}
 			const percent = Number(value);
-			const grade = percent >= 97 ? 'A+' : percent >= 93 ? 'A' : percent >= 90 ? 'A-' : percent >= 87 ? 'B+' : percent >= 83 ? 'B' : percent >= 80 ? 'B-' : percent >= 77 ? 'C+' : percent >= 73 ? 'C' : percent >= 70 ? 'C-' : percent >= 60 ? 'D' : 'F';
-			return `${formatNumber(percent)}% (${grade})`;
+			if (!Number.isFinite(percent)) return '—';
+			return `${formatNumber(percent)}%`;
 		},
 		parametersGuide: [
-			{ id: 'marks', name: 'Marks Obtained', description: 'Raw points or score achieved on the assignment, quiz, or examination.', whyItMatters: 'Serves as the basis for calculating percentage performance.', typicalRange: '0 to total marks' },
-			{ id: 'totalMarks', name: 'Total Marks Available', description: 'Maximum potential score for the assessment.', whyItMatters: 'Establishes the 100% scale against which performance is measured.', typicalRange: '10 to 1,000+' },
-			{ id: 'passingCutoff', name: 'Passing Cutoff', description: 'The minimum percentage required by your school or syllabus to pass.', whyItMatters: 'Highlights your safety buffer above academic probation or failing marks.', typicalRange: '50% to 75%' },
-			{ id: 'curvePoints', name: 'Extra Credit / Curve', description: 'Adjustment points added by the professor to elevate class distribution.', whyItMatters: 'Directly raises your percentage and can elevate your letter grade threshold.', typicalRange: '0 to 15 pts' },
+			{ id: 'marks', name: 'Marks Obtained', description: 'Raw points or score achieved on the assignment, quiz, or examination.', whyItMatters: 'Serves as the universal numerator for calculating percentage performance.', typicalRange: '0 to total marks' },
+			{ id: 'totalMarks', name: 'Total Marks Available', description: 'Maximum potential score for the assessment.', whyItMatters: 'Establishes the denominator against which performance is measured.', typicalRange: '10 to 1,000+' },
+			{ id: 'passingCutoff', name: 'Passing Threshold', description: 'The minimum percentage required by your school or syllabus to pass.', whyItMatters: 'Evaluates your clearance buffer above passing in exact percentage points.', typicalRange: '35% to 70%' },
+			{ id: 'curvePoints', name: 'Extra Credit / Curve', description: 'Optional adjustment points added directly to raw score.', whyItMatters: 'Directly elevates your total marks earned when awarded by the instructor.', typicalRange: '0 to 15 pts' },
 		],
 		faq: [
 			{
-				question: 'Which grading scale is used in this calculator?',
-				answer: 'This tool converts percentage scores to the standard North American letter grade scale (A+ through F).'
+				question: 'Does this grade calculator assume a specific grading scale?',
+				answer: 'No. The universal calculation Percentage = (Marks ÷ Total Marks) × 100 operates independently of any grading scale. You can select specific academic standards (US 4.0, Canadian OMSAS, UK Honours, or Custom) to view applicable letter grade and GPA equivalents.'
+			},
+			{
+				question: 'Why does an 80% mark not equal the same letter grade or GPA everywhere?',
+				answer: 'An 80% mark does not automatically equal the same letter grade or GPA at every institution. Percentage-to-grade and percentage-to-GPA conversions depend on the grading policy being used. In the UK, 80% is First-Class Honours; in North America, it often corresponds to a B or B-; and in India or Nigeria, it follows distinct institutional bands.'
+			},
+			{
+				question: 'Which grading standard should I select?',
+				answer: 'Check your syllabus or official transcript legend. Do not choose a grading standard solely because it is commonly used in your country. If your institution uses a grading table that is not listed, use the Custom Standard and enter the grade boundaries and GPA values from your official institutional policy.'
+			},
+			{
+				question: 'Why is the difference above passing expressed in percentage points?',
+				answer: 'When comparing two percentages (such as an 80% score against a 50% passing threshold), the difference is 30 percentage points. Using "percentage points" is the mathematically precise convention.'
+			},
+			{
+				question: 'Are unearned points treated as deductions?',
+				answer: 'No. The difference between total marks and your earned score represents "Marks Remaining to Maximum", not deductions, unless a specific penalty has been applied.'
 			},
 		],
 		relatedSlugs: ['gpa-calculator', 'cgpa-calculator', 'percentage-calculator'],
 		content: makeContent(
-			'The Grade Calculator converts raw assignment, quiz, and exam scores into exact percentages and corresponding letter grades.',
-			'The formula computes (Marks / Total) × 100 and evaluates letter grade tiers.',
-			'Formula: Grade % = (Marks ÷ Total Marks) × 100.',
+			'The Grade Calculator converts raw assessment, quiz, and examination scores into exact percentages and corresponding academic standard conversions. Grading systems vary by country, university, institution, and sometimes program; when possible, use the grading scale shown on your official transcript or course regulations.',
+			'The universal mathematical formula computes (Marks Obtained ÷ Total Marks) × 100 and evaluates performance thresholds. Standard-specific conversions for letter grades, GPA, and honors standings are computed only when an official standard or custom scale is selected.',
+			'Formula: Grade % = (Marks Obtained ÷ Total Marks) × 100. Percentage-to-grade and percentage-to-GPA conversions depend strictly on the grading policy being used.',
 			[
-				{ title: 'High Exam Grade', description: '92 out of 100 on midterm examination.', values: { marks: 92, totalMarks: 100 }, result: '92.00% (A-)' },
+				{ title: 'Standard Examination', description: '80 out of 100 on midterm examination.', values: { marks: 80, totalMarks: 100 }, result: '80.00%' },
 			],
 		),
 	},
@@ -1248,56 +1283,285 @@ const calculators: CalculatorConfig[] = [
 	// HEALTH & WELLNESS (3 Calculators)
 	// ==========================================
 	{
-		metaTitle: 'BMI Calculator — Body Mass Index Calculator & Height Weight Tool',
+		metaTitle: 'BMI Calculator — Body Mass Index Calculator (US & Metric Units)',
 		slug: 'bmi-calculator',
 		title: 'BMI Calculator & Body Mass Index Calculator',
 		category: 'Health',
-		metaDescription: 'Free online BMI calculator to calculate body mass index formula, evaluate height weight calculator ratio, and check official WHO BMI standards.',
+		metaDescription: 'Free online BMI calculator with US units (lbs, ft, in) and Metric units (kg, cm). Calculate your BMI score, healthy weight target range, and evidence-based health tips.',
 		inputs: [
-			{ id: 'weightKg', label: 'Weight', type: 'number', min: 10, step: 0.5, defaultValue: 70, unit: 'kg' },
-			{ id: 'heightCm', label: 'Height', type: 'number', min: 50, step: 0.5, defaultValue: 175, unit: 'cm' },
+			{
+				id: 'unitSystem',
+				label: 'Measurement System',
+				type: 'select',
+				defaultValue: 'us',
+				options: [
+					{ label: 'US Units (feet, inches, pounds)', value: 'us' },
+					{ label: 'Metric Units (centimeters, kilograms)', value: 'metric' },
+				],
+				colSpan: 'full',
+				helpText: 'Select your preferred measurement system to display the matching inputs'
+			},
+			{ id: 'heightFeet', label: 'Height (feet)', type: 'number', min: 1, max: 8, step: 1, defaultValue: 5, unit: 'ft', suffix: 'ft', colSpan: 'half', helpText: 'Feet portion (e.g. 5 ft)', showWhen: { field: 'unitSystem', value: 'us' } },
+			{ id: 'heightInches', label: 'Height (inches)', type: 'number', min: 0, max: 11.9, step: 0.5, defaultValue: 10, unit: 'in', suffix: 'in', colSpan: 'half', helpText: 'Inches portion (e.g. 10 in)', showWhen: { field: 'unitSystem', value: 'us' } },
+			{ id: 'weightLbs', label: 'Weight (pounds)', type: 'number', min: 20, max: 800, step: 0.5, defaultValue: 160, unit: 'lbs', suffix: 'lbs', colSpan: 'full', helpText: 'Body weight in pounds (lbs)', showWhen: { field: 'unitSystem', value: 'us' } },
+			{ id: 'heightCm', label: 'Height (centimeters)', type: 'number', min: 50, max: 280, step: 0.5, defaultValue: 175, unit: 'cm', suffix: 'cm', colSpan: 'half', helpText: 'Height in centimeters (e.g. 175 cm)', showWhen: { field: 'unitSystem', value: 'metric' } },
+			{ id: 'weightKg', label: 'Weight (kilograms)', type: 'number', min: 10, max: 400, step: 0.5, defaultValue: 70, unit: 'kg', suffix: 'kg', colSpan: 'half', helpText: 'Body weight in kilograms (e.g. 70 kg)', showWhen: { field: 'unitSystem', value: 'metric' } },
 		],
-		formula: (values) => {
-			const weightKg = getValue(values, 'weightKg', 0);
-			const heightM = getValue(values, 'heightCm', 0) / 100;
-			return heightM === 0 ? 0 : weightKg / (heightM * heightM);
+		formula: (values): CalculatorDetailedResult => {
+			const unitSystem = normalizeToken(getTextValue(values, 'unitSystem', 'us'));
+			const isUs = unitSystem !== 'metric';
+
+			let weightKg = 0;
+			let heightM = 0;
+			let displayHeight = '';
+			let displayWeight = '';
+			let healthyWeightRangeStr = '';
+			let weightDiffStr = '';
+
+			if (isUs) {
+				const ft = getValue(values, 'heightFeet', 5);
+				const inches = getValue(values, 'heightInches', 10);
+				const lbs = getValue(values, 'weightLbs', 160);
+
+				const totalInches = (Math.max(0, ft) * 12) + Math.max(0, inches);
+				if (totalInches <= 0 || lbs <= 0) {
+					return {
+						primary: {
+							label: 'Body Mass Index (BMI)',
+							value: 0,
+							formattedValue: 'Enter Height & Weight',
+							subtext: 'Height and weight must be greater than 0'
+						},
+						secondary: [
+							{ id: 'bmiCategory', label: 'WHO Classification', value: '—', formattedValue: '—' },
+							{ id: 'healthyRange', label: 'Healthy Weight Target (BMI 18.5–24.9)', value: '—', formattedValue: '—' },
+							{ id: 'weightDiff', label: 'Weight Status vs Normal Target', value: '—', formattedValue: '—' },
+							{ id: 'bmiPrime', label: 'BMI Prime Ratio', value: '—', formattedValue: '—' },
+						],
+						breakdown: [],
+						chart: {
+							type: 'donut',
+							title: 'BMI Category Status',
+							labels: ['Normal Target'],
+							datasets: [{ label: 'BMI', data: [1] }],
+							summaryText: 'Enter your height and weight to calculate your BMI and healthy target weight.'
+						}
+					};
+				}
+
+				heightM = totalInches * 0.0254;
+				weightKg = lbs * 0.45359237;
+				displayHeight = `${ft}'${inches}" (${Math.round(totalInches * 2.54)} cm)`;
+				displayWeight = `${formatNumber(lbs, 1)} lbs (${formatNumber(weightKg, 1)} kg)`;
+
+				const minLbs = (18.5 * totalInches * totalInches) / 703;
+				const maxLbs = (24.9 * totalInches * totalInches) / 703;
+				healthyWeightRangeStr = `${formatNumber(minLbs, 1)} – ${formatNumber(maxLbs, 1)} lbs (${formatNumber(minLbs * 0.45359237, 1)} – ${formatNumber(maxLbs * 0.45359237, 1)} kg)`;
+
+				if (lbs < minLbs) {
+					weightDiffStr = `${formatNumber(minLbs - lbs, 1)} lbs below healthy minimum`;
+				} else if (lbs > maxLbs) {
+					weightDiffStr = `${formatNumber(lbs - maxLbs, 1)} lbs above healthy maximum`;
+				} else {
+					weightDiffStr = 'Within recommended healthy weight range';
+				}
+			} else {
+				const cm = getValue(values, 'heightCm', 175);
+				const kg = getValue(values, 'weightKg', 70);
+
+				if (cm <= 0 || kg <= 0) {
+					return {
+						primary: {
+							label: 'Body Mass Index (BMI)',
+							value: 0,
+							formattedValue: 'Enter Height & Weight',
+							subtext: 'Height and weight must be greater than 0'
+						},
+						secondary: [
+							{ id: 'bmiCategory', label: 'WHO Classification', value: '—', formattedValue: '—' },
+							{ id: 'healthyRange', label: 'Healthy Weight Target (BMI 18.5–24.9)', value: '—', formattedValue: '—' },
+							{ id: 'weightDiff', label: 'Weight Status vs Normal Target', value: '—', formattedValue: '—' },
+							{ id: 'bmiPrime', label: 'BMI Prime Ratio', value: '—', formattedValue: '—' },
+						],
+						breakdown: [],
+						chart: {
+							type: 'donut',
+							title: 'BMI Category Status',
+							labels: ['Normal Target'],
+							datasets: [{ label: 'BMI', data: [1] }],
+							summaryText: 'Enter your height and weight to calculate your BMI and healthy target weight.'
+						}
+					};
+				}
+
+				heightM = cm / 100;
+				weightKg = kg;
+				const totalInches = cm / 2.54;
+				const ft = Math.floor(totalInches / 12);
+				const inches = Math.round(totalInches % 12);
+				const lbs = kg / 0.45359237;
+				displayHeight = `${formatNumber(cm, 1)} cm (${ft}'${inches}")`;
+				displayWeight = `${formatNumber(kg, 1)} kg (${formatNumber(lbs, 1)} lbs)`;
+
+				const minKg = 18.5 * heightM * heightM;
+				const maxKg = 24.9 * heightM * heightM;
+				healthyWeightRangeStr = `${formatNumber(minKg, 1)} – ${formatNumber(maxKg, 1)} kg (${formatNumber(minKg / 0.45359237, 1)} – ${formatNumber(maxKg / 0.45359237, 1)} lbs)`;
+
+				if (kg < minKg) {
+					weightDiffStr = `${formatNumber(minKg - kg, 1)} kg below healthy minimum`;
+				} else if (kg > maxKg) {
+					weightDiffStr = `${formatNumber(kg - maxKg, 1)} kg above healthy maximum`;
+				} else {
+					weightDiffStr = 'Within recommended healthy weight range';
+				}
+			}
+
+			const bmi = weightKg / (heightM * heightM);
+
+			let category = 'Normal weight';
+			let badge = 'Healthy';
+			let healthRisk = 'Lowest risk of health complications';
+
+			if (bmi < 16.0) {
+				category = 'Severe Thinness';
+				badge = 'Underweight';
+				healthRisk = 'Very high risk of nutritional deficiency and health issues';
+			} else if (bmi < 17.0) {
+				category = 'Moderate Thinness';
+				badge = 'Underweight';
+				healthRisk = 'High risk of malnutrition';
+			} else if (bmi < 18.5) {
+				category = 'Mild Thinness (Underweight)';
+				badge = 'Underweight';
+				healthRisk = 'Increased risk of osteoporosis and weakened immunity';
+			} else if (bmi < 25.0) {
+				category = 'Normal weight';
+				badge = 'Healthy';
+				healthRisk = 'Optimal health and lowest morbidity risk';
+			} else if (bmi < 30.0) {
+				category = 'Overweight (Pre-obesity)';
+				badge = 'Overweight';
+				healthRisk = 'Elevated risk of cardiovascular and metabolic issues';
+			} else if (bmi < 35.0) {
+				category = 'Obese Class I (Moderate)';
+				badge = 'Obese';
+				healthRisk = 'Substantially increased risk of diabetes and hypertension';
+			} else if (bmi < 40.0) {
+				category = 'Obese Class II (Severe)';
+				badge = 'Obese Class II';
+				healthRisk = 'Very high cardiovascular and metabolic risk';
+			} else {
+				category = 'Obese Class III (Very Severe / Morbid)';
+				badge = 'Morbidly Obese';
+				healthRisk = 'Extremely high risk of life-threatening conditions';
+			}
+
+			const bmiPrime = bmi / 25.0;
+
+			return {
+				primary: {
+					label: 'Body Mass Index (BMI)',
+					value: bmi,
+					formattedValue: `${formatNumber(bmi, 1)} kg/m²`,
+					subtext: `${category} · ${healthRisk}`
+				},
+				secondary: [
+					{ id: 'bmiCategory', label: 'WHO Classification', value: category, formattedValue: category, badge },
+					{ id: 'healthyRange', label: 'Healthy Weight Target (BMI 18.5–24.9)', value: healthyWeightRangeStr, formattedValue: healthyWeightRangeStr },
+					{ id: 'weightDiff', label: 'Weight Status vs Normal Target', value: weightDiffStr, formattedValue: weightDiffStr, badge: badge === 'Healthy' ? 'On Target' : 'Action Target' },
+					{ id: 'bmiPrime', label: 'BMI Prime Ratio', value: bmiPrime, formattedValue: `${bmiPrime.toFixed(2)} (Target: 0.74 – 1.00)` },
+				],
+				breakdown: [
+					{ label: 'Underweight (<18.5)', value: Math.min(bmi, 18.5), formattedValue: '18.5 kg/m²' },
+					{ label: 'Normal (18.5–24.9)', value: Math.max(0, Math.min(bmi - 18.5, 6.4)), formattedValue: '24.9 kg/m²' },
+					{ label: 'Overweight (25.0–29.9)', value: Math.max(0, Math.min(bmi - 24.9, 5.0)), formattedValue: '29.9 kg/m²' },
+					{ label: 'Obese (≥30.0)', value: Math.max(0, bmi - 29.9), formattedValue: `${formatNumber(bmi, 1)} kg/m²` },
+				],
+				chart: {
+					type: 'donut',
+					title: 'BMI Relative to Category Thresholds',
+					labels: ['Underweight', 'Normal', 'Overweight', 'Obesity'],
+					datasets: [{
+						label: 'BMI Composition',
+						data: [
+							Number(Math.min(bmi, 18.5).toFixed(1)),
+							Number(Math.max(0, Math.min(bmi - 18.5, 6.4)).toFixed(1)),
+							Number(Math.max(0, Math.min(bmi - 24.9, 5.0)).toFixed(1)),
+							Number(Math.max(0, bmi - 29.9).toFixed(1)),
+						]
+					}],
+					summaryText: `Your BMI is ${formatNumber(bmi, 1)} kg/m² (${category}). Healthy target weight for ${displayHeight} is ${healthyWeightRangeStr}.`
+				},
+				table: {
+					title: 'World Health Organization (WHO) & CDC BMI Categories',
+					headers: ['Classification', 'BMI Range (kg/m²)', 'Associated Health Risk'],
+					rows: [
+						['Severe Thinness', '< 16.0', 'Very high risk of malnutrition and organ dysfunction'],
+						['Moderate Thinness', '16.0 – 16.9', 'High risk of nutritional deficiency and anemia'],
+						['Mild Thinness', '17.0 – 18.4', 'Moderate health risk, weakened bone density'],
+						['Normal Weight', '18.5 – 24.9', 'Lowest risk of weight-related health disorders'],
+						['Overweight (Pre-obesity)', '25.0 – 29.9', 'Increased risk of hypertension and high cholesterol'],
+						['Obese Class I', '30.0 – 34.9', 'High risk of coronary disease and type 2 diabetes'],
+						['Obese Class II', '35.0 – 39.9', 'Very high cardiovascular and metabolic risk'],
+						['Obese Class III', '≥ 40.0', 'Extremely high risk of chronic disease and mortality'],
+					]
+				}
+			};
 		},
 		resultFormat: (value) => {
+			if (typeof value === 'object' && 'primary' in value) {
+				return value.primary.formattedValue;
+			}
 			const bmi = Number(value);
-			if (bmi <= 0) return '0.00 kg/m²';
-			let category = 'Normal';
-			if (bmi < 18.5) category = 'Underweight';
-			else if (bmi < 25) category = 'Normal weight';
-			else if (bmi < 30) category = 'Overweight';
-			else category = 'Obese';
-			return `${formatNumber(bmi)} kg/m² (${category})`;
+			if (!Number.isFinite(bmi) || bmi <= 0) return '0.0 kg/m²';
+			let cat = 'Normal weight';
+			if (bmi < 18.5) cat = 'Underweight';
+			else if (bmi < 25) cat = 'Normal weight';
+			else if (bmi < 30) cat = 'Overweight';
+			else cat = 'Obese';
+			return `${formatNumber(bmi, 1)} kg/m² (${cat})`;
 		},
+		parametersGuide: [
+			{ id: 'unitSystem', name: 'Measurement System', description: 'Choose between US Customary Units (pounds, feet, inches) or Metric Units (kilograms, centimeters).', whyItMatters: 'Ensures the calculation applies the matching mathematical conversion factor (703 for US units vs direct kg/m² for metric).', typicalRange: 'US or Metric' },
+			{ id: 'heightFeet', name: 'Height (Feet)', description: 'The foot component of stature in the US Customary system (1 ft = 12 inches = 30.48 cm).', whyItMatters: 'Height is squared in the BMI denominator, exerting an exponential effect on your body mass score.', typicalRange: '4 to 7 ft' },
+			{ id: 'heightInches', name: 'Height (Inches)', description: 'Additional inches added to feet (e.g. 5 ft 10 in).', whyItMatters: 'Precise height measurement ensures an accurate BMI calculation.', typicalRange: '0 to 11.9 in' },
+			{ id: 'weightLbs', name: 'Weight (Pounds)', description: 'Total body mass measured in pounds on a standard scale.', whyItMatters: 'Represents the numerator in the US Customary BMI equation.', typicalRange: '90 to 350 lbs' },
+			{ id: 'heightCm', name: 'Height (Centimeters)', description: 'Stature in metric centimeters (175 cm = 1.75 meters).', whyItMatters: 'Converted directly to meters and squared for standard international BMI math.', typicalRange: '140 to 215 cm' },
+			{ id: 'weightKg', name: 'Weight (Kilograms)', description: 'Total body mass measured in kilograms (1 kg ≈ 2.20462 lbs).', whyItMatters: 'Direct numerator in the standard SI unit system.', typicalRange: '40 to 160 kg' },
+			{ id: 'healthyWeight', name: 'Healthy Weight Target Range', description: 'The weight span that correlates to a normal BMI between 18.5 and 24.9 kg/m² for your exact height.', whyItMatters: 'Provides a concrete weight target for fitness, nutrition, and wellness planning.', typicalRange: 'BMI 18.5 to 24.9' },
+			{ id: 'bmiPrime', name: 'BMI Prime Ratio', description: 'The ratio of your calculated BMI to the upper normal threshold of 25.0 kg/m² (BMI ÷ 25.0).', whyItMatters: 'A BMI Prime < 0.74 indicates underweight, 0.74–1.00 indicates normal, and > 1.00 indicates overweight.', typicalRange: '0.74 to 1.60' },
+		],
 		faq: [
 			{
-				question: 'How do I calculate body mass index formula from height and weight?',
-				answer: 'To calculate body mass index formula, divide your weight in kilograms by your height in meters squared: BMI = kg / m². You can also use our body mass index converter for quick conversions.'
+				question: 'How do you calculate BMI in US units vs Metric units?',
+				answer: 'In US units, multiply weight in pounds by 703 and divide by total height in inches squared: BMI = 703 × (lbs ÷ in²). In Metric units, divide weight in kilograms by height in meters squared: BMI = kg ÷ m². Both methods yield the exact same standard BMI index value.'
 			},
 			{
-				question: 'What are the official WHO and CDC bmi standards and bmi tables?',
-				answer: 'Official bmi standards define four primary categories: Underweight (BMI < 18.5), Normal weight (BMI 18.5–24.9), Overweight (BMI 25.0–29.9), and Obese (BMI ≥ 30.0).'
+				question: 'Why does maintaining a healthy weight matter for long-term health?',
+				answer: 'Maintaining a normal BMI (18.5–24.9 kg/m²) significantly reduces lifetime risks of cardiovascular disease, hypertension, type 2 diabetes, stroke, sleep apnea, joint osteoarthritis, and at least 13 types of obesity-related cancers.'
 			},
 			{
-				question: 'How does this mass index calculator and height weight calculator work?',
-				answer: 'This mass index calculator takes your height and weight measurements to compute body mass index and classify your body weight category.'
+				question: 'What are the health risks of being underweight (BMI < 18.5)?',
+				answer: 'Being underweight carries serious health risks including malnutrition, vitamin deficiencies, compromised immune response, osteoporosis and bone fractures, anemia, hypothermia, and reproductive complications.'
 			},
 			{
-				question: 'Can I use this to calculate your ideal body weight and body weight calculator estimates?',
-				answer: 'Yes! By referencing standard BMI ranges, you can determine target weight ranges for your height. Note that BMI is an informational screening tool rather than a comprehensive medical diagnosis.'
+				question: 'What are evidence-based health tips to achieve and maintain a healthy weight?',
+				answer: 'Key evidence-based strategies include: 1) Eating nutrient-dense whole foods with adequate lean protein and dietary fiber; 2) Getting at least 150–300 minutes of moderate aerobic activity and 2+ days of strength training weekly; 3) Sleeping 7–9 hours nightly to balance appetite hormones; and 4) Staying well-hydrated with 2–3 liters of water daily.'
+			},
+			{
+				question: 'What are the limitations of the BMI calculator?',
+				answer: 'BMI is an effective population screening tool, but it does not differentiate between lean muscle mass, bone density, and body fat. Muscular athletes often register as "overweight" or "obese" despite low body fat, while older adults with age-related muscle loss (sarcopenia) may test as "normal" despite carrying unhealthy visceral fat. Waist circumference and body fat percentage offer valuable complementary insights.'
 			},
 		],
 		relatedSlugs: ['calorie-calculator', 'water-intake-calculator', 'age-calculator'],
 		content: makeContent(
-			'This online BMI calculator provides quick, accurate body mass index calculations based on World Health Organization guidelines. Whether you are using a mass index calculator, checking your height weight calculator ratio, or looking to compute body mass index for fitness tracking, our tool helps you evaluate body weight status with complete privacy.',
-			'The body mass index calculator divides your body weight in kilograms by the square of your height in meters. The resulting bmi measure is categorized according to established international bmi tables.',
-			'Formula: BMI = Weight (kg) ÷ [Height (m)]². (For example, a person weighing 70 kg at 1.75 m height has a BMI of 70 ÷ (1.75)² = 22.86 kg/m²).',
+			'This comprehensive BMI Calculator computes body mass index using both US Customary units (pounds, feet, inches) and Metric units (kilograms, centimeters). Developed by Belgian statistician Adolphe Quetelet and standardized by the World Health Organization (WHO) and the U.S. Centers for Disease Control and Prevention (CDC), BMI evaluates body mass relative to height to assess health risk tiers and guide wellness planning.',
+			'The calculator converts your height and weight into standard scientific units, calculates the body mass index, and evaluates it against WHO clinical categories. It computes your personalized healthy weight target range (BMI 18.5–24.9 kg/m²), measures the exact weight difference needed to attain a normal category, and generates complete comparative analytics.',
+			'Formulas: US Units: BMI = 703 × [Weight (lbs) ÷ (Height (inches))²]; Metric Units: BMI = Weight (kg) ÷ [Height (m)]². Healthy Weight Range: Minimum Weight = 18.5 × [Height (m)]²; Maximum Weight = 24.9 × [Height (m)]².',
 			[
-				{ title: 'Healthy Weight Adult', description: 'Standard weight adult measuring 70 kg at 175 cm.', values: { weightKg: 70, heightCm: 175 }, result: '22.86 kg/m² (Normal weight)' },
-				{ title: 'Overweight Screening Evaluation', description: 'Adult measuring 85 kg at 170 cm.', values: { weightKg: 85, heightCm: 170 }, result: '29.41 kg/m² (Overweight)' },
+				{ title: 'Standard Adult (US Units)', description: '5 feet 10 inches tall, weighing 160 pounds.', values: { unitSystem: 'us', heightFeet: 5, heightInches: 10, weightLbs: 160 }, result: '23.0 kg/m² (Normal weight)' },
+				{ title: 'Standard Adult (Metric Units)', description: '175 cm tall, weighing 70 kilograms.', values: { unitSystem: 'metric', heightCm: 175, weightKg: 70 }, result: '22.9 kg/m² (Normal weight)' },
+				{ title: 'Overweight Screening Evaluation', description: '5 feet 8 inches tall, weighing 190 pounds.', values: { unitSystem: 'us', heightFeet: 5, heightInches: 8, weightLbs: 190 }, result: '28.9 kg/m² (Overweight)' },
 			],
 		),
 	},
@@ -1783,18 +2047,18 @@ const calculators: CalculatorConfig[] = [
 				type: 'select',
 				defaultValue: 'USD',
 				options: [
-					{ label: '🇺🇸 USD - US Dollar', value: 'USD' },
-					{ label: '🇪🇺 EUR - Euro', value: 'EUR' },
-					{ label: '🇬🇧 GBP - British Pound', value: 'GBP' },
-					{ label: '🇯🇵 JPY - Japanese Yen', value: 'JPY' },
-					{ label: '🇨🇦 CAD - Canadian Dollar', value: 'CAD' },
-					{ label: '🇦🇺 AUD - Australian Dollar', value: 'AUD' },
-					{ label: '🇨🇭 CHF - Swiss Franc', value: 'CHF' },
-					{ label: '🇨🇳 CNY - Chinese Yuan', value: 'CNY' },
-					{ label: '🇮🇳 INR - Indian Rupee', value: 'INR' },
-					{ label: '🇸🇬 SGD - Singapore Dollar', value: 'SGD' },
-					{ label: '🇧🇩 BDT - Bangladeshi Taka', value: 'BDT' },
-					{ label: '🇦🇪 AED - UAE Dirham', value: 'AED' },
+					{ label: 'USD - US Dollar ($)', value: 'USD' },
+					{ label: 'EUR - Euro (€)', value: 'EUR' },
+					{ label: 'GBP - British Pound (£)', value: 'GBP' },
+					{ label: 'JPY - Japanese Yen (¥)', value: 'JPY' },
+					{ label: 'CAD - Canadian Dollar ($)', value: 'CAD' },
+					{ label: 'AUD - Australian Dollar ($)', value: 'AUD' },
+					{ label: 'CHF - Swiss Franc (CHF)', value: 'CHF' },
+					{ label: 'CNY - Chinese Yuan (¥)', value: 'CNY' },
+					{ label: 'INR - Indian Rupee (₹)', value: 'INR' },
+					{ label: 'SGD - Singapore Dollar ($)', value: 'SGD' },
+					{ label: 'BDT - Bangladeshi Taka (৳)', value: 'BDT' },
+					{ label: 'AED - UAE Dirham (د.إ)', value: 'AED' },
 				],
 			},
 			{
@@ -1803,18 +2067,18 @@ const calculators: CalculatorConfig[] = [
 				type: 'select',
 				defaultValue: 'EUR',
 				options: [
-					{ label: '🇪🇺 EUR - Euro', value: 'EUR' },
-					{ label: '🇺🇸 USD - US Dollar', value: 'USD' },
-					{ label: '🇬🇧 GBP - British Pound', value: 'GBP' },
-					{ label: '🇯🇵 JPY - Japanese Yen', value: 'JPY' },
-					{ label: '🇨🇦 CAD - Canadian Dollar', value: 'CAD' },
-					{ label: '🇦🇺 AUD - Australian Dollar', value: 'AUD' },
-					{ label: '🇨🇭 CHF - Swiss Franc', value: 'CHF' },
-					{ label: '🇨🇳 CNY - Chinese Yuan', value: 'CNY' },
-					{ label: '🇮🇳 INR - Indian Rupee', value: 'INR' },
-					{ label: '🇸🇬 SGD - Singapore Dollar', value: 'SGD' },
-					{ label: '🇧🇩 BDT - Bangladeshi Taka', value: 'BDT' },
-					{ label: '🇦🇪 AED - UAE Dirham', value: 'AED' },
+					{ label: 'EUR - Euro (€)', value: 'EUR' },
+					{ label: 'USD - US Dollar ($)', value: 'USD' },
+					{ label: 'GBP - British Pound (£)', value: 'GBP' },
+					{ label: 'JPY - Japanese Yen (¥)', value: 'JPY' },
+					{ label: 'CAD - Canadian Dollar ($)', value: 'CAD' },
+					{ label: 'AUD - Australian Dollar ($)', value: 'AUD' },
+					{ label: 'CHF - Swiss Franc (CHF)', value: 'CHF' },
+					{ label: 'CNY - Chinese Yuan (¥)', value: 'CNY' },
+					{ label: 'INR - Indian Rupee (₹)', value: 'INR' },
+					{ label: 'SGD - Singapore Dollar ($)', value: 'SGD' },
+					{ label: 'BDT - Bangladeshi Taka (৳)', value: 'BDT' },
+					{ label: 'AED - UAE Dirham (د.إ)', value: 'AED' },
 				],
 			},
 		],

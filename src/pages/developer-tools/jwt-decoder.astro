@@ -411,12 +411,12 @@ const parameterGuide = [
 
             const diff = payloadObj.exp - nowSec;
             if (diff > 0) {
-              statStatus.textContent = '🟢 Active';
+              statStatus.innerHTML = '<span class="inline-flex items-center gap-1.5"><span class="h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span>Active</span>';
               statStatus.className = 'font-mono text-sm font-bold text-cyan-600 dark:text-cyan-400 dark:text-cyan-400';
               claimRemaining.textContent = formatDuration(diff);
               claimRemaining.className = 'font-mono font-bold text-xs mt-1 text-cyan-600 dark:text-cyan-400 dark:text-cyan-400';
             } else {
-              statStatus.textContent = '🔴 Expired';
+              statStatus.innerHTML = '<span class="inline-flex items-center gap-1.5"><span class="h-2 w-2 rounded-full bg-rose-500"></span>Expired</span>';
               statStatus.className = 'font-mono text-sm font-bold text-rose-600 dark:text-rose-400';
               claimRemaining.textContent = formatDuration(diff);
               claimRemaining.className = 'font-mono font-bold text-xs mt-1 text-rose-600 dark:text-rose-400';
@@ -424,7 +424,7 @@ const parameterGuide = [
           } else {
             statExp.textContent = 'Never (No exp)';
             claimExp.textContent = 'No expiration (exp) claim set';
-            statStatus.textContent = '🟢 No Expiration';
+            statStatus.innerHTML = '<span class="inline-flex items-center gap-1.5"><span class="h-2 w-2 rounded-full bg-blue-500"></span>No Expiration</span>';
             statStatus.className = 'font-mono text-sm font-bold text-blue-500';
             claimRemaining.textContent = 'Indefinite';
             claimRemaining.className = 'font-mono font-bold text-xs mt-1 text-blue-500';

@@ -1,0 +1,721 @@
+---
+import Icon from '../Icon.astro';
+import { GRADING_STANDARDS, findStandardById, type GradingStandard } from '../../data/gradingStandards';
+import type { CalculatorConfig } from '../../types/calculator';
+
+interface Props {
+  calculator: CalculatorConfig;
+}
+
+const { calculator } = Astro.props as Props;
+---
+
+<section
+  class="overflow-hidden rounded-[2rem] border border-[color:var(--border)] bg-[color:var(--surface-strong)] shadow-[var(--shadow)] transition-all"
+  data-cgpa-calculator-app
+>
+  <div class="grid gap-8 xl:grid-cols-[1.35fr_0.85fr]">
+    <!-- Left Column: Mode Tabs, Inputs & Semesters -->
+    <div class="space-y-6 p-6 sm:p-8">
+      <!-- Header Bar -->
+      <div class="flex flex-wrap items-center justify-between gap-3 border-b border-[color:var(--border)] pb-4">
+        <div>
+          <p class="text-xs font-bold uppercase tracking-[0.24em] text-[color:var(--accent)]">Universal Academic Tracker</p>
+          <h2 class="mt-1 text-2xl font-bold tracking-tight text-[color:var(--fg)]">Cumulative CGPA Calculator</h2>
+        </div>
+        <div class="flex items-center gap-2">
+          <button
+            type="button"
+            class="inline-flex items-center gap-1.5 rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1.5 text-xs font-medium text-[color:var(--muted)] hover:text-[color:var(--fg)] hover:border-[color:var(--border-strong)] transition cursor-pointer"
+            data-load-sample-btn
+          >
+            <span>Load Example</span>
+          </button>
+          <button
+            type="button"
+            class="inline-flex items-center gap-1.5 rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1.5 text-xs font-medium text-[color:var(--fg)] transition hover:border-[color:var(--accent)] hover:bg-[color:var(--surface-strong)] cursor-pointer"
+            data-reset-btn
+          >
+            <Icon name="refresh" class="w-3.5 h-3.5" />
+            <span>Reset</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Mode Selector Tabs -->
+      <div class="flex rounded-2xl bg-[color:var(--surface)] p-1.5 border border-[color:var(--border)] gap-1">
+        <button
+          type="button"
+          class="flex-1 py-2 text-xs font-bold rounded-xl transition cursor-pointer bg-[color:var(--surface-strong)] text-[color:var(--accent)] shadow-2xs border border-[color:var(--border)]"
+          data-mode-tab="multi-term"
+        >
+          Mode A: Multiple Semesters
+        </button>
+        <button
+          type="button"
+          class="flex-1 py-2 text-xs font-bold rounded-xl transition cursor-pointer text-[color:var(--muted)] hover:text-[color:var(--fg)]"
+          data-mode-tab="prior-update"
+        >
+          Mode B: Prior CGPA + New Term
+        </button>
+      </div>
+
+      <!-- Grading Standard Selector -->
+      <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5 space-y-2">
+        <div class="flex items-center justify-between">
+          <label for="cgpa-standard-select" class="text-xs font-bold uppercase tracking-wider text-[color:var(--fg)]">
+            Grading Standard / Scale
+          </label>
+          <span class="rounded-md bg-[color:var(--surface-strong)] px-2 py-0.5 text-[11px] font-bold text-[color:var(--accent)] border border-[color:var(--border)]" data-scale-badge>
+            Scale: 4.00
+          </span>
+        </div>
+        <select
+          id="cgpa-standard-select"
+          class="w-full cursor-pointer rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3.5 py-2.5 text-sm font-medium text-[color:var(--fg)] outline-none transition focus:border-[color:var(--accent)] focus:ring-2 focus:ring-[color:var(--accent-soft)]"
+          data-standard-select
+        >
+          {GRADING_STANDARDS.filter(s => s.id !== 'uk-honours').map((std) => (
+            <option value={std.id} selected={std.id === 'us-4.0'}>
+              {std.name}
+            </option>
+          ))}
+          <option value="universal">Universal (Direct GPA Points, Any Scale)</option>
+        </select>
+        <p class="text-[11px] text-[color:var(--muted)]" data-standard-desc>
+          Standard North American 4.0 collegiate scale.
+        </p>
+
+        <!-- Custom Scale Limit (visible when universal) -->
+        <div class="hidden pt-2 border-t border-[color:var(--border)] flex items-center justify-between gap-4" data-custom-scale-row>
+          <label for="cgpa-custom-max-scale" class="text-xs font-medium text-[color:var(--muted)]">Maximum GPA Scale Limit:</label>
+          <div class="flex items-center gap-1.5">
+            <input
+              id="cgpa-custom-max-scale"
+              type="number"
+              min="1"
+              max="100"
+              step="any"
+              value="4.0"
+              class="w-20 rounded-lg border border-[color:var(--border)] bg-[color:var(--bg)] px-2.5 py-1 text-xs font-bold text-[color:var(--fg)] outline-none"
+              data-custom-scale-input
+            />
+            <span class="text-xs text-[color:var(--muted)]">pts</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- MODE A VIEW: Dynamic Multi-Semester Container -->
+      <div class="space-y-3" data-mode-a-view>
+        <div class="flex items-center justify-between">
+          <h3 class="text-sm font-bold uppercase tracking-wider text-[color:var(--fg)] flex items-center gap-2">
+            <span>Academic Semesters</span>
+            <span class="rounded-full bg-[color:var(--accent-soft)] text-[color:var(--accent)] px-2 py-0.5 text-xs font-mono font-bold" data-sem-count-badge>
+              3 terms
+            </span>
+          </h3>
+          <button
+            type="button"
+            class="inline-flex items-center gap-1.5 rounded-xl bg-[color:var(--accent)] px-3.5 py-2 text-xs font-bold text-white shadow-xs transition hover:bg-[color:var(--accent-hover)] active:scale-98 cursor-pointer"
+            data-add-semester-btn
+          >
+            <span>+ Add Semester</span>
+          </button>
+        </div>
+
+        <!-- Table Header -->
+        <div class="hidden sm:grid grid-cols-[2fr_1.3fr_1.3fr_40px] gap-2 px-3 text-[11px] font-bold uppercase tracking-wider text-[color:var(--muted)]">
+          <span>Semester Label (Optional)</span>
+          <span>Term GPA</span>
+          <span>Term Credits</span>
+          <span class="text-right">Action</span>
+        </div>
+
+        <div class="space-y-2.5" data-semesters-container>
+          <!-- Dynamically populated via JavaScript -->
+        </div>
+
+        <button
+          type="button"
+          class="w-full py-2.5 rounded-xl border border-dashed border-[color:var(--border)] text-xs font-semibold text-[color:var(--muted)] hover:text-[color:var(--accent)] hover:border-[color:var(--accent)] transition cursor-pointer"
+          data-add-semester-bottom-btn
+        >
+          + Add Another Semester
+        </button>
+      </div>
+
+      <!-- MODE B VIEW: Prior CGPA + New Semester Form -->
+      <div class="hidden space-y-4 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5" data-mode-b-view>
+        <div>
+          <h3 class="text-sm font-bold text-[color:var(--fg)]">Update Existing CGPA with Current Term</h3>
+          <p class="text-[11px] text-[color:var(--muted)]">
+            Quickly project your new cumulative GPA without re-entering past individual course or semester breakdowns.
+          </p>
+        </div>
+
+        <div class="grid gap-4 sm:grid-cols-2">
+          <!-- Prior Cumulative GPA -->
+          <div>
+            <label for="prior-cgpa" class="block text-xs font-semibold text-[color:var(--fg)] mb-1">
+              Prior Cumulative CGPA
+            </label>
+            <input
+              id="prior-cgpa"
+              type="number"
+              min="0"
+              step="0.01"
+              placeholder="e.g. 3.45"
+              class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3.5 py-2.5 text-sm font-bold text-[color:var(--fg)] outline-none transition focus:border-[color:var(--accent)]"
+              data-b-prior-gpa
+            />
+          </div>
+
+          <!-- Prior Completed Credits -->
+          <div>
+            <label for="prior-credits" class="block text-xs font-semibold text-[color:var(--fg)] mb-1">
+              Prior Completed Total Credits
+            </label>
+            <input
+              id="prior-credits"
+              type="number"
+              min="0"
+              step="0.5"
+              placeholder="e.g. 90"
+              class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3.5 py-2.5 text-sm font-bold text-[color:var(--fg)] outline-none transition focus:border-[color:var(--accent)]"
+              data-b-prior-credits
+            />
+          </div>
+
+          <!-- Current Semester GPA -->
+          <div>
+            <label for="current-term-gpa" class="block text-xs font-semibold text-[color:var(--fg)] mb-1">
+              Current Semester GPA
+            </label>
+            <input
+              id="current-term-gpa"
+              type="number"
+              min="0"
+              step="0.01"
+              placeholder="e.g. 3.70"
+              class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3.5 py-2.5 text-sm font-bold text-[color:var(--fg)] outline-none transition focus:border-[color:var(--accent)]"
+              data-b-current-gpa
+            />
+          </div>
+
+          <!-- Current Semester Credits -->
+          <div>
+            <label for="current-term-credits" class="block text-xs font-semibold text-[color:var(--fg)] mb-1">
+              Current Semester Credits
+            </label>
+            <input
+              id="current-term-credits"
+              type="number"
+              min="0"
+              step="0.5"
+              placeholder="e.g. 18"
+              class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3.5 py-2.5 text-sm font-bold text-[color:var(--fg)] outline-none transition focus:border-[color:var(--accent)]"
+              data-b-current-credits
+            />
+          </div>
+        </div>
+
+        <div class="rounded-xl bg-[color:var(--bg)] p-3 text-xs text-[color:var(--muted)] border border-[color:var(--border)]">
+          <span class="font-bold text-[color:var(--fg)]">Formula applied:</span>
+          <code class="block mt-1 font-mono text-[11px] text-[color:var(--accent)]">
+            New CGPA = [(Prior CGPA × Prior Credits) + (Current GPA × Current Credits)] ÷ (Prior Credits + Current Credits)
+          </code>
+        </div>
+      </div>
+    </div>
+
+    <!-- Live CGPA Results Panel -->
+    <div class="flex flex-col justify-between space-y-6 rounded-b-[2rem] xl:rounded-b-none xl:rounded-r-[2rem] border-t xl:border-t-0 xl:border-l border-[color:var(--border)] bg-[color:var(--surface)]/40 p-6 sm:p-8">
+      <div class="space-y-6">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Degree Progress</span>
+          <button
+            type="button"
+            class="cursor-pointer text-xs font-semibold text-[color:var(--accent)] hover:underline flex items-center gap-1"
+            data-copy-result-btn
+          >
+            <Icon name="document" class="w-3.5 h-3.5" />
+            <span data-copy-text>Copy Results</span>
+          </button>
+        </div>
+
+        <!-- Primary CGPA Score -->
+        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 text-center shadow-xs">
+          <p class="text-xs font-semibold uppercase tracking-wider text-[color:var(--muted)]">Overall Cumulative CGPA</p>
+          <div class="mt-2 flex items-baseline justify-center gap-1">
+            <span class="text-5xl font-black tracking-tight text-[color:var(--fg)]" data-res-cgpa>—</span>
+            <span class="text-lg font-bold text-[color:var(--muted)]" data-res-scale-max>/ 4.00</span>
+          </div>
+          <p class="mt-2 text-xs font-medium text-[color:var(--muted)]" data-res-subtext>
+            Enter your semester GPAs and credit loads
+          </p>
+        </div>
+
+        <!-- Degree Standing / Honors (Only displayed if standard defines it) -->
+        <div class="hidden rounded-2xl border border-[color:var(--accent)]/30 bg-gradient-to-br from-[color:var(--accent-soft)] via-[color:var(--surface)] to-transparent p-4 space-y-1" data-classification-box>
+          <div class="flex items-center justify-between">
+            <span class="text-[10px] font-bold uppercase tracking-wider text-[color:var(--muted)]">Degree Standing</span>
+            <span class="rounded-full px-2 py-0.5 text-[11px] font-bold border border-[color:var(--accent)]/30 bg-[color:var(--surface)] text-[color:var(--accent)]" data-standing-badge>
+              First Class
+            </span>
+          </div>
+          <p class="text-xs font-bold text-[color:var(--fg)]" data-standing-title>First Class Standing</p>
+          <p class="text-[11px] text-[color:var(--muted)]" data-standing-desc></p>
+        </div>
+
+        <!-- Key Metrics Cards -->
+        <div class="grid grid-cols-2 gap-3">
+          <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3.5 text-center">
+            <span class="block text-[10px] font-bold uppercase tracking-wider text-[color:var(--muted)]">Cumulative Credits</span>
+            <span class="mt-1 block text-2xl font-black text-[color:var(--fg)]" data-res-credits>0</span>
+          </div>
+          <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3.5 text-center">
+            <span class="block text-[10px] font-bold uppercase tracking-wider text-[color:var(--muted)]">Total Quality Points</span>
+            <span class="mt-1 block text-2xl font-black text-[color:var(--fg)]" data-res-points>0.00</span>
+          </div>
+        </div>
+
+        <!-- Semester Progression List (Mode A) -->
+        <div class="space-y-2" data-progression-section>
+          <span class="text-xs font-bold text-[color:var(--fg)]">Semester-by-Semester Progression</span>
+          <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] overflow-hidden">
+            <table class="w-full text-left text-xs">
+              <thead class="border-b border-[color:var(--border)] bg-[color:var(--surface-strong)] text-[color:var(--muted)]">
+                <tr>
+                  <th class="px-3 py-2">Semester</th>
+                  <th class="px-3 py-2">GPA</th>
+                  <th class="px-3 py-2">Credits</th>
+                  <th class="px-3 py-2 text-right">Points</th>
+                </tr>
+              </thead>
+              <tbody data-progression-tbody>
+                <!-- Injected via JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <p class="text-[11px] text-center text-[color:var(--muted)] pt-4 border-t border-[color:var(--border)]">
+        Formula: <code class="font-mono text-[color:var(--fg)]">CGPA = Σ(Semester GPA × Semester Credits) ÷ Total Credits</code>
+      </p>
+    </div>
+  </div>
+
+  <script>
+    import { GRADING_STANDARDS, findStandardById, getDegreeClassification, type GradingStandard } from '../../data/gradingStandards';
+
+    interface SemesterItem {
+      id: string;
+      name: string;
+      gpa: number | string;
+      credits: number | string;
+    }
+
+    function initCgpaCalculator() {
+      const root = document.querySelector('[data-cgpa-calculator-app]');
+      if (!root) return;
+
+      const standardSelect = root.querySelector<HTMLSelectElement>('[data-standard-select]');
+      const standardDesc = root.querySelector<HTMLElement>('[data-standard-desc]');
+      const scaleBadge = root.querySelector<HTMLElement>('[data-scale-badge]');
+      const customScaleRow = root.querySelector<HTMLElement>('[data-custom-scale-row]');
+      const customScaleInput = root.querySelector<HTMLInputElement>('[data-custom-scale-input]');
+
+      const modeTabs = root.querySelectorAll<HTMLButtonElement>('[data-mode-tab]');
+      const modeAView = root.querySelector<HTMLElement>('[data-mode-a-view]');
+      const modeBView = root.querySelector<HTMLElement>('[data-mode-b-view]');
+
+      const semestersContainer = root.querySelector<HTMLElement>('[data-semesters-container]');
+      const countBadge = root.querySelector<HTMLElement>('[data-sem-count-badge]');
+      const addBtn = root.querySelector<HTMLButtonElement>('[data-add-semester-btn]');
+      const addBottomBtn = root.querySelector<HTMLButtonElement>('[data-add-semester-bottom-btn]');
+      const resetBtn = root.querySelector<HTMLButtonElement>('[data-reset-btn]');
+      const loadSampleBtn = root.querySelector<HTMLButtonElement>('[data-load-sample-btn]');
+      const copyBtn = root.querySelector<HTMLButtonElement>('[data-copy-result-btn]');
+
+      // Mode B Inputs
+      const inPriorGpa = root.querySelector<HTMLInputElement>('[data-b-prior-gpa]');
+      const inPriorCr = root.querySelector<HTMLInputElement>('[data-b-prior-credits]');
+      const inCurrGpa = root.querySelector<HTMLInputElement>('[data-b-current-gpa]');
+      const inCurrCr = root.querySelector<HTMLInputElement>('[data-b-current-credits]');
+
+      // Outputs
+      const resCgpa = root.querySelector<HTMLElement>('[data-res-cgpa]');
+      const resScaleMax = root.querySelector<HTMLElement>('[data-res-scale-max]');
+      const resSubtext = root.querySelector<HTMLElement>('[data-res-subtext]');
+      const resCredits = root.querySelector<HTMLElement>('[data-res-credits]');
+      const resPoints = root.querySelector<HTMLElement>('[data-res-points]');
+      const classBox = root.querySelector<HTMLElement>('[data-classification-box]');
+      const standingBadge = root.querySelector<HTMLElement>('[data-standing-badge]');
+      const standingTitle = root.querySelector<HTMLElement>('[data-standing-title]');
+      const standingDesc = root.querySelector<HTMLElement>('[data-standing-desc]');
+      const progSection = root.querySelector<HTMLElement>('[data-progression-section]');
+      const progTbody = root.querySelector<HTMLTableSectionElement>('[data-progression-tbody]');
+
+      if (!standardSelect) return;
+
+      let activeMode: 'multi-term' | 'prior-update' = 'multi-term';
+      let semesters: SemesterItem[] = [
+        { id: 's1', name: '', gpa: '', credits: '' },
+        { id: 's2', name: '', gpa: '', credits: '' },
+        { id: 's3', name: '', gpa: '', credits: '' },
+      ];
+
+      function getActiveStandard(): GradingStandard {
+        const stdId = standardSelect ? standardSelect.value : 'us-4.0';
+        if (stdId === 'universal') {
+          const maxScale = customScaleInput ? parseFloat(customScaleInput.value) || 4.0 : 4.0;
+          return {
+            id: 'universal',
+            name: 'Universal Scale',
+            shortName: 'Universal',
+            description: 'Direct weighted CGPA calculation across semesters without rigid scale restrictions.',
+            gpaScale: maxScale,
+            hasPercentageMapping: false,
+            hasGpaMapping: false,
+            gradeBands: [],
+          };
+        }
+        return findStandardById(stdId);
+      }
+
+      function switchMode(mode: 'multi-term' | 'prior-update') {
+        activeMode = mode;
+        modeTabs.forEach((tab) => {
+          const isSelected = tab.dataset.modeTab === mode;
+          if (isSelected) {
+            tab.className = 'flex-1 py-2 text-xs font-bold rounded-xl transition cursor-pointer bg-[color:var(--surface-strong)] text-[color:var(--accent)] shadow-2xs border border-[color:var(--border)]';
+          } else {
+            tab.className = 'flex-1 py-2 text-xs font-bold rounded-xl transition cursor-pointer text-[color:var(--muted)] hover:text-[color:var(--fg)]';
+          }
+        });
+
+        if (mode === 'multi-term') {
+          if (modeAView) modeAView.classList.remove('hidden');
+          if (modeBView) modeBView.classList.add('hidden');
+          if (progSection) progSection.classList.remove('hidden');
+        } else {
+          if (modeAView) modeAView.classList.add('hidden');
+          if (modeBView) modeBView.classList.remove('hidden');
+          if (progSection) progSection.classList.add('hidden');
+        }
+
+        calculate();
+      }
+
+      function renderSemesters() {
+        const standard = getActiveStandard();
+        const maxScale = standard.gpaScale ?? 4.0;
+        if (!semestersContainer) return;
+
+        semestersContainer.innerHTML = semesters.map((sem, idx) => `
+          <div class="grid grid-cols-1 sm:grid-cols-[2fr_1.3fr_1.3fr_40px] gap-2 p-2.5 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] items-center transition hover:border-[color:var(--border-strong)]" data-semester-row="${sem.id}">
+            <div>
+              <input
+                type="text"
+                placeholder="e.g. Semester ${idx + 1}"
+                value="${sem.name}"
+                data-sem-name="${idx}"
+                class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-medium text-[color:var(--fg)] outline-none transition focus:border-[color:var(--accent)]"
+              />
+            </div>
+            <div>
+              <input
+                type="number"
+                min="0"
+                max="${maxScale}"
+                step="0.01"
+                placeholder="e.g. 3.50"
+                value="${sem.gpa}"
+                data-sem-gpa="${idx}"
+                class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-bold text-[color:var(--fg)] outline-none transition focus:border-[color:var(--accent)]"
+              />
+            </div>
+            <div class="flex items-center gap-1">
+              <input
+                type="number"
+                min="1"
+                max="60"
+                step="0.5"
+                placeholder="e.g. 18"
+                value="${sem.credits}"
+                data-sem-credits="${idx}"
+                class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-bold text-[color:var(--fg)] outline-none transition focus:border-[color:var(--accent)]"
+              />
+              <span class="text-[10px] text-[color:var(--muted)] font-medium">cr</span>
+            </div>
+            <div class="text-right">
+              <button
+                type="button"
+                class="cursor-pointer rounded-lg p-2 text-rose-500 hover:bg-rose-500/10 transition font-bold"
+                data-remove-sem="${idx}"
+                title="Remove Semester"
+                aria-label="Remove Semester"
+                ${semesters.length <= 1 ? 'disabled style="opacity:0.3;cursor:not-allowed"' : ''}
+              >
+                <svg class="w-4 h-4 mx-auto" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+              </button>
+            </div>
+          </div>
+        `).join('');
+
+        if (countBadge) {
+          countBadge.textContent = `${semesters.length} term${semesters.length === 1 ? '' : 's'}`;
+        }
+
+        // Attach listeners
+        semestersContainer.querySelectorAll<HTMLInputElement>('[data-sem-name]').forEach((el) => {
+          el.addEventListener('input', (e) => {
+            const idx = parseInt((e.target as HTMLElement).dataset.semName || '0', 10);
+            if (semesters[idx]) semesters[idx].name = el.value;
+          });
+        });
+
+        semestersContainer.querySelectorAll<HTMLInputElement>('[data-sem-gpa]').forEach((el) => {
+          el.addEventListener('input', (e) => {
+            const idx = parseInt((e.target as HTMLElement).dataset.semGpa || '0', 10);
+            if (semesters[idx]) semesters[idx].gpa = el.value;
+            calculate();
+          });
+        });
+
+        semestersContainer.querySelectorAll<HTMLInputElement>('[data-sem-credits]').forEach((el) => {
+          el.addEventListener('input', (e) => {
+            const idx = parseInt((e.target as HTMLElement).dataset.semCredits || '0', 10);
+            if (semesters[idx]) semesters[idx].credits = el.value;
+            calculate();
+          });
+        });
+
+        semestersContainer.querySelectorAll<HTMLButtonElement>('[data-remove-sem]').forEach((el) => {
+          el.addEventListener('click', (e) => {
+            const idx = parseInt((e.target as HTMLElement).dataset.removeSem || '0', 10);
+            if (semesters.length > 1) {
+              semesters.splice(idx, 1);
+              renderSemesters();
+              calculate();
+            }
+          });
+        });
+      }
+
+      function addSemester() {
+        semesters.push({
+          id: `sem_${Date.now()}_${Math.random().toString(36).substr(2, 4)}`,
+          name: '',
+          gpa: '',
+          credits: '',
+        });
+        renderSemesters();
+        calculate();
+      }
+
+      function calculate() {
+        const standard = getActiveStandard();
+        const maxScale = standard.gpaScale ?? 4.0;
+        if (resScaleMax) resScaleMax.textContent = `/ ${maxScale.toFixed(2)}`;
+
+        let totalCredits = 0;
+        let totalPoints = 0;
+        let activeTermsCount = 0;
+        const validTerms: { name: string; gpa: number; credits: number; points: number }[] = [];
+
+        if (activeMode === 'multi-term') {
+          // Mode A: Multi-semesters
+          semesters.forEach((s, idx) => {
+            const gpaVal = typeof s.gpa === 'number' ? s.gpa : parseFloat(String(s.gpa));
+            const crVal = typeof s.credits === 'number' ? s.credits : parseFloat(String(s.credits));
+
+            if (!isNaN(gpaVal) && gpaVal >= 0 && !isNaN(crVal) && crVal > 0) {
+              const clampedGpa = Math.min(gpaVal, maxScale);
+              const pts = clampedGpa * crVal;
+              totalCredits += crVal;
+              totalPoints += pts;
+              activeTermsCount++;
+              validTerms.push({
+                name: s.name.trim() || `Semester ${idx + 1}`,
+                gpa: clampedGpa,
+                credits: crVal,
+                points: pts,
+              });
+            }
+          });
+        } else {
+          // Mode B: Prior CGPA + New Semester
+          const priorG = inPriorGpa && inPriorGpa.value.trim() !== '' ? parseFloat(inPriorGpa.value) : NaN;
+          const priorC = inPriorCr && inPriorCr.value.trim() !== '' ? parseFloat(inPriorCr.value) : NaN;
+          const currG = inCurrGpa && inCurrGpa.value.trim() !== '' ? parseFloat(inCurrGpa.value) : NaN;
+          const currC = inCurrCr && inCurrCr.value.trim() !== '' ? parseFloat(inCurrCr.value) : NaN;
+
+          if (!isNaN(priorG) && priorG >= 0 && !isNaN(priorC) && priorC > 0) {
+            const priorPts = Math.min(priorG, maxScale) * priorC;
+            totalCredits += priorC;
+            totalPoints += priorPts;
+            activeTermsCount++;
+          }
+          if (!isNaN(currG) && currG >= 0 && !isNaN(currC) && currC > 0) {
+            const currPts = Math.min(currG, maxScale) * currC;
+            totalCredits += currC;
+            totalPoints += currPts;
+            activeTermsCount++;
+          }
+        }
+
+        if (totalCredits <= 0) {
+          if (resCgpa) resCgpa.textContent = '—';
+          if (resCredits) resCredits.textContent = '0';
+          if (resPoints) resPoints.textContent = '0.00';
+          if (resSubtext) resSubtext.textContent = 'Enter semester records to evaluate cumulative standing';
+          if (classBox) classBox.classList.add('hidden');
+          if (progTbody) {
+            progTbody.innerHTML = `
+              <tr>
+                <td colspan="4" class="px-3 py-4 text-center text-[color:var(--muted)]">
+                  No completed terms entered yet.
+                </td>
+              </tr>
+            `;
+          }
+          return;
+        }
+
+        const cgpa = totalPoints / totalCredits;
+
+        if (resCgpa) resCgpa.textContent = cgpa.toFixed(2);
+        if (resCredits) resCredits.textContent = totalCredits.toFixed(totalCredits % 1 === 0 ? 0 : 1);
+        if (resPoints) resPoints.textContent = totalPoints.toFixed(2);
+        if (resSubtext) {
+          resSubtext.textContent = `Cumulative across ${activeTermsCount} academic record${activeTermsCount === 1 ? '' : 's'} (${totalCredits} total credits)`;
+        }
+
+        // Academic Standing / Degree Classification (only if standard provides rules)
+        const classification = getDegreeClassification(cgpa, standard, true);
+        if (classification && classBox) {
+          classBox.classList.remove('hidden');
+          if (standingBadge) standingBadge.textContent = classification.badge || 'Degree Standing';
+          if (standingTitle) standingTitle.textContent = classification.name;
+          if (standingDesc) standingDesc.textContent = classification.description || `Honors benchmark according to ${standard.name}.`;
+        } else if (classBox) {
+          classBox.classList.add('hidden');
+        }
+
+        // Progression Table (Mode A)
+        if (progTbody && activeMode === 'multi-term') {
+          progTbody.innerHTML = validTerms.map((vt) => `
+            <tr class="border-b border-[color:var(--border)] hover:bg-[color:var(--surface-strong)]/50 transition">
+              <td class="px-3 py-2 font-medium text-[color:var(--fg)]">${vt.name}</td>
+              <td class="px-3 py-2 font-mono font-bold text-[color:var(--fg)]">${vt.gpa.toFixed(2)}</td>
+              <td class="px-3 py-2 font-mono text-[color:var(--muted)]">${vt.credits} cr</td>
+              <td class="px-3 py-2 text-right font-mono font-bold text-[color:var(--accent)]">${vt.points.toFixed(1)} pts</td>
+            </tr>
+          `).join('');
+        }
+      }
+
+      function onStandardChange() {
+        const standard = getActiveStandard();
+        if (standardDesc) standardDesc.textContent = standard.description;
+        if (scaleBadge) {
+          scaleBadge.textContent = standard.gpaScale !== undefined ? `Scale: ${standard.gpaScale.toFixed(2)}` : 'Custom Scale';
+        }
+
+        if (customScaleRow) {
+          if (standard.id === 'universal') {
+            customScaleRow.classList.remove('hidden');
+          } else {
+            customScaleRow.classList.add('hidden');
+          }
+        }
+
+        renderSemesters();
+        calculate();
+      }
+
+      // Event listeners
+      standardSelect.addEventListener('change', onStandardChange);
+      if (customScaleInput) customScaleInput.addEventListener('input', () => { onStandardChange(); });
+      modeTabs.forEach((tab) => {
+        tab.addEventListener('click', () => {
+          const mode = tab.dataset.modeTab as 'multi-term' | 'prior-update';
+          if (mode) switchMode(mode);
+        });
+      });
+
+      if (addBtn) addBtn.addEventListener('click', addSemester);
+      if (addBottomBtn) addBottomBtn.addEventListener('click', addSemester);
+
+      // Mode B inputs
+      if (inPriorGpa) inPriorGpa.addEventListener('input', calculate);
+      if (inPriorCr) inPriorCr.addEventListener('input', calculate);
+      if (inCurrGpa) inCurrGpa.addEventListener('input', calculate);
+      if (inCurrCr) inCurrCr.addEventListener('input', calculate);
+
+      if (resetBtn) {
+        resetBtn.addEventListener('click', () => {
+          semesters = [
+            { id: 's1', name: '', gpa: '', credits: '' },
+            { id: 's2', name: '', gpa: '', credits: '' },
+            { id: 's3', name: '', gpa: '', credits: '' },
+          ];
+          if (inPriorGpa) inPriorGpa.value = '';
+          if (inPriorCr) inPriorCr.value = '';
+          if (inCurrGpa) inCurrGpa.value = '';
+          if (inCurrCr) inCurrCr.value = '';
+          renderSemesters();
+          calculate();
+        });
+      }
+
+      if (loadSampleBtn) {
+        loadSampleBtn.addEventListener('click', () => {
+          if (activeMode === 'multi-term') {
+            semesters = [
+              { id: 's1', name: 'Freshman Fall', gpa: 3.55, credits: 18 },
+              { id: 's2', name: 'Freshman Spring', gpa: 3.80, credits: 18 },
+              { id: 's3', name: 'Sophomore Fall', gpa: 3.65, credits: 16 },
+              { id: 's4', name: 'Sophomore Spring', gpa: 3.90, credits: 18 },
+            ];
+            renderSemesters();
+          } else {
+            if (inPriorGpa) inPriorGpa.value = '3.45';
+            if (inPriorCr) inPriorCr.value = '90';
+            if (inCurrGpa) inCurrGpa.value = '3.70';
+            if (inCurrCr) inCurrCr.value = '18';
+          }
+          calculate();
+        });
+      }
+
+      if (copyBtn) {
+        copyBtn.addEventListener('click', async () => {
+          const cgpaVal = resCgpa ? resCgpa.textContent : '';
+          const maxScale = resScaleMax ? resScaleMax.textContent : '';
+          const crVal = resCredits ? resCredits.textContent : '';
+          const ptsVal = resPoints ? resPoints.textContent : '';
+          const standard = getActiveStandard();
+
+          const text = `Cumulative CGPA: ${cgpaVal} ${maxScale}\nCumulative Credits: ${crVal}\nTotal Quality Points: ${ptsVal}\nStandard: ${standard.name}`;
+          try {
+            await navigator.clipboard.writeText(text);
+            const span = root.querySelector<HTMLElement>('[data-copy-text]');
+            if (span) {
+              const orig = span.textContent;
+              span.textContent = 'Copied!';
+              setTimeout(() => { span.textContent = orig; }, 2000);
+            }
+          } catch {}
+        });
+      }
+
+      // Initialize
+      onStandardChange();
+    }
+
+    initCgpaCalculator();
+  </script>
+</section>

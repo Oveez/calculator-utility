@@ -561,7 +561,7 @@ const schemaGraph = [
             publisherVal.value = item.publisher;
           }
 
-          showStatus('✓ Article metadata successfully retrieved and loaded!', 'text-cyan-500 dark:text-cyan-400');
+          showStatus('<span class="inline-flex items-center gap-1.5"><svg class="w-4 h-4 inline shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"></polyline></svg><span>Article metadata successfully retrieved and loaded!</span></span>', 'text-cyan-500 dark:text-cyan-400');
           updateCitations();
         } catch (err) {
           showStatus('Online DOI lookup unavailable or DOI not found. You can enter metadata manually below.', 'text-amber-500');
@@ -573,7 +573,7 @@ const schemaGraph = [
 
       function showStatus(msg, colorClass) {
         fetchStatus.className = `text-xs font-semibold ${colorClass} block`;
-        fetchStatus.textContent = msg;
+        fetchStatus.innerHTML = msg;
       }
 
       // Events

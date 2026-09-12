@@ -23,109 +23,178 @@ function getColSpanClass(input: CalculatorInput, totalInTier: number): string {
   // Default to 1 col in 2-col grid
   return 'sm:col-span-1';
 }
+
+function isInputConditionMet(input: CalculatorInput, values: Record<string, number | string>): boolean {
+  if (!input.showWhen) return true;
+  const currentVal = values[input.showWhen.field];
+  if (currentVal === undefined) return true;
+  if (Array.isArray(input.showWhen.value)) {
+    return input.showWhen.value.map(String).includes(String(currentVal));
+  }
+  return String(currentVal) === String(input.showWhen.value);
+}
 ---
 
 <div class="space-y-6" data-calculator-input-grid>
   <!-- Basic / Essential Parameters (Always Visible) -->
   <div class="grid gap-3.5 sm:grid-cols-2">
-    {basicInputs.map((input) => (
-      <div class:list={[
-        'flex flex-col justify-between rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3.5 sm:p-4 transition hover:border-[color:var(--glass-border-strong)] focus-within:border-[color:var(--accent)] focus-within:shadow-[0_0_12px_var(--accent-glow)]',
-        getColSpanClass(input, basicInputs.length)
-      ]}>
-        <div class="mb-2 flex items-center justify-between gap-2">
-          <label for={`calc-input-${input.id}`} class="text-xs font-semibold uppercase tracking-wider text-[color:var(--fg)] flex items-center gap-1.5">
-            <span>{input.label}</span>
-            {input.required && <span class="text-rose-500 font-bold" title="Required">*</span>}
-          </label>
-          <div class="flex items-center gap-2">
-            {input.type === 'range' && (
-              <span class="rounded-md bg-[color:var(--accent-soft)] px-2 py-0.5 text-xs font-mono font-bold text-[color:var(--accent)]" data-range-val={input.id}>
-                {initialValues[input.id]}
+    {basicInputs.map((input) => {
+      const isMet = isInputConditionMet(input, initialValues);
+      return (
+        <div
+          class:list={[
+            'flex flex-col justify-between rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3.5 sm:p-4 transition hover:border-[color:var(--glass-border-strong)] focus-within:border-[color:var(--accent)] focus-within:shadow-[0_0_12px_var(--accent-glow)]',
+            getColSpanClass(input, basicInputs.length)
+          ]}
+          data-input-wrapper={input.id}
+          data-show-when-field={input.showWhen?.field}
+          data-show-when-value={input.showWhen ? (Array.isArray(input.showWhen.value) ? input.showWhen.value.join(',') : String(input.showWhen.value)) : undefined}
+          style={!isMet ? 'display: none;' : undefined}
+        >
+          <div class="mb-2 flex items-center justify-between gap-2">
+            <label for={`calc-input-${input.id}`} class="text-xs font-semibold uppercase tracking-wider text-[color:var(--fg)] flex items-center gap-1.5">
+              <span>{input.label}</span>
+              {input.required && <span class="text-rose-500 font-bold" title="Required">*</span>}
+            </label>
+            <div class="flex items-center gap-2">
+              {input.type === 'range' && (
+                <span class="rounded-md bg-[color:var(--accent-soft)] px-2 py-0.5 text-xs font-mono font-bold text-[color:var(--accent)]" data-range-val={input.id}>
+                  {initialValues[input.id]}
+                </span>
+              )}
+              {input.unit && (
+                <span class="rounded bg-[color:var(--surface-strong)] px-1.5 py-0.5 text-[11px] font-medium text-[color:var(--muted)] border border-[color:var(--border)]">
+                  {input.unit}
+                </span>
+              )}
+            </div>
+          </div>
+
+          {input.helpText && (
+            <p class="mb-2 text-[11px] leading-tight text-[color:var(--muted)]">{input.helpText}</p>
+          )}
+
+          <!-- Input controls with prefix / suffix / segmented toggle support -->
+          <div class="relative flex items-center">
+            {input.prefix && (
+              <span class="pointer-events-none absolute left-3 text-sm font-semibold text-[color:var(--muted)]">
+                {input.prefix}
               </span>
             )}
-            {input.unit && (
-              <span class="rounded bg-[color:var(--surface-strong)] px-1.5 py-0.5 text-[11px] font-medium text-[color:var(--muted)] border border-[color:var(--border)]">
-                {input.unit}
+
+            {input.id === 'unitSystem' && input.options ? (
+              <div class="space-y-2 w-full" data-unit-toggle-group>
+                <div class="grid grid-cols-2 gap-1.5 p-1 rounded-2xl bg-[color:var(--bg)] border border-[color:var(--border)]" role="tablist" aria-label={input.label}>
+                  {input.options.map((option) => {
+                    const isActive = String(initialValues[input.id]) === option.value;
+                    return (
+                      <button
+                        type="button"
+                        role="tab"
+                        aria-selected={isActive}
+                        class:list={[
+                          'cursor-pointer py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold transition-all text-center flex items-center justify-center gap-1.5 shadow-2xs',
+                          isActive
+                            ? 'bg-[color:var(--accent)] text-white shadow-sm font-black'
+                            : 'text-[color:var(--muted)] hover:text-[color:var(--fg)] hover:bg-[color:var(--surface-strong)] font-semibold'
+                        ]}
+                        data-unit-toggle-btn={option.value}
+                        data-target-select={`calc-input-${input.id}`}
+                      >
+                        <span>{option.label}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+                <select
+                  id={`calc-input-${input.id}`}
+                  class="sr-only"
+                  name={input.id}
+                  aria-label={input.label}
+                  disabled={!isMet}
+                >
+                  {input.options.map((option) => (
+                    <option value={option.value} selected={String(initialValues[input.id]) === option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            ) : input.type === 'textarea' ? (
+              <textarea
+                id={`calc-input-${input.id}`}
+                class="w-full resize-y rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3.5 py-2.5 text-sm text-[color:var(--fg)] shadow-xs outline-none transition focus:border-[color:var(--accent)] focus:ring-2 focus:ring-[color:var(--accent-soft)]"
+                name={input.id}
+                rows={input.rows ?? 3}
+                placeholder={input.placeholder ?? input.label}
+                aria-label={input.label}
+                disabled={!isMet}
+              >{initialValues[input.id]}</textarea>
+            ) : input.type === 'select' && input.options ? (
+              <div class="relative w-full">
+                <select
+                  id={`calc-input-${input.id}`}
+                  class="w-full cursor-pointer appearance-none rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] pl-3.5 pr-9 py-2.5 text-sm font-medium text-[color:var(--fg)] shadow-xs outline-none transition focus:border-[color:var(--accent)] focus:ring-2 focus:ring-[color:var(--accent-soft)]"
+                  name={input.id}
+                  aria-label={input.label}
+                  disabled={!isMet}
+                >
+                  {input.options.map((option) => (
+                    <option value={option.value} selected={String(initialValues[input.id]) === option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+                <div class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[color:var(--muted)]">
+                  <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                  </svg>
+                </div>
+              </div>
+            ) : input.type === 'range' ? (
+              <input
+                id={`calc-input-${input.id}`}
+                class="w-full accent-[color:var(--accent)] cursor-pointer py-1.5"
+                type="range"
+                name={input.id}
+                min={input.min ?? 0}
+                max={input.max ?? 100}
+                step={input.step ?? 1}
+                value={initialValues[input.id]}
+                disabled={!isMet}
+                aria-label={input.label} />
+            ) : (
+              <input
+                id={`calc-input-${input.id}`}
+                class:list={[
+                  'w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] py-2.5 text-sm font-semibold text-[color:var(--fg)] shadow-xs outline-none transition focus:border-[color:var(--accent)] focus:ring-2 focus:ring-[color:var(--accent-soft)]',
+                  input.prefix ? 'pl-8' : 'pl-3.5',
+                  input.suffix ? 'pr-12' : 'pr-3.5',
+                ]}
+                type={input.type === 'date' ? 'date' : input.type === 'datetime-local' ? 'datetime-local' : input.type === 'number' ? 'number' : 'text'}
+                name={input.id}
+                min={input.type === 'text' || input.type === 'date' || input.type === 'datetime-local' ? undefined : input.min}
+                max={input.type === 'text' || input.type === 'date' || input.type === 'datetime-local' ? undefined : input.max}
+                step={input.type === 'text' || input.type === 'date' || input.type === 'datetime-local' ? undefined : input.step ?? 'any'}
+                placeholder={input.placeholder ?? (input.defaultValue !== undefined && input.defaultValue !== '' ? `e.g. ${input.defaultValue}` : input.label)}
+                value={input.defaultValue !== undefined ? initialValues[input.id] : undefined}
+                disabled={!isMet}
+                aria-label={input.label} />
+            )}
+
+            {input.suffix && (
+              <span class="pointer-events-none absolute right-3 text-xs font-semibold text-[color:var(--muted)]">
+                {input.suffix}
               </span>
             )}
           </div>
+
+          <p class="hidden mt-1.5 text-[11px] font-medium text-rose-500" data-input-error={input.id}>
+            {input.errorMessage ?? 'Invalid input'}
+          </p>
         </div>
-
-        {input.helpText && (
-          <p class="mb-2 text-[11px] leading-tight text-[color:var(--muted)]">{input.helpText}</p>
-        )}
-
-        <!-- Input controls with prefix / suffix support -->
-        <div class="relative flex items-center">
-          {input.prefix && (
-            <span class="pointer-events-none absolute left-3 text-sm font-semibold text-[color:var(--muted)]">
-              {input.prefix}
-            </span>
-          )}
-
-          {input.type === 'textarea' ? (
-            <textarea
-              id={`calc-input-${input.id}`}
-              class="w-full resize-y rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3.5 py-2.5 text-sm text-[color:var(--fg)] shadow-xs outline-none transition focus:border-[color:var(--accent)] focus:ring-2 focus:ring-[color:var(--accent-soft)]"
-              name={input.id}
-              rows={input.rows ?? 3}
-              placeholder={input.placeholder ?? input.label}
-              aria-label={input.label}
-            >{initialValues[input.id]}</textarea>
-          ) : input.type === 'select' && input.options ? (
-            <select
-              id={`calc-input-${input.id}`}
-              class="w-full cursor-pointer appearance-none rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3.5 py-2.5 text-sm font-medium text-[color:var(--fg)] shadow-xs outline-none transition focus:border-[color:var(--accent)] focus:ring-2 focus:ring-[color:var(--accent-soft)]"
-              name={input.id}
-              aria-label={input.label}
-            >
-              {input.options.map((option) => (
-                <option value={option.value} selected={String(initialValues[input.id]) === option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
-          ) : input.type === 'range' ? (
-            <input
-              id={`calc-input-${input.id}`}
-              class="w-full accent-[color:var(--accent)] cursor-pointer py-1.5"
-              type="range"
-              name={input.id}
-              min={input.min ?? 0}
-              max={input.max ?? 100}
-              step={input.step ?? 1}
-              value={initialValues[input.id]}
-              aria-label={input.label} />
-          ) : (
-            <input
-              id={`calc-input-${input.id}`}
-              class:list={[
-                'w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] py-2.5 text-sm font-semibold text-[color:var(--fg)] shadow-xs outline-none transition focus:border-[color:var(--accent)] focus:ring-2 focus:ring-[color:var(--accent-soft)]',
-                input.prefix ? 'pl-8' : 'pl-3.5',
-                input.suffix ? 'pr-12' : 'pr-3.5',
-              ]}
-              type={input.type === 'date' ? 'date' : input.type === 'datetime-local' ? 'datetime-local' : input.type === 'number' ? 'number' : 'text'}
-              name={input.id}
-              min={input.type === 'text' || input.type === 'date' || input.type === 'datetime-local' ? undefined : input.min}
-              max={input.type === 'text' || input.type === 'date' || input.type === 'datetime-local' ? undefined : input.max}
-              step={input.type === 'text' || input.type === 'date' || input.type === 'datetime-local' ? undefined : input.step ?? 'any'}
-              placeholder={input.placeholder ?? (input.defaultValue !== undefined && input.defaultValue !== '' ? `e.g. ${input.defaultValue}` : input.label)}
-              aria-label={input.label} />
-          )}
-
-          {input.suffix && (
-            <span class="pointer-events-none absolute right-3 text-xs font-semibold text-[color:var(--muted)]">
-              {input.suffix}
-            </span>
-          )}
-        </div>
-
-        <p class="hidden mt-1.5 text-[11px] font-medium text-rose-500" data-input-error={input.id}>
-          {input.errorMessage ?? 'Invalid input'}
-        </p>
-      </div>
-    ))}
+      );
+    })}
   </div>
 
   <!-- Advanced Options (Collapsible Progressive Disclosure) -->
@@ -143,71 +212,90 @@ function getColSpanClass(input: CalculatorInput, totalInTier: number): string {
         </span>
       </summary>
       <div class="grid gap-3.5 border-t border-[color:var(--border)] p-4 sm:grid-cols-2">
-        {advancedInputs.map((input) => (
-          <div class:list={[
-            'flex flex-col justify-between rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] p-3.5 transition hover:border-[color:var(--glass-border-strong)] focus-within:border-[color:var(--accent)] focus-within:shadow-[0_0_12px_var(--accent-glow)]',
-            getColSpanClass(input, advancedInputs.length)
-          ]}>
-            <div class="mb-2 flex items-center justify-between gap-2">
-              <label for={`calc-input-${input.id}`} class="text-xs font-semibold uppercase tracking-wider text-[color:var(--fg)]">
-                {input.label}
-              </label>
-              {input.unit && (
-                <span class="rounded bg-[color:var(--surface)] px-1.5 py-0.5 text-[11px] font-medium text-[color:var(--muted)] border border-[color:var(--border)]">
-                  {input.unit}
-                </span>
+        {advancedInputs.map((input) => {
+          const isMet = isInputConditionMet(input, initialValues);
+          return (
+            <div
+              class:list={[
+                'flex flex-col justify-between rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] p-3.5 transition hover:border-[color:var(--glass-border-strong)] focus-within:border-[color:var(--accent)] focus-within:shadow-[0_0_12px_var(--accent-glow)]',
+                getColSpanClass(input, advancedInputs.length)
+              ]}
+              data-input-wrapper={input.id}
+              data-show-when-field={input.showWhen?.field}
+              data-show-when-value={input.showWhen ? (Array.isArray(input.showWhen.value) ? input.showWhen.value.join(',') : String(input.showWhen.value)) : undefined}
+              style={!isMet ? 'display: none;' : undefined}
+            >
+              <div class="mb-2 flex items-center justify-between gap-2">
+                <label for={`calc-input-${input.id}`} class="text-xs font-semibold uppercase tracking-wider text-[color:var(--fg)]">
+                  {input.label}
+                </label>
+                {input.unit && (
+                  <span class="rounded bg-[color:var(--surface)] px-1.5 py-0.5 text-[11px] font-medium text-[color:var(--muted)] border border-[color:var(--border)]">
+                    {input.unit}
+                  </span>
+                )}
+              </div>
+
+              {input.helpText && (
+                <p class="mb-2 text-[11px] leading-tight text-[color:var(--muted)]">{input.helpText}</p>
               )}
+
+              <div class="relative flex items-center">
+                {input.prefix && (
+                  <span class="pointer-events-none absolute left-3 text-sm font-semibold text-[color:var(--muted)]">
+                    {input.prefix}
+                  </span>
+                )}
+
+                {input.type === 'select' && input.options ? (
+                  <div class="relative w-full">
+                    <select
+                      id={`calc-input-${input.id}`}
+                      class="w-full cursor-pointer appearance-none rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] pl-3.5 pr-9 py-2 text-sm font-medium text-[color:var(--fg)] shadow-xs outline-none transition focus:border-[color:var(--accent)] focus:ring-2 focus:ring-[color:var(--accent-soft)]"
+                      name={input.id}
+                      aria-label={input.label}
+                      disabled={!isMet}
+                    >
+                      {input.options.map((option) => (
+                        <option value={option.value} selected={String(initialValues[input.id]) === option.value}>
+                          {option.label}
+                        </option>
+                      ))}
+                    </select>
+                    <div class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[color:var(--muted)]">
+                      <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                      </svg>
+                    </div>
+                  </div>
+                ) : (
+                  <input
+                    id={`calc-input-${input.id}`}
+                    class:list={[
+                      'w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] py-2 text-sm font-semibold text-[color:var(--fg)] shadow-xs outline-none transition focus:border-[color:var(--accent)] focus:ring-2 focus:ring-[color:var(--accent-soft)]',
+                      input.prefix ? 'pl-8' : 'pl-3.5',
+                      input.suffix ? 'pr-12' : 'pr-3.5',
+                    ]}
+                    type={input.type === 'date' ? 'date' : input.type === 'datetime-local' ? 'datetime-local' : input.type === 'number' ? 'number' : 'text'}
+                    name={input.id}
+                    min={input.min}
+                    max={input.max}
+                    step={input.step ?? 'any'}
+                    placeholder={input.placeholder ?? (input.defaultValue !== undefined && input.defaultValue !== '' ? `e.g. ${input.defaultValue}` : input.label)}
+                    value={input.defaultValue !== undefined ? initialValues[input.id] : undefined}
+                    disabled={!isMet}
+                    aria-label={input.label} />
+                )}
+
+                {input.suffix && (
+                  <span class="pointer-events-none absolute right-3 text-xs font-semibold text-[color:var(--muted)]">
+                    {input.suffix}
+                  </span>
+                )}
+              </div>
             </div>
-
-            {input.helpText && (
-              <p class="mb-2 text-[11px] leading-tight text-[color:var(--muted)]">{input.helpText}</p>
-            )}
-
-            <div class="relative flex items-center">
-              {input.prefix && (
-                <span class="pointer-events-none absolute left-3 text-sm font-semibold text-[color:var(--muted)]">
-                  {input.prefix}
-                </span>
-              )}
-
-              {input.type === 'select' && input.options ? (
-                <select
-                  id={`calc-input-${input.id}`}
-                  class="w-full cursor-pointer appearance-none rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] px-3.5 py-2 text-sm font-medium text-[color:var(--fg)] shadow-xs outline-none transition focus:border-[color:var(--accent)] focus:ring-2 focus:ring-[color:var(--accent-soft)]"
-                  name={input.id}
-                  aria-label={input.label}
-                >
-                  {input.options.map((option) => (
-                    <option value={option.value} selected={String(initialValues[input.id]) === option.value}>
-                      {option.label}
-                    </option>
-                  ))}
-                </select>
-              ) : (
-                <input
-                  id={`calc-input-${input.id}`}
-                  class:list={[
-                    'w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] py-2 text-sm font-semibold text-[color:var(--fg)] shadow-xs outline-none transition focus:border-[color:var(--accent)] focus:ring-2 focus:ring-[color:var(--accent-soft)]',
-                    input.prefix ? 'pl-8' : 'pl-3.5',
-                    input.suffix ? 'pr-12' : 'pr-3.5',
-                  ]}
-                  type={input.type === 'date' ? 'date' : input.type === 'datetime-local' ? 'datetime-local' : input.type === 'number' ? 'number' : 'text'}
-                  name={input.id}
-                  min={input.min}
-                  max={input.max}
-                  step={input.step ?? 'any'}
-                  placeholder={input.placeholder ?? (input.defaultValue !== undefined && input.defaultValue !== '' ? `e.g. ${input.defaultValue}` : input.label)}
-                  aria-label={input.label} />
-              )}
-
-              {input.suffix && (
-                <span class="pointer-events-none absolute right-3 text-xs font-semibold text-[color:var(--muted)]">
-                  {input.suffix}
-                </span>
-              )}
-            </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </details>
   )}
@@ -227,28 +315,39 @@ function getColSpanClass(input: CalculatorInput, totalInTier: number): string {
         </span>
       </summary>
       <div class="grid gap-3.5 border-t border-[color:var(--border)] p-4 sm:grid-cols-2">
-        {extendedInputs.map((input) => (
-          <div class:list={[
-            'rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] p-3.5',
-            getColSpanClass(input, extendedInputs.length)
-          ]}>
-            <div class="mb-1.5 flex items-center justify-between">
-              <label for={`calc-input-${input.id}`} class="text-xs font-semibold uppercase tracking-wider text-[color:var(--fg)]">
-                {input.label}
-              </label>
-              {input.unit && <span class="text-[10px] text-[color:var(--muted)]">{input.unit}</span>}
+        {extendedInputs.map((input) => {
+          const isMet = isInputConditionMet(input, initialValues);
+          return (
+            <div
+              class:list={[
+                'rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] p-3.5',
+                getColSpanClass(input, extendedInputs.length)
+              ]}
+              data-input-wrapper={input.id}
+              data-show-when-field={input.showWhen?.field}
+              data-show-when-value={input.showWhen ? (Array.isArray(input.showWhen.value) ? input.showWhen.value.join(',') : String(input.showWhen.value)) : undefined}
+              style={!isMet ? 'display: none;' : undefined}
+            >
+              <div class="mb-1.5 flex items-center justify-between">
+                <label for={`calc-input-${input.id}`} class="text-xs font-semibold uppercase tracking-wider text-[color:var(--fg)]">
+                  {input.label}
+                </label>
+                {input.unit && <span class="text-[10px] text-[color:var(--muted)]">{input.unit}</span>}
+              </div>
+              <input
+                id={`calc-input-${input.id}`}
+                class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-2 text-sm font-semibold text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)]"
+                type={input.type === 'number' ? 'number' : 'text'}
+                name={input.id}
+                min={input.min}
+                max={input.max}
+                step={input.step ?? 'any'}
+                placeholder={input.placeholder ?? (input.defaultValue !== undefined && input.defaultValue !== '' ? `e.g. ${input.defaultValue}` : input.label)}
+                value={input.defaultValue !== undefined ? initialValues[input.id] : undefined}
+                disabled={!isMet} />
             </div>
-            <input
-              id={`calc-input-${input.id}`}
-              class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-2 text-sm font-semibold text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)]"
-              type={input.type === 'number' ? 'number' : 'text'}
-              name={input.id}
-              min={input.min}
-              max={input.max}
-              step={input.step ?? 'any'}
-              placeholder={input.placeholder ?? (input.defaultValue !== undefined && input.defaultValue !== '' ? `e.g. ${input.defaultValue}` : input.label)} />
-          </div>
-        ))}
+          );
+        })}
       </div>
     </details>
   )}

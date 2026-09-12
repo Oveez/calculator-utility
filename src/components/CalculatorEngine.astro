@@ -2,6 +2,9 @@
 import type { CalculatorConfig, CalculatorDetailedResult } from '../types/calculator';
 import CalculatorInputGrid from './calculator/CalculatorInputGrid.astro';
 import CalculatorResultCard from './calculator/CalculatorResultCard.astro';
+import GradeCalculatorApp from './calculator/GradeCalculatorApp.astro';
+import GpaCalculatorApp from './calculator/GpaCalculatorApp.astro';
+import CgpaCalculatorApp from './calculator/CgpaCalculatorApp.astro';
 import Icon from './Icon.astro';
 
 interface Props {
@@ -9,74 +12,93 @@ interface Props {
 }
 
 const { calculator } = Astro.props as Props;
-const initialValues = Object.fromEntries(
-  calculator.inputs.map((input) => [
-    input.id,
-    input.type === 'select'
-      ? input.options?.[0]?.value ?? ''
-      : input.type === 'text' || input.type === 'textarea' || input.type === 'date' || input.type === 'datetime-local'
-        ? ''
-        : 0,
-  ]),
-);
+const isDedicatedEducationApp =
+  calculator.slug === 'grade-calculator' ||
+  calculator.slug === 'gpa-calculator' ||
+  calculator.slug === 'cgpa-calculator';
 
-const formulaInitial = calculator.formula(initialValues);
-const initialResult = typeof formulaInitial === 'object' && 'primary' in formulaInitial
-  ? (formulaInitial as CalculatorDetailedResult).primary.formattedValue
-  : calculator.resultFormat(formulaInitial);
+const initialValues = !isDedicatedEducationApp
+  ? Object.fromEntries(
+      calculator.inputs.map((input) => [
+        input.id,
+        input.defaultValue !== undefined
+          ? input.defaultValue
+          : input.type === 'select'
+            ? input.options?.[0]?.value ?? ''
+            : input.type === 'text' || input.type === 'textarea' || input.type === 'date' || input.type === 'datetime-local'
+              ? ''
+              : 0,
+      ]),
+    )
+  : {};
+
+const formulaInitial = !isDedicatedEducationApp ? calculator.formula(initialValues) : null;
+const initialResult = !isDedicatedEducationApp && formulaInitial
+  ? typeof formulaInitial === 'object' && 'primary' in formulaInitial
+    ? (formulaInitial as CalculatorDetailedResult).primary.formattedValue
+    : calculator.resultFormat(formulaInitial)
+  : '';
 ---
 
-<section
-  class="overflow-hidden rounded-[2rem] border border-[color:var(--border)] bg-[color:var(--surface-strong)] shadow-[var(--shadow)] transition-all"
-  data-calculator-root
-  data-calculator-slug={calculator.slug}
->
-  <div class="grid gap-8 xl:grid-cols-[1.35fr_0.85fr]">
-    <form
-      class="space-y-6 p-6 sm:p-8"
-      novalidate
-      data-calculator-form
-    >
-      <div>
-        <p class="text-xs font-bold uppercase tracking-[0.24em] text-[color:var(--accent)]">Live calculator</p>
-        <h2 class="mt-2 text-2xl font-bold tracking-tight text-[color:var(--fg)]">Enter your values</h2>
-      </div>
-
-      <CalculatorInputGrid inputs={calculator.inputs} initialValues={initialValues} />
-
-      <div class="flex flex-wrap items-center justify-between gap-3 pt-2">
-        <div class="flex flex-wrap items-center gap-3">
-          <button
-            class="inline-flex items-center justify-center gap-2 rounded-full bg-[color:var(--accent)] px-6 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-[color:var(--accent-hover)] hover:shadow-[0_0_18px_var(--accent-glow)] hover:-translate-y-0.5 active:scale-98 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[color:var(--bg)] cursor-pointer"
-            type="submit"
-            data-calculator-submit
-          >
-            <Icon name="bolt" class="w-4 h-4" />
-            <span>Calculate</span>
-          </button>
-          <button
-            class="inline-flex items-center justify-center gap-2 rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-4 py-3 text-sm font-medium text-[color:var(--fg)] shadow-sm transition hover:border-[color:var(--accent)] hover:shadow-[0_0_12px_var(--accent-glow)] hover:bg-[color:var(--surface-strong)] active:scale-98 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--accent)] cursor-pointer"
-            type="button"
-            data-calculator-reset
-          >
-            <Icon name="refresh" class="w-3.5 h-3.5" />
-            <span>Reset</span>
-          </button>
+{calculator.slug === 'grade-calculator' ? (
+  <GradeCalculatorApp calculator={calculator} />
+) : calculator.slug === 'gpa-calculator' ? (
+  <GpaCalculatorApp calculator={calculator} />
+) : calculator.slug === 'cgpa-calculator' ? (
+  <CgpaCalculatorApp calculator={calculator} />
+) : (
+  <section
+    class="overflow-hidden rounded-[2rem] border border-[color:var(--border)] bg-[color:var(--surface-strong)] shadow-[var(--shadow)] transition-all"
+    data-calculator-root
+    data-calculator-slug={calculator.slug}
+  >
+    <div class="grid gap-8 xl:grid-cols-[1.35fr_0.85fr]">
+      <form
+        class="space-y-6 p-6 sm:p-8"
+        novalidate
+        data-calculator-form
+      >
+        <div>
+          <p class="text-xs font-bold uppercase tracking-[0.24em] text-[color:var(--accent)]">Live calculator</p>
+          <h2 class="mt-2 text-2xl font-bold tracking-tight text-[color:var(--fg)]">Enter your values</h2>
         </div>
-        <p class="text-xs text-[color:var(--muted)]">Updates automatically as you type</p>
-      </div>
-    </form>
 
-    <CalculatorResultCard
-      initialResult={initialResult}
-      category={calculator.category}
-      inputsCount={calculator.inputs.length}
-    />
-  </div>
+        <CalculatorInputGrid inputs={calculator.inputs} initialValues={initialValues} />
 
-  <script>
-    import { initCalculatorEngines } from '../scripts/calculator-engine';
+        <div class="flex flex-wrap items-center justify-between gap-3 pt-2">
+          <div class="flex flex-wrap items-center gap-3">
+            <button
+              class="inline-flex items-center justify-center gap-2 rounded-full bg-[color:var(--accent)] px-6 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-[color:var(--accent-hover)] hover:shadow-[0_0_18px_var(--accent-glow)] hover:-translate-y-0.5 active:scale-98 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[color:var(--bg)] cursor-pointer"
+              type="submit"
+              data-calculator-submit
+            >
+              <Icon name="bolt" class="w-4 h-4" />
+              <span>Calculate</span>
+            </button>
+            <button
+              class="inline-flex items-center justify-center gap-2 rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-4 py-3 text-sm font-medium text-[color:var(--fg)] shadow-sm transition hover:border-[color:var(--accent)] hover:shadow-[0_0_12px_var(--accent-glow)] hover:bg-[color:var(--surface-strong)] active:scale-98 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--accent)] cursor-pointer"
+              type="button"
+              data-calculator-reset
+            >
+              <Icon name="refresh" class="w-3.5 h-3.5" />
+              <span>Reset</span>
+            </button>
+          </div>
+          <p class="text-xs text-[color:var(--muted)]">Updates automatically as you type</p>
+        </div>
+      </form>
 
-    initCalculatorEngines();
-  </script>
-</section>
+      <CalculatorResultCard
+        initialResult={initialResult}
+        category={calculator.category}
+        inputsCount={calculator.inputs.length}
+      />
+    </div>
+
+    <script>
+      import { initCalculatorEngines } from '../scripts/calculator-engine';
+
+      initCalculatorEngines();
+    </script>
+  </section>
+)}

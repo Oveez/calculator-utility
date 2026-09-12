@@ -240,7 +240,8 @@ const workedExampleData = {
             id="merge-btn"
             class="w-full rounded-xl bg-[color:var(--accent)] py-3 text-xs font-bold text-white shadow-xs transition hover:opacity-90 active:scale-95 cursor-pointer flex items-center justify-center gap-2"
           >
-            <span>⚡ Merge &amp; Download Combined PDF</span>
+            <Icon name="document" class="w-4 h-4" />
+            <span>Merge &amp; Download Combined PDF</span>
           </button>
           <p id="merge-status" class="text-center text-xs text-[color:var(--muted)]"></p>
         </div>
@@ -366,14 +367,14 @@ const workedExampleData = {
               <td class="p-3 text-right font-mono text-[color:var(--muted)]">${formatBytes(item.size)}</td>
               <td class="p-3 text-center">
                 <div class="flex items-center justify-center gap-1">
-                  <button type="button" data-move-up="${index}" class="rounded-lg p-1.5 hover:bg-[color:var(--surface-strong)] ${isFirst ? 'opacity-30 cursor-not-allowed' : 'cursor-pointer'}" title="Move Up" ${isFirst ? 'disabled' : ''}>
-                    ↑
+                  <button type="button" data-move-up="${index}" class="rounded-lg p-1.5 hover:bg-[color:var(--surface-strong)] ${isFirst ? 'opacity-30 cursor-not-allowed' : 'cursor-pointer'}" title="Move Up" aria-label="Move Up" ${isFirst ? 'disabled' : ''}>
+                    <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
                   </button>
-                  <button type="button" data-move-down="${index}" class="rounded-lg p-1.5 hover:bg-[color:var(--surface-strong)] ${isLast ? 'opacity-30 cursor-not-allowed' : 'cursor-pointer'}" title="Move Down" ${isLast ? 'disabled' : ''}>
-                    ↓
+                  <button type="button" data-move-down="${index}" class="rounded-lg p-1.5 hover:bg-[color:var(--surface-strong)] ${isLast ? 'opacity-30 cursor-not-allowed' : 'cursor-pointer'}" title="Move Down" aria-label="Move Down" ${isLast ? 'disabled' : ''}>
+                    <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>
                   </button>
-                  <button type="button" data-remove="${index}" class="rounded-lg p-1.5 text-rose-500 hover:bg-rose-500/10 cursor-pointer" title="Remove">
-                    ✕
+                  <button type="button" data-remove="${index}" class="rounded-lg p-1.5 text-rose-500 hover:bg-rose-500/10 cursor-pointer" title="Remove" aria-label="Remove">
+                    <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
                   </button>
                 </div>
               </td>
@@ -501,7 +502,7 @@ const workedExampleData = {
           document.body.removeChild(a);
           URL.revokeObjectURL(url);
 
-          mergeStatus.textContent = `✓ Successfully merged ${queue.length} documents into ${mergedDoc.getPageCount()} pages!`;
+          mergeStatus.innerHTML = `<span class="inline-flex items-center gap-1.5 text-emerald-500 font-semibold"><svg class="w-4 h-4 inline shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"></polyline></svg> Successfully merged ${queue.length} documents into ${mergedDoc.getPageCount()} pages!</span>`;
         } catch (err) {
           console.error('Merge error:', err);
           mergeStatus.textContent = `Error during merge: ${err.message || err}`;

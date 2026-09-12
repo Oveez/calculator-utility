@@ -646,9 +646,9 @@ const workedExampleData = {
         if (!textOut.value) return;
         try {
           await navigator.clipboard.writeText(textOut.value);
-          const orig = btnCopy.textContent;
-          btnCopy.textContent = '✓ Copied Text!';
-          setTimeout(() => { btnCopy.textContent = orig; }, 1800);
+          const orig = btnCopy.innerHTML;
+          btnCopy.innerHTML = '<span class="inline-flex items-center gap-1"><svg class="w-3.5 h-3.5 inline shrink-0 text-emerald-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"></polyline></svg><span>Copied Text!</span></span>';
+          setTimeout(() => { btnCopy.innerHTML = orig; }, 1800);
         } catch (e) {
           console.error(e);
         }

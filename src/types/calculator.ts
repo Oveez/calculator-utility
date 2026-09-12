@@ -7,6 +7,11 @@ export interface CalculatorInputOption {
   value: string;
 }
 
+export interface CalculatorInputCondition {
+  field: string;
+  value: string | number | (string | number)[];
+}
+
 export interface CalculatorInput {
   id: string;
   label: string;
@@ -28,6 +33,7 @@ export interface CalculatorInput {
   suffix?: string;
   required?: boolean;
   errorMessage?: string;
+  showWhen?: CalculatorInputCondition;
 }
 
 export interface CalculatorFaqItem {
