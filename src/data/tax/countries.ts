@@ -63,12 +63,18 @@ export function getCountryTaxProfile(countryId: string): CountryTaxProfile | und
   return countryTaxProfilesMap[countryId];
 }
 
+export function getCountryTaxUrl(countryId: string): string {
+  if (countryId === 'ca' || countryId === 'canada') return '/canada-income-tax-calculator/';
+  if (countryId === 'au' || countryId === 'australia') return '/australia-income-tax-calculator/';
+  return `/${countryId}-income-tax-calculator/`;
+}
+
 export function getAllTaxCountries(): { id: string; name: string; flagEmoji: string; currency: string; path: string }[] {
   return allCountryTaxProfiles.map((p) => ({
     id: p.id,
     name: p.name,
     flagEmoji: p.flagEmoji,
     currency: p.defaultCurrency,
-    path: `/${p.id}-income-tax-calculator/`,
+    path: getCountryTaxUrl(p.id),
   }));
 }

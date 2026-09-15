@@ -1,5 +1,6 @@
 ---
-import { allCountryTaxProfiles } from '../../data/tax/countries';
+import { allCountryTaxProfiles, getCountryTaxUrl } from '../../data/tax/countries';
+import { withBasePath } from '../../utils/site';
 
 interface Props {
   currentCountryId?: string;
@@ -27,8 +28,10 @@ const {
 
   <div class="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
     {allCountryTaxProfiles.map((country) => {
-      const isSelected = country.id === currentCountryId;
-      const targetUrl = `/${country.id}-income-tax-calculator/`;
+      const isSelected = country.id === currentCountryId ||
+        (currentCountryId === 'canada' && country.id === 'ca') ||
+        (currentCountryId === 'australia' && country.id === 'au');
+      const targetUrl = withBasePath(getCountryTaxUrl(country.id));
 
       return (
         <a

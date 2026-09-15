@@ -24,7 +24,9 @@ const {
 } = Astro.props as Props;
 
 const pageTitle = title.includes(siteName) ? title : `${title} · ${siteName}`;
-const canonicalUrl = canonical ?? new URL(Astro.url.pathname, siteUrl).toString();
+const canonicalUrl = canonical
+  ? (canonical.startsWith('http://') || canonical.startsWith('https://') ? canonical : new URL(canonical, siteUrl).toString())
+  : new URL(Astro.url.pathname, siteUrl).toString();
 const logoUrl = new URL(withBasePath('/calculator.png'), siteUrl).toString();
 
 const websiteSchema = {
