@@ -40,7 +40,7 @@ async function findArticleLogo(item) {
   if (item.article) {
     try {
       const url = 'https://en.wikipedia.org/w/api.php?action=query&titles=' + encodeURIComponent(item.article) + '&prop=images|pageprops&format=json';
-      const res = await fetch(url, { headers: { 'User-Agent': 'AssignmentCoverMaker/1.0 (contact@calculatorutility.tech)' } });
+      const res = await fetch(url, { headers: { 'User-Agent': 'AssignmentCoverMaker/1.0 (contact@toolscastle.app)' } });
       const data = await res.json();
       const p = Object.values(data.query.pages)[0];
       const imgs = (p?.images || []).map(i => i.title).filter(t => /logo|seal|crest|arms|monogram/i.test(t) && !/commons/i.test(t));
@@ -54,7 +54,7 @@ async function findArticleLogo(item) {
   if (item.bnArticle) {
     try {
       const url = 'https://bn.wikipedia.org/w/api.php?action=query&titles=' + encodeURIComponent(item.bnArticle) + '&prop=images&format=json';
-      const res = await fetch(url, { headers: { 'User-Agent': 'AssignmentCoverMaker/1.0 (contact@calculatorutility.tech)' } });
+      const res = await fetch(url, { headers: { 'User-Agent': 'AssignmentCoverMaker/1.0 (contact@toolscastle.app)' } });
       const data = await res.json();
       const p = Object.values(data.query.pages)[0];
       const imgs = (p?.images || []).map(i => i.title).filter(t => !/commons|oojs|flag|wiktionary/i.test(t));
@@ -70,7 +70,7 @@ async function findArticleLogo(item) {
 async function getImageUrl(fileTitle, wiki = 'en') {
   const domain = wiki === 'bn' ? 'bn.wikipedia.org' : 'en.wikipedia.org';
   const url = `https://${domain}/w/api.php?action=query&titles=${encodeURIComponent(fileTitle)}&prop=imageinfo&iiprop=url&format=json`;
-  const res = await fetch(url, { headers: { 'User-Agent': 'AssignmentCoverMaker/1.0 (contact@calculatorutility.tech)' } });
+  const res = await fetch(url, { headers: { 'User-Agent': 'AssignmentCoverMaker/1.0 (contact@toolscastle.app)' } });
   const data = await res.json();
   const p = Object.values(data.query.pages)[0];
   return p?.imageinfo?.[0]?.url;
@@ -104,7 +104,7 @@ async function run() {
 
     // Download image
     try {
-      const res = await fetch(directUrl, { headers: { 'User-Agent': 'AssignmentCoverMaker/1.0 (contact@calculatorutility.tech)' } });
+      const res = await fetch(directUrl, { headers: { 'User-Agent': 'AssignmentCoverMaker/1.0 (contact@toolscastle.app)' } });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const buf = Buffer.from(await res.arrayBuffer());
       if (buf.length < 500) throw new Error('Too small');

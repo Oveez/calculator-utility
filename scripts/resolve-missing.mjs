@@ -129,7 +129,7 @@ async function run() {
     try {
       const res = await fetch(item.url, {
         headers: {
-          'User-Agent': 'AssignmentCoverMaker/1.0 (contact@calculatorutility.tech)'
+          'User-Agent': 'AssignmentCoverMaker/1.0 (contact@toolscastle.app)'
         }
       });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);

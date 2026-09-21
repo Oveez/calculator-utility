@@ -9,7 +9,7 @@ async function runAiSummaryTests() {
 
   // Test 1: Cloudflare Pages Function - Empty Input Handling
   console.log('--- Test 1: Cloudflare Pages Function: Empty Input Handling ---');
-  const emptyReq = new Request('https://calculatorutility.tech/api/generate-summary', {
+  const emptyReq = new Request('https://toolscastle.app/api/generate-summary', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', 'cf-connecting-ip': '1.2.3.4' },
     body: JSON.stringify({}),
@@ -33,7 +33,7 @@ async function runAiSummaryTests() {
     ],
   };
 
-  const studentReq = new Request('https://calculatorutility.tech/api/generate-summary', {
+  const studentReq = new Request('https://toolscastle.app/api/generate-summary', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', 'cf-connecting-ip': '1.2.3.5' },
     body: JSON.stringify(studentPayload),
@@ -63,7 +63,7 @@ async function runAiSummaryTests() {
     skills: ['Kubernetes', 'Terraform', 'AWS', 'Docker', 'CI/CD', 'Go', 'Prometheus'],
   };
 
-  const proReq = new Request('https://calculatorutility.tech/api/generate-summary', {
+  const proReq = new Request('https://toolscastle.app/api/generate-summary', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', 'cf-connecting-ip': '1.2.3.6' },
     body: JSON.stringify(proPayload),
@@ -77,7 +77,7 @@ async function runAiSummaryTests() {
 
   // Test 4: Cloudflare Pages Function - Cooldown Protection Test (Rapid second call with same IP)
   console.log('\n--- Test 4: Cloudflare Pages Function: Anti-Spam Rapid Request Cooldown ---');
-  const rapidReq = new Request('https://calculatorutility.tech/api/generate-summary', {
+  const rapidReq = new Request('https://toolscastle.app/api/generate-summary', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', 'cf-connecting-ip': '1.2.3.6' },
     body: JSON.stringify(proPayload),

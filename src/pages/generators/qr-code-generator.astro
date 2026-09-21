@@ -114,7 +114,7 @@ const schemaGraph = [
               id="qr-url-input"
               class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-[color:var(--fg)] font-mono"
               placeholder="https://example.com"
-              value="https://calculatorutility.tech" />
+              value="https://toolscastle.app" />
           </div>
 
           <div id="field-text" class="hidden space-y-2">
@@ -258,9 +258,9 @@ const schemaGraph = [
       function getPayloadString() {
         const type = qrType.value;
         if (type === 'url') {
-          return urlInput.value.trim() || 'https://calculatorutility.tech';
+          return urlInput.value.trim() || 'https://toolscastle.app';
         } else if (type === 'text') {
-          return textInput.value.trim() || 'Hello from Calculator Utility';
+          return textInput.value.trim() || 'Hello from Toolscastle';
         } else if (type === 'wifi') {
           const ssid = wifiSsid.value.trim() || 'NetworkName';
           const pass = wifiPass.value.trim();
@@ -271,7 +271,7 @@ const schemaGraph = [
           const sub = encodeURIComponent(emailSub.value.trim() || '');
           return `mailto:${email}?subject=${sub}`;
         }
-        return 'https://calculatorutility.tech';
+        return 'https://toolscastle.app';
       }
 
       function updateQr() {

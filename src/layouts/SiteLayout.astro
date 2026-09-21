@@ -70,9 +70,10 @@ const websiteSchema = {
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
     <meta name="theme-color" content="#0F172A" media="(prefers-color-scheme: dark)" />
+    <link rel="icon" type="image/x-icon" href={withBasePath('/favicon.ico')} />
     <link rel="icon" type="image/svg+xml" href={withBasePath('/favicon.svg')} />
     <link rel="icon" type="image/png" sizes="32x32" href={withBasePath('/calc.png')} />
-    <link rel="apple-touch-icon" href={withBasePath('/calc.png')} />
+    <link rel="apple-touch-icon" href={withBasePath('/apple-touch-icon.png')} />
     <link rel="manifest" href={withBasePath('/site.webmanifest')} />
     <link rel="canonical" href={canonicalUrl} />
     <meta name="description" content={description} />
@@ -146,9 +147,19 @@ const websiteSchema = {
           
           <!-- Column 1: Brand & About -->
           <div class="space-y-3 lg:col-span-1">
-            <a class="flex items-center gap-2 transition hover:opacity-90" href={withBasePath('/')}>
-              <BrandLogo class="h-7 w-7 shrink-0 shadow-sm" />
-              <span class="text-sm font-bold tracking-tight text-[color:var(--fg)]">{siteName}</span>
+            <a class="flex items-center gap-2.5 transition hover:opacity-90" href={withBasePath('/')} aria-label={`${siteName} Home`}>
+              <img
+                src={withBasePath('/logo.png')}
+                alt="ToolsCastle Logo"
+                class="h-10 w-10 sm:h-11 sm:w-11 shrink-0 object-contain drop-shadow-xs"
+                width="44"
+                height="44"
+                loading="lazy"
+                decoding="async"
+              />
+              <span class="text-xl sm:text-2xl font-black tracking-tight leading-none text-[color:var(--fg)]">
+                Tools<span class="bg-gradient-to-r from-blue-600 via-blue-500 to-sky-400 dark:from-blue-400 dark:via-sky-300 dark:to-cyan-300 bg-clip-text text-transparent">Castle</span>
+              </span>
             </a>
             <p class="text-xs leading-relaxed text-[color:var(--muted)]">
               Fast, privacy-first calculators, conversion tools, and professional resume builders running directly in your browser.
@@ -159,10 +170,10 @@ const websiteSchema = {
           <div class="space-y-2.5">
             <p class="text-xs font-bold uppercase tracking-wider text-[color:var(--fg)]">Dev &amp; Data Tools</p>
             <ul class="space-y-1.5 text-xs text-[color:var(--muted)]">
-              <li><a class="transition hover:text-[color:var(--fg)]" href={withBasePath('/developer-tools/')}>Developer Utilities</a></li>
+              <li><a class="transition hover:text-[color:var(--fg)]" href={withBasePath('/developer-tools/')}>Developer Tools</a></li>
               <li><a class="transition hover:text-[color:var(--fg)]" href={withBasePath('/developer-tools/json-formatter/')}>JSON Formatter</a></li>
               <li><a class="transition hover:text-[color:var(--fg)]" href={withBasePath('/developer-tools/jwt-decoder/')}>JWT Decoder</a></li>
-              <li><a class="transition hover:text-[color:var(--fg)]" href={withBasePath('/data-tools/')}>CSV &amp; Data Utilities</a></li>
+              <li><a class="transition hover:text-[color:var(--fg)]" href={withBasePath('/data-tools/')}>CSV &amp; Data Tools</a></li>
               <li><a class="transition hover:text-[color:var(--fg)]" href={withBasePath('/url-tools/')}>URL &amp; Query Tools</a></li>
             </ul>
           </div>
@@ -171,7 +182,7 @@ const websiteSchema = {
           <div class="space-y-2.5">
             <p class="text-xs font-bold uppercase tracking-wider text-[color:var(--fg)]">Media &amp; Text</p>
             <ul class="space-y-1.5 text-xs text-[color:var(--muted)]">
-              <li><a class="transition hover:text-[color:var(--fg)]" href={withBasePath('/text-tools/')}>Text Utilities</a></li>
+              <li><a class="transition hover:text-[color:var(--fg)]" href={withBasePath('/text-tools/')}>Text Tools</a></li>
               <li><a class="transition hover:text-[color:var(--fg)]" href={withBasePath('/image-tools/')}>Image &amp; Privacy Tools</a></li>
               <li><a class="transition hover:text-[color:var(--fg)]" href={withBasePath('/pdf-tools/')}>PDF Document Tools</a></li>
               <li><a class="transition hover:text-[color:var(--fg)]" href={withBasePath('/color-tools/')}>Color &amp; Accessibility</a></li>
@@ -207,7 +218,7 @@ const websiteSchema = {
 
         <div class="mt-8 border-t border-[color:var(--border)] pt-5 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-[color:var(--muted)]">
           <p>© {new Date().getFullYear()} {siteName}. All rights reserved.</p>
-          <p class="text-[11px]">Free, fast, and privacy-focused online utility tools.</p>
+          <p class="text-[11px]">Free, fast, and privacy-focused online tools.</p>
         </div>
       </div>
     </footer>

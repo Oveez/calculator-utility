@@ -14,7 +14,7 @@ const {
   R2_ACCESS_KEY_ID,
   R2_SECRET_ACCESS_KEY,
   R2_BUCKET_NAME = 'edu-logos',
-  PUBLIC_LOGOS_CDN_URL = 'https://logos.calculatorutility.tech'
+  PUBLIC_LOGOS_CDN_URL = 'https://logos.toolscastle.app'
 } = process.env;
 
 const PROCESSED_DIR = path.resolve(process.cwd(), 'data/processed-logos');
@@ -77,7 +77,7 @@ async function uploadLogos() {
     console.error('   R2_ACCESS_KEY_ID=your_token_access_key');
     console.error('   R2_SECRET_ACCESS_KEY=your_token_secret_key');
     console.error('   R2_BUCKET_NAME=edu-logos');
-    console.error('   PUBLIC_LOGOS_CDN_URL=https://logos.calculatorutility.tech\n');
+    console.error('   PUBLIC_LOGOS_CDN_URL=https://logos.toolscastle.app\n');
     process.exit(1);
   }
 

@@ -43,7 +43,7 @@ async function run() {
     try {
       const res = await fetch(item.url, {
         headers: {
-          'User-Agent': 'Mozilla/5.0 AssignmentCoverMaker/3.0 (contact@calculatorutility.tech)'
+          'User-Agent': 'Mozilla/5.0 AssignmentCoverMaker/3.0 (contact@toolscastle.app)'
         }
       });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);

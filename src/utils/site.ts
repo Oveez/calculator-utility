@@ -9,9 +9,9 @@ function normalizeBasePath(basePath: string): string {
   return prefixed.endsWith('/') ? prefixed : `${prefixed}/`;
 }
 
-export const siteName = 'Calculator Utility';
-export const siteTagline = 'Fast static calculators and everyday utility tools.';
-export const siteUrl = import.meta.env.SITE_URL ?? 'https://calculatorutility.tech';
+export const siteName = 'ToolsCastle';
+export const siteTagline = 'Fast static calculators and everyday online tools.';
+export const siteUrl = import.meta.env.SITE_URL ?? 'https://toolscastle.app';
 export const basePath = normalizedBasePath;
 
 export function withBasePath(path = '/'): string {

@@ -55,7 +55,7 @@ const categoryGroups = [
       { href: withBasePath('/education-tools/'), label: 'Education & Classroom (7)' },
       { href: withBasePath('/research-tools/'), label: 'Research & Statistics (16)' },
       { href: withBasePath('/color-tools/'), label: 'Color & Accessibility (8)' },
-      { href: withBasePath('/text-tools/'), label: 'Text Utilities (11)' },
+      { href: withBasePath('/text-tools/'), label: 'Text Tools (11)' },
       { href: withBasePath('/generators/'), label: 'Generators (8)' },
     ],
   },
@@ -95,11 +95,23 @@ const categoryGroups = [
   >
     <!-- Drawer Header -->
     <div class="flex items-center justify-between border-b border-[color:var(--border)] p-4 bg-[color:var(--surface)]">
-      <a class="flex items-center gap-2.5" href={withBasePath('/')} id="drawer-brand-link">
-        <BrandLogo class="h-8 w-8 shrink-0" />
-        <div class="flex flex-col">
-          <span class="text-sm font-bold tracking-tight text-[color:var(--fg)] leading-none">{siteName}</span>
-          <span class="text-[10px] font-medium text-[color:var(--muted)] mt-0.5">186 In-Browser Tools</span>
+      <a class="flex items-center gap-2.5" href={withBasePath('/')} id="drawer-brand-link" aria-label={`${siteName} Home`}>
+        <img
+          src={withBasePath('/logo.png')}
+          alt="ToolsCastle Logo"
+          class="h-10 w-10 shrink-0 object-contain drop-shadow-xs"
+          width="40"
+          height="40"
+          loading="eager"
+          decoding="async"
+        />
+        <div class="flex flex-col justify-center">
+          <span class="text-lg font-black tracking-tight leading-none text-[color:var(--fg)]">
+            Tools<span class="bg-gradient-to-r from-blue-600 via-blue-500 to-sky-400 dark:from-blue-400 dark:via-sky-300 dark:to-cyan-300 bg-clip-text text-transparent">Castle</span>
+          </span>
+          <span class="text-[10px] font-semibold text-[color:var(--muted)] tracking-wider mt-1 leading-none">
+            Online Tools &amp; Calculators
+          </span>
         </div>
       </a>
       <button
@@ -120,7 +132,7 @@ const categoryGroups = [
         class="flex w-full items-center gap-2.5 rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] px-3.5 py-2.5 text-xs text-[color:var(--muted)] hover:border-[color:var(--border-strong)] hover:text-[color:var(--fg)] transition cursor-pointer"
       >
         <Icon name="search" class="w-3.5 h-3.5 text-blue-500" />
-        <span>Search all 186 utilities...</span>
+        <span>Search all 186 tools...</span>
       </button>
     </div>
 
@@ -132,15 +144,11 @@ const categoryGroups = [
         class="drawer-nav-item flex items-center gap-3 rounded-xl px-3.5 py-2.5 text-xs font-bold text-[color:var(--fg)] bg-[color:var(--surface)] hover:bg-[color:var(--surface-strong)] transition"
       >
         <div class="flex h-6 w-6 items-center justify-center rounded-lg bg-blue-500/10 text-blue-600 dark:bg-blue-500/20 dark:text-blue-400 shrink-0">
+          <!-- Tool-Home icon: house + wrench -->
           <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <rect width="16" height="20" x="4" y="2" rx="2" />
-            <line x1="8" x2="16" y1="6" y2="6" />
-            <line x1="16" x2="16" y1="14" y2="14.01" />
-            <line x1="12" x2="12" y1="14" y2="14.01" />
-            <line x1="8" x2="8" y1="14" y2="14.01" />
-            <line x1="16" x2="16" y1="18" y2="18.01" />
-            <line x1="12" x2="12" y1="18" y2="18.01" />
-            <line x1="8" x2="8" y1="18" y2="18.01" />
+            <path d="M3 10.5L12 3l9 7.5" />
+            <path d="M5 9.5V20a1 1 0 0 0 1 1h4v-4h4v4h4a1 1 0 0 0 1-1V9.5" />
+            <path d="M12 13a1.5 1.5 0 0 1 1.5 1.5c0 .28-.08.54-.2.77l1.45 1.45-.7.7-1.45-1.45c-.23.13-.49.2-.77.2A1.5 1.5 0 0 1 10.5 14.5 1.5 1.5 0 0 1 12 13z" stroke-width="1.5" />
           </svg>
         </div>
         <span>Home Dashboard</span>

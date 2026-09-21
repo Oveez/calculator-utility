@@ -162,7 +162,7 @@ export const allToolsIndex: ToolIndexItem[] = [
   { title: 'CSV Filter', category: 'Data', url: '/data-tools/csv-filter/', desc: 'Filter CSV data rows matching specific column conditions or thresholds.' },
   { title: 'CSV to Markdown Table Converter', category: 'Data', url: '/data-tools/csv-to-markdown/', desc: 'Convert CSV spreadsheet data into GitHub-flavored Markdown tables.' },
 
-  // 16. Text Utilities (11)
+  // 16. Text Tools (11)
   { title: 'Text Diff & Comparison Checker', category: 'Text', url: '/text-tools/text-diff-checker/', desc: 'Compare two text blocks side-by-side with line additions and deletions.' },
   { title: 'Duplicate Line Remover', category: 'Text', url: '/text-tools/duplicate-line-remover/', desc: 'Clean duplicate lines from lists while preserving original order.' },
   { title: 'Empty Line Remover', category: 'Text', url: '/text-tools/empty-line-remover/', desc: 'Strip blank and whitespace-only lines from code and text.' },

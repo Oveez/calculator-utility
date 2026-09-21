@@ -54,7 +54,7 @@ async function downloadMatchedLogos() {
       await new Promise(r => setTimeout(r, 400));
       const res = await fetch(item.logoUrl, {
         headers: {
-          'User-Agent': 'AssignmentCoverMakerBot/1.0 (https://calculatorutility.tech; contact@calculatorutility.tech)'
+          'User-Agent': 'AssignmentCoverMakerBot/1.0 (https://toolscastle.app; contact@toolscastle.app)'
         }
       });
 
