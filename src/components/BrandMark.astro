@@ -1,0 +1,85 @@
+---
+/**
+ * BrandMark — Toolscastle inline SVG logo.
+ * Clean geometric castle rook mark + wordmark.
+ * The arch gate is a true cutout via SVG clipPath so it works on any background.
+ */
+interface Props {
+  size?: 'sm' | 'md' | 'lg';
+  showWordmark?: boolean;
+  class?: string;
+}
+
+const {
+  size = 'md',
+  showWordmark = true,
+  class: extraClass = '',
+} = Astro.props;
+
+const iconSize = size === 'sm' ? 28 : size === 'lg' ? 44 : 36;
+const wordmarkClass =
+  size === 'sm'
+    ? 'text-base font-black tracking-tight leading-none'
+    : size === 'lg'
+    ? 'text-3xl font-black tracking-tight leading-none'
+    : 'text-xl sm:text-2xl font-black tracking-tight leading-none';
+
+// Unique ID to avoid SVG clipPath conflicts when the component is used multiple times
+const uid = `bm-${Math.random().toString(36).slice(2, 7)}`;
+---
+
+<span class={`inline-flex items-center gap-2.5 ${extraClass}`}>
+  <!--
+    Castle Rook SVG Mark
+    Viewport: 36×36
+    Design:
+      - 3 merlons (rectangular battlements) at the top
+      - Trapezoid tower body tapering slightly toward base
+      - Arched gate opening punched out via clipPath (true transparent cutout)
+    Color: #4F46E5 (indigo-600) — single brand color, flat.
+  -->
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width={iconSize}
+    height={iconSize}
+    viewBox="0 0 36 36"
+    aria-hidden="true"
+    role="img"
+  >
+    <defs>
+      <!-- The clip region is the full icon MINUS the arch cutout -->
+      <clipPath id={uid}>
+        <!-- Full bounding rect -->
+        <rect x="0" y="0" width="36" height="36" />
+        <!-- Subtract the arch gate via evenodd rule -->
+      </clipPath>
+    </defs>
+
+    <g>
+      <!-- Battlements: 3 rectangular merlons -->
+      <rect x="4"    y="2" width="7" height="8" rx="1.5" fill="#4F46E5"/>
+      <rect x="14.5" y="2" width="7" height="8" rx="1.5" fill="#4F46E5"/>
+      <rect x="25"   y="2" width="7" height="8" rx="1.5" fill="#4F46E5"/>
+
+      <!--
+        Tower body as a path with an arch gate punched out.
+        Using fill-rule="evenodd" to create a transparent hole.
+      -->
+      <path
+        fill-rule="evenodd"
+        clip-rule="evenodd"
+        fill="#4F46E5"
+        d="
+          M3 10 H33 L30 34 H6 Z
+          M13.5 34 L13.5 23.5 Q18 17.5 22.5 23.5 L22.5 34 Z
+        "
+      />
+    </g>
+  </svg>
+
+  {showWordmark && (
+    <span class={wordmarkClass}>
+      <span class="text-[color:var(--fg)]">Tools</span><span style="color:#4F46E5">castle</span>
+    </span>
+  )}
+</span>

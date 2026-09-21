@@ -1,7 +1,7 @@
 ---
 import ThemeToggle from './ThemeToggle.astro';
 import Icon from './Icon.astro';
-import BrandLogo from './BrandLogo.astro';
+import BrandMark from './BrandMark.astro';
 import { siteName, withBasePath } from '../utils/site';
 
 const navigationItems = [
@@ -18,24 +18,8 @@ const navigationItems = [
 <header class="sticky top-0 z-40 border-b border-[color:var(--border)] bg-[color:var(--surface)]/95 backdrop-blur-md shadow-xs transition-colors">
   <div class="mx-auto flex w-full max-w-6xl items-center justify-between gap-4 px-4 py-3 sm:px-6 lg:px-8">
     <!-- Brand Logo + Site Name -->
-    <a class="flex items-center gap-3 transition-transform duration-200 hover:scale-[1.02] shrink-0" href={withBasePath('/')} aria-label={`${siteName} Home`}>
-      <img
-        src={withBasePath('/logo.png')}
-        alt="ToolsCastle Logo"
-        class="h-10 w-10 sm:h-12 sm:w-12 shrink-0 object-contain drop-shadow-xs transition-transform duration-200"
-        width="48"
-        height="48"
-        loading="eager"
-        decoding="async"
-      />
-      <div class="flex flex-col justify-center">
-        <span class="text-xl sm:text-2xl font-black tracking-tight leading-none text-[color:var(--fg)]">
-          Tools<span class="bg-gradient-to-r from-blue-600 via-blue-500 to-sky-400 dark:from-blue-400 dark:via-sky-300 dark:to-cyan-300 bg-clip-text text-transparent">Castle</span>
-        </span>
-        <span class="text-[10px] font-semibold text-[color:var(--muted)] tracking-wider mt-1 hidden sm:inline leading-none">
-          Online Tools &amp; Calculators
-        </span>
-      </div>
+    <a class="flex items-center transition-transform duration-200 hover:scale-[1.02] shrink-0" href={withBasePath('/')} aria-label={`${siteName} Home`}>
+      <BrandMark size="md" />
     </a>
 
     <!-- Desktop Navigation -->

@@ -5,7 +5,7 @@ import MobileBottomNav from '../components/MobileBottomNav.astro';
 import MobileSearchModal from '../components/MobileSearchModal.astro';
 import Analytics from '../components/Analytics.astro';
 import CookieConsent from '../components/CookieConsent.astro';
-import BrandLogo from '../components/BrandLogo.astro';
+import BrandMark from '../components/BrandMark.astro';
 import '../styles/global.css';
 import { siteName, siteTagline, siteUrl, withBasePath } from '../utils/site';
 
@@ -148,18 +148,7 @@ const websiteSchema = {
           <!-- Column 1: Brand & About -->
           <div class="space-y-3 lg:col-span-1">
             <a class="flex items-center gap-2.5 transition hover:opacity-90" href={withBasePath('/')} aria-label={`${siteName} Home`}>
-              <img
-                src={withBasePath('/logo.png')}
-                alt="ToolsCastle Logo"
-                class="h-10 w-10 sm:h-11 sm:w-11 shrink-0 object-contain drop-shadow-xs"
-                width="44"
-                height="44"
-                loading="lazy"
-                decoding="async"
-              />
-              <span class="text-xl sm:text-2xl font-black tracking-tight leading-none text-[color:var(--fg)]">
-                Tools<span class="bg-gradient-to-r from-blue-600 via-blue-500 to-sky-400 dark:from-blue-400 dark:via-sky-300 dark:to-cyan-300 bg-clip-text text-transparent">Castle</span>
-              </span>
+              <BrandMark size="md" />
             </a>
             <p class="text-xs leading-relaxed text-[color:var(--muted)]">
               Fast, privacy-first calculators, conversion tools, and professional resume builders running directly in your browser.
