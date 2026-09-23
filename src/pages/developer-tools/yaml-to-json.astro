@@ -65,10 +65,11 @@ const schemaGraph = [
 ];
 ---
 
-<SiteLayout title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
+<SiteLayout heroCompact={true} title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
   <script is:inline type="application/ld+json" set:html={JSON.stringify(schemaGraph)} />
 
-  <article class="space-y-10 py-2" data-yaml-json-app>
+  
+  <div slot="hero" class="site-hero-header">
     <nav aria-label="Breadcrumb">
       <ol class="flex flex-wrap items-center gap-2 text-xs text-[color:var(--muted)]">
         {breadcrumbItems.map((item, index) => (
@@ -100,6 +101,9 @@ const schemaGraph = [
         Parse YAML manifests, Docker Compose files, and cloud configs into validated, formatted JSON. Supports multi-level nesting, lists of objects, and compact or pretty-printed indentation.
       </p>
     </header>
+  </div>
+
+  <article class="space-y-10 py-2" data-yaml-json-app>
 
     <!-- Telemetry Bar -->
     <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">

@@ -65,10 +65,11 @@ const schemaGraph = [
 ];
 ---
 
-<SiteLayout title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
+<SiteLayout heroCompact={true} title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
   <script is:inline type="application/ld+json" set:html={JSON.stringify(schemaGraph)} />
 
-  <article class="space-y-10 py-2" data-dim-app>
+  
+  <div slot="hero" class="site-hero-header">
     <nav aria-label="Breadcrumb">
       <ol class="flex flex-wrap items-center gap-2 text-xs text-[color:var(--muted)]">
         {breadcrumbItems.map((item, index) => (
@@ -100,24 +101,27 @@ const schemaGraph = [
         Find out the exact pixel width, pixel height, aspect ratio, and megapixel count of any image. Compare against industry resolution standards (HD, 4K, 8K) and print size limits.
       </p>
     </header>
+  </div>
+
+  <article class="space-y-10 py-2" data-dim-app>
 
     <!-- Telemetry Bar -->
     <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
       <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3 text-center">
         <p class="text-[10px] font-bold uppercase tracking-wider text-[color:var(--muted)]">Dimensions</p>
-        <p id="stat-dim" class="mt-1 font-mono text-base font-bold text-emerald-500">1920 &times; 1080</p>
+        <p id="stat-dim" class="mt-1 font-mono text-base font-bold text-emerald-500">-</p>
       </div>
       <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3 text-center">
         <p class="text-[10px] font-bold uppercase tracking-wider text-[color:var(--muted)]">Megapixels</p>
-        <p id="stat-mp" class="mt-1 font-mono text-base font-bold text-[color:var(--fg)]">2.07 MP</p>
+        <p id="stat-mp" class="mt-1 font-mono text-base font-bold text-[color:var(--fg)]">0 MP</p>
       </div>
       <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3 text-center">
         <p class="text-[10px] font-bold uppercase tracking-wider text-[color:var(--muted)]">Display Standard</p>
-        <p id="stat-std" class="mt-1 font-mono text-base font-bold text-[color:var(--fg)]">Full HD (1080p)</p>
+        <p id="stat-std" class="mt-1 font-mono text-base font-bold text-[color:var(--fg)]">-</p>
       </div>
       <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3 text-center">
         <p class="text-[10px] font-bold uppercase tracking-wider text-[color:var(--muted)]">Orientation</p>
-        <p id="stat-orient" class="mt-1 font-mono text-base font-bold text-[color:var(--fg)]">Landscape</p>
+        <p id="stat-orient" class="mt-1 font-mono text-base font-bold text-[color:var(--fg)]">-</p>
       </div>
     </div>
 
@@ -160,7 +164,7 @@ const schemaGraph = [
               <input
                 type="number"
                 id="inp-w"
-                value="1920"
+                placeholder="e.g. 1920"
                 min="1"
                 class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-[color:var(--fg)] font-semibold" />
             </div>
@@ -169,7 +173,7 @@ const schemaGraph = [
               <input
                 type="number"
                 id="inp-h"
-                value="1080"
+                placeholder="e.g. 1080"
                 min="1"
                 class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-[color:var(--fg)] font-semibold" />
             </div>
@@ -178,6 +182,8 @@ const schemaGraph = [
           <div class="pt-2 border-t border-[color:var(--border)] space-y-2">
             <span class="text-[11px] font-bold text-[color:var(--muted)]">Presets:</span>
             <div class="flex flex-wrap gap-1.5">
+              <button type="button" id="reset-dim-btn" class="rounded-lg border border-[color:var(--border)] bg-[color:var(--surface-strong)] px-2.5 py-1 text-[11px] font-semibold text-[color:var(--fg)] hover:border-[color:var(--border-strong)] cursor-pointer">Reset</button>
+              <button type="button" id="reset-dim-btn" class="rounded-lg border border-[color:var(--border)] bg-[color:var(--surface-strong)] px-2.5 py-1 text-[11px] font-semibold text-[color:var(--fg)] hover:border-[color:var(--border-strong)] cursor-pointer">Reset</button>
               <button type="button" data-dim="1280,720" class="rounded-lg border border-[color:var(--border)] bg-[color:var(--bg)] px-2.5 py-1 text-[11px] hover:border-[color:var(--border-strong)]">HD 720p</button>
               <button type="button" data-dim="1920,1080" class="rounded-lg border border-[color:var(--border)] bg-[color:var(--bg)] px-2.5 py-1 text-[11px] hover:border-[color:var(--border-strong)]">FHD 1080p</button>
               <button type="button" data-dim="2560,1440" class="rounded-lg border border-[color:var(--border)] bg-[color:var(--bg)] px-2.5 py-1 text-[11px] hover:border-[color:var(--border-strong)]">2K 1440p</button>
@@ -193,19 +199,19 @@ const schemaGraph = [
           <div class="grid grid-cols-2 gap-2 font-mono">
             <div class="rounded-xl bg-[color:var(--bg)] p-3">
               <span class="text-[10px] text-[color:var(--muted)] block">Total Pixels:</span>
-              <strong id="spec-pixels" class="text-[color:var(--fg)] text-sm">2,073,600</strong>
+              <strong id="spec-pixels" class="text-[color:var(--fg)] text-sm">-</strong>
             </div>
             <div class="rounded-xl bg-[color:var(--bg)] p-3">
               <span class="text-[10px] text-[color:var(--muted)] block">Aspect Ratio:</span>
-              <strong id="spec-ratio" class="text-[color:var(--fg)] text-sm">16:9 (1.78)</strong>
+              <strong id="spec-ratio" class="text-[color:var(--fg)] text-sm">-</strong>
             </div>
             <div class="rounded-xl bg-[color:var(--bg)] p-3">
               <span class="text-[10px] text-[color:var(--muted)] block">Max 300 DPI Print:</span>
-              <strong id="spec-print-in" class="text-[color:var(--fg)] text-sm">6.4 &times; 3.6 in</strong>
+              <strong id="spec-print-in" class="text-[color:var(--fg)] text-sm">-</strong>
             </div>
             <div class="rounded-xl bg-[color:var(--bg)] p-3">
               <span class="text-[10px] text-[color:var(--muted)] block">Max 300 DPI Metric:</span>
-              <strong id="spec-print-cm" class="text-[color:var(--fg)] text-sm">16.3 &times; 9.1 cm</strong>
+              <strong id="spec-print-cm" class="text-[color:var(--fg)] text-sm">-</strong>
             </div>
           </div>
         </div>
@@ -432,6 +438,15 @@ const schemaGraph = [
         };
         reader.readAsDataURL(file);
       });
+
+      const resetDimBtn = root.querySelector('#reset-dim-btn');
+      if (resetDimBtn) {
+        resetDimBtn.addEventListener('click', () => {
+          inpW.value = '';
+          inpH.value = '';
+          update();
+        });
+      }
 
       update();
     })();

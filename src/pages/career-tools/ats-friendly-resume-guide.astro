@@ -68,10 +68,11 @@ const schemaGraph = [
 ];
 ---
 
-<SiteLayout title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
+<SiteLayout heroCompact={true} title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
   <script is:inline type="application/ld+json" set:html={JSON.stringify(schemaGraph)} />
 
-  <article class="mx-auto max-w-4xl space-y-10 py-4">
+  
+  <div slot="hero" class="site-hero-header">
     <!-- Breadcrumbs -->
     <nav aria-label="Breadcrumb">
       <ol class="flex flex-wrap items-center gap-2 text-sm text-[color:var(--muted)]">
@@ -104,6 +105,9 @@ const schemaGraph = [
         Actionable resume advice on how applicant tracking system algorithms scan your document. Learn the best resume format for ATS, avoid layout traps, and optimize your keywords to win more interviews.
       </p>
     </header>
+  </div>
+
+  <article class="mx-auto max-w-4xl space-y-10 py-4">
 
     <!-- Content Sections -->
     <div class="space-y-8 text-sm leading-relaxed text-[color:var(--muted)]">

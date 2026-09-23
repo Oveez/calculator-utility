@@ -110,10 +110,11 @@ const workedExampleData = {
 };
 ---
 
-<SiteLayout title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
+<SiteLayout heroCompact={true} title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
   <script is:inline type="application/ld+json" set:html={JSON.stringify(schemaGraph)} />
 
-  <article class="space-y-10 py-2" data-diff-app>
+  
+  <div slot="hero" class="site-hero-header">
     <!-- Breadcrumb -->
     <nav aria-label="Breadcrumb">
       <ol class="flex flex-wrap items-center gap-2 text-xs text-[color:var(--muted)]">
@@ -147,6 +148,9 @@ const workedExampleData = {
         Compare two text blocks, source code files, or markdown documents side-by-side with intra-line word highlighting, customizable whitespace sensitivity, and unified Git patch exports.
       </p>
     </header>
+  </div>
+
+  <article class="space-y-10 py-2" data-diff-app>
 
     <!-- Controls & Options Bar -->
     <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5 space-y-4">

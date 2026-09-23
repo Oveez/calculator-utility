@@ -3,9 +3,10 @@ import SiteHeader from '../components/SiteHeader.astro';
 import MobileDrawer from '../components/MobileDrawer.astro';
 import MobileBottomNav from '../components/MobileBottomNav.astro';
 import MobileSearchModal from '../components/MobileSearchModal.astro';
+import ScrollToggle from '../components/ScrollToggle.astro';
 import Analytics from '../components/Analytics.astro';
 import CookieConsent from '../components/CookieConsent.astro';
-import BrandMark from '../components/BrandMark.astro';
+import Footer from '../components/Footer.astro';
 import '../styles/global.css';
 import { siteName, siteTagline, siteUrl, withBasePath } from '../utils/site';
 
@@ -14,6 +15,8 @@ interface Props {
   description?: string;
   canonical?: string;
   ogType?: 'website' | 'article';
+  heroLayout?: boolean;
+  heroCompact?: boolean;
 }
 
 const {
@@ -21,6 +24,8 @@ const {
   description = siteTagline,
   canonical,
   ogType = 'website',
+  heroLayout = false,
+  heroCompact = false,
 } = Astro.props as Props;
 
 const pageTitle = title.includes(siteName) ? title : `${title} · ${siteName}`;
@@ -68,13 +73,17 @@ const websiteSchema = {
     </script>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
-    <meta name="theme-color" content="#0F172A" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#F8FAFC" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0B0F19" media="(prefers-color-scheme: dark)" />
     <link rel="icon" type="image/x-icon" href={withBasePath('/favicon.ico')} />
     <link rel="icon" type="image/svg+xml" href={withBasePath('/favicon.svg')} />
     <link rel="icon" type="image/png" sizes="32x32" href={withBasePath('/calc.png')} />
     <link rel="apple-touch-icon" href={withBasePath('/apple-touch-icon.png')} />
     <link rel="manifest" href={withBasePath('/site.webmanifest')} />
+    <!-- Google Fonts: Plus Jakarta Sans — Modern geometric SaaS typeface -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet" />
     <link rel="canonical" href={canonicalUrl} />
     <meta name="description" content={description} />
     <meta property="og:site_name" content={siteName} />
@@ -115,7 +124,7 @@ const websiteSchema = {
       initThemeToggle();
     </script>
   </head>
-  <body class="relative min-h-screen flex flex-col bg-[color:var(--bg)] text-[color:var(--fg)] antialiased transition-colors duration-150">
+  <body class="relative min-h-screen flex flex-col bg-[color:var(--bg)] text-[color:var(--fg)] antialiased transition-colors duration-150 overflow-x-hidden">
     <div class="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
       <!-- Faint dot pattern -->
       <div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMiIgY3k9IjIiIHI9IjEiIGZpbGw9IiMwMDAiIGZpbGwtb3BhY2l0eT0iMC4wNCIvPjwvc3ZnPg==')] opacity-60 dark:opacity-20 [mask-image:radial-gradient(ellipse_at_center,black,transparent_80%)]"></div>
@@ -135,82 +144,26 @@ const websiteSchema = {
     <!-- Top Sticky Header -->
     <SiteHeader />
 
+    <!-- Edge-to-Edge Full-Width Hero Section -->
+    {Astro.slots.has('hero') && (
+      <div class={`site-hero-banner ${heroCompact ? 'site-hero-banner--compact' : ''}`}>
+        <div class="site-hero-banner-dots" aria-hidden="true" />
+        <div class="site-hero-inner">
+          <slot name="hero" />
+        </div>
+      </div>
+    )}
+
     <!-- Main Content Container with safe mobile bottom spacing for BottomNav -->
-    <main id="content" class="relative z-0 flex-1 mx-auto w-full max-w-6xl px-3 sm:px-6 lg:px-8 py-5 sm:py-8 pb-24 lg:pb-10">
+    <main
+      id="content"
+      class={`relative z-0 flex-1 mx-auto w-full max-w-6xl px-3 sm:px-6 lg:px-8 pb-24 lg:pb-10 ${heroLayout ? 'pt-0' : Astro.slots.has('hero') ? 'pt-6 sm:pt-8' : 'py-5 sm:py-8'}`}
+    >
       <slot />
     </main>
 
-    <!-- Clean, Professional Footer -->
-    <footer class="mt-auto border-t border-[color:var(--border)] bg-[color:var(--bg)]/50 backdrop-blur-md pb-16 lg:pb-0">
-      <div class="mx-auto w-full max-w-6xl px-4 py-10 sm:px-6 lg:px-8">
-        <div class="grid gap-8 sm:grid-cols-2 lg:grid-cols-5">
-          
-          <!-- Column 1: Brand & About -->
-          <div class="space-y-3 lg:col-span-1">
-            <a class="flex items-center gap-2.5 transition hover:opacity-90" href={withBasePath('/')} aria-label={`${siteName} Home`}>
-              <BrandMark size="md" />
-            </a>
-            <p class="text-xs leading-relaxed text-[color:var(--muted)]">
-              Fast, privacy-first calculators, conversion tools, and professional resume builders running directly in your browser.
-            </p>
-          </div>
-
-          <!-- Column 2: Developer & Data -->
-          <div class="space-y-2.5">
-            <p class="text-xs font-bold uppercase tracking-wider text-[color:var(--fg)]">Dev &amp; Data Tools</p>
-            <ul class="space-y-1.5 text-xs text-[color:var(--muted)]">
-              <li><a class="transition hover:text-[color:var(--fg)]" href={withBasePath('/developer-tools/')}>Developer Tools</a></li>
-              <li><a class="transition hover:text-[color:var(--fg)]" href={withBasePath('/developer-tools/json-formatter/')}>JSON Formatter</a></li>
-              <li><a class="transition hover:text-[color:var(--fg)]" href={withBasePath('/developer-tools/jwt-decoder/')}>JWT Decoder</a></li>
-              <li><a class="transition hover:text-[color:var(--fg)]" href={withBasePath('/data-tools/')}>CSV &amp; Data Tools</a></li>
-              <li><a class="transition hover:text-[color:var(--fg)]" href={withBasePath('/url-tools/')}>URL &amp; Query Tools</a></li>
-            </ul>
-          </div>
-
-          <!-- Column 3: Text & Images -->
-          <div class="space-y-2.5">
-            <p class="text-xs font-bold uppercase tracking-wider text-[color:var(--fg)]">Media &amp; Text</p>
-            <ul class="space-y-1.5 text-xs text-[color:var(--muted)]">
-              <li><a class="transition hover:text-[color:var(--fg)]" href={withBasePath('/text-tools/')}>Text Tools</a></li>
-              <li><a class="transition hover:text-[color:var(--fg)]" href={withBasePath('/image-tools/')}>Image &amp; Privacy Tools</a></li>
-              <li><a class="transition hover:text-[color:var(--fg)]" href={withBasePath('/pdf-tools/')}>PDF Document Tools</a></li>
-              <li><a class="transition hover:text-[color:var(--fg)]" href={withBasePath('/color-tools/')}>Color &amp; Accessibility</a></li>
-              <li><a class="transition hover:text-[color:var(--fg)]" href={withBasePath('/generators/')}>Online Generators</a></li>
-            </ul>
-          </div>
-
-          <!-- Column 4: Academics & Career -->
-          <div class="space-y-2.5">
-            <p class="text-xs font-bold uppercase tracking-wider text-[color:var(--fg)]">Study &amp; Career</p>
-            <ul class="space-y-1.5 text-xs text-[color:var(--muted)]">
-              <li><a class="transition hover:text-[color:var(--fg)]" href={withBasePath('/education-tools/assignment-cover-maker/')}>Assignment Cover Maker</a></li>
-              <li><a class="transition hover:text-[color:var(--fg)]" href={withBasePath('/education-tools/')}>Education &amp; Classroom</a></li>
-              <li><a class="transition hover:text-[color:var(--fg)]" href={withBasePath('/academic-tools/')}>Academic Calculators</a></li>
-              <li><a class="transition hover:text-[color:var(--fg)]" href={withBasePath('/research-tools/')}>Research &amp; Statistics</a></li>
-              <li><a class="transition hover:text-[color:var(--fg)]" href={withBasePath('/career-tools/cv-maker/')}>ATS Resume Maker</a></li>
-              <li><a class="transition hover:text-[color:var(--fg)]" href={withBasePath('/tax-calculators/')}>Tax Calculators (24 Countries)</a></li>
-            </ul>
-          </div>
-
-          <!-- Column 5: Legal & Info -->
-          <div class="space-y-2.5">
-            <p class="text-xs font-bold uppercase tracking-wider text-[color:var(--fg)]">Information</p>
-            <ul class="space-y-1.5 text-xs text-[color:var(--muted)]">
-              <li><a class="transition hover:text-[color:var(--fg)]" href={withBasePath('/about/')}>About</a></li>
-              <li><a class="transition hover:text-[color:var(--fg)]" href={withBasePath('/contact/')}>Contact Support</a></li>
-              <li><a class="transition hover:text-[color:var(--fg)]" href={withBasePath('/privacy/')}>Privacy Policy</a></li>
-              <li><a class="transition hover:text-[color:var(--fg)]" href={withBasePath('/terms/')}>Terms of Service</a></li>
-              <li><a class="transition hover:text-[color:var(--fg)]" href={withBasePath('/disclaimer/')}>Disclaimer</a></li>
-            </ul>
-          </div>
-        </div>
-
-        <div class="mt-8 border-t border-[color:var(--border)] pt-5 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-[color:var(--muted)]">
-          <p>© {new Date().getFullYear()} {siteName}. All rights reserved.</p>
-          <p class="text-[11px]">Free, fast, and privacy-focused online tools.</p>
-        </div>
-      </div>
-    </footer>
+    <!-- Clean, High-Contrast SaaS Dark Footer -->
+    <Footer />
 
     <!-- Mobile Slide-out Drawer -->
     <MobileDrawer />
@@ -220,6 +173,9 @@ const websiteSchema = {
 
     <!-- Global / Mobile Quick Search Modal -->
     <MobileSearchModal />
+
+    <!-- Global Floating Scroll to Bottom / Top Button -->
+    <ScrollToggle />
 
     {/* Cookie Consent Banner */}
     <CookieConsent />

@@ -110,10 +110,11 @@ const workedExampleData = {
 };
 ---
 
-<SiteLayout title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
+<SiteLayout heroCompact={true} title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
   <script is:inline type="application/ld+json" set:html={JSON.stringify(schemaGraph)} />
 
-  <article class="space-y-10 py-2" data-pdf-img-app>
+  
+  <div slot="hero" class="site-hero-header">
     <!-- Breadcrumb -->
     <nav aria-label="Breadcrumb">
       <ol class="flex flex-wrap items-center gap-2 text-xs text-[color:var(--muted)]">
@@ -147,6 +148,9 @@ const workedExampleData = {
         A fast, free online tool to convert PDF to images. Render PDF pages into high-resolution JPG, PNG, or WebP images, extract images from PDF documents, customize DPI up to 300 DPI, and download single sheets or batch collections with 100% client-side privacy.
       </p>
     </header>
+  </div>
+
+  <article class="space-y-10 py-2" data-pdf-img-app>
 
     <div class="space-y-6">
       <!-- Dropzone -->

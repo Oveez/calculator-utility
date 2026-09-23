@@ -110,10 +110,11 @@ const workedExampleData = {
 };
 ---
 
-<SiteLayout title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
+<SiteLayout heroCompact={true} title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
   <script is:inline type="application/ld+json" set:html={JSON.stringify(schemaGraph)} />
 
-  <article class="space-y-10 py-2" data-slug-app>
+  
+  <div slot="hero" class="site-hero-header">
     <!-- Breadcrumb -->
     <nav aria-label="Breadcrumb">
       <ol class="flex flex-wrap items-center gap-2 text-xs text-[color:var(--muted)]">
@@ -147,6 +148,9 @@ const workedExampleData = {
         Convert headlines, blog post titles, and product listings into clean, SEO-optimized permalink slugs with accent normalization, stop word removal, and Google SERP preview.
       </p>
     </header>
+  </div>
+
+  <article class="space-y-10 py-2" data-slug-app>
 
     <!-- Mode Selector & Quick Presets -->
     <div class="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">

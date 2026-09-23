@@ -96,10 +96,11 @@ const schemaGraph = [
 ];
 ---
 
-<SiteLayout title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
+<SiteLayout heroCompact={true} title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
   <script is:inline type="application/ld+json" set:html={JSON.stringify(schemaGraph)} />
 
-  <article class="space-y-10 py-2" data-sample-size-app>
+  
+  <div slot="hero" class="site-hero-header">
     <!-- Breadcrumbs -->
     <nav aria-label="Breadcrumb">
       <ol class="flex flex-wrap items-center gap-2 text-xs text-[color:var(--muted)]">
@@ -133,6 +134,9 @@ const schemaGraph = [
         Compute statistically robust sample sizes for surveys, clinical research, A/B testing, and academic studies. An online statistics calculator that automatically evaluates confidence levels, precision margin of error, and finite population correction (FPC).
       </p>
     </header>
+  </div>
+
+  <article class="space-y-10 py-2" data-sample-size-app>
 
     <!-- Mode Selector Tabs -->
     <div class="flex items-center gap-2 border-b border-[color:var(--border)] pb-2 text-xs font-semibold overflow-x-auto no-scrollbar sm:flex-wrap">

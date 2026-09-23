@@ -110,10 +110,11 @@ const workedExampleData = {
 };
 ---
 
-<SiteLayout title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
+<SiteLayout heroCompact={true} title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
   <script is:inline type="application/ld+json" set:html={JSON.stringify(schemaGraph)} />
 
-  <article class="space-y-10 py-2" data-html-text-app>
+  
+  <div slot="hero" class="site-hero-header">
     <!-- Breadcrumb -->
     <nav aria-label="Breadcrumb">
       <ol class="flex flex-wrap items-center gap-2 text-xs text-[color:var(--muted)]">
@@ -147,6 +148,9 @@ const workedExampleData = {
         Extract clean, human-readable plain text from HTML code, emails, or scraped web pages. Strips tags, formats ASCII tables, compiles link footnotes, and decodes HTML entities.
       </p>
     </header>
+  </div>
+
+  <article class="space-y-10 py-2" data-html-text-app>
 
     <!-- Control Options Panel -->
     <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5 space-y-4">

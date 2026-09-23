@@ -6,105 +6,146 @@
   display: none !important;
 }
 
+/* ==========================================================================
+   DESIGN TOKENS — LIGHT MODE (Crisp, High-Contrast, Modern SaaS)
+   ========================================================================== */
 :root {
   color-scheme: light;
-  --bg: #F9F6F0;
-  --fg: #1E293B;
+
+  /* Canvas */
+  --bg: #F8FAFC;
+  --fg: #0F172A;
   --surface: #FFFFFF;
-  --surface-strong: #F8F9FA;
-  --muted: #64748B;
+  --surface-strong: #F1F5F9;
+  --muted: #475569;
+
+  /* Borders */
   --border: #E2E8F0;
   --border-strong: #CBD5E1;
-  --accent: #2563EB;
-  --accent-hover: #1D4ED8;
-  --accent-strong: #1E40AF;
-  --accent-soft: rgba(37, 99, 235, 0.08);
-  --accent-fg: #FFFFFF;
-  --primary: #2563EB;
-  --accent-secondary: #0F172A;
-  --accent-glow: rgba(37, 99, 235, 0.06);
-  --glass-surface: rgba(255, 255, 255, 0.85);
-  --glass-surface-hover: rgba(255, 255, 255, 0.98);
-  --glass-border: rgba(30, 58, 138, 0.08);
-  --glass-border-strong: rgba(30, 58, 138, 0.15);
-  --success: #10B981;
-  --success-glow: rgba(16, 185, 129, 0.1);
-  --warning: #F59E0B;
-  --warning-glow: rgba(245, 158, 11, 0.1);
-  --error: #EF4444;
-  --error-glow: rgba(239, 68, 68, 0.1);
-  --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px -1px rgba(0, 0, 0, 0.05);
-  --shadow-glass: 0 8px 32px 0 rgba(0, 0, 0, 0.04), 0 1px 2px 0 rgba(0, 0, 0, 0.02);
-  --shadow-neon: 0 4px 12px rgba(30, 58, 138, 0.08);
 
-  /* Clean SaaS Design Tokens for All Website Tabs */
+  /* Navigation Bar Tokens — Solid Dark Slate / Navy (#0F172A) */
+  --nav-bg: #0F172A;
+  --nav-fg: #F8FAFC;
+  --nav-border: #1E293B;
+  --nav-surface: #1E293B;
+  --nav-surface-hover: #334155;
+  --nav-muted: #94A3B8;
+
+  /* Brand Accent — Electric Indigo */
+  --accent: #4F46E5;
+  --accent-hover: #4338CA;
+  --accent-strong: #3730A3;
+  --accent-soft: rgba(79, 70, 229, 0.10);
+  --accent-fg: #FFFFFF;
+  --primary: #4F46E5;
+  --accent-secondary: #0F172A;
+
+  /* High-Intent Action CTA — Vibrant Coral Red (iLovePDF style) */
+  --cta-action: #EF4444;
+  --cta-action-hover: #DC2626;
+  --cta-action-fg: #FFFFFF;
+
+  /* Glass surfaces */
+  --glass-surface: rgba(255, 255, 255, 0.92);
+  --glass-surface-hover: #FFFFFF;
+  --glass-border: rgba(15, 23, 42, 0.08);
+  --glass-border-strong: rgba(15, 23, 42, 0.16);
+
+  /* Semantic */
+  --success: #10B981;
+  --warning: #F59E0B;
+  --error: #EF4444;
+
+  /* Shadows — clean layered depth, zero neon */
+  --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.06), 0 1px 2px -1px rgba(0, 0, 0, 0.04);
+  --shadow-card: 0 2px 8px -2px rgba(15, 23, 42, 0.05), 0 8px 24px -4px rgba(15, 23, 42, 0.07);
+  --shadow-cta: 0 10px 25px -5px rgba(239, 68, 68, 0.35), 0 4px 6px -2px rgba(239, 68, 68, 0.2);
+  --shadow-cta-indigo: 0 10px 25px -5px rgba(79, 70, 229, 0.35), 0 4px 6px -2px rgba(79, 70, 229, 0.15);
+  --shadow-dropdown: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 10px 15px -3px rgba(0, 0, 0, 0.08);
+
+  /* Tabs — Solid iLovePDF-style dark pill for active, clean muted for inactive */
   --tab-surface: #FFFFFF;
-  --tab-surface-hover: #F8FAFC;
-  --tab-surface-active: #EFF6FF;
-  --tab-surface-active-hover: #DBEAFE;
+  --tab-surface-hover: #F1F5F9;
+  --tab-surface-active: #0F172A;
+  --tab-surface-active-hover: #1E293B;
   --tab-border: #E2E8F0;
-  --tab-border-hover: #93C5FD;
-  --tab-border-active: #3B82F6;
-  --tab-text: #64748B;
-  --tab-text-hover: #1E293B;
-  --tab-text-active: #1D4ED8;
-  --tab-glow-hover: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  --tab-glow-active: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
-  --tab-glow-active-hover: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-  --tab-badge-active-bg: #DBEAFE;
-  --tab-badge-active-text: #1E40AF;
+  --tab-border-hover: #CBD5E1;
+  --tab-border-active: #0F172A;
+  --tab-text: #475569;
+  --tab-text-hover: #0F172A;
+  --tab-text-active: #FFFFFF;
+  --tab-badge-active-bg: rgba(255, 255, 255, 0.18);
+  --tab-badge-active-text: #FFFFFF;
 }
 
+/* ==========================================================================
+   DESIGN TOKENS — DARK MODE (Deep OLED Slate, High-Contrast)
+   ========================================================================== */
 html[data-theme='dark'],
 html.dark {
   color-scheme: dark;
-  --bg: #0F172A;
-  --fg: #FFFFFF;
-  --surface: #1E293B;
-  --surface-strong: #334155;
-  --muted: #CBD5E1;
-  --border: #334155;
-  --border-strong: #64748B;
-  --accent: #3B82F6;
-  --accent-hover: #60A5FA;
-  --accent-strong: #93C5FD;
-  --accent-soft: rgba(59, 130, 246, 0.15);
-  --accent-fg: #FFFFFF;
-  --primary: #3B82F6;
-  --accent-secondary: #38BDF8;
-  --accent-glow: rgba(59, 130, 246, 0.1);
-  --glass-surface: rgba(30, 41, 59, 0.85);
-  --glass-surface-hover: rgba(30, 41, 59, 0.95);
-  --glass-border: rgba(255, 255, 255, 0.12);
-  --glass-border-strong: rgba(255, 255, 255, 0.18);
-  --success: #34D399;
-  --success-glow: rgba(52, 211, 153, 0.1);
-  --warning: #FBBF24;
-  --warning-glow: rgba(251, 191, 36, 0.1);
-  --error: #F87171;
-  --error-glow: rgba(248, 113, 113, 0.1);
-  --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
-  --shadow-glass: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
-  --shadow-neon: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
 
-  /* Clean SaaS Design Tokens for All Website Tabs (Dark Mode - High Contrast Readability) */
-  --tab-surface: #1E293B;
-  --tab-surface-hover: #334155;
-  --tab-surface-active: #1E3A8A;
-  --tab-surface-active-hover: #1E40AF;
-  --tab-border: #334155;
-  --tab-border-hover: #3B82F6;
-  --tab-border-active: #60A5FA;
-  --tab-text: #CBD5E1;
-  --tab-text-hover: #FFFFFF;
+  --bg: #0B0F19;
+  --fg: #F8FAFC;
+  --surface: #151E2E;
+  --surface-strong: #1E293B;
+  --muted: #94A3B8;
+  --border: #1E293B;
+  --border-strong: #334155;
+
+  /* Navigation Bar Tokens — Solid Dark Slate / Navy (#0F172A) */
+  --nav-bg: #0F172A;
+  --nav-fg: #F8FAFC;
+  --nav-border: #1E293B;
+  --nav-surface: #1E293B;
+  --nav-surface-hover: #334155;
+  --nav-muted: #94A3B8;
+
+  --accent: #6366F1;
+  --accent-hover: #818CF8;
+  --accent-strong: #A5B4FC;
+  --accent-soft: rgba(99, 102, 241, 0.15);
+  --accent-fg: #FFFFFF;
+  --primary: #6366F1;
+  --accent-secondary: #38BDF8;
+
+  --cta-action: #F87171;
+  --cta-action-hover: #EF4444;
+  --cta-action-fg: #FFFFFF;
+
+  --glass-surface: rgba(21, 30, 46, 0.92);
+  --glass-surface-hover: rgba(30, 41, 59, 0.98);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --glass-border-strong: rgba(255, 255, 255, 0.15);
+
+  --success: #34D399;
+  --warning: #FBBF24;
+  --error: #F87171;
+
+  --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
+  --shadow-card: 0 4px 12px -2px rgba(0, 0, 0, 0.4), 0 10px 24px -4px rgba(0, 0, 0, 0.3);
+  --shadow-cta: 0 10px 25px -5px rgba(248, 113, 113, 0.45), 0 4px 6px -2px rgba(248, 113, 113, 0.25);
+  --shadow-cta-indigo: 0 10px 25px -5px rgba(99, 102, 241, 0.45), 0 4px 6px -2px rgba(99, 102, 241, 0.2);
+  --shadow-dropdown: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+
+  /* Tabs — Indigo pill for active in dark mode */
+  --tab-surface: #151E2E;
+  --tab-surface-hover: #1E293B;
+  --tab-surface-active: #4F46E5;
+  --tab-surface-active-hover: #6366F1;
+  --tab-border: #1E293B;
+  --tab-border-hover: #334155;
+  --tab-border-active: #6366F1;
+  --tab-text: #94A3B8;
+  --tab-text-hover: #F8FAFC;
   --tab-text-active: #FFFFFF;
-  --tab-glow-hover: 0 1px 2px 0 rgba(0, 0, 0, 0.2);
-  --tab-glow-active: 0 1px 3px 0 rgba(0, 0, 0, 0.3);
-  --tab-glow-active-hover: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
-  --tab-badge-active-bg: #1E40AF;
-  --tab-badge-active-text: #DBEAFE;
+  --tab-badge-active-bg: rgba(255, 255, 255, 0.18);
+  --tab-badge-active-text: #FFFFFF;
 }
 
+/* ==========================================================================
+   BASE STYLES
+   ========================================================================== */
 html {
   background-color: var(--bg);
   min-height: 100%;
@@ -116,44 +157,45 @@ html {
 body {
   background-color: var(--bg);
   color: var(--fg);
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-x: clip;
   max-width: 100vw;
   width: 100%;
+  /* Minimum readable text foundation */
+  font-size: 15px;
+  line-height: 1.6;
 }
 
-/* Eliminate tap delays and accidental double-tap zoom shifts on interactive controls */
-button,
-a,
-input,
-select,
-textarea {
+/* Eliminate tap delays on interactive controls */
+button, a, input, select, textarea {
   touch-action: manipulation;
 }
 
-/* Ensure form controls adopt theme typography */
-input,
-select,
-textarea {
+/* Form controls adopt theme typography */
+input, select, textarea {
   color: var(--fg);
+  font-family: inherit;
 }
 
-/* Default button typography inherits theme text color for secondary/surface buttons */
 button {
   color: var(--fg);
+  font-family: inherit;
 }
 
-/* Ensure all blue / accent buttons ALWAYS use crisp white font in both light and dark mode */
+/* Accent buttons always use crisp white text */
 button[class*="bg-[color:var(--accent)]"],
 button[class*="bg-accent"],
 button[class*="bg-blue-"],
 button[class*="bg-indigo-"],
+button[class*="bg-violet-"],
 a[class*="bg-[color:var(--accent)]"],
 a[class*="bg-accent"],
 a[class*="bg-blue-"],
 a[class*="bg-indigo-"],
+a[class*="bg-violet-"],
 .btn-accent,
 .btn-primary {
   color: #FFFFFF !important;
@@ -170,7 +212,6 @@ a[class*="bg-indigo-"] * {
   color: inherit !important;
 }
 
-
 select option {
   background-color: var(--surface);
   color: var(--fg);
@@ -178,10 +219,10 @@ select option {
 
 ::placeholder {
   color: var(--muted);
-  opacity: 0.85;
+  opacity: 0.8;
 }
 
-/* Prevent iOS Safari from auto-zooming when focusing inputs */
+/* Prevent iOS Safari auto-zoom on input focus */
 @media screen and (max-width: 768px) {
   input[type="text"],
   input[type="number"],
@@ -205,7 +246,7 @@ a {
   text-decoration-thickness: from-font;
 }
 
-/* Custom crisp minimal scrollbars with subtle luminous accent */
+/* Crisp minimal scrollbars */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
@@ -229,13 +270,246 @@ a {
     outline: 2px solid var(--accent);
     outline-offset: 2px;
   }
+
+  /* ==========================================================================
+     TYPOGRAPHY SCALE & HIERARCHY (iLovePDF & Desmos Standard)
+     ========================================================================== */
+  h1 {
+    font-size: clamp(2rem, 3.5vw + 0.5rem, 2.75rem);
+    font-weight: 800;
+    letter-spacing: -0.025em;
+    line-height: 1.15;
+    color: var(--fg);
+  }
+
+  h2 {
+    font-size: clamp(1.35rem, 2vw + 0.5rem, 1.85rem);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.25;
+    color: var(--fg);
+  }
+
+  h3 {
+    font-size: clamp(1.1rem, 1.2vw + 0.5rem, 1.35rem);
+    font-weight: 700;
+    letter-spacing: -0.015em;
+    line-height: 1.35;
+    color: var(--fg);
+  }
+
+  h4 {
+    font-size: 1.05rem;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    line-height: 1.4;
+    color: var(--fg);
+  }
+
+  h5 {
+    font-size: 0.95rem;
+    font-weight: 600;
+    letter-spacing: -0.005em;
+    color: var(--fg);
+  }
+
+  h6 {
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--muted);
+  }
+
+  p {
+    line-height: 1.6;
+  }
+
+  label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--fg);
+    letter-spacing: -0.01em;
+  }
+
+  code:not(pre code) {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    font-size: 0.875em;
+    font-weight: 500;
+    background-color: var(--surface-strong);
+    color: var(--fg);
+    border: 1px solid var(--border);
+    border-radius: 0.375rem;
+    padding: 0.125rem 0.375rem;
+  }
+
+  pre {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    font-size: 0.875rem;
+    background-color: var(--surface-strong);
+    color: var(--fg);
+    border: 1px solid var(--border);
+    border-radius: 0.75rem;
+    padding: 1rem;
+    overflow-x: auto;
+    line-height: 1.5;
+  }
+
+  pre code {
+    background-color: transparent !important;
+    border: none !important;
+    padding: 0 !important;
+    font-size: inherit;
+    color: inherit;
+  }
+
+  kbd {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 1.25rem;
+    padding: 0.125rem 0.375rem;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    font-size: 0.75rem;
+    font-weight: 600;
+    line-height: 1;
+    color: var(--fg);
+    background-color: var(--surface-strong);
+    border: 1px solid var(--border-strong);
+    border-radius: 0.375rem;
+    box-shadow: inset 0 -1px 0 var(--border-strong);
+  }
+
+  blockquote {
+    border-left: 3px solid var(--accent);
+    padding-left: 1rem;
+    color: var(--muted);
+    font-style: italic;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.875rem;
+  }
+
+  th {
+    background-color: var(--surface-strong);
+    color: var(--fg);
+    font-weight: 700;
+    text-align: left;
+    padding: 0.625rem 0.875rem;
+    border: 1px solid var(--border);
+  }
+
+  td {
+    padding: 0.625rem 0.875rem;
+    border: 1px solid var(--border);
+    color: var(--fg);
+  }
+
+  dt {
+    font-weight: 600;
+    color: var(--fg);
+  }
+
+  dd {
+    color: var(--fg);
+  }
 }
 
 /* ==========================================================================
-   SUBTLE MODERN NEON-GLASS DESIGN SYSTEM & MICRO-INTERACTIONS
+   TYPOGRAPHY UTILITIES & PROSE HELPERS
+   ========================================================================== */
+.heading-hero {
+  font-size: clamp(2.25rem, 5vw + 0.5rem, 3.75rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  color: var(--fg);
+}
+
+.heading-page {
+  font-size: clamp(1.85rem, 3.5vw + 0.5rem, 2.75rem);
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  line-height: 1.15;
+  color: var(--fg);
+}
+
+.heading-section {
+  font-size: clamp(1.35rem, 2vw + 0.5rem, 1.85rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.25;
+  color: var(--fg);
+}
+
+.heading-card {
+  font-size: clamp(1.05rem, 1.2vw + 0.5rem, 1.25rem);
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  line-height: 1.35;
+  color: var(--fg);
+}
+
+/* Longform / Markdown prose styling */
+.prose-saas {
+  color: var(--muted);
+  line-height: 1.7;
+  font-size: 0.9375rem;
+}
+
+.prose-saas h1,
+.prose-saas h2,
+.prose-saas h3,
+.prose-saas h4 {
+  color: var(--fg);
+  margin-top: 1.75em;
+  margin-bottom: 0.6em;
+}
+
+.prose-saas p {
+  margin-bottom: 1.25em;
+}
+
+.prose-saas strong {
+  color: var(--fg);
+  font-weight: 700;
+}
+
+.prose-saas a {
+  color: var(--accent);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  font-weight: 500;
+}
+
+.prose-saas a:hover {
+  color: var(--accent-hover);
+}
+
+.prose-saas ul {
+  list-style-type: disc;
+  padding-left: 1.35rem;
+  margin-bottom: 1.25em;
+}
+
+.prose-saas ol {
+  list-style-type: decimal;
+  padding-left: 1.35rem;
+  margin-bottom: 1.25em;
+}
+
+.prose-saas li {
+  margin-bottom: 0.35rem;
+}
+
+/* ==========================================================================
+   GLASS PANEL & CARD SURFACE UTILITIES
    ========================================================================== */
 
-/* Glass Panel Utility */
+/* Glass Panel */
 .glass-panel {
   background: var(--glass-surface);
   backdrop-filter: blur(12px);
@@ -243,22 +517,95 @@ a {
   border: 1px solid var(--glass-border);
 }
 
-/* Subtle Neon Glow Accents */
-.neon-glow {
-  box-shadow: 0 0 16px var(--accent-glow);
+/* Elevated Card (iLovePDF-style layered depth) */
+.card-elevated {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-card);
+  border-radius: 1rem;
 }
 
-.neon-border {
-  border-color: var(--glass-border);
-  box-shadow: inset 0 0 0 1px var(--glass-border);
+/* Flat Card */
+.card-flat {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 1rem;
 }
 
 /* ==========================================================================
-   UNIFIED OCEAN BLUE NEON GLASS TAB DESIGN SYSTEM
-   Applies automatically to all tabs across the website from this single global source.
+   HIGH-IMPACT POWER CTA BUTTON CLASSES
+   Large, eye-catching, tactile — inspired by iLovePDF & Desmos
    ========================================================================== */
 
-/* 1. Base / Inactive Tab Styling across all components */
+/* Coral Red primary action (PDF/Image tool pages) */
+.btn-action-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.625rem;
+  background-color: var(--cta-action);
+  color: var(--cta-action-fg);
+  font-weight: 700;
+  font-size: 1rem;
+  line-height: 1.5;
+  padding: 0.875rem 2rem;
+  border-radius: 1rem;
+  box-shadow: var(--shadow-cta);
+  transition: background-color 160ms ease, transform 160ms cubic-bezier(0.16, 1, 0.3, 1), box-shadow 160ms ease;
+  cursor: pointer;
+  border: none;
+  text-decoration: none;
+}
+
+.btn-action-primary:hover {
+  background-color: var(--cta-action-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 16px 30px -6px rgba(239, 68, 68, 0.45);
+  color: #FFFFFF;
+}
+
+.btn-action-primary:active {
+  transform: translateY(0) scale(0.98);
+  box-shadow: 0 4px 10px -2px rgba(239, 68, 68, 0.3);
+}
+
+/* Indigo primary action (general calculators, nav CTAs) */
+.btn-action-indigo {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.625rem;
+  background-color: var(--accent);
+  color: var(--accent-fg);
+  font-weight: 700;
+  font-size: 1rem;
+  line-height: 1.5;
+  padding: 0.875rem 2rem;
+  border-radius: 1rem;
+  box-shadow: var(--shadow-cta-indigo);
+  transition: background-color 160ms ease, transform 160ms cubic-bezier(0.16, 1, 0.3, 1), box-shadow 160ms ease;
+  cursor: pointer;
+  border: none;
+  text-decoration: none;
+}
+
+.btn-action-indigo:hover {
+  background-color: var(--accent-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 16px 30px -6px rgba(79, 70, 229, 0.45);
+  color: #FFFFFF;
+}
+
+.btn-action-indigo:active {
+  transform: translateY(0) scale(0.98);
+}
+
+/* ==========================================================================
+   UNIFIED CLEAN SAAS TAB DESIGN SYSTEM
+   Applied globally via CSS selectors — no per-page changes needed.
+   ========================================================================== */
+
+/* 1. Base / Inactive Tab */
 [role="tab"]:not([aria-selected="true"]):not([aria-pressed="true"]),
 [data-category-tab]:not([aria-selected="true"]):not([aria-pressed="true"]),
 [data-hero-category],
@@ -279,15 +626,14 @@ a {
 [id^="view-"]:not(.active):not([class*="accent"]),
 .glass-tab:not(.active):not(.glass-tab-active) {
   background-color: var(--tab-surface) !important;
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
   border-color: var(--tab-border) !important;
   color: var(--tab-text) !important;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04) !important;
-  transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: var(--shadow) !important;
+  font-weight: 500;
+  transition: all 160ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* 2. Inactive Tab & Nav Hover State: Pop up animation with micro-lift and shadow */
+/* 2. Inactive Tab Hover — clean crisp lift */
 [role="tab"]:not([aria-selected="true"]):not([aria-pressed="true"]):hover,
 [data-category-tab]:not([aria-selected="true"]):not([aria-pressed="true"]):hover,
 [data-hero-category]:hover,
@@ -310,12 +656,12 @@ a {
 nav[aria-label="Primary"] a:hover {
   background-color: var(--tab-surface-hover) !important;
   border-color: var(--tab-border-hover) !important;
-  box-shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.08), 0 0 12px var(--accent-glow) !important;
+  box-shadow: 0 4px 12px -2px rgba(15, 23, 42, 0.08) !important;
   color: var(--tab-text-hover) !important;
-  transform: translateY(-2px) scale(1.02);
+  transform: translateY(-1px);
 }
 
-/* 3. Active Tab: Prominent Ocean Blue Neon Glass Treatment */
+/* 3. Active Tab — Solid dark slate pill (iLovePDF "All" style) */
 [role="tab"][aria-selected="true"],
 [role="tab"][aria-pressed="true"],
 [data-category-tab][aria-selected="true"],
@@ -358,16 +704,14 @@ nav[aria-label="Primary"] a:hover {
 nav[aria-label="Primary"] a.active,
 nav[aria-label="Primary"] a[aria-current="page"] {
   background-color: var(--tab-surface-active) !important;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
   border-color: var(--tab-border-active) !important;
   color: var(--tab-text-active) !important;
-  box-shadow: var(--tab-glow-active) !important;
+  box-shadow: 0 4px 14px -2px rgba(15, 23, 42, 0.15) !important;
   font-weight: 700 !important;
-  transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 160ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* 4. Active Tab Hover State: Pop up micro-lift and shadow */
+/* 4. Active Tab Hover */
 [role="tab"][aria-selected="true"]:hover,
 [role="tab"][aria-pressed="true"]:hover,
 [data-category-tab][aria-selected="true"]:hover,
@@ -411,12 +755,12 @@ nav[aria-label="Primary"] a.active:hover,
 nav[aria-label="Primary"] a[aria-current="page"]:hover {
   background-color: var(--tab-surface-active-hover) !important;
   border-color: var(--tab-border-active) !important;
-  box-shadow: 0 6px 16px -2px rgba(0, 0, 0, 0.12), var(--tab-glow-active-hover) !important;
+  box-shadow: 0 6px 18px -2px rgba(15, 23, 42, 0.2) !important;
   color: var(--tab-text-active) !important;
-  transform: translateY(-2px) scale(1.02);
+  transform: translateY(-1px);
 }
 
-/* 5. Icons inside Active and Inactive Tabs */
+/* 5. Icons inside tabs */
 [role="tab"] svg,
 [data-category-tab] svg,
 .filter-tab svg,
@@ -431,20 +775,20 @@ nav[aria-label="Primary"] a[aria-current="page"]:hover {
 .search-filter-chip svg,
 .glass-tab svg {
   color: currentColor;
-  transition: color 200ms ease;
+  transition: color 160ms ease;
 }
 
-/* 6. Count Badges inside Category & Filter Tabs */
+/* 6. Count badges inside active tabs */
 [role="tab"][aria-selected="true"] span:last-child,
 [role="tab"][aria-pressed="true"] span:last-child,
 [data-category-tab][aria-selected="true"] span:last-child,
 [data-category-tab][aria-pressed="true"] span:last-child {
   background-color: var(--tab-badge-active-bg) !important;
   color: var(--tab-badge-active-text) !important;
-  transition: background-color 200ms ease, color 200ms ease;
+  transition: background-color 160ms ease, color 160ms ease;
 }
 
-/* 7. Accessible Keyboard Focus State */
+/* 7. Keyboard focus */
 [role="tab"]:focus-visible,
 [data-category-tab]:focus-visible,
 .filter-tab:focus-visible,
@@ -463,10 +807,10 @@ nav[aria-label="Primary"] a[aria-current="page"]:hover {
 .glass-tab:focus-visible,
 nav[aria-label="Primary"] a:focus-visible {
   outline: none !important;
-  box-shadow: 0 0 0 2px var(--bg), 0 0 0 4px var(--tab-border-active), var(--tab-glow-active) !important;
+  box-shadow: 0 0 0 2px var(--bg), 0 0 0 4px var(--accent) !important;
 }
 
-/* 8. Accessibility: Respect prefers-reduced-motion */
+/* 8. Reduced motion */
 @media (prefers-reduced-motion: reduce) {
   [role="tab"],
   [data-category-tab],
@@ -494,37 +838,38 @@ nav[aria-label="Primary"] a:focus-visible {
   }
 }
 
-/* Refined Button Micro-Interactions: Pop up spring animation on hover */
+/* ==========================================================================
+   BUTTON MICRO-INTERACTIONS — Tactile, clean, no neon haze
+   ========================================================================== */
 button,
 a[role="button"],
 .btn {
-  transition: transform 220ms cubic-bezier(0.34, 1.56, 0.64, 1),
-              box-shadow 220ms cubic-bezier(0.34, 1.56, 0.64, 1),
-              border-color 180ms ease,
-              background-color 180ms ease,
-              color 180ms ease;
+  transition: transform 160ms cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 160ms cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 140ms ease,
+              background-color 140ms ease,
+              color 140ms ease;
 }
 
-/* Pop up animation effect when cursor is placed on any button */
 button:hover:not(:disabled):not(.theme-switch-btn),
 a[role="button"]:hover:not([aria-disabled="true"]),
 button[type="submit"]:hover,
 [data-calculator-submit]:hover,
 .btn:hover {
-  transform: translateY(-2px) scale(1.02);
-  box-shadow: 0 6px 18px -2px rgba(0, 0, 0, 0.1), 0 0 14px var(--accent-glow);
+  transform: translateY(-1.5px);
+  box-shadow: 0 6px 18px -2px rgba(15, 23, 42, 0.10);
 }
 
 button:active:not(:disabled),
 a[role="button"]:active:not([aria-disabled="true"]),
 button[type="submit"]:active,
 [data-calculator-submit]:active {
-  transform: translateY(0px) scale(0.97);
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  transform: translateY(0px) scale(0.98);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
 }
 
 /* ==========================================================================
-   SEGMENTED DUAL-BUTTON THEME SWITCHER (LIGHT & DARK ANIMATED SPRING SLIDER)
+   SEGMENTED THEME SWITCHER
    ========================================================================== */
 .theme-switch-wrapper {
   position: relative;
@@ -537,163 +882,423 @@ button[type="submit"]:active,
   left: 2px;
   width: calc(50% - 2px);
   transform: translateX(0%);
-  transition: transform 340ms cubic-bezier(0.34, 1.56, 0.64, 1),
-              background-color 200ms ease,
-              border-color 200ms ease,
-              box-shadow 200ms ease;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08), 0 0 8px var(--accent-glow);
+  background-color: #334155;
+  border: 1px solid #475569;
+  transition: transform 320ms cubic-bezier(0.34, 1.56, 0.64, 1),
+              background-color 180ms ease,
+              border-color 180ms ease,
+              box-shadow 180ms ease;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
 }
 
-/* When dark mode is active, slide indicator smoothly across to Dark button */
 html[data-theme='dark'] .theme-switch-slider,
 html.dark .theme-switch-slider {
   transform: translateX(100%);
+  background-color: #334155;
+  border-color: #475569;
 }
 
-/* Light button active state (in light mode) */
 html:not([data-theme='dark']):not(.dark) [data-set-theme="light"] {
-  color: var(--fg);
+  color: #FFFFFF;
   font-weight: 700;
 }
+
 html:not([data-theme='dark']):not(.dark) [data-set-theme="light"] .theme-sun-icon {
-  color: #F59E0B;
+  color: #FBBF24;
   transform: rotate(0deg) scale(1.15);
-  filter: drop-shadow(0 0 6px rgba(245, 158, 11, 0.45));
-}
-html:not([data-theme='dark']):not(.dark) [data-set-theme="dark"] {
-  color: var(--muted);
-}
-html:not([data-theme='dark']):not(.dark) [data-set-theme="dark"] .theme-moon-icon {
-  transform: rotate(-15deg) scale(0.9);
-  color: var(--muted);
 }
 
-/* Dark button active state (in dark mode) */
+html:not([data-theme='dark']):not(.dark) [data-set-theme="dark"] {
+  color: #94A3B8;
+}
+
+html:not([data-theme='dark']):not(.dark) [data-set-theme="dark"] .theme-moon-icon {
+  transform: rotate(-15deg) scale(0.9);
+  color: #94A3B8;
+}
+
 html[data-theme='dark'] [data-set-theme="dark"],
 html.dark [data-set-theme="dark"] {
   color: #FFFFFF;
   font-weight: 700;
 }
+
 html[data-theme='dark'] [data-set-theme="dark"] .theme-moon-icon,
 html.dark [data-set-theme="dark"] .theme-moon-icon {
-  color: #60A5FA;
+  color: #818CF8;
   transform: rotate(0deg) scale(1.15);
-  filter: drop-shadow(0 0 8px rgba(96, 165, 250, 0.5));
 }
+
 html[data-theme='dark'] [data-set-theme="light"],
 html.dark [data-set-theme="light"] {
-  color: var(--muted);
+  color: #94A3B8;
 }
+
 html[data-theme='dark'] [data-set-theme="light"] .theme-sun-icon,
 html.dark [data-set-theme="light"] .theme-sun-icon {
   transform: rotate(-25deg) scale(0.9);
-  color: var(--muted);
+  color: #94A3B8;
 }
 
-/* Pop up interaction on hovering individual theme buttons */
 .theme-switch-btn:hover {
   transform: translateY(-1px);
 }
+
 .theme-switch-btn:active {
   transform: translateY(0) scale(0.95);
 }
 
-/* Luminous Input & Select Focus */
+/* ==========================================================================
+   INPUTS — Clean high-contrast focus ring, no neon haze
+   ========================================================================== */
 input:focus-visible,
 select:focus-visible,
 textarea:focus-visible {
   border-color: var(--accent) !important;
-  box-shadow: 0 0 0 2px var(--accent-soft), 0 0 12px var(--accent-glow) !important;
+  box-shadow: 0 0 0 3px var(--accent-soft) !important;
 }
 
-/* Interactive Card Subtle Lift & Neon Accents */
-[data-calculator-card] {
-  transition: transform 200ms cubic-bezier(0.4, 0, 0.2, 1),
-              border-color 200ms ease,
-              box-shadow 200ms ease,
-              background-color 200ms ease;
+/* ==========================================================================
+   CALCULATOR CARDS — iLovePDF elevation on hover
+   ========================================================================== */
+[data-calculator-card],
+.tool-card {
+  position: relative;
+  border-radius: 1rem;
+  border: 1px solid var(--border);
+  background-color: var(--surface);
+  transition: transform 160ms cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 160ms ease,
+              box-shadow 160ms ease,
+              background-color 160ms ease;
 }
 
-[data-calculator-card]:hover {
-  transform: translateY(-2px);
-  border-color: var(--glass-border-strong);
-  box-shadow: 0 8px 24px -4px rgba(0, 0, 0, 0.06), 0 0 14px var(--accent-glow);
+[data-calculator-card]:hover,
+.tool-card:hover {
+  transform: translateY(-3px);
+  border-color: var(--border-strong);
+  box-shadow: var(--shadow-card);
 }
 
-/* Calculation Result Update Pulse */
+/* ==========================================================================
+   CALCULATOR RESULT SECTIONS — Standard Clean Solid Surface (No Gradients)
+   Neutralize result card gradients globally across all tax & financial engines.
+   ========================================================================== */
+.bg-gradient-to-br,
+[class*="from-[color:var(--accent-soft)]"] {
+  background-image: none !important;
+  background-color: var(--surface) !important;
+  border-color: var(--border) !important;
+}
+
+.bg-gradient-to-br .rounded-2xl[class*="bg-[color:var(--surface)]"],
+[class*="from-[color:var(--accent-soft)]"] .rounded-2xl[class*="bg-[color:var(--surface)]"] {
+  background-color: var(--surface-strong) !important;
+}
+
+/* ==========================================================================
+   ANIMATION KEYFRAMES
+   ========================================================================== */
+
+/* Calculation result pulse */
 @keyframes calcResultPulse {
-  0% {
-    box-shadow: 0 0 0 0 var(--accent-glow);
-    transform: scale(1);
-  }
-  50% {
-    box-shadow: 0 0 20px 3px var(--accent-glow);
-    border-color: var(--accent);
-    transform: scale(1.015);
-  }
-  100% {
-    box-shadow: 0 0 0 0 transparent;
-    transform: scale(1);
-  }
+  0%   { box-shadow: 0 0 0 0 rgba(79, 70, 229, 0.18); transform: scale(1); }
+  50%  { box-shadow: 0 0 14px 2px rgba(79, 70, 229, 0.22); border-color: var(--accent); transform: scale(1.01); }
+  100% { box-shadow: 0 0 0 0 transparent; transform: scale(1); }
 }
 
 .calc-result-updated {
-  animation: calcResultPulse 450ms cubic-bezier(0.4, 0, 0.2, 1);
+  animation: calcResultPulse 340ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* Tab Switching Subtle Fade/Slide Transition */
+/* Tab content fade/slide */
 @keyframes subtleFadeIn {
-  from {
-    opacity: 0.85;
-    transform: translateY(2px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0.8; transform: translateY(3px); }
+  to   { opacity: 1;   transform: translateY(0); }
 }
 
 .tab-content-enter {
-  animation: subtleFadeIn 180ms ease-out forwards;
+  animation: subtleFadeIn 160ms ease-out forwards;
 }
 
-/* Loading States: Subtle Shimmer & Modern Ring */
-@keyframes neonShimmer {
-  0% {
-    background-position: -200% 0;
-  }
-  100% {
-    background-position: 200% 0;
-  }
+/* Skeleton shimmer */
+@keyframes skeletonShimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position:  200% 0; }
 }
 
-.neon-shimmer {
-  background: linear-gradient(90deg, transparent 0%, var(--accent-soft) 50%, transparent 100%);
+.skeleton-shimmer {
+  background: linear-gradient(90deg, var(--surface-strong) 0%, var(--surface) 50%, var(--surface-strong) 100%);
   background-size: 200% 100%;
-  animation: neonShimmer 1.8s infinite;
+  animation: skeletonShimmer 1.6s infinite;
 }
 
-@keyframes neonSpin {
-  to {
-    transform: rotate(360deg);
-  }
+/* Spinner */
+@keyframes modernSpin {
+  to { transform: rotate(360deg); }
 }
 
+.modern-spinner {
+  border: 2px solid var(--border);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: modernSpin 0.65s linear infinite;
+}
+
+/* Legacy alias (keeps old references working) */
 .neon-spinner {
   border: 2px solid var(--border);
   border-top-color: var(--accent);
   border-radius: 50%;
-  animation: neonSpin 0.7s linear infinite;
+  animation: modernSpin 0.65s linear infinite;
 }
 
-/* Accessibility: Respect Reduced Motion Preferences */
+/* ==========================================================================
+   ACCESSIBILITY — Reduced Motion
+   ========================================================================== */
 @media (prefers-reduced-motion: reduce) {
-  *,
-  ::before,
-  ::after {
+  *, ::before, ::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
+}
+
+/* ==========================================================================
+   SITE HERO BANNER — Full-Width CSS/SVG Background System
+   Dark indigo/navy gradient with decorative arc rings & floating tool icons.
+   Inspired by PDF House / iLovePDF premium hero style.
+   Applied via .site-hero-banner wrapper — no image files needed.
+   ========================================================================== */
+
+/* ── Outer wrapper: full width, dark indigo hero with castle & tool category photo ── */
+.site-hero-banner {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  background-color: #0F172A;
+  background-image: url('/images/hero-bg.webp'), url('/images/hero-bg.jpg');
+  background-size: cover;
+  background-position: center right;
+  background-repeat: no-repeat;
+  /* Standard tall banner for homepage */
+  min-height: 320px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* If placed inside a container like <main>, break out to full viewport width */
+main .site-hero-banner {
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
+}
+
+/* Compact variant for category / sub-pages */
+.site-hero-banner--compact {
+  min-height: 190px;
+}
+
+/* ── Subtle text readability gradient on left half, transparent on right ── */
+.site-hero-banner::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    rgba(15, 23, 42, 0.85) 0%,
+    rgba(15, 23, 42, 0.50) 45%,
+    rgba(15, 23, 42, 0.15) 75%,
+    transparent 100%
+  );
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* ── Dot-grid overlay ── */
+.site-hero-banner-dots {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  background-image: radial-gradient(circle, rgba(255,255,255,0.06) 1px, transparent 1px);
+  background-size: 28px 28px;
+  mask-image: radial-gradient(ellipse 80% 100% at 40% 50%, black 30%, transparent 90%);
+  -webkit-mask-image: radial-gradient(ellipse 80% 100% at 40% 50%, black 30%, transparent 90%);
+}
+
+/* ── Inner content wrapper — re-applies max-width centering ── */
+.site-hero-inner {
+  position: relative;
+  z-index: 10;
+  width: 100%;
+  max-width: 72rem; /* max-w-6xl */
+  margin: 0 auto;
+  padding: 2.75rem 1.5rem;
+}
+
+@media (min-width: 640px) {
+  .site-hero-inner {
+    padding: 3.75rem 1.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .site-hero-inner {
+    padding: 4.25rem 2rem;
+  }
+}
+
+.site-hero-banner--compact .site-hero-inner {
+  padding: 1.75rem 1.5rem;
+}
+
+@media (min-width: 640px) {
+  .site-hero-banner--compact .site-hero-inner {
+    padding: 2.25rem 1.5rem;
+  }
+}
+
+/* ── Text styles optimized for the dark hero background ── */
+.site-hero-header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.875rem;
+  max-width: 52rem;
+}
+
+.site-hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  border-radius: 9999px;
+  border: 1px solid rgba(255,255,255,0.18);
+  background: rgba(255,255,255,0.08);
+  backdrop-filter: blur(8px);
+  padding: 0.25rem 0.875rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.92);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+  width: fit-content;
+}
+
+.site-hero-h1 {
+  font-size: clamp(1.875rem, 4vw, 3.25rem);
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  line-height: 1.15;
+  color: #FFFFFF;
+}
+
+.site-hero-banner--compact .site-hero-h1 {
+  font-size: clamp(1.625rem, 3.2vw, 2.375rem);
+}
+
+.site-hero-desc {
+  max-width: 48rem;
+  font-size: 1rem;
+  line-height: 1.7;
+  color: rgba(224, 231, 255, 0.90); /* indigo-100/90 */
+}
+
+@media (min-width: 640px) {
+  .site-hero-desc {
+    font-size: 1.0625rem;
+  }
+}
+
+.site-hero-breadcrumb {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.75rem;
+  color: rgba(199, 210, 254, 0.75);
+  margin-bottom: 0.25rem;
+}
+
+.site-hero-breadcrumb a {
+  color: rgba(199, 210, 254, 0.75);
+  transition: color 0.15s ease;
+}
+
+.site-hero-breadcrumb a:hover {
+  color: #FFFFFF;
+}
+
+.site-hero-breadcrumb [aria-current="page"] {
+  color: #FFFFFF;
+  font-weight: 600;
+}
+
+/* ── Global inner overrides for any elements slotted into .site-hero-banner ── */
+.site-hero-banner h1 {
+  color: #FFFFFF !important;
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  line-height: 1.15;
+}
+
+.site-hero-banner--compact h1 {
+  font-size: clamp(1.625rem, 3.2vw, 2.375rem);
+}
+
+.site-hero-banner p:not(.site-hero-breadcrumb p) {
+  color: rgba(224, 231, 255, 0.90) !important;
+}
+
+.site-hero-banner nav,
+.site-hero-banner nav ol {
+  color: rgba(199, 210, 254, 0.75) !important;
+}
+
+.site-hero-banner nav a {
+  color: rgba(199, 210, 254, 0.75) !important;
+  transition: color 0.15s ease;
+}
+
+.site-hero-banner nav a:hover {
+  color: #FFFFFF !important;
+}
+
+.site-hero-banner nav [aria-current="page"],
+.site-hero-banner nav span.font-semibold,
+.site-hero-banner nav span.font-medium {
+  color: #FFFFFF !important;
+  font-weight: 600;
+}
+
+.site-hero-banner nav span[aria-hidden="true"] {
+  opacity: 0.5;
+}
+
+/* Frosted glass pill badge for any category/pill container in hero */
+.site-hero-banner header > div:first-child,
+.site-hero-banner header > p:first-child,
+.site-hero-banner .site-hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  border-radius: 9999px;
+  border: 1px solid rgba(255, 255, 255, 0.18) !important;
+  background: rgba(255, 255, 255, 0.08) !important;
+  backdrop-filter: blur(8px);
+  padding: 0.25rem 0.875rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.92) !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  width: fit-content;
+}
+
+.site-hero-banner header > div:first-child *,
+.site-hero-banner header > p:first-child * {
+  color: rgba(255, 255, 255, 0.92) !important;
 }

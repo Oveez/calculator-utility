@@ -76,10 +76,11 @@ const schemaGraph = [
 ];
 ---
 
-<SiteLayout title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
+<SiteLayout heroCompact={true} title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
   <script is:inline type="application/ld+json" set:html={JSON.stringify(schemaGraph)} />
 
-  <article class="space-y-10 sm:space-y-12 w-full max-w-full min-w-0 overflow-hidden">
+  
+  <div slot="hero" class="site-hero-header">
     <!-- Breadcrumbs -->
     <nav aria-label="Breadcrumb" class="w-full min-w-0 overflow-x-auto">
       <ol class="flex flex-wrap items-center gap-2 text-sm text-[color:var(--muted)]">
@@ -112,6 +113,9 @@ const schemaGraph = [
         Designed specifically for fresh university graduates and career starters. Use our free fresher resume maker to turn academic coursework, coding projects, and transferable skills into an ATS friendly resume with instant vector PDF download.
       </p>
     </header>
+  </div>
+
+  <article class="space-y-10 sm:space-y-12 w-full max-w-full min-w-0 overflow-hidden">
 
     <!-- The Interactive CV Maker App -->
     <section aria-label="Fresher Resume Builder Application" class="w-full max-w-full min-w-0">
@@ -119,59 +123,67 @@ const schemaGraph = [
     </section>
 
     <!-- Detailed Fresher Guide -->
-    <section class="space-y-10 border-t border-[color:var(--border)] pt-10">
+    <section class="space-y-12 border-t border-[color:var(--border)] pt-12">
       
-      <article class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-6 sm:p-8 space-y-6 shadow-sm">
-        <h2 class="text-2xl font-bold tracking-tight text-[color:var(--fg)]">How Fresh Graduates Can Beat Experience Requirements</h2>
-        <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] p-4 space-y-2">
-            <span class="inline-flex h-7 w-7 items-center justify-center rounded-lg bg-blue-500/10 text-xs font-bold text-[color:var(--primary)] dark:text-blue-400">1</span>
-            <h3 class="text-sm font-bold text-[color:var(--fg)]">Technical Stack</h3>
-            <p class="text-xs leading-relaxed text-[color:var(--muted)]">List specific tools, libraries, and frameworks you know (e.g. Git, SQL, Figma, Python).</p>
+      <article class="space-y-6">
+        <div>
+          <span class="inline-flex items-center gap-2 rounded-full border border-[color:var(--border)] bg-[color:var(--surface-strong)] px-3.5 py-1 text-xs font-bold uppercase tracking-wider text-[color:var(--fg)]">Entry-Level Strategy</span>
+          <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-[color:var(--fg)] mt-2">How Fresh Graduates Can Beat Experience Requirements</h2>
+        </div>
+
+        <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          <div class="space-y-2">
+            <span class="inline-flex h-8 w-8 items-center justify-center rounded-xl bg-blue-600 text-sm font-bold text-white shadow-xs">1</span>
+            <h3 class="text-base sm:text-lg font-bold text-[color:var(--fg)]">Technical Stack</h3>
+            <p class="text-base leading-relaxed text-[color:var(--muted)]">List specific tools, libraries, and frameworks you know (e.g. Git, SQL, Figma, Python).</p>
           </div>
-          <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] p-4 space-y-2">
-            <span class="inline-flex h-7 w-7 items-center justify-center rounded-lg bg-blue-500/10 text-xs font-bold text-[color:var(--primary)] dark:text-blue-400">2</span>
-            <h3 class="text-sm font-bold text-[color:var(--fg)]">Live Project Links</h3>
-            <p class="text-xs leading-relaxed text-[color:var(--muted)]">Include links to your live websites, GitHub repositories, or design portfolios.</p>
+          <div class="space-y-2">
+            <span class="inline-flex h-8 w-8 items-center justify-center rounded-xl bg-blue-600 text-sm font-bold text-white shadow-xs">2</span>
+            <h3 class="text-base sm:text-lg font-bold text-[color:var(--fg)]">Live Project Links</h3>
+            <p class="text-base leading-relaxed text-[color:var(--muted)]">Include links to your live websites, GitHub repositories, or design portfolios.</p>
           </div>
-          <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] p-4 space-y-2">
-            <span class="inline-flex h-7 w-7 items-center justify-center rounded-lg bg-blue-500/10 text-xs font-bold text-[color:var(--primary)] dark:text-blue-400">3</span>
-            <h3 class="text-sm font-bold text-[color:var(--fg)]">Verified Certificates</h3>
-            <p class="text-xs leading-relaxed text-[color:var(--muted)]">Showcase industry certifications that validate your technical credentials.</p>
+          <div class="space-y-2">
+            <span class="inline-flex h-8 w-8 items-center justify-center rounded-xl bg-blue-600 text-sm font-bold text-white shadow-xs">3</span>
+            <h3 class="text-base sm:text-lg font-bold text-[color:var(--fg)]">Verified Certificates</h3>
+            <p class="text-base leading-relaxed text-[color:var(--muted)]">Showcase industry certifications that validate your technical credentials.</p>
           </div>
-          <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] p-4 space-y-2">
-            <span class="inline-flex h-7 w-7 items-center justify-center rounded-lg bg-blue-500/10 text-xs font-bold text-[color:var(--primary)] dark:text-blue-400">4</span>
-            <h3 class="text-sm font-bold text-[color:var(--fg)]">Soft Skills in Action</h3>
-            <p class="text-xs leading-relaxed text-[color:var(--muted)]">Demonstrate teamwork, fast learning, and clear documentation in your project summaries.</p>
+          <div class="space-y-2">
+            <span class="inline-flex h-8 w-8 items-center justify-center rounded-xl bg-blue-600 text-sm font-bold text-white shadow-xs">4</span>
+            <h3 class="text-base sm:text-lg font-bold text-[color:var(--fg)]">Soft Skills in Action</h3>
+            <p class="text-base leading-relaxed text-[color:var(--muted)]">Demonstrate teamwork, fast learning, and clear documentation in your project summaries.</p>
           </div>
         </div>
       </article>
 
       <!-- FAQs -->
-      <article class="space-y-4">
-        <h2 class="text-xl font-bold tracking-tight text-[color:var(--fg)]">Fresher Resume FAQs</h2>
-        <div class="grid gap-3">
+      <article class="space-y-6 border-t border-[color:var(--border)] pt-12">
+        <div>
+          <span class="inline-flex items-center gap-2 rounded-full border border-[color:var(--border)] bg-[color:var(--surface-strong)] px-3.5 py-1 text-xs font-bold uppercase tracking-wider text-[color:var(--fg)]">Frequently Asked Questions</span>
+          <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-[color:var(--fg)] mt-2">Fresher Resume FAQs</h2>
+        </div>
+
+        <div class="divide-y divide-[color:var(--border)]">
           {faqs.map((faq) => (
-            <details class="group rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-4 shadow-sm">
-              <summary class="cursor-pointer list-none text-sm font-bold text-[color:var(--fg)] flex items-center justify-between">
+            <details class="group py-4.5 transition cursor-pointer">
+              <summary class="list-none text-base sm:text-lg font-bold text-[color:var(--fg)] flex items-center justify-between gap-4">
                 <span>{faq.question}</span>
-                <span class="text-xs text-[color:var(--accent)] group-open:rotate-180 transition-transform">▼</span>
+                <span class="text-sm text-[color:var(--accent)] group-open:rotate-180 transition-transform shrink-0">▼</span>
               </summary>
-              <p class="mt-3 text-xs leading-relaxed text-[color:var(--muted)]">{faq.answer}</p>
+              <p class="mt-3 text-base leading-relaxed text-[color:var(--muted)] pr-6">{faq.answer}</p>
             </details>
           ))}
         </div>
       </article>
 
       <!-- Related Navigation -->
-      <div class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div class="border-t border-[color:var(--border)] pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
         <div>
-          <h3 class="text-sm font-bold text-[color:var(--fg)]">Preparing for Entry-Level Salary Negotiations?</h3>
-          <p class="text-xs text-[color:var(--muted)]">Use our Salary Calculator to compare hourly wages and annual compensation before accepting your offer.</p>
+          <h3 class="text-base sm:text-lg font-bold text-[color:var(--fg)]">Preparing for Entry-Level Salary Negotiations?</h3>
+          <p class="text-sm sm:text-base text-[color:var(--muted)] mt-1">Use our Salary Calculator to compare hourly wages and annual compensation before accepting your offer.</p>
         </div>
         <a
           href={withBasePath('/calculators/salary-calculator/')}
-          class="shrink-0 rounded-full bg-[color:var(--accent)] px-5 py-2.5 text-xs font-bold text-white shadow-sm hover:bg-[color:var(--accent-strong)]"
+          class="shrink-0 rounded-xl bg-[color:var(--accent)] px-5 py-2.5 text-xs font-bold text-white shadow-xs hover:bg-[color:var(--accent-strong)] transition"
         >
           Check Salary Breakdown →
         </a>

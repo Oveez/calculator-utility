@@ -1,22 +1,18 @@
 ---
+import SiteHero from '../components/SiteHero.astro';
 import SiteLayout from '../layouts/SiteLayout.astro';
 import Icon from '../components/Icon.astro';
 import { siteName, withBasePath } from '../utils/site';
 ---
 
-<SiteLayout title={`About · ${siteName}`} description="Learn about the design principles, zero-tracking privacy, and static architecture of Toolscastle.">
+<SiteLayout title={`About · ${siteName}`} description="Learn about the design principles, zero-tracking privacy, and static architecture of Toolscastle." heroCompact={true}>
+  <SiteHero
+    slot="hero"
+    badge="About The Project"
+    title="Fast, Transparent, and Private Tools for Everyone."
+    description={`${siteName} is a zero-backend, statically built collection of everyday calculators and career builders designed for speed, clarity, and uncompromising privacy.`}
+  />
   <article class="mx-auto max-w-4xl space-y-8 py-4">
-    <header class="space-y-3">
-      <p class="inline-flex rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1 text-xs font-bold uppercase tracking-wider text-[color:var(--fg)]">
-        About The Project
-      </p>
-      <h1 class="text-2xl font-bold tracking-tight text-[color:var(--fg)] sm:text-3xl lg:text-4xl">
-        Fast, Transparent, and Private Tools for Everyone.
-      </h1>
-      <p class="text-xs sm:text-sm leading-relaxed text-[color:var(--muted)]">
-        {siteName} is a zero-backend, statically built collection of everyday calculators and career builders designed for speed, clarity, and uncompromising privacy.
-      </p>
-    </header>
 
     <section class="grid gap-4 sm:grid-cols-2">
       <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5">

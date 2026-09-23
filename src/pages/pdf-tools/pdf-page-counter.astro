@@ -105,10 +105,11 @@ const workedExampleData = {
 };
 ---
 
-<SiteLayout title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
+<SiteLayout heroCompact={true} title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
   <script is:inline type="application/ld+json" set:html={JSON.stringify(schemaGraph)} />
 
-  <article class="space-y-10 py-2" data-page-counter-app>
+  
+  <div slot="hero" class="site-hero-header">
     <!-- Breadcrumb -->
     <nav aria-label="Breadcrumb">
       <ol class="flex flex-wrap items-center gap-2 text-xs text-[color:var(--muted)]">
@@ -142,6 +143,9 @@ const workedExampleData = {
         Count total pages across single or batch PDF documents instantly in your browser without uploading files to external servers. Analyze page counts, compute print metrics, and export reports to CSV with 100% client-side privacy.
       </p>
     </header>
+  </div>
+
+  <article class="space-y-10 py-2" data-page-counter-app>
 
     <div class="space-y-6">
       <!-- Dropzone -->

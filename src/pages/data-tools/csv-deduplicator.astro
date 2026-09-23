@@ -110,10 +110,11 @@ const parameterGuide = [
 ];
 ---
 
-<SiteLayout title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
+<SiteLayout heroCompact={true} title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
   <script is:inline type="application/ld+json" set:html={JSON.stringify(schemaGraph)} />
 
-  <article class="space-y-10 py-2" data-dedup-app>
+  
+  <div slot="hero" class="site-hero-header">
     <nav aria-label="Breadcrumb">
       <ol class="flex flex-wrap items-center gap-2 text-xs text-[color:var(--muted)]">
         {breadcrumbItems.map((item, index) => (
@@ -145,6 +146,9 @@ const parameterGuide = [
         Strip duplicate entries from email lists, CRM records, and transaction spreadsheets. Filter by whole rows or targeted key columns with customizable case-matching and retention policies.
       </p>
     </header>
+  </div>
+
+  <article class="space-y-10 py-2" data-dedup-app>
 
     <!-- Metrics Bar -->
     <div id="stats-bar" class="grid grid-cols-2 gap-3 sm:grid-cols-4 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-center">

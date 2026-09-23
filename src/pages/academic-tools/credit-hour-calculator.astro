@@ -67,10 +67,11 @@ const schemaGraph = [
 ];
 ---
 
-<SiteLayout title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
+<SiteLayout heroCompact={true} title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
   <script is:inline type="application/ld+json" set:html={JSON.stringify(schemaGraph)} />
 
-  <article class="space-y-10 py-2">
+  
+  <div slot="hero" class="site-hero-header">
     <!-- Breadcrumbs -->
     <nav aria-label="Breadcrumb">
       <ol class="flex flex-wrap items-center gap-2 text-xs text-[color:var(--muted)]">
@@ -103,6 +104,9 @@ const schemaGraph = [
         Plan your semester schedule with confidence. Calculate weekly class time, lab contact hours, recommended outside study time, and estimate your progress toward degree completion.
       </p>
     </header>
+  </div>
+
+  <article class="space-y-10 py-2">
 
     <!-- App Card -->
     <div

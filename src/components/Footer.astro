@@ -1,0 +1,162 @@
+---
+import BrandMark from './BrandMark.astro';
+import Icon from './Icon.astro';
+import { siteName, withBasePath } from '../utils/site';
+
+const currentYear = new Date().getFullYear();
+
+const devTools = [
+  { href: withBasePath('/developer-tools/'), label: 'Developer Tools Hub' },
+  { href: withBasePath('/developer-tools/json-formatter/'), label: 'JSON Formatter' },
+  { href: withBasePath('/developer-tools/jwt-decoder/'), label: 'JWT Decoder' },
+  { href: withBasePath('/developer-tools/regex-tester/'), label: 'Regex Tester' },
+  { href: withBasePath('/data-tools/'), label: 'CSV & Data Suite' },
+  { href: withBasePath('/url-tools/'), label: 'URL & Web Tools' },
+];
+
+const mediaTools = [
+  { href: withBasePath('/pdf-tools/'), label: 'PDF Document Tools' },
+  { href: withBasePath('/image-tools/image-compressor/'), label: 'Image Compressor' },
+  { href: withBasePath('/image-tools/exif-remover/'), label: 'EXIF Privacy Remover' },
+  { href: withBasePath('/text-tools/text-diff-checker/'), label: 'Text Diff Checker' },
+  { href: withBasePath('/text-tools/markdown-to-html/'), label: 'Markdown to HTML' },
+  { href: withBasePath('/generators/'), label: 'Online Generators' },
+];
+
+const studyCareerTools = [
+  { href: withBasePath('/career-tools/cv-maker/'), label: 'ATS Resume Builder' },
+  { href: withBasePath('/education-tools/assignment-cover-maker/'), label: 'Assignment Cover Maker' },
+  { href: withBasePath('/academic-tools/'), label: 'Academic & GPA Suite' },
+  { href: withBasePath('/research-tools/'), label: 'Research & Statistics' },
+  { href: withBasePath('/tax-calculators/'), label: 'Tax Calculators (24 Countries)' },
+  { href: withBasePath('/us-income-tax-calculator/'), label: 'US IRS Tax Calculator' },
+];
+
+const companyLinks = [
+  { href: withBasePath('/about/'), label: 'About Us' },
+  { href: withBasePath('/contact/'), label: 'Contact Support' },
+  { href: withBasePath('/privacy/'), label: 'Privacy Policy' },
+  { href: withBasePath('/terms/'), label: 'Terms of Service' },
+  { href: withBasePath('/disclaimer/'), label: 'Legal Disclaimer' },
+];
+---
+
+<footer class="mt-auto border-t border-slate-900 bg-slate-950 text-slate-400 dark:bg-black dark:border-white/10 pb-20 sm:pb-12 lg:pb-0 transition-colors">
+  <div class="mx-auto w-full max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+    <div class="grid gap-10 sm:grid-cols-2 lg:grid-cols-5">
+      
+      <!-- Column 1: Brand & Mission -->
+      <div class="space-y-4 lg:col-span-1">
+        <a class="flex items-center gap-2.5 transition-transform duration-200 hover:scale-[1.02]" href={withBasePath('/')} aria-label={`${siteName} Home`}>
+          <BrandMark size="md" variant="light" />
+        </a>
+        <p class="text-xs leading-relaxed text-slate-400">
+          Fast, privacy-first online tools, financial calculators, and browser developer utilities running 100% locally on your machine with zero server latency.
+        </p>
+
+        <!-- Privacy & Client-Side Guarantee Badge -->
+        <div class="inline-flex items-center gap-2 rounded-xl bg-slate-900/90 border border-slate-800/80 px-3 py-2 text-[11px] text-slate-300 shadow-2xs">
+          <Icon name="shield" class="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+          <span class="font-medium">100% In-Browser Privacy</span>
+        </div>
+
+        <!-- Social & Direct Channels -->
+        <div class="flex items-center gap-2 pt-1 text-slate-400">
+          <a
+            href="https://github.com/Oveez/calculator-utility"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-800 bg-slate-900 hover:border-slate-700 hover:bg-slate-800 hover:text-white transition"
+            aria-label="GitHub Repository"
+          >
+            <Icon name="github" class="w-4 h-4" />
+          </a>
+          <a
+            href={withBasePath('/contact/')}
+            class="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-800 bg-slate-900 hover:border-slate-700 hover:bg-slate-800 hover:text-white transition"
+            aria-label="Contact Support"
+          >
+            <Icon name="mail" class="w-4 h-4" />
+          </a>
+          <a
+            href={withBasePath('/about/')}
+            class="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-800 bg-slate-900 hover:border-slate-700 hover:bg-slate-800 hover:text-white transition"
+            aria-label="About ToolsCastle"
+          >
+            <Icon name="globe" class="w-4 h-4" />
+          </a>
+        </div>
+      </div>
+
+      <!-- Column 2: Developer & Data -->
+      <div class="space-y-3">
+        <p class="text-xs font-bold uppercase tracking-wider text-white">Developer &amp; Data</p>
+        <ul class="space-y-2 text-xs">
+          {devTools.map((link) => (
+            <li>
+              <a class="text-slate-400 hover:text-white hover:underline transition-colors py-0.5 inline-block" href={link.href}>
+                {link.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <!-- Column 3: Media & Documents -->
+      <div class="space-y-3">
+        <p class="text-xs font-bold uppercase tracking-wider text-white">Media &amp; Text</p>
+        <ul class="space-y-2 text-xs">
+          {mediaTools.map((link) => (
+            <li>
+              <a class="text-slate-400 hover:text-white hover:underline transition-colors py-0.5 inline-block" href={link.href}>
+                {link.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <!-- Column 4: Academics & Career -->
+      <div class="space-y-3">
+        <p class="text-xs font-bold uppercase tracking-wider text-white">Study &amp; Finance</p>
+        <ul class="space-y-2 text-xs">
+          {studyCareerTools.map((link) => (
+            <li>
+              <a class="text-slate-400 hover:text-white hover:underline transition-colors py-0.5 inline-block" href={link.href}>
+                {link.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <!-- Column 5: Company & Legal -->
+      <div class="space-y-3">
+        <p class="text-xs font-bold uppercase tracking-wider text-white">Company &amp; Legal</p>
+        <ul class="space-y-2 text-xs">
+          {companyLinks.map((link) => (
+            <li>
+              <a class="text-slate-400 hover:text-white hover:underline transition-colors py-0.5 inline-block" href={link.href}>
+                {link.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+
+    <!-- Bottom Copyright & Engine Telemetry -->
+    <div class="mt-12 border-t border-slate-900 pt-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
+      <div class="flex items-center gap-2">
+        <p>© {currentYear} {siteName}. All rights reserved.</p>
+        <span class="hidden sm:inline text-slate-700">•</span>
+        <span class="hidden sm:inline">Built for precision &amp; speed</span>
+      </div>
+
+      <div class="flex items-center gap-2 text-[11px] text-slate-400">
+        <span class="inline-block h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span>
+        <span>Client-Side Engine Active (0ms Server Latency)</span>
+      </div>
+    </div>
+  </div>
+</footer>

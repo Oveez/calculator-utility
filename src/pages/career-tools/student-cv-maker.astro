@@ -76,10 +76,11 @@ const schemaGraph = [
 ];
 ---
 
-<SiteLayout title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
+<SiteLayout heroCompact={true} title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
   <script is:inline type="application/ld+json" set:html={JSON.stringify(schemaGraph)} />
 
-  <article class="space-y-10 sm:space-y-12 w-full max-w-full min-w-0 overflow-hidden">
+  
+  <div slot="hero" class="site-hero-header">
     <!-- Breadcrumbs -->
     <nav aria-label="Breadcrumb" class="w-full min-w-0 overflow-x-auto">
       <ol class="flex flex-wrap items-center gap-2 text-sm text-[color:var(--muted)]">
@@ -112,6 +113,9 @@ const schemaGraph = [
         Tailored for university, college, and high school students. Create a winning student CV and student resume showcasing coursework, capstone projects, GPA, and extracurricular leadership with our free ATS-compliant template.
       </p>
     </header>
+  </div>
+
+  <article class="space-y-10 sm:space-y-12 w-full max-w-full min-w-0 overflow-hidden">
 
     <!-- The Interactive CV Maker App pre-configured for Student template -->
     <section aria-label="Student CV Maker Application" class="w-full max-w-full min-w-0">
@@ -119,71 +123,79 @@ const schemaGraph = [
     </section>
 
     <!-- In-Depth Student SEO Content -->
-    <section class="space-y-10 border-t border-[color:var(--border)] pt-10">
+    <section class="space-y-12 border-t border-[color:var(--border)] pt-12">
       
       <!-- Student Strategy Grid -->
-      <article class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-6 sm:p-8 space-y-6 shadow-sm">
-        <h2 class="text-2xl font-bold tracking-tight text-[color:var(--fg)]">Essential Sections for a Student CV</h2>
-        <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] p-4 space-y-2">
-            <span class="inline-flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-500/10 text-xs font-bold text-emerald-600 dark:text-emerald-400">1</span>
-            <h3 class="text-sm font-bold text-[color:var(--fg)]">Education &amp; Degree</h3>
-            <p class="text-xs leading-relaxed text-[color:var(--muted)]">State your expected graduation date (e.g. <em>Expected May 2026</em>), current degree program, and GPA if above 3.5.</p>
+      <article class="space-y-6">
+        <div>
+          <span class="inline-flex items-center gap-2 rounded-full border border-[color:var(--border)] bg-[color:var(--surface-strong)] px-3.5 py-1 text-xs font-bold uppercase tracking-wider text-[color:var(--fg)]">Student Guide</span>
+          <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-[color:var(--fg)] mt-2">Essential Sections for a Student CV</h2>
+        </div>
+
+        <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <div class="space-y-2">
+            <span class="inline-flex h-8 w-8 items-center justify-center rounded-xl bg-emerald-500 text-sm font-bold text-white shadow-xs">1</span>
+            <h3 class="text-base sm:text-lg font-bold text-[color:var(--fg)]">Education &amp; Degree</h3>
+            <p class="text-base leading-relaxed text-[color:var(--muted)]">State your expected graduation date (e.g. <em>Expected May 2026</em>), current degree program, and GPA if above 3.5.</p>
           </div>
-          <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] p-4 space-y-2">
-            <span class="inline-flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-500/10 text-xs font-bold text-emerald-600 dark:text-emerald-400">2</span>
-            <h3 class="text-sm font-bold text-[color:var(--fg)]">Academic Projects</h3>
-            <p class="text-xs leading-relaxed text-[color:var(--muted)]">Include course capstones, lab experiments, or term papers. Detail the tools, methodology, and outcome.</p>
+          <div class="space-y-2">
+            <span class="inline-flex h-8 w-8 items-center justify-center rounded-xl bg-emerald-500 text-sm font-bold text-white shadow-xs">2</span>
+            <h3 class="text-base sm:text-lg font-bold text-[color:var(--fg)]">Academic Projects</h3>
+            <p class="text-base leading-relaxed text-[color:var(--muted)]">Include course capstones, lab experiments, or term papers. Detail the tools, methodology, and outcome.</p>
           </div>
-          <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] p-4 space-y-2">
-            <span class="inline-flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-500/10 text-xs font-bold text-emerald-600 dark:text-emerald-400">3</span>
-            <h3 class="text-sm font-bold text-[color:var(--fg)]">Campus &amp; Club Leadership</h3>
-            <p class="text-xs leading-relaxed text-[color:var(--muted)]">Leadership positions in university societies demonstrate initiative, communication, and event organization.</p>
+          <div class="space-y-2">
+            <span class="inline-flex h-8 w-8 items-center justify-center rounded-xl bg-emerald-500 text-sm font-bold text-white shadow-xs">3</span>
+            <h3 class="text-base sm:text-lg font-bold text-[color:var(--fg)]">Campus &amp; Club Leadership</h3>
+            <p class="text-base leading-relaxed text-[color:var(--muted)]">Leadership positions in university societies demonstrate initiative, communication, and event organization.</p>
           </div>
         </div>
       </article>
 
       <!-- Student Advice -->
-      <article class="rounded-3xl border border-emerald-500/20 bg-emerald-500/5 p-6 sm:p-8 space-y-4">
-        <h2 class="text-xl font-bold text-[color:var(--fg)]">How to Turn Coursework into Impactful Resume Bullets</h2>
-        <p class="text-xs leading-relaxed text-[color:var(--muted)]">
+      <article class="space-y-4 border-t border-[color:var(--border)] pt-12">
+        <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-[color:var(--fg)]">How to Turn Coursework into Impactful Resume Bullets</h2>
+        <p class="text-base sm:text-lg leading-relaxed text-[color:var(--muted)]">
           When applying for internships, employers know you may not have extensive professional history. What they look for is your ability to apply classroom theory to practical problems. Use the <strong>Action Verb + Task + Result</strong> formula:
         </p>
-        <div class="space-y-2 pt-2 text-xs text-[color:var(--muted)]">
-          <div class="rounded-xl bg-[color:var(--surface)] p-3 border border-[color:var(--border)]">
+        <div class="space-y-3 pt-2 text-base text-[color:var(--muted)]">
+          <div class="p-4 rounded-xl border border-rose-500/20 bg-rose-500/5">
             <span class="text-rose-500 font-bold">Weak:</span> <em>"Did a group project on machine learning algorithms in Python."</em>
           </div>
-          <div class="rounded-xl bg-[color:var(--surface)] p-3 border border-emerald-500/30">
+          <div class="p-4 rounded-xl border border-emerald-500/30 bg-emerald-500/5">
             <span class="text-emerald-600 dark:text-emerald-400 font-bold">Strong:</span> <em>"Collaborated in a 4-person team to build a predictive pricing model in Python &amp; Scikit-Learn, achieving 91% classification accuracy across 10,000 dataset samples."</em>
           </div>
         </div>
       </article>
 
       <!-- FAQs -->
-      <article class="space-y-4">
-        <h2 class="text-xl font-bold tracking-tight text-[color:var(--fg)]">Student CV Frequently Asked Questions</h2>
-        <div class="grid gap-3">
+      <article class="space-y-6 border-t border-[color:var(--border)] pt-12">
+        <div>
+          <span class="inline-flex items-center gap-2 rounded-full border border-[color:var(--border)] bg-[color:var(--surface-strong)] px-3.5 py-1 text-xs font-bold uppercase tracking-wider text-[color:var(--fg)]">Frequently Asked Questions</span>
+          <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-[color:var(--fg)] mt-2">Student CV Frequently Asked Questions</h2>
+        </div>
+
+        <div class="divide-y divide-[color:var(--border)]">
           {faqs.map((faq) => (
-            <details class="group rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-4 shadow-sm">
-              <summary class="cursor-pointer list-none text-sm font-bold text-[color:var(--fg)] flex items-center justify-between">
+            <details class="group py-4.5 transition cursor-pointer">
+              <summary class="list-none text-base sm:text-lg font-bold text-[color:var(--fg)] flex items-center justify-between gap-4">
                 <span>{faq.question}</span>
-                <span class="text-xs text-[color:var(--accent)] group-open:rotate-180 transition-transform">▼</span>
+                <span class="text-sm text-[color:var(--accent)] group-open:rotate-180 transition-transform shrink-0">▼</span>
               </summary>
-              <p class="mt-3 text-xs leading-relaxed text-[color:var(--muted)]">{faq.answer}</p>
+              <p class="mt-3 text-base leading-relaxed text-[color:var(--muted)] pr-6">{faq.answer}</p>
             </details>
           ))}
         </div>
       </article>
 
       <!-- Internal Link Box -->
-      <div class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div class="border-t border-[color:var(--border)] pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
         <div>
-          <h3 class="text-sm font-bold text-[color:var(--fg)]">Need to calculate your semester GPA?</h3>
-          <p class="text-xs text-[color:var(--muted)]">Use our instant college GPA calculator to determine your cumulative grade point average accurately.</p>
+          <h3 class="text-base sm:text-lg font-bold text-[color:var(--fg)]">Need to calculate your semester GPA?</h3>
+          <p class="text-sm sm:text-base text-[color:var(--muted)] mt-1">Use our instant college GPA calculator to determine your cumulative grade point average accurately.</p>
         </div>
         <a
           href={withBasePath('/calculators/gpa-calculator/')}
-          class="shrink-0 rounded-full bg-[color:var(--accent)] px-5 py-2.5 text-xs font-bold text-white shadow-sm hover:bg-[color:var(--accent-strong)]"
+          class="shrink-0 rounded-xl bg-[color:var(--accent)] px-5 py-2.5 text-xs font-bold text-white shadow-xs hover:bg-[color:var(--accent-strong)] transition"
         >
           Open GPA Calculator →
         </a>

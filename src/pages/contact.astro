@@ -1,33 +1,26 @@
 ---
+import SiteHero from '../components/SiteHero.astro';
 import SiteLayout from '../layouts/SiteLayout.astro';
 import Icon from '../components/Icon.astro';
 import { siteName, withBasePath } from '../utils/site';
 
 const pageTitle = `Contact Us · ${siteName}`;
 const pageDesc = `Get in touch with the ${siteName} development team. Report a bug, suggest a new calculator feature, or request tax bracket updates.`;
+const breadcrumbItems = [
+  { label: 'Home', href: '/' },
+  { label: 'Contact' },
+];
 ---
 
-<SiteLayout title={pageTitle} description={pageDesc} canonical={withBasePath('/contact/')}>
+<SiteLayout title={pageTitle} description={pageDesc} canonical={withBasePath('/contact/')} heroCompact={true}>
+  <SiteHero
+    slot="hero"
+    breadcrumbs={breadcrumbItems}
+    badge="Support & Feedback"
+    title="Contact the Development Team"
+    description="Have feedback, discovered a calculation discrepancy, or want to suggest a new country tax bracket or financial calculator? We would love to hear from you."
+  />
   <div class="mx-auto max-w-4xl space-y-8">
-    <!-- Breadcrumbs -->
-    <nav class="flex items-center gap-2 text-xs font-medium text-[color:var(--muted)]" aria-label="Breadcrumb">
-      <a href="/" class="hover:text-[color:var(--fg)]">Home</a>
-      <span>/</span>
-      <span class="text-[color:var(--fg)] font-semibold">Contact</span>
-    </nav>
-
-    <!-- Page Header -->
-    <header class="space-y-3">
-      <div class="inline-flex items-center gap-2 rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1 text-xs font-bold text-[color:var(--fg)]">
-        <span>Support &amp; Feedback</span>
-      </div>
-      <h1 class="text-2xl font-bold tracking-tight text-[color:var(--fg)] sm:text-3xl lg:text-4xl">
-        Contact the Development Team
-      </h1>
-      <p class="text-xs sm:text-sm leading-relaxed text-[color:var(--muted)]">
-        Have feedback, discovered a calculation discrepancy, or want to suggest a new country tax bracket or financial calculator? We would love to hear from you.
-      </p>
-    </header>
 
     <!-- Contact Options Cards -->
     <div class="grid gap-4 sm:grid-cols-2">

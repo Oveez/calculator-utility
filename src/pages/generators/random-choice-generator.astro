@@ -56,10 +56,11 @@ const schemaGraph = [
 ];
 ---
 
-<SiteLayout title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
+<SiteLayout heroCompact={true} title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
   <script is:inline type="application/ld+json" set:html={JSON.stringify(schemaGraph)} />
 
-  <article class="space-y-10 py-2" data-choice-app>
+  
+  <div slot="hero" class="site-hero-header">
     <nav aria-label="Breadcrumb">
       <ol class="flex flex-wrap items-center gap-2 text-xs text-[color:var(--muted)]">
         {breadcrumbItems.map((item, index) => (
@@ -91,6 +92,9 @@ const schemaGraph = [
         Let randomness make your choices. Perfect for food picks, team decisions, and activities.
       </p>
     </header>
+  </div>
+
+  <article class="space-y-10 py-2" data-choice-app>
 
     <div class="space-y-6">
       <!-- Choice Hero Display -->

@@ -76,10 +76,11 @@ const schemaGraph = [
 ];
 ---
 
-<SiteLayout title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
+<SiteLayout heroCompact={true} title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
   <script is:inline type="application/ld+json" set:html={JSON.stringify(schemaGraph)} />
 
-  <article class="space-y-10 py-2">
+  
+  <div slot="hero" class="site-hero-header">
     <!-- Breadcrumbs -->
     <nav aria-label="Breadcrumb">
       <ol class="flex flex-wrap items-center gap-2 text-xs text-[color:var(--muted)]">
@@ -112,6 +113,9 @@ const schemaGraph = [
         A precision attendance calculator and academic planner for college and university students. Calculate your live attendance percentage, discover how many lectures you can safely skip, and compute the exact consecutive classes needed to clear 75%, 80%, 85%, or 90% attendance cutoffs.
       </p>
     </header>
+  </div>
+
+  <article class="space-y-10 py-2">
 
     <!-- Interactive Calculator Card -->
     <div

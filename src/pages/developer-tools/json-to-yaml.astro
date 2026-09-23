@@ -65,10 +65,11 @@ const schemaGraph = [
 ];
 ---
 
-<SiteLayout title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
+<SiteLayout heroCompact={true} title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
   <script is:inline type="application/ld+json" set:html={JSON.stringify(schemaGraph)} />
 
-  <article class="space-y-10 py-2" data-json-yaml-app>
+  
+  <div slot="hero" class="site-hero-header">
     <nav aria-label="Breadcrumb">
       <ol class="flex flex-wrap items-center gap-2 text-xs text-[color:var(--muted)]">
         {breadcrumbItems.map((item, index) => (
@@ -100,6 +101,9 @@ const schemaGraph = [
         Convert JSON payloads into clean, idiomatic YAML configurations. Tailor indentation spacing (2 or 4 spaces), sort dictionary keys recursively, and download `.yaml` files instantly.
       </p>
     </header>
+  </div>
+
+  <article class="space-y-10 py-2" data-json-yaml-app>
 
     <!-- Telemetry Bar -->
     <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">

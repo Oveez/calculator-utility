@@ -96,10 +96,11 @@ const schemaGraph = [
 ];
 ---
 
-<SiteLayout title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
+<SiteLayout heroCompact={true} title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
   <script is:inline type="application/ld+json" set:html={JSON.stringify(schemaGraph)} />
 
-  <article class="space-y-10 py-2" data-moe-app>
+  
+  <div slot="hero" class="site-hero-header">
     <!-- Breadcrumbs -->
     <nav aria-label="Breadcrumb">
       <ol class="flex flex-wrap items-center gap-2 text-xs text-[color:var(--muted)]">
@@ -133,6 +134,9 @@ const schemaGraph = [
         Determine the exact statistical margin of error (±%) and confidence bounds for survey proportions, public polls, and continuous sample means with finite population adjustments.
       </p>
     </header>
+  </div>
+
+  <article class="space-y-10 py-2" data-moe-app>
 
     <!-- Mode Selector Tabs -->
     <div class="flex items-center gap-2 border-b border-[color:var(--border)] pb-2 text-xs font-semibold overflow-x-auto no-scrollbar sm:flex-wrap">

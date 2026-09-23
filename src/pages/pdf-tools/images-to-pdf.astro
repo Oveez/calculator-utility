@@ -115,10 +115,11 @@ const workedExampleData = {
 };
 ---
 
-<SiteLayout title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
+<SiteLayout heroCompact={true} title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
   <script is:inline type="application/ld+json" set:html={JSON.stringify(schemaGraph)} />
 
-  <article class="space-y-10 py-2" data-img-pdf-app>
+  
+  <div slot="hero" class="site-hero-header">
     <!-- Breadcrumb -->
     <nav aria-label="Breadcrumb">
       <ol class="flex flex-wrap items-center gap-2 text-xs text-[color:var(--muted)]">
@@ -152,6 +153,9 @@ const workedExampleData = {
         A fast, free online tool to convert images to PDF. Transform JPG, PNG, WebP, SVG, and photo PDF files into clean, printable PDF documents with custom page sizes, smart auto-orientation, margins, and 100% private in-browser processing.
       </p>
     </header>
+  </div>
+
+  <article class="space-y-10 py-2" data-img-pdf-app>
 
     <div class="space-y-6">
       <!-- Dropzone -->
@@ -275,6 +279,21 @@ const workedExampleData = {
       </div>
     </div>
 
+    <!-- Full-Page Zoom Inspection Modal -->
+    <div id="page-zoom-modal" class="fixed inset-0 z-50 hidden bg-black/80 backdrop-blur-xs flex items-center justify-center p-4">
+      <div class="relative max-w-3xl w-full max-h-[92vh] bg-[color:var(--surface)] border border-[color:var(--border)] rounded-3xl p-5 shadow-2xl flex flex-col items-center">
+        <div class="flex w-full items-center justify-between pb-3 border-b border-[color:var(--border)] mb-3">
+          <h4 id="zoom-title" class="font-bold text-sm text-[color:var(--fg)]">Image Preview</h4>
+          <button type="button" id="close-zoom-btn" class="rounded-xl bg-[color:var(--surface-strong)] text-[color:var(--fg)] px-3 py-1 text-xs font-bold hover:bg-[color:var(--border)] cursor-pointer">
+            Close ✕
+          </button>
+        </div>
+        <div class="overflow-auto max-h-[75vh] w-full flex items-center justify-center bg-slate-950/20 rounded-xl p-2">
+          <img id="zoom-img" alt="Zoomed Image Preview" class="max-h-[72vh] max-w-full object-contain rounded-lg shadow-md transition-transform duration-200" />
+        </div>
+      </div>
+    </div>
+
     <!-- Parameter Guide & Worked Example -->
     <CalculatorParameterGuide
       title="Images to PDF Conversion Specifications & Guide"
@@ -321,9 +340,32 @@ const workedExampleData = {
       const pageOrientSelect = root.querySelector('#page-orient');
       const pageMarginSelect = root.querySelector('#page-margin');
       const imgQualityInput = root.querySelector('#img-quality');
-      const qualityVal = root.querySelector('#quality-val');
       const pdfFilenameInput = root.querySelector('#pdf-filename');
       const optGrayscale = root.querySelector('#opt-grayscale');
+      const zoomModal = root.querySelector('#page-zoom-modal');
+      const zoomTitle = root.querySelector('#zoom-title');
+      const zoomImg = root.querySelector('#zoom-img');
+      const closeZoomBtn = root.querySelector('#close-zoom-btn');
+
+      if (closeZoomBtn && zoomModal) {
+        closeZoomBtn.addEventListener('click', () => zoomModal.classList.add('hidden'));
+        zoomModal.addEventListener('click', (e) => {
+          if (e.target === zoomModal) zoomModal.classList.add('hidden');
+        });
+        document.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape' && !zoomModal.classList.contains('hidden')) {
+            zoomModal.classList.add('hidden');
+          }
+        });
+      }
+
+      function openZoomModal(item, idx) {
+        if (!zoomModal || !zoomImg) return;
+        zoomTitle.textContent = `Image #${idx + 1}: ${item.file.name} (${item.width}×${item.height})`;
+        zoomModal.classList.remove('hidden');
+        zoomImg.src = item.url;
+        zoomImg.style.transform = `rotate(${item.rotation}deg)`;
+      }
 
       // State: Array of { id, file, url, rotation: 0|90|180|270, width, height }
       let imageItems = [];
@@ -343,7 +385,7 @@ const workedExampleData = {
         for (const file of files) {
           const url = URL.createObjectURL(file);
           // Pre-load to read dimensions
-          const dimensions = await new Promise(resolve => {
+          const dimensions = await new Promise((resolve) => {
             const img = new Image();
             img.onload = () => resolve({ width: img.naturalWidth, height: img.naturalHeight });
             img.onerror = () => resolve({ width: 800, height: 600 });
@@ -390,6 +432,11 @@ const workedExampleData = {
                 <span class="absolute top-1.5 left-1.5 rounded-md bg-black/60 px-1.5 py-0.5 text-[10px] font-bold text-white backdrop-blur-xs">
                   #${idx + 1}
                 </span>
+
+                <!-- Zoom Inspect Button -->
+                <button type="button" data-zoom="${idx}" class="absolute top-1.5 right-1.5 rounded-md bg-white/95 dark:bg-slate-800/95 p-1 text-[color:var(--fg)] hover:scale-110 shadow-xs transition cursor-pointer" title="Zoom inspect image">
+                  <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line><line x1="11" y1="8" x2="11" y2="14"></line><line x1="8" y1="11" x2="14" y2="11"></line></svg>
+                </button>
               </div>
               <div class="mt-2 min-w-0 space-y-0.5">
                 <p class="truncate text-[11px] font-bold text-[color:var(--fg)]" title="${item.file.name}">
@@ -420,6 +467,13 @@ const workedExampleData = {
         });
 
         imageGrid.innerHTML = html;
+
+        imageGrid.querySelectorAll('[data-zoom]').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const idx = parseInt(btn.dataset.zoom, 10);
+            if (imageItems[idx]) openZoomModal(imageItems[idx], idx);
+          });
+        });
 
         // Attach action handlers
         imageGrid.querySelectorAll('[data-move-up]').forEach(btn => {

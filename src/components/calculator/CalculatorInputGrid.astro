@@ -43,7 +43,7 @@ function isInputConditionMet(input: CalculatorInput, values: Record<string, numb
       return (
         <div
           class:list={[
-            'flex flex-col justify-between rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3.5 sm:p-4 transition hover:border-[color:var(--glass-border-strong)] focus-within:border-[color:var(--accent)] focus-within:shadow-[0_0_12px_var(--accent-glow)]',
+            'flex flex-col justify-between rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface-strong)]/30 p-3.5 sm:p-4 transition hover:border-[color:var(--border-strong)] focus-within:border-[color:var(--accent)] focus-within:ring-2 focus-within:ring-[color:var(--accent)]/15',
             getColSpanClass(input, basicInputs.length)
           ]}
           data-input-wrapper={input.id}
@@ -129,7 +129,7 @@ function isInputConditionMet(input: CalculatorInput, values: Record<string, numb
                 placeholder={input.placeholder ?? input.label}
                 aria-label={input.label}
                 disabled={!isMet}
-              >{initialValues[input.id]}</textarea>
+              ></textarea>
             ) : input.type === 'select' && input.options ? (
               <div class="relative w-full">
                 <select
@@ -177,7 +177,6 @@ function isInputConditionMet(input: CalculatorInput, values: Record<string, numb
                 max={input.type === 'text' || input.type === 'date' || input.type === 'datetime-local' ? undefined : input.max}
                 step={input.type === 'text' || input.type === 'date' || input.type === 'datetime-local' ? undefined : input.step ?? 'any'}
                 placeholder={input.placeholder ?? (input.defaultValue !== undefined && input.defaultValue !== '' ? `e.g. ${input.defaultValue}` : input.label)}
-                value={input.defaultValue !== undefined ? initialValues[input.id] : undefined}
                 disabled={!isMet}
                 aria-label={input.label} />
             )}
@@ -217,7 +216,7 @@ function isInputConditionMet(input: CalculatorInput, values: Record<string, numb
           return (
             <div
               class:list={[
-                'flex flex-col justify-between rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] p-3.5 transition hover:border-[color:var(--glass-border-strong)] focus-within:border-[color:var(--accent)] focus-within:shadow-[0_0_12px_var(--accent-glow)]',
+                'flex flex-col justify-between rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3.5 transition hover:border-[color:var(--border-strong)] focus-within:border-[color:var(--accent)] focus-within:ring-2 focus-within:ring-[color:var(--accent)]/15',
                 getColSpanClass(input, advancedInputs.length)
               ]}
               data-input-wrapper={input.id}
@@ -282,7 +281,6 @@ function isInputConditionMet(input: CalculatorInput, values: Record<string, numb
                     max={input.max}
                     step={input.step ?? 'any'}
                     placeholder={input.placeholder ?? (input.defaultValue !== undefined && input.defaultValue !== '' ? `e.g. ${input.defaultValue}` : input.label)}
-                    value={input.defaultValue !== undefined ? initialValues[input.id] : undefined}
                     disabled={!isMet}
                     aria-label={input.label} />
                 )}
@@ -343,7 +341,6 @@ function isInputConditionMet(input: CalculatorInput, values: Record<string, numb
                 max={input.max}
                 step={input.step ?? 'any'}
                 placeholder={input.placeholder ?? (input.defaultValue !== undefined && input.defaultValue !== '' ? `e.g. ${input.defaultValue}` : input.label)}
-                value={input.defaultValue !== undefined ? initialValues[input.id] : undefined}
                 disabled={!isMet} />
             </div>
           );

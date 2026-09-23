@@ -110,10 +110,11 @@ const parameterGuide = [
 ];
 ---
 
-<SiteLayout title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
+<SiteLayout heroCompact={true} title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
   <script is:inline type="application/ld+json" set:html={JSON.stringify(schemaGraph)} />
 
-  <article class="space-y-10 py-2" data-json-diff-app>
+  
+  <div slot="hero" class="site-hero-header">
     <nav aria-label="Breadcrumb">
       <ol class="flex flex-wrap items-center gap-2 text-xs text-[color:var(--muted)]">
         {breadcrumbItems.map((item, index) => (
@@ -145,6 +146,9 @@ const parameterGuide = [
         Compare two JSON documents to pinpoint added keys, removed properties, and modified values with semantic key normalization and side-by-side inspection.
       </p>
     </header>
+  </div>
+
+  <article class="space-y-10 py-2" data-json-diff-app>
 
     <!-- Metrics Bar -->
     <div id="stats-bar" class="grid grid-cols-2 gap-3 sm:grid-cols-4 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-center">

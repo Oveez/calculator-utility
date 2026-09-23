@@ -1,0 +1,55 @@
+---
+interface Props {
+  badge?: string;
+  title?: string;
+  description?: string;
+  breadcrumbs?: Array<{ label: string; href?: string }>;
+}
+
+const {
+  badge,
+  title,
+  description,
+  breadcrumbs,
+} = Astro.props;
+---
+
+<header class="site-hero-header">
+  {breadcrumbs && breadcrumbs.length > 0 && (
+    <nav aria-label="Breadcrumb" class="site-hero-breadcrumb">
+      <ol class="flex flex-wrap items-center gap-2">
+        {breadcrumbs.map((item, index) => (
+          <li class="flex items-center gap-2">
+            {index > 0 && <span aria-hidden="true" class="opacity-50">/</span>}
+            {item.href ? (
+              <a class="transition hover:text-white" href={item.href}>
+                {item.label}
+              </a>
+            ) : (
+              <span aria-current="page" class="font-semibold text-white">
+                {item.label}
+              </span>
+            )}
+          </li>
+        ))}
+      </ol>
+    </nav>
+  )}
+
+  {badge && (
+    <div class="site-hero-badge">
+      <span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#34d399;flex-shrink:0;"></span>
+      <span>{badge}</span>
+    </div>
+  )}
+
+  {title && (
+    <h1 class="site-hero-h1" set:html={title} />
+  )}
+
+  {description && (
+    <p class="site-hero-desc" set:html={description} />
+  )}
+
+  <slot />
+</header>

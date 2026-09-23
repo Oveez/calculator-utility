@@ -1,0 +1,93 @@
+---
+/**
+ * ScrollToggle — Global floating button for scrolling to bottom and top.
+ * Single button toggles direction dynamically:
+ * - When in top half: points down, scrolls smoothly to bottom.
+ * - When scrolled down: smoothly rotates 180deg to point up, scrolls smoothly to top.
+ */
+---
+
+<button
+  id="global-scroll-toggle"
+  type="button"
+  data-direction="down"
+  class="fixed bottom-20 right-4 sm:bottom-6 sm:right-6 z-40 flex h-11 w-11 sm:h-12 sm:w-12 items-center justify-center rounded-2xl bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white shadow-lg shadow-indigo-600/30 transition-all duration-300 hover:scale-110 cursor-pointer border border-white/20 select-none group"
+  aria-label="Scroll to bottom"
+  title="Scroll to bottom"
+>
+  <svg
+    id="scroll-toggle-svg"
+    class="w-5 h-5 transition-transform duration-300 transform stroke-current"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke-width="2.5"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    aria-hidden="true"
+  >
+    <polyline points="6 9 12 15 18 9"></polyline>
+  </svg>
+</button>
+
+<script is:inline>
+  (function initScrollToggle() {
+    function setup() {
+      const btn = document.getElementById('global-scroll-toggle');
+      const icon = document.getElementById('scroll-toggle-svg');
+      if (!btn || !icon) return;
+
+      function updateDirection() {
+        const scrollY = window.scrollY || document.documentElement.scrollTop || 0;
+        const scrollHeight = document.documentElement.scrollHeight || 1;
+        const clientHeight = document.documentElement.clientHeight || 1;
+        const maxScroll = Math.max(1, scrollHeight - clientHeight);
+
+        // Point UP if scrolled down past 350px or 35% of page
+        const threshold = Math.min(350, maxScroll * 0.35);
+        const shouldBeUp = scrollY > threshold;
+
+        if (shouldBeUp) {
+          btn.setAttribute('data-direction', 'up');
+          btn.setAttribute('aria-label', 'Scroll to top');
+          btn.setAttribute('title', 'Scroll to top');
+          icon.style.transform = 'rotate(180deg)';
+        } else {
+          btn.setAttribute('data-direction', 'down');
+          btn.setAttribute('aria-label', 'Scroll to bottom');
+          btn.setAttribute('title', 'Scroll to bottom');
+          icon.style.transform = 'rotate(0deg)';
+        }
+      }
+
+      btn.onclick = function handleScrollClick(e) {
+        e.preventDefault();
+        const currentDir = btn.getAttribute('data-direction');
+        if (currentDir === 'up') {
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        } else {
+          window.scrollTo({ top: document.documentElement.scrollHeight, behavior: 'smooth' });
+        }
+      };
+
+      let isTicking = false;
+      window.addEventListener('scroll', function onWindowScroll() {
+        if (!isTicking) {
+          window.requestAnimationFrame(function() {
+            updateDirection();
+            isTicking = false;
+          });
+          isTicking = true;
+        }
+      }, { passive: true });
+
+      // Initial check
+      updateDirection();
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', setup);
+    } else {
+      setup();
+    }
+  })();
+</script>

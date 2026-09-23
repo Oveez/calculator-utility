@@ -123,10 +123,11 @@ const workedExampleData = {
 };
 ---
 
-<SiteLayout title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
+<SiteLayout heroCompact={true} title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
   <script is:inline type="application/ld+json" set:html={JSON.stringify(schemaGraph)} />
 
-  <article class="space-y-10 py-2" data-empty-app>
+  
+  <div slot="hero" class="site-hero-header">
     <nav aria-label="Breadcrumb">
       <ol class="flex flex-wrap items-center gap-2 text-xs text-[color:var(--muted)]">
         {breadcrumbItems.map((item, index) => (
@@ -158,6 +159,9 @@ const workedExampleData = {
         Strip unnecessary blank and empty lines from code blocks, logs, and copied text documents. Collapse multiple consecutive empty lines into single breaks, or remove all empty lines completely.
       </p>
     </header>
+  </div>
+
+  <article class="space-y-10 py-2" data-empty-app>
 
     <!-- Metrics Summary Bar -->
     <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">

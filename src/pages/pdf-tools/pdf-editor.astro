@@ -1,0 +1,3090 @@
+---
+import { siteName, toAbsoluteUrl, withBasePath } from '../../utils/site';
+import '../../styles/global.css';
+
+const pageTitle = `PDF Editor — Free Online PDF Editor Tool`;
+const canonicalUrl = toAbsoluteUrl('/pdf-tools/pdf-editor/');
+---
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{pageTitle}</title>
+  <meta name="description" content="Free online PDF editor. Add text, edit existing text, draw shapes, highlight, sign, and manage pages in your browser." />
+  <link rel="canonical" href={canonicalUrl} />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <script is:inline>
+    (function(){try{const t=localStorage.getItem('calculator-theme')||((window.matchMedia('(prefers-color-scheme:dark)').matches)?'dark':'light');document.documentElement.setAttribute('data-theme',t);document.documentElement.classList.toggle('dark',t==='dark');}catch(e){}})();
+  </script>
+</head>
+<body class="pdf-editor-body">
+<!-- ===== UPLOAD PAGE ===== -->
+<div id="upload-page" class="ped-upload-page">
+  <div class="ped-upload-header">
+    <a href="/pdf-tools/" class="ped-back-link">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+      PDF Tools
+    </a>
+    <span class="ped-upload-title">PDF Editor</span>
+    <span class="ped-upload-badge">100% Private — In-Browser</span>
+  </div>
+
+  <div class="ped-upload-body">
+    <input type="file" id="file-input" accept="application/pdf" class="ped-hidden" />
+    <div id="drop-zone" class="ped-dropzone">
+      <div class="ped-dropzone-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m6.75 12H9m1.5-12H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
+        </svg>
+      </div>
+      <h1 class="ped-dropzone-h1">Drop your PDF here to edit</h1>
+      <p class="ped-dropzone-sub">or click the button below to choose a file</p>
+      <label for="file-input" class="ped-dropzone-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+        Select PDF File
+      </label>
+      <div class="ped-feature-badges">
+        <span>✏️ Add &amp; Edit Text</span>
+        <span>🖊 Draw &amp; Shapes</span>
+        <span>🖍 Highlight</span>
+        <span>🖼 Insert Image</span>
+        <span>✍️ Sign PDF</span>
+        <span>📑 Manage Pages</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== EDITOR UI ===== -->
+<div id="editor-page" class="ped-editor-page ped-hidden">
+
+  <!-- TOP TOOLBAR -->
+  <div class="ped-toolbar" id="main-toolbar">
+    <!-- Group: File / History -->
+    <div class="ped-tb-group">
+      <button id="tb-thumbs" class="ped-tb-btn ped-tb-active" title="Toggle Thumbnails">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+        <span>Thumbnails</span>
+      </button>
+      <button id="tb-undo" class="ped-tb-btn" title="Undo" disabled>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 15L3 9m0 0l6-6M3 9h12a6 6 0 010 12h-3"/></svg>
+        <span>Undo</span>
+      </button>
+      <button id="tb-redo" class="ped-tb-btn" title="Redo" disabled>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15 15l6-6m0 0l-6-6m6 6H9a6 6 0 000 12h3"/></svg>
+        <span>Redo</span>
+      </button>
+    </div>
+
+    <div class="ped-tb-sep"></div>
+
+    <!-- Group: Text Tools -->
+    <div class="ped-tb-group">
+      <button data-tool="text" class="ped-tb-btn ped-tool-btn" title="Add Text (Click anywhere on page to place)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"/></svg>
+        <span>Add text</span>
+      </button>
+      <button data-tool="text-edit" class="ped-tb-btn ped-tool-btn" title="Edit Existing Text in PDF">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+        <span>Edit text</span>
+      </button>
+      <button data-tool="sign" class="ped-tb-btn ped-tool-btn" title="Add Signature">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931z"/></svg>
+        <span>Sign</span>
+      </button>
+    </div>
+
+    <div class="ped-tb-sep"></div>
+
+    <!-- Group: Draw & Shape Tools -->
+    <div class="ped-tb-group">
+      <button data-tool="draw" class="ped-tb-btn ped-tool-btn" title="Freehand Draw">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
+        <span>Draw</span>
+      </button>
+      <!-- Line / Shape dropdown -->
+      <div class="ped-dropdown-wrap">
+        <button data-tool="line" class="ped-tb-btn ped-tool-btn ped-dropdown-trigger" title="Line / Shape">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><line x1="5" y1="19" x2="19" y2="5" stroke-linecap="round"/></svg>
+          <span id="shape-btn-label">Line</span>
+          <svg class="ped-caret" viewBox="0 0 10 6" fill="currentColor"><path d="M0 0l5 6 5-6z"/></svg>
+        </button>
+        <div class="ped-dropdown" id="line-dropdown">
+          <button data-shape="line" class="ped-dd-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><line x1="5" y1="19" x2="19" y2="5" stroke-linecap="round"/></svg> Line
+          </button>
+          <button data-shape="arrow" class="ped-dd-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg> Arrow
+          </button>
+          <button data-shape="rect" class="ped-dd-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="4" y="4" width="16" height="16" rx="2"/></svg> Box
+          </button>
+          <button data-shape="circle" class="ped-dd-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="9"/></svg> Circle
+          </button>
+        </div>
+      </div>
+      <button data-tool="highlight" class="ped-tb-btn ped-tool-btn" title="Text Highlight">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
+        <span>Highlight</span>
+      </button>
+      <button data-tool="image" class="ped-tb-btn ped-tool-btn" title="Insert Image (Click anywhere on page to place)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+        <span>Image</span>
+      </button>
+      <button id="btn-rotate" class="ped-tb-btn" title="Rotate Page 90°">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+        <span>Rotate</span>
+      </button>
+      <button data-tool="eraser" class="ped-tb-btn ped-tool-btn" title="Eraser (Erase lines, shapes, and items)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+        <span>Eraser</span>
+      </button>
+    </div>
+
+    <div class="ped-tb-sep"></div>
+
+    <!-- Group: Style controls (Color, Width, Fill) -->
+    <div class="ped-tb-group ped-tb-style-group" id="style-group">
+      <label class="ped-style-label" title="Stroke / Line Color">
+        <span>Color</span>
+        <input type="color" id="ann-color" value="#e53e3e" />
+      </label>
+      <label class="ped-style-label" title="Line Thickness">
+        <span>Width</span>
+        <select id="ann-width">
+          <option value="1">1px</option>
+          <option value="2" selected>2px</option>
+          <option value="4">4px</option>
+          <option value="6">6px</option>
+          <option value="10">10px</option>
+        </select>
+      </label>
+      <label class="ped-style-label" title="Enable Fill for Shapes">
+        <input type="checkbox" id="ann-fill-enable" />
+        <span>Fill</span>
+      </label>
+      <label class="ped-style-label" id="ann-fill-wrap" style="opacity:0.5;" title="Fill Color">
+        <input type="color" id="ann-fill-color" value="#93c5fd" />
+      </label>
+    </div>
+
+    <!-- Right side: Manage Pages, Open, Download -->
+    <div class="ped-tb-right">
+      <button id="tb-manage-pages" class="ped-tb-btn ped-btn-manage" title="Manage Pages (Reorder, Delete, Rotate, Add)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="9" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+        <span>Manage pages</span>
+      </button>
+      <label for="file-input-editor" class="ped-tb-btn ped-btn-ghost" title="Open another PDF">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/></svg>
+        <span>Open</span>
+      </label>
+      <input type="file" id="file-input-editor" accept="application/pdf" class="ped-hidden" />
+      <input type="file" id="img-file-input" accept="image/*" class="ped-hidden" />
+      <button id="tb-download" class="ped-tb-btn ped-btn-primary">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+        Download
+      </button>
+    </div>
+  </div>
+
+  <!-- TEXT CONTEXT TOOLBAR (shown when text tool or text annotation selected) -->
+  <div id="text-ctx-toolbar" class="ped-ctx-toolbar ped-hidden">
+    <select id="ctx-font-family" title="Font Family">
+      <option value="Arial">Arial</option>
+      <option value="Helvetica">Helvetica</option>
+      <option value="Times New Roman">Times New Roman</option>
+      <option value="Courier New">Courier New</option>
+      <option value="Georgia">Georgia</option>
+      <option value="Verdana">Verdana</option>
+    </select>
+    <select id="ctx-font-size" title="Font Size">
+      <option value="10">10px</option><option value="12">12px</option><option value="14">14px</option>
+      <option value="16">16px</option><option value="18" selected>18px</option><option value="20">20px</option>
+      <option value="24">24px</option><option value="28">28px</option><option value="32">32px</option>
+      <option value="36">36px</option><option value="48">48px</option>
+    </select>
+    <button id="ctx-bold" class="ped-ctx-btn" title="Bold"><b>B</b></button>
+    <button id="ctx-italic" class="ped-ctx-btn" title="Italic"><i>I</i></button>
+    <div class="ped-ctx-sep"></div>
+    <button data-align="left" class="ped-ctx-btn align-btn" title="Align Left">
+      <svg viewBox="0 0 24 24" fill="currentColor" width="14" height="14"><path d="M3 5h18v2H3V5zm0 4h12v2H3V9zm0 4h18v2H3v-2zm0 4h12v2H3v-2z"/></svg>
+    </button>
+    <button data-align="center" class="ped-ctx-btn align-btn" title="Center">
+      <svg viewBox="0 0 24 24" fill="currentColor" width="14" height="14"><path d="M3 5h18v2H3V5zm3 4h12v2H6V9zm-3 4h18v2H3v-2zm3 4h12v2H6v-2z"/></svg>
+    </button>
+    <button data-align="right" class="ped-ctx-btn align-btn" title="Align Right">
+      <svg viewBox="0 0 24 24" fill="currentColor" width="14" height="14"><path d="M3 5h18v2H3V5zm6 4h12v2H9V9zm-6 4h18v2H3v-2zm6 4h12v2H9v-2z"/></svg>
+    </button>
+    <div class="ped-ctx-sep"></div>
+    <label style="display:flex;align-items:center;gap:4px;font-size:11px;color:var(--ped-muted);cursor:pointer;">
+      Color <input type="color" id="ctx-color" value="#000000" style="width:24px;height:24px;border-radius:4px;border:1px solid var(--ped-border);cursor:pointer;" />
+    </label>
+    <button id="ctx-delete-btn" class="ped-ctx-btn" title="Delete Selected Text Box" style="color:#ef4444;margin-left:4px;">
+      <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+    </button>
+    <span id="text-ctx-hint" style="font-size:11px;color:var(--ped-muted);margin-left:auto;">Click anywhere to place</span>
+  </div>
+
+  <!-- DRAW CONTEXT TOOLBAR / PEN TRAY (shown when Draw tool is active) -->
+  <div id="draw-ctx-toolbar" class="ped-ctx-toolbar ped-pen-tray ped-hidden">
+    <div class="ped-pen-types">
+      <button type="button" data-pen="pen" class="ped-pen-type-btn active" title="Ballpoint Pen (Solid, crisp line)">
+        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><path d="M2 2l7.586 7.586"/></svg>
+        <span>Pen</span>
+      </button>
+      <button type="button" data-pen="brush" class="ped-pen-type-btn" title="Brush / Calligraphy (Smooth artistic stroke)">
+        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><path d="M18.375 2.625a2.121 2.121 0 113 3L12 15l-4 1 1-4 9.375-9.375z"/><path d="M9 18c-3 0-5 2-5 3s2 1 4 1 3-2 3-4"/></svg>
+        <span>Brush</span>
+      </button>
+      <button type="button" data-pen="marker" class="ped-pen-type-btn" title="Felt Marker (Thick, rounded marker)">
+        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 3v4a1 1 0 0 0 1 1h4"/><path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2z"/></svg>
+        <span>Marker</span>
+      </button>
+      <button type="button" data-pen="highlighter" class="ped-pen-type-btn" title="Highlighter (Semi-transparent accent)">
+        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l-6 6v3h3l6-6"/><path d="M22 2l-7 7-4-4 7-7 4 4z"/></svg>
+        <span>Highlighter</span>
+      </button>
+    </div>
+
+    <div class="ped-ctx-sep"></div>
+
+    <div class="ped-pen-widths">
+      <span style="font-size:11px;font-weight:700;color:var(--ped-muted);">Size:</span>
+      <button type="button" data-pwidth="1" class="ped-pwidth-btn" title="Fine (1px)"><span style="width:3px;height:3px;"></span>1px</button>
+      <button type="button" data-pwidth="2" class="ped-pwidth-btn active" title="Normal (2px)"><span style="width:5px;height:5px;"></span>2px</button>
+      <button type="button" data-pwidth="4" class="ped-pwidth-btn" title="Medium (4px)"><span style="width:8px;height:8px;"></span>4px</button>
+      <button type="button" data-pwidth="8" class="ped-pwidth-btn" title="Bold (8px)"><span style="width:11px;height:11px;"></span>8px</button>
+      <button type="button" data-pwidth="16" class="ped-pwidth-btn" title="Thick (16px)"><span style="width:15px;height:15px;"></span>16px</button>
+    </div>
+
+    <div class="ped-ctx-sep"></div>
+
+    <div class="ped-pen-colors">
+      <button type="button" data-pcolor="#000000" class="ped-pcolor-btn active" style="background:#000000;" title="Black"></button>
+      <button type="button" data-pcolor="#1d4ed8" class="ped-pcolor-btn" style="background:#1d4ed8;" title="Royal Blue"></button>
+      <button type="button" data-pcolor="#dc2626" class="ped-pcolor-btn" style="background:#dc2626;" title="Red"></button>
+      <button type="button" data-pcolor="#16a34a" class="ped-pcolor-btn" style="background:#16a34a;" title="Green"></button>
+      <button type="button" data-pcolor="#ea580c" class="ped-pcolor-btn" style="background:#ea580c;" title="Orange"></button>
+      <button type="button" data-pcolor="#9333ea" class="ped-pcolor-btn" style="background:#9333ea;" title="Purple"></button>
+      <button type="button" data-pcolor="#eab308" class="ped-pcolor-btn" style="background:#eab308;" title="Yellow"></button>
+      <label title="Custom Color" style="cursor:pointer;display:inline-flex;align-items:center;">
+        <input type="color" id="draw-custom-color" value="#000000" style="width:22px;height:22px;border:none;border-radius:50%;cursor:pointer;padding:0;background:transparent;" />
+      </label>
+    </div>
+
+    <span style="font-size:11px;color:var(--ped-muted);margin-left:auto;">Draw freehand on page</span>
+  </div>
+
+  <!-- SHAPE CONTEXT TOOLBAR (shown when Shape is selected or drawn) -->
+  <div id="shape-ctx-toolbar" class="ped-ctx-toolbar ped-hidden">
+    <label style="display:flex;align-items:center;gap:4px;font-size:12px;font-weight:600;color:var(--ped-text);cursor:pointer;">
+      <span>Color</span>
+      <input type="color" id="shape-ctx-color" value="#e53e3e" style="width:24px;height:24px;border-radius:4px;border:1px solid var(--ped-border);cursor:pointer;" />
+    </label>
+
+    <div class="ped-ctx-sep"></div>
+
+    <label style="display:flex;align-items:center;gap:4px;font-size:12px;font-weight:600;color:var(--ped-text);">
+      <span>Width</span>
+      <select id="shape-ctx-width" style="border:1px solid var(--ped-border);border-radius:6px;padding:3px 6px;background:var(--ped-bg);color:var(--ped-text);font-size:12px;cursor:pointer;">
+        <option value="1">1px</option>
+        <option value="2" selected>2px</option>
+        <option value="4">4px</option>
+        <option value="6">6px</option>
+        <option value="10">10px</option>
+      </select>
+    </label>
+
+    <div class="ped-ctx-sep"></div>
+
+    <label style="display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--ped-text);cursor:pointer;">
+      <input type="checkbox" id="shape-ctx-fill-enable" style="cursor:pointer;" />
+      <span>Fill</span>
+    </label>
+    <label id="shape-ctx-fill-wrap" style="display:flex;align-items:center;cursor:pointer;opacity:0.5;">
+      <input type="color" id="shape-ctx-fill-color" value="#93c5fd" style="width:24px;height:24px;border-radius:4px;border:1px solid var(--ped-border);cursor:pointer;" />
+    </label>
+
+    <div class="ped-ctx-sep"></div>
+
+    <button id="shape-ctx-delete-btn" class="ped-ctx-btn" title="Delete Selected Shape" style="color:#ef4444;gap:4px;">
+      <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+      <span>Delete</span>
+    </button>
+    <span style="font-size:11px;color:var(--ped-muted);margin-left:auto;">Drag to move • Corner dots to resize • Change style above</span>
+  </div>
+
+  <!-- EDITOR BODY -->
+  <div class="ped-editor-body">
+
+    <!-- LEFT: Thumbnails -->
+    <div id="thumb-panel" class="ped-thumb-panel">
+      <div id="thumb-list" class="ped-thumb-list"></div>
+    </div>
+
+    <!-- CENTER: Canvas viewport -->
+    <div id="canvas-viewport" class="ped-canvas-viewport">
+      <div id="page-wrapper" class="ped-page-wrapper">
+        <canvas id="pdf-canvas"></canvas>
+        <canvas id="ann-canvas" style="position:absolute;top:0;left:0;"></canvas>
+        <!-- Overlay for draggable text/image annotations and existing PDF text layer -->
+        <div id="ann-overlay" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;"></div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- BOTTOM PAGE NAV BAR -->
+  <div class="ped-bottom-bar">
+    <button id="nav-first" class="ped-nav-btn" title="First page">⏮</button>
+    <button id="nav-prev" class="ped-nav-btn" title="Previous page">◀</button>
+
+    <div class="ped-page-display">
+      Page <span id="cur-page-num">1</span> / <span id="tot-page-num">1</span>
+    </div>
+
+    <button id="nav-next" class="ped-nav-btn" title="Next page">▶</button>
+    <button id="nav-last" class="ped-nav-btn" title="Last page">⏭</button>
+
+    <div class="ped-bottom-sep"></div>
+
+    <button id="zoom-out-btn" class="ped-nav-btn" title="Zoom Out">−</button>
+    <span id="zoom-label" class="ped-zoom-label">100%</span>
+    <button id="zoom-in-btn" class="ped-nav-btn" title="Zoom In">+</button>
+    <button id="zoom-fit-btn" class="ped-nav-btn" title="Fit to width">Fit</button>
+
+    <div class="ped-bottom-sep"></div>
+    <span id="status-msg" class="ped-status"></span>
+  </div>
+
+</div>
+
+<!-- SIGN MODAL -->
+<div id="sign-modal" class="ped-modal-backdrop ped-hidden">
+  <div class="ped-modal">
+    <div class="ped-modal-header">
+      <h3>Add Signature</h3>
+      <button id="sign-modal-close" class="ped-modal-close">&times;</button>
+    </div>
+    <div class="ped-modal-tabs">
+      <button data-sign-tab="draw" class="ped-mtab ped-mtab-active">Draw</button>
+      <button data-sign-tab="type" class="ped-mtab">Type</button>
+      <button data-sign-tab="image" class="ped-mtab">Image</button>
+    </div>
+    <div id="stab-draw" class="ped-mtab-body">
+      <div class="ped-sign-controls-row">
+        <div class="ped-sign-colors">
+          <button data-scolor="#000000" class="ped-scolor-btn ped-scolor-active" style="background:#000" title="Black"></button>
+          <button data-scolor="#1a56db" class="ped-scolor-btn" style="background:#1a56db" title="Royal Blue"></button>
+          <button data-scolor="#1e3a8a" class="ped-scolor-btn" style="background:#1e3a8a" title="Navy"></button>
+          <button data-scolor="#e53e3e" class="ped-scolor-btn" style="background:#e53e3e" title="Red"></button>
+          <button data-scolor="#059669" class="ped-scolor-btn" style="background:#059669" title="Green"></button>
+          <label title="Custom Color" style="cursor:pointer;display:inline-flex;align-items:center;">
+            <input type="color" id="sign-custom-color" value="#000000" style="width:24px;height:24px;border:none;border-radius:50%;cursor:pointer;padding:0;background:transparent;" />
+          </label>
+        </div>
+        <div class="ped-sign-widths">
+          <span style="font-size:11px;color:var(--ped-muted);font-weight:600;">Pen:</span>
+          <button data-swidth="1.5" class="ped-swidth-btn">Fine</button>
+          <button data-swidth="3" class="ped-swidth-btn ped-swidth-active">Medium</button>
+          <button data-swidth="5" class="ped-swidth-btn">Thick</button>
+        </div>
+      </div>
+      <canvas id="sign-canvas" width="500" height="180"></canvas>
+      <p class="ped-sign-hint">Draw your signature above using mouse or touch</p>
+    </div>
+    <div id="stab-type" class="ped-mtab-body ped-hidden">
+      <div class="ped-sign-colors" style="margin-bottom:12px;">
+        <button data-scolor="#000000" class="ped-scolor-btn ped-scolor-active" style="background:#000" title="Black"></button>
+        <button data-scolor="#1a56db" class="ped-scolor-btn" style="background:#1a56db" title="Royal Blue"></button>
+        <button data-scolor="#1e3a8a" class="ped-scolor-btn" style="background:#1e3a8a" title="Navy"></button>
+        <button data-scolor="#e53e3e" class="ped-scolor-btn" style="background:#e53e3e" title="Red"></button>
+      </div>
+      <input id="sign-type-input" type="text" placeholder="Type your signature" class="ped-sign-type-input" />
+      <div class="ped-sign-font-row">
+        <button data-sfont="'Dancing Script', cursive" class="ped-sfont-btn ped-sfont-active" style="font-family:'Dancing Script',cursive">John Smith</button>
+        <button data-sfont="Georgia, serif" class="ped-sfont-btn" style="font-family:Georgia,serif;font-style:italic">John Smith</button>
+        <button data-sfont="'Courier New', monospace" class="ped-sfont-btn" style="font-family:'Courier New',monospace">John Smith</button>
+      </div>
+    </div>
+    <div id="stab-image" class="ped-mtab-body ped-hidden">
+      <label class="ped-sign-img-upload">
+        <input type="file" id="sign-img-input" accept="image/*" class="ped-hidden" />
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="32" height="32"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+        Click to upload signature image
+      </label>
+      <img id="sign-img-preview" class="ped-hidden" alt="signature preview" style="max-height:120px;margin:10px auto 0;display:block;" />
+    </div>
+    <div class="ped-modal-footer">
+      <button id="sign-clear" class="ped-modal-btn-ghost">Clear</button>
+      <button id="sign-cancel" class="ped-modal-btn-ghost">Cancel</button>
+      <button id="sign-done" class="ped-modal-btn-primary">Place Signature</button>
+    </div>
+  </div>
+</div>
+
+<!-- MANAGE PAGES MODAL -->
+<div id="manage-pages-modal" class="ped-modal-backdrop ped-hidden">
+  <div class="ped-mp-container">
+    <!-- Top action bar -->
+    <div class="ped-mp-header">
+      <div class="ped-mp-actions">
+        <button id="mp-act-new" class="ped-mp-btn" title="Add blank page">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 4v16m-8-8h16"/></svg>
+          <span>New Page</span>
+        </button>
+        <button id="mp-act-delete" class="ped-mp-btn" title="Delete selected page(s)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+          <span>Delete Pages</span>
+        </button>
+        <button id="mp-act-duplicate" class="ped-mp-btn" title="Duplicate selected page(s)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+          <span>Duplicate</span>
+        </button>
+        <div class="ped-mp-sep"></div>
+        <button id="mp-act-rot-left" class="ped-mp-btn" title="Rotate left 90°">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 12a9 9 0 109-9 9.75 9.75 0 00-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+          <span>Rotate Left</span>
+        </button>
+        <button id="mp-act-rot-right" class="ped-mp-btn" title="Rotate right 90°">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 12a9 9 0 11-9-9 9.75 9.75 0 016.74 2.74L21 8"/><path d="M21 3v5h-5"/></svg>
+          <span>Rotate Right</span>
+        </button>
+        <div class="ped-mp-sep"></div>
+        <button id="mp-act-move-prev" class="ped-mp-btn" title="Move selected page earlier">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M15 19l-7-7 7-7"/></svg>
+          <span>Move Before</span>
+        </button>
+        <button id="mp-act-move-next" class="ped-mp-btn" title="Move selected page later">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 5l7 7-7 7"/></svg>
+          <span>Move After</span>
+        </button>
+        <div class="ped-mp-sep"></div>
+        <button id="mp-act-select-all" class="ped-mp-btn" title="Select all pages">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+          <span>Select All</span>
+        </button>
+        <button id="mp-act-select-none" class="ped-mp-btn" title="Deselect all">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="2" stroke-dasharray="3 3"/></svg>
+          <span>Select None</span>
+        </button>
+        <div class="ped-mp-sep"></div>
+        <button id="mp-act-zoom-out" class="ped-mp-btn" title="Smaller grid">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35M8 11h6"/></svg>
+          <span>Zoom Out</span>
+        </button>
+        <button id="mp-act-zoom-in" class="ped-mp-btn" title="Larger grid">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35M11 8v6M8 11h6"/></svg>
+          <span>Zoom In</span>
+        </button>
+      </div>
+      <button id="mp-close-btn" class="ped-modal-close" title="Close">&times;</button>
+    </div>
+
+    <!-- Main Grid Content -->
+    <div class="ped-mp-body">
+      <div id="mp-grid" class="ped-mp-grid"></div>
+    </div>
+
+    <!-- Bottom Footer -->
+    <div class="ped-mp-footer">
+      <button id="mp-cancel-btn" class="ped-modal-btn-ghost">Cancel</button>
+      <div id="mp-status-info" class="ped-mp-count">0 pages selected</div>
+      <button id="mp-save-btn" class="ped-modal-btn-primary">Save Changes</button>
+    </div>
+  </div>
+</div>
+
+<!-- GLOBAL STYLES FOR STATIC AND DYNAMIC ELEMENTS -->
+<style is:global>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --ped-bg: #f5f5f5;
+  --ped-surface: #ffffff;
+  --ped-border: #e2e8f0;
+  --ped-text: #1a202c;
+  --ped-muted: #718096;
+  --ped-accent: #3b82f6;
+  --ped-accent-hover: #2563eb;
+  --ped-toolbar-bg: #ffffff;
+  --ped-toolbar-border: #e2e8f0;
+  --ped-thumb-bg: #f0f0f0;
+  --ped-active-bg: #eff6ff;
+  --ped-active-border: #3b82f6;
+  --ped-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.08);
+  --ped-shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+}
+[data-theme="dark"] {
+  --ped-bg: #111827;
+  --ped-surface: #1f2937;
+  --ped-border: #374151;
+  --ped-text: #f9fafb;
+  --ped-muted: #9ca3af;
+  --ped-toolbar-bg: #1f2937;
+  --ped-toolbar-border: #374151;
+  --ped-thumb-bg: #111827;
+  --ped-active-bg: #1e3a5f;
+  --ped-active-border: #3b82f6;
+}
+
+html, body { height: 100%; overflow: hidden; font-family: 'Plus Jakarta Sans', system-ui, sans-serif; background: var(--ped-bg); color: var(--ped-text); }
+.ped-hidden { display: none !important; }
+
+/* ── UPLOAD PAGE ─────────────────────────────────── */
+.ped-upload-page {
+  height: 100vh; display: flex; flex-direction: column; background: var(--ped-bg);
+}
+.ped-upload-header {
+  display: flex; align-items: center; gap: 16px; padding: 14px 24px;
+  background: var(--ped-toolbar-bg); border-bottom: 1px solid var(--ped-toolbar-border);
+  box-shadow: var(--ped-shadow);
+}
+.ped-back-link {
+  display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600;
+  color: var(--ped-muted); text-decoration: none; transition: color .15s;
+}
+.ped-back-link:hover { color: var(--ped-accent); }
+.ped-back-link svg { width: 14px; height: 14px; }
+.ped-upload-title { font-size: 16px; font-weight: 800; color: var(--ped-text); }
+.ped-upload-badge {
+  margin-left: auto; font-size: 11px; font-weight: 600; color: #10b981;
+  background: rgba(16,185,129,.1); border: 1px solid rgba(16,185,129,.25); border-radius: 99px; padding: 2px 10px;
+}
+.ped-upload-body {
+  flex: 1; display: flex; align-items: center; justify-content: center; padding: 24px;
+}
+.ped-dropzone {
+  width: 100%; max-width: 600px; display: flex; flex-direction: column; align-items: center;
+  gap: 18px; background: var(--ped-surface); border: 2px dashed var(--ped-border);
+  border-radius: 20px; padding: 52px 40px; text-align: center; transition: border-color .2s;
+  cursor: pointer;
+}
+.ped-dropzone.drag-over { border-color: var(--ped-accent); background: var(--ped-active-bg); }
+.ped-dropzone-icon svg {
+  width: 64px; height: 64px; color: var(--ped-accent); stroke-width: 1;
+}
+.ped-dropzone-h1 { font-size: 24px; font-weight: 800; color: var(--ped-text); }
+.ped-dropzone-sub { font-size: 14px; color: var(--ped-muted); margin-top: -8px; }
+.ped-dropzone-btn {
+  display: inline-flex; align-items: center; gap: 8px; background: var(--ped-accent);
+  color: #fff; font-weight: 700; font-size: 14px; padding: 12px 28px; border-radius: 12px;
+  border: none; cursor: pointer; transition: background .15s, transform .1s;
+}
+.ped-dropzone-btn:hover { background: var(--ped-accent-hover); transform: translateY(-1px); }
+.ped-dropzone-btn svg { width: 16px; height: 16px; }
+.ped-feature-badges {
+  display: flex; flex-wrap: wrap; gap: 8px; justify-content: center;
+}
+.ped-feature-badges span {
+  font-size: 12px; color: var(--ped-muted); background: var(--ped-bg);
+  border: 1px solid var(--ped-border); border-radius: 8px; padding: 5px 12px;
+}
+
+/* ── EDITOR PAGE ─────────────────────────────────── */
+.ped-editor-page {
+  height: 100vh; display: flex; flex-direction: column; background: var(--ped-bg); overflow: hidden;
+}
+
+/* TOOLBAR */
+.ped-toolbar {
+  display: flex; align-items: center; gap: 4px; padding: 6px 12px;
+  background: var(--ped-toolbar-bg); border-bottom: 1px solid var(--ped-toolbar-border);
+  box-shadow: var(--ped-shadow); flex-shrink: 0; flex-wrap: wrap; min-height: 50px; z-index: 20;
+}
+.ped-tb-group { display: flex; align-items: center; gap: 2px; }
+.ped-tb-sep { width: 1px; height: 28px; background: var(--ped-toolbar-border); margin: 0 6px; flex-shrink: 0; }
+.ped-tb-btn {
+  display: inline-flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 1px; padding: 5px 8px; border-radius: 8px; border: 1px solid transparent;
+  background: transparent; color: var(--ped-muted); cursor: pointer; font-size: 9px;
+  font-weight: 600; white-space: nowrap; transition: all .15s; min-width: 44px;
+}
+.ped-tb-btn svg { width: 18px; height: 18px; flex-shrink: 0; }
+.ped-tb-btn:hover { background: var(--ped-active-bg); color: var(--ped-accent); border-color: var(--ped-active-border); }
+.ped-tb-btn:disabled { opacity: .4; cursor: not-allowed; }
+.ped-tb-btn.ped-tb-active { background: var(--ped-active-bg); color: var(--ped-accent); border-color: var(--ped-active-border); }
+.ped-tool-btn.tool-active { background: var(--ped-accent); color: white !important; border-color: var(--ped-accent); }
+.ped-tb-style-group { gap: 8px; }
+.ped-style-label {
+  display: flex; align-items: center; gap: 5px; font-size: 10px; font-weight: 600; color: var(--ped-muted); cursor: pointer;
+}
+.ped-style-label input[type=color] { width: 26px; height: 26px; border-radius: 6px; border: 1px solid var(--ped-border); cursor: pointer; padding: 1px; background: transparent; }
+.ped-style-label select {
+  border: 1px solid var(--ped-border); border-radius: 6px; background: var(--ped-bg);
+  color: var(--ped-text); font-size: 11px; font-weight: 600; padding: 3px 6px; cursor: pointer;
+}
+.ped-tb-right { margin-left: auto; display: flex; align-items: center; gap: 6px; }
+.ped-btn-ghost { background: var(--ped-bg) !important; border-color: var(--ped-border) !important; color: var(--ped-text) !important; }
+.ped-btn-primary { background: #f97316 !important; border-color: #f97316 !important; color: white !important; }
+.ped-btn-primary:hover { background: #ea580c !important; }
+.ped-btn-manage { color: var(--ped-accent) !important; background: var(--ped-active-bg) !important; border-color: var(--ped-active-border) !important; font-weight: 700 !important; }
+.ped-btn-manage:hover { background: var(--ped-accent) !important; color: white !important; }
+
+/* Dropdown */
+.ped-dropdown-wrap { position: relative; }
+.ped-caret { width: 8px; height: 5px; flex-shrink: 0; }
+.ped-dropdown {
+  position: absolute; top: calc(100% + 4px); left: 0; z-index: 100;
+  background: var(--ped-surface); border: 1px solid var(--ped-border); border-radius: 10px;
+  box-shadow: var(--ped-shadow-md); padding: 4px; min-width: 130px; display: none;
+}
+.ped-dropdown.open { display: block; }
+.ped-dd-item {
+  display: flex; align-items: center; gap: 8px; width: 100%; padding: 7px 10px;
+  border-radius: 7px; border: none; background: transparent; color: var(--ped-text);
+  font-size: 12px; font-weight: 600; cursor: pointer; text-align: left;
+}
+.ped-dd-item:hover { background: var(--ped-active-bg); color: var(--ped-accent); }
+.ped-dd-item svg { width: 16px; height: 16px; flex-shrink: 0; }
+
+/* CONTEXT TOOLBAR */
+.ped-ctx-toolbar {
+  display: flex; align-items: center; gap: 6px; padding: 6px 16px;
+  background: var(--ped-surface); border-bottom: 1px solid var(--ped-border); flex-shrink: 0;
+}
+.ped-ctx-toolbar select {
+  border: 1px solid var(--ped-border); border-radius: 7px; background: var(--ped-bg);
+  color: var(--ped-text); font-size: 12px; font-weight: 600; padding: 4px 8px; cursor: pointer;
+}
+.ped-ctx-btn {
+  padding: 4px 10px; border-radius: 7px; border: 1px solid var(--ped-border);
+  background: transparent; color: var(--ped-text); cursor: pointer; font-size: 13px;
+  font-weight: 700; transition: all .15s; display: inline-flex; align-items: center; justify-content: center;
+}
+.ped-ctx-btn:hover, .ped-ctx-btn.active { background: var(--ped-active-bg); border-color: var(--ped-accent); color: var(--ped-accent); }
+.ped-ctx-sep { width: 1px; height: 22px; background: var(--ped-border); margin: 0 2px; }
+
+/* PEN TRAY (DRAW CONTEXT TOOLBAR) */
+.ped-pen-tray {
+  background: var(--ped-surface);
+  border-bottom: 1px solid var(--ped-border);
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.ped-pen-types, .ped-pen-widths, .ped-pen-colors {
+  display: flex; align-items: center; gap: 4px;
+}
+.ped-pen-type-btn {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 4px 10px; border-radius: 7px; border: 1px solid var(--ped-border);
+  background: var(--ped-bg); color: var(--ped-text); cursor: pointer;
+  font-size: 11px; font-weight: 700; transition: all .15s;
+}
+.ped-pen-type-btn:hover { background: var(--ped-active-bg); border-color: var(--ped-accent); color: var(--ped-accent); }
+.ped-pen-type-btn.active { background: var(--ped-accent); border-color: var(--ped-accent); color: #ffffff; }
+.ped-pwidth-btn {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 3px 8px; border-radius: 6px; border: 1px solid var(--ped-border);
+  background: var(--ped-bg); color: var(--ped-text); cursor: pointer;
+  font-size: 11px; font-weight: 600; transition: all .15s;
+}
+.ped-pwidth-btn:hover { border-color: var(--ped-accent); }
+.ped-pwidth-btn.active { background: var(--ped-active-bg); border-color: var(--ped-accent); color: var(--ped-accent); font-weight: 800; }
+.ped-pwidth-btn span { background: currentColor; border-radius: 50%; display: inline-block; }
+.ped-pcolor-btn {
+  width: 20px; height: 20px; border-radius: 50%; border: 2px solid transparent;
+  cursor: pointer; transition: transform .15s;
+}
+.ped-pcolor-btn:hover { transform: scale(1.15); }
+.ped-pcolor-btn.active { border-color: white; box-shadow: 0 0 0 2px var(--ped-accent); }
+
+/* SHAPE ANNOTATION */
+.shape-annotation {
+  position: absolute; cursor: move; pointer-events: all;
+  box-sizing: border-box; outline: 1.5px dashed transparent;
+  transition: outline 0.15s;
+}
+.shape-annotation:hover {
+  outline: 1.5px dashed rgba(59, 130, 246, 0.6);
+}
+.shape-annotation.selected {
+  outline: 1.5px solid #3b82f6 !important;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.25);
+  z-index: 10;
+}
+.shape-svg-wrap {
+  width: 100%; height: 100%; pointer-events: none;
+}
+
+/* EDITOR BODY */
+.ped-editor-body {
+  flex: 1; display: flex; overflow: hidden; min-height: 0;
+}
+
+/* THUMBNAILS */
+.ped-thumb-panel {
+  width: 140px; flex-shrink: 0; background: var(--ped-thumb-bg);
+  border-right: 1px solid var(--ped-border); overflow-y: auto; padding: 10px 8px;
+  display: flex; flex-direction: column; gap: 8px;
+}
+.ped-thumb-panel.collapsed { width: 0; padding: 0; overflow: hidden; }
+.ped-thumb-list { display: flex; flex-direction: column; gap: 8px; }
+.ped-thumb-item {
+  position: relative; border-radius: 8px; overflow: hidden;
+  border: 2px solid var(--ped-border); cursor: pointer; transition: border-color .15s;
+  background: white;
+}
+.ped-thumb-item:hover { border-color: var(--ped-accent); }
+.ped-thumb-item.active { border-color: var(--ped-accent); box-shadow: 0 0 0 2px var(--ped-accent); }
+.ped-thumb-item canvas { display: block; width: 100%; }
+.ped-thumb-label {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  background: rgba(0,0,0,0.55); color: white; font-size: 10px;
+  font-weight: 700; text-align: center; padding: 2px 0;
+}
+
+/* CANVAS VIEWPORT */
+.ped-canvas-viewport {
+  flex: 1; overflow: auto; display: flex; align-items: flex-start;
+  justify-content: center; padding: 24px; background: var(--ped-bg);
+}
+.ped-page-wrapper {
+  position: relative; display: inline-block;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+  user-select: none;
+}
+#pdf-canvas { display: block; }
+#ann-canvas { cursor: crosshair; }
+#ann-overlay { pointer-events: none; }
+
+/* BOTTOM BAR */
+.ped-bottom-bar {
+  display: flex; align-items: center; gap: 8px; padding: 6px 16px;
+  background: var(--ped-toolbar-bg); border-top: 1px solid var(--ped-toolbar-border);
+  flex-shrink: 0; font-size: 12px; font-weight: 600;
+}
+.ped-nav-btn {
+  padding: 4px 10px; border-radius: 7px; border: 1px solid var(--ped-border);
+  background: var(--ped-bg); color: var(--ped-text); cursor: pointer;
+  font-size: 14px; transition: all .15s;
+}
+.ped-nav-btn:hover { background: var(--ped-active-bg); border-color: var(--ped-accent); color: var(--ped-accent); }
+.ped-page-display { color: var(--ped-text); padding: 0 4px; }
+.ped-zoom-label { min-width: 42px; text-align: center; color: var(--ped-text); }
+.ped-bottom-sep { width: 1px; height: 20px; background: var(--ped-border); margin: 0 4px; }
+.ped-status { color: var(--ped-accent); font-size: 11px; margin-left: auto; font-weight: 600; }
+
+/* MODALS */
+.ped-modal-backdrop {
+  position: fixed; inset: 0; z-index: 200; display: flex; align-items: center;
+  justify-content: center; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px);
+}
+.ped-modal {
+  background: var(--ped-surface); border: 1px solid var(--ped-border); border-radius: 16px;
+  width: 540px; max-width: 95vw; box-shadow: 0 20px 60px rgba(0,0,0,0.3); overflow: hidden;
+}
+.ped-modal-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 16px 20px; border-bottom: 1px solid var(--ped-border);
+}
+.ped-modal-header h3 { font-size: 15px; font-weight: 800; color: var(--ped-text); }
+.ped-modal-close { border: none; background: transparent; font-size: 22px; color: var(--ped-muted); cursor: pointer; line-height: 1; padding: 2px 6px; }
+.ped-modal-close:hover { color: var(--ped-text); }
+.ped-modal-tabs { display: flex; border-bottom: 1px solid var(--ped-border); }
+.ped-mtab {
+  flex: 1; padding: 10px; font-size: 13px; font-weight: 600; border: none; background: transparent;
+  color: var(--ped-muted); cursor: pointer; border-bottom: 2px solid transparent; transition: all .15s;
+}
+.ped-mtab.ped-mtab-active { color: var(--ped-accent); border-bottom-color: var(--ped-accent); }
+.ped-mtab-body { padding: 16px 20px; }
+.ped-sign-controls-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+.ped-sign-colors { display: flex; align-items: center; gap: 8px; }
+.ped-scolor-btn {
+  width: 24px; height: 24px; border-radius: 50%; border: 2px solid transparent;
+  cursor: pointer; transition: transform .15s;
+}
+.ped-scolor-btn:hover { transform: scale(1.1); }
+.ped-scolor-btn.ped-scolor-active { border-color: white; box-shadow: 0 0 0 2px var(--ped-accent); }
+.ped-sign-widths { display: flex; align-items: center; gap: 4px; }
+.ped-swidth-btn {
+  padding: 3px 8px; font-size: 11px; font-weight: 600; border-radius: 6px;
+  border: 1px solid var(--ped-border); background: var(--ped-bg); color: var(--ped-text); cursor: pointer;
+}
+.ped-swidth-btn.ped-swidth-active {
+  background: var(--ped-active-bg); border-color: var(--ped-accent); color: var(--ped-accent);
+}
+#sign-canvas {
+  width: 100%; border: 1.5px dashed var(--ped-border); border-radius: 10px;
+  background: #fff; cursor: crosshair; touch-action: none; display: block;
+}
+.ped-sign-hint { text-align: center; font-size: 11px; color: var(--ped-muted); margin-top: 6px; }
+.ped-sign-type-input {
+  width: 100%; padding: 12px 16px; border: 1px solid var(--ped-border); border-radius: 10px;
+  background: var(--ped-bg); color: var(--ped-text); font-size: 26px; font-style: italic;
+  font-family: 'Dancing Script', cursive; margin-bottom: 12px;
+}
+.ped-sign-font-row { display: flex; gap: 8px; flex-wrap: wrap; }
+.ped-sfont-btn {
+  flex: 1; padding: 8px 12px; border: 1px solid var(--ped-border); border-radius: 8px;
+  background: var(--ped-bg); color: var(--ped-text); font-size: 18px; cursor: pointer; transition: all .15s;
+}
+.ped-sfont-btn.ped-sfont-active { border-color: var(--ped-accent); background: var(--ped-active-bg); }
+.ped-sign-img-upload {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 10px; width: 100%; height: 140px; border: 2px dashed var(--ped-border); border-radius: 12px;
+  background: var(--ped-bg); cursor: pointer; color: var(--ped-muted); font-size: 13px; font-weight: 600;
+  transition: border-color .15s;
+}
+.ped-sign-img-upload:hover { border-color: var(--ped-accent); }
+.ped-modal-footer {
+  display: flex; align-items: center; justify-content: flex-end; gap: 8px;
+  padding: 14px 20px; border-top: 1px solid var(--ped-border);
+}
+.ped-modal-btn-ghost {
+  padding: 8px 18px; border-radius: 9px; border: 1px solid var(--ped-border);
+  background: transparent; color: var(--ped-muted); font-size: 13px; font-weight: 600; cursor: pointer;
+}
+.ped-modal-btn-ghost:hover { color: var(--ped-text); border-color: var(--ped-text); }
+.ped-modal-btn-primary {
+  padding: 8px 22px; border-radius: 9px; border: 1px solid var(--ped-accent);
+  background: var(--ped-accent); color: white; font-size: 13px; font-weight: 700; cursor: pointer;
+}
+.ped-modal-btn-primary:hover { background: var(--ped-accent-hover); }
+
+/* ── TEXT & IMAGE ANNOTATIONS (CLEAN PDF HOUSE STYLE) ─────────────────── */
+.text-annotation {
+  position: absolute; min-width: 50px; min-height: 24px;
+  border: 1.5px dashed rgba(59, 130, 246, 0.6); cursor: move; outline: none;
+  background: transparent; box-sizing: border-box; pointer-events: all;
+  border-radius: 2px;
+}
+.text-annotation.selected {
+  border: 1.5px solid #3b82f6 !important;
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+  z-index: 10;
+}
+.text-annotation.editing {
+  background: #ffffff !important;
+  border: 1.5px solid #2563eb !important;
+  box-shadow: 0 0 0 3px rgba(37,99,235,0.25);
+  z-index: 15;
+}
+.text-content {
+  width: 100%; height: 100%; outline: none; cursor: text; user-select: text;
+  word-break: break-word; white-space: pre-wrap; line-height: 1.25; padding: 2px 4px;
+}
+.text-content:empty::before {
+  content: 'Type here...'; opacity: 0.45; pointer-events: none;
+}
+
+/* 8 RESIZE DOTS (PDF HOUSE STYLE) */
+.resize-dot {
+  position: absolute; width: 8px; height: 8px; background: #3b82f6;
+  border: 1.5px solid #ffffff; border-radius: 50%; box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+  z-index: 20; display: none;
+}
+.selected .resize-dot, .active .resize-dot { display: block; }
+.resize-dot.nw { top: -4px; left: -4px; cursor: nw-resize; }
+.resize-dot.n  { top: -4px; left: calc(50% - 4px); cursor: n-resize; }
+.resize-dot.ne { top: -4px; right: -4px; cursor: ne-resize; }
+.resize-dot.e  { top: calc(50% - 4px); right: -4px; cursor: e-resize; }
+.resize-dot.se { bottom: -4px; right: -4px; cursor: se-resize; }
+.resize-dot.s  { bottom: -4px; left: calc(50% - 4px); cursor: s-resize; }
+.resize-dot.sw { bottom: -4px; left: -4px; cursor: sw-resize; }
+.resize-dot.w  { top: calc(50% - 4px); left: -4px; cursor: w-resize; }
+
+/* ── IMAGE & SIGNATURE ANNOTATIONS ───────────────────────── */
+.img-annotation {
+  position: absolute; cursor: move; user-select: none; pointer-events: all;
+  border: 1.5px dashed rgba(59, 130, 246, 0.6); box-sizing: border-box;
+}
+.img-annotation.selected {
+  border: 1.5px solid #3b82f6; box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2); z-index: 10;
+}
+.img-annotation img { display: block; pointer-events: none; width: 100%; height: 100%; }
+
+/* ── EXISTING PDF TEXT EDITING LAYER (PDF HOUSE STYLE) ───────────────── */
+.ped-existing-text-block {
+  position: absolute; border: 1.5px dashed rgba(59, 130, 246, 0.5);
+  background: transparent; border-radius: 2px; cursor: pointer;
+  pointer-events: all; transition: background 0.1s, border-color 0.1s;
+  box-sizing: border-box; padding: 0 1px; z-index: 5;
+}
+.ped-existing-text-block:hover {
+  background: rgba(59, 130, 246, 0.08); border-color: #2563eb;
+}
+.ped-existing-text-block.active, .ped-existing-text-block.edited {
+  border: 1.5px solid #2563eb !important; background: #ffffff !important;
+  box-shadow: 0 0 0 3px rgba(37,99,235,0.25); z-index: 15; cursor: move;
+}
+.ped-existing-text-block.editing {
+  background: #ffffff !important;
+  border: 1.5px solid #2563eb !important;
+  box-shadow: 0 0 0 3px rgba(37,99,235,0.25);
+  z-index: 15;
+}
+.ped-existing-text-block .ped-et-content {
+  width: 100%; height: 100%; outline: none; white-space: pre;
+  line-height: 1.05 !important; cursor: text; margin: 0; padding: 0;
+  box-sizing: border-box; overflow: visible;
+}
+
+/* ── MANAGE PAGES MODAL ────────────────────────────────────── */
+.ped-mp-container {
+  width: 96vw; height: 92vh; max-width: 1360px; background: var(--ped-surface);
+  border-radius: 16px; border: 1px solid var(--ped-border);
+  box-shadow: 0 25px 60px rgba(0,0,0,0.3); display: flex; flex-direction: column; overflow: hidden;
+}
+.ped-mp-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 8px 16px; background: var(--ped-toolbar-bg); border-bottom: 1px solid var(--ped-border);
+  flex-shrink: 0; flex-wrap: wrap; gap: 6px;
+}
+.ped-mp-actions { display: flex; align-items: center; gap: 4px; flex-wrap: wrap; }
+.ped-mp-btn {
+  display: inline-flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 2px; padding: 6px 10px; border-radius: 8px; border: 1px solid transparent;
+  background: transparent; color: var(--ped-muted); cursor: pointer; font-size: 10px;
+  font-weight: 600; white-space: nowrap; transition: all .15s;
+}
+.ped-mp-btn svg { width: 17px; height: 17px; }
+.ped-mp-btn:hover { background: var(--ped-active-bg); color: var(--ped-accent); border-color: var(--ped-active-border); }
+.ped-mp-sep { width: 1px; height: 26px; background: var(--ped-border); margin: 0 4px; }
+.ped-mp-body {
+  flex: 1; overflow-y: auto; padding: 24px; background: var(--ped-bg);
+}
+.ped-mp-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+  gap: 20px; align-items: start;
+}
+.ped-mp-grid.zoom-lg { grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); }
+.ped-mp-grid.zoom-sm { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); }
+.ped-mp-card {
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+  cursor: pointer; position: relative; user-select: none;
+}
+.ped-mp-card-inner {
+  position: relative; width: 100%; background: #ffffff;
+  border-radius: 8px; border: 2px solid var(--ped-border); overflow: hidden;
+  box-shadow: var(--ped-shadow); transition: all .15s;
+}
+.ped-mp-card:hover .ped-mp-card-inner { border-color: var(--ped-accent); transform: translateY(-2px); }
+.ped-mp-card.selected .ped-mp-card-inner {
+  border-color: var(--ped-accent); box-shadow: 0 0 0 3px rgba(59,130,246,0.35);
+}
+.ped-mp-card-inner canvas { display: block; width: 100%; height: auto; }
+.ped-mp-check-badge {
+  position: absolute; top: 8px; right: 8px; width: 22px; height: 22px;
+  border-radius: 50%; background: var(--ped-surface); border: 2px solid var(--ped-border);
+  display: flex; align-items: center; justify-content: center; transition: all .15s;
+}
+.ped-mp-card.selected .ped-mp-check-badge {
+  background: var(--ped-accent); border-color: var(--ped-accent); color: white;
+}
+.ped-mp-card.selected .ped-mp-check-badge svg { display: block; }
+.ped-mp-check-badge svg { display: none; width: 13px; height: 13px; }
+.ped-mp-card-num {
+  font-size: 12px; font-weight: 700; color: var(--ped-muted);
+  background: var(--ped-surface); border: 1px solid var(--ped-border);
+  padding: 3px 12px; border-radius: 99px;
+}
+.ped-mp-card.selected .ped-mp-card-num {
+  background: var(--ped-active-bg); color: var(--ped-accent); border-color: var(--ped-accent);
+}
+.ped-mp-footer {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 20px; background: var(--ped-toolbar-bg); border-top: 1px solid var(--ped-border);
+  flex-shrink: 0;
+}
+.ped-mp-count { font-size: 13px; font-weight: 600; color: var(--ped-muted); }
+</style>
+
+<script is:inline>
+(function() {
+function loadScript(src) {
+  return new Promise(function(res, rej) {
+    if (document.querySelector('script[src="' + src + '"]')) { res(); return; }
+    var s = document.createElement('script'); s.src = src; s.onload = res; s.onerror = rej;
+    document.head.appendChild(s);
+  });
+}
+Promise.all([
+  loadScript('https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js'),
+  loadScript('https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js'),
+]).then(init);
+
+function init() {
+  var pdfjsLib = window['pdfjs-dist/build/pdf'];
+  pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+  var state = {
+    pdfDoc: null, totalPages: 0, currentPage: 1, scale: 1.5, rawBytes: null, fileName: 'document.pdf',
+    activeTool: null, activeShape: 'line', isDrawing: false, isErasing: false, drawStart: null, drawStartOverlay: null, freehandPts: [],
+    drawStrokeType: 'pen', drawPenWidth: 2, drawPenColor: '#000000',
+    pageRots: {}, pageAnns: {}, undoStack: [], redoStack: [],
+    pendingSignature: null, pendingImage: null,
+    signColor: '#000000', signFont: "'Dancing Script', cursive", signWidth: 3,
+    bold: false, italic: false, textAlign: 'left', thumbsVisible: true, hlStart: null, selectedEl: null, selectedAnn: null,
+    existingTextBlocks: {}
+  };
+
+  var $ = function(id) { return document.getElementById(id); };
+  var uploadPage = $('upload-page'), editorPage = $('editor-page'), dropZone = $('drop-zone');
+  var pageWrapper = $('page-wrapper');
+  var pdfCanvas = $('pdf-canvas'), annCanvas = $('ann-canvas'), annOverlay = $('ann-overlay');
+  var thumbList = $('thumb-list'), thumbPanel = $('thumb-panel');
+  var curPageNum = $('cur-page-num'), totPageNum = $('tot-page-num'), zoomLabel = $('zoom-label'), statusMsg = $('status-msg');
+  var textCtxToolbar = $('text-ctx-toolbar'), lineDropdown = $('line-dropdown');
+  var drawCtxToolbar = $('draw-ctx-toolbar'), shapeCtxToolbar = $('shape-ctx-toolbar');
+  var signModal = $('sign-modal'), signCanvas = $('sign-canvas'), signCtx = signCanvas.getContext('2d');
+  var pCtx = pdfCanvas.getContext('2d'), aCtx = annCanvas.getContext('2d');
+  var managePagesModal = $('manage-pages-modal'), mpGrid = $('mp-grid');
+
+  annCanvas.style.pointerEvents = 'all';
+
+  function setupFileInputs() {
+    [$('file-input'), $('file-input-editor')].forEach(function(inp) {
+      if (!inp) return;
+      inp.addEventListener('change', function(e) {
+        var f = e.target.files[0];
+        if (f) loadPDF(f);
+        inp.value = '';
+      });
+    });
+  }
+  setupFileInputs();
+
+  dropZone.addEventListener('dragover', function(e) { e.preventDefault(); dropZone.classList.add('drag-over'); });
+  dropZone.addEventListener('dragleave', function() { dropZone.classList.remove('drag-over'); });
+  dropZone.addEventListener('drop', function(e) {
+    e.preventDefault(); dropZone.classList.remove('drag-over');
+    var f = e.dataTransfer.files[0];
+    if (f && f.type === 'application/pdf') loadPDF(f);
+  });
+
+  async function loadPDF(file) {
+    setStatus('Loading PDF...');
+    state.fileName = file.name;
+    state.rawBytes = await file.arrayBuffer();
+    state.pdfDoc = await pdfjsLib.getDocument({ data: new Uint8Array(state.rawBytes) }).promise;
+    state.totalPages = state.pdfDoc.numPages;
+    state.currentPage = 1;
+    state.pageRots = {}; state.pageAnns = {}; state.undoStack = []; state.redoStack = [];
+    state.existingTextBlocks = {};
+    totPageNum.textContent = state.totalPages;
+    uploadPage.classList.add('ped-hidden');
+    editorPage.classList.remove('ped-hidden');
+    await buildThumbnails();
+    await renderPage(state.currentPage);
+    updateUndoRedoBtns();
+    setStatus('Ready');
+  }
+
+  async function buildThumbnails() {
+    thumbList.innerHTML = '';
+    for (var p = 1; p <= state.totalPages; p++) {
+      var page = await state.pdfDoc.getPage(p);
+      var vp = page.getViewport({ scale: 0.18, rotation: (state.pageRots[p] || 0) + page.rotate });
+      var c = document.createElement('canvas'); c.width = vp.width; c.height = vp.height;
+      await page.render({ canvasContext: c.getContext('2d'), viewport: vp }).promise;
+      var item = document.createElement('div'); item.className = 'ped-thumb-item'; item.dataset.page = p;
+      item.appendChild(c);
+      var lbl = document.createElement('div'); lbl.className = 'ped-thumb-label'; lbl.textContent = p; item.appendChild(lbl);
+      item.addEventListener('click', function() { goToPage(parseInt(this.dataset.page)); });
+      thumbList.appendChild(item);
+    }
+    activateThumb(state.currentPage);
+  }
+
+  function activateThumb(p) {
+    document.querySelectorAll('.ped-thumb-item').forEach(function(el) { el.classList.remove('active'); });
+    var el = document.querySelector('.ped-thumb-item[data-page="' + p + '"]');
+    if (el) { el.classList.add('active'); el.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); }
+  }
+
+  async function renderPage(p) {
+    setStatus('Rendering page ' + p + '...');
+    var page = await state.pdfDoc.getPage(p);
+    var rotation = (state.pageRots[p] || 0) + page.rotate;
+    var vp = page.getViewport({ scale: state.scale, rotation: rotation });
+
+    pdfCanvas.width = vp.width; pdfCanvas.height = vp.height;
+    annCanvas.width = vp.width; annCanvas.height = vp.height;
+    annCanvas.style.width = vp.width + 'px'; annCanvas.style.height = vp.height + 'px';
+    annOverlay.style.width = vp.width + 'px'; annOverlay.style.height = vp.height + 'px';
+
+    pCtx.clearRect(0, 0, vp.width, vp.height);
+    aCtx.clearRect(0, 0, vp.width, vp.height);
+    annOverlay.innerHTML = '';
+
+    await page.render({ canvasContext: pCtx, viewport: vp }).promise;
+    redrawAnnotations(p);
+    if (state.activeTool === 'text-edit') {
+      await renderExistingTextLayer(p);
+    }
+    curPageNum.textContent = p;
+    activateThumb(p);
+    setStatus('');
+  }
+
+  function goToPage(p) {
+    if (!state.pdfDoc || p < 1 || p > state.totalPages) return;
+    deselectAll();
+    state.currentPage = p;
+    renderPage(p);
+  }
+
+  function redrawAnnotations(p) {
+    var anns = state.pageAnns[p] || [];
+    aCtx.clearRect(0, 0, annCanvas.width, annCanvas.height);
+    annOverlay.innerHTML = '';
+    anns.forEach(function(a) {
+      if (a.type === 'mask') drawMask(aCtx, a);
+      else if (a.type === 'draw') drawShape(aCtx, a);
+      else if (a.type === 'highlight') drawHL(aCtx, a);
+      else if (a.type === 'shape') restoreShapeEl(a);
+      else if (a.type === 'text') restoreTextEl(a);
+      else if (a.type === 'image') restoreImgEl(a);
+      else if (a.type === 'edit-text') restoreEditedTextEl(a);
+    });
+  }
+
+  function drawMask(ctx, a) {
+    ctx.save();
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(a.x, a.y, a.w, a.h);
+    ctx.restore();
+  }
+
+  // Exact overlay position in CSS pixels for DOM placement
+  function getOverlayPos(e) {
+    var rect = annOverlay.getBoundingClientRect();
+    return {
+      x: Math.round(e.clientX - rect.left),
+      y: Math.round(e.clientY - rect.top)
+    };
+  }
+
+  // Exact canvas backing position for freehand/shapes
+  function getCanvasPos(e) {
+    var rect = annCanvas.getBoundingClientRect();
+    var sx = annCanvas.width / rect.width, sy = annCanvas.height / rect.height;
+    return {
+      x: (e.clientX - rect.left) * sx,
+      y: (e.clientY - rect.top) * sy
+    };
+  }
+
+  function distToSegment(px, py, x1, y1, x2, y2) {
+    var dx = x2 - x1, dy = y2 - y1;
+    var l2 = dx * dx + dy * dy;
+    if (l2 === 0) return Math.hypot(px - x1, py - y1);
+    var t = Math.max(0, Math.min(1, ((px - x1) * dx + (py - y1) * dy) / l2));
+    return Math.hypot(px - (x1 + t * dx), py - (y1 + t * dy));
+  }
+
+  function drawShape(ctx, a) {
+    ctx.save();
+    var pType = a.strokeType || 'pen';
+    var alpha = a.alpha != null ? a.alpha : (pType === 'highlighter' ? 0.35 : (pType === 'marker' ? 0.85 : 1.0));
+    var pWidth = a.width || 2;
+    var lineW = pType === 'highlighter' ? Math.max(16, pWidth * 3) : (pType === 'marker' ? pWidth * 1.5 : pWidth);
+
+    ctx.strokeStyle = a.color || '#e53e3e';
+    ctx.lineWidth = lineW;
+    ctx.lineCap = (pType === 'marker' || pType === 'highlighter') ? 'square' : 'round';
+    ctx.lineJoin = 'round';
+    ctx.globalAlpha = alpha;
+
+    if (a.shape === 'freehand' && a.pts && a.pts.length > 1) {
+      ctx.beginPath();
+      ctx.moveTo(a.pts[0].x, a.pts[0].y);
+      a.pts.slice(1).forEach(function(pt) { ctx.lineTo(pt.x, pt.y); });
+      ctx.stroke();
+    } else if (a.shape === 'line') {
+      ctx.beginPath(); ctx.moveTo(a.x1, a.y1); ctx.lineTo(a.x2, a.y2); ctx.stroke();
+    } else if (a.shape === 'arrow') {
+      drawArrow(ctx, a.x1, a.y1, a.x2, a.y2, a.color, a.width);
+    } else if (a.shape === 'rect') {
+      if (a.fill) {
+        ctx.fillStyle = a.fillColor || 'rgba(59, 130, 246, 0.3)';
+        ctx.fillRect(a.x1, a.y1, a.x2 - a.x1, a.y2 - a.y1);
+      }
+      ctx.strokeRect(a.x1, a.y1, a.x2 - a.x1, a.y2 - a.y1);
+    } else if (a.shape === 'circle') {
+      var rx = Math.max(1, Math.abs(a.x2 - a.x1) / 2), ry = Math.max(1, Math.abs(a.y2 - a.y1) / 2);
+      ctx.beginPath();
+      ctx.ellipse((a.x1 + a.x2) / 2, (a.y1 + a.y2) / 2, rx, ry, 0, 0, Math.PI * 2);
+      if (a.fill) {
+        ctx.fillStyle = a.fillColor || 'rgba(59, 130, 246, 0.3)';
+        ctx.fill();
+      }
+      ctx.stroke();
+    }
+    ctx.restore();
+  }
+
+  function drawArrow(ctx, x1, y1, x2, y2, color, width) {
+    ctx.save(); ctx.strokeStyle = ctx.fillStyle = color || '#e53e3e'; ctx.lineWidth = width || 2;
+    var angle = Math.atan2(y2 - y1, x2 - x1), hl = Math.max(12, (width || 2) * 4);
+    ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(x2, y2);
+    ctx.lineTo(x2 - hl * Math.cos(angle - Math.PI / 6), y2 - hl * Math.sin(angle - Math.PI / 6));
+    ctx.lineTo(x2 - hl * Math.cos(angle + Math.PI / 6), y2 - hl * Math.sin(angle + Math.PI / 6));
+    ctx.closePath(); ctx.fill(); ctx.restore();
+  }
+
+  function drawHL(ctx, a) {
+    ctx.save(); ctx.globalAlpha = 0.3; ctx.fillStyle = a.color || '#ffd700';
+    ctx.fillRect(a.x1, a.y1, a.x2 - a.x1, a.y2 - a.y1);
+    ctx.globalAlpha = 1; ctx.restore();
+  }
+
+  function previewShape(ctx, x1, y1, x2, y2) {
+    var color = $('ann-color').value, width = parseInt($('ann-width').value) || 2;
+    var fill = $('ann-fill-enable').checked, fillColor = $('ann-fill-color').value;
+    ctx.save(); ctx.strokeStyle = color; ctx.lineWidth = width; ctx.lineCap = 'round';
+    var s = state.activeShape;
+    if (s === 'line') { ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke(); }
+    else if (s === 'arrow') drawArrow(ctx, x1, y1, x2, y2, color, width);
+    else if (s === 'rect') {
+      if (fill) { ctx.fillStyle = fillColor; ctx.fillRect(x1, y1, x2 - x1, y2 - y1); }
+      ctx.strokeRect(x1, y1, x2 - x1, y2 - y1);
+    } else if (s === 'circle') {
+      var rx = Math.max(1, Math.abs(x2 - x1) / 2), ry = Math.max(1, Math.abs(y2 - y1) / 2);
+      ctx.beginPath(); ctx.ellipse((x1 + x2) / 2, (y1 + y2) / 2, rx, ry, 0, 0, Math.PI * 2);
+      if (fill) { ctx.fillStyle = fillColor; ctx.fill(); }
+      ctx.stroke();
+    }
+    ctx.restore();
+  }
+
+  // ── RESIZE HANDLES BUILDER (8 DOTS LIKE PDF HOUSE) ───────────
+  function attachResizeDots(el, a, onResize) {
+    var dirs = ['nw', 'n', 'ne', 'e', 'se', 's', 'sw', 'w'];
+    dirs.forEach(function(dir) {
+      var dot = document.createElement('div');
+      dot.className = 'resize-dot ' + dir;
+      el.appendChild(dot);
+
+      dot.addEventListener('mousedown', function(e) {
+        e.preventDefault(); e.stopPropagation();
+        var startX = e.clientX, startY = e.clientY;
+        var origX = a.x, origY = a.y, origW = a.w || el.offsetWidth, origH = a.h || el.offsetHeight;
+
+        function onMv(ev) {
+          var dx = ev.clientX - startX, dy = ev.clientY - startY;
+          var nw = origW, nh = origH, nx = origX, ny = origY;
+
+          if (dir.includes('e')) nw = Math.max(30, origW + dx);
+          if (dir.includes('s')) nh = Math.max(16, origH + dy);
+          if (dir.includes('w')) {
+            var diff = Math.min(dx, origW - 30);
+            nx = origX + diff; nw = origW - diff;
+          }
+          if (dir.includes('n')) {
+            var diffY = Math.min(dy, origH - 16);
+            ny = origY + diffY; nh = origH - diffY;
+          }
+
+          a.x = Math.round(nx); a.y = Math.round(ny);
+          a.w = Math.round(nw); a.h = Math.round(nh);
+          el.style.left = a.x + 'px'; el.style.top = a.y + 'px';
+          el.style.width = a.w + 'px'; el.style.height = a.h + 'px';
+          if (onResize) onResize(a);
+        }
+
+        function onUp() {
+          document.removeEventListener('mousemove', onMv);
+          document.removeEventListener('mouseup', onUp);
+          pushUndoSnapshot();
+        }
+        document.addEventListener('mousemove', onMv);
+        document.addEventListener('mouseup', onUp);
+      });
+    });
+  }
+
+  // ── DRAG MOVE HANDLER (SMOOTH & DOES NOT BLOCK CLICKS) ─────────
+  function attachDragMove(el, a, handleEl) {
+    var target = handleEl || el;
+
+    target.addEventListener('mousedown', function(e) {
+      if (e.target.classList.contains('resize-dot')) return;
+      if (el.classList.contains('editing')) return; // Allow natural text editing and selection
+
+      e.stopPropagation();
+      selectElement(el, a);
+
+      var startX = e.clientX, startY = e.clientY;
+      var origX = a.x, origY = a.y;
+      var hasMoved = false;
+
+      function onMv(ev) {
+        var dx = ev.clientX - startX, dy = ev.clientY - startY;
+        if (!hasMoved) {
+          if (Math.hypot(dx, dy) < 4) return;
+          hasMoved = true;
+        }
+        ev.preventDefault();
+        a.x = Math.max(0, Math.round(origX + dx));
+        a.y = Math.max(0, Math.round(origY + dy));
+        el.style.left = a.x + 'px';
+        el.style.top = a.y + 'px';
+      }
+
+      function onUp() {
+        document.removeEventListener('mousemove', onMv);
+        document.removeEventListener('mouseup', onUp);
+        if (hasMoved) pushUndoSnapshot();
+      }
+
+      document.addEventListener('mousemove', onMv);
+      document.addEventListener('mouseup', onUp);
+    });
+
+    target.addEventListener('dblclick', function(e) {
+      if (a.type === 'text' || a.type === 'edit-text') {
+        e.stopPropagation();
+        e.preventDefault();
+        startTextEditing(el, a);
+      }
+    });
+  }
+
+  function selectAllTextInContent(content) {
+    if (!content) return;
+    try {
+      var range = document.createRange();
+      range.selectNodeContents(content);
+      var sel = window.getSelection();
+      sel.removeAllRanges();
+      sel.addRange(range);
+    } catch (err) {}
+  }
+
+  function startTextEditing(el, a) {
+    selectElement(el, a);
+    el.classList.add('editing');
+    var content = el.querySelector('.text-content') || el.querySelector('.ped-et-content');
+    if (content) {
+      content.contentEditable = 'true';
+      content.focus();
+      selectAllTextInContent(content);
+    }
+    setStatus('Editing text... Type your text. Click outside or press Esc when done.');
+  }
+
+  function deselectAll() {
+    if (state.selectedEl) {
+      state.selectedEl.classList.remove('selected', 'editing', 'active');
+      var content = state.selectedEl.querySelector('.text-content') || state.selectedEl.querySelector('.ped-et-content');
+      if (content) content.contentEditable = 'false';
+      state.selectedEl = null;
+      state.selectedAnn = null;
+    }
+    if (!state.activeTool || (state.activeTool !== 'text' && state.activeTool !== 'text-edit')) {
+      textCtxToolbar.classList.add('ped-hidden');
+    }
+    if (state.activeTool !== 'draw') {
+      drawCtxToolbar.classList.add('ped-hidden');
+    }
+    if (state.activeTool !== 'line') {
+      shapeCtxToolbar.classList.add('ped-hidden');
+    }
+  }
+
+  function selectElement(el, a) {
+    deselectAll();
+    state.selectedEl = el;
+    state.selectedAnn = a;
+    el.classList.add('selected');
+
+    if (a.type === 'text' || a.type === 'edit-text') {
+      textCtxToolbar.classList.remove('ped-hidden');
+      drawCtxToolbar.classList.add('ped-hidden');
+      shapeCtxToolbar.classList.add('ped-hidden');
+
+      if (a.fontFamily) {
+        var fOpt = $('ctx-font-family').querySelector('option[value="' + a.fontFamily + '"]');
+        if (fOpt) {
+          $('ctx-font-family').value = a.fontFamily;
+        } else {
+          var newFOpt = document.createElement('option');
+          newFOpt.value = a.fontFamily;
+          newFOpt.textContent = a.fontFamily;
+          $('ctx-font-family').appendChild(newFOpt);
+          $('ctx-font-family').value = a.fontFamily;
+        }
+      }
+
+      var fsVal = String(a.fontSize || 18);
+      var opt = $('ctx-font-size').querySelector('option[value="' + fsVal + '"]');
+      if (!opt) {
+        var newOpt = document.createElement('option');
+        newOpt.value = fsVal;
+        newOpt.textContent = fsVal + 'px';
+        $('ctx-font-size').appendChild(newOpt);
+      }
+      $('ctx-font-size').value = fsVal;
+
+      $('ctx-color').value = a.color || '#000000';
+      state.bold = !!a.bold; $('ctx-bold').classList.toggle('active', state.bold);
+      state.italic = !!a.italic; $('ctx-italic').classList.toggle('active', state.italic);
+      state.textAlign = a.align || 'left';
+      document.querySelectorAll('.align-btn').forEach(function(b) {
+        b.classList.toggle('active', b.dataset.align === state.textAlign);
+      });
+      $('text-ctx-hint').textContent = 'Double-click to edit text';
+    } else if (a.type === 'shape') {
+      shapeCtxToolbar.classList.remove('ped-hidden');
+      textCtxToolbar.classList.add('ped-hidden');
+      drawCtxToolbar.classList.add('ped-hidden');
+      $('shape-ctx-color').value = a.color || '#e53e3e';
+      $('shape-ctx-width').value = String(a.width || 2);
+      $('shape-ctx-fill-enable').checked = !!a.fill;
+      $('shape-ctx-fill-color').value = a.fillColor || '#93c5fd';
+      $('shape-ctx-fill-wrap').style.opacity = a.fill ? '1' : '0.5';
+
+      // Also sync main toolbar controls
+      $('ann-color').value = a.color || '#e53e3e';
+      $('ann-width').value = String(a.width || 2);
+      $('ann-fill-enable').checked = !!a.fill;
+      $('ann-fill-color').value = a.fillColor || '#93c5fd';
+      $('ann-fill-wrap').style.opacity = a.fill ? '1' : '0.5';
+      setStatus('Shape selected. Drag to move, dots to resize, adjust color & fill above.');
+    }
+  }
+
+  // ── SHAPE RENDERING (UNLOCKED, SELECTABLE, RESIZABLE, STYLABLE) ───
+  function renderShapeSvg(svgWrap, a) {
+    var w = Math.max(8, a.w || 20);
+    var h = Math.max(8, a.h || 20);
+    var sw = a.width || 2;
+    var stroke = a.color || '#e53e3e';
+    var fill = a.fill ? (a.fillColor || '#93c5fd') : 'transparent';
+    var half = sw / 2;
+
+    var html = '';
+    if (a.shape === 'rect') {
+      html = '<svg width="100%" height="100%" viewBox="0 0 ' + w + ' ' + h + '" style="overflow:visible;display:block;">' +
+        '<rect x="' + half + '" y="' + half + '" width="' + Math.max(1, w - sw) + '" height="' + Math.max(1, h - sw) + '" rx="3" ' +
+        'fill="' + fill + '" stroke="' + stroke + '" stroke-width="' + sw + '" />' +
+        '</svg>';
+    } else if (a.shape === 'circle') {
+      var rx = Math.max(1, (w - sw) / 2);
+      var ry = Math.max(1, (h - sw) / 2);
+      html = '<svg width="100%" height="100%" viewBox="0 0 ' + w + ' ' + h + '" style="overflow:visible;display:block;">' +
+        '<ellipse cx="' + (w / 2) + '" cy="' + (h / 2) + '" rx="' + rx + '" ry="' + ry + '" ' +
+        'fill="' + fill + '" stroke="' + stroke + '" stroke-width="' + sw + '" />' +
+        '</svg>';
+    } else if (a.shape === 'line') {
+      var lx1 = (a.x2 >= a.x1) ? half : (w - half);
+      var ly1 = (a.y2 >= a.y1) ? half : (h - half);
+      var lx2 = (a.x2 >= a.x1) ? (w - half) : half;
+      var ly2 = (a.y2 >= a.y1) ? (h - half) : half;
+      html = '<svg width="100%" height="100%" viewBox="0 0 ' + w + ' ' + h + '" style="overflow:visible;display:block;">' +
+        '<line x1="' + lx1 + '" y1="' + ly1 + '" x2="' + lx2 + '" y2="' + ly2 + '" ' +
+        'stroke="' + stroke + '" stroke-width="' + sw + '" stroke-linecap="round" />' +
+        '</svg>';
+    } else if (a.shape === 'arrow') {
+      var lx1 = (a.x2 >= a.x1) ? half : (w - half);
+      var ly1 = (a.y2 >= a.y1) ? half : (h - half);
+      var lx2 = (a.x2 >= a.x1) ? (w - half) : half;
+      var ly2 = (a.y2 >= a.y1) ? (h - half) : half;
+      var angle = Math.atan2(ly2 - ly1, lx2 - lx1);
+      var hl = Math.max(12, sw * 4);
+      var p1x = lx2 - hl * Math.cos(angle - Math.PI / 6);
+      var p1y = ly2 - hl * Math.sin(angle - Math.PI / 6);
+      var p2x = lx2 - hl * Math.cos(angle + Math.PI / 6);
+      var p2y = ly2 - hl * Math.sin(angle + Math.PI / 6);
+      html = '<svg width="100%" height="100%" viewBox="0 0 ' + w + ' ' + h + '" style="overflow:visible;display:block;">' +
+        '<line x1="' + lx1 + '" y1="' + ly1 + '" x2="' + lx2 + '" y2="' + ly2 + '" stroke="' + stroke + '" stroke-width="' + sw + '" stroke-linecap="round" />' +
+        '<polygon points="' + lx2 + ',' + ly2 + ' ' + p1x + ',' + p1y + ' ' + p2x + ',' + p2y + '" fill="' + stroke + '" />' +
+        '</svg>';
+    }
+    svgWrap.innerHTML = html;
+  }
+
+  function restoreShapeEl(a) {
+    var el = document.createElement('div');
+    el.className = 'shape-annotation';
+    el.dataset.annId = a.id;
+    el.style.left = a.x + 'px';
+    el.style.top = a.y + 'px';
+    el.style.width = a.w + 'px';
+    el.style.height = a.h + 'px';
+
+    var svgWrap = document.createElement('div');
+    svgWrap.className = 'shape-svg-wrap';
+    el.appendChild(svgWrap);
+    renderShapeSvg(svgWrap, a);
+
+    attachResizeDots(el, a, function(updatedA) {
+      renderShapeSvg(svgWrap, updatedA);
+    });
+    attachDragMove(el, a);
+
+    el.addEventListener('click', function(e) {
+      e.stopPropagation();
+      selectElement(el, a);
+    });
+
+    annOverlay.appendChild(el);
+    return el;
+  }
+
+  // ── ADD TEXTBOX (CLICK-TO-PLACE EXACT POSITION) ─────────────
+  function createTextAnnotation(x, y) {
+    var a = {
+      type: 'text', id: Date.now(),
+      x: x, y: y, w: 180, h: 36,
+      text: '', fontFamily: $('ctx-font-family').value || 'Helvetica',
+      fontSize: parseInt($('ctx-font-size').value) || 18,
+      bold: state.bold, italic: state.italic, align: state.textAlign,
+      color: $('ctx-color').value || '#000000'
+    };
+    pushAnn(a);
+    var el = buildTextEl(a);
+    annOverlay.appendChild(el);
+    startTextEditing(el, a);
+  }
+
+  function buildTextEl(a) {
+    var el = document.createElement('div');
+    el.className = 'text-annotation';
+    el.dataset.annId = a.id;
+    el.style.left = a.x + 'px';
+    el.style.top = a.y + 'px';
+    el.style.width = (a.w || 180) + 'px';
+    el.style.height = (a.h || 36) + 'px';
+
+    var content = document.createElement('div');
+    content.className = 'text-content';
+    content.contentEditable = 'false';
+    content.innerText = a.text || '';
+    applyTextStyle(content, a);
+    el.appendChild(content);
+
+    attachResizeDots(el, a);
+    attachDragMove(el, a);
+
+    el.addEventListener('click', function(e) {
+      e.stopPropagation();
+      selectElement(el, a);
+    });
+
+    content.addEventListener('dblclick', function(e) {
+      e.stopPropagation();
+      selectAllTextInContent(content);
+    });
+
+    content.addEventListener('input', function() {
+      a.text = content.innerText;
+    });
+
+    content.addEventListener('blur', function() {
+      a.text = content.innerText;
+      el.classList.remove('editing');
+      content.contentEditable = 'false';
+      if (!a.text.trim()) {
+        deleteAnn(a.id, el);
+      } else {
+        pushUndoSnapshot();
+      }
+    });
+
+    content.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') content.blur();
+    });
+
+    return el;
+  }
+
+  function applyTextStyle(el, a) {
+    el.style.fontFamily = a.fontFamily || 'Arial';
+    el.style.fontSize = (a.fontSize || 18) + 'px';
+    el.style.fontWeight = a.bold ? 'bold' : 'normal';
+    el.style.fontStyle = a.italic ? 'italic' : 'normal';
+    el.style.textAlign = a.align || 'left';
+    el.style.color = a.color || '#000000';
+  }
+
+  function restoreTextEl(a) {
+    var el = buildTextEl(a);
+    annOverlay.appendChild(el);
+  }
+
+  function deleteAnn(id, el) {
+    var arr = state.pageAnns[state.currentPage] || [];
+    state.pageAnns[state.currentPage] = arr.filter(function(x) { return x.id !== id; });
+    if (el) el.remove();
+    deselectAll();
+    redrawAnnotations(state.currentPage);
+    pushUndoSnapshot();
+  }
+
+  $('ctx-delete-btn').addEventListener('click', function() {
+    if (state.selectedAnn && state.selectedEl) {
+      deleteAnn(state.selectedAnn.id, state.selectedEl);
+    }
+  });
+
+  $('shape-ctx-delete-btn').addEventListener('click', function() {
+    if (state.selectedAnn && state.selectedEl) {
+      deleteAnn(state.selectedAnn.id, state.selectedEl);
+    }
+  });
+
+  // ── EDIT EXISTING PDF TEXT (PDF HOUSE STYLE) ───────────────────
+  function sampleTextColor(ctx, x, y, w, h) {
+    try {
+      var cw = ctx.canvas.width, ch = ctx.canvas.height;
+      if (!cw || !ch) return '#000000';
+      var sx = Math.max(0, Math.min(cw - 1, Math.round(x)));
+      var sy = Math.max(0, Math.min(ch - 1, Math.round(y)));
+      var sw = Math.max(1, Math.min(cw - sx, Math.round(w)));
+      var sh = Math.max(1, Math.min(ch - sy, Math.round(h)));
+      if (sw <= 0 || sh <= 0) return '#000000';
+
+      var imgData = ctx.getImageData(sx, sy, sw, sh);
+      var d = imgData.data;
+      var nonWhite = [];
+
+      var step = Math.max(1, Math.floor(d.length / 2000)) * 4;
+      for (var i = 0; i < d.length; i += step) {
+        var r = d[i], g = d[i + 1], b = d[i + 2], a = d[i + 3];
+        if (a < 50) continue;
+        var lum = 0.299 * r + 0.587 * g + 0.114 * b;
+        if (lum < 220) {
+          nonWhite.push({ r: r, g: g, b: b, lum: lum });
+        }
+      }
+
+      if (nonWhite.length === 0) return '#000000';
+
+      nonWhite.sort(function(p1, p2) { return p1.lum - p2.lum; });
+      var take = Math.max(1, Math.min(25, Math.floor(nonWhite.length * 0.4)));
+      var sr = 0, sg = 0, sb = 0;
+      for (var j = 0; j < take; j++) {
+        sr += nonWhite[j].r;
+        sg += nonWhite[j].g;
+        sb += nonWhite[j].b;
+      }
+      var ar = Math.round(sr / take);
+      var ag = Math.round(sg / take);
+      var ab = Math.round(sb / take);
+
+      function toHex(n) {
+        var s = Math.max(0, Math.min(255, n)).toString(16);
+        return s.length === 1 ? '0' + s : s;
+      }
+      return '#' + toHex(ar) + toHex(ag) + toHex(ab);
+    } catch (e) {
+      return '#000000';
+    }
+  }
+
+  function detectFont(fontName, styleObj) {
+    var raw = ((fontName || '') + ' ' + (styleObj && styleObj.fontFamily ? styleObj.fontFamily : '')).toLowerCase();
+    
+    var isSerif = /times|roman|georgia|cambria|garamond|serif|baskerville|palatino|minion|century|bookman/i.test(raw);
+    var isMono = /courier|mono|consolas|menlo|monospace|typewriter/i.test(raw);
+    var isGeorgia = /georgia/i.test(raw);
+    var isVerdana = /verdana/i.test(raw);
+
+    var family = 'Arial';
+    var cssFamily = 'Arial, Helvetica, "Segoe UI", sans-serif';
+    if (isGeorgia) {
+      family = 'Georgia';
+      cssFamily = 'Georgia, "Times New Roman", serif';
+    } else if (isSerif) {
+      family = 'Times New Roman';
+      cssFamily = '"Times New Roman", Times, Georgia, serif';
+    } else if (isMono) {
+      family = 'Courier New';
+      cssFamily = '"Courier New", Courier, monospace';
+    } else if (isVerdana) {
+      family = 'Verdana';
+      cssFamily = 'Verdana, Geneva, sans-serif';
+    }
+
+    var isBold = /bold|black|heavy|700|semibold/i.test(fontName || '');
+    var isItalic = /italic|oblique|slant/i.test(fontName || '');
+
+    return {
+      family: family,
+      cssFamily: cssFamily,
+      bold: isBold,
+      italic: isItalic
+    };
+  }
+
+  async function extractTextBlocks(page, vp) {
+    var tc = await page.getTextContent();
+    var styles = tc.styles || {};
+    var rawItems = [];
+
+    tc.items.forEach(function(item) {
+      if (!item.str || !item.str.trim()) return;
+
+      var fontInfo = detectFont(item.fontName, styles[item.fontName]);
+      var tx = item.transform;
+      var fontHeightPt = Math.hypot(tx[2], tx[3]) || Math.hypot(tx[0], tx[1]) || 12;
+      var fontSize = Math.round(fontHeightPt * vp.scale);
+      
+      var pt = vp.convertToViewportPoint(tx[4], tx[5]);
+      var baselineX = Math.round(pt[0]);
+      var baselineY = Math.round(pt[1]);
+      var w = Math.round(Math.abs(item.width * vp.scale));
+      var h = Math.round(fontSize * 1.08);
+      var y = Math.round(baselineY - fontSize * 0.82);
+
+      var color = sampleTextColor(pCtx, baselineX, y, Math.max(16, w), Math.max(12, h));
+
+      rawItems.push({
+        str: item.str,
+        x: baselineX,
+        y: y,
+        baselineX: baselineX,
+        baselineY: baselineY,
+        w: w,
+        h: h,
+        fontSize: fontSize,
+        fontName: item.fontName || 'Helvetica',
+        family: fontInfo.family,
+        cssFamily: fontInfo.cssFamily,
+        bold: fontInfo.bold,
+        italic: fontInfo.italic,
+        color: color
+      });
+    });
+
+    // Sort top to bottom by baselineY, then left to right
+    rawItems.sort(function(a, b) {
+      if (Math.abs(a.baselineY - b.baselineY) > 5) return a.baselineY - b.baselineY;
+      return a.x - b.x;
+    });
+
+    // Group text items on the same line into natural blocks
+    var lines = [];
+    rawItems.forEach(function(it) {
+      var last = lines[lines.length - 1];
+      var sameLine = last && Math.abs(last.baselineY - it.baselineY) <= 5;
+      if (sameLine) {
+        var gap = it.x - (last.x + last.w);
+        if (gap >= -10 && gap < Math.max(25, it.fontSize * 1.5)) {
+          var needsSpace = gap > (it.fontSize * 0.22) && !last.str.endsWith(' ') && !it.str.startsWith(' ');
+          last.str += (needsSpace ? ' ' : '') + it.str;
+          last.w = Math.round(Math.max(last.w, (it.x + it.w) - last.x));
+          last.h = Math.max(last.h, it.h);
+          last.bold = last.bold || it.bold;
+          last.italic = last.italic || it.italic;
+          if (it.color && it.color !== '#000000' && last.color === '#000000') {
+            last.color = it.color;
+          }
+          return;
+        }
+      }
+      lines.push(Object.assign({}, it));
+    });
+
+    return lines;
+  }
+
+  async function renderExistingTextLayer(p) {
+    var page = await state.pdfDoc.getPage(p);
+    var rotation = (state.pageRots[p] || 0) + page.rotate;
+    var vp = page.getViewport({ scale: state.scale, rotation: rotation });
+    var cacheKey = p + '-' + state.scale + '-' + rotation;
+    if (!state.existingTextBlocks[cacheKey]) {
+      state.existingTextBlocks[cacheKey] = await extractTextBlocks(page, vp);
+    }
+    var blocks = state.existingTextBlocks[cacheKey];
+
+    // Remove any previous edit-layer
+    var prevLayer = annOverlay.querySelector('.ped-edit-text-layer');
+    if (prevLayer) prevLayer.remove();
+
+    var layer = document.createElement('div');
+    layer.className = 'ped-edit-text-layer';
+    layer.style.cssText = 'position:absolute;inset:0;pointer-events:none;z-index:5;';
+
+    blocks.forEach(function(b, idx) {
+      var blockId = 'et-' + p + '-' + idx;
+      var existingAnn = (state.pageAnns[p] || []).find(function(x) { return x.type === 'edit-text' && x.blockId === blockId; });
+      if (existingAnn) return; // already restored as edited block
+
+      var box = document.createElement('div');
+      box.className = 'ped-existing-text-block';
+      box.dataset.blockId = blockId;
+      box.style.left = b.x + 'px';
+      box.style.top = b.y + 'px';
+      box.style.width = Math.max(24, Math.round(b.w + 8)) + 'px';
+      box.style.height = Math.max(16, Math.round(b.h + 2)) + 'px';
+      box.style.pointerEvents = 'all';
+
+      // Keep text transparent initially: genuine PDF text on canvas shows cleanly without duplicates!
+      var content = document.createElement('div');
+      content.className = 'ped-et-content';
+      content.style.fontSize = b.fontSize + 'px';
+      content.style.fontFamily = b.cssFamily;
+      content.style.fontWeight = b.bold ? 'bold' : 'normal';
+      content.style.fontStyle = b.italic ? 'italic' : 'normal';
+      content.style.color = 'transparent';
+      content.contentEditable = 'false';
+      content.innerText = b.str;
+      box.appendChild(content);
+
+      var annRef = {
+        type: 'edit-text', blockId: blockId, id: Date.now() + idx,
+        x: b.x, y: b.y, w: Math.round(b.w + 8), h: Math.round(b.h + 2),
+        origX: b.x, origY: b.y, origW: Math.round(b.w + 8), origH: Math.round(b.h + 2),
+        origText: b.str, text: b.str,
+        fontSize: b.fontSize, fontFamily: b.family, cssFamily: b.cssFamily,
+        color: b.color || '#000000', bold: b.bold, italic: b.italic, align: 'left'
+      };
+
+      attachResizeDots(box, annRef);
+      attachDragMove(box, annRef);
+
+      function activateBlock() {
+        if (!box.classList.contains('active')) {
+          box.classList.add('active', 'edited');
+          box.style.background = '#ffffff';
+          content.style.color = annRef.color || '#000000';
+          content.style.fontFamily = annRef.cssFamily || 'Arial, sans-serif';
+          content.style.fontSize = annRef.fontSize + 'px';
+          content.style.fontWeight = annRef.bold ? 'bold' : 'normal';
+          content.style.fontStyle = annRef.italic ? 'italic' : 'normal';
+
+          // Insert opaque white mask at original location to prevent ghost original PDF text
+          var mask = {
+            type: 'mask',
+            id: 'mask-' + blockId,
+            x: b.x - 2,
+            y: b.y - 1,
+            w: b.w + 12,
+            h: b.h + 4
+          };
+          if (!state.pageAnns[p]) state.pageAnns[p] = [];
+          if (!state.pageAnns[p].some(function(m) { return m.id === mask.id; })) {
+            state.pageAnns[p].unshift(mask);
+            aCtx.save();
+            aCtx.fillStyle = '#ffffff';
+            aCtx.fillRect(mask.x, mask.y, mask.w, mask.h);
+            aCtx.restore();
+          }
+          saveEditText(annRef, content.innerText);
+        }
+      }
+
+      box.addEventListener('click', function(e) {
+        e.stopPropagation();
+        activateBlock();
+        selectElement(box, annRef);
+        setStatus('Text selected. Double-click to edit, drag borders to move.');
+      });
+
+      box.addEventListener('dblclick', function(e) {
+        e.stopPropagation();
+        activateBlock();
+        startTextEditing(box, annRef);
+      });
+
+      content.addEventListener('dblclick', function(e) {
+        e.stopPropagation();
+        selectAllTextInContent(content);
+      });
+
+      content.addEventListener('input', function() {
+        annRef.text = content.innerText;
+        saveEditText(annRef, content.innerText);
+      });
+      content.addEventListener('blur', function() {
+        annRef.text = content.innerText;
+        box.classList.remove('editing');
+        content.contentEditable = 'false';
+        saveEditText(annRef, content.innerText);
+        pushUndoSnapshot();
+      });
+      content.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') content.blur();
+      });
+
+      layer.appendChild(box);
+    });
+
+    annOverlay.appendChild(layer);
+  }
+
+  function saveEditText(annRef, text) {
+    if (!state.pageAnns[state.currentPage]) state.pageAnns[state.currentPage] = [];
+    var anns = state.pageAnns[state.currentPage];
+    var existing = anns.find(function(x) { return x.blockId === annRef.blockId; });
+    annRef.text = text;
+    if (!existing) {
+      anns.push(annRef);
+    }
+  }
+
+  function restoreEditedTextEl(a) {
+    var box = document.createElement('div');
+    box.className = 'ped-existing-text-block active edited';
+    box.dataset.blockId = a.blockId;
+    box.style.left = a.x + 'px';
+    box.style.top = a.y + 'px';
+    box.style.width = Math.max(24, a.w) + 'px';
+    box.style.height = Math.max(16, a.h) + 'px';
+    box.style.background = '#ffffff';
+
+    var content = document.createElement('div');
+    content.className = 'ped-et-content';
+    content.contentEditable = 'false';
+    content.innerText = a.text;
+    applyTextStyle(content, a);
+    box.appendChild(content);
+
+    attachResizeDots(box, a);
+    attachDragMove(box, a);
+
+    box.addEventListener('click', function(e) {
+      e.stopPropagation();
+      selectElement(box, a);
+    });
+    box.addEventListener('dblclick', function(e) {
+      e.stopPropagation();
+      startTextEditing(box, a);
+    });
+    content.addEventListener('dblclick', function(e) {
+      e.stopPropagation();
+      selectAllTextInContent(content);
+    });
+    content.addEventListener('input', function() { a.text = content.innerText; });
+    content.addEventListener('blur', function() {
+      a.text = content.innerText;
+      box.classList.remove('editing');
+      content.contentEditable = 'false';
+      pushUndoSnapshot();
+    });
+    content.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') content.blur();
+    });
+
+    annOverlay.appendChild(box);
+  }
+
+  // ── IMAGES & SIGNATURES (CLICK TO PLACE & RESIZE) ────────────
+  function createImgAnnotation(src, x, y, w, h) {
+    var a = {
+      type: 'image', id: Date.now(), src: src,
+      x: x, y: y, w: w, h: h
+    };
+    pushAnn(a);
+    restoreImgEl(a);
+  }
+
+  function restoreImgEl(a) {
+    var wrap = document.createElement('div');
+    wrap.className = 'img-annotation';
+    wrap.dataset.annId = a.id;
+    wrap.style.left = a.x + 'px';
+    wrap.style.top = a.y + 'px';
+    wrap.style.width = a.w + 'px';
+    wrap.style.height = a.h + 'px';
+
+    var img = document.createElement('img');
+    img.src = a.src;
+    img.draggable = false;
+    wrap.appendChild(img);
+
+    attachResizeDots(wrap, a);
+    attachDragMove(wrap, a);
+
+    wrap.addEventListener('click', function(e) {
+      e.stopPropagation();
+      selectElement(wrap, a);
+    });
+
+    annOverlay.appendChild(wrap);
+    selectElement(wrap, a);
+  }
+
+  // ── CANVAS & PAGE INTERACTION & PLACEMENT ─────────────────
+  pageWrapper.addEventListener('mousedown', function(e) {
+    var tool = state.activeTool;
+    if (tool === 'text') {
+      if (e.target.closest('.text-annotation.editing') || e.target.closest('.ped-existing-text-block.editing')) return;
+      e.preventDefault();
+      e.stopPropagation();
+      var pos = getOverlayPos(e);
+      createTextAnnotation(pos.x, pos.y);
+      setTool(null);
+      return;
+    }
+    if (tool === 'place-image' && state.pendingImage) {
+      e.preventDefault();
+      e.stopPropagation();
+      var pos = getOverlayPos(e);
+      var pImg = state.pendingImage;
+      createImgAnnotation(pImg.src, Math.round(pos.x - pImg.w / 2), Math.round(pos.y - pImg.h / 2), pImg.w, pImg.h);
+      state.pendingImage = null;
+      setTool(null);
+      setStatus('Image placed. Drag to move, corner dots to resize.');
+      return;
+    }
+    if (tool === 'place-sign' && state.pendingSignature) {
+      e.preventDefault();
+      e.stopPropagation();
+      var pos = getOverlayPos(e);
+      var sig = state.pendingSignature;
+      var w = Math.min(220, annCanvas.width * 0.4);
+      var h = Math.round(w * sig.h / sig.w);
+      createImgAnnotation(sig.src, Math.round(pos.x - w / 2), Math.round(pos.y - h / 2), w, h);
+      state.pendingSignature = null;
+      setTool(null);
+      setStatus('Signature placed. Drag to move, corner dots to resize.');
+      return;
+    }
+  }, true);
+
+  annCanvas.addEventListener('mousedown', function(e) {
+    var tool = state.activeTool;
+    var overlayPos = getOverlayPos(e);
+    var canvasPos = getCanvasPos(e);
+
+    if (!tool) {
+      deselectAll();
+      return;
+    }
+    e.preventDefault();
+
+    // 1. Add Textbox right at clicked position
+    if (tool === 'text') {
+      createTextAnnotation(overlayPos.x, overlayPos.y);
+      setTool(null);
+      return;
+    }
+
+    // 2. Place Image right at clicked position
+    if (tool === 'place-image' && state.pendingImage) {
+      var pImg = state.pendingImage;
+      createImgAnnotation(pImg.src, Math.round(overlayPos.x - pImg.w / 2), Math.round(overlayPos.y - pImg.h / 2), pImg.w, pImg.h);
+      state.pendingImage = null;
+      setTool(null);
+      setStatus('Image placed. Drag to move, corner dots to resize.');
+      return;
+    }
+
+    // 3. Place Signature right at clicked position
+    if (tool === 'place-sign' && state.pendingSignature) {
+      var sig = state.pendingSignature;
+      var w = Math.min(220, annCanvas.width * 0.4);
+      var h = Math.round(w * sig.h / sig.w);
+      createImgAnnotation(sig.src, Math.round(overlayPos.x - w / 2), Math.round(overlayPos.y - h / 2), w, h);
+      state.pendingSignature = null;
+      setTool(null);
+      setStatus('Signature placed. Drag to move, corner dots to resize.');
+      return;
+    }
+
+    // 4. Eraser
+    if (tool === 'eraser') {
+      state.isErasing = true;
+      eraseAt(canvasPos.x, canvasPos.y);
+      return;
+    }
+
+    // 5. Draw & Line
+    if (tool === 'draw') {
+      state.isDrawing = true;
+      state.drawStart = canvasPos;
+      state.freehandPts = [canvasPos];
+    } else if (tool === 'line') {
+      state.isDrawing = true;
+      state.drawStart = canvasPos;
+      state.drawStartOverlay = overlayPos;
+    }
+    if (tool === 'highlight') {
+      state.isDrawing = true;
+      state.hlStart = canvasPos;
+    }
+  });
+
+  annCanvas.addEventListener('mousemove', function(e) {
+    var tool = state.activeTool;
+    var canvasPos = getCanvasPos(e);
+
+    if (tool === 'eraser' && state.isErasing) {
+      eraseAt(canvasPos.x, canvasPos.y);
+      return;
+    }
+
+    if (!state.isDrawing) return;
+
+    if (tool === 'draw') {
+      state.freehandPts.push(canvasPos);
+      aCtx.save();
+      var pType = state.drawStrokeType || 'pen';
+      var pColor = state.drawPenColor || $('ann-color').value || '#000000';
+      var pWidth = state.drawPenWidth || parseInt($('ann-width').value) || 2;
+      var lineW = pType === 'highlighter' ? Math.max(16, pWidth * 3) : (pType === 'marker' ? pWidth * 1.5 : pWidth);
+
+      aCtx.strokeStyle = pColor;
+      aCtx.lineWidth = lineW;
+      aCtx.lineCap = (pType === 'marker' || pType === 'highlighter') ? 'square' : 'round';
+      aCtx.lineJoin = 'round';
+      aCtx.globalAlpha = pType === 'highlighter' ? 0.35 : (pType === 'marker' ? 0.85 : 1.0);
+
+      var pts = state.freehandPts;
+      if (pts.length > 1) {
+        aCtx.beginPath();
+        aCtx.moveTo(pts[pts.length - 2].x, pts[pts.length - 2].y);
+        aCtx.lineTo(pts[pts.length - 1].x, pts[pts.length - 1].y);
+        aCtx.stroke();
+      }
+      aCtx.restore();
+    } else if (tool === 'line') {
+      redrawAnnotations(state.currentPage);
+      previewShape(aCtx, state.drawStart.x, state.drawStart.y, canvasPos.x, canvasPos.y);
+    } else if (tool === 'highlight') {
+      redrawAnnotations(state.currentPage);
+      aCtx.save();
+      aCtx.globalAlpha = 0.3;
+      aCtx.fillStyle = $('ann-color').value || '#ffd700';
+      aCtx.fillRect(state.hlStart.x, state.hlStart.y, canvasPos.x - state.hlStart.x, canvasPos.y - state.hlStart.y);
+      aCtx.globalAlpha = 1;
+      aCtx.restore();
+    }
+  });
+
+  window.addEventListener('mouseup', function(e) {
+    state.isErasing = false;
+    if (!state.isDrawing) return;
+    state.isDrawing = false;
+    var canvasPos = getCanvasPos(e);
+    var overlayPos = getOverlayPos(e);
+    var color = $('ann-color').value, width = parseInt($('ann-width').value) || 2;
+    var fill = $('ann-fill-enable').checked, fillColor = $('ann-fill-color').value;
+    var tool = state.activeTool;
+
+    if (tool === 'draw') {
+      var pType = state.drawStrokeType || 'pen';
+      var pColor = state.drawPenColor || color || '#000000';
+      var pWidth = state.drawPenWidth || width || 2;
+      pushAnn({
+        type: 'draw',
+        shape: 'freehand',
+        strokeType: pType,
+        pts: [...state.freehandPts],
+        color: pColor,
+        width: pWidth,
+        alpha: pType === 'highlighter' ? 0.35 : (pType === 'marker' ? 0.85 : 1.0)
+      });
+      redrawAnnotations(state.currentPage);
+    } else if (tool === 'line') {
+      var sOverlay = state.drawStartOverlay || overlayPos;
+      var minX = Math.min(sOverlay.x, overlayPos.x);
+      var minY = Math.min(sOverlay.y, overlayPos.y);
+      var maxX = Math.max(sOverlay.x, overlayPos.x);
+      var maxY = Math.max(sOverlay.y, overlayPos.y);
+      var w = Math.max(20, maxX - minX);
+      var h = Math.max(20, maxY - minY);
+
+      var shapeAnn = {
+        type: 'shape',
+        shape: state.activeShape || 'rect',
+        id: Date.now(),
+        x: minX,
+        y: minY,
+        w: w,
+        h: h,
+        x1: sOverlay.x,
+        y1: sOverlay.y,
+        x2: overlayPos.x,
+        y2: overlayPos.y,
+        color: $('shape-ctx-color') ? $('shape-ctx-color').value : color,
+        width: $('shape-ctx-width') ? (parseInt($('shape-ctx-width').value) || width) : width,
+        fill: $('shape-ctx-fill-enable') ? $('shape-ctx-fill-enable').checked : fill,
+        fillColor: $('shape-ctx-fill-color') ? $('shape-ctx-fill-color').value : fillColor
+      };
+      pushAnn(shapeAnn);
+      redrawAnnotations(state.currentPage);
+      var newEl = annOverlay.querySelector('.shape-annotation[data-ann-id="' + shapeAnn.id + '"]');
+      if (newEl) selectElement(newEl, shapeAnn);
+      setTool(null);
+    } else if (tool === 'highlight') {
+      pushAnn({ type: 'highlight', x1: state.hlStart.x, y1: state.hlStart.y, x2: canvasPos.x, y2: canvasPos.y, color: color });
+      redrawAnnotations(state.currentPage);
+    }
+  });
+
+  // ── ERASER FUNCTIONALITY (FIXED FOR THIN LINES) ─────────────
+  function eraseAt(x, y) {
+    var R = 28;
+    var anns = state.pageAnns[state.currentPage] || [];
+    var before = anns.length;
+
+    state.pageAnns[state.currentPage] = anns.filter(function(a) {
+      if (a.type === 'text' || a.type === 'edit-text') {
+        return !(x >= a.x - 10 && x <= a.x + (a.w || 120) + 10 && y >= a.y - 10 && y <= a.y + (a.h || 30) + 10);
+      }
+      if (a.type === 'shape') {
+        return !(x >= a.x - 10 && x <= a.x + a.w + 10 && y >= a.y - 10 && y <= a.y + a.h + 10);
+      }
+      if (a.type === 'image') {
+        return !(x >= a.x - 5 && x <= a.x + a.w + 5 && y >= a.y - 5 && y <= a.y + a.h + 5);
+      }
+      if (a.type === 'draw' && a.shape === 'freehand') {
+        if (!a.pts || a.pts.length < 2) return false;
+        for (var i = 0; i < a.pts.length - 1; i++) {
+          if (distToSegment(x, y, a.pts[i].x, a.pts[i].y, a.pts[i + 1].x, a.pts[i + 1].y) < R + (a.width || 2)) return false;
+        }
+        return true;
+      }
+      if (a.type === 'draw' && (a.shape === 'line' || a.shape === 'arrow')) {
+        return distToSegment(x, y, a.x1, a.y1, a.x2, a.y2) > R + (a.width || 2);
+      }
+      if (a.type === 'draw' && a.shape === 'rect') {
+        var d1 = distToSegment(x, y, a.x1, a.y1, a.x2, a.y1);
+        var d2 = distToSegment(x, y, a.x2, a.y1, a.x2, a.y2);
+        var d3 = distToSegment(x, y, a.x2, a.y2, a.x1, a.y2);
+        var d4 = distToSegment(x, y, a.x1, a.y2, a.x1, a.y1);
+        var inside = a.fill && (x >= Math.min(a.x1, a.x2) && x <= Math.max(a.x1, a.x2) && y >= Math.min(a.y1, a.y2) && y <= Math.max(a.y1, a.y2));
+        return Math.min(d1, d2, d3, d4) > R && !inside;
+      }
+      if (a.type === 'draw' && a.shape === 'circle') {
+        var cx = (a.x1 + a.x2) / 2, cy = (a.y1 + a.y2) / 2;
+        var rx = Math.max(1, Math.abs(a.x2 - a.x1) / 2);
+        var d = Math.abs(Math.hypot(x - cx, y - cy) - rx);
+        return d > R;
+      }
+      if (a.type === 'highlight') {
+        return !(x >= Math.min(a.x1, a.x2) - 5 && x <= Math.max(a.x1, a.x2) + 5 && y >= Math.min(a.y1, a.y2) - 5 && y <= Math.max(a.y1, a.y2) + 5);
+      }
+      return true;
+    });
+
+    if (state.pageAnns[state.currentPage].length !== before) {
+      redrawAnnotations(state.currentPage);
+      pushUndoSnapshot();
+    }
+  }
+
+  // ── UNDO / REDO ──────────────────────────────────────────
+  function pushAnn(a) {
+    if (!state.pageAnns[state.currentPage]) state.pageAnns[state.currentPage] = [];
+    state.pageAnns[state.currentPage].push(a);
+    pushUndoSnapshot();
+  }
+
+  function pushUndoSnapshot() {
+    state.undoStack.push({
+      page: state.currentPage,
+      snap: JSON.parse(JSON.stringify(state.pageAnns[state.currentPage] || []))
+    });
+    state.redoStack = [];
+    updateUndoRedoBtns();
+  }
+
+  function updateUndoRedoBtns() {
+    $('tb-undo').disabled = state.undoStack.length === 0;
+    $('tb-redo').disabled = state.redoStack.length === 0;
+  }
+
+  $('tb-undo').addEventListener('click', function() {
+    if (!state.undoStack.length) return;
+    var e = state.undoStack.pop();
+    state.redoStack.push({ page: e.page, snap: JSON.parse(JSON.stringify(state.pageAnns[e.page] || [])) });
+    var prev = null;
+    for (var i = state.undoStack.length - 1; i >= 0; i--) {
+      if (state.undoStack[i].page === e.page) { prev = state.undoStack[i]; break; }
+    }
+    state.pageAnns[e.page] = prev ? JSON.parse(JSON.stringify(prev.snap)) : [];
+    if (e.page === state.currentPage) redrawAnnotations(state.currentPage);
+    updateUndoRedoBtns();
+  });
+
+  $('tb-redo').addEventListener('click', function() {
+    if (!state.redoStack.length) return;
+    var e = state.redoStack.pop();
+    state.undoStack.push({ page: e.page, snap: JSON.parse(JSON.stringify(state.pageAnns[e.page] || [])) });
+    state.pageAnns[e.page] = JSON.parse(JSON.stringify(e.snap));
+    if (e.page === state.currentPage) redrawAnnotations(state.currentPage);
+    updateUndoRedoBtns();
+  });
+
+  // ── TOOL ACTIVATION ──────────────────────────────────────
+  function setTool(tool) {
+    state.activeTool = tool;
+    document.querySelectorAll('.ped-tool-btn').forEach(function(b) {
+      b.classList.toggle('tool-active', b.dataset.tool === tool);
+    });
+
+    var cm = {
+      text: 'crosshair', 'text-edit': 'default', 'place-image': 'crosshair', 'place-sign': 'crosshair',
+      draw: 'crosshair', line: 'crosshair', highlight: 'text', eraser: 'cell'
+    };
+    annCanvas.style.cursor = cm[tool] || 'default';
+    annCanvas.style.pointerEvents = 'all';
+
+    textCtxToolbar.classList.add('ped-hidden');
+    drawCtxToolbar.classList.add('ped-hidden');
+    shapeCtxToolbar.classList.add('ped-hidden');
+
+    // Remove existing edit-text layer whenever we switch away from text-edit
+    if (tool !== 'text-edit') {
+      var editLayer = annOverlay.querySelector('.ped-edit-text-layer');
+      if (editLayer) editLayer.remove();
+    }
+
+    if (tool === 'text') {
+      deselectAll();
+      textCtxToolbar.classList.remove('ped-hidden');
+      $('text-ctx-hint').textContent = 'Click anywhere on page to place text box';
+      setStatus('Click anywhere on the PDF to place a text box');
+    } else if (tool === 'text-edit') {
+      textCtxToolbar.classList.remove('ped-hidden');
+      $('text-ctx-hint').textContent = 'Click any outlined text box to edit';
+      setStatus('Loading text blocks... Click any text box to edit');
+      renderExistingTextLayer(state.currentPage);
+    } else if (tool === 'draw') {
+      drawCtxToolbar.classList.remove('ped-hidden');
+      setStatus('Draw tool active. Choose pen stroke type, width, and color in the tray above.');
+    } else if (tool === 'line') {
+      shapeCtxToolbar.classList.remove('ped-hidden');
+      setStatus('Shape tool active. Drag on page to draw shape, then adjust color & fill.');
+    } else if (tool === 'place-image') {
+      setStatus('Click anywhere on the PDF to place your image');
+    } else if (tool === 'place-sign') {
+      setStatus('Click anywhere on the PDF to place your signature');
+    } else if (tool === 'eraser') {
+      setStatus('Click or drag across lines and shapes to erase them');
+      deselectAll();
+    } else {
+      deselectAll();
+    }
+  }
+
+  document.querySelectorAll('.ped-tool-btn').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      var tool = btn.dataset.tool;
+      if (tool === 'sign') { openSignModal(); return; }
+      if (tool === 'image') { $('img-file-input').click(); return; }
+      if (tool === 'line') {
+        lineDropdown.classList.toggle('open');
+        if (state.activeTool !== 'line') setTool('line');
+        return;
+      }
+      setTool(state.activeTool === tool ? null : tool);
+    });
+  });
+
+  document.addEventListener('click', function(e) {
+    if (!e.target.closest('.ped-dropdown-wrap')) lineDropdown.classList.remove('open');
+  });
+
+  document.querySelectorAll('.ped-dd-item').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      state.activeShape = btn.dataset.shape;
+      $('shape-btn-label').textContent = btn.innerText.trim();
+      lineDropdown.classList.remove('open');
+      setTool('line');
+    });
+  });
+
+  $('ann-fill-enable').addEventListener('change', function() {
+    $('ann-fill-wrap').style.opacity = this.checked ? '1' : '0.5';
+  });
+
+  $('tb-thumbs').addEventListener('click', function() {
+    state.thumbsVisible = !state.thumbsVisible;
+    thumbPanel.classList.toggle('collapsed', !state.thumbsVisible);
+    $('tb-thumbs').classList.toggle('ped-tb-active', state.thumbsVisible);
+  });
+
+  // Context toolbar styling
+  $('ctx-bold').addEventListener('click', function() {
+    state.bold = !state.bold; $('ctx-bold').classList.toggle('active', state.bold);
+    updateSelectedTextStyle();
+  });
+  $('ctx-italic').addEventListener('click', function() {
+    state.italic = !state.italic; $('ctx-italic').classList.toggle('active', state.italic);
+    updateSelectedTextStyle();
+  });
+  document.querySelectorAll('.align-btn').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      state.textAlign = btn.dataset.align;
+      document.querySelectorAll('.align-btn').forEach(function(b) { b.classList.toggle('active', b.dataset.align === state.textAlign); });
+      updateSelectedTextStyle();
+    });
+  });
+  $('ctx-color').addEventListener('input', updateSelectedTextStyle);
+  $('ctx-font-family').addEventListener('change', updateSelectedTextStyle);
+  $('ctx-font-size').addEventListener('change', updateSelectedTextStyle);
+
+  function updateSelectedTextStyle() {
+    if (!state.selectedAnn || !state.selectedEl) return;
+    var a = state.selectedAnn;
+    a.fontFamily = $('ctx-font-family').value;
+    a.cssFamily = a.fontFamily;
+    a.fontSize = parseInt($('ctx-font-size').value) || 18;
+    a.bold = state.bold; a.italic = state.italic; a.align = state.textAlign;
+    a.color = $('ctx-color').value;
+
+    var contentEl = state.selectedEl.querySelector('.text-content') || state.selectedEl.querySelector('.ped-et-content');
+    if (contentEl) applyTextStyle(contentEl, a);
+    pushUndoSnapshot();
+  }
+
+  // ── PEN TRAY CONTROLS ─────────────────────────────────────
+  document.querySelectorAll('.ped-pen-type-btn').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      document.querySelectorAll('.ped-pen-type-btn').forEach(function(b) { b.classList.remove('active'); });
+      btn.classList.add('active');
+      state.drawStrokeType = btn.dataset.pen;
+      if (btn.dataset.pen === 'highlighter') {
+        setStatus('Highlighter selected: semi-transparent fluorescent stroke');
+      } else if (btn.dataset.pen === 'marker') {
+        setStatus('Marker selected: thick, smooth strokes');
+      } else if (btn.dataset.pen === 'brush') {
+        setStatus('Brush selected: calligraphy style strokes');
+      } else {
+        setStatus('Ballpoint Pen selected: fine, crisp lines');
+      }
+    });
+  });
+
+  document.querySelectorAll('.ped-pwidth-btn').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      document.querySelectorAll('.ped-pwidth-btn').forEach(function(b) { b.classList.remove('active'); });
+      btn.classList.add('active');
+      state.drawPenWidth = parseInt(btn.dataset.pwidth) || 2;
+      $('ann-width').value = String(Math.min(10, state.drawPenWidth));
+    });
+  });
+
+  document.querySelectorAll('.ped-pcolor-btn').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      document.querySelectorAll('.ped-pcolor-btn').forEach(function(b) { b.classList.remove('active'); });
+      btn.classList.add('active');
+      state.drawPenColor = btn.dataset.pcolor;
+      $('draw-custom-color').value = btn.dataset.pcolor;
+      $('ann-color').value = btn.dataset.pcolor;
+    });
+  });
+
+  $('draw-custom-color').addEventListener('input', function() {
+    state.drawPenColor = this.value;
+    $('ann-color').value = this.value;
+    document.querySelectorAll('.ped-pcolor-btn').forEach(function(b) {
+      b.classList.toggle('active', b.dataset.pcolor === this.value);
+    });
+  });
+
+  // ── SHAPE CONTEXT TOOLBAR CONTROLS (UNLOCKED STYLING) ─────────
+  function updateSelectedShapeStyle() {
+    if (!state.selectedAnn || state.selectedAnn.type !== 'shape' || !state.selectedEl) return;
+    var a = state.selectedAnn;
+    a.color = $('shape-ctx-color').value;
+    a.width = parseInt($('shape-ctx-width').value) || 2;
+    a.fill = $('shape-ctx-fill-enable').checked;
+    a.fillColor = $('shape-ctx-fill-color').value;
+
+    $('shape-ctx-fill-wrap').style.opacity = a.fill ? '1' : '0.5';
+
+    // Also sync main toolbar controls
+    $('ann-color').value = a.color;
+    $('ann-width').value = String(a.width);
+    $('ann-fill-enable').checked = a.fill;
+    $('ann-fill-color').value = a.fillColor;
+    $('ann-fill-wrap').style.opacity = a.fill ? '1' : '0.5';
+
+    var svgWrap = state.selectedEl.querySelector('.shape-svg-wrap');
+    if (svgWrap) renderShapeSvg(svgWrap, a);
+    pushUndoSnapshot();
+  }
+
+  $('shape-ctx-color').addEventListener('input', updateSelectedShapeStyle);
+  $('shape-ctx-width').addEventListener('change', updateSelectedShapeStyle);
+  $('shape-ctx-fill-enable').addEventListener('change', updateSelectedShapeStyle);
+  $('shape-ctx-fill-color').addEventListener('input', updateSelectedShapeStyle);
+
+  // Sync when changed from main toolbar
+  $('ann-color').addEventListener('input', function() {
+    if (state.selectedAnn && state.selectedAnn.type === 'shape') {
+      $('shape-ctx-color').value = this.value;
+      updateSelectedShapeStyle();
+    }
+  });
+  $('ann-width').addEventListener('change', function() {
+    if (state.selectedAnn && state.selectedAnn.type === 'shape') {
+      $('shape-ctx-width').value = this.value;
+      updateSelectedShapeStyle();
+    }
+  });
+  $('ann-fill-enable').addEventListener('change', function() {
+    $('ann-fill-wrap').style.opacity = this.checked ? '1' : '0.5';
+    if (state.selectedAnn && state.selectedAnn.type === 'shape') {
+      $('shape-ctx-fill-enable').checked = this.checked;
+      updateSelectedShapeStyle();
+    }
+  });
+  $('ann-fill-color').addEventListener('input', function() {
+    if (state.selectedAnn && state.selectedAnn.type === 'shape') {
+      $('shape-ctx-fill-color').value = this.value;
+      updateSelectedShapeStyle();
+    }
+  });
+
+  // Image upload
+  $('img-file-input').addEventListener('change', function(e) {
+    var file = e.target.files[0];
+    if (!file) return;
+    var reader = new FileReader();
+    reader.onload = function(ev) {
+      var img = new Image();
+      img.src = ev.target.result;
+      img.onload = function() {
+        var w = Math.min(img.width, annCanvas.width * 0.45);
+        var h = Math.round((img.height / img.width) * w);
+        state.pendingImage = { src: ev.target.result, w: w, h: h };
+        setTool('place-image');
+      };
+    };
+    reader.readAsDataURL(file);
+    e.target.value = '';
+  });
+
+  $('btn-rotate').addEventListener('click', function() {
+    state.pageRots[state.currentPage] = ((state.pageRots[state.currentPage] || 0) + 90) % 360;
+    renderPage(state.currentPage);
+    buildThumbnails();
+  });
+
+  $('nav-first').addEventListener('click', function() { goToPage(1); });
+  $('nav-prev').addEventListener('click', function() { goToPage(state.currentPage - 1); });
+  $('nav-next').addEventListener('click', function() { goToPage(state.currentPage + 1); });
+  $('nav-last').addEventListener('click', function() { goToPage(state.totalPages); });
+
+  document.addEventListener('keydown', function(e) {
+    // Delete or Backspace to delete selected element if not actively typing inside contenteditable
+    if (e.key === 'Delete' || e.key === 'Backspace') {
+      if (state.selectedEl && state.selectedAnn && !state.selectedEl.classList.contains('editing')) {
+        var isTyping = document.activeElement && (document.activeElement.isContentEditable || ['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement.tagName));
+        if (!isTyping) {
+          e.preventDefault();
+          deleteAnn(state.selectedAnn.id, state.selectedEl);
+          return;
+        }
+      }
+    }
+
+    if (document.activeElement && (document.activeElement.isContentEditable || ['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement.tagName))) return;
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') { e.preventDefault(); goToPage(state.currentPage - 1); }
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') { e.preventDefault(); goToPage(state.currentPage + 1); }
+    if ((e.ctrlKey || e.metaKey) && e.key === 'z') { e.preventDefault(); $('tb-undo').click(); }
+    if ((e.ctrlKey || e.metaKey) && (e.key === 'y' || (e.shiftKey && e.key === 'z'))) { e.preventDefault(); $('tb-redo').click(); }
+    if (e.key === 'Delete' || e.key === 'Backspace') {
+      if (state.selectedAnn && state.selectedEl) {
+        deleteAnn(state.selectedAnn.id, state.selectedEl);
+      }
+    }
+  });
+
+  // Zoom controls
+  $('zoom-in-btn').addEventListener('click', function() {
+    if (state.scale >= 4) return;
+    state.scale = Math.round((state.scale + 0.25) * 100) / 100;
+    updateZoomLabel(); renderPage(state.currentPage);
+  });
+  $('zoom-out-btn').addEventListener('click', function() {
+    if (state.scale <= 0.5) return;
+    state.scale = Math.round((state.scale - 0.25) * 100) / 100;
+    updateZoomLabel(); renderPage(state.currentPage);
+  });
+  $('zoom-fit-btn').addEventListener('click', function() {
+    var vp = $('canvas-viewport'), availW = vp.clientWidth - 48;
+    state.scale = Math.max(0.5, Math.min(3, availW / 816));
+    updateZoomLabel(); renderPage(state.currentPage);
+  });
+  function updateZoomLabel() { zoomLabel.textContent = Math.round(state.scale / 1.5 * 100) + '%'; }
+
+  // ── SIGN MODAL ───────────────────────────────────────────
+  function openSignModal() {
+    $('sign-modal').classList.remove('ped-hidden');
+    signCtx.clearRect(0, 0, signCanvas.width, signCanvas.height);
+  }
+  function closeSignModal() { $('sign-modal').classList.add('ped-hidden'); }
+  $('sign-modal-close').addEventListener('click', closeSignModal);
+  $('sign-cancel').addEventListener('click', closeSignModal);
+
+  document.querySelectorAll('.ped-mtab').forEach(function(tab) {
+    tab.addEventListener('click', function() {
+      document.querySelectorAll('.ped-mtab').forEach(function(t) { t.classList.remove('ped-mtab-active'); });
+      tab.classList.add('ped-mtab-active');
+      var id = tab.dataset.signTab;
+      [$('stab-draw'), $('stab-type'), $('stab-image')].forEach(function(el) { el.classList.add('ped-hidden'); });
+      $('stab-' + id).classList.remove('ped-hidden');
+    });
+  });
+
+  var signDrawing = false;
+  var signPos = function(e) {
+    var r = signCanvas.getBoundingClientRect();
+    return { x: (e.clientX - r.left) * signCanvas.width / r.width, y: (e.clientY - r.top) * signCanvas.height / r.height };
+  };
+  signCanvas.addEventListener('mousedown', function(e) {
+    signDrawing = true; var p = signPos(e); signCtx.beginPath(); signCtx.moveTo(p.x, p.y);
+  });
+  signCanvas.addEventListener('mousemove', function(e) {
+    if (!signDrawing) return;
+    var p = signPos(e);
+    signCtx.lineWidth = state.signWidth || 3;
+    signCtx.strokeStyle = state.signColor;
+    signCtx.lineCap = signCtx.lineJoin = 'round';
+    signCtx.lineTo(p.x, p.y);
+    signCtx.stroke();
+  });
+  signCanvas.addEventListener('mouseup', function() { signDrawing = false; });
+  signCanvas.addEventListener('mouseleave', function() { signDrawing = false; });
+
+  document.querySelectorAll('.ped-scolor-btn').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      document.querySelectorAll('.ped-scolor-btn').forEach(function(b) { b.classList.remove('ped-scolor-active'); });
+      btn.classList.add('ped-scolor-active');
+      state.signColor = btn.dataset.scolor;
+      $('sign-type-input').style.color = state.signColor;
+    });
+  });
+  $('sign-custom-color').addEventListener('input', function() {
+    state.signColor = this.value;
+    $('sign-type-input').style.color = state.signColor;
+  });
+
+  document.querySelectorAll('.ped-swidth-btn').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      document.querySelectorAll('.ped-swidth-btn').forEach(function(b) { b.classList.remove('ped-swidth-active'); });
+      btn.classList.add('ped-swidth-active');
+      state.signWidth = parseFloat(btn.dataset.swidth) || 3;
+    });
+  });
+
+  document.querySelectorAll('.ped-sfont-btn').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      document.querySelectorAll('.ped-sfont-btn').forEach(function(b) { b.classList.remove('ped-sfont-active'); });
+      btn.classList.add('ped-sfont-active');
+      state.signFont = btn.dataset.sfont;
+      $('sign-type-input').style.fontFamily = state.signFont;
+    });
+  });
+
+  $('sign-clear').addEventListener('click', function() {
+    signCtx.clearRect(0, 0, signCanvas.width, signCanvas.height);
+    $('sign-type-input').value = '';
+    var prev = $('sign-img-preview');
+    if (prev) { prev.src = ''; prev.classList.add('ped-hidden'); }
+  });
+
+  $('sign-img-input').addEventListener('change', function(e) {
+    var file = e.target.files[0];
+    if (!file) return;
+    var reader = new FileReader();
+    reader.onload = function(ev) {
+      var prev = $('sign-img-preview');
+      prev.src = ev.target.result;
+      prev.classList.remove('ped-hidden');
+    };
+    reader.readAsDataURL(file);
+  });
+
+  $('sign-done').addEventListener('click', function() {
+    var activeTab = document.querySelector('.ped-mtab.ped-mtab-active').dataset.signTab;
+    var src = null, sw = 220, sh = 70;
+    if (activeTab === 'draw') {
+      src = signCanvas.toDataURL();
+      sw = 220; sh = Math.round(220 * signCanvas.height / signCanvas.width);
+    } else if (activeTab === 'type') {
+      var text = $('sign-type-input').value || 'Signature';
+      var c = document.createElement('canvas'); c.width = 440; c.height = 120;
+      var ctx = c.getContext('2d');
+      ctx.font = 'bold 54px ' + state.signFont;
+      ctx.fillStyle = state.signColor;
+      ctx.fillText(text, 10, 80);
+      src = c.toDataURL();
+      sw = 220; sh = 60;
+    } else if (activeTab === 'image') {
+      var prev = $('sign-img-preview');
+      if (prev && prev.src) {
+        src = prev.src;
+        sw = 200; sh = 80;
+      }
+    }
+    if (src) {
+      state.pendingSignature = { src: src, w: sw, h: sh };
+      closeSignModal();
+      setTool('place-sign');
+    } else {
+      closeSignModal();
+    }
+  });
+
+  // ── MANAGE PAGES MODAL ───────────────────────────────────
+  var mpState = { pages: [], zoomLevel: 'md' };
+
+  $('tb-manage-pages').addEventListener('click', openManagePages);
+  $('mp-close-btn').addEventListener('click', closeManagePages);
+  $('mp-cancel-btn').addEventListener('click', closeManagePages);
+
+  async function openManagePages() {
+    if (!state.pdfDoc) return;
+    managePagesModal.classList.remove('ped-hidden');
+    mpState.pages = [];
+    for (var p = 1; p <= state.totalPages; p++) {
+      mpState.pages.push({
+        id: 'p-' + p + '-' + Date.now(),
+        origPageIndex: p - 1,
+        rotation: state.pageRots[p] || 0,
+        isNewBlank: false,
+        selected: false
+      });
+    }
+    renderMpGrid();
+  }
+
+  function closeManagePages() {
+    managePagesModal.classList.add('ped-hidden');
+  }
+
+  async function renderMpGrid() {
+    mpGrid.innerHTML = '';
+    updateMpCount();
+    for (var i = 0; i < mpState.pages.length; i++) {
+      var pInfo = mpState.pages[i];
+      var card = createMpCard(pInfo, i);
+      mpGrid.appendChild(card);
+    }
+  }
+
+  function createMpCard(pInfo, index) {
+    var card = document.createElement('div');
+    card.className = 'ped-mp-card' + (pInfo.selected ? ' selected' : '');
+    card.dataset.index = index;
+
+    var inner = document.createElement('div');
+    inner.className = 'ped-mp-card-inner';
+
+    var c = document.createElement('canvas');
+    inner.appendChild(c);
+
+    var check = document.createElement('div');
+    check.className = 'ped-mp-check-badge';
+    check.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>';
+    inner.appendChild(check);
+
+    var numLbl = document.createElement('div');
+    numLbl.className = 'ped-mp-card-num';
+    numLbl.textContent = index + 1;
+
+    card.appendChild(inner);
+    card.appendChild(numLbl);
+
+    (async function(canvas, info) {
+      if (info.isNewBlank) {
+        canvas.width = 140; canvas.height = 198;
+        var ctx = canvas.getContext('2d');
+        ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, 140, 198);
+        ctx.strokeStyle = '#e2e8f0'; ctx.strokeRect(0, 0, 140, 198);
+        ctx.fillStyle = '#94a3b8'; ctx.font = '12px sans-serif'; ctx.textAlign = 'center';
+        ctx.fillText('Blank Page', 70, 99);
+      } else {
+        var page = await state.pdfDoc.getPage(info.origPageIndex + 1);
+        var rot = ((info.rotation || 0) + page.rotate) % 360;
+        var vp = page.getViewport({ scale: 0.22, rotation: rot });
+        canvas.width = vp.width; canvas.height = vp.height;
+        await page.render({ canvasContext: canvas.getContext('2d'), viewport: vp }).promise;
+      }
+    })(c, pInfo);
+
+    card.addEventListener('click', function(e) {
+      pInfo.selected = !pInfo.selected;
+      card.classList.toggle('selected', pInfo.selected);
+      updateMpCount();
+    });
+
+    return card;
+  }
+
+  function updateMpCount() {
+    var sel = mpState.pages.filter(function(p) { return p.selected; }).length;
+    $('mp-status-info').textContent = sel + ' of ' + mpState.pages.length + ' page' + (mpState.pages.length === 1 ? '' : 's') + ' selected';
+  }
+
+  $('mp-act-new').addEventListener('click', function() {
+    mpState.pages.push({
+      id: 'blank-' + Date.now(),
+      origPageIndex: null,
+      rotation: 0,
+      isNewBlank: true,
+      selected: false
+    });
+    renderMpGrid();
+  });
+
+  $('mp-act-delete').addEventListener('click', function() {
+    var sel = mpState.pages.filter(function(p) { return p.selected; });
+    if (!sel.length) { alert('Please select page(s) to delete'); return; }
+    if (sel.length === mpState.pages.length) { alert('Cannot delete all pages. The document must contain at least one page.'); return; }
+    mpState.pages = mpState.pages.filter(function(p) { return !p.selected; });
+    renderMpGrid();
+  });
+
+  $('mp-act-duplicate').addEventListener('click', function() {
+    var newPages = [];
+    mpState.pages.forEach(function(p) {
+      newPages.push(p);
+      if (p.selected) {
+        newPages.push(Object.assign({}, p, { id: 'dup-' + Date.now() + Math.random(), selected: false }));
+      }
+    });
+    mpState.pages = newPages;
+    renderMpGrid();
+  });
+
+  $('mp-act-rot-left').addEventListener('click', function() {
+    mpState.pages.forEach(function(p) {
+      if (p.selected) p.rotation = ((p.rotation || 0) - 90 + 360) % 360;
+    });
+    renderMpGrid();
+  });
+
+  $('mp-act-rot-right').addEventListener('click', function() {
+    mpState.pages.forEach(function(p) {
+      if (p.selected) p.rotation = ((p.rotation || 0) + 90) % 360;
+    });
+    renderMpGrid();
+  });
+
+  $('mp-act-move-prev').addEventListener('click', function() {
+    for (var i = 1; i < mpState.pages.length; i++) {
+      if (mpState.pages[i].selected && !mpState.pages[i - 1].selected) {
+        var tmp = mpState.pages[i - 1];
+        mpState.pages[i - 1] = mpState.pages[i];
+        mpState.pages[i] = tmp;
+      }
+    }
+    renderMpGrid();
+  });
+
+  $('mp-act-move-next').addEventListener('click', function() {
+    for (var i = mpState.pages.length - 2; i >= 0; i--) {
+      if (mpState.pages[i].selected && !mpState.pages[i + 1].selected) {
+        var tmp = mpState.pages[i + 1];
+        mpState.pages[i + 1] = mpState.pages[i];
+        mpState.pages[i] = tmp;
+      }
+    }
+    renderMpGrid();
+  });
+
+  $('mp-act-select-all').addEventListener('click', function() {
+    mpState.pages.forEach(function(p) { p.selected = true; });
+    document.querySelectorAll('.ped-mp-card').forEach(function(c) { c.classList.add('selected'); });
+    updateMpCount();
+  });
+
+  $('mp-act-select-none').addEventListener('click', function() {
+    mpState.pages.forEach(function(p) { p.selected = false; });
+    document.querySelectorAll('.ped-mp-card').forEach(function(c) { c.classList.remove('selected'); });
+    updateMpCount();
+  });
+
+  $('mp-act-zoom-in').addEventListener('click', function() {
+    mpGrid.classList.remove('zoom-sm'); mpGrid.classList.add('zoom-lg');
+  });
+  $('mp-act-zoom-out').addEventListener('click', function() {
+    mpGrid.classList.remove('zoom-lg'); mpGrid.classList.add('zoom-sm');
+  });
+
+  $('mp-save-btn').addEventListener('click', async function() {
+    var saveBtn = $('mp-save-btn'), origText = saveBtn.textContent;
+    saveBtn.textContent = 'Applying changes...'; saveBtn.disabled = true;
+    try {
+      var PDFDocument = window.PDFLib.PDFDocument;
+      var srcDoc = await PDFDocument.load(state.rawBytes);
+      var newDoc = await PDFDocument.create();
+      var newPageAnns = {}, newPageRots = {};
+
+      for (var i = 0; i < mpState.pages.length; i++) {
+        var pInfo = mpState.pages[i];
+        var targetPageNum = i + 1;
+        if (pInfo.isNewBlank) {
+          var blank = newDoc.addPage([595, 842]);
+          if (pInfo.rotation) blank.setRotation(window.PDFLib.degrees(pInfo.rotation));
+        } else {
+          var copiedArr = await newDoc.copyPages(srcDoc, [pInfo.origPageIndex]);
+          var copiedPage = copiedArr[0];
+          var totalRot = (pInfo.rotation || 0) % 360;
+          copiedPage.setRotation(window.PDFLib.degrees(totalRot));
+          newDoc.addPage(copiedPage);
+
+          var origPageNum = pInfo.origPageIndex + 1;
+          if (state.pageAnns[origPageNum]) {
+            newPageAnns[targetPageNum] = JSON.parse(JSON.stringify(state.pageAnns[origPageNum]));
+          }
+        }
+        newPageRots[targetPageNum] = pInfo.rotation || 0;
+      }
+
+      var newBytes = await newDoc.save();
+      state.rawBytes = newBytes;
+      state.pdfDoc = await pdfjsLib.getDocument({ data: new Uint8Array(state.rawBytes) }).promise;
+      state.totalPages = state.pdfDoc.numPages;
+      state.currentPage = Math.min(state.currentPage, state.totalPages);
+      state.pageAnns = newPageAnns;
+      state.pageRots = newPageRots;
+      state.existingTextBlocks = {};
+      totPageNum.textContent = state.totalPages;
+
+      await buildThumbnails();
+      await renderPage(state.currentPage);
+      closeManagePages();
+      setStatus('Pages updated successfully');
+    } catch (err) {
+      console.error(err);
+      alert('Error updating pages: ' + err.message);
+    }
+    saveBtn.textContent = origText; saveBtn.disabled = false;
+  });
+
+  // ── DOWNLOAD VIA PDF-LIB ──────────────────────────────────
+  $('tb-download').addEventListener('click', async function() {
+    var btn = $('tb-download'), orig = btn.innerHTML;
+    btn.textContent = 'Exporting...'; btn.disabled = true;
+    setStatus('Generating PDF...');
+    try {
+      var PDFDocument = window.PDFLib.PDFDocument;
+      var pdfLibDoc = await PDFDocument.load(state.rawBytes);
+      var libPages = pdfLibDoc.getPages();
+
+      for (var pi = 0; pi < libPages.length; pi++) {
+        var pg = pi + 1, anns = state.pageAnns[pg] || [];
+        if (!anns.length) continue;
+        var pdfJsPage = await state.pdfDoc.getPage(pg);
+        var rot = (state.pageRots[pg] || 0) + pdfJsPage.rotate;
+        var vp = pdfJsPage.getViewport({ scale: 2, rotation: rot });
+        var tc = document.createElement('canvas'); tc.width = vp.width; tc.height = vp.height;
+        var tCtx = tc.getContext('2d');
+        var sc = 2 / state.scale;
+
+        for (var ai = 0; ai < anns.length; ai++) {
+          var a = anns[ai];
+          if (a.type === 'mask') {
+            tCtx.fillStyle = '#ffffff';
+            tCtx.fillRect(a.x * sc, a.y * sc, a.w * sc, a.h * sc);
+          } else if (a.type === 'shape') {
+            var sw = a.w * sc, sh = a.h * sc;
+            var sx = a.x * sc, sy = a.y * sc;
+            var strW = (a.width || 2) * sc;
+            tCtx.save();
+            tCtx.strokeStyle = a.color || '#e53e3e';
+            tCtx.lineWidth = strW;
+            tCtx.lineCap = 'round';
+            if (a.shape === 'rect') {
+              if (a.fill) {
+                tCtx.fillStyle = a.fillColor || '#93c5fd';
+                tCtx.fillRect(sx, sy, sw, sh);
+              }
+              tCtx.strokeRect(sx, sy, sw, sh);
+            } else if (a.shape === 'circle') {
+              tCtx.beginPath();
+              tCtx.ellipse(sx + sw / 2, sy + sh / 2, Math.max(1, sw / 2), Math.max(1, sh / 2), 0, 0, Math.PI * 2);
+              if (a.fill) {
+                tCtx.fillStyle = a.fillColor || '#93c5fd';
+                tCtx.fill();
+              }
+              tCtx.stroke();
+            } else if (a.shape === 'line') {
+              var lx1 = (a.x2 >= a.x1) ? sx : (sx + sw);
+              var ly1 = (a.y2 >= a.y1) ? sy : (sy + sh);
+              var lx2 = (a.x2 >= a.x1) ? (sx + sw) : sx;
+              var ly2 = (a.y2 >= a.y1) ? (sy + sh) : sy;
+              tCtx.beginPath();
+              tCtx.moveTo(lx1, ly1);
+              tCtx.lineTo(lx2, ly2);
+              tCtx.stroke();
+            } else if (a.shape === 'arrow') {
+              var lx1 = (a.x2 >= a.x1) ? sx : (sx + sw);
+              var ly1 = (a.y2 >= a.y1) ? sy : (sy + sh);
+              var lx2 = (a.x2 >= a.x1) ? (sx + sw) : sx;
+              var ly2 = (a.y2 >= a.y1) ? (sy + sh) : sy;
+              drawArrow(tCtx, lx1, ly1, lx2, ly2, a.color, strW);
+            }
+            tCtx.restore();
+          } else if (a.type === 'draw') {
+            var sa = JSON.parse(JSON.stringify(a));
+            if (sa.pts) sa.pts = sa.pts.map(function(p) { return { x: p.x * sc, y: p.y * sc }; });
+            if (sa.x1 != null) { sa.x1 *= sc; sa.y1 *= sc; sa.x2 *= sc; sa.y2 *= sc; sa.width = (sa.width || 2) * sc; }
+            drawShape(tCtx, sa);
+          } else if (a.type === 'highlight') {
+            tCtx.save(); tCtx.globalAlpha = 0.3; tCtx.fillStyle = a.color || '#ffd700';
+            tCtx.fillRect(a.x1 * sc, a.y1 * sc, (a.x2 - a.x1) * sc, (a.y2 - a.y1) * sc);
+            tCtx.globalAlpha = 1; tCtx.restore();
+          } else if (a.type === 'text' && a.text) {
+            tCtx.save();
+            tCtx.font = (a.italic ? 'italic ' : '') + (a.bold ? 'bold ' : '') + ((a.fontSize || 18) * sc) + 'px ' + (a.fontFamily || 'Arial');
+            tCtx.fillStyle = a.color || '#000000';
+            tCtx.textAlign = a.align || 'left';
+            tCtx.fillText(a.text, a.x * sc, a.y * sc + (a.fontSize || 18) * sc * 0.85);
+            tCtx.restore();
+          } else if (a.type === 'edit-text' && a.text) {
+            // White mask to erase underlying original PDF text cleanly
+            var ox = (a.origX != null ? a.origX : a.x) * sc;
+            var oy = (a.origY != null ? a.origY : a.y) * sc;
+            var ow = (a.origW != null ? a.origW : a.w) * sc;
+            var oh = (a.origH != null ? a.origH : a.h) * sc;
+            tCtx.fillStyle = '#ffffff';
+            tCtx.fillRect(ox - 2, oy - 2, ow + 4, oh + 4);
+
+            tCtx.save();
+            tCtx.font = (a.italic ? 'italic ' : '') + (a.bold ? 'bold ' : '') + ((a.fontSize || 14) * sc) + 'px ' + (a.fontFamily || 'Arial');
+            tCtx.fillStyle = a.color || '#000000';
+            tCtx.textAlign = a.align || 'left';
+            tCtx.fillText(a.text, a.x * sc, a.y * sc + (a.fontSize || 14) * sc * 0.85);
+            tCtx.restore();
+          } else if (a.type === 'image') {
+            await new Promise(function(res) {
+              var img = new Image();
+              img.src = a.src;
+              img.onload = function() {
+                tCtx.drawImage(img, a.x * sc, a.y * sc, a.w * sc, a.h * sc);
+                res();
+              };
+              img.onerror = res;
+            });
+          }
+        }
+
+        var imgBytes = await (await fetch(tc.toDataURL('image/png'))).arrayBuffer();
+        var emb = await pdfLibDoc.embedPng(imgBytes);
+        var sz = libPages[pi].getSize();
+        libPages[pi].drawImage(emb, { x: 0, y: 0, width: sz.width, height: sz.height });
+      }
+
+      var bytes = await pdfLibDoc.save();
+      var url = URL.createObjectURL(new Blob([bytes], { type: 'application/pdf' }));
+      var a = document.createElement('a'); a.href = url;
+      a.download = state.fileName.replace(/\.pdf$/i, '') + '-edited.pdf';
+      a.click();
+      URL.revokeObjectURL(url);
+      setStatus('Downloaded successfully!');
+    } catch (err) {
+      console.error(err);
+      alert('Export error: ' + err.message);
+      setStatus('Export failed');
+    }
+    btn.innerHTML = orig; btn.disabled = false;
+  });
+
+  function setStatus(msg) { statusMsg.textContent = msg; }
+}
+})();
+</script>
+</body>
+</html>

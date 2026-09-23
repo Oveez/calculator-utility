@@ -110,10 +110,11 @@ const parameterGuide = [
 ];
 ---
 
-<SiteLayout title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
+<SiteLayout heroCompact={true} title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
   <script is:inline type="application/ld+json" set:html={JSON.stringify(schemaGraph)} />
 
-  <article class="space-y-10 py-2" data-ts-app>
+  
+  <div slot="hero" class="site-hero-header">
     <nav aria-label="Breadcrumb">
       <ol class="flex flex-wrap items-center gap-2 text-xs text-[color:var(--muted)]">
         {breadcrumbItems.map((item, index) => (
@@ -145,6 +146,9 @@ const parameterGuide = [
         Convert between Unix epoch timestamps (seconds, milliseconds, microseconds) and human-readable dates across multiple timezones. Features live relative time and a real-time ticking clock.
       </p>
     </header>
+  </div>
+
+  <article class="space-y-10 py-2" data-ts-app>
 
     <!-- Live Current Epoch Hero -->
     <div class="space-y-3 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 sm:p-6">

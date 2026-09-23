@@ -101,10 +101,11 @@ const schemaGraph = [
 ];
 ---
 
-<SiteLayout title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
+<SiteLayout heroCompact={true} title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
   <script is:inline type="application/ld+json" set:html={JSON.stringify(schemaGraph)} />
 
-  <article class="space-y-10 py-2" data-doi-app>
+  
+  <div slot="hero" class="site-hero-header">
     <nav aria-label="Breadcrumb">
       <ol class="flex flex-wrap items-center gap-2 text-xs text-[color:var(--muted)]">
         {breadcrumbItems.map((item, index) => (
@@ -136,6 +137,9 @@ const schemaGraph = [
         Generate peer-reviewed academic citations formatted in APA 7, MLA 9, Chicago, Harvard, IEEE, and BibTeX. Enter a DOI for instant automated CrossRef metadata retrieval or manually customize bibliographic details.
       </p>
     </header>
+  </div>
+
+  <article class="space-y-10 py-2" data-doi-app>
 
     <div class="space-y-6">
       <!-- DOI Quick Lookup Bar -->
@@ -151,7 +155,7 @@ const schemaGraph = [
                 id="doi-val"
                 class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-2.5 font-mono text-xs sm:text-sm text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)]"
                 placeholder="e.g. 10.1038/s41586-020-2649-2 or https://doi.org/..."
-                value="10.1038/s41586-020-2649-2" />
+                 />
             </div>
           </div>
           <button
@@ -191,7 +195,7 @@ const schemaGraph = [
               id="author-val"
               class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-[color:var(--fg)]"
               placeholder="e.g. Jumper, John, Evans, Richard, & Pritzel, Alexander"
-              value="Jumper, John, et al." />
+              placeholder="e.g. Jumper, John, et al." />
           </div>
           <div>
             <label for="title-val" class="font-bold text-[color:var(--fg)] block mb-1">Article / Paper Title:</label>
@@ -200,7 +204,7 @@ const schemaGraph = [
               id="title-val"
               class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-[color:var(--fg)]"
               placeholder="e.g. Highly accurate protein structure prediction with AlphaFold"
-              value="Highly accurate protein structure prediction with AlphaFold" />
+              placeholder="e.g. Highly accurate protein structure prediction with AlphaFold" />
           </div>
         </div>
 
@@ -211,7 +215,7 @@ const schemaGraph = [
               type="text"
               id="journal-val"
               class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-[color:var(--fg)]"
-              value="Nature" />
+              placeholder="e.g. Nature" />
           </div>
           <div>
             <label for="year-val" class="font-bold text-[color:var(--fg)] block mb-1">Year of Publication:</label>
@@ -226,7 +230,7 @@ const schemaGraph = [
               type="text"
               id="vol-val"
               class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-[color:var(--fg)]"
-              value="596(7873)" />
+              placeholder="e.g. 596(7873)" />
           </div>
         </div>
 
@@ -237,7 +241,7 @@ const schemaGraph = [
               type="text"
               id="pages-val"
               class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-[color:var(--fg)]"
-              value="583–589" />
+              placeholder="e.g. 583–589" />
           </div>
           <div class="sm:col-span-2">
             <label for="publisher-val" class="font-bold text-[color:var(--fg)] block mb-1">Publisher (Optional):</label>
@@ -245,7 +249,7 @@ const schemaGraph = [
               type="text"
               id="publisher-val"
               class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-[color:var(--fg)]"
-              value="Nature Publishing Group" />
+              placeholder="e.g. Nature Publishing Group" />
           </div>
         </div>
       </div>

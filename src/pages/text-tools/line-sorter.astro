@@ -123,10 +123,11 @@ const workedExampleData = {
 };
 ---
 
-<SiteLayout title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
+<SiteLayout heroCompact={true} title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
   <script is:inline type="application/ld+json" set:html={JSON.stringify(schemaGraph)} />
 
-  <article class="space-y-10 py-2" data-sorter-app>
+  
+  <div slot="hero" class="site-hero-header">
     <nav aria-label="Breadcrumb">
       <ol class="flex flex-wrap items-center gap-2 text-xs text-[color:var(--muted)]">
         {breadcrumbItems.map((item, index) => (
@@ -158,6 +159,9 @@ const workedExampleData = {
         Sort lines of text alphabetically (A–Z, Z–A), naturally with numeric awareness (item2 before item10), by line length, or randomize order. Custom numbering and deduplication options.
       </p>
     </header>
+  </div>
+
+  <article class="space-y-10 py-2" data-sorter-app>
 
     <!-- Metrics Summary Bar -->
     <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">

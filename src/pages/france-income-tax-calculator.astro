@@ -9,12 +9,12 @@ const profile = frProfile;
 const defaultYear = profile.years[profile.defaultTaxYear];
 ---
 
-<SiteLayout
+<SiteLayout heroCompact={true}
   title="France Income Tax Calculator 2026 — Salary Calculator France, Gross to Net Tax"
   description={`Free France income tax calculator and salary calculator France for tax year ${defaultYear.taxYear}. Calculate French tax brackets (0%–45%), CSG/CRDS social security deductions, gross to net salary, and take home pay.`}
 >
-  <div class="mx-auto max-w-5xl space-y-10">
-    <!-- Breadcrumb & Header -->
+  
+  <div slot="hero" class="site-hero-header">
     <nav class="flex items-center gap-2 text-xs font-medium text-[color:var(--muted)]" aria-label="Breadcrumb">
       <a href="/" class="hover:text-[color:var(--accent)]">Home</a>
       <span>/</span>
@@ -36,6 +36,9 @@ const defaultYear = profile.years[profile.defaultTaxYear];
         {profile.metaDescription}
       </p>
     </header>
+  </div>
+
+  <div class="mx-auto max-w-5xl space-y-10">
 
     <!-- Flagship Interactive Calculator App -->
     <TaxCalculatorApp profile={profile} />

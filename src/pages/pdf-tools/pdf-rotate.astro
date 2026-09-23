@@ -105,10 +105,11 @@ const workedExampleData = {
 };
 ---
 
-<SiteLayout title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
+<SiteLayout heroCompact={true} title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
   <script is:inline type="application/ld+json" set:html={JSON.stringify(schemaGraph)} />
 
-  <article class="space-y-10 py-2" data-pdf-rotate-app>
+  
+  <div slot="hero" class="site-hero-header">
     <!-- Breadcrumb -->
     <nav aria-label="Breadcrumb">
       <ol class="flex flex-wrap items-center gap-2 text-xs text-[color:var(--muted)]">
@@ -142,6 +143,9 @@ const workedExampleData = {
         Rotate sideways or upside-down PDF pages permanently by 90, 180, or 270 degrees in your browser to create print-ready PDF files. Choose all pages, odd/even pages, or custom ranges with lossless quality and 100% client-side privacy.
       </p>
     </header>
+  </div>
+
+  <article class="space-y-10 py-2" data-pdf-rotate-app>
 
     <div class="space-y-6">
       <!-- Dropzone -->
@@ -209,14 +213,33 @@ const workedExampleData = {
           </div>
         </div>
 
-        <!-- Visual Rotation Angle Simulation Card -->
-        <div class="flex items-center gap-4 rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] p-4">
-          <div class="flex h-14 w-12 items-center justify-center rounded-lg border-2 border-dashed border-[color:var(--accent)] bg-[color:var(--surface)] text-xs font-bold text-[color:var(--fg)] shadow-xs transition-transform duration-300" id="preview-page-icon">
-            <svg class="w-6 h-6 text-[color:var(--accent)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+        <!-- Visual Page Catalog & Live Interactive Rotator -->
+        <div class="space-y-3 pt-2 border-t border-[color:var(--border)]">
+          <div class="flex flex-wrap items-center justify-between gap-3">
+            <div class="flex items-center gap-2">
+              <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Visual Page Catalog</span>
+              <span id="rotate-page-count-badge" class="rounded-full bg-[color:var(--surface-strong)] px-2.5 py-0.5 font-mono text-[11px] font-bold text-[color:var(--accent)]">
+                0 pages
+              </span>
+            </div>
+            <div class="flex flex-wrap items-center gap-1.5 text-xs">
+              <button type="button" id="btn-rot-all-cw" class="rounded-lg border border-[color:var(--border)] bg-[color:var(--surface)] px-2.5 py-1 text-[11px] font-semibold text-[color:var(--fg)] hover:border-[color:var(--accent)] hover:text-[color:var(--accent)] transition cursor-pointer">
+                ↻ Rotate All +90°
+              </button>
+              <button type="button" id="btn-rot-all-ccw" class="rounded-lg border border-[color:var(--border)] bg-[color:var(--surface)] px-2.5 py-1 text-[11px] font-semibold text-[color:var(--fg)] hover:border-[color:var(--accent)] hover:text-[color:var(--accent)] transition cursor-pointer">
+                ↺ Rotate All -90°
+              </button>
+              <button type="button" id="btn-rot-reset" class="rounded-lg border border-[color:var(--border)] bg-[color:var(--surface)] px-2.5 py-1 text-[11px] font-semibold text-rose-500 hover:bg-rose-500/10 transition cursor-pointer">
+                Reset (0°)
+              </button>
+            </div>
           </div>
-          <div class="text-xs space-y-1">
-            <p class="font-bold text-[color:var(--fg)]" id="preview-text">Rotating 90° Clockwise</p>
-            <p class="text-[color:var(--muted)]" id="preview-scope-text">Applied to all pages.</p>
+          <p class="text-[11px] text-[color:var(--muted)]">
+            Click on any page's rotate icon (<span class="text-[color:var(--accent)] font-bold">↻</span>) to rotate that page individually, or use the batch controls above.
+          </p>
+
+          <div id="rotate-tile-grid" class="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 pt-1">
+            <!-- Dynamic Page Tiles rendered by JS -->
           </div>
         </div>
 
@@ -241,6 +264,21 @@ const workedExampleData = {
             <svg class="w-4 h-4 stroke-current" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"></path></svg><span>Rotate &amp; Download PDF</span>
           </button>
           <p id="rotate-status" class="text-center text-xs text-[color:var(--muted)]"></p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Full-Page Zoom Inspection Modal -->
+    <div id="page-zoom-modal" class="fixed inset-0 z-50 hidden bg-black/80 backdrop-blur-xs flex items-center justify-center p-4">
+      <div class="relative max-w-3xl w-full max-h-[92vh] bg-[color:var(--surface)] border border-[color:var(--border)] rounded-3xl p-5 shadow-2xl flex flex-col items-center">
+        <div class="flex w-full items-center justify-between pb-3 border-b border-[color:var(--border)] mb-3">
+          <h4 id="zoom-title" class="font-bold text-sm text-[color:var(--fg)]">Page Preview</h4>
+          <button type="button" id="close-zoom-btn" class="rounded-xl bg-[color:var(--surface-strong)] text-[color:var(--fg)] px-3 py-1 text-xs font-bold hover:bg-[color:var(--border)] cursor-pointer">
+            Close ✕
+          </button>
+        </div>
+        <div class="overflow-auto max-h-[75vh] w-full flex items-center justify-center bg-slate-950/20 rounded-xl p-2">
+          <img id="zoom-img" alt="Zoomed Page Preview" class="max-h-[72vh] max-w-full object-contain rounded-lg shadow-md transition-transform duration-200" />
         </div>
       </div>
     </div>
@@ -272,6 +310,8 @@ const workedExampleData = {
     </section>
   </article>
 
+  <!-- PDF.js & PDF-Lib CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js" is:inline></script>
   <script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js" is:inline></script>
   <script is:inline>
     (function () {
@@ -290,42 +330,52 @@ const workedExampleData = {
       const rotScopeSelect = root.querySelector('#rot-scope');
       const customRangeBox = root.querySelector('#custom-range-box');
       const customRangeIn = root.querySelector('#custom-range-in');
-      const previewPageIcon = root.querySelector('#preview-page-icon');
-      const previewText = root.querySelector('#preview-text');
-      const previewScopeText = root.querySelector('#preview-scope-text');
       const rotFilenameInput = root.querySelector('#rot-filename');
+
+      const rotatePageCountBadge = root.querySelector('#rotate-page-count-badge');
+      const rotateTileGrid = root.querySelector('#rotate-tile-grid');
+      const btnRotAllCw = root.querySelector('#btn-rot-all-cw');
+      const btnRotAllCcw = root.querySelector('#btn-rot-all-ccw');
+      const btnRotReset = root.querySelector('#btn-rot-reset');
 
       const rotateBtn = root.querySelector('#rotate-btn');
       const rotateStatus = root.querySelector('#rotate-status');
 
+      // Modal elements
+      const zoomModal = root.querySelector('#page-zoom-modal');
+      const zoomTitle = root.querySelector('#zoom-title');
+      const zoomImg = root.querySelector('#zoom-img');
+      const closeZoomBtn = root.querySelector('#close-zoom-btn');
+
+      if (closeZoomBtn && zoomModal) {
+        closeZoomBtn.addEventListener('click', () => zoomModal.classList.add('hidden'));
+        zoomModal.addEventListener('click', (e) => {
+          if (e.target === zoomModal) zoomModal.classList.add('hidden');
+        });
+        document.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape' && !zoomModal.classList.contains('hidden')) {
+            zoomModal.classList.add('hidden');
+          }
+        });
+      }
+
+      if (window.pdfjsLib) {
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+      }
+
       let currentBytes = null;
       let totalPages = 0;
       let originalFilename = 'document.pdf';
+      let currentPdfJsDoc = null;
+      const pageThumbnails = {}; // p -> dataUrl
+      // State: Map of pageNum (1-based) -> cumulative rotation degrees to apply (0, 90, 180, 270)
+      const pageRotations = {};
 
       function formatBytes(bytes) {
         if (bytes < 1024) return bytes + ' B';
         if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
         return (bytes / 1048576).toFixed(2) + ' MB';
       }
-
-      function updatePreview() {
-        const deg = (rotDegSelect.value !== '' && !isNaN(parseInt(rotDegSelect.value, 10)) ? parseInt(rotDegSelect.value, 10) : 0);
-        previewPageIcon.style.transform = `rotate(${deg}deg)`;
-        previewText.textContent = `Rotating ${deg}° ${deg === 180 ? '(Upside Down)' : (deg === 90 ? 'Clockwise' : 'Counter-Clockwise')}`;
-
-        const scope = rotScopeSelect.value;
-        if (scope === 'all') previewScopeText.textContent = 'Applied to all pages in document.';
-        else if (scope === 'odd') previewScopeText.textContent = 'Applied only to odd pages (1, 3, 5...).';
-        else if (scope === 'even') previewScopeText.textContent = 'Applied only to even pages (2, 4, 6...).';
-        else previewScopeText.textContent = `Applied to custom range: ${customRangeIn.value || 'None specified'}.`;
-      }
-
-      rotDegSelect.addEventListener('change', updatePreview);
-      rotScopeSelect.addEventListener('change', () => {
-        customRangeBox.classList.toggle('hidden', rotScopeSelect.value !== 'custom');
-        updatePreview();
-      });
-      customRangeIn.addEventListener('input', updatePreview);
 
       function parseCustomRange(str, max) {
         const pages = new Set();
@@ -336,14 +386,175 @@ const workedExampleData = {
             const s = parseInt(startStr, 10);
             const e = parseInt(endStr, 10);
             if (!isNaN(s) && !isNaN(e)) {
-              for (let p = Math.max(1, s); p <= Math.min(max, e); p++) pages.add(p - 1);
+              for (let p = Math.max(1, s); p <= Math.min(max, e); p++) pages.add(p);
             }
           } else {
             const p = parseInt(part, 10);
-            if (!isNaN(p) && p >= 1 && p <= max) pages.add(p - 1);
+            if (!isNaN(p) && p >= 1 && p <= max) pages.add(p);
           }
         }
         return pages;
+      }
+
+      function updateTileRotationUI(p) {
+        const tile = rotateTileGrid.querySelector(`[data-rotate-tile="${p}"]`);
+        if (!tile) return;
+
+        const deg = pageRotations[p] || 0;
+        const img = tile.querySelector('.tile-thumb-img');
+        const badge = tile.querySelector('.tile-rot-badge');
+
+        if (img) {
+          img.style.transform = `rotate(${deg}deg)`;
+        }
+        if (badge) {
+          if (deg % 360 === 0) {
+            badge.textContent = '0°';
+            badge.className = 'tile-rot-badge rounded bg-[color:var(--surface-strong)] text-[color:var(--muted)] px-1.5 py-0.5 text-[10px] font-bold';
+          } else {
+            badge.textContent = `+${deg % 360}°`;
+            badge.className = 'tile-rot-badge rounded bg-amber-500/15 text-amber-600 dark:text-amber-400 px-1.5 py-0.5 text-[10px] font-bold';
+          }
+        }
+      }
+
+      function applyBatchRotation(addAngle, scopeFilter) {
+        let targets = new Set();
+        if (scopeFilter === 'all') {
+          for (let p = 1; p <= totalPages; p++) targets.add(p);
+        } else if (scopeFilter === 'odd') {
+          for (let p = 1; p <= totalPages; p += 2) targets.add(p);
+        } else if (scopeFilter === 'even') {
+          for (let p = 2; p <= totalPages; p += 2) targets.add(p);
+        } else if (scopeFilter === 'custom') {
+          targets = parseCustomRange(customRangeIn.value, totalPages);
+        }
+
+        targets.forEach(p => {
+          pageRotations[p] = ((pageRotations[p] || 0) + addAngle + 360) % 360;
+          updateTileRotationUI(p);
+        });
+      }
+
+      async function openZoomModal(p) {
+        if (!zoomModal || !zoomImg) return;
+        const curRot = pageRotations[p] || 0;
+        zoomTitle.textContent = `Page ${p} of ${totalPages} — Full Inspection (${curRot}° Rotation)`;
+        zoomModal.classList.remove('hidden');
+        zoomImg.style.transform = `rotate(${curRot}deg)`;
+
+        if (currentPdfJsDoc) {
+          try {
+            const page = await currentPdfJsDoc.getPage(p);
+            const unscaledViewport = page.getViewport({ scale: 1 });
+            const targetW = Math.min(1200, window.innerWidth * 0.85);
+            const scale = targetW / unscaledViewport.width;
+            const viewport = page.getViewport({ scale: scale });
+
+            const canvas = document.createElement('canvas');
+            canvas.width = viewport.width;
+            canvas.height = viewport.height;
+            const ctx = canvas.getContext('2d');
+
+            await page.render({ canvasContext: ctx, viewport: viewport }).promise;
+            zoomImg.src = canvas.toDataURL('image/jpeg', 0.9);
+          } catch (err) {
+            console.error('Error rendering zoom page:', err);
+            if (pageThumbnails[p]) zoomImg.src = pageThumbnails[p];
+          }
+        } else if (pageThumbnails[p]) {
+          zoomImg.src = pageThumbnails[p];
+        }
+      }
+
+      async function renderThumbnailsAsync() {
+        if (!currentPdfJsDoc) return;
+
+        for (let p = 1; p <= totalPages; p++) {
+          try {
+            const page = await currentPdfJsDoc.getPage(p);
+            const unscaledViewport = page.getViewport({ scale: 1 });
+            const targetWidth = 190;
+            const scale = targetWidth / unscaledViewport.width;
+            const viewport = page.getViewport({ scale: scale });
+
+            const canvas = document.createElement('canvas');
+            canvas.width = viewport.width;
+            canvas.height = viewport.height;
+            const ctx = canvas.getContext('2d');
+
+            await page.render({ canvasContext: ctx, viewport: viewport }).promise;
+            const thumbUrl = canvas.toDataURL('image/jpeg', 0.85);
+            pageThumbnails[p] = thumbUrl;
+
+            const tile = rotateTileGrid.querySelector(`[data-rotate-tile="${p}"]`);
+            if (tile) {
+              const loadingEl = tile.querySelector('.tile-loading');
+              const imgEl = tile.querySelector('.tile-thumb-img');
+              if (loadingEl) loadingEl.classList.add('hidden');
+              if (imgEl) {
+                imgEl.src = thumbUrl;
+                imgEl.classList.remove('hidden');
+              }
+            }
+          } catch (err) {
+            console.error(`Error rendering thumb for page ${p}:`, err);
+          }
+        }
+      }
+
+      function buildGrid() {
+        rotateTileGrid.innerHTML = '';
+        rotatePageCountBadge.textContent = `${totalPages} pages`;
+
+        for (let p = 1; p <= totalPages; p++) {
+          const curRot = pageRotations[p] || 0;
+          const thumbUrl = pageThumbnails[p];
+
+          const tile = document.createElement('div');
+          tile.dataset.rotateTile = p.toString();
+          tile.className = 'group relative flex flex-col justify-between rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-2.5 shadow-xs transition hover:border-[color:var(--accent)] hover:shadow-md';
+
+          tile.innerHTML = `
+            <div class="flex w-full items-center justify-between text-[11px] font-bold text-[color:var(--muted)] pb-1.5 border-b border-[color:var(--border)]/60">
+              <span class="rounded bg-[color:var(--surface-strong)] px-1.5 py-0.5 text-[color:var(--fg)]">Pg ${p}</span>
+              <span class="tile-rot-badge rounded ${curRot % 360 === 0 ? 'bg-[color:var(--surface-strong)] text-[color:var(--muted)]' : 'bg-amber-500/15 text-amber-600 dark:text-amber-400'} px-1.5 py-0.5 text-[10px] font-bold">
+                ${curRot % 360 === 0 ? '0°' : `+${curRot % 360}°`}
+              </span>
+            </div>
+
+            <div class="relative my-2 flex aspect-3/4 w-full items-center justify-center overflow-hidden rounded-xl bg-[color:var(--surface-strong)] border border-[color:var(--border)]">
+              <div class="tile-loading ${thumbUrl ? 'hidden' : 'flex'} absolute inset-0 items-center justify-center text-[10px] text-[color:var(--muted)] font-medium animate-pulse">
+                Pg ${p}...
+              </div>
+              <img src="${thumbUrl || ''}" class="tile-thumb-img ${thumbUrl ? '' : 'hidden'} max-h-full max-w-full object-contain pointer-events-none rounded transition-transform duration-200" style="transform: rotate(${curRot}deg);" alt="Page ${p}" />
+
+              <!-- Zoom Inspect Button -->
+              <button type="button" data-zoom="${p}" class="absolute top-1.5 right-1.5 rounded-md bg-white/95 dark:bg-slate-800/95 p-1 text-[color:var(--fg)] hover:scale-110 shadow-xs transition cursor-pointer" title="Zoom inspect page ${p}">
+                <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line><line x1="11" y1="8" x2="11" y2="14"></line><line x1="8" y1="11" x2="14" y2="11"></line></svg>
+              </button>
+            </div>
+
+            <div class="flex items-center justify-between border-t border-[color:var(--border)] pt-1.5">
+              <button type="button" data-rotate-single="${p}" class="w-full flex items-center justify-center gap-1.5 rounded-xl bg-[color:var(--surface-strong)] hover:bg-[color:var(--accent)] hover:text-white py-1.5 text-xs font-bold text-[color:var(--fg)] transition cursor-pointer" title="Rotate this page 90° clockwise">
+                <svg class="w-3.5 h-3.5 stroke-current" viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"></path></svg>
+                <span>+90°</span>
+              </button>
+            </div>
+          `;
+
+          // Handlers
+          tile.querySelector('[data-zoom]').addEventListener('click', () => {
+            openZoomModal(p);
+          });
+
+          tile.querySelector('[data-rotate-single]').addEventListener('click', () => {
+            pageRotations[p] = ((pageRotations[p] || 0) + 90) % 360;
+            updateTileRotationUI(p);
+          });
+
+          rotateTileGrid.appendChild(tile);
+        }
       }
 
       async function handleFile(file) {
@@ -369,9 +580,67 @@ const workedExampleData = {
 
         thumbInfo.textContent = `${formatBytes(file.size)} • ${totalPages} pages`;
         customRangeIn.placeholder = `1-${totalPages}`;
-        updatePreview();
+
+        // Reset rotations
+        for (let p = 1; p <= totalPages; p++) {
+          pageRotations[p] = 0;
+        }
+
+        buildGrid();
         card.classList.remove('hidden');
+
+        // Render visual thumbnails
+        if (window.pdfjsLib) {
+          try {
+            currentPdfJsDoc = await pdfjsLib.getDocument({ data: currentBytes.slice(0) }).promise;
+            renderThumbnailsAsync();
+          } catch (err) {
+            console.error('PDF.js failed to load document for thumbnails:', err);
+          }
+        }
       }
+
+      // Quick batch buttons
+      btnRotAllCw.addEventListener('click', () => {
+        applyBatchRotation(90, 'all');
+      });
+
+      btnRotAllCcw.addEventListener('click', () => {
+        applyBatchRotation(-90, 'all');
+      });
+
+      btnRotReset.addEventListener('click', () => {
+        for (let p = 1; p <= totalPages; p++) {
+          pageRotations[p] = 0;
+          updateTileRotationUI(p);
+        }
+      });
+
+      // Also listen to select dropdown changes to sync
+      rotDegSelect.addEventListener('change', () => {
+        const deg = parseInt(rotDegSelect.value, 10) || 0;
+        const scope = rotScopeSelect.value;
+        // Apply select value to target scope
+        let targets = new Set();
+        if (scope === 'all') {
+          for (let p = 1; p <= totalPages; p++) targets.add(p);
+        } else if (scope === 'odd') {
+          for (let p = 1; p <= totalPages; p += 2) targets.add(p);
+        } else if (scope === 'even') {
+          for (let p = 2; p <= totalPages; p += 2) targets.add(p);
+        } else if (scope === 'custom') {
+          targets = parseCustomRange(customRangeIn.value, totalPages);
+        }
+
+        targets.forEach(p => {
+          pageRotations[p] = deg % 360;
+          updateTileRotationUI(p);
+        });
+      });
+
+      rotScopeSelect.addEventListener('change', () => {
+        customRangeBox.classList.toggle('hidden', rotScopeSelect.value !== 'custom');
+      });
 
       // Drag and drop
       ['dragenter', 'dragover'].forEach(name => {
@@ -401,7 +670,7 @@ const workedExampleData = {
         fileIn.value = '';
       });
 
-      // Rotate action
+      // Rotate action & export
       rotateBtn.addEventListener('click', async () => {
         if (!currentBytes) return;
         if (!window.PDFLib) {
@@ -416,26 +685,17 @@ const workedExampleData = {
         try {
           const pdfDoc = await PDFLib.PDFDocument.load(currentBytes, { ignoreEncryption: true });
           const pages = pdfDoc.getPages();
-          const angle = (rotDegSelect.value !== '' && !isNaN(parseInt(rotDegSelect.value, 10)) ? parseInt(rotDegSelect.value, 10) : 0);
-          const scope = rotScopeSelect.value;
+          let rotatedCount = 0;
 
-          let targetIndices = new Set();
-          if (scope === 'all') {
-            for (let i = 0; i < pages.length; i++) targetIndices.add(i);
-          } else if (scope === 'odd') {
-            for (let i = 0; i < pages.length; i += 2) targetIndices.add(i);
-          } else if (scope === 'even') {
-            for (let i = 1; i < pages.length; i += 2) targetIndices.add(i);
-          } else if (scope === 'custom') {
-            targetIndices = parseCustomRange(customRangeIn.value, pages.length);
-          }
-
-          targetIndices.forEach(idx => {
-            if (pages[idx]) {
-              const currentAngle = pages[idx].getRotation().angle;
-              pages[idx].setRotation(PDFLib.degrees(currentAngle + angle));
+          for (let p = 1; p <= pages.length; p++) {
+            const rot = pageRotations[p] || 0;
+            if (rot !== 0) {
+              const page = pages[p - 1];
+              const currentAngle = page.getRotation().angle;
+              page.setRotation(PDFLib.degrees(currentAngle + rot));
+              rotatedCount++;
             }
-          });
+          }
 
           const pdfBytes = await pdfDoc.save();
           const blob = new Blob([pdfBytes], { type: 'application/pdf' });
@@ -452,7 +712,7 @@ const workedExampleData = {
           document.body.removeChild(a);
           URL.revokeObjectURL(url);
 
-          rotateStatus.innerHTML = `<span class="inline-flex items-center gap-1.5 text-emerald-500 font-semibold"><svg class="w-4 h-4 inline shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"></polyline></svg> Successfully rotated ${targetIndices.size} pages by ${angle}°!</span>`;
+          rotateStatus.innerHTML = `<span class="inline-flex items-center gap-1.5 text-emerald-500 font-semibold"><svg class="w-4 h-4 inline shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"></polyline></svg> Successfully transformed ${rotatedCount > 0 ? rotatedCount : totalPages} pages in ${filename}!</span>`;
         } catch (err) {
           console.error('Rotation error:', err);
           rotateStatus.textContent = `Error during rotation: ${err.message || err}`;
@@ -461,8 +721,6 @@ const workedExampleData = {
           rotateBtn.classList.remove('opacity-70');
         }
       });
-
-      updatePreview();
     })();
   </script>
 </SiteLayout>

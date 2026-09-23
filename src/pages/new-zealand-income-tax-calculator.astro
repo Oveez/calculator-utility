@@ -9,12 +9,12 @@ const profile = nzProfile;
 const defaultYear = profile.years[profile.defaultTaxYear];
 ---
 
-<SiteLayout
+<SiteLayout heroCompact={true}
   title="New Zealand PAYE Tax Calculator 2026/27 | IRD Brackets & Take-Home"
   description={`${profile.name} Income Tax Calculator for tax year ${defaultYear.taxYear}. Compute your take-home pay, progressive tax brackets, social security deductions, and effective tax rate using official government rates.`}
 >
-  <div class="mx-auto max-w-5xl space-y-10">
-    <!-- Breadcrumb & Header -->
+  
+  <div slot="hero" class="site-hero-header">
     <nav class="flex items-center gap-2 text-xs font-medium text-[color:var(--muted)]" aria-label="Breadcrumb">
       <a href="/" class="hover:text-[color:var(--accent)]">Home</a>
       <span>/</span>
@@ -36,6 +36,9 @@ const defaultYear = profile.years[profile.defaultTaxYear];
         {profile.metaDescription}
       </p>
     </header>
+  </div>
+
+  <div class="mx-auto max-w-5xl space-y-10">
 
     <!-- Flagship Interactive Calculator App -->
     <TaxCalculatorApp profile={profile} />

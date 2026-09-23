@@ -1,5 +1,6 @@
 ---
 import SiteLayout from '../../layouts/SiteLayout.astro';
+import SiteHero from '../../components/SiteHero.astro';
 import Icon from '../../components/Icon.astro';
 import ToolIcon from '../../components/ToolIcon.astro';
 import { siteName, toAbsoluteUrl, withBasePath } from '../../utils/site';
@@ -94,6 +95,14 @@ const pdfToolsList = [
     href: withBasePath('/pdf-tools/pdf-rotate/'),
     icon: 'document',
   },
+  {
+    slug: 'pdf-editor',
+    title: 'PDF Editor',
+    badge: 'Edit',
+    metaDescription: 'Add text, draw shapes, highlight, insert images, sign, and annotate PDF documents — 100% private, in-browser PDF editing.',
+    href: withBasePath('/pdf-tools/pdf-editor/'),
+    icon: 'document',
+  },
 ];
 
 const schemaFaq = [
@@ -129,49 +138,27 @@ const schemaGraph = [
 ];
 ---
 
-<SiteLayout title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
+<SiteLayout title={pageTitle} description={pageDesc} canonical={canonicalUrl} heroCompact={true}>
   <script is:inline type="application/ld+json" set:html={JSON.stringify(schemaGraph)} />
 
-  <article class="space-y-10 py-2">
-    <nav aria-label="Breadcrumb">
-      <ol class="flex flex-wrap items-center gap-2 text-xs text-[color:var(--muted)]">
-        {breadcrumbItems.map((item, index) => (
-          <li class="flex items-center gap-2">
-            {index > 0 && <span aria-hidden="true">/</span>}
-            {item.href ? (
-              <a class="transition hover:text-[color:var(--fg)]" href={item.href}>
-                {item.label}
-              </a>
-            ) : (
-              <span aria-current="page" class="font-semibold text-[color:var(--fg)]">
-                {item.label}
-              </span>
-            )}
-          </li>
-        ))}
-      </ol>
-    </nav>
+  <SiteHero
+    slot="hero"
+    breadcrumbs={breadcrumbItems}
+    badge="100% Private Client-Side PDF Suite"
+    title="Free PDF Tools Online — PDF Maker &amp; Document Tools"
+    description="Fast, free online PDF tools to merge PDF to PDF, convert images to PDF, split documents, extract pages, rotate orientations, and strip metadata with 100% private in-browser processing."
+  />
 
-    <header class="space-y-4 rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-6 sm:p-10">
-      <div class="inline-flex items-center gap-2 rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3.5 py-1 text-xs font-bold text-[color:var(--fg)]">
-        <span>100% Private Client-Side PDF Suite</span>
-      </div>
-      <h1 class="text-3xl font-extrabold tracking-tight text-[color:var(--fg)] sm:text-4xl">
-        Free PDF Tools Online — PDF Maker &amp; Document Tools
-      </h1>
-      <p class="max-w-3xl text-sm leading-relaxed text-[color:var(--muted)] sm:text-base">
-        Fast, free online PDF tools to merge PDF to PDF, convert images to PDF, split documents, extract pages, rotate orientations, and strip metadata with 100% private in-browser processing.
-      </p>
-    </header>
+  <article class="space-y-10 py-2">
 
     <section class="space-y-4">
       <div class="flex items-center justify-between">
         <div>
           <p class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Tool Directory</p>
-          <h2 class="text-xl font-bold tracking-tight text-[color:var(--fg)]">10 In-Browser PDF Engines</h2>
+          <h2 class="text-xl font-bold tracking-tight text-[color:var(--fg)]">11 In-Browser PDF Engines</h2>
         </div>
         <span class="rounded-lg bg-[color:var(--surface)] border border-[color:var(--border)] px-2.5 py-1 text-xs font-bold text-[color:var(--fg)]">
-          10 Tools
+          11 Tools
         </span>
       </div>
 
@@ -180,24 +167,28 @@ const schemaGraph = [
           <a
             href={tool.href}
             class="group flex flex-col justify-between rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 transition hover:border-[color:var(--border-strong)] hover:bg-[color:var(--surface-strong)]"
+            data-calculator-card
           >
             <div class="space-y-3">
               <div class="flex items-center justify-between gap-2">
                 <ToolIcon slug={tool.slug} category="PDF" size="md" />
-                <span class="rounded-md bg-[color:var(--surface-strong)] border border-[color:var(--border)] px-2 py-0.5 text-[10px] font-bold text-[color:var(--muted)]">
+                <span class="rounded-md bg-[color:var(--surface-strong)] border border-[color:var(--border)] px-2.5 py-0.5 text-[10px] font-bold text-[color:var(--muted)]">
                   {tool.badge}
                 </span>
               </div>
-              <h3 class="text-base font-bold text-[color:var(--fg)] transition-colors">
+              <h3 class="text-base font-bold tracking-tight text-[color:var(--fg)] group-hover:text-[color:var(--accent)] transition-colors">
                 {tool.title}
               </h3>
-              <p class="text-xs leading-relaxed text-[color:var(--muted)]">
+              <p class="text-xs leading-relaxed text-[color:var(--muted)] line-clamp-2">
                 {tool.metaDescription}
               </p>
             </div>
-            <div class="mt-5 flex items-center gap-1.5 text-xs font-bold text-[color:var(--fg)]">
-              <span>Open Tool</span>
-              <Icon name="arrow-right" class="w-3.5 h-3.5" />
+            <div class="mt-5 flex items-center justify-between pt-2.5 border-t border-[color:var(--border)]/60">
+              <span class="inline-flex items-center gap-1 text-xs font-bold text-[color:var(--fg)] group-hover:text-[color:var(--accent)] transition-colors">
+                <span>Open Tool</span>
+                <Icon name="arrow-right" class="w-3.5 h-3.5 transition group-hover:translate-x-1" />
+              </span>
+              <span class="text-[10px] font-semibold uppercase tracking-wider text-[color:var(--muted)] group-hover:text-[color:var(--fg)] transition-colors">Instant</span>
             </div>
           </a>
         ))}

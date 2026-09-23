@@ -110,10 +110,11 @@ const parameterGuide = [
 ];
 ---
 
-<SiteLayout title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
+<SiteLayout heroCompact={true} title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
   <script is:inline type="application/ld+json" set:html={JSON.stringify(schemaGraph)} />
 
-  <article class="space-y-10 py-2" data-json-app>
+  
+  <div slot="hero" class="site-hero-header">
     <!-- Breadcrumbs -->
     <nav aria-label="Breadcrumb">
       <ol class="flex flex-wrap items-center gap-2 text-xs text-[color:var(--muted)]">
@@ -147,6 +148,9 @@ const parameterGuide = [
         Beautify, inspect, validate, and convert JSON data online. An all-in-one JSON tool featuring alphabetical key sorting, line-precise syntax error indicators, collapsible tree view, and real-time payload metrics.
       </p>
     </header>
+  </div>
+
+  <article class="space-y-10 py-2" data-json-app>
 
     <!-- Metrics Bar -->
     <div id="stats-bar" class="grid grid-cols-2 gap-3 sm:grid-cols-5 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-center">

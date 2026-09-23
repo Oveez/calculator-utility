@@ -50,11 +50,12 @@ const parameterGuide: CalculatorParameterInfo[] = [
 ];
 ---
 
-<SiteLayout
+<SiteLayout heroCompact={true}
   title="Salary to Hourly Calculator — Hourly Wage & Paycheck Calculator"
   description="Convert salary to hourly pay, calculate equivalent hourly wage rates, and determine daily, weekly, or monthly paycheck amounts with our free wage calculator."
 >
-  <div class="mx-auto max-w-4xl space-y-10">
+  
+  <div slot="hero" class="site-hero-header">
     <nav class="flex items-center gap-2 text-xs font-medium text-[color:var(--muted)]" aria-label="Breadcrumb">
       <a href="/" class="hover:text-[color:var(--accent)]">Home</a>
       <span>/</span>
@@ -74,6 +75,9 @@ const parameterGuide: CalculatorParameterInfo[] = [
         Convert your annual salary into equivalent hourly wage, daily pay, weekly compensation, and monthly paycheck rates based on customizable work schedules.
       </p>
     </header>
+  </div>
+
+  <div class="mx-auto max-w-4xl space-y-10">
 
     <!-- Salary Converter Component -->
     <div class="rounded-[2.5rem] border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-6 shadow-[var(--shadow)] sm:p-10" data-salary-app>
@@ -106,7 +110,7 @@ const parameterGuide: CalculatorParameterInfo[] = [
                 type="number"
                 min="1"
                 max="168"
-                value="40"
+                placeholder="e.g. 40"
                 class="mt-1.5 w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] p-3 text-sm font-bold text-[color:var(--fg)] outline-none"
                 data-hours-week />
             </div>
@@ -119,7 +123,7 @@ const parameterGuide: CalculatorParameterInfo[] = [
                 type="number"
                 min="1"
                 max="52"
-                value="52"
+                placeholder="e.g. 52"
                 class="mt-1.5 w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] p-3 text-sm font-bold text-[color:var(--fg)] outline-none"
                 data-weeks-year />
             </div>
@@ -134,15 +138,14 @@ const parameterGuide: CalculatorParameterInfo[] = [
               <p class="mt-1 text-4xl font-extrabold text-[color:var(--fg)] sm:text-5xl" data-out-hourly>$0.00</p>
               <p class="text-xs text-[color:var(--muted)]">Based on 2,080 working hours/year</p>
             </div>
-            <button
+            <div class="flex items-center gap-2"><button type="button" data-reset-btn class="inline-flex items-center gap-1.5 rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] px-2.5 py-1 text-xs font-semibold text-[color:var(--fg)] hover:border-[color:var(--border-strong)] transition cursor-pointer"><Icon name="refresh" class="w-3.5 h-3.5" /><span>Reset</span></button><button
               type="button"
               data-copy-btn
               class="inline-flex items-center gap-1.5 rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] px-2.5 py-1 text-xs font-semibold text-[color:var(--fg)] hover:border-[color:var(--accent)] hover:shadow-[0_0_12px_var(--accent-glow)] transition cursor-pointer"
             >
               <Icon name="copy" class="w-3.5 h-3.5" />
               <span>Copy Summary</span>
-            </button>
-          </div>
+            </button></div></div>
 
           <div class="space-y-2.5 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-xs">
             <div class="flex items-center justify-between text-[color:var(--muted)]">
@@ -243,6 +246,7 @@ const parameterGuide: CalculatorParameterInfo[] = [
     const outBiweekly = app.querySelector('[data-out-biweekly]');
     const outMonthly = app.querySelector('[data-out-monthly]');
     const copyBtn = app.querySelector('[data-copy-btn]');
+    
 
     function fmt(num: number) {
       return '$' + num.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -250,8 +254,8 @@ const parameterGuide: CalculatorParameterInfo[] = [
 
     function update() {
       const salary = Math.max(0, parseFloat(salaryInput?.value || '0') || 0);
-      const hours = Math.max(1, parseFloat(hoursInput?.value || '40') || 40);
-      const weeks = Math.max(1, parseFloat(weeksInput?.value || '52') || 52);
+      const hours = hoursInput?.value !== '' && hoursInput?.value !== undefined ? Math.max(1, parseFloat(hoursInput.value) || 40) : 40;
+      const weeks = weeksInput?.value !== '' && weeksInput?.value !== undefined ? Math.max(1, parseFloat(weeksInput.value) || 52) : 52;
 
       const totalHours = hours * weeks;
       const hourly = totalHours > 0 ? salary / totalHours : 0;
@@ -294,6 +298,15 @@ const parameterGuide: CalculatorParameterInfo[] = [
     salaryInput?.addEventListener('input', update);
     hoursInput?.addEventListener('input', update);
     weeksInput?.addEventListener('input', update);
+
+    if (resetBtn) {
+      resetBtn.addEventListener('click', () => {
+        if (salaryInput) salaryInput.value = '';
+        if (hoursInput) hoursInput.value = '';
+        if (weeksInput) weeksInput.value = '';
+        update();
+      });
+    }
 
     update();
   })();

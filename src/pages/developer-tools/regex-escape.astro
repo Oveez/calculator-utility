@@ -65,10 +65,11 @@ const schemaGraph = [
 ];
 ---
 
-<SiteLayout title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
+<SiteLayout heroCompact={true} title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
   <script is:inline type="application/ld+json" set:html={JSON.stringify(schemaGraph)} />
 
-  <article class="space-y-10 py-2" data-regex-escape-app>
+  
+  <div slot="hero" class="site-hero-header">
     <nav aria-label="Breadcrumb">
       <ol class="flex flex-wrap items-center gap-2 text-xs text-[color:var(--muted)]">
         {breadcrumbItems.map((item, index) => (
@@ -100,6 +101,9 @@ const schemaGraph = [
         Escape or unescape special regular expression metacharacters in literal text strings. Generate production-ready JavaScript snippets for safe dynamic RegExp constructors.
       </p>
     </header>
+  </div>
+
+  <article class="space-y-10 py-2" data-regex-escape-app>
 
     <!-- Controls & Telemetry -->
     <div class="space-y-6">

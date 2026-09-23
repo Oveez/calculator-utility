@@ -105,10 +105,11 @@ const workedExampleData = {
 };
 ---
 
-<SiteLayout title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
+<SiteLayout heroCompact={true} title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
   <script is:inline type="application/ld+json" set:html={JSON.stringify(schemaGraph)} />
 
-  <article class="space-y-10 py-2" data-pdf-meta-app>
+  
+  <div slot="hero" class="site-hero-header">
     <!-- Breadcrumb -->
     <nav aria-label="Breadcrumb">
       <ol class="flex flex-wrap items-center gap-2 text-xs text-[color:var(--muted)]">
@@ -142,6 +143,9 @@ const workedExampleData = {
         Inspect PDF document details, Title, Author, Subject, Creator software, Producer engine, PDF version, and timestamps with 100% client-side privacy. View and export metadata properties as JSON or Markdown.
       </p>
     </header>
+  </div>
+
+  <article class="space-y-10 py-2" data-pdf-meta-app>
 
     <div class="space-y-6">
       <!-- Dropzone -->

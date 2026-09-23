@@ -67,10 +67,11 @@ const schemaGraph = [
 ];
 ---
 
-<SiteLayout title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
+<SiteLayout heroCompact={true} title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
   <script is:inline type="application/ld+json" set:html={JSON.stringify(schemaGraph)} />
 
-  <article class="space-y-10 py-2">
+  
+  <div slot="hero" class="site-hero-header">
     <!-- Breadcrumbs -->
     <nav aria-label="Breadcrumb">
       <ol class="flex flex-wrap items-center gap-2 text-xs text-[color:var(--muted)]">
@@ -103,6 +104,9 @@ const schemaGraph = [
         How many hours should you actually study each week? Calculate customized study time recommendations tailored to your enrolled credit load, course difficulty, and target GPA.
       </p>
     </header>
+  </div>
+
+  <article class="space-y-10 py-2">
 
     <!-- App Card -->
     <div

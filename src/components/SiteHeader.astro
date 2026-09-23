@@ -5,61 +5,67 @@ import BrandMark from './BrandMark.astro';
 import { siteName, withBasePath } from '../utils/site';
 
 const navigationItems = [
-  { href: withBasePath('/developer-tools/'), label: 'Dev Tools', icon: 'code', color: 'text-blue-500' },
-  { href: withBasePath('/text-tools/'), label: 'Text Tools', icon: 'text', color: 'text-purple-500' },
-  { href: withBasePath('/data-tools/'), label: 'Data', icon: 'converter', color: 'text-teal-500' },
-  { href: withBasePath('/image-tools/'), label: 'Images', icon: 'image', color: 'text-emerald-500' },
-  { href: withBasePath('/pdf-tools/'), label: 'PDF Tools', icon: 'document', color: 'text-rose-500' },
-  { href: withBasePath('/generators/'), label: 'Generators', icon: 'dice', color: 'text-amber-500' },
-  { href: withBasePath('/#calculators'), label: 'All Tools', icon: 'grid', color: 'text-[color:var(--muted)]' },
+  { href: withBasePath('/developer-tools/'), label: 'Dev Tools', icon: 'code', bg: 'bg-blue-600' },
+  { href: withBasePath('/text-tools/'), label: 'Text Tools', icon: 'text', bg: 'bg-purple-600' },
+  { href: withBasePath('/data-tools/'), label: 'Data', icon: 'converter', bg: 'bg-teal-600' },
+  { href: withBasePath('/image-tools/'), label: 'Images', icon: 'image', bg: 'bg-emerald-600' },
+  { href: withBasePath('/pdf-tools/'), label: 'PDF Tools', icon: 'document', bg: 'bg-rose-600' },
+  { href: withBasePath('/generators/'), label: 'Generators', icon: 'dice', bg: 'bg-amber-600' },
+  { href: withBasePath('/#calculators'), label: 'All Categories', icon: 'grid', bg: 'bg-indigo-600' },
 ];
 ---
 
-<header class="sticky top-0 z-40 border-b border-[color:var(--border)] bg-[color:var(--surface)]/95 backdrop-blur-md shadow-xs transition-colors">
-  <div class="mx-auto flex w-full max-w-6xl items-center justify-between gap-4 px-4 py-3 sm:px-6 lg:px-8">
-    <!-- Brand Logo + Site Name -->
-    <a class="flex items-center transition-transform duration-200 hover:scale-[1.02] shrink-0" href={withBasePath('/')} aria-label={`${siteName} Home`}>
-      <BrandMark size="md" />
-    </a>
+<header class="sticky top-0 z-40 border-b border-slate-800 bg-[#0F172A] shadow-md transition-colors text-white">
+  <div class="site-header-inner mx-auto w-full max-w-7xl px-4 py-3.5 sm:py-4 sm:px-6 lg:px-6 xl:px-8">
+    <!-- Brand Logo + Site Name (Left Column) -->
+    <div class="site-header-left flex items-center justify-start shrink-0">
+      <a class="flex items-center transition-transform duration-200 hover:scale-[1.02]" href={withBasePath('/')} aria-label={`${siteName} Home`}>
+        <BrandMark size="md" variant="light" />
+      </a>
+    </div>
 
-    <!-- Desktop Navigation -->
-    <nav class="hidden items-center gap-1 lg:flex" aria-label="Primary">
+    <!-- Desktop Navigation (Center Column - Mathematically Centered & Non-Overlapping) -->
+    <nav class="site-header-center hidden lg:flex items-center justify-center gap-1 xl:gap-1.5 shrink-0" aria-label="Primary">
       {navigationItems.map((item) => (
         <a
-          class="group flex items-center gap-1.5 rounded-xl border border-transparent px-2.5 py-1.5 text-xs font-semibold text-[color:var(--muted)] transition-all duration-200 hover:bg-[color:var(--surface-strong)] hover:text-[color:var(--fg)] hover:border-[color:var(--border)]"
+          class="group flex items-center gap-1.5 rounded-xl px-2 py-2 xl:px-2.5 text-xs font-semibold text-slate-200 transition-all duration-200 hover:bg-slate-800 hover:text-white whitespace-nowrap"
           href={item.href}
         >
-          <Icon name={item.icon as any} class={`w-[18px] h-[18px] transition-transform duration-200 group-hover:scale-110 shrink-0 ${item.color}`} />
-          <span>{item.label}</span>
+          <span class={`flex h-7 w-7 items-center justify-center rounded-lg ${item.bg} text-white shadow-xs transition-transform duration-200 group-hover:scale-110 shrink-0`}>
+            <Icon name={item.icon as any} class="w-3.5 h-3.5 text-white" />
+          </span>
+          <span class="tracking-tight">{item.label}</span>
         </a>
       ))}
     </nav>
 
-    <!-- Header Actions (Search + Theme Toggle + Mobile Menu Trigger) -->
-    <div class="flex items-center gap-2">
+    <!-- Header Actions (Right Column) -->
+    <div class="site-header-right flex items-center gap-2 shrink-0 justify-end">
       <!-- Quick Search Trigger Button -->
       <button
         type="button"
         data-trigger-search
-        class="hidden sm:flex h-9 items-center gap-2 rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] px-2.5 sm:px-3 text-xs text-[color:var(--muted)] hover:border-[color:var(--border-strong)] hover:shadow-sm hover:text-[color:var(--fg)] transition cursor-pointer"
+        class="hidden sm:flex h-10 items-center gap-2 rounded-xl border border-slate-700/80 bg-slate-800/90 px-2.5 sm:px-3 text-xs text-slate-300 hover:border-slate-600 hover:bg-slate-800 hover:text-white transition cursor-pointer whitespace-nowrap shrink-0 shadow-xs"
         aria-label="Search all tools"
       >
-        <Icon name="search" class="h-3.5 w-3.5 text-blue-500" />
-        <span class="font-medium">Search 186+ tools...</span>
-        <kbd class="hidden md:inline rounded-md border border-[color:var(--border)] bg-[color:var(--surface)] px-1.5 py-0.5 text-[10px] font-mono text-[color:var(--fg)] shadow-xs">/</kbd>
+        <span class="flex h-5.5 w-5.5 items-center justify-center rounded-md bg-blue-600 text-white shadow-2xs shrink-0">
+          <Icon name="search" class="h-3 w-3 text-white" />
+        </span>
+        <span class="font-medium text-xs whitespace-nowrap text-slate-200">Search..</span>
+        <kbd class="hidden xl:inline rounded-md border border-slate-700 bg-slate-900 px-1.5 py-0.5 text-[10px] font-mono text-slate-300 shadow-xs">/</kbd>
       </button>
 
-      <!-- Theme Toggle -->
+      <!-- Theme Toggle (Compact segmented switch) -->
       <ThemeToggle />
 
-      <!-- Mobile Hamburger Button (Triggers slide-out Drawer) -->
+      <!-- Mobile & Tablet Hamburger Button (Triggers slide-out Drawer) -->
       <button
         type="button"
         data-trigger-drawer
-        class="flex h-9 w-9 md:hidden items-center justify-center rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] text-[color:var(--fg)] hover:border-[color:var(--border-strong)] hover:bg-[color:var(--surface-strong)] transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-current cursor-pointer"
+        class="flex h-10 w-10 lg:hidden items-center justify-center rounded-xl border border-slate-700/80 bg-slate-800/90 text-slate-200 hover:border-slate-600 hover:bg-slate-800 hover:text-white transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400 cursor-pointer shadow-xs"
         aria-label="Open navigation drawer"
       >
-        <svg class="h-4.5 w-4.5 stroke-current" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <svg class="h-5 w-5 stroke-current" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <line x1="3" y1="12" x2="21" y2="12"></line>
           <line x1="3" y1="6" x2="21" y2="6"></line>
           <line x1="3" y1="18" x2="21" y2="18"></line>
@@ -68,3 +74,31 @@ const navigationItems = [
     </div>
   </div>
 </header>
+
+<style>
+  .site-header-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+  }
+  @media (min-width: 1024px) {
+    .site-header-inner {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      gap: 1rem;
+    }
+    .site-header-left {
+      justify-self: start;
+    }
+    .site-header-center {
+      justify-self: center;
+      margin: 0 auto;
+      transform: translateX(-10px);
+    }
+    .site-header-right {
+      justify-self: end;
+    }
+  }
+</style>

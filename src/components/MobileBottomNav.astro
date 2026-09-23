@@ -12,7 +12,7 @@ const isCv = currentPath.includes('/career-tools/cv-maker');
 <!-- Fixed App-Style Bottom Navigation Bar (Mobile only) -->
 <nav
   id="mobile-bottom-nav"
-  class="fixed bottom-0 left-0 right-0 z-40 md:hidden border-t border-[color:var(--border)] bg-[color:var(--bg)]/95 backdrop-blur-xl shadow-lg transition-colors"
+  class="fixed bottom-0 left-0 right-0 z-40 md:hidden border-t border-slate-800 bg-[#0F172A]/95 backdrop-blur-xl shadow-lg transition-colors"
   aria-label="Mobile Bottom Navigation"
   style="padding-bottom: env(safe-area-inset-bottom, 0px);"
 >
@@ -21,19 +21,19 @@ const isCv = currentPath.includes('/career-tools/cv-maker');
     <a
       href={withBasePath('/')}
       class:list={[
-        'bottom-nav-tab flex flex-col items-center justify-center gap-0.5 py-1 text-center transition-colors',
-        isHome ? 'text-blue-600 dark:text-blue-400 font-bold' : 'text-[color:var(--muted)] hover:text-[color:var(--fg)] font-medium',
+        'bottom-nav-tab flex flex-col items-center justify-center gap-1 py-1 text-center transition-colors',
+        isHome ? 'text-blue-400 font-bold' : 'text-slate-400 hover:text-white font-medium',
       ]}
       aria-label="Home"
     >
-      <!-- Tool-Home icon: house silhouette with a wrench inside -->
-      <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <!-- House shape -->
-        <path d="M3 10.5L12 3l9 7.5" />
-        <path d="M5 9.5V20a1 1 0 0 0 1 1h4v-4h4v4h4a1 1 0 0 0 1-1V9.5" />
-        <!-- Wrench inside the house -->
-        <path d="M12 13a1.5 1.5 0 0 1 1.5 1.5c0 .28-.08.54-.2.77l1.45 1.45-.7.7-1.45-1.45c-.23.13-.49.2-.77.2A1.5 1.5 0 0 1 10.5 14.5 1.5 1.5 0 0 1 12 13z" stroke-width="1.5" />
-      </svg>
+      <span class:list={['flex h-6 w-6 items-center justify-center rounded-lg shadow-xs bg-blue-600 text-white shrink-0 transition-transform', isHome && 'scale-105 ring-2 ring-blue-400/40']}>
+        <!-- Tool-Home icon: house silhouette with a wrench inside -->
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 stroke-current" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 10.5L12 3l9 7.5" />
+          <path d="M5 9.5V20a1 1 0 0 0 1 1h4v-4h4v4h4a1 1 0 0 0 1-1V9.5" />
+          <path d="M12 13a1.5 1.5 0 0 1 1.5 1.5c0 .28-.08.54-.2.77l1.45 1.45-.7.7-1.45-1.45c-.23.13-.49.2-.77.2A1.5 1.5 0 0 1 10.5 14.5 1.5 1.5 0 0 1 12 13z" stroke-width="1.5" />
+        </svg>
+      </span>
       <span class="text-[10px] tracking-tight">Home</span>
     </a>
 
@@ -41,12 +41,14 @@ const isCv = currentPath.includes('/career-tools/cv-maker');
     <a
       href={withBasePath('/tax-calculators/')}
       class:list={[
-        'bottom-nav-tab flex flex-col items-center justify-center gap-0.5 py-1 text-center transition-colors',
-        isTax ? 'text-emerald-600 dark:text-emerald-400 font-bold' : 'text-[color:var(--muted)] hover:text-[color:var(--fg)] font-medium',
+        'bottom-nav-tab flex flex-col items-center justify-center gap-1 py-1 text-center transition-colors',
+        isTax ? 'text-emerald-400 font-bold' : 'text-slate-400 hover:text-white font-medium',
       ]}
       aria-label="Tax & Salary Suite"
     >
-      <Icon name="finance" class:list={['w-5 h-5 shrink-0', isTax ? 'text-emerald-600 dark:text-emerald-400' : 'text-emerald-500']} />
+      <span class:list={['flex h-6 w-6 items-center justify-center rounded-lg shadow-xs bg-emerald-600 text-white shrink-0 transition-transform', isTax && 'scale-105 ring-2 ring-emerald-400/40']}>
+        <Icon name="finance" class="w-3.5 h-3.5 text-white" />
+      </span>
       <span class="text-[10px] tracking-tight">Tax Hub</span>
     </a>
 
@@ -54,23 +56,27 @@ const isCv = currentPath.includes('/career-tools/cv-maker');
     <button
       type="button"
       data-trigger-search
-      class="bottom-nav-tab flex flex-col items-center justify-center gap-0.5 py-1 text-center text-[color:var(--muted)] hover:text-[color:var(--fg)] cursor-pointer transition-colors"
+      class="bottom-nav-tab flex flex-col items-center justify-center gap-1 py-1 text-center text-slate-400 hover:text-white cursor-pointer transition-colors"
       aria-label="Search 186 Tools"
     >
-      <Icon name="search" class="w-5 h-5 shrink-0 text-blue-500" />
-      <span class="text-[10px] tracking-tight font-medium text-[color:var(--fg)]">Search</span>
+      <span class="flex h-6 w-6 items-center justify-center rounded-lg shadow-xs bg-indigo-600 text-white shrink-0">
+        <Icon name="search" class="w-3.5 h-3.5 text-white" />
+      </span>
+      <span class="text-[10px] tracking-tight font-medium text-slate-200">Search</span>
     </button>
 
     <!-- 4. Developer Tools Tab -->
     <a
       href={withBasePath('/developer-tools/')}
       class:list={[
-        'bottom-nav-tab flex flex-col items-center justify-center gap-0.5 py-1 text-center transition-colors',
-        isDev ? 'text-blue-600 dark:text-blue-400 font-bold' : 'text-[color:var(--muted)] hover:text-[color:var(--fg)] font-medium',
+        'bottom-nav-tab flex flex-col items-center justify-center gap-1 py-1 text-center transition-colors',
+        isDev ? 'text-purple-400 font-bold' : 'text-slate-400 hover:text-white font-medium',
       ]}
       aria-label="Developer Tools"
     >
-      <Icon name="code" class:list={['w-5 h-5 shrink-0', isDev ? 'text-blue-600 dark:text-blue-400' : 'text-blue-500']} />
+      <span class:list={['flex h-6 w-6 items-center justify-center rounded-lg shadow-xs bg-purple-600 text-white shrink-0 transition-transform', isDev && 'scale-105 ring-2 ring-purple-400/40']}>
+        <Icon name="code" class="w-3.5 h-3.5 text-white" />
+      </span>
       <span class="text-[10px] tracking-tight">Dev Tools</span>
     </a>
 
@@ -78,12 +84,14 @@ const isCv = currentPath.includes('/career-tools/cv-maker');
     <a
       href={withBasePath('/career-tools/cv-maker/')}
       class:list={[
-        'bottom-nav-tab flex flex-col items-center justify-center gap-0.5 py-1 text-center transition-colors',
-        isCv ? 'text-sky-600 dark:text-sky-400 font-bold' : 'text-[color:var(--muted)] hover:text-[color:var(--fg)] font-medium',
+        'bottom-nav-tab flex flex-col items-center justify-center gap-1 py-1 text-center transition-colors',
+        isCv ? 'text-sky-400 font-bold' : 'text-slate-400 hover:text-white font-medium',
       ]}
       aria-label="CV Maker"
     >
-      <Icon name="career" class:list={['w-5 h-5 shrink-0', isCv ? 'text-sky-600 dark:text-sky-400' : 'text-sky-500']} />
+      <span class:list={['flex h-6 w-6 items-center justify-center rounded-lg shadow-xs bg-sky-600 text-white shrink-0 transition-transform', isCv && 'scale-105 ring-2 ring-sky-400/40']}>
+        <Icon name="career" class="w-3.5 h-3.5 text-white" />
+      </span>
       <span class="text-[10px] tracking-tight">CV Maker</span>
     </a>
   </div>

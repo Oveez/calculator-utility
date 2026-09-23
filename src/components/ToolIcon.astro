@@ -21,10 +21,18 @@ const {
 
 const config = getToolIconConfig(slug || url, title, category);
 
+/**
+ * iLovePDF-style solid squircle tile:
+ *   - Solid vibrant background (e.g. bg-rose-500)
+ *   - White SVG icon (text-white) — bold 2.5 stroke
+ *   - No border (border-transparent)
+ *   - Slight drop shadow for depth
+ *   - Scale-up on parent group hover
+ */
 const sizeClasses = {
-  sm: 'w-7 h-7 rounded-lg p-1.5',
-  md: 'w-9 h-9 rounded-xl p-2',
-  lg: 'w-11 h-11 rounded-2xl p-2.5',
+  sm: 'w-8 h-8 rounded-xl p-1.5',
+  md: 'w-10 h-10 rounded-xl p-2',
+  lg: 'w-12 h-12 rounded-2xl p-2.5',
 }[size];
 
 const svgSizes = {
@@ -36,20 +44,20 @@ const svgSizes = {
 
 <div
   class:list={[
-    'inline-flex shrink-0 items-center justify-center border shadow-xs transition-transform duration-200 group-hover:scale-105',
+    'inline-flex shrink-0 items-center justify-center transition-transform duration-150 ease-out group-hover:scale-110',
     config.badgeBg,
-    config.badgeBorder,
     config.iconColor,
     sizeClasses,
     className,
   ]}
+  style="box-shadow: 0 2px 6px rgba(0,0,0,0.14), 0 1px 2px rgba(0,0,0,0.08);"
 >
   <svg
-    class:list={[svgSizes, 'stroke-current']}
+    class:list={[svgSizes]}
     viewBox={config.viewBox || '0 0 24 24'}
     fill="none"
     stroke="currentColor"
-    stroke-width="2"
+    stroke-width="2.5"
     stroke-linecap="round"
     stroke-linejoin="round"
     set:html={config.svgPath}

@@ -71,10 +71,11 @@ const schemaGraph = [
 ];
 ---
 
-<SiteLayout title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
+<SiteLayout heroCompact={true} title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
   <script is:inline type="application/ld+json" set:html={JSON.stringify(schemaGraph)} />
 
-  <article class="space-y-10 py-2">
+  
+  <div slot="hero" class="site-hero-header">
     <!-- Breadcrumbs -->
     <nav aria-label="Breadcrumb">
       <ol class="flex flex-wrap items-center gap-2 text-xs text-[color:var(--muted)]">
@@ -107,6 +108,9 @@ const schemaGraph = [
         Need to take a day off? Calculate exactly how many lectures and practical labs you can safely bunk without violating your 75% or 80% university attendance cutoff rule.
       </p>
     </header>
+  </div>
+
+  <article class="space-y-10 py-2">
 
     <!-- Bunk App Card -->
     <div

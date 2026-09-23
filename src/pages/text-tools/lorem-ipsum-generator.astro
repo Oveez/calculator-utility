@@ -115,10 +115,11 @@ const workedExampleData = {
 };
 ---
 
-<SiteLayout title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
+<SiteLayout heroCompact={true} title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
   <script is:inline type="application/ld+json" set:html={JSON.stringify(schemaGraph)} />
 
-  <article class="space-y-10 py-2" data-lorem-app>
+  
+  <div slot="hero" class="site-hero-header">
     <!-- Breadcrumb -->
     <nav aria-label="Breadcrumb">
       <ol class="flex flex-wrap items-center gap-2 text-xs text-[color:var(--muted)]">
@@ -152,6 +153,9 @@ const workedExampleData = {
         Generate custom placeholder copy for UI mockups, websites, wireframes, and print layouts by paragraphs, sentences, or word count with HTML, Markdown, and JSON formatting.
       </p>
     </header>
+  </div>
+
+  <article class="space-y-10 py-2" data-lorem-app>
 
     <!-- Quick Presets -->
     <div class="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
@@ -209,7 +213,7 @@ const workedExampleData = {
               id="lorem-qty"
               min="1"
               max="200"
-              value="3"
+              placeholder="e.g. 3"
               class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-[color:var(--fg)] font-bold" />
             <span id="qty-label" class="text-[11px] text-[color:var(--muted)] whitespace-nowrap">paras</span>
           </div>

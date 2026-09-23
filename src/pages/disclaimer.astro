@@ -1,4 +1,5 @@
 ---
+import SiteHero from '../components/SiteHero.astro';
 import SiteLayout from '../layouts/SiteLayout.astro';
 import { siteName, toAbsoluteUrl, withBasePath } from '../utils/site';
 
@@ -12,34 +13,15 @@ const breadcrumbItems = [
 ];
 ---
 
-<SiteLayout title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
+<SiteLayout title={pageTitle} description={pageDesc} canonical={canonicalUrl} heroCompact={true}>
+  <SiteHero
+    slot="hero"
+    breadcrumbs={breadcrumbItems}
+    badge="Legal & Compliance"
+    title="Website Disclaimer"
+    description="General informational, financial, medical, and career tool disclaimers."
+  />
   <article class="mx-auto max-w-3xl space-y-8 py-4">
-    <!-- Breadcrumbs -->
-    <nav aria-label="Breadcrumb">
-      <ol class="flex flex-wrap items-center gap-2 text-sm text-[color:var(--muted)]">
-        {breadcrumbItems.map((item, index) => (
-          <li class="flex items-center gap-2">
-            {index > 0 && <span aria-hidden="true">/</span>}
-            {item.href ? (
-              <a class="transition hover:text-[color:var(--fg)]" href={item.href}>
-                {item.label}
-              </a>
-            ) : (
-              <span aria-current="page" class="font-medium text-[color:var(--fg)]">
-                {item.label}
-              </span>
-            )}
-          </li>
-        ))}
-      </ol>
-    </nav>
-
-    <!-- Header -->
-    <header class="space-y-3">
-      <p class="text-xs font-semibold uppercase tracking-wider text-[color:var(--accent)]">Legal &amp; Compliance</p>
-      <h1 class="text-3xl font-bold tracking-tight text-[color:var(--fg)] sm:text-4xl">Website Disclaimer</h1>
-      <p class="text-xs text-[color:var(--muted)]">Last updated: August 2026</p>
-    </header>
 
     <div class="space-y-6 text-sm leading-relaxed text-[color:var(--muted)]">
       

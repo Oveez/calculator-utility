@@ -60,6 +60,34 @@ const popularCalculators = popularSlugs
   .map((slug) => calculators.find((c) => c.slug === slug))
   .filter((c): c is typeof calculators[0] => Boolean(c));
 
+// Sets for high-intent badge chips (POPULAR / NEW)
+const popularSet = new Set([
+  'currency-converter',
+  'mortgage-calculator',
+  'compound-interest-calculator',
+  'bmi-calculator',
+  'gpa-calculator',
+  'discount-calculator',
+  'json-formatter',
+  'percentage-calculator',
+  'sales-tax-calculator',
+  'pdf-to-image',
+  'image-compressor',
+  'cv-maker',
+]);
+
+const newToolSet = new Set([
+  'assignment-cover-maker',
+  'exam-seating-generator',
+  'study-schedule-generator',
+  'random-group-generator',
+  'jwt-decoder',
+  'regex-tester',
+  'cron-expression-generator',
+  'csv-to-json-converter',
+  'color-contrast-checker',
+]);
+
 const categoryTabs = [{ name: 'All', count: allToolsIndex.length }, ...categories];
 
 const homeTitle = "Free Calculator Online — Math, Finance & Online Tools | ToolsCastle";
@@ -67,204 +95,31 @@ const homeDescription = "Free calculator online suite featuring 186+ fast tools:
 ---
 
 <SiteLayout title={homeTitle} description={homeDescription} canonical={withBasePath('/')}>
-  <!-- Hero Section -->
-  <section class="relative overflow-hidden rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-6 sm:p-10 lg:p-12">
-    <div class="grid gap-10 lg:grid-cols-[1.2fr_0.8fr] lg:items-center">
-      <div class="space-y-6">
-        <div class="inline-flex items-center gap-2 rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3.5 py-1.5 text-xs font-semibold uppercase tracking-wider text-[color:var(--fg)] shadow-xs">
-          <span>Fast • 100% Client-Side • Privacy-First</span>
-        </div>
-
-        <div class="space-y-4">
-          <h1 class="text-3xl font-bold tracking-tight text-[color:var(--fg)] sm:text-4xl lg:text-5xl">
-            Free calculator online &amp; smart tools.
-          </h1>
-          <p class="max-w-xl text-sm leading-relaxed text-[color:var(--muted)] sm:text-base">
-            Access 186+ precision tools and calculators across 16 specialized hubs for finance calculator tasks, math calculator operations, tax engines, PDF tools, image processors, and developer tools. Instant browser computations with zero server latency.
-          </p>
-        </div>
-
-        <!-- Hero Search Bar -->
-        <form class="max-w-xl" role="search" aria-label="Search calculators" onsubmit="return false;">
-          <label class="relative block cursor-pointer" data-trigger-search>
-            <span class="sr-only">Search all tools and calculators</span>
-            <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4 text-[color:var(--muted)]">
-              <Icon name="search" class="w-4 h-4 text-[color:var(--accent)]" />
-            </div>
-            <input
-              class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] py-3.5 pl-11 pr-24 text-sm sm:text-base text-[color:var(--fg)] outline-none transition placeholder:text-[color:var(--muted)] hover:border-[color:var(--border-strong)] focus:border-[color:var(--border-strong)] focus:ring-1 focus:ring-[color:var(--accent)] cursor-pointer"
-              type="search"
-              placeholder="Search 186+ tools (JSON, PDF, GPA, Tax, BMI)..."
-              aria-label="Search calculators"
-              data-calculator-search
-              data-trigger-search
-              readonly />
-            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-4 gap-1.5">
-              <span class="hidden sm:inline text-[11px] font-semibold text-[color:var(--muted)]">Quick Search</span>
-              <kbd class="rounded-lg border border-[color:var(--border)] bg-[color:var(--surface)] px-2 py-0.5 text-xs font-mono text-[color:var(--muted)]">
-                /
-              </kbd>
-            </div>
-          </label>
-        </form>
-
-        <!-- Category Quick Pills -->
-        <div class="flex flex-wrap gap-2 text-xs font-medium">
-          <a href={withBasePath('/developer-tools/')} class="inline-flex items-center gap-1.5 cursor-pointer rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3.5 py-1.5 text-[color:var(--fg)] font-semibold shadow-xs transition hover:border-[color:var(--border-strong)] hover:bg-[color:var(--surface-strong)]">
-            <Icon name="code" class="w-3.5 h-3.5 text-blue-500" />
-            <span>Dev Tools (17)</span>
-          </a>
-          <a href={withBasePath('/text-tools/')} class="inline-flex items-center gap-1.5 cursor-pointer rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3.5 py-1.5 text-[color:var(--fg)] font-semibold shadow-xs transition hover:border-[color:var(--border-strong)] hover:bg-[color:var(--surface-strong)]">
-            <Icon name="text" class="w-3.5 h-3.5 text-purple-500" />
-            <span>Text Tools (11)</span>
-          </a>
-          <a href={withBasePath('/image-tools/')} class="inline-flex items-center gap-1.5 cursor-pointer rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3.5 py-1.5 text-[color:var(--fg)] font-semibold shadow-xs transition hover:border-[color:var(--border-strong)] hover:bg-[color:var(--surface-strong)]">
-            <Icon name="image" class="w-3.5 h-3.5 text-emerald-500" />
-            <span>Image Tools (10)</span>
-          </a>
-          <a href={withBasePath('/pdf-tools/')} class="inline-flex items-center gap-1.5 cursor-pointer rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3.5 py-1.5 text-[color:var(--fg)] font-semibold shadow-xs transition hover:border-[color:var(--border-strong)] hover:bg-[color:var(--surface-strong)]">
-            <Icon name="document" class="w-3.5 h-3.5 text-rose-500" />
-            <span>PDF Tools (10)</span>
-          </a>
-          <a href={withBasePath('/color-tools/')} class="inline-flex items-center gap-1.5 cursor-pointer rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3.5 py-1.5 text-[color:var(--fg)] font-semibold shadow-xs transition hover:border-[color:var(--border-strong)] hover:bg-[color:var(--surface-strong)]">
-            <Icon name="color" class="w-3.5 h-3.5 text-fuchsia-500" />
-            <span>Color Tools (8)</span>
-          </a>
-          <a href={withBasePath('/academic-tools/')} class="inline-flex items-center gap-1.5 cursor-pointer rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3.5 py-1.5 text-[color:var(--fg)] font-semibold shadow-xs transition hover:border-[color:var(--border-strong)] hover:bg-[color:var(--surface-strong)]">
-            <Icon name="education" class="w-3.5 h-3.5 text-indigo-500" />
-            <span>Academic (7)</span>
-          </a>
-          <a href={withBasePath('/career-tools/cv-maker/')} class="inline-flex items-center gap-1.5 cursor-pointer rounded-full border border-sky-500/30 bg-sky-500/10 px-3.5 py-1.5 text-sky-600 dark:text-sky-400 font-semibold shadow-xs transition hover:border-sky-500 hover:bg-sky-500/20">
-            <Icon name="career" class="w-3.5 h-3.5 text-sky-500" />
-            <span>CV Maker</span>
-          </a>
-          <a href={withBasePath('/education-tools/assignment-cover-maker/')} class="inline-flex items-center gap-1.5 cursor-pointer rounded-full border border-indigo-500/40 bg-indigo-50 dark:bg-indigo-950/50 px-3.5 py-1.5 text-indigo-700 dark:text-indigo-200 font-bold shadow-xs transition hover:border-indigo-600 hover:bg-indigo-100 dark:hover:bg-indigo-900/60">
-            <Icon name="education" class="w-3.5 h-3.5 text-indigo-700 dark:text-indigo-300" />
-            <span>Assignment Cover Maker</span>
-          </a>
-        </div>
-      </div>
-
-      <!-- Hero Stats Card / Library Overview -->
-      <aside class="grid gap-5 rounded-3xl border border-[color:var(--border)] bg-[color:var(--bg)] p-6 sm:p-7 shadow-sm">
-        <div class="flex items-start gap-4">
-          <div class="flex h-16 w-16 sm:h-20 sm:w-20 shrink-0 items-center justify-center rounded-2xl border border-blue-500/25 bg-blue-500/10 text-blue-600 dark:border-blue-400/30 dark:bg-blue-500/20 dark:text-blue-400 shadow-sm" aria-label="Library Overview Emblem">
-            <svg class="h-9 w-9 sm:h-11 sm:w-11 stroke-current" viewBox="0 0 24 24" fill="none" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"></path>
-              <path d="M6 6h7"></path>
-              <path d="M6 10h4"></path>
-              <rect x="13" y="9" width="6" height="6" rx="1.5"></rect>
-              <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
-            </svg>
-          </div>
-          <div class="min-w-0 flex-1">
-            <div class="flex items-center gap-2">
-              <span class="inline-block h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span>
-              <p class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Library Overview</p>
-            </div>
-            <p class="mt-1 text-xl sm:text-2xl font-bold tracking-tight text-[color:var(--fg)] leading-tight">186 Precision Tools &amp; Calculators</p>
-            <p class="mt-1 text-xs text-[color:var(--muted)]">Free, 100% private, and instant browser-computed</p>
-          </div>
-        </div>
-
-        <div class="grid grid-cols-2 gap-3">
-          <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3.5 transition hover:border-[color:var(--border-strong)]">
-            <div class="flex items-center justify-between">
-              <p class="text-xs font-medium text-[color:var(--muted)]">Tool Suites</p>
-              <div class="flex h-6 w-6 items-center justify-center rounded-lg bg-purple-500/10 text-purple-500">
-                <svg class="h-3.5 w-3.5 stroke-current" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="7" height="7" x="3" y="3" rx="1"></rect><rect width="7" height="7" x="14" y="3" rx="1"></rect><rect width="7" height="7" x="14" y="14" rx="1"></rect><rect width="7" height="7" x="3" y="14" rx="1"></rect></svg>
-              </div>
-            </div>
-            <p class="mt-2 text-xl sm:text-2xl font-bold text-[color:var(--fg)]">16 Hubs</p>
-            <p class="text-[10px] text-[color:var(--muted)]">Categorized</p>
-          </div>
-          <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3.5 transition hover:border-[color:var(--border-strong)]">
-            <div class="flex items-center justify-between">
-              <p class="text-xs font-medium text-[color:var(--muted)]">Zero Latency</p>
-              <div class="flex h-6 w-6 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-500">
-                <svg class="h-3.5 w-3.5 stroke-current" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
-              </div>
-            </div>
-            <p class="mt-2 text-xl sm:text-2xl font-bold text-[color:var(--fg)]">100%</p>
-            <p class="text-[10px] text-[color:var(--muted)]">Client-side</p>
-          </div>
-        </div>
-
-        <div class="rounded-2xl border border-dashed border-[color:var(--border)] p-3 text-center text-xs text-[color:var(--muted)] bg-[color:var(--surface)]/50">
-          Press <kbd class="rounded-lg bg-[color:var(--surface-strong)] px-2 py-0.5 font-mono text-[color:var(--fg)] border border-[color:var(--border)] font-bold shadow-xs">/</kbd> anytime to search
-        </div>
-      </aside>
-    </div>
-  </section>
-
-  <!-- New Specialized Tool Suites Showcase -->
-  <section class="mt-12 space-y-5">
-    <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
-      <div>
-        <p class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Tool Directory</p>
-        <h2 class="mt-1 text-xl sm:text-2xl font-bold tracking-tight text-[color:var(--fg)]">Browser-Side Tool Hubs</h2>
-        <p class="text-xs sm:text-sm text-[color:var(--muted)]">Developer tools, data processors, image &amp; PDF slicers, and study generators running 100% in your browser.</p>
-      </div>
+  <!-- ══════════════════════════════════════════════════════════════════
+       HOMEPAGE HERO BANNER
+       Uses SiteLayout slot="hero" with full-width dark indigo photo background,
+       concentric circular rings, glowing castle logo, and category icon orbs.
+       Text sits directly on the background.
+       ══════════════════════════════════════════════════════════════════ -->
+  <div slot="hero" class="space-y-4 max-w-4xl">
+    <!-- Status badge -->
+    <div class="site-hero-badge">
+      <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#34d399;animation:pulse 2s cubic-bezier(0.4,0,0.6,1) infinite;flex-shrink:0;"></span>
+      <span>Fast • 100% Client-Side • Privacy-First</span>
     </div>
 
-    <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-      <a href={withBasePath('/developer-tools/')} class="group flex flex-col justify-between rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 transition hover:border-[color:var(--border-strong)] hover:bg-[color:var(--surface-strong)]">
-        <div class="space-y-2">
-          <div class="flex items-center justify-between">
-            <div class="flex h-9 w-9 items-center justify-center rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-500 shadow-xs">
-              <Icon name="code" class="w-4 h-4" />
-            </div>
-            <span class="rounded-md bg-[color:var(--surface-strong)] border border-[color:var(--border)] px-2 py-0.5 text-[10px] font-bold text-[color:var(--muted)]">17 Tools</span>
-          </div>
-          <h3 class="font-bold text-sm text-[color:var(--fg)]">Developer Tools</h3>
-          <p class="text-[11px] text-[color:var(--muted)] leading-relaxed">JSON formatter, JWT decoder, Regex tester, UUIDs &amp; Cron generator.</p>
-        </div>
-        <span class="mt-4 inline-flex items-center gap-1 text-[11px] font-bold text-[color:var(--fg)]">Open Suite →</span>
-      </a>
+    <!-- H1 -->
+    <h1 class="site-hero-h1">
+      Free calculator online &amp; smart tools.
+    </h1>
 
-      <a href={withBasePath('/data-tools/')} class="group flex flex-col justify-between rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 transition hover:border-[color:var(--border-strong)] hover:bg-[color:var(--surface-strong)]">
-        <div class="space-y-2">
-          <div class="flex items-center justify-between">
-            <div class="flex h-9 w-9 items-center justify-center rounded-xl bg-teal-500/10 border border-teal-500/20 text-teal-500 shadow-xs">
-              <Icon name="converter" class="w-4 h-4" />
-            </div>
-            <span class="rounded-md bg-[color:var(--surface-strong)] border border-[color:var(--border)] px-2 py-0.5 text-[10px] font-bold text-[color:var(--muted)]">6 Tools</span>
-          </div>
-          <h3 class="font-bold text-sm text-[color:var(--fg)]">Data &amp; CSV Tools</h3>
-          <p class="text-[11px] text-[color:var(--muted)] leading-relaxed">CSV to JSON, column extractor, deduplicator, sorter &amp; markdown tables.</p>
-        </div>
-        <span class="mt-4 inline-flex items-center gap-1 text-[11px] font-bold text-[color:var(--fg)]">Open Suite →</span>
-      </a>
+    <!-- Description -->
+    <p class="site-hero-desc">
+      Access 186+ precision tools and calculators across 16 specialized hubs for finance calculator tasks, math calculator operations, tax engines, PDF tools, image processors, and developer tools. Instant browser computations with zero server latency.
+    </p>
+  </div>
 
-      <a href={withBasePath('/image-tools/')} class="group flex flex-col justify-between rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 transition hover:border-[color:var(--border-strong)] hover:bg-[color:var(--surface-strong)]">
-        <div class="space-y-2">
-          <div class="flex items-center justify-between">
-            <div class="flex h-9 w-9 items-center justify-center rounded-xl bg-purple-500/10 border border-purple-500/20 text-purple-500 shadow-xs">
-              <Icon name="image" class="w-4 h-4" />
-            </div>
-            <span class="rounded-md bg-[color:var(--surface-strong)] border border-[color:var(--border)] px-2 py-0.5 text-[10px] font-bold text-[color:var(--muted)]">10 Tools</span>
-          </div>
-          <h3 class="font-bold text-sm text-[color:var(--fg)]">Image &amp; Privacy Tools</h3>
-          <p class="text-[11px] text-[color:var(--muted)] leading-relaxed">EXIF remover, DPI checker, color picker, compressor &amp; converter.</p>
-        </div>
-        <span class="mt-4 inline-flex items-center gap-1 text-[11px] font-bold text-[color:var(--fg)]">Open Suite →</span>
-      </a>
 
-      <a href={withBasePath('/pdf-tools/')} class="group flex flex-col justify-between rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 transition hover:border-[color:var(--border-strong)] hover:bg-[color:var(--surface-strong)]">
-        <div class="space-y-2">
-          <div class="flex items-center justify-between">
-            <div class="flex h-9 w-9 items-center justify-center rounded-xl bg-red-500/10 border border-red-500/20 text-red-500 shadow-xs">
-              <Icon name="document" class="w-4 h-4" />
-            </div>
-            <span class="rounded-md bg-[color:var(--surface-strong)] border border-[color:var(--border)] px-2 py-0.5 text-[10px] font-bold text-[color:var(--muted)]">10 Tools</span>
-          </div>
-          <h3 class="font-bold text-sm text-[color:var(--fg)]">PDF &amp; Document Tools</h3>
-          <p class="text-[11px] text-[color:var(--muted)] leading-relaxed">Merge PDF to PDF, convert images to PDF, split documents, render to images &amp; rotate.</p>
-        </div>
-        <span class="mt-4 inline-flex items-center gap-1 text-[11px] font-bold text-[color:var(--fg)]">Open Suite →</span>
-      </a>
-    </div>
-  </section>
 
   <!-- Career Tools Showcase Banner -->
   <section class="mt-12 rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 sm:p-8">
@@ -319,7 +174,7 @@ const homeDescription = "Free calculator online suite featuring 186+ fast tools:
   <section class="mt-12 rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 sm:p-8">
     <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
       <div class="space-y-3 max-w-2xl">
-        <div class="inline-flex items-center gap-2 rounded-full border border-indigo-500/20 bg-indigo-500/10 px-3 py-1 text-xs font-bold text-indigo-600 dark:text-indigo-400">
+        <div class="inline-flex items-center gap-2 rounded-full border border-[color:var(--border)] bg-[color:var(--surface-strong)] px-3 py-1 text-xs font-bold text-[color:var(--fg)]">
           <Icon name="education" class="w-3.5 h-3.5 text-indigo-500" />
           <span>Academic &amp; Classroom Suite</span>
         </div>
@@ -363,7 +218,7 @@ const homeDescription = "Free calculator online suite featuring 186+ fast tools:
         </div>
       </div>
 
-      <div class="hidden lg:flex flex-col items-center justify-center rounded-2xl border border-indigo-500/20 bg-indigo-500/5 p-5 text-center shrink-0 w-60 space-y-2">
+      <div class="hidden lg:flex flex-col items-center justify-center rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-5 text-center shrink-0 w-60 space-y-2">
         <Icon name="education" class="w-8 h-8 text-indigo-500" />
         <p class="font-bold text-xs text-[color:var(--fg)]">Print-Ready A4 PDF</p>
         <p class="text-[10px] text-[color:var(--muted)]">Official University Seals • 5 Layouts • Free Export</p>
@@ -387,62 +242,62 @@ const homeDescription = "Free calculator online suite featuring 186+ fast tools:
 
     <!-- Country Selector Quick Flags -->
     <div class="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
-      <a href="/us-income-tax-calculator/" class="group flex flex-col items-center justify-center rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3.5 text-center transition hover:border-[color:var(--accent)] hover:shadow-[0_0_12px_var(--accent-glow)] hover:bg-[color:var(--surface-strong)]">
+      <a href="/us-income-tax-calculator/" class="group flex flex-col items-center justify-center rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3.5 text-center transition hover:border-[color:var(--border-strong)] hover:bg-[color:var(--surface-strong)] hover:-translate-y-0.5 hover:shadow-xs">
         <span class="text-2xl transition group-hover:scale-105">🇺🇸</span>
         <span class="mt-1.5 text-xs font-bold text-[color:var(--fg)]">United States</span>
         <span class="text-[10px] font-mono text-[color:var(--muted)]">IRS (USD $)</span>
       </a>
-      <a href="/uk-income-tax-calculator/" class="group flex flex-col items-center justify-center rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3.5 text-center transition hover:border-[color:var(--accent)] hover:shadow-[0_0_12px_var(--accent-glow)] hover:bg-[color:var(--surface-strong)]">
+      <a href="/uk-income-tax-calculator/" class="group flex flex-col items-center justify-center rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3.5 text-center transition hover:border-[color:var(--border-strong)] hover:bg-[color:var(--surface-strong)] hover:-translate-y-0.5 hover:shadow-xs">
         <span class="text-2xl transition group-hover:scale-105">🇬🇧</span>
         <span class="mt-1.5 text-xs font-bold text-[color:var(--fg)]">United Kingdom</span>
         <span class="text-[10px] font-mono text-[color:var(--muted)]">HMRC (GBP £)</span>
       </a>
-      <a href="/canada-income-tax-calculator/" class="group flex flex-col items-center justify-center rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3.5 text-center transition hover:border-[color:var(--accent)] hover:shadow-[0_0_12px_var(--accent-glow)] hover:bg-[color:var(--surface-strong)]">
+      <a href="/canada-income-tax-calculator/" class="group flex flex-col items-center justify-center rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3.5 text-center transition hover:border-[color:var(--border-strong)] hover:bg-[color:var(--surface-strong)] hover:-translate-y-0.5 hover:shadow-xs">
         <span class="text-2xl transition group-hover:scale-105">🇨🇦</span>
         <span class="mt-1.5 text-xs font-bold text-[color:var(--fg)]">Canada</span>
         <span class="text-[10px] font-mono text-[color:var(--muted)]">CRA (CAD $)</span>
       </a>
-      <a href="/australia-income-tax-calculator/" class="group flex flex-col items-center justify-center rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3.5 text-center transition hover:border-[color:var(--accent)] hover:shadow-[0_0_12px_var(--accent-glow)] hover:bg-[color:var(--surface-strong)]">
+      <a href="/australia-income-tax-calculator/" class="group flex flex-col items-center justify-center rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3.5 text-center transition hover:border-[color:var(--border-strong)] hover:bg-[color:var(--surface-strong)] hover:-translate-y-0.5 hover:shadow-xs">
         <span class="text-2xl transition group-hover:scale-105">🇦🇺</span>
         <span class="mt-1.5 text-xs font-bold text-[color:var(--fg)]">Australia</span>
         <span class="text-[10px] font-mono text-[color:var(--muted)]">ATO (AUD $)</span>
       </a>
-      <a href="/germany-income-tax-calculator/" class="group flex flex-col items-center justify-center rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3.5 text-center transition hover:border-[color:var(--accent)] hover:shadow-[0_0_12px_var(--accent-glow)] hover:bg-[color:var(--surface-strong)]">
+      <a href="/germany-income-tax-calculator/" class="group flex flex-col items-center justify-center rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3.5 text-center transition hover:border-[color:var(--border-strong)] hover:bg-[color:var(--surface-strong)] hover:-translate-y-0.5 hover:shadow-xs">
         <span class="text-2xl transition group-hover:scale-105">🇩🇪</span>
         <span class="mt-1.5 text-xs font-bold text-[color:var(--fg)]">Germany</span>
         <span class="text-[10px] font-mono text-[color:var(--muted)]">BMF (EUR €)</span>
       </a>
-      <a href="/france-income-tax-calculator/" class="group flex flex-col items-center justify-center rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3.5 text-center transition hover:border-[color:var(--accent)] hover:shadow-[0_0_12px_var(--accent-glow)] hover:bg-[color:var(--surface-strong)]">
+      <a href="/france-income-tax-calculator/" class="group flex flex-col items-center justify-center rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3.5 text-center transition hover:border-[color:var(--border-strong)] hover:bg-[color:var(--surface-strong)] hover:-translate-y-0.5 hover:shadow-xs">
         <span class="text-2xl transition group-hover:scale-105">🇫🇷</span>
         <span class="mt-1.5 text-xs font-bold text-[color:var(--fg)]">France</span>
         <span class="text-[10px] font-mono text-[color:var(--muted)]">DGFiP (EUR €)</span>
       </a>
-      <a href="/spain-income-tax-calculator/" class="group flex flex-col items-center justify-center rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3.5 text-center transition hover:border-[color:var(--accent)] hover:shadow-[0_0_12px_var(--accent-glow)] hover:bg-[color:var(--surface-strong)]">
+      <a href="/spain-income-tax-calculator/" class="group flex flex-col items-center justify-center rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3.5 text-center transition hover:border-[color:var(--border-strong)] hover:bg-[color:var(--surface-strong)] hover:-translate-y-0.5 hover:shadow-xs">
         <span class="text-2xl transition group-hover:scale-105">🇪🇸</span>
         <span class="mt-1.5 text-xs font-bold text-[color:var(--fg)]">Spain</span>
         <span class="text-[10px] font-mono text-[color:var(--muted)]">AEAT (EUR €)</span>
       </a>
-      <a href="/italy-income-tax-calculator/" class="group flex flex-col items-center justify-center rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3.5 text-center transition hover:border-[color:var(--accent)] hover:shadow-[0_0_12px_var(--accent-glow)] hover:bg-[color:var(--surface-strong)]">
+      <a href="/italy-income-tax-calculator/" class="group flex flex-col items-center justify-center rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3.5 text-center transition hover:border-[color:var(--border-strong)] hover:bg-[color:var(--surface-strong)] hover:-translate-y-0.5 hover:shadow-xs">
         <span class="text-2xl transition group-hover:scale-105">🇮🇹</span>
         <span class="mt-1.5 text-xs font-bold text-[color:var(--fg)]">Italy</span>
         <span class="text-[10px] font-mono text-[color:var(--muted)]">IRPEF (EUR €)</span>
       </a>
-      <a href="/netherlands-income-tax-calculator/" class="group flex flex-col items-center justify-center rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3.5 text-center transition hover:border-[color:var(--accent)] hover:shadow-[0_0_12px_var(--accent-glow)] hover:bg-[color:var(--surface-strong)]">
+      <a href="/netherlands-income-tax-calculator/" class="group flex flex-col items-center justify-center rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3.5 text-center transition hover:border-[color:var(--border-strong)] hover:bg-[color:var(--surface-strong)] hover:-translate-y-0.5 hover:shadow-xs">
         <span class="text-2xl transition group-hover:scale-105">🇳🇱</span>
         <span class="mt-1.5 text-xs font-bold text-[color:var(--fg)]">Netherlands</span>
         <span class="text-[10px] font-mono text-[color:var(--muted)]">Box 1 (EUR €)</span>
       </a>
-      <a href="/switzerland-income-tax-calculator/" class="group flex flex-col items-center justify-center rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3.5 text-center transition hover:border-[color:var(--accent)] hover:shadow-[0_0_12px_var(--accent-glow)] hover:bg-[color:var(--surface-strong)]">
+      <a href="/switzerland-income-tax-calculator/" class="group flex flex-col items-center justify-center rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3.5 text-center transition hover:border-[color:var(--border-strong)] hover:bg-[color:var(--surface-strong)] hover:-translate-y-0.5 hover:shadow-xs">
         <span class="text-2xl transition group-hover:scale-105">🇨🇭</span>
         <span class="mt-1.5 text-xs font-bold text-[color:var(--fg)]">Switzerland</span>
         <span class="text-[10px] font-mono text-[color:var(--muted)]">ESTV (CHF)</span>
       </a>
-      <a href="/singapore-income-tax-calculator/" class="group flex flex-col items-center justify-center rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3.5 text-center transition hover:border-[color:var(--accent)] hover:shadow-[0_0_12px_var(--accent-glow)] hover:bg-[color:var(--surface-strong)]">
+      <a href="/singapore-income-tax-calculator/" class="group flex flex-col items-center justify-center rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3.5 text-center transition hover:border-[color:var(--border-strong)] hover:bg-[color:var(--surface-strong)] hover:-translate-y-0.5 hover:shadow-xs">
         <span class="text-2xl transition group-hover:scale-105">🇸🇬</span>
         <span class="mt-1.5 text-xs font-bold text-[color:var(--fg)]">Singapore</span>
         <span class="text-[10px] font-mono text-[color:var(--muted)]">IRAS (SGD $)</span>
       </a>
-      <a href="/japan-income-tax-calculator/" class="group flex flex-col items-center justify-center rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3.5 text-center transition hover:border-[color:var(--accent)] hover:shadow-[0_0_12px_var(--accent-glow)] hover:bg-[color:var(--surface-strong)]">
+      <a href="/japan-income-tax-calculator/" class="group flex flex-col items-center justify-center rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3.5 text-center transition hover:border-[color:var(--border-strong)] hover:bg-[color:var(--surface-strong)] hover:-translate-y-0.5 hover:shadow-xs">
         <span class="text-2xl transition group-hover:scale-105">🇯🇵</span>
         <span class="mt-1.5 text-xs font-bold text-[color:var(--fg)]">Japan</span>
         <span class="text-[10px] font-mono text-[color:var(--muted)]">NTA (JPY ¥)</span>
@@ -467,15 +322,21 @@ const homeDescription = "Free calculator online suite featuring 186+ fast tools:
         <a
           class="group flex flex-col justify-between rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 transition hover:border-[color:var(--border-strong)] hover:bg-[color:var(--surface-strong)]"
           href={getCalculatorPath(calculator.slug)}
+          data-calculator-card
         >
           <div class="space-y-3">
             <div class="flex items-center justify-between gap-2">
               <ToolIcon slug={calculator.slug} category={calculator.category} size="md" />
-              <span class="inline-flex rounded-md bg-[color:var(--surface-strong)] px-2.5 py-0.5 text-[11px] font-semibold text-[color:var(--muted)] border border-[color:var(--border)]">
-                {calculator.category}
-              </span>
+              <div class="flex items-center gap-1.5">
+                <span class="inline-flex items-center rounded-md bg-amber-500/10 dark:bg-amber-400/10 px-2 py-0.5 text-[10px] font-bold text-amber-700 dark:text-amber-300 border border-amber-500/20">
+                  POPULAR
+                </span>
+                <span class="inline-flex rounded-md bg-[color:var(--surface-strong)] px-2.5 py-0.5 text-[11px] font-semibold text-[color:var(--muted)] border border-[color:var(--border)]">
+                  {calculator.category}
+                </span>
+              </div>
             </div>
-            <h3 class="text-base font-bold tracking-tight text-[color:var(--fg)] transition-colors">
+            <h3 class="text-base font-bold tracking-tight text-[color:var(--fg)] group-hover:text-[color:var(--accent)] transition-colors">
               {calculator.title}
             </h3>
             <p class="text-xs leading-relaxed text-[color:var(--muted)] line-clamp-2">
@@ -483,9 +344,12 @@ const homeDescription = "Free calculator online suite featuring 186+ fast tools:
             </p>
           </div>
 
-          <div class="mt-5 flex items-center gap-1 text-xs font-bold text-[color:var(--fg)]">
-            <span>Open Tool</span>
-            <Icon name="arrow-right" class="w-3.5 h-3.5 transition group-hover:translate-x-1" />
+          <div class="mt-5 flex items-center justify-between pt-2.5 border-t border-[color:var(--border)]/60">
+            <span class="inline-flex items-center gap-1 text-xs font-bold text-[color:var(--fg)] group-hover:text-[color:var(--accent)] transition-colors">
+              <span>Open Tool</span>
+              <Icon name="arrow-right" class="w-3.5 h-3.5 transition group-hover:translate-x-1" />
+            </span>
+            <span class="text-[10px] font-semibold uppercase tracking-wider text-[color:var(--muted)] group-hover:text-[color:var(--fg)] transition-colors">Instant</span>
           </div>
         </a>
       ))}
@@ -508,31 +372,47 @@ const homeDescription = "Free calculator online suite featuring 186+ fast tools:
       </div>
 
       <!-- Category Filter Tabs -->
-      <div class="flex flex-wrap gap-2" role="tablist" aria-label="Tool Categories">
+      <div class="flex flex-wrap gap-2.5 sm:gap-3" role="tablist" aria-label="Tool Categories">
         {categoryTabs.map((category, index) => {
           const catConfig = getCategoryIconConfig(category.name);
-          const activeTextColor = category.name === 'All' ? 'text-[color:var(--fg)]' : catConfig.textColor;
-          const activeBgColor = category.name === 'All' ? 'bg-[color:var(--surface-strong)]' : catConfig.badgeBg;
+          const isAll = category.name === 'All';
           return (
             <button
               class:list={[
                 'inline-flex cursor-pointer items-center gap-2 rounded-xl border px-3.5 py-1.5 text-xs transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-current',
                 index === 0
-                  ? 'active font-bold border-[color:var(--border-strong)] bg-[color:var(--surface-strong)] text-[color:var(--fg)] shadow-xs'
-                  : 'border-[color:var(--border)] bg-[color:var(--surface)] text-[color:var(--fg)] font-semibold hover:border-[color:var(--border-strong)] hover:bg-[color:var(--surface-strong)]',
+                  ? 'active font-bold border-transparent bg-slate-900 text-white dark:bg-white dark:text-slate-950 shadow-sm'
+                  : 'border-[color:var(--border)] bg-[color:var(--surface)] text-[color:var(--muted)] font-semibold hover:border-[color:var(--border-strong)] hover:text-[color:var(--fg)] hover:bg-[color:var(--surface-strong)]',
               ]}
               type="button"
               role="tab"
               data-category-tab
-              data-category-name={category.name === 'All' ? '' : category.name}
-              data-color-class={activeTextColor}
-              data-bg-class={activeBgColor}
+              data-category-name={isAll ? '' : category.name}
+              data-icon-color={catConfig.textColor}
               aria-pressed={index === 0 ? 'true' : 'false'}
               aria-selected={index === 0 ? 'true' : 'false'}
             >
-              <svg class={`w-3.5 h-3.5 stroke-current shrink-0 ${catConfig.textColor}`} viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" set:html={catConfig.svgPath} />
+              <svg
+                class:list={[
+                  'w-3.5 h-3.5 stroke-current shrink-0',
+                  index === 0 ? 'text-white dark:text-slate-950' : catConfig.textColor
+                ]}
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                set:html={catConfig.svgPath}
+                data-tab-icon
+              />
               <span>{category.name}</span>
-              <span class="rounded-md bg-black/5 dark:bg-white/10 px-1.5 py-0.5 text-[10px] font-bold">{category.count}</span>
+              <span
+                class:list={[
+                  'rounded-full px-2 py-0.5 text-[10px] font-bold',
+                  index === 0 ? 'bg-white/20 text-white dark:bg-black/10 dark:text-slate-950' : 'bg-black/5 dark:bg-white/10 text-[color:var(--muted)]'
+                ]}
+                data-tab-count
+              >{category.count}</span>
             </button>
           );
         })}
@@ -556,36 +436,55 @@ const homeDescription = "Free calculator online suite featuring 186+ fast tools:
 
     <!-- Calculator Cards Grid (186 tools) -->
     <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3" data-calculator-grid>
-      {allToolsIndex.map((tool) => (
-        <article
-          class="group flex flex-col justify-between rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 transition hover:border-[color:var(--border-strong)] hover:bg-[color:var(--surface-strong)]"
-          data-calculator-card
-          data-calculator-category={tool.category}
-          data-search-text={`${tool.title} ${tool.category} ${tool.desc} ${tool.url}`.toLowerCase()}
-        >
-          <div class="space-y-3">
-            <div class="flex items-center justify-between gap-2">
-              <ToolIcon url={tool.url} title={tool.title} category={tool.category} size="md" />
-              <span class="inline-flex rounded-md bg-[color:var(--surface-strong)] px-2.5 py-0.5 text-[11px] font-semibold text-[color:var(--muted)] border border-[color:var(--border)]">
-                {tool.category}
-              </span>
-            </div>
-            <h3 class="text-base font-bold tracking-tight text-[color:var(--fg)] transition-colors">
-              {tool.title}
-            </h3>
-            <p class="text-xs leading-relaxed text-[color:var(--muted)] line-clamp-2">
-              {tool.desc}
-            </p>
-          </div>
-
+      {allToolsIndex.map((tool) => {
+        const slug = tool.url.replace(/^\/|\/$/g, '').split('/').pop() || '';
+        const isPopular = popularSet.has(slug);
+        const isNew = newToolSet.has(slug);
+        return (
           <a
-            class="mt-5 inline-flex items-center justify-center rounded-xl bg-[color:var(--accent)] px-4 py-2 text-xs font-bold text-white shadow-xs transition hover:opacity-90"
+            class="group flex flex-col justify-between rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 transition hover:border-[color:var(--border-strong)] hover:bg-[color:var(--surface-strong)]"
             href={withBasePath(tool.url)}
+            data-calculator-card
+            data-calculator-category={tool.category}
+            data-search-text={`${tool.title} ${tool.category} ${tool.desc} ${tool.url}`.toLowerCase()}
           >
-            Launch Tool →
+            <div class="space-y-3">
+              <div class="flex items-center justify-between gap-2">
+                <ToolIcon url={tool.url} title={tool.title} category={tool.category} size="md" />
+                <div class="flex items-center gap-1.5">
+                  {isPopular && (
+                    <span class="inline-flex items-center rounded-md bg-amber-500/10 dark:bg-amber-400/10 px-2 py-0.5 text-[10px] font-bold text-amber-700 dark:text-amber-300 border border-amber-500/20">
+                      POPULAR
+                    </span>
+                  )}
+                  {isNew && (
+                    <span class="inline-flex items-center rounded-md bg-emerald-500/10 dark:bg-emerald-400/10 px-2 py-0.5 text-[10px] font-bold text-emerald-700 dark:text-emerald-300 border border-emerald-500/20">
+                      NEW
+                    </span>
+                  )}
+                  <span class="inline-flex rounded-md bg-[color:var(--surface-strong)] px-2.5 py-0.5 text-[11px] font-semibold text-[color:var(--muted)] border border-[color:var(--border)]">
+                    {tool.category}
+                  </span>
+                </div>
+              </div>
+              <h3 class="text-base font-bold tracking-tight text-[color:var(--fg)] group-hover:text-[color:var(--accent)] transition-colors">
+                {tool.title}
+              </h3>
+              <p class="text-xs leading-relaxed text-[color:var(--muted)] line-clamp-2">
+                {tool.desc}
+              </p>
+            </div>
+
+            <div class="mt-5 flex items-center justify-between pt-2.5 border-t border-[color:var(--border)]/60">
+              <span class="inline-flex items-center gap-1 text-xs font-bold text-[color:var(--fg)] group-hover:text-[color:var(--accent)] transition-colors">
+                <span>Open Tool</span>
+                <Icon name="arrow-right" class="w-3.5 h-3.5 transition group-hover:translate-x-1" />
+              </span>
+              <span class="text-[10px] font-semibold uppercase tracking-wider text-[color:var(--muted)] group-hover:text-[color:var(--fg)] transition-colors">Instant</span>
+            </div>
           </a>
-        </article>
-      ))}
+        );
+      })}
     </div>
 
     <!-- Empty search result alert -->
@@ -609,7 +508,8 @@ const homeDescription = "Free calculator online suite featuring 186+ fast tools:
   <script is:inline>
     (function () {
       const searchInputs = Array.from(document.querySelectorAll('[data-calculator-search]'));
-      const cards = Array.from(document.querySelectorAll('[data-calculator-card]'));
+      const grid = document.querySelector('[data-calculator-grid]');
+      const cards = grid ? Array.from(grid.querySelectorAll('[data-calculator-card]')) : [];
       const categoryTabs = Array.from(document.querySelectorAll('[data-category-tab]'));
       const heroCategoryButtons = Array.from(document.querySelectorAll('[data-hero-category]'));
       const resetButtons = Array.from(document.querySelectorAll('[data-reset-filters]'));
@@ -618,7 +518,6 @@ const homeDescription = "Free calculator online suite featuring 186+ fast tools:
       const activeFilterBar = document.querySelector('[data-active-filter-bar]');
       const filterSummary = document.querySelector('[data-filter-summary]');
       const emptyState = document.querySelector('[data-search-empty]');
-      const grid = document.querySelector('[data-calculator-grid]');
 
       let activeCategory = '';
       let currentQuery = '';
@@ -691,17 +590,26 @@ const homeDescription = "Free calculator online suite featuring 186+ fast tools:
           tab.setAttribute('aria-pressed', String(isSelected));
           tab.setAttribute('aria-selected', String(isSelected));
 
-          const colorClass = tab.dataset.colorClass || 'text-[color:var(--fg)]';
-          const bgClass = tab.dataset.bgClass || 'bg-[color:var(--surface-strong)]';
+          const icon = tab.querySelector('[data-tab-icon]');
+          const countBadge = tab.querySelector('[data-tab-count]');
+          const iconColor = tab.dataset.iconColor || 'text-[color:var(--muted)]';
 
           if (isSelected) {
-            if (!tabCat) {
-              tab.className = 'inline-flex cursor-pointer items-center gap-2 rounded-xl border px-3.5 py-1.5 text-xs font-bold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-current border-[color:var(--border-strong)] bg-[color:var(--surface-strong)] text-[color:var(--fg)] shadow-xs active';
-            } else {
-              tab.className = `inline-flex cursor-pointer items-center gap-2 rounded-xl border border-current px-3.5 py-1.5 text-xs font-bold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-current ${colorClass} ${bgClass} shadow-xs active`;
+            tab.className = 'inline-flex cursor-pointer items-center gap-2 rounded-xl border border-transparent bg-slate-900 text-white dark:bg-white dark:text-slate-950 px-3.5 py-1.5 text-xs font-bold shadow-sm active transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-current';
+            if (icon) {
+              icon.className = 'w-3.5 h-3.5 stroke-current shrink-0 text-white dark:text-slate-950';
+            }
+            if (countBadge) {
+              countBadge.className = 'rounded-full px-2 py-0.5 text-[10px] font-bold bg-white/20 text-white dark:bg-black/10 dark:text-slate-950';
             }
           } else {
-            tab.className = 'inline-flex cursor-pointer items-center gap-2 rounded-xl border px-3.5 py-1.5 text-xs font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-current border-[color:var(--border)] bg-[color:var(--surface)] text-[color:var(--fg)] hover:border-[color:var(--border-strong)] hover:bg-[color:var(--surface-strong)]';
+            tab.className = 'inline-flex cursor-pointer items-center gap-2 rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] text-[color:var(--muted)] hover:border-[color:var(--border-strong)] hover:text-[color:var(--fg)] hover:bg-[color:var(--surface-strong)] px-3.5 py-1.5 text-xs font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-current';
+            if (icon) {
+              icon.className = `w-3.5 h-3.5 stroke-current shrink-0 ${iconColor}`;
+            }
+            if (countBadge) {
+              countBadge.className = 'rounded-full px-2 py-0.5 text-[10px] font-bold bg-black/5 dark:bg-white/10 text-[color:var(--muted)]';
+            }
           }
         });
 

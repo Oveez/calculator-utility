@@ -1,4 +1,5 @@
 ---
+import SiteHero from '../components/SiteHero.astro';
 import SiteLayout from './SiteLayout.astro';
 import type { BreadcrumbItem, CalculatorConfig, CalculatorFaqItem } from '../types/calculator';
 import { siteName, toAbsoluteUrl } from '../utils/site';
@@ -65,27 +66,16 @@ const schemaGraph = [
 ];
 ---
 
-<SiteLayout title={pageTitle} description={calculator.metaDescription} canonical={canonicalUrl}>
+<SiteLayout title={pageTitle} description={calculator.metaDescription} canonical={canonicalUrl} heroCompact={true}>
   <script is:inline type="application/ld+json" set:html={JSON.stringify(schemaGraph)} />
 
-  <nav aria-label="Breadcrumb" class="mb-6">
-    <ol class="flex flex-wrap items-center gap-2 text-sm text-[color:var(--muted)]">
-      {breadcrumbItems.map((item, index) => (
-        <li class="flex items-center gap-2">
-          {index > 0 && <span aria-hidden="true">/</span>}
-          {item.href ? (
-            <a class="transition hover:text-[color:var(--fg)]" href={item.href}>
-              {item.label}
-            </a>
-          ) : (
-            <span aria-current="page" class="font-medium text-[color:var(--fg)]">
-              {item.label}
-            </span>
-          )}
-        </li>
-      ))}
-    </ol>
-  </nav>
+  <SiteHero
+    slot="hero"
+    breadcrumbs={breadcrumbItems}
+    badge={calculator.category}
+    title={calculator.title}
+    description={calculator.metaDescription}
+  />
 
   <slot />
 </SiteLayout>

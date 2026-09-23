@@ -101,10 +101,11 @@ const schemaGraph = [
 ];
 ---
 
-<SiteLayout title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
+<SiteLayout heroCompact={true} title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
   <script is:inline type="application/ld+json" set:html={JSON.stringify(schemaGraph)} />
 
-  <article class="space-y-10 py-2" data-dpi-app>
+  
+  <div slot="hero" class="site-hero-header">
     <nav aria-label="Breadcrumb">
       <ol class="flex flex-wrap items-center gap-2 text-xs text-[color:var(--muted)]">
         {breadcrumbItems.map((item, index) => (
@@ -136,6 +137,9 @@ const schemaGraph = [
         Accurately calculate physical print dimensions in inches, centimeters, and millimeters from digital image pixels, or reverse-calculate required resolution for any print format at 72, 150, 300, or 600 DPI.
       </p>
     </header>
+  </div>
+
+  <article class="space-y-10 py-2" data-dpi-app>
 
     <!-- Upload & Auto-Detect Banner -->
     <div id="dropzone-box" class="space-y-3 rounded-3xl border-2 border-dashed border-[color:var(--border)] bg-[color:var(--surface)] p-6 sm:p-8 text-center transition hover:border-[color:var(--border-strong)]">
@@ -203,7 +207,7 @@ const schemaGraph = [
           <input
             type="number"
             id="px-w"
-            value="3000"
+            placeholder="e.g. 3000"
             min="1"
             max="100000"
             class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-[color:var(--fg)]" />
@@ -213,7 +217,7 @@ const schemaGraph = [
           <input
             type="number"
             id="px-h"
-            value="2000"
+            placeholder="e.g. 2000"
             min="1"
             max="100000"
             class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-[color:var(--fg)]" />
@@ -234,6 +238,7 @@ const schemaGraph = [
       <!-- Quick DPI Presets -->
       <div class="flex flex-wrap items-center gap-2 text-xs">
         <span class="font-semibold text-[color:var(--muted)]">Quick DPI Tiers:</span>
+        <button type="button" id="reset-dpi-a" class="rounded-lg border border-[color:var(--border)] bg-[color:var(--surface-strong)] px-2.5 py-1 text-[color:var(--fg)] hover:border-emerald-500 cursor-pointer">Reset</button>
         <button type="button" class="quick-dpi-btn rounded-lg border border-[color:var(--border)] bg-[color:var(--surface)] px-2.5 py-1 text-[color:var(--fg)] hover:border-emerald-500 cursor-pointer" data-val="300">300 DPI (Pro Photo)</button>
         <button type="button" class="quick-dpi-btn rounded-lg border border-[color:var(--border)] bg-[color:var(--surface)] px-2.5 py-1 text-[color:var(--fg)] hover:border-emerald-500 cursor-pointer" data-val="150">150 DPI (Poster)</button>
         <button type="button" class="quick-dpi-btn rounded-lg border border-[color:var(--border)] bg-[color:var(--surface)] px-2.5 py-1 text-[color:var(--fg)] hover:border-emerald-500 cursor-pointer" data-val="72">72 DPI (Web)</button>
@@ -244,18 +249,18 @@ const schemaGraph = [
       <div class="grid gap-4 sm:grid-cols-3">
         <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 space-y-2 text-center">
           <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Print Size (Inches)</span>
-          <p id="res-in" class="text-2xl sm:text-3xl font-extrabold text-emerald-500 font-mono">10.00" &times; 6.67"</p>
-          <p id="res-in-feet" class="text-[11px] text-[color:var(--muted)] font-mono">0.83 ft &times; 0.56 ft</p>
+          <p id="res-in" class="text-2xl sm:text-3xl font-extrabold text-emerald-500 font-mono">-</p>
+          <p id="res-in-feet" class="text-[11px] text-[color:var(--muted)] font-mono">-</p>
         </div>
         <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 space-y-2 text-center">
           <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Print Size (Centimeters)</span>
-          <p id="res-cm" class="text-2xl sm:text-3xl font-extrabold text-[color:var(--fg)] font-mono">25.40 &times; 16.93 cm</p>
-          <p id="res-mm" class="text-[11px] text-[color:var(--muted)] font-mono">254 &times; 169 mm</p>
+          <p id="res-cm" class="text-2xl sm:text-3xl font-extrabold text-[color:var(--fg)] font-mono">-</p>
+          <p id="res-mm" class="text-[11px] text-[color:var(--muted)] font-mono">-</p>
         </div>
         <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 space-y-2 text-center">
           <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Image Telemetry</span>
-          <p id="res-mp" class="text-2xl sm:text-3xl font-extrabold text-[color:var(--fg)] font-mono">6.00 MP</p>
-          <p id="res-ratio" class="text-[11px] text-[color:var(--muted)] font-mono">Aspect Ratio: 3:2 (1.50:1)</p>
+          <p id="res-mp" class="text-2xl sm:text-3xl font-extrabold text-[color:var(--fg)] font-mono">0 MP</p>
+          <p id="res-ratio" class="text-[11px] text-[color:var(--muted)] font-mono">-</p>
         </div>
       </div>
     </section>
@@ -268,7 +273,7 @@ const schemaGraph = [
           <input
             type="number"
             id="phy-w"
-            value="8"
+            placeholder="e.g. 8"
             step="0.1"
             min="0.1"
             class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-[color:var(--fg)]" />
@@ -278,7 +283,7 @@ const schemaGraph = [
           <input
             type="number"
             id="phy-h"
-            value="10"
+            placeholder="e.g. 10"
             step="0.1"
             min="0.1"
             class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-[color:var(--fg)]" />
@@ -305,6 +310,7 @@ const schemaGraph = [
       <!-- Quick Print Presets -->
       <div class="flex flex-wrap items-center gap-2 text-xs">
         <span class="font-semibold text-[color:var(--muted)]">Standard Print Formats:</span>
+        <button type="button" id="reset-dpi-b" class="rounded-lg border border-[color:var(--border)] bg-[color:var(--surface-strong)] px-2.5 py-1 text-[color:var(--fg)] hover:border-emerald-500 cursor-pointer">Reset</button>
         <button type="button" class="preset-btn rounded-lg border border-[color:var(--border)] bg-[color:var(--surface)] px-2.5 py-1 text-[color:var(--fg)] hover:border-emerald-500 cursor-pointer" data-w="4" data-h="6" data-u="in">4&times;6" Photo</button>
         <button type="button" class="preset-btn rounded-lg border border-[color:var(--border)] bg-[color:var(--surface)] px-2.5 py-1 text-[color:var(--fg)] hover:border-emerald-500 cursor-pointer" data-w="5" data-h="7" data-u="in">5&times;7" Portrait</button>
         <button type="button" class="preset-btn rounded-lg border border-[color:var(--border)] bg-[color:var(--surface)] px-2.5 py-1 text-[color:var(--fg)] hover:border-emerald-500 cursor-pointer" data-w="8" data-h="10" data-u="in">8&times;10" Frame</button>
@@ -317,12 +323,12 @@ const schemaGraph = [
       <div class="grid gap-4 sm:grid-cols-2">
         <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 space-y-2 text-center">
           <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Required Pixel Resolution</span>
-          <p id="res-req-px" class="text-2xl sm:text-3xl font-extrabold text-emerald-500 font-mono">2400 &times; 3000 px</p>
-          <p id="res-req-total" class="text-[11px] text-[color:var(--muted)] font-mono">7,200,000 Total Pixels</p>
+          <p id="res-req-px" class="text-2xl sm:text-3xl font-extrabold text-emerald-500 font-mono">-</p>
+          <p id="res-req-total" class="text-[11px] text-[color:var(--muted)] font-mono">-</p>
         </div>
         <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 space-y-2 text-center">
           <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Camera Sensor Recommendation</span>
-          <p id="res-req-mp" class="text-2xl sm:text-3xl font-extrabold text-[color:var(--fg)] font-mono">&ge; 7.2 MP</p>
+          <p id="res-req-mp" class="text-2xl sm:text-3xl font-extrabold text-[color:var(--fg)] font-mono">-</p>
           <p id="res-req-sensor" class="text-[11px] text-[color:var(--muted)]">Any standard smartphone or mirrorless camera</p>
         </div>
       </div>
@@ -336,7 +342,7 @@ const schemaGraph = [
           <input
             type="number"
             id="eff-px-w"
-            value="1920"
+            placeholder="e.g. 1920"
             min="1"
             class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-[color:var(--fg)]" />
         </div>
@@ -345,7 +351,7 @@ const schemaGraph = [
           <input
             type="number"
             id="eff-px-h"
-            value="1080"
+            placeholder="e.g. 1080"
             min="1"
             class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-[color:var(--fg)]" />
         </div>
@@ -354,7 +360,7 @@ const schemaGraph = [
           <input
             type="number"
             id="eff-phy-w"
-            value="10"
+            placeholder="e.g. 10"
             step="0.1"
             min="0.1"
             class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-[color:var(--fg)]" />
@@ -364,29 +370,28 @@ const schemaGraph = [
           <input
             type="number"
             id="eff-phy-h"
-            value="6"
+            placeholder="e.g. 6"
             step="0.1"
             min="0.1"
             class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-[color:var(--fg)]" />
         </div>
       </div>
+      <div class="flex justify-end pt-2"><button type="button" id="reset-dpi-c" class="rounded-lg border border-[color:var(--border)] bg-[color:var(--surface-strong)] px-3 py-1 text-xs font-semibold text-[color:var(--fg)] hover:border-emerald-500 cursor-pointer">Reset Mode C</button></div>
 
       <div class="grid gap-4 sm:grid-cols-3">
         <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 space-y-2 text-center">
           <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Effective Print DPI</span>
-          <p id="eff-dpi-val" class="text-3xl font-extrabold text-emerald-500 font-mono">192 DPI</p>
+          <p id="eff-dpi-val" class="text-3xl font-extrabold text-emerald-500 font-mono">-</p>
           <p class="text-[11px] text-[color:var(--muted)]">Calculated based on image dimensions</p>
         </div>
         <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 space-y-2 text-center">
           <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Quality Classification</span>
-          <div id="eff-badge" class="inline-flex items-center gap-1.5 rounded-full bg-amber-500/10 border border-amber-500/20 px-3 py-1 text-xs font-bold text-amber-500 mt-2">
-            Standard Quality (Posters &amp; Signs)
-          </div>
-          <p id="eff-quality-desc" class="text-[11px] text-[color:var(--muted)] mt-1">Acceptable sharpness viewed from &gt; 18 inches.</p>
+          <div id="eff-badge" class="hidden"></div>
+          <p id="eff-quality-desc" class="text-[11px] text-[color:var(--muted)] mt-1">Enter pixel and print dimensions to calculate effective DPI.</p>
         </div>
         <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 space-y-2 text-center">
           <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Min. Viewing Distance</span>
-          <p id="eff-view-dist" class="text-3xl font-extrabold text-[color:var(--fg)] font-mono">18 inches</p>
+          <p id="eff-view-dist" class="text-3xl font-extrabold text-[color:var(--fg)] font-mono">-</p>
           <p class="text-[11px] text-[color:var(--muted)]">Human eye resolves pixels as smooth beyond this point</p>
         </div>
       </div>
@@ -613,7 +618,16 @@ const schemaGraph = [
         const h = (pxH.value !== '' && !isNaN(parseFloat(pxH.value)) ? parseFloat(pxH.value) : 0);
         const dpi = (targetDpi.value !== '' && !isNaN(parseFloat(targetDpi.value)) ? parseFloat(targetDpi.value) : 0);
 
-        if (w <= 0 || h <= 0) return;
+        if (w <= 0 || h <= 0) {
+          resIn.textContent = '-';
+          resInFeet.textContent = '-';
+          resCm.textContent = '-';
+          resMm.textContent = '-';
+          resMp.textContent = '0 MP';
+          resRatio.textContent = '-';
+          if (matrixTbody) matrixTbody.innerHTML = '';
+          return;
+        }
 
         const inW = w / dpi;
         const inH = h / dpi;
@@ -656,6 +670,12 @@ const schemaGraph = [
 
         const reqW = Math.round(inW * dpi);
         const reqH = Math.round(inH * dpi);
+        if (w <= 0 || h <= 0) {
+          resReqPx.textContent = '-';
+          resReqTotal.textContent = '-';
+          resReqMp.textContent = '-';
+          return;
+        }
         const totalPx = reqW * reqH;
         const mp = (totalPx / 1000000).toFixed(1);
 
@@ -670,7 +690,13 @@ const schemaGraph = [
         const inW = (effPhyW.value !== '' && !isNaN(parseFloat(effPhyW.value)) ? parseFloat(effPhyW.value) : 0);
         const inH = (effPhyH.value !== '' && !isNaN(parseFloat(effPhyH.value)) ? parseFloat(effPhyH.value) : 0);
 
-        if (w <= 0 || inW <= 0) return;
+        if (w <= 0 || inW <= 0) {
+          effDpiVal.textContent = '-';
+          effViewDist.textContent = '-';
+          effBadge.className = 'hidden';
+          effQualityDesc.textContent = 'Enter pixel and print dimensions to calculate effective DPI.';
+          return;
+        }
 
         const dpiX = w / inW;
         const dpiY = h / (inH || 1);
@@ -775,6 +801,33 @@ const schemaGraph = [
       [effPxW, effPxH, effPhyW, effPhyH].forEach(el => el?.addEventListener('input', calcModeC));
 
       // Initialize
+      const btnResetA = root.querySelector('#reset-dpi-a');
+      if (btnResetA) {
+        btnResetA.addEventListener('click', () => {
+          pxW.value = '';
+          pxH.value = '';
+          calcModeA();
+        });
+      }
+      const btnResetB = root.querySelector('#reset-dpi-b');
+      if (btnResetB) {
+        btnResetB.addEventListener('click', () => {
+          phyW.value = '';
+          phyH.value = '';
+          calcModeB();
+        });
+      }
+      const btnResetC = root.querySelector('#reset-dpi-c');
+      if (btnResetC) {
+        btnResetC.addEventListener('click', () => {
+          effPxW.value = '';
+          effPxH.value = '';
+          effPhyW.value = '';
+          effPhyH.value = '';
+          calcModeC();
+        });
+      }
+
       calcModeA();
       calcModeB();
       calcModeC();

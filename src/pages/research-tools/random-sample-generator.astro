@@ -126,10 +126,11 @@ const schemaGraph = [
 ];
 ---
 
-<SiteLayout title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
+<SiteLayout heroCompact={true} title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
   <script is:inline type="application/ld+json" set:html={JSON.stringify(schemaGraph)} />
 
-  <article class="space-y-10 py-2" data-srs-app>
+  
+  <div slot="hero" class="site-hero-header">
     <nav aria-label="Breadcrumb">
       <ol class="flex flex-wrap items-center gap-2 text-xs text-[color:var(--muted)]">
         {breadcrumbItems.map((item, index) => (
@@ -161,6 +162,9 @@ const schemaGraph = [
         Select unbiased, cryptographically randomized samples from numeric ranges or custom subject lists. Supports sampling without replacement, bootstrap with replacement, and 1-in-k systematic sampling.
       </p>
     </header>
+  </div>
+
+  <article class="space-y-10 py-2" data-srs-app>
 
     <div
       class="rounded-[2.5rem] border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-6 shadow-[var(--shadow)] sm:p-10"

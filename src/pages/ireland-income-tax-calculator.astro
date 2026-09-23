@@ -9,12 +9,12 @@ const profile = ieProfile;
 const defaultYear = profile.years[profile.defaultTaxYear];
 ---
 
-<SiteLayout
+<SiteLayout heroCompact={true}
   title="Ireland Salary Calculator 2026 — Ireland Tax Calculator & PAYE"
   description={`Free Ireland salary calculator and Ireland tax calculator for tax year ${defaultYear.taxYear}. Calculate PAYE income tax, USC, PRSI, and net salary take-home pay.`}
 >
-  <div class="mx-auto max-w-5xl space-y-10">
-    <!-- Breadcrumb & Header -->
+  
+  <div slot="hero" class="site-hero-header">
     <nav class="flex items-center gap-2 text-xs font-medium text-[color:var(--muted)]" aria-label="Breadcrumb">
       <a href="/" class="hover:text-[color:var(--accent)]">Home</a>
       <span>/</span>
@@ -36,6 +36,9 @@ const defaultYear = profile.years[profile.defaultTaxYear];
         {profile.metaDescription}
       </p>
     </header>
+  </div>
+
+  <div class="mx-auto max-w-5xl space-y-10">
 
     <!-- Flagship Interactive Calculator App -->
     <TaxCalculatorApp profile={profile} />

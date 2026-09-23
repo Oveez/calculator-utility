@@ -7,8 +7,9 @@ const pageTitle = "Currency Converter — Live Currency Exchange Rates & Forex C
 const pageDesc = "Free online currency converter and exchange rate calculator. Convert 160+ world currencies with real-time currency exchange rates, live forex calculator data, and instant money converter tools.";
 ---
 
-<SiteLayout title={pageTitle} description={pageDesc} canonical={withBasePath('/currency-converter/')}>
-  <div class="mx-auto max-w-5xl space-y-10">
+<SiteLayout heroCompact={true} title={pageTitle} description={pageDesc} canonical={withBasePath('/currency-converter/')}>
+  
+  <div slot="hero" class="site-hero-header">
     <nav class="flex items-center gap-2 text-xs font-medium text-[color:var(--muted)]" aria-label="Breadcrumb">
       <a href="/" class="hover:text-[color:var(--accent)]">Home</a>
       <span>/</span>
@@ -28,6 +29,9 @@ const pageDesc = "Free online currency converter and exchange rate calculator. C
         Calculate live foreign currency exchange rates, compare world currencies, and convert foreign currency instantly with our free online currency converter and forex calculator.
       </p>
     </header>
+  </div>
+
+  <div class="mx-auto max-w-5xl space-y-10">
 
     <CurrencyConverterApp />
   </div>

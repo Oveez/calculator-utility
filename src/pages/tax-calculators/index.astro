@@ -1,34 +1,31 @@
 ---
 import SiteLayout from '../../layouts/SiteLayout.astro';
+import SiteHero from '../../components/SiteHero.astro';
 import CountryTaxSelector from '../../components/tax/CountryTaxSelector.astro';
 import Icon from '../../components/Icon.astro';
 import ToolIcon from '../../components/ToolIcon.astro';
+import { withBasePath } from '../../utils/site';
+
+const breadcrumbItems = [
+  { label: 'Home', href: withBasePath('/') },
+  { label: 'Tax Calculators Hub' },
+];
 ---
 
 <SiteLayout
   title="Tax Calculator & Income Tax Calculator 2026/2027 | Free Salary Tax Tools"
   description="Free online tax calculator and income tax calculator suite for 24 countries. Calculate salary tax, progressive tax brackets, take-home pay, and VAT with official revenue data."
+  heroCompact={true}
 >
-  <div class="mx-auto max-w-5xl space-y-8">
-    <!-- Breadcrumb & Header -->
-    <nav class="flex items-center gap-2 text-xs font-medium text-[color:var(--muted)]" aria-label="Breadcrumb">
-      <a href="/" class="hover:text-[color:var(--fg)]">Home</a>
-      <span>/</span>
-      <span class="text-[color:var(--fg)] font-semibold">Tax Calculators Hub</span>
-    </nav>
+  <SiteHero
+    slot="hero"
+    breadcrumbs={breadcrumbItems}
+    badge="Verified Official Data • 24 Countries • 2026/2027 Tax Years"
+    title="Tax Calculator &amp; Income Tax Calculator Hub"
+    description="Accurate, high-precision salary and tax calculator tools for income tax, payroll deductions, and consumption taxes. Powered by verified official data from national revenue authorities (IRS, CRA, HMRC, ATO, BZSt, DGFiP, and more)."
+  />
 
-    <!-- Header Banner -->
-    <header class="space-y-3 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 sm:p-8">
-      <div class="inline-flex items-center gap-2 rounded-full border border-[color:var(--border)] bg-[color:var(--surface-strong)] px-3 py-1 text-xs font-bold text-[color:var(--fg)]">
-        <span>Verified Official Data • 24 Countries • 2026/2027 Tax Years</span>
-      </div>
-      <h1 class="text-2xl font-bold tracking-tight text-[color:var(--fg)] sm:text-3xl lg:text-4xl">
-        Tax Calculator &amp; Income Tax Calculator Hub
-      </h1>
-      <p class="max-w-3xl text-xs sm:text-sm leading-relaxed text-[color:var(--muted)]">
-        Accurate, high-precision salary and tax calculator tools for income tax, payroll deductions, and consumption taxes. Powered by verified official data from national revenue authorities (IRS, CRA, HMRC, ATO, BZSt, DGFiP, and more).
-      </p>
-    </header>
+  <div class="mx-auto max-w-5xl space-y-8">
 
     <!-- Feature Categories Grid -->
     <section class="space-y-4">
@@ -42,19 +39,28 @@ import ToolIcon from '../../components/ToolIcon.astro';
         <a
           href="/tax-calculators/vat-calculator/"
           class="group flex flex-col justify-between rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 transition hover:border-[color:var(--border-strong)] hover:bg-[color:var(--surface-strong)]"
+          data-calculator-card
         >
-          <div class="space-y-2.5">
-            <ToolIcon slug="vat-calculator" category="Tax & Finance" size="md" />
-            <h3 class="text-base font-bold text-[color:var(--fg)]">
+          <div class="space-y-3">
+            <div class="flex items-center justify-between gap-2">
+              <ToolIcon slug="vat-calculator" category="Tax & Finance" size="md" />
+              <span class="rounded-md bg-[color:var(--surface-strong)] border border-[color:var(--border)] px-2.5 py-0.5 text-[10px] font-bold text-[color:var(--muted)]">
+                24 Countries
+              </span>
+            </div>
+            <h3 class="text-base font-bold tracking-tight text-[color:var(--fg)] group-hover:text-[color:var(--accent)] transition-colors">
               Global VAT &amp; GST Calculator
             </h3>
-            <p class="text-xs leading-relaxed text-[color:var(--muted)]">
+            <p class="text-xs leading-relaxed text-[color:var(--muted)] line-clamp-2">
               Calculate price before/after tax, add or remove VAT/GST with preset rates for 24+ countries.
             </p>
           </div>
-          <div class="mt-5 flex items-center gap-1 text-xs font-bold text-[color:var(--fg)]">
-            <span>Open Tool</span>
-            <Icon name="arrow-right" class="w-3.5 h-3.5 transition group-hover:translate-x-1" />
+          <div class="mt-5 flex items-center justify-between pt-2.5 border-t border-[color:var(--border)]/60">
+            <span class="inline-flex items-center gap-1 text-xs font-bold text-[color:var(--fg)] group-hover:text-[color:var(--accent)] transition-colors">
+              <span>Open Tool</span>
+              <Icon name="arrow-right" class="w-3.5 h-3.5 transition group-hover:translate-x-1" />
+            </span>
+            <span class="text-[10px] font-semibold uppercase tracking-wider text-[color:var(--muted)] group-hover:text-[color:var(--fg)] transition-colors">Instant</span>
           </div>
         </a>
 
@@ -62,19 +68,28 @@ import ToolIcon from '../../components/ToolIcon.astro';
         <a
           href="/tax-calculators/salary-to-hourly/"
           class="group flex flex-col justify-between rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 transition hover:border-[color:var(--border-strong)] hover:bg-[color:var(--surface-strong)]"
+          data-calculator-card
         >
-          <div class="space-y-2.5">
-            <ToolIcon slug="salary-to-hourly" category="Tax & Finance" size="md" />
-            <h3 class="text-base font-bold text-[color:var(--fg)]">
+          <div class="space-y-3">
+            <div class="flex items-center justify-between gap-2">
+              <ToolIcon slug="salary-to-hourly" category="Tax & Finance" size="md" />
+              <span class="rounded-md bg-[color:var(--surface-strong)] border border-[color:var(--border)] px-2.5 py-0.5 text-[10px] font-bold text-[color:var(--muted)]">
+                Payroll
+              </span>
+            </div>
+            <h3 class="text-base font-bold tracking-tight text-[color:var(--fg)] group-hover:text-[color:var(--accent)] transition-colors">
               Salary to Hourly Converter
             </h3>
-            <p class="text-xs leading-relaxed text-[color:var(--muted)]">
+            <p class="text-xs leading-relaxed text-[color:var(--muted)] line-clamp-2">
               Break down annual salary into monthly, bi-weekly, weekly, daily, and hourly wage rates.
             </p>
           </div>
-          <div class="mt-5 flex items-center gap-1 text-xs font-bold text-[color:var(--fg)]">
-            <span>Open Tool</span>
-            <Icon name="arrow-right" class="w-3.5 h-3.5 transition group-hover:translate-x-1" />
+          <div class="mt-5 flex items-center justify-between pt-2.5 border-t border-[color:var(--border)]/60">
+            <span class="inline-flex items-center gap-1 text-xs font-bold text-[color:var(--fg)] group-hover:text-[color:var(--accent)] transition-colors">
+              <span>Open Tool</span>
+              <Icon name="arrow-right" class="w-3.5 h-3.5 transition group-hover:translate-x-1" />
+            </span>
+            <span class="text-[10px] font-semibold uppercase tracking-wider text-[color:var(--muted)] group-hover:text-[color:var(--fg)] transition-colors">Instant</span>
           </div>
         </a>
 
@@ -82,19 +97,28 @@ import ToolIcon from '../../components/ToolIcon.astro';
         <a
           href="/tax-calculators/hourly-to-salary/"
           class="group flex flex-col justify-between rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 transition hover:border-[color:var(--border-strong)] hover:bg-[color:var(--surface-strong)]"
+          data-calculator-card
         >
-          <div class="space-y-2.5">
-            <ToolIcon slug="hourly-to-salary" category="Tax & Finance" size="md" />
-            <h3 class="text-base font-bold text-[color:var(--fg)]">
+          <div class="space-y-3">
+            <div class="flex items-center justify-between gap-2">
+              <ToolIcon slug="hourly-to-salary" category="Tax & Finance" size="md" />
+              <span class="rounded-md bg-[color:var(--surface-strong)] border border-[color:var(--border)] px-2.5 py-0.5 text-[10px] font-bold text-[color:var(--muted)]">
+                Overtime
+              </span>
+            </div>
+            <h3 class="text-base font-bold tracking-tight text-[color:var(--fg)] group-hover:text-[color:var(--accent)] transition-colors">
               Hourly to Salary &amp; Overtime
             </h3>
-            <p class="text-xs leading-relaxed text-[color:var(--muted)]">
+            <p class="text-xs leading-relaxed text-[color:var(--muted)] line-clamp-2">
               Convert hourly wage to annual income with overtime pay (1.5x time-and-a-half &amp; 2.0x double time).
             </p>
           </div>
-          <div class="mt-5 flex items-center gap-1 text-xs font-bold text-[color:var(--fg)]">
-            <span>Open Tool</span>
-            <Icon name="arrow-right" class="w-3.5 h-3.5 transition group-hover:translate-x-1" />
+          <div class="mt-5 flex items-center justify-between pt-2.5 border-t border-[color:var(--border)]/60">
+            <span class="inline-flex items-center gap-1 text-xs font-bold text-[color:var(--fg)] group-hover:text-[color:var(--accent)] transition-colors">
+              <span>Open Tool</span>
+              <Icon name="arrow-right" class="w-3.5 h-3.5 transition group-hover:translate-x-1" />
+            </span>
+            <span class="text-[10px] font-semibold uppercase tracking-wider text-[color:var(--muted)] group-hover:text-[color:var(--fg)] transition-colors">Instant</span>
           </div>
         </a>
       </div>

@@ -130,10 +130,11 @@ const workedExampleData = {
 };
 ---
 
-<SiteLayout title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
+<SiteLayout heroCompact={true} title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
   <script is:inline type="application/ld+json" set:html={JSON.stringify(schemaGraph)} />
 
-  <article class="space-y-10 py-2" data-find-replace-app>
+  
+  <div slot="hero" class="site-hero-header">
     <nav aria-label="Breadcrumb">
       <ol class="flex flex-wrap items-center gap-2 text-xs text-[color:var(--muted)]">
         {breadcrumbItems.map((item, index) => (
@@ -165,6 +166,9 @@ const workedExampleData = {
         Bulk find and replace strings or regular expressions across multi-line text. Multi-rule chaining, escape sequences, word boundaries, and real-time replacement counters.
       </p>
     </header>
+  </div>
+
+  <article class="space-y-10 py-2" data-find-replace-app>
 
     <!-- Find & Replace Control Panel -->
     <div class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 sm:p-6 space-y-5 shadow-sm">
@@ -194,7 +198,7 @@ const workedExampleData = {
               type="text"
               class="rule-find w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-1.5 text-xs text-[color:var(--fg)] font-mono"
               placeholder="Text or pattern to find..."
-              value="old_string" />
+              placeholder="e.g. search_text" />
           </div>
           <div class="sm:col-span-5">
             <label class="block text-[11px] font-bold text-[color:var(--muted)] mb-1">Replace With:</label>
@@ -202,7 +206,7 @@ const workedExampleData = {
               type="text"
               class="rule-replace w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-1.5 text-xs text-[color:var(--fg)] font-mono"
               placeholder="Replacement string..."
-              value="new_string" />
+              placeholder="e.g. replace_text" />
           </div>
           <div class="sm:col-span-2 flex items-center justify-end gap-1.5 pt-4 sm:pt-0">
             <button

@@ -1,4 +1,5 @@
 ---
+import SiteHero from '../components/SiteHero.astro';
 import SiteLayout from '../layouts/SiteLayout.astro';
 import Icon from '../components/Icon.astro';
 import { calculators } from '../data/calculators';
@@ -8,16 +9,14 @@ import { siteName, withBasePath } from '../utils/site';
 const popularCalculators = calculators.slice(0, 4);
 ---
 
-<SiteLayout title={`Page Not Found · ${siteName}`} description="The requested tool or page was not found.">
-  <div class="mx-auto max-w-2xl py-12 text-center">
-    <div class="inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-[color:var(--surface)] border border-[color:var(--border)] text-[color:var(--fg)] shadow-xs">
-      <Icon name="search" class="w-7 h-7" />
-    </div>
-
-    <h1 class="mt-5 text-3xl font-bold tracking-tight text-[color:var(--fg)] sm:text-4xl">404 - Page Not Found</h1>
-    <p class="mt-2 text-sm text-[color:var(--muted)]">
-      The tool or page you were looking for doesn't exist or may have been moved.
-    </p>
+<SiteLayout title={`Page Not Found · ${siteName}`} description="The requested tool or page was not found." heroCompact={true}>
+  <SiteHero
+    slot="hero"
+    badge="Error 404"
+    title="Page Not Found"
+    description="The tool or page you were looking for doesn't exist or may have been moved."
+  />
+  <div class="mx-auto max-w-2xl py-8 text-center">
 
     <div class="mt-6 flex flex-wrap justify-center gap-3">
       <a

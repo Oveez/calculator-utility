@@ -56,10 +56,11 @@ const schemaGraph = [
 ];
 ---
 
-<SiteLayout title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
+<SiteLayout heroCompact={true} title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
   <script is:inline type="application/ld+json" set:html={JSON.stringify(schemaGraph)} />
 
-  <article class="space-y-10 py-2" data-utm-parser-app>
+  
+  <div slot="hero" class="site-hero-header">
     <nav aria-label="Breadcrumb">
       <ol class="flex flex-wrap items-center gap-2 text-xs text-[color:var(--muted)]">
         {breadcrumbItems.map((item, index) => (
@@ -91,6 +92,9 @@ const schemaGraph = [
         Decode and extract Google Analytics UTM marketing tags from ad links, sponsored posts, and email campaigns.
       </p>
     </header>
+  </div>
+
+  <article class="space-y-10 py-2" data-utm-parser-app>
 
     <div class="space-y-6">
       <div class="space-y-2">

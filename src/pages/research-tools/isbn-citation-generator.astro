@@ -97,10 +97,11 @@ const schemaGraph = [
 ];
 ---
 
-<SiteLayout title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
+<SiteLayout heroCompact={true} title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
   <script is:inline type="application/ld+json" set:html={JSON.stringify(schemaGraph)} />
 
-  <article class="space-y-10 py-2" data-isbn-app>
+  
+  <div slot="hero" class="site-hero-header">
     <nav aria-label="Breadcrumb">
       <ol class="flex flex-wrap items-center gap-2 text-xs text-[color:var(--muted)]">
         {breadcrumbItems.map((item, index) => (
@@ -132,6 +133,9 @@ const schemaGraph = [
         Format published books into APA 7, MLA 9, Chicago, Harvard, and BibTeX. Validate ISBN checksums, fetch bibliographic metadata automatically via Open Library, or customize citations manually.
       </p>
     </header>
+  </div>
+
+  <article class="space-y-10 py-2" data-isbn-app>
 
     <div class="space-y-6">
       <!-- ISBN Lookup Card -->
@@ -151,7 +155,7 @@ const schemaGraph = [
               id="isbn-val"
               class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-2.5 font-mono text-xs sm:text-sm text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)]"
               placeholder="e.g. 978-0262033848 or 0262033844"
-              value="978-0262033848" />
+               />
           </div>
           <button
             type="button"
@@ -190,7 +194,7 @@ const schemaGraph = [
               id="author-val"
               class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-[color:var(--fg)]"
               placeholder="e.g. Cormen, Thomas H., Leiserson, Charles E., & Rivest, Ronald L."
-              value="Cormen, Thomas H., Leiserson, Charles E., Rivest, Ronald L., & Stein, Clifford" />
+              placeholder="e.g. Cormen, Thomas H., et al." />
           </div>
           <div>
             <label for="title-val" class="font-bold text-[color:var(--fg)] block mb-1">Book Title &amp; Subtitle:</label>
@@ -199,7 +203,7 @@ const schemaGraph = [
               id="title-val"
               class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-[color:var(--fg)]"
               placeholder="e.g. Introduction to Algorithms"
-              value="Introduction to Algorithms" />
+              placeholder="e.g. Introduction to Algorithms" />
           </div>
         </div>
 
@@ -210,7 +214,7 @@ const schemaGraph = [
               type="text"
               id="publisher-val"
               class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-[color:var(--fg)]"
-              value="MIT Press" />
+              placeholder="e.g. MIT Press" />
           </div>
           <div>
             <label for="year-val" class="font-bold text-[color:var(--fg)] block mb-1">Year of Publication:</label>
@@ -225,7 +229,7 @@ const schemaGraph = [
               type="text"
               id="edition-val"
               class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-[color:var(--fg)]"
-              value="3rd ed." />
+              placeholder="e.g. 3rd ed." />
           </div>
         </div>
       </div>

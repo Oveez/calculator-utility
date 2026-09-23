@@ -481,11 +481,11 @@ function setupRoot(root: HTMLElement): void {
 				const originalText = copyTextSpan?.textContent || 'Copy';
 
 				if (copyTextSpan) copyTextSpan.textContent = 'Copied!';
-				copyBtn.classList.add('border-[color:var(--accent)]', 'text-[color:var(--accent)]', 'shadow-[0_0_12px_var(--accent-glow)]');
+				copyBtn.classList.add('border-emerald-500', 'text-emerald-600', 'dark:text-emerald-400', 'bg-emerald-500/10');
 
 				setTimeout(() => {
 					if (copyTextSpan) copyTextSpan.textContent = originalText;
-					copyBtn.classList.remove('border-[color:var(--accent)]', 'text-[color:var(--accent)]', 'shadow-[0_0_12px_var(--accent-glow)]');
+					copyBtn.classList.remove('border-emerald-500', 'text-emerald-600', 'dark:text-emerald-400', 'bg-emerald-500/10');
 				}, 2000);
 			} catch {
 				// Clipboard fallback

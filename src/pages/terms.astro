@@ -1,15 +1,17 @@
 ---
+import SiteHero from '../components/SiteHero.astro';
 import SiteLayout from '../layouts/SiteLayout.astro';
 import { siteName, withBasePath } from '../utils/site';
 ---
 
-<SiteLayout title={`Terms of Use · ${siteName}`} description="Terms of service and informational disclaimer for Toolscastle.">
+<SiteLayout title={`Terms of Use · ${siteName}`} description="Terms of service and informational disclaimer for Toolscastle." heroCompact={true}>
+  <SiteHero
+    slot="hero"
+    badge="Legal & Terms"
+    title="Terms of Use"
+    description="Terms of service, educational usage guidelines, and informational disclaimers."
+  />
   <article class="mx-auto max-w-3xl space-y-8 py-6">
-    <header class="space-y-3">
-      <p class="text-xs font-semibold uppercase tracking-wider text-[color:var(--accent)]">Legal & Terms</p>
-      <h1 class="text-3xl font-bold tracking-tight text-[color:var(--fg)] sm:text-4xl">Terms of Use</h1>
-      <p class="text-sm text-[color:var(--muted)]">Last updated: August 2026</p>
-    </header>
 
     <div class="space-y-6 text-sm leading-7 text-[color:var(--muted)]">
       <section class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-6 shadow-sm">

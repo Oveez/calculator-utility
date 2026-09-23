@@ -65,10 +65,11 @@ const schemaGraph = [
 ];
 ---
 
-<SiteLayout title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
+<SiteLayout heroCompact={true} title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
   <script is:inline type="application/ld+json" set:html={JSON.stringify(schemaGraph)} />
 
-  <article class="space-y-10 py-2" data-compressor-app>
+  
+  <div slot="hero" class="site-hero-header">
     <nav aria-label="Breadcrumb">
       <ol class="flex flex-wrap items-center gap-2 text-xs text-[color:var(--muted)]">
         {breadcrumbItems.map((item, index) => (
@@ -100,6 +101,9 @@ const schemaGraph = [
         Reduce image file sizes instantly. Choose standard quality compression or set a target file weight (KB/MB) with automatic convergence. Your photos never leave your device.
       </p>
     </header>
+  </div>
+
+  <article class="space-y-10 py-2" data-compressor-app>
 
     <!-- Telemetry Bar -->
     <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
@@ -211,7 +215,7 @@ const schemaGraph = [
                 <input
                   type="number"
                   id="target-kb"
-                  value="250"
+                  placeholder="e.g. 250"
                   min="10"
                   max="10000"
                   class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-[color:var(--fg)]" />

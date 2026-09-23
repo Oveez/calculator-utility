@@ -4,6 +4,7 @@ import CalculatorLayout from '../../layouts/CalculatorLayout.astro';
 import CalculatorParameterGuide from '../../components/calculator/CalculatorParameterGuide.astro';
 import AcademicGradingGuide from '../../components/calculator/AcademicGradingGuide.astro';
 import Icon from '../../components/Icon.astro';
+import ToolIcon from '../../components/ToolIcon.astro';
 import { calculators } from '../../data/calculators';
 import type { CalculatorConfig } from '../../types/calculator';
 import { getCalculatorBreadcrumbs, getCalculatorPath } from '../../utils/calculators';
@@ -29,40 +30,32 @@ const relatedCalculators = calculator.relatedSlugs
 
 <CalculatorLayout calculator={calculator} breadcrumbs={getCalculatorBreadcrumbs(calculator)} canonical={getCalculatorPath(calculator.slug)}>
   <article class="space-y-10">
-    <header class="space-y-4">
-      <p class="inline-flex rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-4 py-2 text-sm font-medium text-[color:var(--accent)] shadow-xs">
-        {calculator.category}
-      </p>
-      <h1 class="max-w-4xl text-4xl font-semibold tracking-tight text-[color:var(--fg)] sm:text-5xl">{calculator.title}</h1>
-      <p class="max-w-3xl text-lg leading-8 text-[color:var(--muted)]">{calculator.metaDescription}</p>
-    </header>
-
     <CalculatorEngine calculator={calculator} />
 
     <section class="grid gap-6 lg:grid-cols-2">
-      <article class="rounded-[1.75rem] border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-6 shadow-sm transition hover:border-[color:var(--accent)]/30">
-        <h2 class="text-2xl font-semibold tracking-tight text-[color:var(--fg)] flex items-center gap-2">
+      <article class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 sm:p-7 shadow-xs transition hover:border-[color:var(--border-strong)]">
+        <h2 class="text-xl sm:text-2xl font-bold tracking-tight text-[color:var(--fg)] flex items-center gap-2">
           <Icon name="sparkles" class="w-5 h-5 text-[color:var(--accent)]" />
           <span>Introduction</span>
         </h2>
-        <p class="mt-4 text-[color:var(--muted)]">{calculator.content.intro}</p>
+        <p class="mt-3.5 text-sm sm:text-base leading-relaxed text-[color:var(--muted)]">{calculator.content.intro}</p>
       </article>
 
-      <article class="rounded-[1.75rem] border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-6 shadow-sm transition hover:border-[color:var(--accent)]/30">
-        <h2 class="text-2xl font-semibold tracking-tight text-[color:var(--fg)] flex items-center gap-2">
+      <article class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 sm:p-7 shadow-xs transition hover:border-[color:var(--border-strong)]">
+        <h2 class="text-xl sm:text-2xl font-bold tracking-tight text-[color:var(--fg)] flex items-center gap-2">
           <Icon name="gear" class="w-5 h-5 text-[color:var(--accent)]" />
-          <span>How it works</span>
+          <span>How It Works</span>
         </h2>
-        <p class="mt-4 text-[color:var(--muted)]">{calculator.content.howItWorks}</p>
+        <p class="mt-3.5 text-sm sm:text-base leading-relaxed text-[color:var(--muted)]">{calculator.content.howItWorks}</p>
       </article>
     </section>
 
-    <section class="rounded-[1.75rem] border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-6 shadow-sm transition hover:border-[color:var(--accent)]/30">
-      <h2 class="text-2xl font-semibold tracking-tight text-[color:var(--fg)] flex items-center gap-2">
+    <section class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 sm:p-7 shadow-xs transition hover:border-[color:var(--border-strong)]">
+      <h2 class="text-xl sm:text-2xl font-bold tracking-tight text-[color:var(--fg)] flex items-center gap-2">
         <Icon name="math" class="w-5 h-5 text-[color:var(--accent)]" />
-        <span>Formula explanation</span>
+        <span>Formula Explanation</span>
       </h2>
-      <p class="mt-4 max-w-4xl text-[color:var(--muted)]">{calculator.content.formulaExplanation}</p>
+      <p class="mt-3.5 max-w-4xl text-sm sm:text-base leading-relaxed text-[color:var(--muted)]">{calculator.content.formulaExplanation}</p>
     </section>
 
     <CalculatorParameterGuide
@@ -76,29 +69,29 @@ const relatedCalculators = calculator.relatedSlugs
 
     <section class="space-y-6">
       <div>
-        <p class="text-sm font-semibold uppercase tracking-[0.24em] text-[color:var(--accent)]">Examples</p>
-        <h2 class="mt-2 text-2xl font-semibold tracking-tight text-[color:var(--fg)] flex items-center gap-2">
+        <p class="text-xs font-bold uppercase tracking-[0.2em] text-[color:var(--accent)]">Examples</p>
+        <h2 class="mt-1 text-2xl font-bold tracking-tight text-[color:var(--fg)] flex items-center gap-2">
           <Icon name="document" class="w-5 h-5 text-[color:var(--accent)]" />
-          <span>Worked examples</span>
+          <span>Worked Examples</span>
         </h2>
       </div>
 
       {calculator.content.examples.length > 0 ? (
         <div class="grid gap-4 lg:grid-cols-2">
           {calculator.content.examples.map((example) => (
-            <article class="rounded-[1.75rem] border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-6 shadow-sm transition hover:border-[color:var(--accent)]/30">
-              <h3 class="text-xl font-semibold tracking-tight text-[color:var(--fg)]">{example.title}</h3>
-              <p class="mt-2 text-sm leading-6 text-[color:var(--muted)]">{example.description}</p>
-              <dl class="mt-5 space-y-2 rounded-3xl border border-[color:var(--border)] bg-[color:var(--bg)] p-4 text-sm text-[color:var(--muted)]">
+            <article class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 shadow-xs transition hover:border-[color:var(--border-strong)]">
+              <h3 class="text-lg font-bold tracking-tight text-[color:var(--fg)]">{example.title}</h3>
+              <p class="mt-1.5 text-xs sm:text-sm leading-relaxed text-[color:var(--muted)]">{example.description}</p>
+              <dl class="mt-4 space-y-2 rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-strong)]/40 p-4 text-xs sm:text-sm text-[color:var(--muted)]">
                 {Object.entries(example.values).map(([key, value]) => (
                   <div class="flex items-start justify-between gap-4">
                     <dt class="font-medium text-[color:var(--fg)]">{key}</dt>
-                    <dd>{value}</dd>
+                    <dd class="font-semibold text-[color:var(--fg)]">{value}</dd>
                   </div>
                 ))}
                 {example.result && (
-                  <div class="flex items-start justify-between gap-4 border-t border-[color:var(--border)] pt-3 text-[color:var(--accent)] font-semibold">
-                    <dt class="font-medium text-[color:var(--fg)]">Result</dt>
+                  <div class="flex items-start justify-between gap-4 border-t border-[color:var(--border)] pt-2.5 text-[color:var(--accent)] font-bold">
+                    <dt>Result</dt>
                     <dd>{example.result}</dd>
                   </div>
                 )}
@@ -107,7 +100,7 @@ const relatedCalculators = calculator.relatedSlugs
           ))}
         </div>
       ) : (
-        <div class="rounded-3xl border border-dashed border-[color:var(--border)] bg-[color:var(--surface)] p-6 text-[color:var(--muted)]">
+        <div class="rounded-2xl border border-dashed border-[color:var(--border)] bg-[color:var(--surface)] p-6 text-xs text-[color:var(--muted)]">
           Add examples to this calculator config to show worked walkthroughs here.
         </div>
       )}
@@ -115,23 +108,26 @@ const relatedCalculators = calculator.relatedSlugs
 
     <section class="space-y-6">
       <div>
-        <p class="text-sm font-semibold uppercase tracking-[0.24em] text-[color:var(--accent)]">FAQ</p>
-        <h2 class="mt-2 text-2xl font-semibold tracking-tight text-[color:var(--fg)]">Frequently asked questions</h2>
+        <p class="text-xs font-bold uppercase tracking-[0.2em] text-[color:var(--accent)]">FAQ</p>
+        <h2 class="mt-1 text-2xl font-bold tracking-tight text-[color:var(--fg)]">Frequently asked questions</h2>
       </div>
 
       {calculator.faq.length > 0 ? (
-        <div class="grid gap-4">
+        <div class="grid gap-3.5">
           {calculator.faq.map((item) => (
-            <details class="group rounded-[1.75rem] border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-5 shadow-sm">
-              <summary class="cursor-pointer list-none text-lg font-semibold tracking-tight text-[color:var(--fg)]">
-                {item.question}
+            <details class="group rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 shadow-xs transition hover:border-[color:var(--border-strong)]">
+              <summary class="cursor-pointer list-none text-base font-bold tracking-tight text-[color:var(--fg)] flex items-center justify-between gap-4 select-none">
+                <span>{item.question}</span>
+                <svg class="h-4 w-4 shrink-0 text-[color:var(--muted)] transition-transform duration-200 group-open:rotate-180" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
               </summary>
-              <p class="mt-4 text-[color:var(--muted)]">{item.answer}</p>
+              <p class="mt-3.5 text-xs sm:text-sm leading-relaxed text-[color:var(--muted)] border-t border-[color:var(--border)]/60 pt-3">{item.answer}</p>
             </details>
           ))}
         </div>
       ) : (
-        <div class="rounded-3xl border border-dashed border-[color:var(--border)] bg-[color:var(--surface)] p-6 text-[color:var(--muted)]">
+        <div class="rounded-2xl border border-dashed border-[color:var(--border)] bg-[color:var(--surface)] p-6 text-xs text-[color:var(--muted)]">
           FAQs are optional. Add them in the calculator config when needed.
         </div>
       )}
@@ -139,25 +135,44 @@ const relatedCalculators = calculator.relatedSlugs
 
     <section class="space-y-6">
       <div>
-        <p class="text-sm font-semibold uppercase tracking-[0.24em] text-[color:var(--accent)]">Related</p>
-        <h2 class="mt-2 text-2xl font-semibold tracking-tight text-[color:var(--fg)]">Related calculators</h2>
+        <p class="text-xs font-bold uppercase tracking-[0.2em] text-[color:var(--accent)]">Related</p>
+        <h2 class="mt-1 text-2xl font-bold tracking-tight text-[color:var(--fg)]">Related calculators</h2>
       </div>
 
       {relatedCalculators.length > 0 ? (
-        <div class="grid gap-4 lg:grid-cols-3">
+        <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {relatedCalculators.map((related) => (
             <a
-              class="rounded-[1.75rem] border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-5 shadow-sm transition hover:-translate-y-1 hover:border-[color:var(--accent)]"
+              class="group flex flex-col justify-between rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 shadow-xs transition hover:border-[color:var(--border-strong)] hover:bg-[color:var(--surface-strong)]"
               href={getCalculatorPath(related.slug)}
             >
-              <p class="text-sm font-medium text-[color:var(--accent)]">{related.category}</p>
-              <h3 class="mt-2 text-xl font-semibold tracking-tight text-[color:var(--fg)]">{related.title}</h3>
-              <p class="mt-3 text-sm leading-6 text-[color:var(--muted)]">{related.metaDescription}</p>
+              <div class="space-y-3">
+                <div class="flex items-center justify-between gap-2">
+                  <ToolIcon url={getCalculatorPath(related.slug)} title={related.title} category={related.category} size="md" />
+                  <span class="inline-flex rounded-md bg-[color:var(--surface-strong)] px-2.5 py-0.5 text-[11px] font-semibold text-[color:var(--muted)] border border-[color:var(--border)]">
+                    {related.category}
+                  </span>
+                </div>
+                <h3 class="text-base font-bold tracking-tight text-[color:var(--fg)] group-hover:text-[color:var(--accent)] transition-colors">
+                  {related.title}
+                </h3>
+                <p class="text-xs leading-relaxed text-[color:var(--muted)] line-clamp-2">
+                  {related.metaDescription}
+                </p>
+              </div>
+
+              <div class="mt-4 flex items-center justify-between pt-2.5 border-t border-[color:var(--border)]/60">
+                <span class="inline-flex items-center gap-1 text-xs font-bold text-[color:var(--fg)] group-hover:text-[color:var(--accent)] transition-colors">
+                  <span>Open Calculator</span>
+                  <Icon name="arrow-right" class="w-3.5 h-3.5 transition group-hover:translate-x-1" />
+                </span>
+                <span class="text-[10px] font-semibold uppercase tracking-wider text-[color:var(--muted)]">Instant</span>
+              </div>
             </a>
           ))}
         </div>
       ) : (
-        <div class="rounded-3xl border border-dashed border-[color:var(--border)] bg-[color:var(--surface)] p-6 text-[color:var(--muted)]">
+        <div class="rounded-2xl border border-dashed border-[color:var(--border)] bg-[color:var(--surface)] p-6 text-xs text-[color:var(--muted)]">
           Related links will appear once you connect calculator slugs inside the config object.
         </div>
       )}

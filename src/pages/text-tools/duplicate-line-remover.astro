@@ -130,10 +130,11 @@ const workedExampleData = {
 };
 ---
 
-<SiteLayout title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
+<SiteLayout heroCompact={true} title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
   <script is:inline type="application/ld+json" set:html={JSON.stringify(schemaGraph)} />
 
-  <article class="space-y-10 py-2" data-dup-app>
+  
+  <div slot="hero" class="site-hero-header">
     <nav aria-label="Breadcrumb">
       <ol class="flex flex-wrap items-center gap-2 text-xs text-[color:var(--muted)]">
         {breadcrumbItems.map((item, index) => (
@@ -165,6 +166,9 @@ const workedExampleData = {
         Clean and deduplicate lists, keywords, email databases, and log files. Custom case sensitivity, whitespace normalization, occurrence controls, and duplicate frequency inspection.
       </p>
     </header>
+  </div>
+
+  <article class="space-y-10 py-2" data-dup-app>
 
     <!-- Metrics Summary Bar -->
     <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
