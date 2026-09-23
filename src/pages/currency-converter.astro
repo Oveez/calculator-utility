@@ -7,10 +7,10 @@ const pageTitle = "Currency Converter — Live Currency Exchange Rates & Forex C
 const pageDesc = "Free online currency converter and exchange rate calculator. Convert 160+ world currencies with real-time currency exchange rates, live forex calculator data, and instant money converter tools.";
 ---
 
-<SiteLayout heroCompact={true} title={pageTitle} description={pageDesc} canonical={withBasePath('/currency-converter/')}>
-  
-  <div slot="hero" class="site-hero-header">
-    <nav class="flex items-center gap-2 text-xs font-medium text-[color:var(--muted)]" aria-label="Breadcrumb">
+<SiteLayout title={pageTitle} description={pageDesc} canonical={withBasePath('/currency-converter/')}>
+  <div class="mx-auto max-w-5xl space-y-10">
+    <!-- Breadcrumb / compact page context -->
+    <nav class="site-tool-breadcrumb flex items-center gap-2 text-xs font-medium text-[color:var(--muted)] mb-4 pt-1" aria-label="Breadcrumb">
       <a href="/" class="hover:text-[color:var(--accent)]">Home</a>
       <span>/</span>
       <a href="/#calculators?category=Converters" class="hover:text-[color:var(--accent)]">Converters</a>
@@ -18,21 +18,25 @@ const pageDesc = "Free online currency converter and exchange rate calculator. C
       <span class="text-[color:var(--fg)] font-semibold">Currency Converter</span>
     </nav>
 
-    <header class="space-y-3">
-      <div class="inline-flex items-center gap-2 rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3.5 py-1 text-xs font-semibold text-[color:var(--fg)]">
-        <span>160+ Currencies • Free Real-Time API</span>
-      </div>
-      <h1 class="text-3xl font-extrabold tracking-tight text-[color:var(--fg)] sm:text-4xl lg:text-5xl">
-        Currency Converter &amp; Exchange Rate Calculator
-      </h1>
-      <p class="max-w-3xl text-base leading-relaxed text-[color:var(--muted)] sm:text-lg">
-        Calculate live foreign currency exchange rates, compare world currencies, and convert foreign currency instantly with our free online currency converter and forex calculator.
-      </p>
-    </header>
-  </div>
-
-  <div class="mx-auto max-w-5xl space-y-10">
-
+    <!-- ACTUAL TOOL UI -->
     <CurrencyConverterApp />
+
+    <!-- Existing full SEO hero/banner -->
+    <div class="site-hero-banner site-hero-banner--compact my-10">
+      <div class="site-hero-banner-dots" aria-hidden="true" />
+      <div class="site-hero-inner">
+        <header class="space-y-3">
+          <div class="inline-flex items-center gap-2 rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3.5 py-1 text-xs font-semibold text-[color:var(--fg)]">
+            <span>160+ Currencies • Free Real-Time API</span>
+          </div>
+          <h1 class="text-3xl font-extrabold tracking-tight text-[color:var(--fg)] sm:text-4xl lg:text-5xl">
+            Currency Converter &amp; Exchange Rate Calculator
+          </h1>
+          <p class="max-w-3xl text-base leading-relaxed text-[color:var(--muted)] sm:text-lg">
+            Calculate live foreign currency exchange rates, compare world currencies, and convert foreign currency instantly with our free online currency converter and forex calculator.
+          </p>
+        </header>
+      </div>
+    </div>
   </div>
 </SiteLayout>

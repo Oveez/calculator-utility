@@ -1,5 +1,6 @@
 ---
 import SiteLayout from '../../layouts/SiteLayout.astro';
+import SiteHero from '../../components/SiteHero.astro';
 import Icon from '../../components/Icon.astro';
 import { siteName, toAbsoluteUrl, withBasePath } from '../../utils/site';
 
@@ -134,11 +135,18 @@ const schemaGraph = [
         box-sizing: border-box !important;
       }
     }
+
+    /* Hide global scroll-to-top/bottom floating button on mobile/tablet for this page */
+    @media (max-width: 1023px) {
+      #global-scroll-toggle {
+        display: none !important;
+      }
+    }
   </style>
 
-  
-  <div slot="hero" class="site-hero-header">
-    <nav aria-label="Breadcrumb">
+  <article class="space-y-6 py-2" data-cover-maker-app>
+    <!-- Breadcrumb / compact page context -->
+    <nav aria-label="Breadcrumb" class="site-tool-breadcrumb mb-4 pt-1">
       <ol class="flex flex-wrap items-center gap-2 text-xs text-[color:var(--muted)]">
         {breadcrumbItems.map((item, index) => (
           <li class="flex items-center gap-2">
@@ -157,72 +165,45 @@ const schemaGraph = [
       </ol>
     </nav>
 
-    <!-- Header Section -->
-    <header class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between border-b border-[color:var(--border)] pb-5">
-      <div>
-        <div class="flex items-center gap-2 mb-1">
-          <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-[color:var(--accent-soft)] text-[color:var(--accent)]">
-            <Icon name="sparkles" class="w-3.5 h-3.5" />
-            Academic Tool
-          </span>
-          <span class="text-xs text-[color:var(--muted)] font-medium">Standard A4 Format (210 × 297 mm)</span>
-        </div>
-        <h1 class="text-2xl font-bold tracking-tight text-[color:var(--fg)] sm:text-3xl">
-          Assignment Cover Maker
-        </h1>
-        <p class="text-sm text-[color:var(--muted)] mt-1 max-w-2xl leading-relaxed">
-          Create publication-quality university cover pages in seconds. Choose from 5 distinct academic templates, customize color palettes, load institution logos, and export print-ready A4 PDFs.
-        </p>
-      </div>
-
-      <!-- Quick Action Controls -->
-      <div class="flex items-center gap-2 self-start sm:self-auto flex-wrap">
-        <button
-          type="button"
-          id="btn-sample-data"
-          class="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold rounded-xl border border-[color:var(--border-strong)] bg-[color:var(--surface)] text-[color:var(--fg)] hover:bg-[color:var(--surface-strong)] hover:border-[color:var(--accent)] transition cursor-pointer shadow-xs"
-          title="Populate form with University of Dhaka sample data"
-        >
-          <Icon name="sparkles" class="w-3.5 h-3.5 text-[color:var(--accent)]" />
-          <span>Use Sample Data</span>
-        </button>
-        <button
-          type="button"
-          id="btn-reset-form"
-          class="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold rounded-xl border border-[color:var(--border-strong)] bg-[color:var(--surface)] text-[color:var(--fg)] hover:text-rose-600 dark:hover:text-rose-400 hover:border-rose-500/50 hover:bg-[color:var(--surface-strong)] transition cursor-pointer shadow-xs"
-          title="Reset all form fields"
-        >
-          <Icon name="refresh" class="w-3.5 h-3.5 text-[color:var(--muted)]" />
-          <span>Reset</span>
-        </button>
-        <button
-          type="button"
-          id="btn-print-cover"
-          class="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold rounded-xl border border-[color:var(--border-strong)] bg-[color:var(--surface)] text-[color:var(--fg)] hover:bg-[color:var(--surface-strong)] hover:border-[color:var(--accent)] transition cursor-pointer shadow-xs"
-        >
-          <Icon name="document" class="w-3.5 h-3.5 text-[color:var(--muted)]" />
-          <span>Print</span>
-        </button>
-        <button
-          type="button"
-          id="btn-quick-download"
-          class="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-bold rounded-xl bg-[color:var(--accent)] hover:bg-[color:var(--accent-hover)] text-white transition cursor-pointer shadow-xs focus:ring-2 focus:ring-[color:var(--accent-glow)]"
-        >
-          <Icon name="download" class="w-3.5 h-3.5" />
-          <span>Download PDF</span>
-        </button>
-      </div>
-    </header>
-  </div>
-
-  <article class="space-y-6 py-2" data-cover-maker-app>
-
     <!-- Main Workspace: Split Editor & Preview -->
     <div class="grid grid-cols-1 gap-8 lg:grid-cols-12 lg:items-start">
       
       <!-- LEFT COLUMN: Controls & Form Editor (6 cols) -->
       <section id="editor-controls-column" class="lg:col-span-6 xl:col-span-6 space-y-6">
         
+        <!-- Form Options Toolbar -->
+        <div class="flex items-center justify-between gap-3 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] px-4 py-2.5 shadow-xs">
+          <div class="flex items-center gap-2">
+            <span class="inline-flex items-center justify-center w-7 h-7 rounded-xl bg-[color:var(--surface-strong)] border border-[color:var(--border)] text-[color:var(--fg)]">
+              <Icon name="gear" class="w-3.5 h-3.5 text-[color:var(--accent)]" />
+            </span>
+            <div>
+              <p class="text-xs font-bold text-[color:var(--fg)]">Cover Details</p>
+              <p class="text-[11px] text-[color:var(--muted)]">Customize assignment fields</p>
+            </div>
+          </div>
+          <div class="flex items-center gap-2">
+            <button
+              type="button"
+              id="btn-sample-data"
+              class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] text-[color:var(--fg)] hover:border-[color:var(--accent)] hover:text-[color:var(--accent)] hover:bg-[color:var(--surface)] transition cursor-pointer shadow-2xs"
+              title="Populate form with sample university data"
+            >
+              <Icon name="sparkles" class="w-3.5 h-3.5 text-[color:var(--accent)]" />
+              <span>Use Sample Data</span>
+            </button>
+            <button
+              type="button"
+              id="btn-reset-form"
+              class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] text-[color:var(--muted)] hover:text-rose-600 dark:hover:text-rose-400 hover:border-rose-400/50 hover:bg-[color:var(--surface)] transition cursor-pointer shadow-2xs"
+              title="Reset all form fields"
+            >
+              <Icon name="refresh" class="w-3.5 h-3.5" />
+              <span>Reset</span>
+            </button>
+          </div>
+        </div>
+
         <!-- 1. TEMPLATE SELECTION -->
         <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 shadow-xs space-y-3.5">
           <div class="flex items-center justify-between">
@@ -689,17 +670,35 @@ const schemaGraph = [
       <!-- RIGHT COLUMN: Sticky Live A4 Preview (6 cols) -->
       <section class="lg:col-span-6 xl:col-span-6 lg:sticky lg:top-6 space-y-4">
         
-        <!-- Preview Toolbar -->
-        <div id="preview-toolbar" class="flex items-center justify-between rounded-xl bg-[color:var(--surface-strong)] border border-[color:var(--border)] px-4 py-2.5 shadow-xs">
+        <!-- Preview Toolbar with Direct Output Actions -->
+        <div id="preview-toolbar" class="flex flex-wrap items-center justify-between gap-2.5 rounded-2xl bg-[color:var(--surface)] border border-[color:var(--border)] p-3 shadow-xs">
           <div class="flex items-center gap-2">
             <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
             <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--fg)]">Live A4 Preview</span>
-          </div>
-
-          <div class="flex items-center gap-2 text-xs text-[color:var(--muted)]">
-            <span id="preview-mode-tag" class="px-2.5 py-0.5 rounded-md bg-[color:var(--surface)] border border-[color:var(--border)] font-semibold text-[color:var(--fg)]">
+            <span id="preview-mode-tag" class="hidden sm:inline-block px-2.5 py-0.5 rounded-lg bg-[color:var(--surface-strong)] border border-[color:var(--border)] text-[11px] font-semibold text-[color:var(--fg)]">
               Classic Academic
             </span>
+          </div>
+
+          <div class="flex items-center gap-2">
+            <button
+              type="button"
+              id="btn-print-cover"
+              class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] text-[color:var(--fg)] hover:border-[color:var(--accent)] hover:bg-[color:var(--surface)] transition cursor-pointer shadow-2xs"
+              title="Print cover page directly"
+            >
+              <Icon name="document" class="w-3.5 h-3.5 text-[color:var(--muted)]" />
+              <span>Print</span>
+            </button>
+            <button
+              type="button"
+              id="btn-quick-download"
+              class="inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-bold rounded-xl bg-[color:var(--accent)] hover:bg-[color:var(--accent-hover)] text-white transition cursor-pointer shadow-xs focus:ring-2 focus:ring-[color:var(--accent-glow)]"
+              title="Download print-ready A4 PDF"
+            >
+              <Icon name="download" class="w-3.5 h-3.5" />
+              <span>Download PDF</span>
+            </button>
           </div>
         </div>
 
@@ -734,6 +733,21 @@ const schemaGraph = [
 
       </section>
 
+    </div>
+
+    <!-- Existing full SEO hero/banner -->
+    <div class="site-hero-banner site-hero-banner--compact my-10">
+      <div class="site-hero-banner-dots" aria-hidden="true" />
+      <div class="site-hero-inner">
+        <header class="site-hero-header">
+          <div class="site-hero-badge">
+            <span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#34d399;flex-shrink:0;"></span>
+            <span>Academic Tool • Standard A4 Format (210 × 297 mm)</span>
+          </div>
+          <h1 class="site-hero-h1">Assignment Cover Maker</h1>
+          <p class="site-hero-desc">Create publication-quality university cover pages in seconds. Choose from 5 distinct academic templates, customize color palettes, load institution logos, and export print-ready A4 PDFs.</p>
+        </header>
+      </div>
     </div>
 
     <!-- Features & Academic Standards -->
@@ -830,6 +844,92 @@ const schemaGraph = [
       </div>
     </section>
   </article>
+
+  <!-- Floating Action Button for Mobile Live Preview -->
+  <aside aria-label="Mobile Live Preview">
+    <button
+      type="button"
+      id="btn-mobile-preview-fab"
+      class="fixed bottom-20 right-4 z-40 lg:hidden flex items-center gap-2 rounded-full px-4 py-2.5 text-white font-bold text-xs shadow-2xl transition-all duration-300 active:scale-95 cursor-pointer border border-white/20 select-none group"
+      aria-label="Open Full Screen Cover Preview"
+      title="Open Full Screen Cover Preview"
+    >
+      <span class="relative flex h-2 w-2">
+        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+        <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-400"></span>
+      </span>
+      <svg class="w-4 h-4 stroke-current transition-transform group-hover:scale-110" viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+        <circle cx="12" cy="12" r="3"></circle>
+      </svg>
+      <span class="tracking-wide">Preview Cover</span>
+    </button>
+  </aside>
+
+  <!-- Full Screen Mobile Preview Modal -->
+  <div
+    id="mobile-fullscreen-modal"
+    class="fixed inset-0 z-50 bg-slate-950/95 backdrop-blur-md hidden flex-col transition-opacity duration-200"
+    role="dialog"
+    aria-modal="true"
+    aria-label="Full Screen Cover Preview"
+  >
+    <!-- Modal Header Navigation Bar -->
+    <header class="flex items-center justify-between px-3 sm:px-5 py-3 border-b border-white/10 bg-slate-900/90 text-white shrink-0">
+      <button
+        type="button"
+        id="btn-close-fullscreen"
+        class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-bold transition cursor-pointer active:scale-95"
+      >
+        <svg class="w-4 h-4 stroke-current" viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+        <span>Close</span>
+      </button>
+
+      <div class="text-center px-2">
+        <p class="text-xs font-bold text-white tracking-wide truncate max-w-[160px] sm:max-w-xs">Full Screen Preview</p>
+        <p class="text-[10px] text-slate-400" id="fullscreen-mode-tag">Standard A4 Format</p>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <button
+          type="button"
+          id="btn-fullscreen-print"
+          class="p-2 rounded-xl bg-white/10 hover:bg-white/20 text-white transition cursor-pointer active:scale-95"
+          title="Print Cover"
+        >
+          <Icon name="document" class="w-4 h-4" />
+        </button>
+        <button
+          type="button"
+          id="btn-fullscreen-download"
+          class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[color:var(--accent)] hover:bg-[color:var(--accent-hover)] text-white text-xs font-bold transition cursor-pointer shadow-xs active:scale-95"
+          title="Download PDF"
+        >
+          <Icon name="download" class="w-3.5 h-3.5" />
+          <span class="hidden sm:inline">Download</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Modal Scrollable / Scaled Viewport Container -->
+    <div id="fullscreen-viewport-container" class="flex-1 w-full overflow-auto p-4 flex flex-col items-center justify-start sm:justify-center">
+      <div
+        id="fullscreen-cover-scaler"
+        class="flex justify-center items-start transition-transform duration-150 origin-top select-none pointer-events-auto"
+      >
+        <div
+          id="fullscreen-cover-page"
+          class="bg-white text-slate-900 shadow-2xl rounded-xs border border-slate-300 relative box-border select-none"
+          style="width: 794px; min-width: 794px; height: 1123px; min-height: 1123px; transform-origin: top center;"
+        >
+          <!-- Dynamic Content Injected on Open -->
+        </div>
+      </div>
+    </div>
+  </div>
 
   <!-- Load local self-hosted pdf-lib bundle for instant zero-latency client-side vector PDF compilation -->
   <script is:inline src="/js/pdf-lib.min.js"></script>
@@ -1652,6 +1752,17 @@ const schemaGraph = [
       const btnMergeAssignment = document.getElementById('btn-merge-assignment');
       const btnMergeText = document.getElementById('btn-merge-text');
 
+      // Mobile Floating Preview FAB & Fullscreen Modal Elements
+      const btnMobileFab = document.getElementById('btn-mobile-preview-fab');
+      const fullscreenModal = document.getElementById('mobile-fullscreen-modal');
+      const btnCloseFullscreen = document.getElementById('btn-close-fullscreen');
+      const btnFullscreenPrint = document.getElementById('btn-fullscreen-print');
+      const btnFullscreenDownload = document.getElementById('btn-fullscreen-download');
+      const fullscreenCoverPage = document.getElementById('fullscreen-cover-page');
+      const fullscreenCoverScaler = document.getElementById('fullscreen-cover-scaler');
+      const fullscreenViewportContainer = document.getElementById('fullscreen-viewport-container');
+      const fullscreenModeTag = document.getElementById('fullscreen-mode-tag');
+
       let institutionsDb = null;
       let isFetchingDb = false;
 
@@ -1660,7 +1771,15 @@ const schemaGraph = [
         return `${months[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}`;
       }
 
-      // Responsive A4 Viewport Scaling Engine
+      // Dynamically match mobile floating button face and glow to the active theme
+      function updateFabTheme() {
+        if (!btnMobileFab) return;
+        const activeTheme = THEMES[state.theme] || THEMES.classic;
+        btnMobileFab.style.backgroundColor = activeTheme.primary;
+        btnMobileFab.style.boxShadow = `0 12px 28px -4px ${activeTheme.primary}75, 0 6px 12px -2px ${activeTheme.primary}40`;
+      }
+
+      // Responsive A4 Viewport Scaling Engine (Desktop & In-page)
       function updateViewportScale() {
         if (!coverViewport || !previewPage) return;
         const availableWidth = coverViewport.clientWidth;
@@ -1673,6 +1792,81 @@ const schemaGraph = [
       }
 
       window.addEventListener('resize', updateViewportScale);
+
+      // Fullscreen Modal Scaling Engine (Mobile viewport fit)
+      function updateFullscreenScale() {
+        if (!fullscreenViewportContainer || !fullscreenCoverScaler || !fullscreenCoverPage) return;
+        const availW = Math.max(80, fullscreenViewportContainer.clientWidth - 20);
+        const availH = Math.max(80, fullscreenViewportContainer.clientHeight - 20);
+        const scale = Math.min(availW / 794, availH / 1123, 1.25);
+        fullscreenCoverPage.style.transform = `scale(${scale})`;
+        fullscreenCoverPage.style.transformOrigin = 'top center';
+        fullscreenCoverScaler.style.width = `${Math.round(794 * scale)}px`;
+        fullscreenCoverScaler.style.height = `${Math.round(1123 * scale)}px`;
+      }
+
+      function syncFullscreenContent() {
+        if (!fullscreenModal || !fullscreenCoverPage || !previewPage) return;
+        fullscreenCoverPage.innerHTML = previewPage.innerHTML;
+        fullscreenCoverPage.style.cssText = previewPage.style.cssText;
+        if (fullscreenModeTag) {
+          fullscreenModeTag.textContent = `${getTemplateDisplayName(state.template)} • ${(THEMES[state.theme] || THEMES.classic).name}`;
+        }
+      }
+
+      function openFullscreenPreview() {
+        if (!fullscreenModal) return;
+        syncFullscreenContent();
+        fullscreenModal.classList.remove('hidden');
+        fullscreenModal.classList.add('flex');
+        document.body.style.overflow = 'hidden';
+        requestAnimationFrame(() => {
+          updateFullscreenScale();
+        });
+      }
+
+      function closeFullscreenPreview() {
+        if (!fullscreenModal) return;
+        fullscreenModal.classList.add('hidden');
+        fullscreenModal.classList.remove('flex');
+        document.body.style.overflow = '';
+      }
+
+      if (btnMobileFab) {
+        btnMobileFab.addEventListener('click', openFullscreenPreview);
+      }
+      if (btnCloseFullscreen) {
+        btnCloseFullscreen.addEventListener('click', closeFullscreenPreview);
+      }
+      if (btnFullscreenPrint) {
+        btnFullscreenPrint.addEventListener('click', () => {
+          closeFullscreenPreview();
+          window.print();
+        });
+      }
+      if (btnFullscreenDownload) {
+        btnFullscreenDownload.addEventListener('click', () => {
+          closeFullscreenPreview();
+          document.getElementById('generate-pdf-btn').click();
+        });
+      }
+      if (fullscreenModal) {
+        fullscreenModal.addEventListener('click', (e) => {
+          if (e.target === fullscreenModal || e.target === fullscreenViewportContainer) {
+            closeFullscreenPreview();
+          }
+        });
+      }
+      window.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && fullscreenModal && !fullscreenModal.classList.contains('hidden')) {
+          closeFullscreenPreview();
+        }
+      });
+      window.addEventListener('resize', () => {
+        if (fullscreenModal && !fullscreenModal.classList.contains('hidden')) {
+          updateFullscreenScale();
+        }
+      });
 
       // Convert remote image to base64 data URL for zero-CORS safety
       async function cacheLogoAsBase64(url) {
@@ -2328,6 +2522,12 @@ const schemaGraph = [
         // Re-calculate responsive viewport scale
         updateViewportScale();
 
+        // Sync live updates to fullscreen modal if currently open
+        if (fullscreenModal && !fullscreenModal.classList.contains('hidden')) {
+          syncFullscreenContent();
+        }
+        updateFabTheme();
+
         // Persist state in browser storage
         saveStateToStorage();
       }
@@ -2921,6 +3121,7 @@ const schemaGraph = [
       syncTemplateAndThemeButtons();
       renderPreview();
       updateViewportScale();
+      updateFabTheme();
 
       // Flush latest state before page refresh
       window.addEventListener('beforeunload', () => {

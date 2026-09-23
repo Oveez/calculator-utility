@@ -1,4 +1,5 @@
 ---
+import CalculatorEngine from '../components/CalculatorEngine.astro';
 import SiteHero from '../components/SiteHero.astro';
 import SiteLayout from './SiteLayout.astro';
 import type { BreadcrumbItem, CalculatorConfig, CalculatorFaqItem } from '../types/calculator';
@@ -66,16 +67,46 @@ const schemaGraph = [
 ];
 ---
 
-<SiteLayout title={pageTitle} description={calculator.metaDescription} canonical={canonicalUrl} heroCompact={true}>
+<SiteLayout title={pageTitle} description={calculator.metaDescription} canonical={canonicalUrl}>
   <script is:inline type="application/ld+json" set:html={JSON.stringify(schemaGraph)} />
 
-  <SiteHero
-    slot="hero"
-    breadcrumbs={breadcrumbItems}
-    badge={calculator.category}
-    title={calculator.title}
-    description={calculator.metaDescription}
-  />
+  <!-- 1. Breadcrumb / compact page context -->
+  <nav aria-label="Breadcrumb" class="site-tool-breadcrumb mb-6 pt-1">
+    <ol class="flex flex-wrap items-center gap-2 text-xs text-[color:var(--muted)]">
+      {breadcrumbItems.map((item, index) => (
+        <li class="flex items-center gap-2">
+          {index > 0 && <span aria-hidden="true" class="opacity-50">/</span>}
+          {item.href ? (
+            <a class="transition hover:text-[color:var(--fg)]" href={item.href}>
+              {item.label}
+            </a>
+          ) : (
+            <span aria-current="page" class="font-semibold text-[color:var(--fg)]">
+              {item.label}
+            </span>
+          )}
+        </li>
+      ))}
+    </ol>
+  </nav>
 
+  <!-- 2. ACTUAL TOOL UI (first major content users see) -->
+  <div class="site-tool-engine-wrapper">
+    <CalculatorEngine calculator={calculator} />
+  </div>
+
+  <!-- 3. Existing full SEO hero/banner -->
+  <div class="site-hero-banner site-hero-banner--compact my-10">
+    <div class="site-hero-banner-dots" aria-hidden="true" />
+    <div class="site-hero-inner">
+      <SiteHero
+        badge={calculator.category}
+        title={calculator.title}
+        description={calculator.metaDescription}
+      />
+    </div>
+  </div>
+
+  <!-- 4. Existing supporting content -->
   <slot />
 </SiteLayout>

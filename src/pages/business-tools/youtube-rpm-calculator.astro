@@ -68,12 +68,13 @@ const schemaGraph = [
 ];
 ---
 
-<SiteLayout heroCompact={true} title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
+<SiteLayout title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
   <script is:inline type="application/ld+json" set:html={JSON.stringify(schemaGraph)} />
 
   
-  <div slot="hero" class="site-hero-header">
-    <nav aria-label="Breadcrumb">
+  <article class="space-y-10 py-2">
+    <!-- Breadcrumb / compact page context -->
+    <nav class="site-tool-breadcrumb mb-4 pt-1" aria-label="Breadcrumb">
       <ol class="flex flex-wrap items-center gap-2 text-xs text-[color:var(--muted)]">
         {breadcrumbItems.map((item, index) => (
           <li class="flex items-center gap-2">
@@ -92,20 +93,6 @@ const schemaGraph = [
       </ol>
     </nav>
 
-    <header class="space-y-3">
-      <div class="inline-flex items-center gap-2 rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3.5 py-1 text-xs font-semibold text-[color:var(--fg)]">
-        <span>Content Creator Monetization</span>
-      </div>
-      <h1 class="text-3xl font-extrabold tracking-tight text-[color:var(--fg)] sm:text-4xl">
-        YouTube RPM &amp; Earnings Calculator
-      </h1>
-      <p class="max-w-3xl text-sm leading-relaxed text-[color:var(--muted)] sm:text-base">
-        Estimate your channel's monthly and annual AdSense revenue. Model expected earnings across long-form video, YouTube Shorts, and industry niche RPM benchmarks.
-      </p>
-    </header>
-  </div>
-
-  <article class="space-y-10 py-2">
 
     <div
       class="rounded-[2.5rem] border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-6 shadow-[var(--shadow)] sm:p-10"
@@ -203,6 +190,24 @@ const schemaGraph = [
             </div>
           </div>
         </div>
+      </div>
+    </div>
+
+    <!-- Existing full SEO hero/banner -->
+    <div class="site-hero-banner site-hero-banner--compact my-10">
+      <div class="site-hero-banner-dots" aria-hidden="true" />
+      <div class="site-hero-inner">
+        <header class="space-y-3">
+      <div class="inline-flex items-center gap-2 rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3.5 py-1 text-xs font-semibold text-[color:var(--fg)]">
+        <span>Content Creator Monetization</span>
+      </div>
+      <h1 class="text-3xl font-extrabold tracking-tight text-[color:var(--fg)] sm:text-4xl">
+        YouTube RPM &amp; Earnings Calculator
+      </h1>
+      <p class="max-w-3xl text-sm leading-relaxed text-[color:var(--muted)] sm:text-base">
+        Estimate your channel's monthly and annual AdSense revenue. Model expected earnings across long-form video, YouTube Shorts, and industry niche RPM benchmarks.
+      </p>
+    </header>
       </div>
     </div>
 

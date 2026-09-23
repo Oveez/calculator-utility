@@ -65,12 +65,13 @@ const schemaGraph = [
 ];
 ---
 
-<SiteLayout heroCompact={true} title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
+<SiteLayout title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
   <script is:inline type="application/ld+json" set:html={JSON.stringify(schemaGraph)} />
 
   
-  <div slot="hero" class="site-hero-header">
-    <nav aria-label="Breadcrumb">
+  <article class="space-y-10 py-2" data-regex-escape-app>
+    <!-- Breadcrumb / compact page context -->
+    <nav class="site-tool-breadcrumb mb-4 pt-1" aria-label="Breadcrumb">
       <ol class="flex flex-wrap items-center gap-2 text-xs text-[color:var(--muted)]">
         {breadcrumbItems.map((item, index) => (
           <li class="flex items-center gap-2">
@@ -89,21 +90,6 @@ const schemaGraph = [
       </ol>
     </nav>
 
-    <header class="space-y-3">
-      <div class="inline-flex items-center gap-2 rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1 text-xs font-semibold text-[color:var(--muted)]">
-        <span class="inline-block h-2 w-2 rounded-full bg-emerald-500"></span>
-        <span>RegExp Constructor Safety &bull; Reversible Escaping</span>
-      </div>
-      <h1 class="text-2xl sm:text-4xl font-extrabold tracking-tight text-[color:var(--fg)]">
-        Regex Special Character Escaper
-      </h1>
-      <p class="max-w-2xl text-xs sm:text-sm text-[color:var(--muted)] leading-relaxed">
-        Escape or unescape special regular expression metacharacters in literal text strings. Generate production-ready JavaScript snippets for safe dynamic RegExp constructors.
-      </p>
-    </header>
-  </div>
-
-  <article class="space-y-10 py-2" data-regex-escape-app>
 
     <!-- Controls & Telemetry -->
     <div class="space-y-6">
@@ -247,6 +233,25 @@ const schemaGraph = [
             <p class="text-[10px] text-[color:var(--muted)] mt-0.5">Delimiter Slash</p>
           </div>
         </div>
+      </div>
+    </div>
+
+    <!-- Existing full SEO hero/banner -->
+    <div class="site-hero-banner site-hero-banner--compact my-10">
+      <div class="site-hero-banner-dots" aria-hidden="true" />
+      <div class="site-hero-inner">
+        <header class="space-y-3">
+      <div class="inline-flex items-center gap-2 rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1 text-xs font-semibold text-[color:var(--muted)]">
+        <span class="inline-block h-2 w-2 rounded-full bg-emerald-500"></span>
+        <span>RegExp Constructor Safety &bull; Reversible Escaping</span>
+      </div>
+      <h1 class="text-2xl sm:text-4xl font-extrabold tracking-tight text-[color:var(--fg)]">
+        Regex Special Character Escaper
+      </h1>
+      <p class="max-w-2xl text-xs sm:text-sm text-[color:var(--muted)] leading-relaxed">
+        Escape or unescape special regular expression metacharacters in literal text strings. Generate production-ready JavaScript snippets for safe dynamic RegExp constructors.
+      </p>
+    </header>
       </div>
     </div>
 

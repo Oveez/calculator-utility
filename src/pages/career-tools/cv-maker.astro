@@ -84,13 +84,13 @@ const schemaGraph = [
 ];
 ---
 
-<SiteLayout heroCompact={true} title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
+<SiteLayout title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
   <script is:inline type="application/ld+json" set:html={JSON.stringify(schemaGraph)} />
 
   
-  <div slot="hero" class="site-hero-header">
-    <!-- Breadcrumbs -->
-    <nav aria-label="Breadcrumb" class="mb-2 w-full min-w-0 overflow-x-auto">
+  <article class="space-y-10 sm:space-y-12 w-full max-w-full min-w-0 overflow-hidden">
+    <!-- Breadcrumb / compact page context -->
+    <nav class="site-tool-breadcrumb mb-4 pt-1" aria-label="Breadcrumb" class="mb-2 w-full min-w-0 overflow-x-auto">
       <ol class="flex flex-wrap items-center gap-2 text-sm text-[color:var(--muted)]">
         {breadcrumbItems.map((item, index) => (
           <li class="flex items-center gap-2">
@@ -109,8 +109,17 @@ const schemaGraph = [
       </ol>
     </nav>
 
-    <!-- Header / Hero -->
-    <header class="space-y-3 w-full min-w-0">
+
+    <!-- The Interactive CV Maker App -->
+    <section aria-label="Interactive CV Maker Engine" class="w-full max-w-full min-w-0">
+      <CvMakerApp initialTemplate="professional" />
+    </section>
+
+    <!-- Existing full SEO hero/banner -->
+    <div class="site-hero-banner site-hero-banner--compact my-10">
+      <div class="site-hero-banner-dots" aria-hidden="true" />
+      <div class="site-hero-inner">
+        <header class="space-y-3 w-full min-w-0">
       <div class="inline-flex items-center gap-2 rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3.5 py-1 text-xs font-bold text-[color:var(--fg)]">
         <span>Career Tools &amp; Resume Builder</span>
       </div>
@@ -121,14 +130,8 @@ const schemaGraph = [
         Build a high-converting, professional CV and ATS friendly resume in minutes. Designed to pass applicant tracking system resume scans with clean typography, A4 vector PDF downloads, and zero paywalls.
       </p>
     </header>
-  </div>
-
-  <article class="space-y-10 sm:space-y-12 w-full max-w-full min-w-0 overflow-hidden">
-
-    <!-- The Interactive CV Maker App -->
-    <section aria-label="Interactive CV Maker Engine" class="w-full max-w-full min-w-0">
-      <CvMakerApp initialTemplate="professional" />
-    </section>
+      </div>
+    </div>
 
     <!-- Deep In-Depth SEO Guide & Search Intent Content -->
     <section class="space-y-12 border-t border-[color:var(--border)] pt-12">

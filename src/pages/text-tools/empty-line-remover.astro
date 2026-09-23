@@ -123,12 +123,13 @@ const workedExampleData = {
 };
 ---
 
-<SiteLayout heroCompact={true} title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
+<SiteLayout title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
   <script is:inline type="application/ld+json" set:html={JSON.stringify(schemaGraph)} />
 
   
-  <div slot="hero" class="site-hero-header">
-    <nav aria-label="Breadcrumb">
+  <article class="space-y-10 py-2" data-empty-app>
+    <!-- Breadcrumb / compact page context -->
+    <nav class="site-tool-breadcrumb mb-4 pt-1" aria-label="Breadcrumb">
       <ol class="flex flex-wrap items-center gap-2 text-xs text-[color:var(--muted)]">
         {breadcrumbItems.map((item, index) => (
           <li class="flex items-center gap-2">
@@ -147,21 +148,6 @@ const workedExampleData = {
       </ol>
     </nav>
 
-    <header class="space-y-3">
-      <div class="inline-flex items-center gap-2 rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1 text-xs font-semibold text-[color:var(--muted)]">
-        <span class="inline-block h-2 w-2 rounded-full bg-emerald-500"></span>
-        <span>100% Client-Side • Multiple Cleaning Modes • Instant Real-Time Preview</span>
-      </div>
-      <h1 class="text-2xl sm:text-4xl font-extrabold tracking-tight text-[color:var(--fg)]">
-        Empty Line Remover
-      </h1>
-      <p class="max-w-2xl text-xs sm:text-sm text-[color:var(--muted)] leading-relaxed">
-        Strip unnecessary blank and empty lines from code blocks, logs, and copied text documents. Collapse multiple consecutive empty lines into single breaks, or remove all empty lines completely.
-      </p>
-    </header>
-  </div>
-
-  <article class="space-y-10 py-2" data-empty-app>
 
     <!-- Metrics Summary Bar -->
     <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
@@ -275,6 +261,25 @@ const workedExampleData = {
           class="w-full font-mono text-xs leading-relaxed rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-4 text-[color:var(--fg)] focus:outline-hidden transition shadow-inner"
           placeholder="Text without empty lines will appear here in real-time..."
         ></textarea>
+      </div>
+    </div>
+
+    <!-- Existing full SEO hero/banner -->
+    <div class="site-hero-banner site-hero-banner--compact my-10">
+      <div class="site-hero-banner-dots" aria-hidden="true" />
+      <div class="site-hero-inner">
+        <header class="space-y-3">
+      <div class="inline-flex items-center gap-2 rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1 text-xs font-semibold text-[color:var(--muted)]">
+        <span class="inline-block h-2 w-2 rounded-full bg-emerald-500"></span>
+        <span>100% Client-Side • Multiple Cleaning Modes • Instant Real-Time Preview</span>
+      </div>
+      <h1 class="text-2xl sm:text-4xl font-extrabold tracking-tight text-[color:var(--fg)]">
+        Empty Line Remover
+      </h1>
+      <p class="max-w-2xl text-xs sm:text-sm text-[color:var(--muted)] leading-relaxed">
+        Strip unnecessary blank and empty lines from code blocks, logs, and copied text documents. Collapse multiple consecutive empty lines into single breaks, or remove all empty lines completely.
+      </p>
+    </header>
       </div>
     </div>
 

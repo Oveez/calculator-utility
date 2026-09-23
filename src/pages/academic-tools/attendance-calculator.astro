@@ -76,13 +76,13 @@ const schemaGraph = [
 ];
 ---
 
-<SiteLayout heroCompact={true} title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
+<SiteLayout title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
   <script is:inline type="application/ld+json" set:html={JSON.stringify(schemaGraph)} />
 
   
-  <div slot="hero" class="site-hero-header">
-    <!-- Breadcrumbs -->
-    <nav aria-label="Breadcrumb">
+  <article class="space-y-10 py-2">
+    <!-- Breadcrumb / compact page context -->
+    <nav class="site-tool-breadcrumb mb-4 pt-1" aria-label="Breadcrumb">
       <ol class="flex flex-wrap items-center gap-2 text-xs text-[color:var(--muted)]">
         {breadcrumbItems.map((item, index) => (
           <li class="flex items-center gap-2">
@@ -101,21 +101,6 @@ const schemaGraph = [
       </ol>
     </nav>
 
-    <!-- Header & Introduction -->
-    <header class="space-y-3">
-      <div class="inline-flex items-center gap-2 rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3.5 py-1 text-xs font-semibold text-[color:var(--fg)]">
-        <span>Academic Attendance Tool</span>
-      </div>
-      <h1 class="text-3xl font-extrabold tracking-tight text-[color:var(--fg)] sm:text-4xl">
-        Attendance Calculator — College Attendance &amp; Safe Bunks
-      </h1>
-      <p class="max-w-3xl text-sm leading-relaxed text-[color:var(--muted)] sm:text-base">
-        A precision attendance calculator and academic planner for college and university students. Calculate your live attendance percentage, discover how many lectures you can safely skip, and compute the exact consecutive classes needed to clear 75%, 80%, 85%, or 90% attendance cutoffs.
-      </p>
-    </header>
-  </div>
-
-  <article class="space-y-10 py-2">
 
     <!-- Interactive Calculator Card -->
     <div
@@ -326,6 +311,24 @@ const schemaGraph = [
         </div>
       </div>
     </section>
+
+    <!-- Existing full SEO hero/banner -->
+    <div class="site-hero-banner site-hero-banner--compact my-10">
+      <div class="site-hero-banner-dots" aria-hidden="true" />
+      <div class="site-hero-inner">
+        <header class="space-y-3">
+      <div class="inline-flex items-center gap-2 rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3.5 py-1 text-xs font-semibold text-[color:var(--fg)]">
+        <span>Academic Attendance Tool</span>
+      </div>
+      <h1 class="text-3xl font-extrabold tracking-tight text-[color:var(--fg)] sm:text-4xl">
+        Attendance Calculator — College Attendance &amp; Safe Bunks
+      </h1>
+      <p class="max-w-3xl text-sm leading-relaxed text-[color:var(--muted)] sm:text-base">
+        A precision attendance calculator and academic planner for college and university students. Calculate your live attendance percentage, discover how many lectures you can safely skip, and compute the exact consecutive classes needed to clear 75%, 80%, 85%, or 90% attendance cutoffs.
+      </p>
+    </header>
+      </div>
+    </div>
 
     <!-- Parameter Guide -->
     <CalculatorParameterGuide parameters={parameterGuide} />
