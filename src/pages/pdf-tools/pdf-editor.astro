@@ -1,22 +1,133 @@
 ---
-import { siteName, toAbsoluteUrl, withBasePath } from '../../utils/site';
+import { siteName, siteUrl, toAbsoluteUrl, withBasePath } from '../../utils/site';
 import '../../styles/global.css';
 import BrandMark from '../../components/BrandMark.astro';
 
-const pageTitle = `PDF Editor — Free Online PDF Editor Tool`;
+const pageTitle = `PDF Editor — Free Online PDF Editor Tool to Edit PDFs Online · ${siteName}`;
+const pageDesc = 'Free online PDF editor to edit PDFs and create editable PDFs in your browser. Edit existing text, add text, draw, sign, insert images, and delete pages with zero watermark.';
 const canonicalUrl = toAbsoluteUrl('/pdf-tools/pdf-editor/');
+const logoUrl = new URL(withBasePath('/calculator.png'), siteUrl).toString();
+
+const breadcrumbItems = [
+  { label: 'Home', href: toAbsoluteUrl('/') },
+  { label: 'PDF Tools', href: toAbsoluteUrl('/pdf-tools/') },
+  { label: 'PDF Editor' },
+];
+
+const faqs = [
+  {
+    question: 'Can I edit existing text in a PDF document online for free?',
+    answer: 'Yes! Our tool allows you to edit existing text in pdf online free directly in your web browser. Simply click the "Edit text" button in the toolbar, click on any text block within your document, and change text in pdf online free. You can edit pdf online with same font styling or choose custom typography without needing any desktop software.',
+  },
+  {
+    question: 'Do I need to sign up, register, or pay for a subscription?',
+    answer: 'No. This is a true free online pdf editor no sign up and free pdf editor without subscription. You can edit pdf for free no sign up, enjoy edit pdf online free without login, and edit pdf free online no sign up without entering credit card details or creating an account.',
+  },
+  {
+    question: 'Will my edited PDF have any watermark when downloaded?',
+    answer: 'No. As an authentic online pdf editor without watermark and free pdf editor no watermark, your documents are exported cleanly with zero branding. You can edit pdf without watermark every single time.',
+  },
+  {
+    question: 'Are my confidential PDF documents uploaded to a remote cloud server?',
+    answer: 'No. Unlike a traditional cloud based pdf editor where files are transferred to third-party databases, our web pdf editor processes everything locally in browser memory via client-side WebAssembly and canvas rendering. Your sensitive contracts, invoices, and personal files never leave your device.',
+  },
+  {
+    question: 'How does this compare to Sejda, Adobe Acrobat, and iLovePDF?',
+    answer: 'Many users searching for sejda pdf edit, ilovepdf edit pdf, or adobe acrobat edit pdf online encounter severe limits—such as daily task caps, file size limits, or costly monthly subscriptions. Our platform provides a completely free pdf editor online and absolutely free pdf editor with unrestricted document editing and page management.',
+  },
+  {
+    question: 'Can I sign PDF documents digitally and insert logos or images?',
+    answer: 'Yes! You can use the sign pdf digital tool to draw or type a legally valid electronic signature. Furthermore, our built-in pdf image editor allows you to edit pdf image online, use pdf editor add image to stamp company logos, and position visual graphics anywhere on the canvas.',
+  },
+  {
+    question: 'Can I delete, rotate, or reorder pages in my PDF file?',
+    answer: 'Yes. With our page management tools, you can delete pages pdf free, edit pdf delete pages, edit pdf remove pages, and edit and delete pages in pdf. If you notice an extra blank page, you can delete page from pdf online free with one click.',
+  },
+  {
+    question: 'Can I erase text or white out sensitive details?',
+    answer: 'Yes. You can use the pdf eraser free online, the pdf redactor online, or draw filled white boxes over unwanted content to delete text from pdf online and erase text in pdf online securely.',
+  },
+];
+
+const schemaGraph = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebApplication',
+    name: 'Free Online PDF Editor — Edit PDFs Online',
+    description: pageDesc,
+    url: canonicalUrl,
+    applicationCategory: 'DocumentApplication',
+    operatingSystem: 'All',
+    browserRequirements: 'Requires JavaScript',
+    offers: {
+      '@type': 'Offer',
+      price: '0',
+      priceCurrency: 'USD',
+    },
+    publisher: {
+      '@type': 'Organization',
+      name: siteName,
+    },
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: breadcrumbItems.map((item, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      name: item.label,
+      item: item.href ?? canonicalUrl,
+    })),
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faqs.map((faq) => ({
+      '@type': 'Question',
+      name: faq.question,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: faq.answer,
+      },
+    })),
+  },
+];
 ---
 <!doctype html>
 <html lang="en">
 <head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-TS9777MY1R"></script>
+  <script is:inline>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-TS9777MY1R');
+  </script>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>{pageTitle}</title>
-  <meta name="description" content="Free online PDF editor. Add text, edit existing text, draw shapes, highlight, sign, and manage pages in your browser." />
+  <meta name="description" content={pageDesc} />
   <link rel="canonical" href={canonicalUrl} />
+  <meta property="og:site_name" content={siteName} />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content={pageTitle} />
+  <meta property="og:description" content={pageDesc} />
+  <meta property="og:url" content={canonicalUrl} />
+  <meta property="og:image" content={logoUrl} />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content={pageTitle} />
+  <meta name="twitter:description" content={pageDesc} />
+  <meta name="twitter:image" content={logoUrl} />
+  <link rel="icon" type="image/x-icon" href={withBasePath('/favicon.ico')} />
+  <link rel="icon" type="image/svg+xml" href={withBasePath('/favicon.svg')} />
+  <link rel="icon" type="image/png" sizes="32x32" href={withBasePath('/calc.png')} />
+  <link rel="apple-touch-icon" href={withBasePath('/apple-touch-icon.png')} />
+  <link rel="manifest" href={withBasePath('/site.webmanifest')} />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(schemaGraph)} />
   <script is:inline>
     (function(){try{const t=localStorage.getItem('calculator-theme')||((window.matchMedia('(prefers-color-scheme:dark)').matches)?'dark':'light');document.documentElement.setAttribute('data-theme',t);document.documentElement.classList.toggle('dark',t==='dark');}catch(e){}})();
   </script>
@@ -37,13 +148,29 @@ const canonicalUrl = toAbsoluteUrl('/pdf-tools/pdf-editor/');
   </div>
 
   <div class="ped-upload-body">
-    <input type="file" id="file-input" accept="application/pdf" class="ped-hidden" />
-    <div id="drop-zone" class="ped-dropzone">
-      <div class="ped-dropzone-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m6.75 12H9m1.5-12H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
-        </svg>
-    <div style="display: flex; flex-direction: column; align-items: center; gap: 40px; width: 100%; max-width: 700px;">
+    <div style="display: flex; flex-direction: column; align-items: center; gap: 36px; width: 100%; max-width: 960px;">
+      
+      <!-- Breadcrumb Navigation -->
+      <nav class="ped-breadcrumb" aria-label="Breadcrumb" style="width: 100%; margin-bottom: -16px;">
+        <ol style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px; font-size: 12px; color: var(--ped-muted); list-style: none; padding: 0; margin: 0;">
+          {breadcrumbItems.map((item, index) => (
+            <li style="display: flex; align-items: center; gap: 8px;">
+              {index > 0 && <span aria-hidden="true" style="opacity: 0.5;">/</span>}
+              {item.href ? (
+                <a href={item.href} style="color: inherit; text-decoration: none; transition: color .15s;" onmouseover="this.style.color='var(--ped-accent)'" onmouseout="this.style.color='inherit'">
+                  {item.label}
+                </a>
+              ) : (
+                <span aria-current="page" style="font-weight: 700; color: var(--ped-text);">
+                  {item.label}
+                </span>
+              )}
+            </li>
+          ))}
+        </ol>
+      </nav>
+
+      <!-- Dropzone Upload Card -->
       <input type="file" id="file-input" accept="application/pdf" class="ped-hidden" />
       <div id="drop-zone" class="ped-dropzone">
         <div class="ped-dropzone-icon">
@@ -51,8 +178,8 @@ const canonicalUrl = toAbsoluteUrl('/pdf-tools/pdf-editor/');
             <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m6.75 12H9m1.5-12H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
           </svg>
         </div>
-        <h1 class="ped-dropzone-h1">Drop your PDF here to edit</h1>
-        <p class="ped-dropzone-sub">or click the button below to choose a file</p>
+        <h1 class="ped-dropzone-h1">Free Online PDF Editor — Edit PDFs in Your Browser</h1>
+        <p class="ped-dropzone-sub">Drop your PDF here to edit, or click the button below to choose a file</p>
         <label for="file-input" class="ped-dropzone-btn">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
           Select PDF File
@@ -66,26 +193,253 @@ const canonicalUrl = toAbsoluteUrl('/pdf-tools/pdf-editor/');
           <span>📑 Manage Pages</span>
         </div>
       </div>
-      <h1 class="ped-dropzone-h1">Drop your PDF here to edit</h1>
-      <p class="ped-dropzone-sub">or click the button below to choose a file</p>
-      <label for="file-input" class="ped-dropzone-btn">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
-        Select PDF File
-      </label>
-      <div class="ped-feature-badges">
-        <span>✏️ Add &amp; Edit Text</span>
-        <span>🖊 Draw &amp; Shapes</span>
-        <span>🖍 Highlight</span>
-        <span>🖼 Insert Image</span>
-        <span>✍️ Sign PDF</span>
-        <span>📑 Manage Pages</span>
-      </div>
 
-      <details class="ped-seo-text" style="color: var(--ped-muted); font-size: 13px; text-align: center; cursor: pointer;">
-        <summary style="font-weight: 600; outline: none;">About our PDF Editor</summary>
-        <p style="line-height: 1.6; margin-top: 12px; cursor: default;">
-          Looking for a reliable <strong>pdf editor online</strong>? Our platform allows you to <strong>edit pdfs</strong> and create <strong>editable pdfs</strong> quickly and securely directly in your browser. Whether you need to <strong>edit pdf document online</strong> or <strong>modify pdf online</strong>, we offer one of the best <strong>free pdf tools online</strong>. Avoid expensive subscriptions and try our <strong>online pdf tools free</strong> today. A fast and private alternative to <strong>sejda pdf edit</strong> and <strong>adobe acrobat edit pdf online</strong>.
-        </p>
+      <!-- Collapsible In-Depth SEO Guide & Documentation -->
+      <details class="ped-seo-guide group w-full" open>
+        <summary class="ped-seo-summary">
+          <div class="ped-seo-summary-inner">
+            <div class="ped-seo-summary-badge">
+              <span class="ped-badge-dot"></span>
+              <span>Comprehensive PDF Editing Guide &amp; Technical Reference</span>
+            </div>
+            <h2 class="ped-seo-summary-h2">Free PDF Editor Online — Tools, Features &amp; User Manual</h2>
+            <p class="ped-seo-summary-desc">Click to expand or collapse this in-depth guide covering step-by-step PDF editing, core tools, privacy architecture, and FAQs.</p>
+          </div>
+          <div class="ped-seo-summary-action">
+            <span class="ped-seo-toggle-label ped-label-open">Collapse Guide ▲</span>
+            <span class="ped-seo-toggle-label ped-label-closed">Read Full Guide ▼</span>
+          </div>
+        </summary>
+
+        <div class="ped-seo-body">
+          
+          <!-- Section 1: Walkthrough -->
+          <article class="ped-seo-section">
+            <span class="ped-section-tag">Quick Walkthrough</span>
+            <h2 class="ped-section-title">How to Edit PDF Documents in 5 Simple Steps</h2>
+            <p class="ped-section-lead">
+              Whether you need to <strong>edit pdfs</strong>, generate <strong>editable pdfs</strong>, or <strong>modify pdf online</strong>, our <strong>easy to use online pdf editor</strong> works smoothly without requiring third-party software installations. Follow these 5 steps to <strong>edit pdf document online</strong> in seconds:
+            </p>
+
+            <div class="ped-steps-grid">
+              <div class="ped-step-card">
+                <span class="ped-step-num">1</span>
+                <h3>Upload Your File</h3>
+                <p>Drop your file into our <strong>web based pdf editor</strong> or click select file. You can <strong>edit pdf document online</strong> and <strong>edit pdf doc online</strong> with immediate client-side rendering.</p>
+              </div>
+              <div class="ped-step-card">
+                <span class="ped-step-num">2</span>
+                <h3>Select Editing Mode</h3>
+                <p>Choose from our suite of <strong>free pdf tools online</strong>: select text editing to <strong>edit existing text in pdf online free</strong>, insert new notes, or choose annotation brushes.</p>
+              </div>
+              <div class="ped-step-card">
+                <span class="ped-step-num">3</span>
+                <h3>Modify Content</h3>
+                <p>Easily <strong>edit pdf text online</strong>, adjust font sizes, or <strong>edit pdf online with same font</strong>. You can also draw shapes, highlight passages, or <strong>edit pdf image online</strong>.</p>
+              </div>
+              <div class="ped-step-card">
+                <span class="ped-step-num">4</span>
+                <h3>Reorganize Pages</h3>
+                <p>Open thumbnail mode to <strong>edit pages in pdf</strong>. You can rotate orientations, reorder page sequence, or <strong>edit pdf delete pages</strong> with instant visual feedback.</p>
+              </div>
+              <div class="ped-step-card">
+                <span class="ped-step-num">5</span>
+                <h3>Download Clean PDF</h3>
+                <p>Enjoy one-click <strong>edit pdf online free and download</strong>. Export high-resolution vector documents with zero watermarks, zero wait times, and zero paywalls.</p>
+              </div>
+            </div>
+          </article>
+
+          <!-- Section 2: Core Editing Capabilities -->
+          <article class="ped-seo-section">
+            <span class="ped-section-tag">Feature Suite</span>
+            <h2 class="ped-section-title">Core Tools &amp; Capabilities in Our Free Web PDF Editor</h2>
+            <p class="ped-section-lead">
+              Designed as a complete <strong>pdf editing software online</strong>, our canvas provides professional tools to <strong>edit pdf file online</strong>, update typography, sign contracts, and manage page structures.
+            </p>
+
+            <div class="ped-features-grid">
+              <div class="ped-feature-card">
+                <h3>Direct Text Editing &amp; Font Styling</h3>
+                <p>
+                  Need to update outdated wording? You can <strong>edit pdf text online</strong>, <strong>change text in pdf online</strong>, and <strong>modify pdf text online</strong> with pixel-perfect font matching. Our <strong>pdf editor online change text</strong> and <strong>pdf editor online edit text</strong> engine lets you <strong>edit pdf file text online</strong> and <strong>edit text on pdf document</strong> while preserving layout structure.
+                </p>
+              </div>
+
+              <div class="ped-feature-card">
+                <h3>Add New Text &amp; Form Fields</h3>
+                <p>
+                  Effortlessly <strong>add text to a pdf document</strong> or <strong>add text in pdf document</strong> to complete unfilled forms. You can <strong>type on pdf online</strong>, <strong>write on pdf file online</strong>, <strong>type text to pdf online</strong>, or <strong>copy paste text to pdf online</strong> with custom font sizing, alignment, and color palettes.
+                </p>
+              </div>
+
+              <div class="ped-feature-card">
+                <h3>Redaction, Whiteout &amp; Eraser Tools</h3>
+                <p>
+                  Protect private data using our built-in <strong>pdf redactor online</strong> and <strong>pdf online redactor</strong>. Use the <strong>pdf eraser free online</strong> or <strong>pdf editor erase text</strong> tool to <strong>remove text from pdf online free</strong>, <strong>erase text in pdf online</strong>, or <strong>delete text from pdf online</strong> before sharing files.
+                </p>
+              </div>
+
+              <div class="ped-feature-card">
+                <h3>Digital Signatures &amp; Image Stamping</h3>
+                <p>
+                  Apply your legal initials or signature using the <strong>sign pdf digital</strong> module. As a versatile <strong>pdf image editor</strong>, our tool enables you to <strong>edit pdf image online</strong>, use the <strong>pdf editor add image</strong> feature to insert company stamps, and position graphics anywhere on the canvas.
+                </p>
+              </div>
+
+              <div class="ped-feature-card">
+                <h3>Vector Drawings, Shapes &amp; Highlights</h3>
+                <p>
+                  Annotate documents using freehand sketching, straight lines, directional arrows, rectangular bounding boxes, and circular callouts. Add vibrant text highlights to emphasize critical clauses or audit contracts with clear visual cues.
+                </p>
+              </div>
+
+              <div class="ped-feature-card">
+                <h3>Page Reordering, Rotation &amp; Deletion</h3>
+                <p>
+                  Manage document architecture directly. Easily <strong>edit pages from pdf</strong>, <strong>edit pdf pages online</strong>, and <strong>delete pages pdf free</strong>. You can <strong>edit pdf remove pages</strong>, <strong>edit and delete pages in pdf</strong>, or <strong>delete page from pdf online free</strong> without corrupting document metadata.
+                </p>
+              </div>
+            </div>
+          </article>
+
+          <!-- Section 3: In-Browser Client-Side Privacy -->
+          <article class="ped-seo-section">
+            <span class="ped-section-tag">Privacy &amp; Security</span>
+            <h2 class="ped-section-title">100% In-Browser Privacy — Why Client-Side Editing Matters</h2>
+            <p class="ped-section-lead">
+              Most cloud platforms require uploading confidential business contracts, tax records, or legal documents to external servers. Discover how our <strong>web pdf editor</strong> protects your personal information.
+            </p>
+
+            <div class="ped-info-card">
+              <p>
+                Unlike a conventional <strong>cloud based pdf editor</strong>, our tool executes 100% locally in your browser memory via WebAssembly and HTML5 canvas APIs. When you <strong>edit pdf in browser</strong>, your documents are never uploaded, stored, or indexed on remote servers. This ensures complete data confidentiality for financial statements, legal agreements, and personal IDs.
+              </p>
+              <p>
+                Furthermore, we believe essential document utilities should be accessible to all. Our platform provides a true <strong>pdf editor online free no sign up</strong> experience. You can <strong>edit pdf no sign up</strong>, perform <strong>edit pdf online free without login</strong>, and enjoy an authentic <strong>free pdf editor no account</strong> with zero telemetry tracking.
+              </p>
+              <p>
+                Every exported file remains 100% clean: our <strong>free pdf editor no watermark</strong> and <strong>online pdf editor without watermark</strong> policy guarantees your documents have zero branding or promotional overlays.
+              </p>
+            </div>
+          </article>
+
+          <!-- Section 4: Unrestricted Alternative to Subscription Platforms -->
+          <article class="ped-seo-section">
+            <span class="ped-section-tag">Platform Comparison</span>
+            <h2 class="ped-section-title">A Free Alternative to Sejda, Adobe Acrobat &amp; iLovePDF</h2>
+            <p class="ped-section-lead">
+              Tired of hitting daily upload limits, 3-task caps, and expensive monthly paywalls? See how our <strong>pdf editor 100 free</strong> utility compares to popular alternatives.
+            </p>
+
+            <div class="ped-comparison-list">
+              <div class="ped-comp-item">
+                <strong>Sejda PDF Quota Comparison:</strong> Users searching for <strong>sejda pdf edit</strong>, <strong>sejda edit pdf online</strong>, or <strong>sejda online pdf editor</strong> are routinely blocked after 3 tasks per day or files over 200 pages. Our editor provides unlimited edits with zero daily quotas or page caps.
+              </div>
+              <div class="ped-comp-item">
+                <strong>Adobe Acrobat Paywall Alternative:</strong> Commercial software like <strong>adobe acrobat edit pdf online</strong> and <strong>adobe reader edit pdf online</strong> requires costly recurring subscriptions. Our platform lets you <strong>edit pdf without acrobat</strong> and <strong>edit a pdf without adobe</strong> completely free.
+              </div>
+              <div class="ped-comp-item">
+                <strong>iLovePDF &amp; Smallpdf Restrictions:</strong> Web services such as <strong>ilovepdf edit pdf</strong>, <strong>ilovepdf online pdf editor</strong>, <strong>smallpdf pdf editor</strong>, and <strong>smallpdf online pdf editor</strong> throttle non-paying users with waiting timers and file size caps. We provide an <strong>absolutely free pdf editor</strong> and <strong>completely free pdf editor online</strong> with zero artificial barriers.
+              </div>
+              <div class="ped-comp-item">
+                <strong>No Watermarks or Subscriptions:</strong> Many tools lock watermark removal behind premium tiers. We believe in transparency: you can always <strong>edit pdf without watermark</strong>, <strong>edit and save pdf free</strong>, and utilize our <strong>online pdf editor free without watermark</strong> freely.
+              </div>
+            </div>
+          </article>
+
+          <!-- Section 5: Practical Use Cases & Best Practices -->
+          <article class="ped-seo-section">
+            <span class="ped-section-tag">Practical Guide</span>
+            <h2 class="ped-section-title">Common Use Cases to Modify PDF Files Online Free</h2>
+            <p class="ped-section-lead">
+              Explore how professionals, students, and businesses use our tool to <strong>modify pdf online free</strong> and maintain crisp documentation.
+            </p>
+
+            <div class="ped-features-grid">
+              <div class="ped-feature-card">
+                <h3>Updating Resumes &amp; CVs</h3>
+                <p>
+                  Quickly correct employment dates, telephone numbers, or addresses using <strong>edit existing text in pdf online free</strong>. Maintain identical font styling to make clean revisions without starting over in Word.
+                </p>
+              </div>
+
+              <div class="ped-feature-card">
+                <h3>Business Contracts &amp; Agreements</h3>
+                <p>
+                  Insert customized terms, append initials with <strong>sign pdf digital</strong>, and stamp authorized approval logos. Ideal for procurement officers and freelancers reviewing client agreements.
+                </p>
+              </div>
+
+              <div class="ped-feature-card">
+                <h3>Invoices &amp; Financial Statements</h3>
+                <p>
+                  Need to correct billing addresses or line-item descriptions? Confidently <strong>make changes to pdf</strong> invoices and <strong>modify pdf file online free</strong> to ensure accounting records remain accurate.
+                </p>
+              </div>
+
+              <div class="ped-feature-card">
+                <h3>Academic Notes &amp; Course Materials</h3>
+                <p>
+                  Use highlighter colors, underline key definitions, and draw shapes to annotate lectures. Remove blank assignment pages with <strong>delete pages from pdf free online</strong> before printing.
+                </p>
+              </div>
+            </div>
+          </article>
+
+          <!-- Section 6: Frequently Asked Questions -->
+          <article class="ped-seo-section">
+            <span class="ped-section-tag">Frequently Asked Questions</span>
+            <h2 class="ped-section-title">Online PDF Editor FAQs</h2>
+            <p class="ped-section-lead">Find clear answers to common questions about editing, modifying, and exporting PDF documents online.</p>
+
+            <div class="ped-faq-list">
+              {faqs.map((faq) => (
+                <details class="ped-faq-item group">
+                  <summary class="ped-faq-summary">
+                    <span>{faq.question}</span>
+                    <span class="ped-faq-chevron">▼</span>
+                  </summary>
+                  <p>{faq.answer}</p>
+                </details>
+              ))}
+            </div>
+          </article>
+
+          <!-- Section 7: Related PDF Tools -->
+          <article class="ped-seo-section">
+            <span class="ped-section-tag">Explore More</span>
+            <h2 class="ped-section-title">Related Free PDF Tools Online</h2>
+            <p class="ped-section-lead">Discover other free client-side PDF utilities to merge, split, convert, and manage your documents.</p>
+
+            <div class="ped-related-grid">
+              <a href={withBasePath('/pdf-tools/pdf-merger/')} class="ped-related-card">
+                <span class="ped-related-badge">Combine Files</span>
+                <span class="ped-related-name">PDF Merger</span>
+                <span class="ped-related-desc">Combine multiple PDF documents into a single organized file with duplex padding.</span>
+              </a>
+
+              <a href={withBasePath('/pdf-tools/pdf-splitter/')} class="ped-related-card">
+                <span class="ped-related-badge">Extract Sheets</span>
+                <span class="ped-related-name">PDF Splitter</span>
+                <span class="ped-related-desc">Extract custom page ranges or divide large PDF files into separate documents.</span>
+              </a>
+
+              <a href={withBasePath('/pdf-tools/images-to-pdf/')} class="ped-related-card">
+                <span class="ped-related-badge">Convert Graphics</span>
+                <span class="ped-related-name">Images to PDF</span>
+                <span class="ped-related-desc">Transform JPG, PNG, and WebP graphics into clean, high-resolution PDF documents.</span>
+              </a>
+
+              <a href={withBasePath('/pdf-tools/pdf-rotate/')} class="ped-related-card">
+                <span class="ped-related-badge">Page Orientation</span>
+                <span class="ped-related-name">PDF Rotate</span>
+                <span class="ped-related-desc">Permanently rotate portrait and landscape PDF pages by 90°, 180°, or 270°.</span>
+              </a>
+            </div>
+          </article>
+
+        </div>
       </details>
     </div>
   </div>
@@ -659,12 +1013,13 @@ html, body { height: 100%; overflow: hidden; font-family: 'Plus Jakarta Sans', s
 
 /* ── UPLOAD PAGE ─────────────────────────────────── */
 .ped-upload-page {
-  height: 100vh; display: flex; flex-direction: column; background: var(--ped-bg);
+  min-height: 100vh; height: 100%; overflow-y: auto; display: flex; flex-direction: column; background: var(--ped-bg);
+  -webkit-overflow-scrolling: touch;
 }
 .ped-upload-header {
   display: flex; align-items: center; gap: 16px; padding: 14px 24px;
   background: var(--ped-toolbar-bg); border-bottom: 1px solid var(--ped-toolbar-border);
-  box-shadow: var(--ped-shadow);
+  box-shadow: var(--ped-shadow); position: sticky; top: 0; z-index: 10;
 }
 .ped-back-link {
   display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600;
@@ -678,13 +1033,13 @@ html, body { height: 100%; overflow: hidden; font-family: 'Plus Jakarta Sans', s
   background: rgba(16,185,129,.1); border: 1px solid rgba(16,185,129,.25); border-radius: 99px; padding: 2px 10px;
 }
 .ped-upload-body {
-  flex: 1; display: flex; align-items: center; justify-content: center; padding: 24px;
+  flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; padding: 36px 20px 80px; width: 100%;
 }
 .ped-dropzone {
-  width: 100%; max-width: 600px; display: flex; flex-direction: column; align-items: center;
+  width: 100%; max-width: 680px; display: flex; flex-direction: column; align-items: center;
   gap: 18px; background: var(--ped-surface); border: 2px dashed var(--ped-border);
   border-radius: 20px; padding: 52px 40px; text-align: center; transition: border-color .2s;
-  cursor: pointer;
+  cursor: pointer; box-shadow: var(--ped-shadow);
 }
 .ped-dropzone.drag-over { border-color: var(--ped-accent); background: var(--ped-active-bg); }
 .ped-dropzone-icon svg {
@@ -706,6 +1061,121 @@ html, body { height: 100%; overflow: hidden; font-family: 'Plus Jakarta Sans', s
   font-size: 12px; color: var(--ped-muted); background: var(--ped-bg);
   border: 1px solid var(--ped-border); border-radius: 8px; padding: 5px 12px;
 }
+
+/* ── SEO DOCUMENTATION & GUIDE DRAWER ───────────── */
+.ped-seo-guide {
+  width: 100%; max-width: 960px; border: 1px solid var(--ped-border);
+  border-radius: 20px; background: var(--ped-surface); box-shadow: var(--ped-shadow);
+  overflow: hidden; transition: border-color .2s; margin-top: 12px;
+}
+.ped-seo-guide:hover { border-color: var(--ped-active-border); }
+.ped-seo-summary {
+  list-style: none; cursor: pointer; padding: 22px 28px;
+  display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  border-bottom: 1px solid transparent; transition: background .15s, border-color .15s;
+  user-select: none;
+}
+.ped-seo-summary::-webkit-details-marker { display: none; }
+.ped-seo-summary:hover { background: var(--ped-active-bg); }
+.ped-seo-guide[open] > .ped-seo-summary { border-bottom-color: var(--ped-border); }
+.ped-seo-summary-inner { display: flex; flex-direction: column; gap: 4px; text-align: left; }
+.ped-seo-summary-badge {
+  display: inline-flex; align-items: center; gap: 6px; font-size: 11px;
+  font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--ped-accent);
+}
+.ped-badge-dot { width: 6px; height: 6px; border-radius: 99px; background: var(--ped-accent); }
+.ped-seo-summary-h2 { font-size: 18px; font-weight: 800; color: var(--ped-text); margin: 0; letter-spacing: -0.02em; }
+.ped-seo-summary-desc { font-size: 13px; color: var(--ped-muted); margin: 0; line-height: 1.5; }
+.ped-seo-summary-action { flex-shrink: 0; }
+.ped-seo-toggle-label {
+  display: inline-flex; align-items: center; gap: 6px; font-size: 12px;
+  font-weight: 700; padding: 7px 14px; border-radius: 10px; border: 1px solid var(--ped-border);
+  background: var(--ped-bg); color: var(--ped-text); transition: all .15s;
+}
+.ped-seo-summary:hover .ped-seo-toggle-label { border-color: var(--ped-accent); color: var(--ped-accent); }
+.ped-seo-guide[open] .ped-label-closed { display: none; }
+.ped-seo-guide:not([open]) .ped-label-open { display: none; }
+
+.ped-seo-body {
+  padding: 32px 28px 40px; display: flex; flex-direction: column; gap: 44px; text-align: left;
+}
+.ped-seo-section { display: flex; flex-direction: column; gap: 14px; }
+.ped-section-tag {
+  display: inline-flex; align-items: center; gap: 6px; align-self: flex-start;
+  padding: 3px 10px; border-radius: 99px; font-size: 11px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.05em; background: var(--ped-bg);
+  border: 1px solid var(--ped-border); color: var(--ped-text);
+}
+.ped-section-title { font-size: 20px; font-weight: 800; color: var(--ped-text); letter-spacing: -0.02em; line-height: 1.3; }
+.ped-section-lead { font-size: 14px; line-height: 1.6; color: var(--ped-muted); }
+
+.ped-steps-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 14px; margin-top: 6px;
+}
+.ped-step-card {
+  display: flex; flex-direction: column; gap: 8px; padding: 16px; border-radius: 14px;
+  border: 1px solid var(--ped-border); background: var(--ped-bg);
+}
+.ped-step-num {
+  width: 28px; height: 28px; display: inline-flex; align-items: center; justify-content: center;
+  border-radius: 8px; background: var(--ped-accent); color: #fff; font-size: 13px; font-weight: 800;
+}
+.ped-step-card h3 { font-size: 14px; font-weight: 700; color: var(--ped-text); margin: 0; }
+.ped-step-card p { font-size: 12px; line-height: 1.5; color: var(--ped-muted); margin: 0; }
+
+.ped-features-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; margin-top: 6px;
+}
+.ped-feature-card {
+  padding: 20px; border-radius: 14px; border: 1px solid var(--ped-border);
+  background: var(--ped-bg); display: flex; flex-direction: column; gap: 8px;
+}
+.ped-feature-card h3 { font-size: 15px; font-weight: 700; color: var(--ped-text); margin: 0; display: flex; align-items: center; gap: 8px; }
+.ped-feature-card p { font-size: 13px; line-height: 1.6; color: var(--ped-muted); margin: 0; }
+
+.ped-info-card {
+  padding: 24px; border-radius: 16px; border: 1px solid var(--ped-border); background: var(--ped-bg);
+  display: flex; flex-direction: column; gap: 12px;
+}
+.ped-info-card p { font-size: 13.5px; line-height: 1.65; color: var(--ped-muted); margin: 0; }
+
+.ped-comparison-list {
+  display: flex; flex-direction: column; gap: 12px; margin-top: 6px;
+}
+.ped-comp-item {
+  padding: 16px 20px; border-radius: 12px; border: 1px solid var(--ped-border); background: var(--ped-bg);
+  font-size: 13px; line-height: 1.6; color: var(--ped-muted);
+}
+.ped-comp-item strong { color: var(--ped-text); }
+
+.ped-faq-list { display: flex; flex-direction: column; gap: 10px; margin-top: 6px; }
+.ped-faq-item {
+  border: 1px solid var(--ped-border); border-radius: 12px; background: var(--ped-bg);
+  padding: 16px 20px; transition: border-color .15s;
+}
+.ped-faq-item:hover { border-color: var(--ped-accent); }
+.ped-faq-summary {
+  list-style: none; cursor: pointer; font-size: 14px; font-weight: 700; color: var(--ped-text);
+  display: flex; align-items: center; justify-content: space-between; gap: 12px; user-select: none;
+}
+.ped-faq-summary::-webkit-details-marker { display: none; }
+.ped-faq-chevron { font-size: 12px; color: var(--ped-accent); transition: transform .2s; flex-shrink: 0; }
+.ped-faq-item[open] .ped-faq-chevron { transform: rotate(180deg); }
+.ped-faq-item p { font-size: 13px; line-height: 1.6; color: var(--ped-muted); margin-top: 10px; }
+
+.ped-related-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; margin-top: 6px;
+}
+.ped-related-card {
+  display: flex; flex-direction: column; gap: 6px; padding: 18px; border-radius: 14px;
+  border: 1px solid var(--ped-border); background: var(--ped-bg); text-decoration: none; transition: all .15s;
+}
+.ped-related-card:hover { border-color: var(--ped-accent); transform: translateY(-2px); box-shadow: var(--ped-shadow); }
+.ped-related-badge { font-size: 11px; font-weight: 700; color: var(--ped-accent); }
+.ped-related-name { font-size: 14px; font-weight: 700; color: var(--ped-text); }
+.ped-related-desc { font-size: 12px; line-height: 1.5; color: var(--ped-muted); }
+
+.ped-seo-body strong { color: var(--ped-text); }
 
 /* ── EDITOR PAGE ─────────────────────────────────── */
 .ped-editor-page {
@@ -4734,6 +5204,7 @@ function init() {
         var rfs = (r.pdfFontSize || a.pdfFontSize || 14) * exportScale;
         var fontStr = (r.italic ? 'italic ' : '') + (r.bold ? 'bold ' : '') + Math.round(rfs) + 'px ' + (r.cssFamily || r.fontFamily || a.cssFamily || a.fontFamily || 'Arial, sans-serif');
         tCtx.save();
+        tCtx.font = fontStr;
         var normText = normalizePdfGlyphs(r.text);
         var rw = tCtx.measureText(normText).width;
 

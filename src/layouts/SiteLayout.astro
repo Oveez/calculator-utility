@@ -1,7 +1,6 @@
 ---
 import SiteHeader from '../components/SiteHeader.astro';
 import MobileDrawer from '../components/MobileDrawer.astro';
-import MobileBottomNav from '../components/MobileBottomNav.astro';
 import MobileSearchModal from '../components/MobileSearchModal.astro';
 import ScrollToggle from '../components/ScrollToggle.astro';
 import Analytics from '../components/Analytics.astro';
@@ -154,10 +153,10 @@ const websiteSchema = {
       </div>
     )}
 
-    <!-- Main Content Container with safe mobile bottom spacing for BottomNav -->
+    <!-- Main Content Container -->
     <main
       id="content"
-      class={`relative z-0 flex-1 mx-auto w-full max-w-6xl px-3 sm:px-6 lg:px-8 pb-24 lg:pb-10 ${heroLayout ? 'pt-0' : Astro.slots.has('hero') ? 'pt-6 sm:pt-8' : 'py-5 sm:py-8'}`}
+      class={`relative z-0 flex-1 mx-auto w-full max-w-6xl px-3 sm:px-6 lg:px-8 pb-10 ${heroLayout ? 'pt-0' : Astro.slots.has('hero') ? 'pt-6 sm:pt-8' : 'py-5 sm:py-8'}`}
     >
       <slot />
     </main>
@@ -167,9 +166,6 @@ const websiteSchema = {
 
     <!-- Mobile Slide-out Drawer -->
     <MobileDrawer />
-
-    <!-- Mobile Fixed Bottom Navigation Bar -->
-    <MobileBottomNav />
 
     <!-- Global / Mobile Quick Search Modal -->
     <MobileSearchModal />

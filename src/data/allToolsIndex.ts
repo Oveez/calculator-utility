@@ -207,6 +207,7 @@ export const allToolsIndex: ToolIndexItem[] = [
   { title: 'Images to PDF Converter', category: 'PDF', url: '/pdf-tools/images-to-pdf/', desc: 'Convert photo and images to PDF online free with custom page sizes and margins.' },
   { title: 'PDF to Images Converter', category: 'PDF', url: '/pdf-tools/pdf-to-images/', desc: 'Convert PDF to images and extract pages as high-resolution JPG or PNG files.' },
   { title: 'PDF Page Rotator', category: 'PDF', url: '/pdf-tools/pdf-rotate/', desc: 'Rotate PDF pages 90, 180, or 270 degrees permanently for print-ready files.' },
+  { title: 'PDF Editor (Free Online PDF Editor)', category: 'PDF', url: '/pdf-tools/pdf-editor/', desc: 'Free online PDF editor to edit text, draw shapes, highlight, insert images, sign, and modify PDFs.' },
 
   // 20. Color & Accessibility (8)
   { title: 'Color Contrast Checker (WCAG 2.1)', category: 'Color', url: '/color-tools/color-contrast-checker/', desc: 'Test text and background contrast ratios against AA and AAA standards.' },

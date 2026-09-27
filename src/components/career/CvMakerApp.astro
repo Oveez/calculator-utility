@@ -85,6 +85,44 @@ const { initialTemplate = 'professional' } = Astro.props as Props;
     </div>
   </div>
 
+  <!-- Mobile Mode Switcher Bar (Visible on mobile screens < 1024px) -->
+  <div class="flex items-center justify-between gap-1.5 sm:gap-2 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-1.5 shadow-sm lg:hidden w-full max-w-full min-w-0">
+    <button
+      type="button"
+      id="cv-mobile-tab-edit"
+      class="flex-1 flex items-center justify-center gap-1.5 rounded-xl bg-[color:var(--accent)] text-white py-2 text-xs font-bold transition shadow-xs cursor-pointer"
+    >
+      <svg class="w-3.5 h-3.5 stroke-current" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M12 20h9" />
+        <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
+      </svg>
+      <span>Edit Details</span>
+    </button>
+    <button
+      type="button"
+      id="cv-mobile-tab-preview"
+      class="flex-1 flex items-center justify-center gap-1.5 rounded-xl text-[color:var(--muted)] py-2 text-xs font-bold hover:text-[color:var(--fg)] transition cursor-pointer"
+    >
+      <svg class="w-3.5 h-3.5 stroke-current" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+        <circle cx="12" cy="12" r="3" />
+      </svg>
+      <span>Preview A4</span>
+    </button>
+    <button
+      type="button"
+      id="cv-mobile-btn-download"
+      class="flex items-center justify-center gap-1.5 rounded-xl bg-emerald-600 text-white px-3 sm:px-3.5 py-2 text-xs font-bold shadow-xs hover:bg-emerald-700 transition cursor-pointer"
+      title="Download PDF"
+    >
+      <svg class="w-3.5 h-3.5 stroke-current" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+        <polyline points="7 10 12 15 17 10" />
+        <line x1="12" y1="15" x2="12" y2="3" />
+      </svg>
+      <span>PDF</span>
+    </button>
+  </div>
 
   <!-- Main Workspace Grid: Form Editor (Left) & Real A4 Document Preview (Right) -->
   <div class="grid gap-6 lg:gap-8 lg:grid-cols-12 lg:items-start w-full max-w-full min-w-0">
@@ -505,86 +543,6 @@ const { initialTemplate = 'professional' } = Astro.props as Props;
       </div>
     </div>
   </div>
-
-  <!-- Mobile Floating FAB to open preview -->
-  <button
-    type="button"
-    id="btn-mobile-preview-fab"
-    class="fixed bottom-20 right-4 z-50 lg:hidden flex items-center gap-2 rounded-full bg-[color:var(--accent)] px-4 py-2.5 text-white font-bold text-xs shadow-2xl transition-all duration-300 active:scale-95 cursor-pointer border border-white/20 select-none group"
-    aria-label="Open Full Screen CV Preview"
-    title="Open Full Screen CV Preview"
-  >
-    <span class="relative flex h-2 w-2">
-      <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-      <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-400"></span>
-    </span>
-    <svg class="w-4 h-4 stroke-current transition-transform group-hover:scale-110" viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-      <circle cx="12" cy="12" r="3"></circle>
-    </svg>
-    <span class="tracking-wide">Preview CV</span>
-  </button>
-
-  <!-- Full Screen Mobile Preview Modal -->
-  <div
-    id="mobile-fullscreen-modal"
-    class="fixed inset-0 z-50 bg-slate-950/95 backdrop-blur-md hidden flex-col transition-opacity duration-200"
-    role="dialog"
-    aria-modal="true"
-    aria-label="Full Screen CV Preview"
-  >
-    <!-- Modal Header Navigation Bar -->
-    <header class="flex items-center justify-between px-3 sm:px-5 py-3 border-b border-white/10 bg-slate-900/90 text-white shrink-0">
-      <button
-        type="button"
-        id="btn-close-fullscreen"
-        class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-bold transition cursor-pointer active:scale-95"
-      >
-        <svg class="w-4 h-4 stroke-current" viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-          <line x1="18" y1="6" x2="6" y2="18"></line>
-          <line x1="6" y1="6" x2="18" y2="18"></line>
-        </svg>
-        <span>Close</span>
-      </button>
-
-      <div class="text-center px-2">
-        <p class="text-xs font-bold text-white tracking-wide truncate max-w-[160px] sm:max-w-xs">Full Screen Preview</p>
-        <p class="text-[10px] text-slate-400" id="fullscreen-mode-tag">Standard A4 Format</p>
-      </div>
-
-      <div class="flex items-center gap-2">
-        <button
-          type="button"
-          id="btn-fullscreen-download"
-          class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition cursor-pointer shadow-xs active:scale-95"
-          title="Download PDF"
-        >
-          <svg class="w-3.5 h-3.5 stroke-current" viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-            <polyline points="7 10 12 15 17 10" />
-            <line x1="12" y1="15" x2="12" y2="3" />
-          </svg>
-          <span>PDF</span>
-        </button>
-      </div>
-    </header>
-
-    <!-- Modal Scrollable / Scaled Viewport Container -->
-    <div id="fullscreen-viewport-container" class="flex-1 w-full overflow-auto p-4 flex flex-col items-center justify-start">
-      <div
-        id="fullscreen-cv-scaler"
-        class="flex justify-center items-start transition-transform duration-150 origin-top select-none pointer-events-auto"
-      >
-        <div
-          id="fullscreen-cv-page"
-          class="cv-sheet-paper bg-white text-slate-900 shadow-2xl rounded-xs border border-slate-300 relative box-border select-none"
-          style="width: 794px; min-width: 794px; height: 1123px; min-height: 1123px; transform-origin: top center;"
-        >
-          <!-- Dynamic Content Injected on Open -->
-        </div>
-      </div>
-    </div>
-  </div>
 </div>
 
 <style>
@@ -664,13 +622,6 @@ const { initialTemplate = 'professional' } = Astro.props as Props;
 
 <!-- GLOBAL STYLES FOR THE CV SHEET AND DYNAMIC RENDERED ELEMENTS -->
 <style is:global>
-  /* Hide global scroll-to-top/bottom floating button on mobile/tablet for CV Maker */
-  @media (max-width: 1023px) {
-    #global-scroll-toggle {
-      display: none !important;
-    }
-  }
-
   /* ========================================================== */
   /* REAL A4 SHEET DOCUMENT STYLING (Harvard & Corporate ATS)   */
   /* ========================================================== */
@@ -2363,15 +2314,9 @@ const { initialTemplate = 'professional' } = Astro.props as Props;
 
     // =========================================================================
     // MOBILE APP-STYLE VIEW TOGGLE & RESPONSIVE A4 DOCUMENT SCALING
-    const btnMobileFab = document.getElementById('btn-mobile-preview-fab');
-    const fullscreenModal = document.getElementById('mobile-fullscreen-modal');
-    const btnCloseFullscreen = document.getElementById('btn-close-fullscreen');
-    const btnFullscreenDownload = document.getElementById('btn-fullscreen-download');
-    const fullscreenCvPage = document.getElementById('fullscreen-cv-page');
-    const fullscreenCvScaler = document.getElementById('fullscreen-cv-scaler');
-    const fullscreenViewportContainer = document.getElementById('fullscreen-viewport-container');
-    const fullscreenModeTag = document.getElementById('fullscreen-mode-tag');
-
+    // =========================================================================
+    const mobileTabEdit = document.getElementById('cv-mobile-tab-edit');
+    const mobileTabPreview = document.getElementById('cv-mobile-tab-preview');
     const editorColumn = document.getElementById('cv-editor-column');
     const previewColumn = document.getElementById('cv-preview-column');
     const scaleWrapper = document.getElementById('cv-scale-wrapper');
@@ -2411,75 +2356,32 @@ const { initialTemplate = 'professional' } = Astro.props as Props;
       if (zoomLabel) zoomLabel.textContent = `${Math.round(scale * 100)}%`;
     }
 
-    // Fullscreen Modal Scaling Engine (Mobile viewport fit)
-    function updateFullscreenScale() {
-      if (!fullscreenViewportContainer || !fullscreenCvScaler || !fullscreenCvPage) return;
-      const availW = Math.max(80, fullscreenViewportContainer.clientWidth - 20);
-      const availH = Math.max(80, fullscreenViewportContainer.clientHeight - 20);
-      const scale = Math.min(availW / 794, availH / 1123, 1.25);
-      fullscreenCvPage.style.transform = `scale(${scale.toFixed(3)})`;
-      fullscreenCvPage.style.transformOrigin = 'top center';
-      fullscreenCvScaler.style.width = `${Math.round(794 * scale)}px`;
-      fullscreenCvScaler.style.height = `${Math.round(1123 * scale)}px`;
-    }
-
-    function syncFullscreenContent() {
-      if (!fullscreenModal || !fullscreenCvPage || !cvPreviewDoc) return;
-      fullscreenCvPage.innerHTML = cvPreviewDoc.innerHTML;
-      fullscreenCvPage.className = cvPreviewDoc.className;
-      if (fullscreenModeTag) {
-        const tplNames: Record<string, string> = {
-          professional: 'Professional (Harvard Standard)',
-          modern: 'Modern (Silicon Valley Tech)',
-          student: 'Student (Fresher / Academic)'
-        };
-        fullscreenModeTag.textContent = `${tplNames[currentTemplate] || 'A4 Format'} • Standard A4`;
+    function setMobileMode(mode: 'edit' | 'preview') {
+      if (!editorColumn || !previewColumn) return;
+      if (mode === 'edit') {
+        editorColumn.classList.remove('hidden');
+        previewColumn.classList.add('hidden');
+        previewColumn.classList.remove('block');
+        mobileTabEdit?.classList.add('bg-[color:var(--accent)]', 'text-white');
+        mobileTabEdit?.classList.remove('text-[color:var(--muted)]');
+        mobileTabPreview?.classList.remove('bg-[color:var(--accent)]', 'text-white');
+        mobileTabPreview?.classList.add('text-[color:var(--muted)]');
+      } else {
+        editorColumn.classList.add('hidden');
+        previewColumn.classList.remove('hidden');
+        previewColumn.classList.add('block');
+        mobileTabPreview?.classList.add('bg-[color:var(--accent)]', 'text-white');
+        mobileTabPreview?.classList.remove('text-[color:var(--muted)]');
+        mobileTabEdit?.classList.remove('bg-[color:var(--accent)]', 'text-white');
+        mobileTabEdit?.classList.add('text-[color:var(--muted)]');
+        // Render & scale immediately upon switching to preview
+        renderLivePreview();
+        setTimeout(updateDocumentScale, 50);
       }
     }
 
-    function openFullscreenPreview() {
-      if (!fullscreenModal) return;
-      renderLivePreview();
-      syncFullscreenContent();
-      fullscreenModal.classList.remove('hidden');
-      fullscreenModal.classList.add('flex');
-      document.body.style.overflow = 'hidden';
-      requestAnimationFrame(() => {
-        updateFullscreenScale();
-      });
-    }
-
-    function closeFullscreenPreview() {
-      if (!fullscreenModal) return;
-      fullscreenModal.classList.add('hidden');
-      fullscreenModal.classList.remove('flex');
-      document.body.style.overflow = '';
-    }
-
-    if (btnMobileFab) {
-      btnMobileFab.addEventListener('click', openFullscreenPreview);
-    }
-    if (btnCloseFullscreen) {
-      btnCloseFullscreen.addEventListener('click', closeFullscreenPreview);
-    }
-    if (btnFullscreenDownload) {
-      btnFullscreenDownload.addEventListener('click', () => {
-        closeFullscreenPreview();
-        downloadPdfDirect();
-      });
-    }
-    if (fullscreenModal) {
-      fullscreenModal.addEventListener('click', (e) => {
-        if (e.target === fullscreenModal || e.target === fullscreenViewportContainer) {
-          closeFullscreenPreview();
-        }
-      });
-    }
-    window.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && fullscreenModal && !fullscreenModal.classList.contains('hidden')) {
-        closeFullscreenPreview();
-      }
-    });
+    mobileTabEdit?.addEventListener('click', () => setMobileMode('edit'));
+    mobileTabPreview?.addEventListener('click', () => setMobileMode('preview'));
 
     zoomFitBtn?.addEventListener('click', () => {
       currentScaleMode = 'fit';
@@ -2497,9 +2399,8 @@ const { initialTemplate = 'professional' } = Astro.props as Props;
 
     window.addEventListener('resize', () => {
       if (window.innerWidth >= 1024) {
-        closeFullscreenPreview();
-      } else if (fullscreenModal && !fullscreenModal.classList.contains('hidden')) {
-        updateFullscreenScale();
+        editorColumn?.classList.remove('hidden');
+        previewColumn?.classList.remove('hidden');
       }
       updateDocumentScale();
     });

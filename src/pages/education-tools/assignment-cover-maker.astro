@@ -4,6 +4,12 @@ import SiteHero from '../../components/SiteHero.astro';
 import Icon from '../../components/Icon.astro';
 import { siteName, toAbsoluteUrl, withBasePath } from '../../utils/site';
 
+const configuredCdn = import.meta.env.PUBLIC_LOGOS_CDN_URL;
+const logosBaseUrl = (configuredCdn && !configuredCdn.includes('logos.toolscastle.app') && !configuredCdn.includes('calculatorutility.tech'))
+  ? configuredCdn
+  : withBasePath('/logos');
+const institutionsDataUrl = withBasePath('/data/institutions.json');
+
 const pageTitle = `Assignment Cover Maker (Free PDF Generator) · ${siteName}`;
 const pageDesc = 'Create professional university assignment covers instantly. Choose from 5 academic templates, custom color themes, search thousands of institutions, and generate a print-ready A4 PDF.';
 const canonicalUrl = toAbsoluteUrl('/education-tools/assignment-cover-maker/');
@@ -144,7 +150,12 @@ const schemaGraph = [
     }
   </style>
 
-  <article class="space-y-6 py-2" data-cover-maker-app>
+  <article
+    class="space-y-6 py-2"
+    data-cover-maker-app
+    data-logos-url={logosBaseUrl}
+    data-institutions-url={institutionsDataUrl}
+  >
     <!-- Breadcrumb / compact page context -->
     <nav aria-label="Breadcrumb" class="site-tool-breadcrumb mb-4 pt-1">
       <ol class="flex flex-wrap items-center gap-2 text-xs text-[color:var(--muted)]">
@@ -850,7 +861,7 @@ const schemaGraph = [
     <button
       type="button"
       id="btn-mobile-preview-fab"
-      class="fixed bottom-20 right-4 z-40 lg:hidden flex items-center gap-2 rounded-full px-4 py-2.5 text-white font-bold text-xs shadow-2xl transition-all duration-300 active:scale-95 cursor-pointer border border-white/20 select-none group"
+      class="fixed bottom-20 right-4 z-40 lg:hidden flex items-center gap-2 rounded-full bg-[color:var(--accent)] px-4 py-2.5 text-white font-bold text-xs shadow-2xl transition-all duration-300 active:scale-95 cursor-pointer border border-white/20 select-none group"
       aria-label="Open Full Screen Cover Preview"
       title="Open Full Screen Cover Preview"
     >
@@ -939,6 +950,9 @@ const schemaGraph = [
     (function () {
       const appRoot = document.querySelector('[data-cover-maker-app]');
       if (!appRoot) return;
+
+      const CDN_URL = appRoot.getAttribute('data-logos-url') || '/logos';
+      const INSTITUTIONS_URL = appRoot.getAttribute('data-institutions-url') || '/data/institutions.json';
 
       // Resilient PDFLib getter
       function getPDFLib() {
@@ -1630,7 +1644,6 @@ const schemaGraph = [
         });
       }
 
-      const CDN_URL = 'https://logos.toolscastle.app';
       const LOGO_VERSION = 'v20260913';
 
       // 6 Curated Themes
@@ -1925,6 +1938,9 @@ const schemaGraph = [
           const saved = JSON.parse(raw);
           if (saved && typeof saved === 'object') {
             Object.assign(state, saved);
+            if (state.slug && state.logoMode === 'stored') {
+              state.logoUrl = `${CDN_URL}/${state.slug}.webp?v=${LOGO_VERSION}`;
+            }
             if (!Array.isArray(state.students) || state.students.length === 0) {
               state.students = [{ name: '', id: '', section: '' }];
             }
@@ -2075,6 +2091,15 @@ const schemaGraph = [
         `;
       }
 
+      // Global safe fallback handler for broken logo images (avoids broken image icons)
+      window.handleCoverLogoError = function (img) {
+        if (!img) return;
+        const box = img.closest('.cover-logo-box');
+        if (!box) return;
+        const activeTheme = THEMES[state.theme] || THEMES.classic;
+        box.innerHTML = getEmblemSvg(activeTheme.primary);
+      };
+
       // Render Logo Component with 4 Explicit Modes
       function renderLogoHtml(extraClass = '', sizeClass = 'max-h-24 max-w-[200px]') {
         const activeTheme = THEMES[state.theme] || THEMES.classic;
@@ -2099,7 +2124,7 @@ const schemaGraph = [
                   src="${escapeHtml(state.customLogoBase64)}"
                   alt="Custom Logo"
                   class="${sizeClass} object-contain"
-                  onerror="this.parentElement.innerHTML = '${escapeHtml(getEmblemSvg(activeTheme.primary)).replace(/"/g, "'")}'"
+                  onerror="window.handleCoverLogoError && window.handleCoverLogoError(this)"
                 />
               </div>
             `;
@@ -2121,7 +2146,7 @@ const schemaGraph = [
                 alt="${escapeHtml(state.institution || 'Institution')} Logo"
                 crossorigin="anonymous"
                 class="${sizeClass} object-contain"
-                onerror="this.parentElement.innerHTML = '${escapeHtml(getEmblemSvg(activeTheme.primary)).replace(/"/g, "'")}'"
+                onerror="window.handleCoverLogoError && window.handleCoverLogoError(this)"
               />
             </div>
           `;
@@ -2597,7 +2622,7 @@ const schemaGraph = [
         if (institutionsDb || isFetchingDb) return;
         isFetchingDb = true;
         try {
-          const res = await fetch('/data/institutions.json?v=' + LOGO_VERSION);
+          const res = await fetch(INSTITUTIONS_URL + '?v=' + LOGO_VERSION);
           institutionsDb = await res.json();
         } catch (err) {
           console.error('Failed to load institutions DB', err);
@@ -2705,22 +2730,6 @@ const schemaGraph = [
         };
         reader.readAsDataURL(file);
       });
-
-      // ==========================================
-      // INSTITUTION SEARCH & AUTOCOMPLETE
-      // ==========================================
-      async function fetchInstitutionsDb() {
-        if (institutionsDb || isFetchingDb) return;
-        isFetchingDb = true;
-        try {
-          const res = await fetch('/data/institutions.json?v=' + LOGO_VERSION);
-          institutionsDb = await res.json();
-        } catch (err) {
-          console.error('Failed to load institutions DB', err);
-        }
-      }
-
-      instInput.addEventListener('focus', fetchInstitutionsDb);
 
       instInput.addEventListener('input', (e) => {
         const query = e.target.value.toLowerCase().trim();
