@@ -201,18 +201,12 @@ const canonicalUrl = toAbsoluteUrl('/pdf-tools/pdf-editor/');
       <option value="Georgia">Georgia</option>
       <option value="Verdana">Verdana</option>
     </select>
-    <div class="ped-font-size-combo" title="Font Size (pt)">
-      <input type="number" id="ctx-font-size" step="any" min="1" max="500" class="ped-ctx-num-input" list="ctx-font-size-list" value="16" placeholder="Size" />
-      <datalist id="ctx-font-size-list">
-        <option value="8">8</option><option value="9">9</option><option value="10">10</option>
-        <option value="10.5">10.5</option><option value="11">11</option><option value="11.5">11.5</option>
-        <option value="12">12</option><option value="13">13</option><option value="14">14</option>
-        <option value="15">15</option><option value="16">16</option><option value="17">17</option>
-        <option value="17.5">17.5</option><option value="18">18</option><option value="20">20</option>
-        <option value="24">24</option><option value="28">28</option><option value="32">32</option>
-        <option value="36">36</option><option value="48">48</option><option value="72">72</option>
-      </datalist>
-    </div>
+    <select id="ctx-font-size" title="Font Size">
+      <option value="10">10px</option><option value="12">12px</option><option value="14">14px</option>
+      <option value="16">16px</option><option value="18" selected>18px</option><option value="20">20px</option>
+      <option value="24">24px</option><option value="28">28px</option><option value="32">32px</option>
+      <option value="36">36px</option><option value="48">48px</option>
+    </select>
     <button id="ctx-bold" class="ped-ctx-btn" title="Bold"><b>B</b></button>
     <button id="ctx-italic" class="ped-ctx-btn" title="Italic"><i>I</i></button>
     <div class="ped-ctx-sep"></div>
@@ -382,18 +376,19 @@ const canonicalUrl = toAbsoluteUrl('/pdf-tools/pdf-editor/');
             <option value="Georgia">Georgia</option>
             <option value="Verdana">Verdana</option>
           </select>
-          <div class="flt-font-size-combo" title="Font Size (pt)">
-            <input type="number" id="flt-font-size" step="any" min="1" max="500" class="flt-select flt-num-input" list="flt-font-size-list" value="16" placeholder="Size" />
-            <datalist id="flt-font-size-list">
-              <option value="8">8</option><option value="9">9</option><option value="10">10</option>
-              <option value="10.5">10.5</option><option value="11">11</option><option value="11.5">11.5</option>
-              <option value="12">12</option><option value="13">13</option><option value="14">14</option>
-              <option value="15">15</option><option value="16">16</option><option value="17">17</option>
-              <option value="17.5">17.5</option><option value="18">18</option><option value="20">20</option>
-              <option value="24">24</option><option value="28">28</option><option value="32">32</option>
-              <option value="36">36</option><option value="48">48</option><option value="72">72</option>
-            </datalist>
-          </div>
+          <select id="flt-font-size" class="flt-select" title="Font Size">
+            <option value="10">10</option>
+            <option value="12">12</option>
+            <option value="14">14</option>
+            <option value="16">16</option>
+            <option value="18">18</option>
+            <option value="20">20</option>
+            <option value="24">24</option>
+            <option value="28">28</option>
+            <option value="32">32</option>
+            <option value="36">36</option>
+            <option value="48">48</option>
+          </select>
           <button id="flt-bold" type="button" class="flt-btn" title="Bold"><b>B</b></button>
           <button id="flt-italic" type="button" class="flt-btn" title="Italic"><i>I</i></button>
           <button id="flt-align-left" type="button" class="flt-btn" title="Align Left">
@@ -735,14 +730,9 @@ html, body { height: 100%; overflow: hidden; font-family: 'Plus Jakarta Sans', s
   display: flex; align-items: center; gap: 6px; padding: 6px 16px;
   background: var(--ped-surface); border-bottom: 1px solid var(--ped-border); flex-shrink: 0;
 }
-.ped-ctx-toolbar select,
-.ped-ctx-num-input {
+.ped-ctx-toolbar select {
   border: 1px solid var(--ped-border); border-radius: 7px; background: var(--ped-bg);
-  color: var(--ped-text); font-size: 12px; font-weight: 600; padding: 4px 6px; cursor: pointer;
-  box-sizing: border-box; outline: none;
-}
-.ped-ctx-num-input {
-  width: 58px; text-align: center;
+  color: var(--ped-text); font-size: 12px; font-weight: 600; padding: 4px 8px; cursor: pointer;
 }
 .ped-ctx-btn {
   padding: 4px 10px; border-radius: 7px; border: 1px solid var(--ped-border);
@@ -1144,11 +1134,6 @@ html, body { height: 100%; overflow: hidden; font-family: 'Plus Jakarta Sans', s
   color: var(--ped-text, #1e293b);
   cursor: pointer;
   outline: none;
-}
-.flt-num-input {
-  width: 48px;
-  text-align: center;
-  box-sizing: border-box;
 }
 .flt-btn {
   width: 26px;
@@ -1754,14 +1739,15 @@ function init() {
   function normalizePdfGlyphs(str) {
     if (!str) return '';
     return String(str)
-      .replace(/[\uF0B7\uF06C\u25CF\u2022\u00B7]/g, '•')
+      .replace(/[\uF0B7\uF06C\u25CF\u2022]/g, '●')
       .replace(/[\uF06F\uF0A1\u25CB]/g, '○')
       .replace(/[\uF076\uF0A7\uF0FE\u25A0]/g, '■')
       .replace(/[\uF0A8\uF071\u25A1]/g, '□')
       .replace(/[\uF0FC\uF044\u2713\u2714]/g, '✔')
       .replace(/[\uF0D8\uF0E0\u27A4\u27A2]/g, '➢')
       .replace(/[\uF0B4\u25C6]/g, '◆')
-      .replace(/[\uF02D\u2013\u2014]/g, '–');
+      .replace(/[\uF02D\u2013\u2014]/g, '–')
+      .replace(/\u00B7/g, '•');
   }
 
   function restoreSavedSelection() {
@@ -1783,39 +1769,20 @@ function init() {
     return '#' + h(match[1]) + h(match[2]) + h(match[3]);
   }
 
-  function hasMixedRuns(runs) {
-    if (!runs || runs.length <= 1) return false;
-    var first = runs[0];
-    for (var i = 1; i < runs.length; i++) {
-      var r = runs[i];
-      if (r.fontFamily !== first.fontFamily ||
-          Math.abs((r.pdfFontSize || 0) - (first.pdfFontSize || 0)) > 0.4 ||
-          !!r.bold !== !!first.bold ||
-          !!r.italic !== !!first.italic ||
-          r.color !== first.color ||
-          r.highlight !== first.highlight) {
-        return true;
-      }
-    }
-    return false;
-  }
-
   function runsToHtml(runs, defaultStyle) {
     if (!runs || !runs.length) return '';
     return runs.map(function(r) {
       var styles = [];
       var fam = r.cssFamily || r.fontFamily || (defaultStyle && (defaultStyle.cssFamily || defaultStyle.fontFamily));
       if (fam) styles.push('font-family:' + fam);
-      var fsPt = r.pdfFontSize != null ? r.pdfFontSize : ((defaultStyle && defaultStyle.pdfFontSize) || 14);
-      styles.push('font-size:' + (Math.round(fsPt * state.scale * 10) / 10) + 'px');
-      var isB = r.bold != null ? r.bold : (defaultStyle && defaultStyle.bold);
-      if (isB) {
+      var fsPt = r.pdfFontSize || (defaultStyle && defaultStyle.pdfFontSize) || 14;
+      styles.push('font-size:' + Math.round(fsPt * state.scale) + 'px');
+      if (r.bold != null ? r.bold : (defaultStyle && defaultStyle.bold)) {
         styles.push('font-weight:bold');
       } else {
         styles.push('font-weight:normal');
       }
-      var isI = r.italic != null ? r.italic : (defaultStyle && defaultStyle.italic);
-      if (isI) {
+      if (r.italic != null ? r.italic : (defaultStyle && defaultStyle.italic)) {
         styles.push('font-style:italic');
       } else {
         styles.push('font-style:normal');
@@ -1838,7 +1805,7 @@ function init() {
     var baseStyle = {
       fontFamily: (defaultStyle && defaultStyle.fontFamily) || 'Arial',
       cssFamily: (defaultStyle && defaultStyle.cssFamily) || 'Arial, sans-serif',
-      pdfFontSize: (defaultStyle && defaultStyle.pdfFontSize) != null ? defaultStyle.pdfFontSize : 14,
+      pdfFontSize: (defaultStyle && defaultStyle.pdfFontSize) || 14,
       bold: !!(defaultStyle && defaultStyle.bold),
       italic: !!(defaultStyle && defaultStyle.italic),
       color: (defaultStyle && defaultStyle.color) || '#000000',
@@ -1881,7 +1848,7 @@ function init() {
         }
         if (computed.fontSize) {
           var px = parseFloat(computed.fontSize);
-          if (px > 0) nextStyle.pdfFontSize = Math.round((px / state.scale) * 10) / 10;
+          if (px > 0) nextStyle.pdfFontSize = Math.round(px / state.scale);
         }
         if (computed.color) {
           nextStyle.color = rgbToHex(computed.color) || computed.color;
@@ -2062,9 +2029,8 @@ function init() {
           curBlock.fontFamily = value;
           curBlock.cssFamily = value;
         } else if (cmd === 'fontSize') {
-          var num = parseFloat(value) || 16;
-          curBlock.pdfFontSize = Math.round(num * 10) / 10;
-          curBlock.fontSize = Math.round(curBlock.pdfFontSize * state.scale * 10) / 10;
+          curBlock.pdfFontSize = parseInt(value) || 16;
+          curBlock.fontSize = Math.round(curBlock.pdfFontSize * state.scale);
         } else if (cmd === 'bold') {
           curBlock.bold = !curBlock.bold;
         } else if (cmd === 'italic') {
@@ -2099,8 +2065,7 @@ function init() {
     } else if (cmd === 'fontName') {
       applySpanStyleToRange(sel.getRangeAt(0), 'fontFamily', value);
     } else if (cmd === 'fontSize') {
-      var num = parseFloat(value) || 16;
-      applySpanStyleToRange(sel.getRangeAt(0), 'fontSize', (Math.round(num * state.scale * 10) / 10) + 'px');
+      applySpanStyleToRange(sel.getRangeAt(0), 'fontSize', (parseInt(value) * state.scale) + 'px');
     }
 
     if (curEl && curBlock) {
@@ -2296,7 +2261,7 @@ function init() {
     var content = el.querySelector('.ped-text-content') || el.querySelector('.ped-et-content') || el.querySelector('.text-content');
     if (content) {
       content.style.color = b.color || '#000000';
-      if (b.runs && b.runs.length > 0 && hasMixedRuns(b.runs)) {
+      if (b.runs && b.runs.length > 0) {
         content.innerHTML = runsToHtml(b.runs, b);
       } else {
         content.innerText = b.text;
@@ -2570,30 +2535,11 @@ function init() {
   function samplePageBgColor(ctx, x, y) {
     try {
       if (!ctx || !ctx.canvas) return '#ffffff';
-      var cw = ctx.canvas.width;
-      var ch = ctx.canvas.height;
-
-      // Sample outside the text block: page margin or points well outside
-      var samplePoints = [
-        { x: 10, y: 10 },
-        { x: 20, y: 20 },
-        { x: x - 6, y: y - 6 },
-        { x: x + 20, y: y - 6 },
-        { x: x - 6, y: y + 10 }
-      ];
-
-      for (var i = 0; i < samplePoints.length; i++) {
-        var sp = samplePoints[i];
-        var sx = Math.max(0, Math.min(cw - 1, Math.round(sp.x)));
-        var sy = Math.max(0, Math.min(ch - 1, Math.round(sp.y)));
-        var p = ctx.getImageData(sx, sy, 1, 1).data;
-        if (p[3] < 30) return '#ffffff';
-        var lum = 0.299 * p[0] + 0.587 * p[1] + 0.114 * p[2];
-        if (lum > 140) {
-          return rgbToHex('rgb(' + p[0] + ',' + p[1] + ',' + p[2] + ')') || '#ffffff';
-        }
-      }
-      return '#ffffff';
+      var sx = Math.max(0, Math.min(ctx.canvas.width - 1, Math.round(x)));
+      var sy = Math.max(0, Math.min(ctx.canvas.height - 1, Math.round(y)));
+      var p = ctx.getImageData(sx, sy, 1, 1).data;
+      if (p[3] < 30) return '#ffffff';
+      return rgbToHex('rgb(' + p[0] + ',' + p[1] + ',' + p[2] + ')') || '#ffffff';
     } catch (e) {
       return '#ffffff';
     }
@@ -2602,11 +2548,11 @@ function init() {
   function getOriginalTextMaskBounds(b) {
     var fontSize = b.pdfFontSize || 12;
     var baselineY = b.baselineY != null ? b.baselineY : (b.origPdfY + fontSize * 0.85);
-    // Ascender and descender boundaries with extra padding to cleanly cover italics, serifs, & oversized symbols
-    var top = baselineY - (fontSize * 0.90);
-    var height = fontSize * 1.25;
-    var x = b.origPdfX - 2.5;
-    var width = b.origPdfW + 5.0;
+    // Tight ascender and descender boundaries (avoids eating into lines above and below)
+    var top = baselineY - (fontSize * 0.78);
+    var height = fontSize * 0.98;
+    var x = b.origPdfX;
+    var width = b.origPdfW;
     return { x: x, y: top, w: width, h: height };
   }
 
@@ -2617,7 +2563,7 @@ function init() {
     var my = Math.round(mb.y * scale);
     var mw = Math.round(mb.w * scale);
     var mh = Math.round(mb.h * scale);
-    var bg = b.bgColor || samplePageBgColor(pCtx, mx, my);
+    var bg = b.bgColor || samplePageBgColor(pCtx, mx + 2, my + 2);
     ctx.save();
     ctx.fillStyle = bg;
     ctx.fillRect(mx, my, mw, mh);
@@ -2627,7 +2573,7 @@ function init() {
   function syncToolbarToBlock(b) {
     if (!b) return;
     var fam = b.fontFamily || 'Arial';
-    var pt = b.pdfFontSize != null ? (Math.round(b.pdfFontSize * 10) / 10) : 16;
+    var pt = b.pdfFontSize != null ? Math.round(b.pdfFontSize) : 16;
     var fsStr = String(pt);
     var col = b.color || '#000000';
     var isB = !!b.bold;
@@ -2645,9 +2591,14 @@ function init() {
     $('ctx-font-family').value = fam;
 
     // 2. Context Toolbar: Font Size
-    if ($('ctx-font-size')) {
-      $('ctx-font-size').value = fsStr;
+    var cSizeOpt = $('ctx-font-size').querySelector('option[value="' + fsStr + '"]');
+    if (!cSizeOpt) {
+      var nsOpt = document.createElement('option');
+      nsOpt.value = fsStr;
+      nsOpt.textContent = fsStr + 'px';
+      $('ctx-font-size').appendChild(nsOpt);
     }
+    $('ctx-font-size').value = fsStr;
 
     // 3. Context Toolbar: Bold, Italic, Color, Align
     state.bold = isB;
@@ -2671,9 +2622,14 @@ function init() {
     $('flt-font-family').value = fam;
 
     // 5. Floating Toolbar: Font Size
-    if ($('flt-font-size')) {
-      $('flt-font-size').value = fsStr;
+    var fSizeOpt = $('flt-font-size').querySelector('option[value="' + fsStr + '"]');
+    if (!fSizeOpt) {
+      var nfsOpt = document.createElement('option');
+      nfsOpt.value = fsStr;
+      nfsOpt.textContent = fsStr;
+      $('flt-font-size').appendChild(nfsOpt);
     }
+    $('flt-font-size').value = fsStr;
 
     // 6. Floating Toolbar: Bold, Italic, Color, Align
     $('flt-bold').classList.toggle('active', isB);
@@ -2689,7 +2645,7 @@ function init() {
     var def = state.defaultNewTextStyle;
     if (!def) return;
     var fam = def.fontFamily || 'Arial';
-    var pt = def.fontSize != null ? (Math.round(def.fontSize * 10) / 10) : 16;
+    var pt = def.fontSize || 16;
     var col = def.color || '#000000';
     var isB = !!def.bold;
     var isI = !!def.italic;
@@ -2705,9 +2661,14 @@ function init() {
     }
     $('ctx-font-family').value = fam;
 
-    if ($('ctx-font-size')) {
-      $('ctx-font-size').value = String(pt);
+    var cSizeOpt = $('ctx-font-size').querySelector('option[value="' + pt + '"]');
+    if (!cSizeOpt) {
+      var nsOpt = document.createElement('option');
+      nsOpt.value = String(pt);
+      nsOpt.textContent = pt + 'px';
+      $('ctx-font-size').appendChild(nsOpt);
     }
+    $('ctx-font-size').value = String(pt);
 
     state.bold = isB;
     $('ctx-bold').classList.toggle('active', isB);
@@ -2729,9 +2690,14 @@ function init() {
     }
     $('flt-font-family').value = fam;
 
-    if ($('flt-font-size')) {
-      $('flt-font-size').value = String(pt);
+    var fSizeOpt = $('flt-font-size').querySelector('option[value="' + pt + '"]');
+    if (!fSizeOpt) {
+      var nfsOpt = document.createElement('option');
+      nfsOpt.value = String(pt);
+      nfsOpt.textContent = String(pt);
+      $('flt-font-size').appendChild(nfsOpt);
     }
+    $('flt-font-size').value = String(pt);
 
     $('flt-bold').classList.toggle('active', isB);
     $('flt-italic').classList.toggle('active', isI);
@@ -2747,166 +2713,49 @@ function init() {
     var loadedName = (fontObj && (fontObj.loadedName || fontObj.name)) || '';
     var fallbackName = (fontObj && fontObj.fallbackName) || '';
     var styleFamily = (styleObj && styleObj.fontFamily) || '';
-    var styleName = (styleObj && (styleObj.fontName || styleObj.name)) || '';
     var objName = (fontObj && (fontObj.name || '')) || '';
     
-    var allNames = (rawFontName + ' ' + loadedName + ' ' + fallbackName + ' ' + styleFamily + ' ' + styleName + ' ' + objName).toLowerCase();
+    var allNames = (rawFontName + ' ' + loadedName + ' ' + fallbackName + ' ' + styleFamily + ' ' + objName).toLowerCase();
 
-    // Bold detection: check fontObj properties, flags, and comprehensive regex
+    // Bold detection: check fontObj properties or comprehensive regex
     var isBold = false;
-    if (fontObj && (fontObj.bold || fontObj.isBold || fontObj.black || fontObj.weight === 'bold' || parseInt(fontObj.weight) >= 600 || (fontObj.flags && (fontObj.flags & 262144)))) {
+    if (fontObj && (fontObj.bold || fontObj.black || fontObj.weight === 'bold' || parseInt(fontObj.weight) >= 600)) {
       isBold = true;
     } else if (/bold|black|heavy|semibold|demibold|bld|w[6-9]00|700|800|900/i.test(allNames) ||
-               /(?:[-_ ,]|^)(bd|b)(?:mt)?(?:[-_ ,]|$)/i.test(rawFontName) ||
-               /(?:[-_ ,]|^)(bd|b)(?:mt)?(?:[-_ ,]|$)/i.test(loadedName)) {
+               /[-_, ](bd|b)$/i.test(rawFontName) ||
+               /[-_, ](bd|b)$/i.test(loadedName)) {
       isBold = true;
     }
 
-    // Italic detection: check fontObj properties, flags, and regex
+    // Italic detection: check fontObj properties or regex
     var isItalic = false;
-    if (fontObj && (fontObj.italic || fontObj.isItalic || fontObj.style === 'italic' || fontObj.style === 'oblique' || (fontObj.flags && (fontObj.flags & 64)))) {
+    if (fontObj && (fontObj.italic || fontObj.style === 'italic' || fontObj.style === 'oblique')) {
       isItalic = true;
-    } else if (/italic|oblique|slant|ita/i.test(allNames) ||
-               /(?:[-_ ,]|^)(it|i)(?:mt)?(?:[-_ ,]|$)/i.test(rawFontName) ||
-               /(?:[-_ ,]|^)(it|i)(?:mt)?(?:[-_ ,]|$)/i.test(loadedName)) {
+    } else if (/italic|oblique|slant|ita|it$/i.test(allNames) ||
+               /[-_, ](it|i)$/i.test(rawFontName) ||
+               /[-_, ](it|i)$/i.test(loadedName)) {
       isItalic = true;
     }
+
+    var isSerif = /times|roman|georgia|cambria|garamond|serif|baskerville|palatino|minion|century|bookman/i.test(allNames);
+    var isMono = /courier|mono|consolas|menlo|monospace|typewriter|fixed/i.test(allNames);
+    var isGeorgia = /georgia/i.test(allNames);
+    var isVerdana = /verdana/i.test(allNames);
 
     var family = 'Arial';
     var cssFamily = 'Arial, Helvetica, "Segoe UI", sans-serif';
-
-    if (/calibri/i.test(allNames)) {
-      family = 'Calibri';
-      cssFamily = 'Calibri, "Segoe UI", Arial, sans-serif';
-    } else if (/cambria/i.test(allNames)) {
-      family = 'Cambria';
-      cssFamily = 'Cambria, Georgia, serif';
-    } else if (/garamond/i.test(allNames)) {
-      family = 'Garamond';
-      cssFamily = 'Garamond, "Times New Roman", serif';
-    } else if (/georgia/i.test(allNames)) {
+    if (isGeorgia) {
       family = 'Georgia';
       cssFamily = 'Georgia, "Times New Roman", serif';
-    } else if (/comic/i.test(allNames)) {
-      family = 'Comic Sans MS';
-      cssFamily = '"Comic Sans MS", "Comic Sans", cursive';
-    } else if (/trebuchet/i.test(allNames)) {
-      family = 'Trebuchet MS';
-      cssFamily = '"Trebuchet MS", "Lucida Grande", sans-serif';
-    } else if (/tahoma/i.test(allNames)) {
-      family = 'Tahoma';
-      cssFamily = 'Tahoma, Geneva, sans-serif';
-    } else if (/verdana/i.test(allNames)) {
-      family = 'Verdana';
-      cssFamily = 'Verdana, Geneva, sans-serif';
-    } else if (/impact/i.test(allNames)) {
-      family = 'Impact';
-      cssFamily = 'Impact, Charcoal, sans-serif';
-    } else if (/roboto/i.test(allNames)) {
-      family = 'Roboto';
-      cssFamily = 'Roboto, Arial, sans-serif';
-    } else if (/open sans/i.test(allNames)) {
-      family = 'Open Sans';
-      cssFamily = '"Open Sans", Arial, sans-serif';
-    } else if (/lato/i.test(allNames)) {
-      family = 'Lato';
-      cssFamily = 'Lato, Arial, sans-serif';
-    } else if (/montserrat/i.test(allNames)) {
-      family = 'Montserrat';
-      cssFamily = 'Montserrat, Arial, sans-serif';
-    } else if (/segoe/i.test(allNames)) {
-      family = 'Segoe UI';
-      cssFamily = '"Segoe UI", Arial, sans-serif';
-    } else if (/futura/i.test(allNames)) {
-      family = 'Futura';
-      cssFamily = 'Futura, "Trebuchet MS", Arial, sans-serif';
-    } else if (/gill sans/i.test(allNames)) {
-      family = 'Gill Sans';
-      cssFamily = '"Gill Sans", "Gill Sans MT", Calibri, sans-serif';
-    } else if (/optima/i.test(allNames)) {
-      family = 'Optima';
-      cssFamily = 'Optima, Segoe, "Segoe UI", Candara, Calibri, Arial, sans-serif';
-    } else if (/avenir/i.test(allNames)) {
-      family = 'Avenir';
-      cssFamily = 'Avenir, "Avenir Next", "Helvetica Neue", Arial, sans-serif';
-    } else if (/proxima/i.test(allNames)) {
-      family = 'Proxima Nova';
-      cssFamily = '"Proxima Nova", "Montserrat", "Helvetica Neue", Arial, sans-serif';
-    } else if (/nunito/i.test(allNames)) {
-      family = 'Nunito';
-      cssFamily = 'Nunito, "Segoe UI", Arial, sans-serif';
-    } else if (/raleway/i.test(allNames)) {
-      family = 'Raleway';
-      cssFamily = 'Raleway, "Helvetica Neue", Arial, sans-serif';
-    } else if (/poppins/i.test(allNames)) {
-      family = 'Poppins';
-      cssFamily = 'Poppins, "Segoe UI", Arial, sans-serif';
-    } else if (/ubuntu/i.test(allNames)) {
-      family = 'Ubuntu';
-      cssFamily = 'Ubuntu, "Segoe UI", Arial, sans-serif';
-    } else if (/lucida sans|lucida grande/i.test(allNames)) {
-      family = 'Lucida Sans';
-      cssFamily = '"Lucida Sans Unicode", "Lucida Grande", sans-serif';
-    } else if (/century gothic/i.test(allNames)) {
-      family = 'Century Gothic';
-      cssFamily = '"Century Gothic", CenturyGothic, AppleGothic, sans-serif';
-    } else if (/franklin gothic/i.test(allNames)) {
-      family = 'Franklin Gothic Medium';
-      cssFamily = '"Franklin Gothic Medium", "Franklin Gothic", "ITC Franklin Gothic", Arial, sans-serif';
-    } else if (/frutiger/i.test(allNames)) {
-      family = 'Frutiger';
-      cssFamily = 'Frutiger, "Frutiger Linotype", Univers, Calibri, "Gill Sans", "Gill Sans MT", "Myriad Pro", Myriad, "DejaVu Sans Condensed", "Liberation Sans", "Nimbus Sans L", Tahoma, Geneva, "Helvetica Neue", Helvetica, Arial, sans-serif';
-    } else if (/myriad/i.test(allNames)) {
-      family = 'Myriad Pro';
-      cssFamily = '"Myriad Pro", Myriad, "Liberation Sans", "Nimbus Sans L", "Helvetica Neue", Helvetica, Arial, sans-serif';
-    } else if (/univers/i.test(allNames)) {
-      family = 'Univers';
-      cssFamily = 'Univers, "Univers CE 55", "Univers LT Std 55", "Frutiger", "Helvetica Neue", Helvetica, Arial, sans-serif';
-    } else if (/san francisco|sf pro/i.test(allNames)) {
-      family = 'San Francisco';
-      cssFamily = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif';
-    } else if (/bodoni/i.test(allNames)) {
-      family = 'Bodoni MT';
-      cssFamily = '"Bodoni MT", Didot, "Didot LT STD", "Hoefler Text", Garamond, "Times New Roman", serif';
-    } else if (/didot/i.test(allNames)) {
-      family = 'Didot';
-      cssFamily = 'Didot, "Didot LT STD", "Hoefler Text", Garamond, "Times New Roman", serif';
-    } else if (/rockwell/i.test(allNames)) {
-      family = 'Rockwell';
-      cssFamily = 'Rockwell, "Courier Bold", Courier, Georgia, Times, "Times New Roman", serif';
-    } else if (/merriweather/i.test(allNames)) {
-      family = 'Merriweather';
-      cssFamily = 'Merriweather, Georgia, serif';
-    } else if (/playfair/i.test(allNames)) {
-      family = 'Playfair Display';
-      cssFamily = '"Playfair Display", Georgia, serif';
-    } else if (/pt serif/i.test(allNames)) {
-      family = 'PT Serif';
-      cssFamily = '"PT Serif", Georgia, serif';
-    } else if (/lora/i.test(allNames)) {
-      family = 'Lora';
-      cssFamily = 'Lora, Georgia, serif';
-    } else if (/caslon/i.test(allNames)) {
-      family = 'Caslon';
-      cssFamily = '"Adobe Caslon Pro", "Hoefler Text", Garamond, "Times New Roman", serif';
-    } else if (/constantia/i.test(allNames)) {
-      family = 'Constantia';
-      cssFamily = 'Constantia, "Lucida Bright", Lucidabright, "Lucida Serif", Lucida, "DejaVu Serif", "Bitstream Vera Serif", "Liberation Serif", Georgia, serif';
-    } else if (/hoefler/i.test(allNames)) {
-      family = 'Hoefler Text';
-      cssFamily = '"Hoefler Text", "Baskerville old face", Garamond, "Times New Roman", serif';
-    } else if (/lucida bright/i.test(allNames)) {
-      family = 'Lucida Bright';
-      cssFamily = '"Lucida Bright", Georgia, serif';
-    } else if (/helvetica/i.test(allNames)) {
-      family = 'Helvetica';
-      cssFamily = 'Helvetica, Arial, sans-serif';
-    } else if (/times|roman|serif|baskerville|palatino|minion|century|bookman/i.test(allNames) || !!(fontObj && fontObj.flags && (fontObj.flags & 2))) {
+    } else if (isSerif) {
       family = 'Times New Roman';
       cssFamily = '"Times New Roman", Times, Georgia, serif';
-    } else if (/courier|mono|consolas|menlo|monospace|typewriter|fixed/i.test(allNames) || !!(fontObj && fontObj.flags && (fontObj.flags & 1))) {
+    } else if (isMono) {
       family = 'Courier New';
       cssFamily = '"Courier New", Courier, monospace';
+    } else if (isVerdana) {
+      family = 'Verdana';
+      cssFamily = 'Verdana, Geneva, sans-serif';
     }
 
     return {
@@ -2940,7 +2789,7 @@ function init() {
       var fontInfo = detectFont(item.fontName, styles[item.fontName], fontObj);
       var tx = item.transform;
       var fontHeightPt = Math.hypot(tx[2], tx[3]) || Math.hypot(tx[0], tx[1]) || 12;
-      var fontSize = Math.round(fontHeightPt * 10) / 10;
+      var fontSize = Math.round(fontHeightPt);
 
       var pt = baseVp.convertToViewportPoint(tx[4], tx[5]);
       var baselineX = Math.round(pt[0]);
@@ -3090,7 +2939,7 @@ function init() {
 
   function createNewTextBlock(pdfX, pdfY) {
     var def = state.defaultNewTextStyle || {};
-    var chosenPt = def.fontSize || parseFloat($('ctx-font-size').value) || 16;
+    var chosenPt = def.fontSize || parseInt($('ctx-font-size').value) || 16;
     var b = {
       id: 'tb-user-' + Date.now(),
       isOriginal: false,
@@ -3139,7 +2988,7 @@ function init() {
     var sy = Math.round(b.pdfY * state.scale);
     var sw = Math.max(20, Math.round(b.pdfW * state.scale));
     var sh = Math.max(14, Math.round(b.pdfH * state.scale));
-    var sFontSize = Math.max(8, Math.round((b.pdfFontSize || 12) * state.scale * 10) / 10);
+    var sFontSize = Math.max(8, Math.round(b.pdfFontSize * state.scale));
 
     box.style.left = sx + 'px';
     box.style.top = sy + 'px';
@@ -3161,14 +3010,13 @@ function init() {
     content.style.fontWeight = b.bold ? 'bold' : 'normal';
     content.style.fontStyle = b.italic ? 'italic' : 'normal';
     content.style.textAlign = b.align || 'left';
-    content.style.lineHeight = '1.15';
 
     if (b.isOriginal && !b.isModified) {
       content.style.color = 'transparent';
       content.innerText = b.text;
     } else {
       content.style.color = b.color || '#000000';
-      if (b.runs && b.runs.length > 0 && hasMixedRuns(b.runs)) {
+      if (b.runs && b.runs.length > 0) {
         content.innerHTML = runsToHtml(b.runs, b);
       } else {
         content.innerText = b.text || '';
@@ -3243,9 +3091,6 @@ function init() {
 
         if (isDragging) {
           box.classList.remove('dragging');
-          if (b.isOriginal) {
-            redrawAnnotationsCanvas(state.currentPage);
-          }
           pushUndoSnapshot();
           return;
         }
@@ -3302,8 +3147,7 @@ function init() {
     // 1. Draw background white masks for any modified or deleted original text blocks
     var blocks = (state.doc.textBlocks && state.doc.textBlocks[p]) || [];
     blocks.forEach(function(b) {
-      var isBeingEdited = (state.activeEditBlock && state.activeEditBlock.id === b.id);
-      if (b.isOriginal && (b.isModified || b.isDeleted || isBeingEdited)) {
+      if (b.isOriginal && (b.isModified || b.isDeleted)) {
         drawOriginalTextMask(aCtx, b, state.scale);
       }
     });
@@ -4068,7 +3912,7 @@ function init() {
     if (!a || !el) {
       if (!state.defaultNewTextStyle) state.defaultNewTextStyle = {};
       state.defaultNewTextStyle.fontFamily = $('ctx-font-family').value;
-      state.defaultNewTextStyle.fontSize = parseFloat($('ctx-font-size').value) || 16;
+      state.defaultNewTextStyle.fontSize = parseInt($('ctx-font-size').value) || 16;
       state.defaultNewTextStyle.bold = state.bold;
       state.defaultNewTextStyle.italic = state.italic;
       state.defaultNewTextStyle.align = state.textAlign;
@@ -4079,9 +3923,9 @@ function init() {
     a.isModified = true;
     a.fontFamily = $('ctx-font-family').value;
     a.cssFamily = a.fontFamily;
-    var ptSize = parseFloat($('ctx-font-size').value) || 16;
-    a.pdfFontSize = Math.round(ptSize * 10) / 10;
-    a.fontSize = Math.round(a.pdfFontSize * state.scale * 10) / 10;
+    var ptSize = parseInt($('ctx-font-size').value) || 16;
+    a.pdfFontSize = ptSize;
+    a.fontSize = Math.round(ptSize * state.scale);
     a.bold = state.bold;
     a.italic = state.italic;
     a.align = state.textAlign;

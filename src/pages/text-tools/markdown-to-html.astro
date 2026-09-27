@@ -135,18 +135,18 @@ const workedExampleData = {
     <!-- Options Bar -->
     <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5 space-y-4">
       <div class="flex flex-wrap items-center justify-between gap-4">
-        <div class="flex flex-wrap items-center gap-3">
-          <div>
+        <div class="flex flex-wrap items-center gap-3 w-full sm:w-auto">
+          <div class="w-full sm:w-auto min-w-0">
             <label for="opt-doc-wrapper" class="block text-[11px] font-bold uppercase tracking-wider text-[color:var(--muted)] mb-1">Output Structure</label>
-            <select id="opt-doc-wrapper" class="rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-1.5 text-xs text-[color:var(--fg)] font-semibold">
+            <select id="opt-doc-wrapper" class="w-full sm:w-auto max-w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-1.5 text-xs text-[color:var(--fg)] font-semibold">
               <option value="fragment">HTML Body Fragment (Snippet)</option>
               <option value="full">Full HTML5 Document (&lt;!DOCTYPE&gt;)</option>
             </select>
           </div>
 
-          <div>
+          <div class="w-full sm:w-auto min-w-0">
             <label for="opt-heading-ids" class="block text-[11px] font-bold uppercase tracking-wider text-[color:var(--muted)] mb-1">Heading IDs</label>
-            <select id="opt-heading-ids" class="rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-1.5 text-xs text-[color:var(--fg)] font-semibold">
+            <select id="opt-heading-ids" class="w-full sm:w-auto max-w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-1.5 text-xs text-[color:var(--fg)] font-semibold">
               <option value="auto">Auto Generate Slugs (id="...")</option>
               <option value="none">Plain Headings (&lt;h1&gt;)</option>
             </select>
@@ -217,7 +217,7 @@ const workedExampleData = {
     <!-- Main Workspace -->
     <div class="grid gap-6 lg:grid-cols-2">
       <!-- Left: Markdown Input -->
-      <div class="space-y-2">
+      <div class="space-y-2 min-w-0 max-w-full">
         <div class="flex items-center justify-between">
           <label for="md-in" class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Markdown Source</label>
           <div class="flex items-center gap-2 text-xs">
@@ -236,7 +236,7 @@ const workedExampleData = {
       </div>
 
       <!-- Right: Output / Preview Tabs -->
-      <div class="space-y-2">
+      <div class="space-y-2 min-w-0 max-w-full">
         <div class="flex flex-wrap items-center justify-between gap-2">
           <div class="flex items-center gap-1 rounded-xl bg-[color:var(--surface-strong)] p-1 text-xs shrink-0 overflow-x-auto no-scrollbar">
             <button
@@ -255,7 +255,7 @@ const workedExampleData = {
             </button>
           </div>
 
-          <div class="flex items-center gap-2 shrink-0">
+          <div class="flex flex-wrap items-center gap-2 shrink-0">
             <button
               type="button"
               id="btn-copy-html"
@@ -276,7 +276,7 @@ const workedExampleData = {
         <!-- Rendered Live Preview -->
         <div
           id="preview-out"
-          class="min-h-[432px] max-h-[560px] overflow-y-auto rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 text-sm text-[color:var(--fg)] leading-relaxed space-y-4 prose-preview"
+          class="min-h-[432px] max-h-[560px] overflow-y-auto overflow-x-auto max-w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-6 text-sm text-[color:var(--fg)] leading-relaxed space-y-4 prose-preview"
         >
           <p class="text-[color:var(--muted)] italic">Preview will appear here once you enter Markdown.</p>
         </div>

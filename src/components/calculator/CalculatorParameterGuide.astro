@@ -98,30 +98,30 @@ const guideItems: CalculatorParameterInfo[] = parameters ?? (inputs?.map((input)
               )}
             </div>
 
-            <p class="text-sm sm:text-base leading-relaxed text-[color:var(--fg)]/90 dark:text-slate-300 pl-8">
+            <p class="text-sm sm:text-base leading-relaxed text-[color:var(--fg)]/90 dark:text-slate-300 pl-0 sm:pl-8">
               {param.description}
             </p>
 
             {param.whyItMatters && (
-              <p class="text-sm sm:text-base leading-relaxed text-[color:var(--muted)] pl-8">
+              <p class="text-sm sm:text-base leading-relaxed text-[color:var(--muted)] pl-0 sm:pl-8">
                 <strong class="font-bold text-[color:var(--fg)]">Why it matters:</strong> {param.whyItMatters}
               </p>
             )}
 
             {(param.defaultValue || param.typicalRange) && (
-              <div class="flex flex-wrap items-center gap-x-6 gap-y-2 pl-8 pt-1 text-xs sm:text-sm text-[color:var(--muted)]">
+              <div class="flex flex-wrap items-center gap-x-6 gap-y-2 pl-0 sm:pl-8 pt-1 text-xs sm:text-sm text-[color:var(--muted)] max-w-full">
                 {param.defaultValue && (
-                  <span class="inline-flex items-center gap-1.5">
-                    <strong class="font-semibold text-[color:var(--fg)]">Default:</strong>
-                    <code class="font-mono text-xs px-2 py-0.5 rounded bg-[color:var(--surface-strong)] border border-[color:var(--border)] text-[color:var(--fg)]">
+                  <span class="inline-flex flex-wrap items-center gap-1.5 max-w-full">
+                    <strong class="font-semibold text-[color:var(--fg)] shrink-0">Default:</strong>
+                    <code class="font-mono text-xs px-2 py-0.5 rounded bg-[color:var(--surface-strong)] border border-[color:var(--border)] text-[color:var(--fg)] break-all max-w-full">
                       {param.defaultValue}
                     </code>
                   </span>
                 )}
                 {param.typicalRange && (
-                  <span class="inline-flex items-center gap-1.5">
-                    <strong class="font-semibold text-[color:var(--fg)]">Typical range:</strong>
-                    <code class="font-mono text-xs px-2 py-0.5 rounded bg-[color:var(--surface-strong)] border border-[color:var(--border)] text-[color:var(--fg)]">
+                  <span class="inline-flex flex-wrap items-center gap-1.5 max-w-full">
+                    <strong class="font-semibold text-[color:var(--fg)] shrink-0">Typical range:</strong>
+                    <code class="font-mono text-xs px-2 py-0.5 rounded bg-[color:var(--surface-strong)] border border-[color:var(--border)] text-[color:var(--fg)] break-words max-w-full">
                       {param.typicalRange}
                     </code>
                   </span>
@@ -148,11 +148,11 @@ const guideItems: CalculatorParameterInfo[] = parameters ?? (inputs?.map((input)
           </p>
 
           {workedExample.formula && (
-            <div class="rounded-xl bg-[color:var(--surface-strong)] border border-[color:var(--border)] p-4">
+            <div class="rounded-xl bg-[color:var(--surface-strong)] border border-[color:var(--border)] p-4 max-w-full">
               <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)] block mb-1">
                 Formula Reference
               </span>
-              <code class="font-mono text-xs sm:text-sm text-[color:var(--fg)] font-semibold break-all">
+              <code class="font-mono text-xs sm:text-sm text-[color:var(--fg)] font-semibold break-words max-w-full block">
                 {workedExample.formula}
               </code>
             </div>
@@ -164,14 +164,14 @@ const guideItems: CalculatorParameterInfo[] = parameters ?? (inputs?.map((input)
             </span>
             <ol class="space-y-3">
               {workedExample.steps.map((step, sIdx) => (
-                <li class="flex items-start gap-3.5 rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-strong)]/30 p-4">
+                <li class="flex items-start gap-3.5 rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-strong)]/30 p-4 max-w-full">
                   <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[color:var(--accent)] text-white text-xs font-bold shadow-xs">
                     {sIdx + 1}
                   </span>
-                  <div class="space-y-1 text-sm sm:text-base">
-                    <strong class="font-bold text-[color:var(--fg)] block">{step.step}</strong>
-                    <p class="text-xs sm:text-sm text-[color:var(--muted)] leading-relaxed">{step.calculation}</p>
-                    <div class="text-xs sm:text-sm font-bold text-[color:var(--accent)] font-mono pt-1">
+                  <div class="space-y-1 text-sm sm:text-base min-w-0 flex-1">
+                    <strong class="font-bold text-[color:var(--fg)] block break-words">{step.step}</strong>
+                    <p class="text-xs sm:text-sm text-[color:var(--muted)] leading-relaxed break-words">{step.calculation}</p>
+                    <div class="text-xs sm:text-sm font-bold text-[color:var(--accent)] font-mono pt-1 break-words">
                       Result: {step.result}
                     </div>
                   </div>
