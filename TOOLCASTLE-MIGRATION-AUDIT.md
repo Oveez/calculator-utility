@@ -2,7 +2,7 @@
 
 The repository is an Astro static site. The checked-in Wrangler configuration publishes `dist` as Worker assets, but the old GitHub Pages workflow built with a repository-prefixed GitHub Pages URL. That could generate incorrect canonical, sitemap, Open Graph, and asset URLs for CI artifacts even though the currently served production site is already using `https://toolscastle.app`.
 
-The workflow now builds with `SITE_URL=https://toolscastle.app` and `BASE_PATH=/`, then deploys through Wrangler. No Cloudflare resource, DNS record, redirect, R2 object, or production deployment was changed from this environment because Wrangler is unauthenticated.
+The workflow now builds with `SITE_URL=https://toolscastle.app` and `BASE_PATH=/`, then deploys through Wrangler. Wrangler was subsequently authenticated and the existing `edu-logos` bucket was connected to `logos.toolscastle.app`; no objects, old custom domains, DNS records, redirects, or application deployment were deleted or replaced.
 
 Verified production behavior at audit time:
 
@@ -23,27 +23,27 @@ Records the audit findings, verified behavior, blocked operations, testing, and 
 
 # Cloudflare Changes
 
-No Cloudflare dashboard or API changes were made. Wrangler `4.142.0` is available through `npx`, but `wrangler whoami` reported that the environment is unauthenticated.
+Wrangler `4.142.0` was authenticated with the Cloudflare account and used for read-only inventory plus one safe R2 custom-domain addition. No application Worker deployment was performed from this branch.
 
-The checked-in Worker asset configuration is named `calculator`, uses compatibility date `2026-09-28`, has no compatibility flags, and publishes `./dist` with `404-page` handling. It contains no Worker entry point, routes, custom domains, bindings, environment variables, or R2 declaration. The actual production Worker name, deployments, routes, custom domains, redirect rules, DNS records, SSL mode, and compatibility settings remain unverified through the Cloudflare API.
+The checked-in Worker asset configuration is named `calculator`, uses compatibility date `2026-09-28`, has no compatibility flags, and publishes `./dist` with `404-page` handling. It contains no Worker entry point, routes, custom domains, bindings, environment variables, or R2 declaration. Cloudflare confirmed an active `calculator` deployment and no Worker secrets. Worker routes, custom domains, redirect rules, DNS records, SSL mode, and compatibility settings remain only partially verified.
 
 # R2 Storage
 
-The source contains an upload utility for the `edu-logos` bucket and defaults its public URL to `https://logos.toolscastle.app`. The application reads that URL from configuration in the assignment cover maker. No R2 bucket, custom domain, CORS policy, or object was inspected or changed because Cloudflare authentication was unavailable. No objects were deleted.
+The source contains an upload utility for the `edu-logos` bucket and defaults its public URL to `https://logos.toolscastle.app`. Cloudflare reports 129 objects and a 2.58 MB bucket. The existing `logos.calculatorutility.tech` custom domain remains active. `logos.toolscastle.app` was added successfully, but its ownership and SSL status are still pending and the hostname does not yet resolve. No objects were deleted or migrated.
 
 # Google / DNS
 
 The live site uses `https://toolscastle.app` for canonical URLs, sitemap URLs, and metadata observed during testing. The live sitemap is `/sitemap.xml`; `robots.txt` points to that URL. The Google Analytics measurement ID observed in the live HTML was left unchanged.
 
-DNS resolution returned Cloudflare edge addresses for both production zones from this environment. Authoritative nameserver, DNSSEC, record inventory, verification TXT/CNAME values, and the unusual historical `100::` value were not verified through Cloudflare because API authentication was unavailable. No verification record was removed or added.
+The `toolscastle.app` zone is active with Cloudflare nameservers. DNS-record inventory was blocked because the OAuth session has zone metadata read but not DNS-record read permission. Authoritative nameserver, DNSSEC, verification TXT/CNAME values, and the unusual historical `100::` value therefore remain unverified. No DNS record was removed or added.
 
 # Permissions
 
 ## Cloudflare API
 
-- Operation blocked: inspect or modify Workers, custom domains, routes, redirect rules, DNS, SSL, and R2.
-- Reason: `wrangler whoami` reported `You are not authenticated`.
-- Minimum access: a scoped Cloudflare API token with Workers Scripts Edit and Account Read for deployment; Zone DNS Read for DNS inspection; Zone DNS Edit only if an approved DNS change is required; R2 Read for inventory and R2 Edit only for an approved custom-domain/configuration change.
+- Operation blocked: inspect DNS records, DNSSEC, verification records, and the historical AAAA value through the Cloudflare API.
+- Reason: the authenticated OAuth session has zone metadata read but lacks DNS-record read access; the direct DNS-record API returned authentication error 10000.
+- Minimum access: add DNS Records Read for both zones. DNS Records Edit is not required for inspection and should only be granted for an approved DNS change. Workers Scripts Edit and Account Read remain sufficient for deployment; R2 Read/Edit was sufficient for the approved custom-domain addition.
 - Configure at: GitHub repository Settings -> Secrets and variables -> Actions, preferably in a production environment named `production`.
 - Required secret names: `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID`.
 - Re-authentication: required before Wrangler inspection or deployment can run.
@@ -56,9 +56,9 @@ DNS resolution returned Cloudflare edge addresses for both production zones from
 
 # Manual Tasks
 
-1. Create a least-privilege Cloudflare API token for the account and add it to the repository or production environment as `CLOUDFLARE_API_TOKEN`; add the account ID as `CLOUDFLARE_ACCOUNT_ID`.
-2. Run `npx wrangler whoami` and `npx wrangler deployments list --name calculator` with that token. Confirm the production Worker name before changing `wrangler.jsonc` or removing any custom domain.
-3. Inspect both zones, redirect rules, custom domains, SSL mode, DNSSEC, and the `edu-logos` bucket. Do not delete records, domains, or objects during this inspection.
+1. Add DNS Records Read to the Cloudflare authentication used for this audit, then inspect both zones, redirect rules, SSL mode, DNSSEC, verification records, and the historical AAAA value. Do not delete or replace records during inspection.
+2. Confirm `logos.toolscastle.app` ownership and SSL become active. Keep `logos.calculatorutility.tech` until the new hostname serves a known logo successfully.
+3. Configure `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` as GitHub Actions secrets if the new deployment workflow should deploy automatically after merge.
 4. In Google Search Console, verify `toolscastle.app` with a genuine Google-issued token and submit `https://toolscastle.app/sitemap.xml`.
 
 # Testing
