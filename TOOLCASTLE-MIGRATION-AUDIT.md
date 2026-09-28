@@ -29,7 +29,7 @@ The checked-in Worker asset configuration is named `calculator`, uses compatibil
 
 # R2 Storage
 
-The source contains an upload utility for the `edu-logos` bucket and defaults its public URL to `https://logos.toolscastle.app`. Cloudflare reports 129 objects and a 2.58 MB bucket. The existing `logos.calculatorutility.tech` custom domain remains active. `logos.toolscastle.app` was added successfully, but its ownership and SSL status are still pending and the hostname does not yet resolve. No objects were deleted or migrated.
+The source contains an upload utility for the `edu-logos` bucket and defaults its public URL to `https://logos.toolscastle.app`. Cloudflare reports 129 objects and a 2.58 MB bucket. The existing `logos.calculatorutility.tech` custom domain remains active. `logos.toolscastle.app` was added successfully and ownership is active, but SSL is still pending and the hostname does not yet serve successfully. No objects were deleted or migrated.
 
 # Google / DNS
 
