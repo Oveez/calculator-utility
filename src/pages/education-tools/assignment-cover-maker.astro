@@ -5,7 +5,7 @@ import Icon from '../../components/Icon.astro';
 import { siteName, toAbsoluteUrl, withBasePath } from '../../utils/site';
 
 const configuredCdn = import.meta.env.PUBLIC_LOGOS_CDN_URL;
-const logosBaseUrl = (configuredCdn && !configuredCdn.includes('logos.toolscastle.app') && !configuredCdn.includes('calculatorutility.tech'))
+const logosBaseUrl = (configuredCdn && !configuredCdn.includes('logos.toolscastle.app'))
   ? configuredCdn
   : withBasePath('/logos');
 const institutionsDataUrl = withBasePath('/data/institutions.json');

@@ -2379,19 +2379,23 @@ function init() {
         if (computed.fontWeight === 'normal' || computed.fontWeight === '400') nextStyle.bold = false;
         if (computed.fontStyle === 'italic' || computed.fontStyle === 'oblique') nextStyle.italic = true;
         if (computed.fontStyle === 'normal') nextStyle.italic = false;
-        if (computed.fontFamily) {
-          nextStyle.cssFamily = computed.fontFamily;
-          nextStyle.fontFamily = computed.fontFamily.split(',')[0].replace(/['"]/g, '').trim();
+
+        var elemFace = computed.fontFamily || (node.getAttribute && node.getAttribute('face'));
+        if (elemFace) {
+          nextStyle.cssFamily = elemFace;
+          nextStyle.fontFamily = elemFace.split(',')[0].replace(/['"]/g, '').trim();
         }
         if (computed.fontSize) {
           var px = parseFloat(computed.fontSize);
           if (px > 0) nextStyle.pdfFontSize = Math.round((px / state.scale) * 10) / 10;
         }
-        if (computed.color) {
-          nextStyle.color = rgbToHex(computed.color) || computed.color;
+        var elemColor = computed.color || (node.getAttribute && node.getAttribute('color'));
+        if (elemColor) {
+          nextStyle.color = rgbToHex(elemColor) || elemColor;
         }
-        if (computed.backgroundColor && computed.backgroundColor !== 'transparent' && computed.backgroundColor !== 'rgba(0, 0, 0, 0)') {
-          nextStyle.highlight = rgbToHex(computed.backgroundColor) || computed.backgroundColor;
+        var elemBg = (computed.backgroundColor && computed.backgroundColor !== 'transparent' && computed.backgroundColor !== 'rgba(0, 0, 0, 0)') || (node.getAttribute && node.getAttribute('bgcolor'));
+        if (elemBg) {
+          nextStyle.highlight = rgbToHex(elemBg) || elemBg;
         }
 
         if (tag === 'br') {
@@ -2565,22 +2569,44 @@ function init() {
         if (cmd === 'fontName') {
           curBlock.fontFamily = value;
           curBlock.cssFamily = value;
+          if (curBlock.runs) curBlock.runs.forEach(function(r) { r.fontFamily = value; r.cssFamily = value; });
         } else if (cmd === 'fontSize') {
           var num = parseFloat(value) || 16;
           curBlock.pdfFontSize = Math.round(num * 10) / 10;
           curBlock.fontSize = Math.round(curBlock.pdfFontSize * state.scale * 10) / 10;
+          if (curBlock.runs) curBlock.runs.forEach(function(r) { r.pdfFontSize = curBlock.pdfFontSize; });
         } else if (cmd === 'bold') {
           curBlock.bold = !curBlock.bold;
+          if (curBlock.runs) curBlock.runs.forEach(function(r) { r.bold = curBlock.bold; });
         } else if (cmd === 'italic') {
           curBlock.italic = !curBlock.italic;
+          if (curBlock.runs) curBlock.runs.forEach(function(r) { r.italic = curBlock.italic; });
         } else if (cmd === 'foreColor') {
           curBlock.color = value;
+          if (curBlock.runs) curBlock.runs.forEach(function(r) { r.color = value; });
         }
         curBlock.isModified = true;
         var contentEl = curEl.querySelector('.ped-text-content') || curEl.querySelector('.ped-et-content') || curEl.querySelector('.text-content');
         if (contentEl) {
           applyTextStyle(contentEl, curBlock);
+          contentEl.querySelectorAll('*').forEach(function(n) {
+            if (n.style) {
+              n.style.color = '';
+              n.style.fontFamily = '';
+              n.style.fontSize = '';
+              n.style.fontWeight = '';
+              n.style.fontStyle = '';
+            }
+            if (n.removeAttribute) {
+              n.removeAttribute('color');
+              n.removeAttribute('face');
+              n.removeAttribute('size');
+            }
+          });
           curBlock.runs = parseFormattingRuns(contentEl, curBlock);
+          if (curBlock.runs && curBlock.runs.length > 0 && cmd === 'foreColor') {
+            curBlock.runs.forEach(function(r) { r.color = curBlock.color; });
+          }
         }
         if (curBlock.isOriginal) {
           drawOriginalTextMask(aCtx, curBlock, state.scale);
@@ -2597,9 +2623,10 @@ function init() {
     } else if (cmd === 'italic') {
       document.execCommand('italic', false, null);
     } else if (cmd === 'foreColor') {
+      applySpanStyleToRange(sel.getRangeAt(0), 'color', value);
       document.execCommand('foreColor', false, value);
     } else if (cmd === 'hiliteColor') {
-      document.execCommand('hiliteColor', false, value);
+      applySpanStyleToRange(sel.getRangeAt(0), 'backgroundColor', value);
     } else if (cmd === 'fontName') {
       applySpanStyleToRange(sel.getRangeAt(0), 'fontFamily', value);
     } else if (cmd === 'fontSize') {
@@ -3121,7 +3148,10 @@ function init() {
     var my = Math.round(mb.y * scale);
     var mw = Math.round(mb.w * scale);
     var mh = Math.round(mb.h * scale);
-    var bg = b.bgColor || samplePageBgColor(pCtx, mx, my);
+    var sampleCtx = (typeof aCtx !== 'undefined' && ctx === aCtx) ? pCtx : ctx;
+    var sampleX = (typeof aCtx !== 'undefined' && ctx === aCtx) ? Math.round(mb.x * state.scale) : mx;
+    var sampleY = (typeof aCtx !== 'undefined' && ctx === aCtx) ? Math.round(mb.y * state.scale) : my;
+    var bg = b.bgColor || samplePageBgColor(sampleCtx, sampleX, sampleY);
     ctx.save();
     ctx.fillStyle = bg;
     ctx.fillRect(mx, my, mw, mh);
@@ -4595,7 +4625,29 @@ function init() {
     var contentEl = el.querySelector('.ped-text-content') || el.querySelector('.text-content') || el.querySelector('.ped-et-content');
     if (contentEl) {
       applyTextStyle(contentEl, a);
+      contentEl.querySelectorAll('*').forEach(function(n) {
+        if (n.style) {
+          n.style.color = '';
+          n.style.fontFamily = '';
+          n.style.fontSize = '';
+          n.style.fontWeight = '';
+          n.style.fontStyle = '';
+        }
+        if (n.removeAttribute) {
+          n.removeAttribute('color');
+          n.removeAttribute('face');
+          n.removeAttribute('size');
+        }
+      });
       a.runs = parseFormattingRuns(contentEl, a);
+      if (a.runs && a.runs.length > 0) {
+        a.runs.forEach(function(r) {
+          r.color = a.color;
+          r.fontFamily = a.fontFamily;
+          r.bold = a.bold;
+          r.italic = a.italic;
+        });
+      }
     }
 
     if (a.isOriginal) {
@@ -5172,6 +5224,7 @@ function init() {
   function drawTextRunsToExportCanvas(tCtx, a, exportScale) {
     var expX = (a.pdfX != null ? a.pdfX : a.x / state.scale) * exportScale;
     var expY = (a.pdfY != null ? a.pdfY : a.y / state.scale) * exportScale;
+    var expW = (a.pdfW != null ? a.pdfW : a.w / state.scale) * exportScale;
     var baseFs = (a.pdfFontSize || 14) * exportScale;
 
     // Group runs into lines separated by '\n'
@@ -5193,11 +5246,24 @@ function init() {
         return;
       }
       var maxFs = baseFs;
+      var totalLineWidth = 0;
       lineRuns.forEach(function(r) {
         var rfs = (r.pdfFontSize || a.pdfFontSize || 14) * exportScale;
         if (rfs > maxFs) maxFs = rfs;
+        var fontStr = (r.italic ? 'italic ' : '') + (r.bold ? 'bold ' : '') + Math.round(rfs) + 'px ' + (r.cssFamily || r.fontFamily || a.cssFamily || a.fontFamily || 'Arial, sans-serif');
+        tCtx.save();
+        tCtx.font = fontStr;
+        totalLineWidth += tCtx.measureText(normalizePdfGlyphs(r.text)).width;
+        tCtx.restore();
       });
+
       var curX = expX;
+      if (a.align === 'center') {
+        curX = expX + Math.max(0, (expW - totalLineWidth) / 2);
+      } else if (a.align === 'right') {
+        curX = expX + Math.max(0, expW - totalLineWidth);
+      }
+
       var baselineY = curY + maxFs * 0.85;
 
       lineRuns.forEach(function(r) {
@@ -5233,24 +5299,36 @@ function init() {
     setStatus('Generating PDF...');
     try {
       var PDFDocument = window.PDFLib.PDFDocument;
-      var pdfLibDoc = await PDFDocument.load(state.rawBytes.slice(0));
-      var libPages = pdfLibDoc.getPages();
+      var srcDoc = await PDFDocument.load(state.rawBytes.slice(0));
+      var newDoc = await PDFDocument.create();
 
-      for (var pi = 0; pi < libPages.length; pi++) {
+      for (var pi = 0; pi < srcDoc.getPageCount(); pi++) {
         var pg = pi + 1;
         var blocks = (state.doc.textBlocks && state.doc.textBlocks[pg]) || [];
         var anns = (state.doc.annotations && state.doc.annotations[pg]) || [];
         var hasModBlocks = blocks.some(function(b) { return !b.isDeleted && (b.isModified || !b.isOriginal); });
         var hasDelBlocks = blocks.some(function(b) { return b.isOriginal && b.isDeleted; });
+        var hasRot = !!(state.pageRots[pg]);
 
-        if (!anns.length && !hasModBlocks && !hasDelBlocks) continue;
+        // If the page is untouched, copy directly without re-rendering for lossless vector preservation
+        if (!anns.length && !hasModBlocks && !hasDelBlocks && !hasRot) {
+          var copiedArr = await newDoc.copyPages(srcDoc, [pi]);
+          newDoc.addPage(copiedArr[0]);
+          continue;
+        }
 
         var pdfJsPage = await state.pdfDoc.getPage(pg);
         var rot = (state.pageRots[pg] || 0) + pdfJsPage.rotate;
-        var exportScale = 2.0;
+        var exportScale = 2.5; // High-resolution crisp export
         var vp = pdfJsPage.getViewport({ scale: exportScale, rotation: rot });
-        var tc = document.createElement('canvas'); tc.width = vp.width; tc.height = vp.height;
+        var tc = document.createElement('canvas');
+        tc.width = Math.round(vp.width);
+        tc.height = Math.round(vp.height);
         var tCtx = tc.getContext('2d');
+
+        // Render base original PDF page cleanly at high DPI
+        await pdfJsPage.render({ canvasContext: tCtx, viewport: vp }).promise;
+
         var sc = exportScale / state.scale;
 
         // 1. Draw masks to cover original text for modified or deleted original blocks
@@ -5349,7 +5427,7 @@ function init() {
         blocks.forEach(function(b) {
           if (b.isDeleted) return;
           if (b.isOriginal && !b.isModified) return;
-          if (b.runs && b.runs.length > 0) {
+          if (b.runs && b.runs.length > 0 && b.runs.some(function(r) { return r.text && r.text.length > 0; })) {
             drawTextRunsToExportCanvas(tCtx, b, exportScale);
           } else if (b.text) {
             var expX = b.pdfX * exportScale;
@@ -5375,12 +5453,14 @@ function init() {
         });
 
         var imgBytes = await (await fetch(tc.toDataURL('image/png'))).arrayBuffer();
-        var emb = await pdfLibDoc.embedPng(imgBytes);
-        var sz = libPages[pi].getSize();
-        libPages[pi].drawImage(emb, { x: 0, y: 0, width: sz.width, height: sz.height });
+        var emb = await newDoc.embedPng(imgBytes);
+        var pageWidth = vp.width / exportScale;
+        var pageHeight = vp.height / exportScale;
+        var newPage = newDoc.addPage([pageWidth, pageHeight]);
+        newPage.drawImage(emb, { x: 0, y: 0, width: pageWidth, height: pageHeight });
       }
 
-      var bytes = await pdfLibDoc.save();
+      var bytes = await newDoc.save();
       var url = URL.createObjectURL(new Blob([bytes], { type: 'application/pdf' }));
       var a = document.createElement('a'); a.href = url;
       a.download = state.fileName.replace(/\.pdf$/i, '') + '-edited.pdf';
