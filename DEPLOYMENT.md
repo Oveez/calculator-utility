@@ -93,7 +93,7 @@ Fill in the deployment form:
 Under **Environment Variables (Advanced)**, click **Add variable**:
 - `SITE_URL`: `https://toolscastle.app` (or your temporary `*.pages.dev` URL).
 - `BASE_PATH`: `/`
-- `NODE_VERSION`: `20`
+- `NODE_VERSION`: `22.14.0` (or `22`, required by Astro v7)
 
 ### 2.4 Click "Save and Deploy"
 Cloudflare will build your project in ~40 seconds and give you a live URL like `https://calculator-xyz.pages.dev`.
