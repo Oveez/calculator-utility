@@ -1,0 +1,644 @@
+---
+import type { CountryTaxProfile } from '../../data/tax/types';
+import { calculateNlTax } from '../../utils/tax/nl-engine';
+import { formatCurrency, formatPercent } from '../../utils/tax/formatters';
+import TaxDisclaimer from './TaxDisclaimer.astro';
+import CalculatorParameterGuide from '../calculator/CalculatorParameterGuide.astro';
+import Icon from '../Icon.astro';
+import TaxYearSelector from './shared/TaxYearSelector.astro';
+import TaxAllocationBar from './shared/TaxAllocationBar.astro';
+import PaycheckFrequencyTable from './shared/PaycheckFrequencyTable.astro';
+import TaxBreakdownTable from './shared/TaxBreakdownTable.astro';
+import TaxBracketsTable from './shared/TaxBracketsTable.astro';
+import type { CalculatorParameterInfo } from '../../types/calculator';
+
+interface Props {
+  profile: CountryTaxProfile;
+  initialIncome?: number;
+}
+
+const { profile, initialIncome = 0 } = Astro.props;
+
+// Initial server-rendered baseline calculations for Netherlands
+const initialResult = calculateNlTax({
+  grossIncome: initialIncome,
+  taxYear: profile.defaultTaxYear,
+  has30PercentRuling: false,
+});
+
+const defaultYearData = profile.years[profile.defaultTaxYear];
+
+const taxParameterGuide: CalculatorParameterInfo[] = [
+  {
+    id: 'grossSalary',
+    name: 'Gross Annual Salary (Bruto Jaarsalaris)',
+    description: 'Total agreed annual earnings from employment before statutory wage tax (loonheffing), national insurance, or Zvw deductions.',
+    whyItMatters: 'Baseline salary evaluated by the Belastingdienst for Box 1 progressive brackets and statutory tax credits.',
+    typicalRange: 'Any positive earnings',
+    unit: 'EUR (€)',
+  },
+  {
+    id: 'ruling30',
+    name: '30% Facility (30%-regeling voor expats)',
+    description: 'A special tax exemption for qualifying incoming expatriates, allowing employers to grant up to 30% of salary tax-free (capped at the Balkenendenorm of ~€233,000).',
+    whyItMatters: 'Significantly reduces Box 1 taxable income and increases net take-home pay.',
+    typicalRange: '0% or 30% tax-free',
+    unit: '%',
+  },
+  {
+    id: 'box1',
+    name: 'Box 1 Progressive Income Tax Brackets',
+    description: 'Official 2026 progressive rate scale combining national income tax and volksverzekeringen (national insurance premiums: AOW, Anw, Wlz).',
+    whyItMatters: 'Applies to income from employment, home ownership, and periodic benefits.',
+    typicalRange: '35.75% to 49.50%',
+    unit: '%',
+  },
+  {
+    id: 'generalCredit',
+    name: 'General Tax Credit (Algemene heffingskorting)',
+    description: 'A non-refundable tax credit (maximum €3,362 in 2026) that phases out by 6.63% for taxable incomes exceeding €24,812.',
+    whyItMatters: 'Directly lowers the net Box 1 tax payable.',
+    typicalRange: '€0 to €3,362',
+    unit: 'EUR (€)',
+  },
+  {
+    id: 'labourCredit',
+    name: 'Labour Tax Credit (Arbeidskorting)',
+    description: 'An employment incentive credit (up to €5,529) that increases with salary up to ~€39,957 before gradually phasing out at a rate of 6.51%.',
+    whyItMatters: 'Ensures that working individuals retain a higher percentage of their earned wages.',
+    typicalRange: '€0 to €5,529',
+    unit: 'EUR (€)',
+  },
+  {
+    id: 'zvw',
+    name: 'Healthcare Insurance Act (Zvw Bijdrage)',
+    description: 'Statutory health insurance contribution of 5.45% on employment income up to the maximum contribution ceiling of €78,426.',
+    whyItMatters: 'Funds the universal Dutch basic statutory health insurance system.',
+    typicalRange: '5.45% (max €4,274)',
+    unit: '%',
+  },
+];
+---
+
+<div
+  class="relative overflow-hidden rounded-[2.5rem] border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-5 shadow-[var(--shadow)] sm:p-8 lg:p-10"
+  data-tax-app
+  data-country-id="nl"
+  data-profile-json={JSON.stringify(profile)}
+>
+  <!-- Top Bar: Country Info & Mode Switcher -->
+  <div class="flex flex-col gap-4 border-b border-[color:var(--border)] pb-6 sm:flex-row sm:items-center sm:justify-between">
+    <div class="flex items-center gap-3">
+      <span class="text-3xl sm:text-4xl select-none">{profile.flagEmoji}</span>
+      <div>
+        <div class="flex items-center gap-2 flex-wrap">
+          <h2 class="text-xl font-bold tracking-tight text-[color:var(--fg)] sm:text-2xl">
+            Netherlands Income Tax &amp; Salary Calculator (Bruto Netto)
+          </h2>
+          <span class="inline-flex items-center rounded-full bg-cyan-500/10 px-2.5 py-0.5 text-xs font-semibold text-cyan-600 dark:text-cyan-400 border border-cyan-500/20">
+            Official 2026 Belastingdienst Data
+          </span>
+        </div>
+        <p class="text-xs text-[color:var(--muted)]">
+          Source: <a href={defaultYearData.officialSourceUrl} target="_blank" rel="noopener noreferrer" class="font-medium text-[color:var(--accent)] hover:underline">{defaultYearData.officialSourceName}</a> • Verified {defaultYearData.lastVerifiedDate}
+        </p>
+      </div>
+    </div>
+
+    <!-- App Tabs & Tax Year -->
+    <div class="flex flex-wrap items-center gap-2">
+      <TaxYearSelector profile={profile} id="nl-tax-year-select" />
+
+      <!-- Engine View Toggle -->
+      <div class="flex items-center rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-1 text-xs font-semibold overflow-x-auto no-scrollbar max-w-full shrink-0">
+        <button
+          type="button"
+          class="shrink-0 min-w-max cursor-pointer rounded-xl px-3 py-1.5 text-xs font-bold transition inline-flex items-center gap-1.5 bg-[color:var(--accent)] text-white shadow-xs active"
+          data-engine-tab="advanced"
+        >
+          <Icon name="bolt" class="w-3.5 h-3.5" />
+          <span>Detailed Box 1 Mode</span>
+        </button>
+        <button
+          type="button"
+          class="shrink-0 min-w-max cursor-pointer rounded-xl px-3 py-1.5 text-xs font-semibold text-[color:var(--muted)] hover:text-[color:var(--fg)] transition inline-flex items-center gap-1.5"
+          data-engine-tab="quick"
+        >
+          <Icon name="calculator" class="w-3.5 h-3.5" />
+          <span>Quick Salary</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- HERO DYNAMIC TAKE-HOME BANNER -->
+  <div class="mt-6 rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 sm:p-6 shadow-sm">
+    <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+      <div>
+        <div class="flex items-center gap-2">
+          <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Net Salary (Netto Loon)</span>
+          <span
+            data-hero-badge
+            class="inline-flex items-center gap-1 rounded-full bg-cyan-500/10 px-2.5 py-0.5 text-xs font-bold text-cyan-600 dark:text-cyan-400 border border-cyan-500/20"
+          >
+            Estimated Take-Home
+          </span>
+        </div>
+        <p class="mt-1 text-3xl font-black tracking-tight sm:text-4xl lg:text-5xl text-[color:var(--fg)]" data-hero-amount>
+          {formatCurrency(initialResult.netIncomeAnnual, profile.defaultCurrency, profile.defaultCurrencySymbol)}
+        </p>
+        <p class="mt-1 text-xs text-[color:var(--muted)]" data-hero-subtext>
+          {formatCurrency(initialResult.netIncomeMonthly, profile.defaultCurrency, profile.defaultCurrencySymbol)}/month · {formatCurrency(initialResult.netIncomeWeekly, profile.defaultCurrency, profile.defaultCurrencySymbol)}/week
+        </p>
+      </div>
+
+      <div class="grid grid-cols-2 gap-3 sm:grid-cols-3 border-t border-[color:var(--border)]/60 pt-3 md:border-t-0 md:pt-0">
+        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] p-3">
+          <p class="text-[11px] font-medium text-[color:var(--muted)]">Net Box 1 Tax</p>
+          <p class="text-base font-extrabold text-blue-500" data-hero-incometax>
+            {formatCurrency(initialResult.netBox1Tax, profile.defaultCurrency, profile.defaultCurrencySymbol)}
+          </p>
+          <p class="text-[10px] text-[color:var(--muted)]">After Heffingskortingen</p>
+        </div>
+        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] p-3">
+          <p class="text-[11px] font-medium text-[color:var(--muted)]">Zvw Premie (5.45%)</p>
+          <p class="text-base font-extrabold text-amber-500" data-hero-social>
+            {formatCurrency(initialResult.zvwContribution, profile.defaultCurrency, profile.defaultCurrencySymbol)}
+          </p>
+          <p class="text-[10px] text-[color:var(--muted)]">Zorgverzekeringswet</p>
+        </div>
+        <div class="col-span-2 sm:col-span-1 rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] p-3 flex flex-col justify-between">
+          <p class="text-[11px] font-medium text-[color:var(--muted)]">Action</p>
+          <button
+            type="button"
+            data-copy-summary-btn
+            class="inline-flex items-center justify-center gap-1.5 rounded-xl bg-[color:var(--surface)] px-2.5 py-1.5 text-xs font-bold text-[color:var(--fg)] border border-[color:var(--border)] hover:border-[color:var(--accent)] hover:shadow-[0_0_12px_var(--accent-glow)] transition cursor-pointer"
+          >
+            <Icon name="copy" class="w-3.5 h-3.5" />
+            <span>Copy Dutch Tax Report</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Reusable Income Allocation Bar -->
+    <TaxAllocationBar />
+  </div>
+
+  <!-- CALCULATOR MAIN BODY -->
+  <div class="mt-8 grid gap-8 lg:grid-cols-[1.15fr_0.85fr]">
+    <!-- LEFT COLUMN: INPUT FORMS -->
+    <div class="space-y-6">
+
+      <!-- SECTION 1: Earnings & 30% Ruling -->
+      <div class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 sm:p-6 space-y-4 shadow-sm">
+        <h3 class="text-sm font-bold uppercase tracking-wider text-[color:var(--fg)] flex items-center gap-2">
+          <Icon name="user" class="w-4 h-4 text-[color:var(--accent)]" />
+          <span>1. Bruto Jaarsalaris &amp; 30% Facility</span>
+        </h3>
+
+        <div class="space-y-4">
+          <!-- Gross Salary -->
+          <div>
+            <div class="flex justify-between items-center text-xs">
+              <label for="nl-gross-salary" class="font-bold text-[color:var(--fg)]">
+                Annual Gross Salary / Bruto Salaris (€ EUR)
+              </label>
+              <span class="text-[color:var(--muted)] font-mono">Belastingdienst</span>
+            </div>
+            <div class="relative mt-1.5">
+              <span class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-sm font-bold text-[color:var(--muted)]">
+                €
+              </span>
+              <input
+                id="nl-gross-salary"
+                type="number"
+                min="0"
+                step="1000"
+                placeholder="e.g. 50,000"
+                class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] py-3 pl-8 pr-4 text-base font-black text-[color:var(--fg)] outline-none transition focus:border-[color:var(--accent)] focus:ring-2 focus:ring-[color:var(--accent)]/20"
+                data-nl-salary
+              />
+            </div>
+            <p class="mt-1 text-[11px] text-[color:var(--muted)]">
+              Agreed annual gross salary including vacation allowance (vakantiegeld 8%) and annual bonus.
+            </p>
+          </div>
+
+          <!-- 30% Ruling Toggle -->
+          <div class="pt-2 border-t border-[color:var(--border)]/60">
+            <label class="block text-xs font-bold text-[color:var(--fg)] mb-2">
+              Qualify for 30% Ruling (30%-regeling voor expats)?
+            </label>
+            <div class="grid grid-cols-2 gap-3">
+              <label class="flex items-center gap-2.5 p-3 rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] cursor-pointer hover:border-[color:var(--accent)] transition">
+                <input type="radio" name="nl-ruling" value="no" checked data-nl-ruling-radio class="text-[color:var(--accent)]" />
+                <span class="text-xs font-bold text-[color:var(--fg)]">No (Standard Tax)</span>
+              </label>
+              <label class="flex items-center gap-2.5 p-3 rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] cursor-pointer hover:border-[color:var(--accent)] transition">
+                <input type="radio" name="nl-ruling" value="yes" data-nl-ruling-radio class="text-[color:var(--accent)]" />
+                <span class="text-xs font-bold text-[color:var(--fg)]">Yes (30% Exemption)</span>
+              </label>
+            </div>
+            <p class="mt-1.5 text-[11px] text-[color:var(--muted)]">
+              The 30% facility grants an income-tax-free allowance of up to 30% of taxable salary for eligible highly skilled migrants.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- SECTION 2: Heffingskortingen (Advanced Only) -->
+      <div class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 sm:p-6 space-y-4 shadow-sm" data-advanced-section>
+        <div class="flex items-center justify-between">
+          <h3 class="text-sm font-bold uppercase tracking-wider text-[color:var(--fg)] flex items-center gap-2">
+            <Icon name="shield-check" class="w-4 h-4 text-emerald-500" />
+            <span>2. Heffingskortingen (Tax Credits)</span>
+          </h3>
+          <span class="text-[10px] font-bold text-emerald-600 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">
+            Kortingen
+          </span>
+        </div>
+
+        <div class="space-y-3">
+          <!-- Dynamic Tax Credits Cards -->
+          <div class="rounded-2xl border border-emerald-500/20 bg-emerald-500/5 p-4 space-y-2">
+            <div class="flex justify-between items-center text-xs">
+              <span class="font-bold text-emerald-800 dark:text-emerald-300">Algemene Heffingskorting (General Credit):</span>
+              <span class="font-extrabold text-emerald-800 dark:text-emerald-300" data-nl-gtc-amount>€3,362</span>
+            </div>
+            <p class="text-[11px] text-[color:var(--muted)]">
+              Maximum €3,362 in 2026, gradually phasing out above €24,812 at 6.63%.
+            </p>
+
+            <div class="flex justify-between items-center text-xs pt-2 border-t border-emerald-500/20">
+              <span class="font-bold text-emerald-800 dark:text-emerald-300">Arbeidskorting (Labour Tax Credit):</span>
+              <span class="font-extrabold text-emerald-800 dark:text-emerald-300" data-nl-ltc-amount>€0</span>
+            </div>
+            <p class="text-[11px] text-[color:var(--muted)]">
+              Incentive credit for working individuals (max €5,529) that automatically reduces payroll tax.
+            </p>
+          </div>
+
+          <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] p-3 text-xs space-y-1">
+            <p class="font-bold text-[color:var(--fg)]">Statutory Zvw Health Insurance (2026):</p>
+            <p class="text-[11px] text-[color:var(--muted)]">
+              Employee health levy of 5.45% up to the statutory maximum contribution base of €78,426 (max ~€4,274 per year).
+            </p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- RIGHT COLUMN: RESULTS, PAYCHECK SCHEDULE & AUDIT TRAIL -->
+    <div class="space-y-6">
+
+      <!-- PAYCHECK FREQUENCY TABLE (Shared Primitive) -->
+      <div class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 sm:p-6 shadow-sm">
+        <PaycheckFrequencyTable
+          currencySymbol={profile.defaultCurrencySymbol}
+          monthly={initialResult.netIncomeMonthly}
+          biweekly={initialResult.netIncomeBiweekly}
+          weekly={initialResult.netIncomeWeekly}
+          daily={initialResult.netIncomeDaily}
+          hourly={initialResult.netIncomeHourly}
+        />
+      </div>
+
+      <!-- AUDIT TRAIL / BREAKDOWN TABLE -->
+      <div class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 sm:p-6 shadow-sm space-y-4">
+        <div class="flex items-center justify-between border-b border-[color:var(--border)] pb-3">
+          <h3 class="text-sm font-bold uppercase tracking-wider text-[color:var(--fg)] flex items-center gap-2">
+            <Icon name="table" class="w-4 h-4 text-[color:var(--accent)]" />
+            <span>Belastingdienst Audit Trail</span>
+          </h3>
+          <span class="text-xs font-mono font-bold text-[color:var(--accent)]" data-effective-rate>
+            {formatPercent(initialResult.effectiveTaxRate, 1)}
+          </span>
+        </div>
+
+        <div class="space-y-2 text-xs">
+          <div class="flex justify-between py-1.5 border-b border-[color:var(--border)]/40 font-medium">
+            <span class="text-[color:var(--muted)]">Bruto Jaarsalaris (Gross Income)</span>
+            <span class="font-bold text-[color:var(--fg)]" data-res-gross>
+              {formatCurrency(initialResult.grossIncome, profile.defaultCurrency, profile.defaultCurrencySymbol)}
+            </span>
+          </div>
+
+          <div class="flex justify-between py-1.5 border-b border-[color:var(--border)]/40">
+            <span class="text-[color:var(--muted)]">Min: 30% Ruling Vergoeding</span>
+            <span class="font-bold text-purple-500" data-res-30ruling>
+              -€0
+            </span>
+          </div>
+
+          <div class="flex justify-between py-1.5 border-b border-[color:var(--border)]/40 font-bold bg-[color:var(--bg)] px-2 rounded-lg">
+            <span class="text-[color:var(--fg)]">Belastbaar Inkomen Box 1</span>
+            <span class="text-[color:var(--fg)]" data-res-taxable>
+              {formatCurrency(initialResult.taxableIncome, profile.defaultCurrency, profile.defaultCurrencySymbol)}
+            </span>
+          </div>
+
+          <div class="flex justify-between py-1.5 border-b border-[color:var(--border)]/40">
+            <span class="text-[color:var(--muted)]">Bruto Box 1 Belasting</span>
+            <span class="font-bold text-blue-500" data-res-box1-gross>
+              {formatCurrency(initialResult.box1Tax, profile.defaultCurrency, profile.defaultCurrencySymbol)}
+            </span>
+          </div>
+
+          <div class="flex justify-between py-1.5 border-b border-[color:var(--border)]/40">
+            <span class="text-[color:var(--muted)]">Min: Algemene Heffingskorting</span>
+            <span class="font-bold text-emerald-500" data-res-gtc>
+              -{formatCurrency(initialResult.generalTaxCredit, profile.defaultCurrency, profile.defaultCurrencySymbol)}
+            </span>
+          </div>
+
+          <div class="flex justify-between py-1.5 border-b border-[color:var(--border)]/40">
+            <span class="text-[color:var(--muted)]">Min: Arbeidskorting</span>
+            <span class="font-bold text-emerald-500" data-res-ltc>
+              -{formatCurrency(initialResult.labourTaxCredit, profile.defaultCurrency, profile.defaultCurrencySymbol)}
+            </span>
+          </div>
+
+          <div class="flex justify-between py-1.5 border-b border-[color:var(--border)]/40 font-bold">
+            <span class="text-[color:var(--fg)]">Netto Inkomstenbelasting Box 1</span>
+            <span class="text-blue-600 dark:text-blue-400" data-res-box1-net>
+              {formatCurrency(initialResult.netBox1Tax, profile.defaultCurrency, profile.defaultCurrencySymbol)}
+            </span>
+          </div>
+
+          <div class="flex justify-between py-1.5 border-b border-[color:var(--border)]/40">
+            <span class="text-[color:var(--muted)]">Zvw Premie (5.45%)</span>
+            <span class="font-bold text-amber-500" data-res-zvw>
+              {formatCurrency(initialResult.zvwContribution, profile.defaultCurrency, profile.defaultCurrencySymbol)}
+            </span>
+          </div>
+
+          <div class="flex justify-between py-2 border-t-2 border-[color:var(--border)] text-sm font-extrabold">
+            <span class="text-[color:var(--fg)]">Totaal Belastingen &amp; Premies</span>
+            <span class="text-red-500" data-res-total-tax>
+              {formatCurrency(initialResult.totalTax, profile.defaultCurrency, profile.defaultCurrencySymbol)}
+            </span>
+          </div>
+
+          <div class="flex justify-between py-2 rounded-xl bg-[color:var(--accent)]/10 px-3 text-sm font-black text-[color:var(--accent)]">
+            <span>Netto Loon (Take-Home Pay)</span>
+            <span data-res-net-takehome>
+              {formatCurrency(initialResult.netIncomeAnnual, profile.defaultCurrency, profile.defaultCurrencySymbol)}
+            </span>
+          </div>
+        </div>
+
+        <div class="pt-2 flex justify-between text-xs text-[color:var(--muted)] border-t border-[color:var(--border)]/40">
+          <span>Marginale Belastingdruk: <strong class="text-[color:var(--fg)]" data-marginal-rate>{formatPercent(initialResult.marginalTaxRate, 1)}</strong></span>
+          <span>Gemiddelde Druk: <strong class="text-[color:var(--fg)]" data-effective-tax-rate>{formatPercent(initialResult.effectiveTaxRate, 1)}</strong></span>
+        </div>
+      </div>
+
+      <!-- BOX 1 PROGRESSIVE BRACKETS TABLE (Shared Primitive) -->
+      <div class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 sm:p-6 shadow-sm">
+        <TaxBracketsTable
+          breakdown={initialResult.bracketBreakdown || []}
+          currencySymbol={profile.defaultCurrencySymbol}
+        />
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Parameter Explanations -->
+  <div class="mt-8 border-t border-[color:var(--border)] pt-8">
+    <CalculatorParameterGuide parameters={taxParameterGuide} />
+  </div>
+
+  <!-- Disclaimer Footer -->
+  <div class="mt-8">
+    <TaxDisclaimer />
+  </div>
+</div>
+
+<script>
+  import { calculateNlTax } from '../../utils/tax/nl-engine';
+
+  function setupNlTaxCalculator() {
+    const apps = document.querySelectorAll('[data-tax-app][data-country-id="nl"]');
+
+    apps.forEach((app) => {
+      try {
+        const profileJson = app.getAttribute('data-profile-json');
+        if (!profileJson) return;
+        const profile = JSON.parse(profileJson);
+
+        // Controls
+        const yearSelect = app.querySelector('[data-tax-year]') as HTMLSelectElement | null;
+        const engineTabs = Array.from(app.querySelectorAll('[data-engine-tab]')) as HTMLElement[];
+        const salaryInput = app.querySelector('[data-nl-salary]') as HTMLInputElement | null;
+        const rulingRadios = Array.from(app.querySelectorAll('[data-nl-ruling-radio]')) as HTMLInputElement[];
+        const gtcDisplay = app.querySelector('[data-nl-gtc-amount]');
+        const ltcDisplay = app.querySelector('[data-nl-ltc-amount]');
+
+        // Mode State
+        let currentMode: 'advanced' | 'quick' = 'advanced';
+
+        // Hero Outputs
+        const heroAmount = app.querySelector('[data-hero-amount]');
+        const heroSubtext = app.querySelector('[data-hero-subtext]');
+        const heroIncomeTax = app.querySelector('[data-hero-incometax]');
+        const heroSocial = app.querySelector('[data-hero-social]');
+        const marginalRateEl = app.querySelector('[data-marginal-rate]');
+        const effectiveRateEl = app.querySelector('[data-effective-rate]');
+        const effectiveTaxRateEl = app.querySelector('[data-effective-tax-rate]');
+
+        // Allocation Bar
+        const barTakehome = app.querySelector('[data-bar-takehome]') as HTMLElement | null;
+        const barFedtax = app.querySelector('[data-bar-fedtax]') as HTMLElement | null;
+        const barFica = app.querySelector('[data-bar-fica]') as HTMLElement | null;
+        const barPretax = app.querySelector('[data-bar-pretax]') as HTMLElement | null;
+        const allocationLabel = app.querySelector('[data-allocation-label]');
+
+        // Paycheck Schedule
+        const schedMonthly = app.querySelector('[data-sched-monthly]');
+        const schedSemiMonthly = app.querySelector('[data-sched-semimonthly]');
+        const schedBiweekly = app.querySelector('[data-sched-biweekly]');
+        const schedWeekly = app.querySelector('[data-sched-weekly]');
+        const schedDaily = app.querySelector('[data-sched-daily]');
+        const schedHourly = app.querySelector('[data-sched-hourly]');
+
+        // Audit Trail Elements
+        const resGross = app.querySelector('[data-res-gross]');
+        const res30Ruling = app.querySelector('[data-res-30ruling]');
+        const resTaxable = app.querySelector('[data-res-taxable]');
+        const resBox1Gross = app.querySelector('[data-res-box1-gross]');
+        const resGtc = app.querySelector('[data-res-gtc]');
+        const resLtc = app.querySelector('[data-res-ltc]');
+        const resBox1Net = app.querySelector('[data-res-box1-net]');
+        const resZvw = app.querySelector('[data-res-zvw]');
+        const resTotalTax = app.querySelector('[data-res-total-tax]');
+        const resNetTakeHome = app.querySelector('[data-res-net-takehome]');
+        const bracketTbody = app.querySelector('[data-bracket-tbody]');
+        const copySummaryBtn = app.querySelector('[data-copy-summary-btn]');
+
+        function fmt(n: number): string {
+          return '€' + Math.round(n).toLocaleString('nl-NL');
+        }
+
+        function calculate() {
+          const selectedYear = yearSelect ? yearSelect.value : profile.defaultTaxYear;
+          const yearData = profile.years[selectedYear] || profile.years[profile.defaultTaxYear];
+
+          const gross = Math.max(0, parseFloat(salaryInput?.value || '0') || 0);
+          const has30Ruling = rulingRadios.find(r => r.checked)?.value === 'yes' && currentMode === 'advanced';
+
+          const res = calculateNlTax({
+            grossIncome: gross,
+            taxYear: selectedYear,
+            has30PercentRuling: has30Ruling,
+          });
+
+          const allowance30 = res.taxFreeAllowance;
+          const taxable = res.taxableIncome;
+          const box1Gross = res.box1Tax;
+          const marginalRate = res.marginalTaxRate;
+          const zvwContribution = res.zvwContribution;
+          const gtc = res.generalTaxCredit;
+          const ltc = res.labourTaxCredit;
+          const box1Net = res.netBox1Tax;
+          const totalTax = res.totalTax;
+          const netTakeHome = res.netIncome;
+          const effectiveTaxRate = res.effectiveTaxRate;
+
+          if (gtcDisplay) gtcDisplay.textContent = fmt(gtc);
+          if (ltcDisplay) ltcDisplay.textContent = fmt(ltc);
+
+          // Update Hero
+          if (heroAmount) heroAmount.textContent = fmt(netTakeHome);
+          if (heroSubtext) heroSubtext.textContent = `${fmt(netTakeHome / 12)}/maand · ${fmt(netTakeHome / 52)}/week`;
+          if (heroIncomeTax) heroIncomeTax.textContent = fmt(box1Net);
+          if (heroSocial) heroSocial.textContent = fmt(zvwContribution);
+          if (effectiveRateEl) effectiveRateEl.textContent = `${effectiveTaxRate.toFixed(1)}%`;
+          if (effectiveTaxRateEl) effectiveTaxRateEl.textContent = `${effectiveTaxRate.toFixed(1)}%`;
+          if (marginalRateEl) marginalRateEl.textContent = `${marginalRate.toFixed(1)}%`;
+
+          // Paycheck Schedule
+          if (schedMonthly) schedMonthly.textContent = fmt(netTakeHome / 12);
+          if (schedSemiMonthly) schedSemiMonthly.textContent = fmt(netTakeHome / 24);
+          if (schedBiweekly) schedBiweekly.textContent = fmt(netTakeHome / 26);
+          if (schedWeekly) schedWeekly.textContent = fmt(netTakeHome / 52);
+          if (schedDaily) schedDaily.textContent = fmt(netTakeHome / 260);
+          if (schedHourly) schedHourly.textContent = fmt(netTakeHome / 2080);
+
+          // Audit Trail
+          if (resGross) resGross.textContent = fmt(gross);
+          if (res30Ruling) res30Ruling.textContent = allowance30 > 0 ? `-${fmt(allowance30)}` : '-€0';
+          if (resTaxable) resTaxable.textContent = fmt(taxable);
+          if (resBox1Gross) resBox1Gross.textContent = fmt(box1Gross);
+          if (resGtc) resGtc.textContent = `-${fmt(gtc)}`;
+          if (resLtc) resLtc.textContent = `-${fmt(ltc)}`;
+          if (resBox1Net) resBox1Net.textContent = fmt(box1Net);
+          if (resZvw) resZvw.textContent = fmt(zvwContribution);
+          if (resTotalTax) resTotalTax.textContent = fmt(totalTax);
+          if (resNetTakeHome) resNetTakeHome.textContent = fmt(netTakeHome);
+
+          // Allocation Bar
+          if (gross > 0) {
+            const pctTakehome = Math.max(0, (netTakeHome / gross) * 100);
+            const pctTax = Math.max(0, (box1Net / gross) * 100);
+            const pctZvw = Math.max(0, (zvwContribution / gross) * 100);
+            const pct30 = Math.max(0, (allowance30 / gross) * 100);
+
+            if (barTakehome) barTakehome.style.width = `${pctTakehome}%`;
+            if (barFedtax) barFedtax.style.width = `${pctTax}%`;
+            if (barFica) barFica.style.width = `${pctZvw}%`;
+            if (barPretax) barPretax.style.width = `${pct30}%`;
+
+            if (allocationLabel) {
+              allocationLabel.textContent = `Netto: ${pctTakehome.toFixed(1)}% · Box 1: ${pctTax.toFixed(1)}% · Zvw: ${pctZvw.toFixed(1)}%`;
+            }
+          }
+
+          // Bracket Table
+          if (bracketTbody) {
+            bracketTbody.innerHTML = res.bracketBreakdown
+              .map(
+                (row) => `
+                <tr class="border-b border-[color:var(--border)]/40 hover:bg-[color:var(--bg)]/50 transition">
+                  <td class="py-2 px-3 font-medium text-[color:var(--fg)]">${row.bracketRange}</td>
+                  <td class="py-2 px-3 text-right font-mono text-[color:var(--muted)]">${row.ratePercent}</td>
+                  <td class="py-2 px-3 text-right font-mono font-medium text-[color:var(--fg)]">${fmt(row.taxableInBracket)}</td>
+                  <td class="py-2 px-3 text-right font-mono font-bold text-blue-500">${fmt(row.taxAmount)}</td>
+                </tr>
+              `
+              )
+              .join('');
+          }
+        }
+
+        // Mode Switching
+        engineTabs.forEach((tab) => {
+          tab.addEventListener('click', () => {
+            const mode = tab.getAttribute('data-engine-tab') as 'advanced' | 'quick';
+            if (!mode) return;
+            currentMode = mode;
+
+            engineTabs.forEach((t) => {
+              if (t === tab) {
+                t.className = 'shrink-0 min-w-max cursor-pointer rounded-xl px-3 py-1.5 text-xs font-bold transition inline-flex items-center gap-1.5 bg-[color:var(--accent)] text-white shadow-xs active';
+              } else {
+                t.className = 'shrink-0 min-w-max cursor-pointer rounded-xl px-3 py-1.5 text-xs font-semibold text-[color:var(--muted)] hover:text-[color:var(--fg)] transition inline-flex items-center gap-1.5';
+              }
+            });
+
+            const advSections = app.querySelectorAll('[data-advanced-section]');
+            advSections.forEach((sec) => {
+              if (mode === 'quick') {
+                sec.classList.add('hidden');
+              } else {
+                sec.classList.remove('hidden');
+              }
+            });
+
+            calculate();
+          });
+        });
+
+        // Event Listeners
+        salaryInput?.addEventListener('input', calculate);
+        rulingRadios.forEach(r => r.addEventListener('change', calculate));
+        yearSelect?.addEventListener('change', calculate);
+
+        // Copy Report
+        copySummaryBtn?.addEventListener('click', () => {
+          const gross = salaryInput?.value || '0';
+          const net = heroAmount?.textContent || '€0';
+          const tax = heroIncomeTax?.textContent || '€0';
+          const soc = heroSocial?.textContent || '€0';
+          const eff = effectiveRateEl?.textContent || '0%';
+          const summary = `--- Netherlands Tax Calculation (Belastingdienst 2026 Bruto Netto) ---\nBruto Salaris: €${gross}\nNetto Loon: ${net}\nBox 1 Inkomstenbelasting: ${tax}\nZvw Premie: ${soc}\nEffectieve Druk: ${eff}\nCalculated via Toolscastle Tax Platform`;
+
+          navigator.clipboard.writeText(summary).then(() => {
+            const btnSpan = copySummaryBtn.querySelector('span');
+            if (btnSpan) {
+              const orig = btnSpan.textContent;
+              btnSpan.textContent = 'Gekopieerd naar klembord!';
+              setTimeout(() => {
+                btnSpan.textContent = orig;
+              }, 2000);
+            }
+          });
+        });
+
+        // Initialize
+        calculate();
+      } catch (err) {
+        console.error('Error initializing NL tax calculator:', err);
+      }
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', setupNlTaxCalculator);
+  } else {
+    setupNlTaxCalculator();
+  }
+</script>
+

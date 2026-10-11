@@ -1,0 +1,642 @@
+---
+import type { CountryTaxProfile } from '../../data/tax/types';
+import { calculateKrTax } from '../../utils/tax/kr-engine';
+import { formatCurrency, formatPercent } from '../../utils/tax/formatters';
+import TaxDisclaimer from './TaxDisclaimer.astro';
+import CalculatorParameterGuide from '../calculator/CalculatorParameterGuide.astro';
+import Icon from '../Icon.astro';
+import TaxYearSelector from './shared/TaxYearSelector.astro';
+import TaxAllocationBar from './shared/TaxAllocationBar.astro';
+import PaycheckFrequencyTable from './shared/PaycheckFrequencyTable.astro';
+import TaxBreakdownTable from './shared/TaxBreakdownTable.astro';
+import TaxBracketsTable from './shared/TaxBracketsTable.astro';
+import type { CalculatorParameterInfo } from '../../types/calculator';
+
+interface Props {
+  profile: CountryTaxProfile;
+  initialIncome?: number;
+}
+
+const { profile, initialIncome = 0 } = Astro.props;
+
+// Initial server-rendered baseline calculations for South Korea
+const initialResult = calculateKrTax({
+  grossIncome: initialIncome,
+  taxYear: (profile.defaultTaxYear as '2025' | '2026') || '2026',
+});
+
+const defaultYearData = profile.years[profile.defaultTaxYear];
+
+const taxParameterGuide: CalculatorParameterInfo[] = [
+  {
+    id: 'grossSalary',
+    name: 'Annual Gross Salary (연봉 / 총급여액)',
+    description: 'Contractual annual gross wage including base pay, overtime, and annual bonuses before statutory 4 Major Social Insurances and tax withholdings.',
+    whyItMatters: 'Baseline for NTS progressive taxation and social insurance contribution assessments.',
+    typicalRange: 'Any positive earnings',
+    unit: 'KRW (₩)',
+  },
+  {
+    id: 'basicDeduction',
+    name: 'Basic Personal Allowance (기본공제 ₩1,500,000)',
+    description: 'Standard statutory deduction of ₩1,500,000 per person (taxpayer, spouse, and eligible dependents) subtracted from gross earnings.',
+    whyItMatters: 'Reduces taxable income based directly on household family size.',
+    typicalRange: '₩1,500,000 to ₩6,000,000+',
+    unit: 'KRW (₩)',
+  },
+  {
+    id: 'fourInsurances',
+    name: '4 Major Social Insurances (4대 사회보험 ~9.72%)',
+    description: 'Mandatory employee statutory insurances: National Pension (4.75% capped at ₩76M), Health Insurance (3.595%), Long-term Care (0.472%), and Employment Insurance (0.90%).',
+    whyItMatters: 'Provides state healthcare, pension, and unemployment safety nets for salaried employees in Korea.',
+    typicalRange: '~9.72% employee share',
+    unit: '%',
+  },
+  {
+    id: 'nationalTax',
+    name: 'National Income Tax (종합소득세 6%–45%)',
+    description: 'Central progressive income tax evaluated across 8 tax brackets established by the National Tax Service (NTS).',
+    whyItMatters: 'The primary central government income tax on personal earnings.',
+    typicalRange: '6.0% to 45.0%',
+    unit: '%',
+  },
+  {
+    id: 'localTax',
+    name: 'Local Income Tax (지방소득세 10% Surtax)',
+    description: 'Municipal tax assessed automatically at exactly 10% of the calculated national income tax liability.',
+    whyItMatters: 'Funds local municipal city/provincial budgets.',
+    typicalRange: '10% of National Tax',
+    unit: '%',
+  },
+];
+---
+
+<div
+  class="relative overflow-hidden rounded-[2.5rem] border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-5 shadow-[var(--shadow)] sm:p-8 lg:p-10"
+  data-tax-app
+  data-country-id="kr"
+  data-profile-json={JSON.stringify(profile)}
+>
+  <!-- Top Bar: Country Info & Mode Switcher -->
+  <div class="flex flex-col gap-4 border-b border-[color:var(--border)] pb-6 sm:flex-row sm:items-center sm:justify-between">
+    <div class="flex items-center gap-3">
+      <span class="text-3xl sm:text-4xl select-none">{profile.flagEmoji}</span>
+      <div>
+        <div class="flex items-center gap-2 flex-wrap">
+          <h2 class="text-xl font-bold tracking-tight text-[color:var(--fg)] sm:text-2xl">
+            South Korea Income Tax &amp; Salary Calculator (실수령액 계산기)
+          </h2>
+          <span class="inline-flex items-center rounded-full bg-cyan-500/10 px-2.5 py-0.5 text-xs font-semibold text-cyan-600 dark:text-cyan-400 border border-cyan-500/20">
+            Official 2026 NTS (국세청) Data
+          </span>
+        </div>
+        <p class="text-xs text-[color:var(--muted)]">
+          Source: <a href={defaultYearData.officialSourceUrl} target="_blank" rel="noopener noreferrer" class="font-medium text-[color:var(--accent)] hover:underline">{defaultYearData.officialSourceName}</a> • Verified {defaultYearData.lastVerifiedDate}
+        </p>
+      </div>
+    </div>
+
+    <!-- App Tabs & Tax Year -->
+    <div class="flex flex-wrap items-center gap-2">
+      <TaxYearSelector profile={profile} id="kr-tax-year-select" />
+
+      <!-- Engine View Toggle -->
+      <div class="flex items-center rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-1 text-xs font-semibold overflow-x-auto no-scrollbar max-w-full shrink-0">
+        <button
+          type="button"
+          class="shrink-0 min-w-max cursor-pointer rounded-xl px-3 py-1.5 text-xs font-bold transition inline-flex items-center gap-1.5 bg-[color:var(--accent)] text-white shadow-xs active"
+          data-engine-tab="advanced"
+        >
+          <Icon name="bolt" class="w-3.5 h-3.5" />
+          <span>Detailed NTS Mode</span>
+        </button>
+        <button
+          type="button"
+          class="shrink-0 min-w-max cursor-pointer rounded-xl px-3 py-1.5 text-xs font-semibold text-[color:var(--muted)] hover:text-[color:var(--fg)] transition inline-flex items-center gap-1.5"
+          data-engine-tab="quick"
+        >
+          <Icon name="calculator" class="w-3.5 h-3.5" />
+          <span>Quick Salary</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- HERO DYNAMIC TAKE-HOME BANNER -->
+  <div class="mt-6 rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 sm:p-6 shadow-sm">
+    <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+      <div>
+        <div class="flex items-center gap-2">
+          <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Annual Net Take-Home (연간 실수령액)</span>
+          <span
+            data-hero-badge
+            class="inline-flex items-center gap-1 rounded-full bg-cyan-500/10 px-2.5 py-0.5 text-xs font-bold text-cyan-600 dark:text-cyan-400 border border-cyan-500/20"
+          >
+            Net Salary
+          </span>
+        </div>
+        <p class="mt-1 text-3xl font-black tracking-tight sm:text-4xl lg:text-5xl text-[color:var(--fg)]" data-hero-amount>
+          {formatCurrency(initialResult.netAnnualTakeHome, profile.defaultCurrency, profile.defaultCurrencySymbol)}
+        </p>
+        <p class="mt-1 text-xs text-[color:var(--muted)]" data-hero-subtext>
+          {formatCurrency(initialResult.netMonthlyTakeHome, profile.defaultCurrency, profile.defaultCurrencySymbol)}/month · {formatCurrency(initialResult.netWeeklyTakeHome, profile.defaultCurrency, profile.defaultCurrencySymbol)}/week
+        </p>
+      </div>
+
+      <div class="grid grid-cols-2 gap-3 sm:grid-cols-3 border-t border-[color:var(--border)]/60 pt-3 md:border-t-0 md:pt-0">
+        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] p-3">
+          <p class="text-[11px] font-medium text-[color:var(--muted)]">Income Tax (소득세 + 지방세)</p>
+          <p class="text-base font-extrabold text-blue-500" data-hero-incometax>
+            {formatCurrency(initialResult.netFederalIncomeTax + initialResult.stateIncomeTax, profile.defaultCurrency, profile.defaultCurrencySymbol)}
+          </p>
+          <p class="text-[10px] text-[color:var(--muted)]">National + 10% Local</p>
+        </div>
+        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] p-3">
+          <p class="text-[11px] font-medium text-[color:var(--muted)]">4 Major Insurances (4대보험)</p>
+          <p class="text-base font-extrabold text-amber-500" data-hero-social>
+            {formatCurrency(initialResult.totalFicaTax, profile.defaultCurrency, profile.defaultCurrencySymbol)}
+          </p>
+          <p class="text-[10px] text-[color:var(--muted)]">Pension, Health, Employment</p>
+        </div>
+        <div class="col-span-2 sm:col-span-1 rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] p-3 flex flex-col justify-between">
+          <p class="text-[11px] font-medium text-[color:var(--muted)]">Action</p>
+          <button
+            type="button"
+            data-copy-summary-btn
+            class="inline-flex items-center justify-center gap-1.5 rounded-xl bg-[color:var(--surface)] px-2.5 py-1.5 text-xs font-bold text-[color:var(--fg)] border border-[color:var(--border)] hover:border-[color:var(--accent)] hover:shadow-[0_0_12px_var(--accent-glow)] transition cursor-pointer"
+          >
+            <Icon name="copy" class="w-3.5 h-3.5" />
+            <span>Copy Tax Report</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Reusable Income Allocation Bar -->
+    <TaxAllocationBar />
+  </div>
+
+  <!-- CALCULATOR MAIN BODY -->
+  <div class="mt-8 grid gap-8 lg:grid-cols-[1.15fr_0.85fr]">
+    <!-- LEFT COLUMN: INPUT FORMS -->
+    <div class="space-y-6">
+
+      <!-- SECTION 1: Gross Salary & Dependents -->
+      <div class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 sm:p-6 space-y-4 shadow-sm">
+        <h3 class="text-sm font-bold uppercase tracking-wider text-[color:var(--fg)] flex items-center gap-2">
+          <Icon name="user" class="w-4 h-4 text-[color:var(--accent)]" />
+          <span>1. Gross Salary &amp; Dependents</span>
+        </h3>
+
+        <div class="space-y-4">
+          <!-- Gross Salary -->
+          <div>
+            <div class="flex justify-between items-center text-xs">
+              <label for="kr-gross-salary" class="font-bold text-[color:var(--fg)]">
+                Annual Gross Salary (연봉) (₩ KRW)
+              </label>
+              <span class="text-[color:var(--muted)] font-mono">Contractual Base + Bonuses</span>
+            </div>
+            <div class="relative mt-1.5">
+              <span class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-sm font-bold text-[color:var(--muted)]">
+                ₩
+              </span>
+              <input
+                id="kr-gross-salary"
+                type="number"
+                min="0"
+                step="1000000"
+                placeholder="e.g. 50,000,000"
+                class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] py-3 pl-8 pr-4 text-base font-black text-[color:var(--fg)] outline-none transition focus:border-[color:var(--accent)] focus:ring-2 focus:ring-[color:var(--accent)]/20"
+                data-kr-salary
+              />
+            </div>
+            <p class="mt-1 text-[11px] text-[color:var(--muted)]">
+              Total annual pre-tax earnings before deduction of 4 major insurances and income tax.
+            </p>
+          </div>
+
+          <!-- Dependents & Marital Status -->
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label for="kr-spouse-status" class="block text-xs font-bold text-[color:var(--fg)]">
+                Spouse Status (배우자)
+              </label>
+              <select
+                id="kr-spouse-status"
+                data-kr-spouse
+                class="mt-1.5 w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] py-2.5 px-3 text-xs font-semibold text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)] cursor-pointer"
+              >
+                <option value="none" selected>No Spouse (Single)</option>
+                <option value="dependent">Dependent Spouse (+₩1.5M)</option>
+              </select>
+            </div>
+
+            <div>
+              <label for="kr-dependents-count" class="block text-xs font-bold text-[color:var(--fg)]">
+                Children / Dependents (부양가족)
+              </label>
+              <select
+                id="kr-dependents-count"
+                data-kr-dependents
+                class="mt-1.5 w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] py-2.5 px-3 text-xs font-semibold text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)] cursor-pointer"
+              >
+                <option value="0" selected>0 Dependents</option>
+                <option value="1">1 Dependent (+₩1.5M)</option>
+                <option value="2">2 Dependents (+₩3.0M)</option>
+                <option value="3">3 Dependents (+₩4.5M)</option>
+                <option value="4">4 Dependents (+₩6.0M)</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Basic Deduction Display -->
+          <div class="rounded-2xl border border-blue-500/20 bg-blue-500/5 p-3 flex justify-between items-center text-xs">
+            <span class="text-[color:var(--muted)]">Total Basic Personal Allowance (기본공제) :</span>
+            <span class="font-extrabold text-blue-600 dark:text-blue-400" data-kr-allowance-display>₩1,500,000</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- SECTION 2: Advanced Deductions & Insurances -->
+      <div class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 sm:p-6 space-y-4 shadow-sm" data-advanced-section>
+        <div class="flex items-center justify-between">
+          <h3 class="text-sm font-bold uppercase tracking-wider text-[color:var(--fg)] flex items-center gap-2">
+            <Icon name="briefcase" class="w-4 h-4 text-emerald-500" />
+            <span>2. Optional Deductions &amp; Credits</span>
+          </h3>
+          <span class="text-[10px] font-bold text-emerald-600 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">
+            Year-End Settlement
+          </span>
+        </div>
+
+        <div class="space-y-4">
+          <div>
+            <div class="flex justify-between items-center text-xs">
+              <label for="kr-extra-deductions" class="font-bold text-[color:var(--fg)]">
+                Additional Deductions (Credit Card, Pension Savings) (₩ KRW)
+              </label>
+              <span class="text-[color:var(--muted)]">Optional</span>
+            </div>
+            <div class="relative mt-1.5">
+              <span class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-sm font-bold text-[color:var(--muted)]">
+                ₩
+              </span>
+              <input
+                id="kr-extra-deductions"
+                type="number"
+                min="0"
+                step="500000"
+                placeholder="0"
+                class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] py-2.5 pl-8 pr-4 text-sm font-bold text-[color:var(--fg)] outline-none transition focus:border-[color:var(--accent)]"
+                data-kr-extra-deductions
+              />
+            </div>
+            <p class="mt-1 text-[11px] text-[color:var(--muted)]">
+              Deductions claimed during the annual Year-End Tax Settlement (연말정산).
+            </p>
+          </div>
+
+          <!-- Social Security Breakdown Details -->
+          <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] p-3 text-xs space-y-1">
+            <p class="font-bold text-[color:var(--fg)]">4 Major Insurances Employee Rates (2026) :</p>
+            <div class="grid grid-cols-2 gap-2 text-[11px] text-[color:var(--muted)]">
+              <div>National Pension (국민연금): <strong class="text-[color:var(--fg)]">4.75%</strong> (cap ₩76M)</div>
+              <div>Health Care (건강보험): <strong class="text-[color:var(--fg)]">3.595%</strong></div>
+              <div>Long-Term Care (장기요양): <strong class="text-[color:var(--fg)]">0.472%</strong></div>
+              <div>Employment (고용보험): <strong class="text-[color:var(--fg)]">0.90%</strong></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- RIGHT COLUMN: RESULTS, PAYCHECK SCHEDULE & AUDIT TRAIL -->
+    <div class="space-y-6">
+
+      <!-- PAYCHECK FREQUENCY TABLE (Shared Primitive) -->
+      <div class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 sm:p-6 shadow-sm">
+        <PaycheckFrequencyTable
+          currencySymbol={profile.defaultCurrencySymbol}
+          monthly={initialResult.netMonthlyTakeHome}
+          biweekly={initialResult.netBiweeklyTakeHome}
+          weekly={initialResult.netWeeklyTakeHome}
+          daily={initialResult.netAnnualTakeHome / 260}
+          hourly={initialResult.netHourlyTakeHome}
+        />
+      </div>
+
+      <!-- AUDIT TRAIL / BREAKDOWN TABLE -->
+      <div class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 sm:p-6 shadow-sm space-y-4">
+        <div class="flex items-center justify-between border-b border-[color:var(--border)] pb-3">
+          <h3 class="text-sm font-bold uppercase tracking-wider text-[color:var(--fg)] flex items-center gap-2">
+            <Icon name="table" class="w-4 h-4 text-[color:var(--accent)]" />
+            <span>NTS Tax &amp; Insurance Audit Trail</span>
+          </h3>
+          <span class="text-xs font-mono font-bold text-[color:var(--accent)]" data-effective-rate>
+            {formatPercent(initialResult.effectiveTotalTaxRate, 1)}
+          </span>
+        </div>
+
+        <div class="space-y-2 text-xs">
+          <div class="flex justify-between py-1.5 border-b border-[color:var(--border)]/40 font-medium">
+            <span class="text-[color:var(--muted)]">Annual Gross Salary (연봉)</span>
+            <span class="font-bold text-[color:var(--fg)]" data-res-gross>
+              {formatCurrency(initialResult.totalGrossIncome, profile.defaultCurrency, profile.defaultCurrencySymbol)}
+            </span>
+          </div>
+
+          <div class="flex justify-between py-1.5 border-b border-[color:var(--border)]/40">
+            <span class="text-[color:var(--muted)]">Basic Personal Allowance (기본공제)</span>
+            <span class="font-bold text-emerald-500" data-res-allowance>
+              -{formatCurrency(initialResult.standardDeductionAmount, profile.defaultCurrency, profile.defaultCurrencySymbol)}
+            </span>
+          </div>
+
+          <div class="flex justify-between py-1.5 border-b border-[color:var(--border)]/40 font-bold bg-[color:var(--bg)] px-2 rounded-lg">
+            <span class="text-[color:var(--fg)]">Taxable Income (과세표준)</span>
+            <span class="text-[color:var(--fg)]" data-res-taxable>
+              {formatCurrency(initialResult.taxableIncome, profile.defaultCurrency, profile.defaultCurrencySymbol)}
+            </span>
+          </div>
+
+          <div class="flex justify-between py-1.5 border-b border-[color:var(--border)]/40">
+            <span class="text-[color:var(--muted)]">National Income Tax (소득세)</span>
+            <span class="font-bold text-blue-500" data-res-nationaltax>
+              {formatCurrency(initialResult.netFederalIncomeTax, profile.defaultCurrency, profile.defaultCurrencySymbol)}
+            </span>
+          </div>
+
+          <div class="flex justify-between py-1.5 border-b border-[color:var(--border)]/40">
+            <span class="text-[color:var(--muted)]">Local Income Tax (지방소득세 10%)</span>
+            <span class="font-bold text-indigo-500" data-res-localtax>
+              {formatCurrency(initialResult.stateIncomeTax, profile.defaultCurrency, profile.defaultCurrencySymbol)}
+            </span>
+          </div>
+
+          <div class="flex justify-between py-1.5 border-b border-[color:var(--border)]/40">
+            <span class="text-[color:var(--muted)]">4 Major Insurances (4대보험)</span>
+            <span class="font-bold text-amber-500" data-res-social>
+              {formatCurrency(initialResult.totalFicaTax, profile.defaultCurrency, profile.defaultCurrencySymbol)}
+            </span>
+          </div>
+
+          <div class="flex justify-between py-2 border-t-2 border-[color:var(--border)] text-sm font-extrabold">
+            <span class="text-[color:var(--fg)]">Total Taxes &amp; Insurances</span>
+            <span class="text-red-500" data-res-total-taxes>
+              {formatCurrency(initialResult.totalAllTaxes, profile.defaultCurrency, profile.defaultCurrencySymbol)}
+            </span>
+          </div>
+
+          <div class="flex justify-between py-2 rounded-xl bg-[color:var(--accent)]/10 px-3 text-sm font-black text-[color:var(--accent)]">
+            <span>Net Annual Take-Home (연간 실수령액)</span>
+            <span data-res-net-takehome>
+              {formatCurrency(initialResult.netAnnualTakeHome, profile.defaultCurrency, profile.defaultCurrencySymbol)}
+            </span>
+          </div>
+        </div>
+
+        <div class="pt-2 flex justify-between text-xs text-[color:var(--muted)] border-t border-[color:var(--border)]/40">
+          <span>Marginal Rate: <strong class="text-[color:var(--fg)]" data-marginal-rate>{formatPercent(initialResult.marginalFederalRate, 1)}</strong></span>
+          <span>Effective Rate: <strong class="text-[color:var(--fg)]" data-effective-tax-rate>{formatPercent(initialResult.effectiveTotalTaxRate, 1)}</strong></span>
+        </div>
+      </div>
+
+      <!-- BRACKETS TABLE (Shared Primitive) -->
+      <div class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 sm:p-6 shadow-sm">
+        <TaxBracketsTable
+          breakdown={[]}
+          currencySymbol={profile.defaultCurrencySymbol}
+        />
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Parameter Explanations -->
+  <div class="mt-8 border-t border-[color:var(--border)] pt-8">
+    <CalculatorParameterGuide parameters={taxParameterGuide} />
+  </div>
+
+  <!-- Disclaimer Footer -->
+  <div class="mt-8">
+    <TaxDisclaimer />
+  </div>
+</div>
+
+<script>
+  import { calculateKrTax } from '../../utils/tax/kr-engine';
+
+  function setupKrTaxCalculator() {
+    const apps = document.querySelectorAll('[data-tax-app][data-country-id="kr"]');
+
+    apps.forEach((app) => {
+      try {
+        const profileJson = app.getAttribute('data-profile-json');
+        if (!profileJson) return;
+        const profile = JSON.parse(profileJson);
+
+        // Controls
+        const yearSelect = app.querySelector('[data-tax-year]') as HTMLSelectElement | null;
+        const engineTabs = Array.from(app.querySelectorAll('[data-engine-tab]')) as HTMLElement[];
+        const salaryInput = app.querySelector('[data-kr-salary]') as HTMLInputElement | null;
+        const spouseSelect = app.querySelector('[data-kr-spouse]') as HTMLSelectElement | null;
+        const dependentsSelect = app.querySelector('[data-kr-dependents]') as HTMLSelectElement | null;
+        const extraDeductionsInput = app.querySelector('[data-kr-extra-deductions]') as HTMLInputElement | null;
+        const allowanceDisplay = app.querySelector('[data-kr-allowance-display]');
+
+        // Mode State
+        let currentMode: 'advanced' | 'quick' = 'advanced';
+
+        // Hero Outputs
+        const heroAmount = app.querySelector('[data-hero-amount]');
+        const heroSubtext = app.querySelector('[data-hero-subtext]');
+        const heroIncomeTax = app.querySelector('[data-hero-incometax]');
+        const heroSocial = app.querySelector('[data-hero-social]');
+        const marginalRateEl = app.querySelector('[data-marginal-rate]');
+        const effectiveRateEl = app.querySelector('[data-effective-rate]');
+        const effectiveTaxRateEl = app.querySelector('[data-effective-tax-rate]');
+
+        // Allocation Bar
+        const barTakehome = app.querySelector('[data-bar-takehome]') as HTMLElement | null;
+        const barFedtax = app.querySelector('[data-bar-fedtax]') as HTMLElement | null;
+        const barFica = app.querySelector('[data-bar-fica]') as HTMLElement | null;
+        const barPretax = app.querySelector('[data-bar-pretax]') as HTMLElement | null;
+        const allocationLabel = app.querySelector('[data-allocation-label]');
+
+        // Paycheck Schedule
+        const schedMonthly = app.querySelector('[data-sched-monthly]');
+        const schedSemiMonthly = app.querySelector('[data-sched-semimonthly]');
+        const schedBiweekly = app.querySelector('[data-sched-biweekly]');
+        const schedWeekly = app.querySelector('[data-sched-weekly]');
+        const schedDaily = app.querySelector('[data-sched-daily]');
+        const schedHourly = app.querySelector('[data-sched-hourly]');
+
+        // Audit Trail Elements
+        const resGross = app.querySelector('[data-res-gross]');
+        const resAllowance = app.querySelector('[data-res-allowance]');
+        const resTaxable = app.querySelector('[data-res-taxable]');
+        const resNationalTax = app.querySelector('[data-res-nationaltax]');
+        const resLocalTax = app.querySelector('[data-res-localtax]');
+        const resSocial = app.querySelector('[data-res-social]');
+        const resTotalTaxes = app.querySelector('[data-res-total-taxes]');
+        const resNetTakeHome = app.querySelector('[data-res-net-takehome]');
+        const bracketTbody = app.querySelector('[data-bracket-tbody]');
+        const copySummaryBtn = app.querySelector('[data-copy-summary-btn]');
+
+        function fmt(n: number): string {
+          return '₩' + Math.round(n).toLocaleString('ko-KR');
+        }
+
+        function calculate() {
+          const selectedYear = (yearSelect ? yearSelect.value : profile.defaultTaxYear) as '2025' | '2026';
+          const gross = Math.max(0, parseFloat(salaryInput?.value || '0') || 0);
+          const hasDependentSpouse = spouseSelect ? spouseSelect.value === 'dependent' : false;
+          const deps = dependentsSelect ? parseInt(dependentsSelect.value || '0', 10) : 0;
+          const customDeductions = currentMode === 'advanced' ? Math.max(0, parseFloat(extraDeductionsInput?.value || '0') || 0) : 0;
+
+          const res = calculateKrTax({
+            grossIncome: gross,
+            taxYear: selectedYear,
+            dependentsCount: deps,
+            hasDependentSpouse,
+            customDeductions,
+          });
+
+          if (allowanceDisplay) {
+            allowanceDisplay.textContent = fmt(res.standardDeduction);
+          }
+
+          // Update Hero
+          if (heroAmount) heroAmount.textContent = fmt(res.netIncomeAnnual);
+          if (heroSubtext) heroSubtext.textContent = `${fmt(res.netIncomeMonthly)}/month · ${fmt(res.netIncomeWeekly)}/week`;
+          if (heroIncomeTax) heroIncomeTax.textContent = fmt(res.totalIncomeTax);
+          if (heroSocial) heroSocial.textContent = fmt(res.totalSocialContributions);
+          if (effectiveRateEl) effectiveRateEl.textContent = `${res.effectiveTotalDeductionRate.toFixed(1)}%`;
+          if (effectiveTaxRateEl) effectiveTaxRateEl.textContent = `${res.effectiveTotalDeductionRate.toFixed(1)}%`;
+          if (marginalRateEl) marginalRateEl.textContent = `${res.marginalTaxRate.toFixed(1)}%`;
+
+          // Paycheck Schedule
+          if (schedMonthly) schedMonthly.textContent = fmt(res.netIncomeMonthly);
+          if (schedSemiMonthly) schedSemiMonthly.textContent = fmt(res.netIncomeMonthly / 2);
+          if (schedBiweekly) schedBiweekly.textContent = fmt(res.netIncomeBiweekly);
+          if (schedWeekly) schedWeekly.textContent = fmt(res.netIncomeWeekly);
+          if (schedDaily) schedDaily.textContent = fmt(res.netIncomeDaily);
+          if (schedHourly) schedHourly.textContent = fmt(res.netIncomeHourly);
+
+          // Audit Trail
+          if (resGross) resGross.textContent = fmt(gross);
+          if (resAllowance) resAllowance.textContent = `-${fmt(res.standardDeduction)}`;
+          if (resTaxable) resTaxable.textContent = fmt(res.taxableIncome);
+          if (resNationalTax) resNationalTax.textContent = fmt(res.nationalIncomeTax);
+          if (resLocalTax) resLocalTax.textContent = fmt(res.localIncomeTax);
+          if (resSocial) resSocial.textContent = fmt(res.totalSocialContributions);
+          if (resTotalTaxes) resTotalTaxes.textContent = fmt(res.totalTaxAndDeductions);
+          if (resNetTakeHome) resNetTakeHome.textContent = fmt(res.netIncomeAnnual);
+
+          // Allocation Bar
+          if (gross > 0) {
+            const pctTakehome = Math.max(0, (res.netIncomeAnnual / gross) * 100);
+            const pctIncomeTax = Math.max(0, (res.totalIncomeTax / gross) * 100);
+            const pctSocial = Math.max(0, (res.totalSocialContributions / gross) * 100);
+            const pctDeduction = Math.max(0, (res.standardDeduction / gross) * 100);
+
+            if (barTakehome) barTakehome.style.width = `${pctTakehome}%`;
+            if (barFedtax) barFedtax.style.width = `${pctIncomeTax}%`;
+            if (barFica) barFica.style.width = `${pctSocial}%`;
+            if (barPretax) barPretax.style.width = `${pctDeduction}%`;
+
+            if (allocationLabel) {
+              allocationLabel.textContent = `Take-Home: ${pctTakehome.toFixed(1)}% · Taxes: ${pctIncomeTax.toFixed(1)}% · 4 Insurances: ${pctSocial.toFixed(1)}%`;
+            }
+          }
+
+          // Bracket Table
+          if (bracketTbody) {
+            bracketTbody.innerHTML = res.bracketBreakdown
+              .map(
+                (row) => `
+                <tr class="border-b border-[color:var(--border)]/40 hover:bg-[color:var(--bg)]/50 transition">
+                  <td class="py-2 px-3 font-medium text-[color:var(--fg)]">${row.bracketRange}</td>
+                  <td class="py-2 px-3 text-right font-mono text-[color:var(--muted)]">${row.ratePercent}</td>
+                  <td class="py-2 px-3 text-right font-mono font-medium text-[color:var(--fg)]">${fmt(row.taxableInBracket)}</td>
+                  <td class="py-2 px-3 text-right font-mono font-bold text-blue-500">${fmt(row.taxAmount)}</td>
+                </tr>
+              `
+              )
+              .join('');
+          }
+        }
+
+        // Mode Switching
+        engineTabs.forEach((tab) => {
+          tab.addEventListener('click', () => {
+            const mode = tab.getAttribute('data-engine-tab') as 'advanced' | 'quick';
+            if (!mode) return;
+            currentMode = mode;
+
+            engineTabs.forEach((t) => {
+              if (t === tab) {
+                t.className = 'shrink-0 min-w-max cursor-pointer rounded-xl px-3 py-1.5 text-xs font-bold transition inline-flex items-center gap-1.5 bg-[color:var(--accent)] text-white shadow-xs active';
+              } else {
+                t.className = 'shrink-0 min-w-max cursor-pointer rounded-xl px-3 py-1.5 text-xs font-semibold text-[color:var(--muted)] hover:text-[color:var(--fg)] transition inline-flex items-center gap-1.5';
+              }
+            });
+
+            const advSections = app.querySelectorAll('[data-advanced-section]');
+            advSections.forEach((sec) => {
+              if (mode === 'quick') {
+                sec.classList.add('hidden');
+              } else {
+                sec.classList.remove('hidden');
+              }
+            });
+
+            calculate();
+          });
+        });
+
+        // Event Listeners
+        salaryInput?.addEventListener('input', calculate);
+        spouseSelect?.addEventListener('change', calculate);
+        dependentsSelect?.addEventListener('change', calculate);
+        extraDeductionsInput?.addEventListener('input', calculate);
+        yearSelect?.addEventListener('change', calculate);
+
+        // Copy Report
+        copySummaryBtn?.addEventListener('click', () => {
+          const gross = salaryInput?.value || '0';
+          const net = heroAmount?.textContent || '₩0';
+          const tax = heroIncomeTax?.textContent || '₩0';
+          const soc = heroSocial?.textContent || '₩0';
+          const eff = effectiveRateEl?.textContent || '0%';
+          const summary = `--- South Korea Income Tax Summary (2026 NTS 실수령액) ---\nGross Salary: ₩${gross}\nNet Take-Home: ${net}\nIncome Tax (소득세 + 지방세): ${tax}\n4 Major Insurances (4대보험): ${soc}\nEffective Rate: ${eff}\nCalculated via Toolscastle Tax Platform`;
+
+          navigator.clipboard.writeText(summary).then(() => {
+            const btnSpan = copySummaryBtn.querySelector('span');
+            if (btnSpan) {
+              const orig = btnSpan.textContent;
+              btnSpan.textContent = 'Copied to clipboard!';
+              setTimeout(() => {
+                btnSpan.textContent = orig;
+              }, 2000);
+            }
+          });
+        });
+
+        // Initialize
+        calculate();
+      } catch (err) {
+        console.error('Error initializing South Korea tax calculator:', err);
+      }
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', setupKrTaxCalculator);
+  } else {
+    setupKrTaxCalculator();
+  }
+</script>
+

@@ -1,6 +1,11 @@
 import type { CountryTaxProfile } from '../types';
 
 export const caProfile: CountryTaxProfile = {
+  sourceMetadata: {
+    officialDocs: 'https://www.canada.ca/en/revenue-agency.html',
+    updateNotes: 'Updated for 2026 tax year',
+    verifiedBy: 'Antigravity'
+  },
   id: 'ca',
   name: 'Canada',
   countryCode: 'CA',
@@ -75,8 +80,30 @@ export const caProfile: CountryTaxProfile = {
         },
       ],
       regions: [
-        { code: 'on', name: 'Ontario (5.05% – 13.16%)', additionalTaxRate: 0.08 },
-        { code: 'bc', name: 'British Columbia (5.06% – 20.5%)', additionalTaxRate: 0.077 },
+        { 
+          code: 'on', 
+          name: 'Ontario (5.05% – 13.16%)', 
+          brackets: [
+            { threshold: 0, upTo: 53891, rate: 0.0505 },
+            { threshold: 53891, upTo: 107785, rate: 0.0915 },
+            { threshold: 107785, upTo: 150000, rate: 0.1116 },
+            { threshold: 150000, upTo: 220000, rate: 0.1216 },
+            { threshold: 220000, rate: 0.1316 }
+          ]
+        },
+        { 
+          code: 'bc', 
+          name: 'British Columbia (5.6% – 20.5%)', 
+          brackets: [
+            { threshold: 0, upTo: 50363, rate: 0.0560 },
+            { threshold: 50363, upTo: 100728, rate: 0.0770 },
+            { threshold: 100728, upTo: 115648, rate: 0.1050 },
+            { threshold: 115648, upTo: 140430, rate: 0.1229 },
+            { threshold: 140430, upTo: 190405, rate: 0.1470 },
+            { threshold: 190405, upTo: 265545, rate: 0.1680 },
+            { threshold: 265545, rate: 0.2050 }
+          ]
+        },
         { code: 'ab', name: 'Alberta (10% flat)', additionalTaxRate: 0.10 },
         { code: 'qc', name: 'Quebec (14% – 25.75%)', additionalTaxRate: 0.15 },
         { code: 'sk', name: 'Saskatchewan (10.5% – 14.5%)', additionalTaxRate: 0.105 },
@@ -134,7 +161,17 @@ export const caProfile: CountryTaxProfile = {
         },
       ],
       regions: [
-        { code: 'on', name: 'Ontario (5.05% – 13.16%)', additionalTaxRate: 0.08 },
+        { 
+          code: 'on', 
+          name: 'Ontario (5.05% – 13.16%)', 
+          brackets: [
+            { threshold: 0, upTo: 53891, rate: 0.0505 },
+            { threshold: 53891, upTo: 107785, rate: 0.0915 },
+            { threshold: 107785, upTo: 150000, rate: 0.1116 },
+            { threshold: 150000, upTo: 220000, rate: 0.1216 },
+            { threshold: 220000, rate: 0.1316 }
+          ]
+        },
         { code: 'bc', name: 'British Columbia (5.06% – 20.5%)', additionalTaxRate: 0.077 },
         { code: 'ab', name: 'Alberta (10% flat)', additionalTaxRate: 0.10 },
         { code: 'qc', name: 'Quebec (14% – 25.75%)', additionalTaxRate: 0.15 },

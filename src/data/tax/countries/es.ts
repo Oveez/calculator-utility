@@ -19,7 +19,7 @@ export const esProfile: CountryTaxProfile = {
     },
     {
       question: 'What is the Spanish Mínimo Personal in 2026?',
-      answer: 'The general personal and family minimum (Mínimo personal y familiar) is €5,550 for individual taxpayers under 65, which acts as the basic tax-exempt threshold.',
+      answer: 'The general personal and family minimum (mínimo personal y familiar) is €5,550 for individual taxpayers under 65, which acts as the basic tax-exempt threshold applied as a tax credit at bottom rates.',
     },
     {
       question: 'What is the maximum Social Security contribution base in Spain for 2026?',
@@ -33,12 +33,20 @@ export const esProfile: CountryTaxProfile = {
       currencySymbol: '€',
       standardDeduction: 5550, // Mínimo personal general
       nationalBrackets: [
-        { threshold: 0, upTo: 6900, rate: 0.19, label: 'Tramo 1 (19%)' }, // €5,550 to €12,450
-        { threshold: 6900, upTo: 14650, rate: 0.24, label: 'Tramo 2 (24%)' }, // €12,450 to €20,200
-        { threshold: 14650, upTo: 29650, rate: 0.30, label: 'Tramo 3 (30%)' }, // €20,200 to €35,200
-        { threshold: 29650, upTo: 54450, rate: 0.37, label: 'Tramo 4 (37%)' }, // €35,200 to €60,000
-        { threshold: 54450, upTo: 294450, rate: 0.45, label: 'Tramo 5 (45%)' }, // €60,000 to €300,000
-        { threshold: 294450, rate: 0.47, label: 'Tramo 6 (47%)' }, // Over €300,000
+        { threshold: 0, upTo: 12450, rate: 0.095, label: 'State Tramo 1 (9.5%)' }, 
+        { threshold: 12450, upTo: 20200, rate: 0.12, label: 'State Tramo 2 (12%)' }, 
+        { threshold: 20200, upTo: 35200, rate: 0.15, label: 'State Tramo 3 (15%)' }, 
+        { threshold: 35200, upTo: 60000, rate: 0.185, label: 'State Tramo 4 (18.5%)' }, 
+        { threshold: 60000, upTo: 300000, rate: 0.225, label: 'State Tramo 5 (22.5%)' }, 
+        { threshold: 300000, rate: 0.245, label: 'State Tramo 6 (24.5%)' }, 
+      ],
+      regionalBrackets: [
+        { threshold: 0, upTo: 12450, rate: 0.095, label: 'Regional Tramo 1 (9.5%)' },
+        { threshold: 12450, upTo: 20200, rate: 0.12, label: 'Regional Tramo 2 (12%)' },
+        { threshold: 20200, upTo: 35200, rate: 0.15, label: 'Regional Tramo 3 (15%)' },
+        { threshold: 35200, upTo: 60000, rate: 0.185, label: 'Regional Tramo 4 (18.5%)' },
+        { threshold: 60000, upTo: 300000, rate: 0.225, label: 'Regional Tramo 5 (22.5%)' },
+        { threshold: 300000, rate: 0.225, label: 'Regional Tramo 6 (22.5%)' },
       ],
       socialContributions: [
         {
@@ -81,7 +89,12 @@ export const esProfile: CountryTaxProfile = {
       },
       officialSourceName: 'Agencia Estatal de Administración Tributaria (AEAT) & Seguridad Social',
       officialSourceUrl: 'https://sede.agenciatributaria.gob.es',
-      lastVerifiedDate: '2026-09-01',
+      lastVerifiedDate: '2026-10-01',
+      sourceMetadata: {
+        title: 'Impuesto sobre la Renta de las Personas Físicas 2026',
+        url: 'https://sede.agenciatributaria.gob.es/Sede/ayuda/manuales-videos-folletos/manuales-practicos/irpf-2026/capitulo-15.html',
+        verified: '2026-10-01'
+      },
       assumptions: [
         'Single individual under 65 years with no dependent children',
         'Standard employee contract (Régimen General de la Seguridad Social)',

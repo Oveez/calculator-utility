@@ -58,6 +58,11 @@ export const dkProfile: CountryTaxProfile = {
       officialSourceName: 'Skattestyrelsen (Danish Tax Agency)',
       officialSourceUrl: 'https://skat.dk',
       lastVerifiedDate: '2026-09-01',
+      sourceMetadata: {
+        sourceName: 'Skattestyrelsen (Danish Tax Agency)',
+        sourceUrl: 'https://skat.dk',
+        dateVerified: '2026-09-01',
+      },
       assumptions: [
         'Adult single taxpayer living in Denmark (skattepligtig)',
         'Personfradrag applied (DKK 54,100)',

@@ -74,6 +74,11 @@ export const krProfile: CountryTaxProfile = {
       officialSourceName: 'National Tax Service of South Korea (NTS / 국세청) & NHIS',
       officialSourceUrl: 'https://www.nts.go.kr',
       lastVerifiedDate: '2026-09-01',
+      sourceMetadata: {
+        sourceName: 'National Tax Service of South Korea (NTS / 국세청) & NHIS',
+        sourceUrl: 'https://www.nts.go.kr',
+        dateVerified: '2026-09-01'
+      },
       assumptions: [
         'Single resident salaried employee',
         'Basic personal allowance (₩1,500,000) applied',
@@ -128,6 +133,11 @@ export const krProfile: CountryTaxProfile = {
       officialSourceName: 'National Tax Service of South Korea (NTS)',
       officialSourceUrl: 'https://www.nts.go.kr',
       lastVerifiedDate: '2025-01-15',
+      sourceMetadata: {
+        sourceName: 'National Tax Service of South Korea (NTS)',
+        sourceUrl: 'https://www.nts.go.kr',
+        dateVerified: '2025-01-15'
+      },
       assumptions: ['Single resident salaried employee for 2025'],
     },
   },

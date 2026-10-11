@@ -77,6 +77,11 @@ export const fiProfile: CountryTaxProfile = {
       officialSourceName: 'Verohallinto (Finnish Tax Administration - Vero.fi)',
       officialSourceUrl: 'https://www.vero.fi',
       lastVerifiedDate: '2026-09-01',
+      sourceMetadata: {
+        sourceName: 'Verohallinto (Finnish Tax Administration - Vero.fi)',
+        sourceUrl: 'https://www.vero.fi',
+        dateVerified: '2026-09-01',
+      },
       assumptions: [
         'Single resident employee',
         'State income tax scale and selected municipal tax rate applied',

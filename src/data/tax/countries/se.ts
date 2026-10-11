@@ -61,6 +61,11 @@ export const seProfile: CountryTaxProfile = {
       officialSourceName: 'Skatteverket (Swedish Tax Agency)',
       officialSourceUrl: 'https://www.skatteverket.se',
       lastVerifiedDate: '2026-09-01',
+      sourceMetadata: {
+        sourceName: 'Skatteverket',
+        sourceUrl: 'https://www.skatteverket.se',
+        dateVerified: '2026-10-01'
+      },
       assumptions: [
         'Swedish resident worker under 66 years old',
         'National average municipal tax rate of 32.38% applied',

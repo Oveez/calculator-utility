@@ -1,0 +1,750 @@
+---
+import type { CountryTaxProfile } from '../../data/tax/types';
+import { calculateAuTax } from '../../utils/tax/au-engine';
+import { formatCurrency, formatPercent } from '../../utils/tax/formatters';
+import TaxDisclaimer from './TaxDisclaimer.astro';
+import CalculatorParameterGuide from '../calculator/CalculatorParameterGuide.astro';
+import Icon from '../Icon.astro';
+import TaxYearSelector from './shared/TaxYearSelector.astro';
+import TaxAllocationBar from './shared/TaxAllocationBar.astro';
+import PaycheckFrequencyTable from './shared/PaycheckFrequencyTable.astro';
+import TaxBreakdownTable from './shared/TaxBreakdownTable.astro';
+import TaxBracketsTable from './shared/TaxBracketsTable.astro';
+import type { CalculatorParameterInfo } from '../../types/calculator';
+
+interface Props {
+  profile: CountryTaxProfile;
+  initialIncome?: number;
+}
+
+const { profile, initialIncome = 0 } = Astro.props;
+
+// Initial server-rendered baseline calculations for Australia
+const initialResult = calculateAuTax({
+  grossIncome: initialIncome,
+  taxYear: profile.defaultTaxYear,
+  hasPrivateHealthInsurance: true,
+  isResident: true,
+});
+
+const defaultYearData = profile.years[profile.defaultTaxYear];
+
+const taxParameterGuide: CalculatorParameterInfo[] = [
+  {
+    id: 'grossSalary',
+    name: 'Gross Annual Employment Income',
+    description: 'Total annual earnings from wages, salaries, bonuses, and commission before any tax or superannuation deductions.',
+    whyItMatters: 'Baseline earnings used by the Australian Taxation Office (ATO) to calculate taxable income and Medicare liability.',
+    typicalRange: 'Any positive earnings',
+    unit: 'AUD ($)',
+  },
+  {
+    id: 'stage3Brackets',
+    name: 'ATO Stage 3 Tax Cuts & Brackets',
+    description: 'Legislated resident individual rates: 0% up to $18,200; 16% ($18,201–$45,000); 30% ($45,001–$135,000); 37% ($135,001–$190,000); 45% (above $190,000).',
+    whyItMatters: 'Determines progressive tax liability across personal income brackets for Australian tax residents.',
+    typicalRange: '0% to 45%',
+    unit: '%',
+  },
+  {
+    id: 'lito',
+    name: 'Low Income Tax Offset (LITO)',
+    description: 'A non-refundable tax offset of up to $700 for individuals earning up to $37,500, phasing out to zero at $66,667.',
+    whyItMatters: 'Directly reduces gross tax payable for lower and middle income earners.',
+    typicalRange: 'Up to $700 offset',
+    unit: 'AUD ($)',
+  },
+  {
+    id: 'medicareLevy',
+    name: 'Medicare Levy (2.0%)',
+    description: 'A 2% levy on taxable income to support Australia\'s public universal healthcare system, with phase-in relief for low incomes below $32,500.',
+    whyItMatters: 'Paid by most Australian tax residents in addition to standard income tax.',
+    typicalRange: '0% – 2.0%',
+    unit: '%',
+  },
+  {
+    id: 'mls',
+    name: 'Medicare Levy Surcharge (MLS)',
+    description: 'An additional 1.0% to 1.5% surcharge applied to high-income earners who do not hold eligible private hospital cover ($105,000+ for singles, $210,000+ for families).',
+    whyItMatters: 'Incentivizes private hospital insurance coverage to alleviate demand on public hospitals.',
+    typicalRange: '0.0%, 1.0%, 1.25%, or 1.5%',
+    unit: '%',
+  },
+  {
+    id: 'superannuation',
+    name: 'Superannuation Guarantee (12%)',
+    description: 'Compulsory employer contributions into your nominated super fund (12% for the 2026–27 financial year), paid on top of ordinary time earnings.',
+    whyItMatters: 'Builds long-term retirement wealth with concessional 15% tax treatment inside the superannuation fund.',
+    typicalRange: '12% employer-paid',
+    unit: '%',
+  },
+];
+---
+
+<div
+  class="relative overflow-hidden rounded-[2.5rem] border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-5 shadow-[var(--shadow)] sm:p-8 lg:p-10"
+  data-tax-app
+  data-country-id="au"
+  data-profile-json={JSON.stringify(profile)}
+>
+  <!-- Top Bar: Country Info & Mode Switcher -->
+  <div class="flex flex-col gap-4 border-b border-[color:var(--border)] pb-6 sm:flex-row sm:items-center sm:justify-between">
+    <div class="flex items-center gap-3">
+      <span class="text-3xl sm:text-4xl select-none">{profile.flagEmoji}</span>
+      <div>
+        <div class="flex items-center gap-2 flex-wrap">
+          <h2 class="text-xl font-bold tracking-tight text-[color:var(--fg)] sm:text-2xl">
+            Australia Income Tax &amp; Salary Calculator
+          </h2>
+          <span class="inline-flex items-center rounded-full bg-cyan-500/10 px-2.5 py-0.5 text-xs font-semibold text-cyan-600 dark:text-cyan-400 border border-cyan-500/20">
+            Official 2026–27 ATO Data
+          </span>
+        </div>
+        <p class="text-xs text-[color:var(--muted)]">
+          Source: <a href={defaultYearData.officialSourceUrl} target="_blank" rel="noopener noreferrer" class="font-medium text-[color:var(--accent)] hover:underline">{defaultYearData.officialSourceName}</a> • Verified {defaultYearData.lastVerifiedDate}
+        </p>
+      </div>
+    </div>
+
+    <!-- App Tabs & Tax Year -->
+    <div class="flex flex-wrap items-center gap-2">
+      <TaxYearSelector profile={profile} id="au-tax-year-select" />
+
+      <!-- Engine View Toggle -->
+      <div class="flex items-center rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-1 text-xs font-semibold overflow-x-auto no-scrollbar max-w-full shrink-0">
+        <button
+          type="button"
+          class="shrink-0 min-w-max cursor-pointer rounded-xl px-3 py-1.5 text-xs font-bold transition inline-flex items-center gap-1.5 bg-[color:var(--accent)] text-white shadow-xs active"
+          data-engine-tab="advanced"
+        >
+          <Icon name="bolt" class="w-3.5 h-3.5" />
+          <span>Detailed ATO Mode</span>
+        </button>
+        <button
+          type="button"
+          class="shrink-0 min-w-max cursor-pointer rounded-xl px-3 py-1.5 text-xs font-semibold text-[color:var(--muted)] hover:text-[color:var(--fg)] transition inline-flex items-center gap-1.5"
+          data-engine-tab="quick"
+        >
+          <Icon name="calculator" class="w-3.5 h-3.5" />
+          <span>Quick Salary</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- HERO DYNAMIC TAKE-HOME BANNER -->
+  <div class="mt-6 rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 sm:p-6 shadow-sm">
+    <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+      <div>
+        <div class="flex items-center gap-2">
+          <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Net Take-Home Pay</span>
+          <span
+            data-hero-badge
+            class="inline-flex items-center gap-1 rounded-full bg-cyan-500/10 px-2.5 py-0.5 text-xs font-bold text-cyan-600 dark:text-cyan-400 border border-cyan-500/20"
+          >
+            Estimated Take-Home
+          </span>
+        </div>
+        <p class="mt-1 text-3xl font-black tracking-tight sm:text-4xl lg:text-5xl text-[color:var(--fg)]" data-hero-amount>
+          {formatCurrency(initialResult.netIncomeAnnual, profile.defaultCurrency, profile.defaultCurrencySymbol)}
+        </p>
+        <p class="mt-1 text-xs text-[color:var(--muted)]" data-hero-subtext>
+          {formatCurrency(initialResult.netIncomeMonthly, profile.defaultCurrency, profile.defaultCurrencySymbol)}/month · {formatCurrency(initialResult.netIncomeWeekly, profile.defaultCurrency, profile.defaultCurrencySymbol)}/week
+        </p>
+      </div>
+
+      <div class="grid grid-cols-2 gap-3 sm:grid-cols-3 border-t border-[color:var(--border)]/60 pt-3 md:border-t-0 md:pt-0">
+        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] p-3">
+          <p class="text-[11px] font-medium text-[color:var(--muted)]">Income Tax (ATO)</p>
+          <p class="text-base font-extrabold text-blue-500" data-hero-incometax>
+            {formatCurrency(initialResult.nationalIncomeTax, profile.defaultCurrency, profile.defaultCurrencySymbol)}
+          </p>
+          <p class="text-[10px] text-[color:var(--muted)]">After LITO Offset</p>
+        </div>
+        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] p-3">
+          <p class="text-[11px] font-medium text-[color:var(--muted)]">Medicare Levy (2%)</p>
+          <p class="text-base font-extrabold text-amber-500" data-hero-medicare>
+            {formatCurrency(initialResult.medicareLevy, profile.defaultCurrency, profile.defaultCurrencySymbol)}
+          </p>
+          <p class="text-[10px] text-[color:var(--muted)]">Includes Surcharge</p>
+        </div>
+        <div class="col-span-2 sm:col-span-1 rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] p-3 flex flex-col justify-between">
+          <p class="text-[11px] font-medium text-[color:var(--muted)]">Action</p>
+          <button
+            type="button"
+            data-copy-summary-btn
+            class="inline-flex items-center justify-center gap-1.5 rounded-xl bg-[color:var(--surface)] px-2.5 py-1.5 text-xs font-bold text-[color:var(--fg)] border border-[color:var(--border)] hover:border-[color:var(--accent)] hover:shadow-[0_0_12px_var(--accent-glow)] transition cursor-pointer"
+          >
+            <Icon name="copy" class="w-3.5 h-3.5" />
+            <span>Copy AU Tax Report</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Reusable Income Allocation Bar -->
+    <TaxAllocationBar />
+  </div>
+
+  <!-- CALCULATOR MAIN BODY -->
+  <div class="mt-8 grid gap-8 lg:grid-cols-[1.15fr_0.85fr]">
+    <!-- LEFT COLUMN: INPUT FORMS -->
+    <div class="space-y-6">
+
+      <!-- SECTION 1: Earnings & Residency -->
+      <div class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 sm:p-6 space-y-4 shadow-sm">
+        <h3 class="text-sm font-bold uppercase tracking-wider text-[color:var(--fg)] flex items-center gap-2">
+          <Icon name="user" class="w-4 h-4 text-[color:var(--accent)]" />
+          <span>1. Employment Income &amp; Residency</span>
+        </h3>
+
+        <div class="space-y-4">
+          <!-- Gross Salary -->
+          <div>
+            <div class="flex justify-between items-center text-xs">
+              <label for="au-gross-salary" class="font-bold text-[color:var(--fg)]">
+                Annual Gross Salary / Wages ($ AUD)
+              </label>
+              <span class="text-[color:var(--muted)] font-mono">ATO Income</span>
+            </div>
+            <div class="relative mt-1.5">
+              <span class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-sm font-bold text-[color:var(--muted)]">
+                $
+              </span>
+              <input
+                id="au-gross-salary"
+                type="number"
+                min="0"
+                step="1000"
+                placeholder="e.g. 90,000"
+                class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] py-3 pl-8 pr-4 text-base font-black text-[color:var(--fg)] outline-none transition focus:border-[color:var(--accent)] focus:ring-2 focus:ring-[color:var(--accent)]/20"
+                data-au-salary
+              />
+            </div>
+            <p class="mt-1 text-[11px] text-[color:var(--muted)]">
+              Ordinary earnings from your employer before PAYG withholding, deductions, or super.
+            </p>
+          </div>
+
+          <!-- Tax Residency -->
+          <div>
+            <label for="au-residency-status" class="block text-xs font-bold text-[color:var(--fg)]">
+              Tax Residency Status
+            </label>
+            <select
+              id="au-residency-status"
+              data-au-residency
+              class="mt-1.5 w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] py-2.5 px-3 text-sm font-semibold text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)] cursor-pointer"
+            >
+              <option value="resident" selected>Australian Resident (Tax-Free Threshold $18,200)</option>
+              <option value="non_resident">Non-Resident (Foreign Resident Rates)</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- SECTION 2: Medicare Levy & Surcharge (Advanced Only) -->
+      <div class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 sm:p-6 space-y-4 shadow-sm" data-advanced-section>
+        <div class="flex items-center justify-between">
+          <h3 class="text-sm font-bold uppercase tracking-wider text-[color:var(--fg)] flex items-center gap-2">
+            <Icon name="shield-check" class="w-4 h-4 text-amber-500" />
+            <span>2. Medicare Levy &amp; Surcharge (MLS)</span>
+          </h3>
+          <span class="text-[10px] font-bold text-amber-600 bg-amber-500/10 px-2 py-0.5 rounded-full border border-amber-500/20">
+            Health Cover
+          </span>
+        </div>
+
+        <div class="space-y-4">
+          <!-- Private Health Insurance -->
+          <div>
+            <label class="block text-xs font-bold text-[color:var(--fg)] mb-2">
+              Do you hold an appropriate Private Hospital Cover?
+            </label>
+            <div class="grid grid-cols-2 gap-3">
+              <label class="flex items-center gap-2.5 p-3 rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] cursor-pointer hover:border-[color:var(--accent)] transition">
+                <input type="radio" name="au-health-cover" value="yes" checked data-au-phi class="text-[color:var(--accent)]" />
+                <span class="text-xs font-bold text-[color:var(--fg)]">Yes (No MLS Surcharge)</span>
+              </label>
+              <label class="flex items-center gap-2.5 p-3 rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] cursor-pointer hover:border-[color:var(--accent)] transition">
+                <input type="radio" name="au-health-cover" value="no" data-au-phi class="text-[color:var(--accent)]" />
+                <span class="text-xs font-bold text-[color:var(--fg)]">No (MLS applies if &gt;$105k)</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Family Status for MLS -->
+          <div id="au-family-block" class="space-y-3 pt-2 border-t border-[color:var(--border)]/60">
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label for="au-family-type" class="block text-xs font-bold text-[color:var(--fg)]">
+                  Family Status for MLS
+                </label>
+                <select
+                  id="au-family-type"
+                  data-au-family-type
+                  class="mt-1.5 w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] py-2.5 px-3 text-xs font-semibold text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)] cursor-pointer"
+                >
+                  <option value="single" selected>Single Individual ($105k threshold)</option>
+                  <option value="family">Family / Couple ($210k+ threshold)</option>
+                </select>
+              </div>
+
+              <div id="au-spouse-wrap" class="hidden">
+                <label for="au-spouse-salary" class="block text-xs font-bold text-[color:var(--fg)]">
+                  Spouse Income ($ AUD)
+                </label>
+                <input
+                  id="au-spouse-salary"
+                  type="number"
+                  min="0"
+                  step="1000"
+                  placeholder="0"
+                  data-au-spouse
+                  class="mt-1.5 w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] py-2.5 px-3 text-xs font-semibold text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)]"
+                />
+              </div>
+            </div>
+
+            <p class="text-[11px] text-[color:var(--muted)]">
+              The Medicare Levy Surcharge (MLS) is 1.0% to 1.5% for high-income earners without eligible private hospital insurance. Singles threshold is $105,000; family threshold starts at $210,000.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- SECTION 3: Deductions & Superannuation (Advanced Only) -->
+      <div class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 sm:p-6 space-y-4 shadow-sm" data-advanced-section>
+        <div class="flex items-center justify-between">
+          <h3 class="text-sm font-bold uppercase tracking-wider text-[color:var(--fg)] flex items-center gap-2">
+            <Icon name="briefcase" class="w-4 h-4 text-emerald-500" />
+            <span>3. Deductions &amp; Superannuation</span>
+          </h3>
+          <span class="text-[10px] font-bold text-emerald-600 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">
+            ATO Tax Offsets
+          </span>
+        </div>
+
+        <div class="space-y-4">
+          <!-- Work-related Deductions -->
+          <div>
+            <div class="flex justify-between items-center text-xs">
+              <label for="au-deductions" class="font-bold text-[color:var(--fg)]">
+                Work-Related Expenses &amp; Deductions ($ AUD)
+              </label>
+              <span class="text-[color:var(--muted)]">Direct Taxable Reduction</span>
+            </div>
+            <div class="relative mt-1.5">
+              <span class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-sm font-bold text-[color:var(--muted)]">
+                $
+              </span>
+              <input
+                id="au-deductions"
+                type="number"
+                min="0"
+                step="500"
+                placeholder="e.g. 1,500"
+                class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] py-2.5 pl-8 pr-4 text-sm font-bold text-[color:var(--fg)] outline-none transition focus:border-[color:var(--accent)]"
+                data-au-deductions
+              />
+            </div>
+            <p class="mt-1 text-[11px] text-[color:var(--muted)]">
+              Uniforms, home office expenses, vehicle travel, self-education, union dues, and donations.
+            </p>
+          </div>
+
+          <!-- Superannuation Info Card -->
+          <div class="rounded-2xl border border-emerald-500/20 bg-emerald-500/5 p-4 space-y-1">
+            <div class="flex justify-between items-center">
+              <span class="text-xs font-bold text-emerald-700 dark:text-emerald-400">Superannuation Guarantee (SG)</span>
+              <span class="text-xs font-extrabold text-emerald-700 dark:text-emerald-400" data-au-super-amount>$0 / yr</span>
+            </div>
+            <p class="text-[11px] text-[color:var(--muted)]">
+              In 2026–27, employers must contribute 12.0% on top of ordinary earnings into your super fund (subject to quarterly contribution caps).
+            </p>
+          </div>
+
+          <!-- LITO Info Notice -->
+          <div id="au-lito-notice" class="rounded-xl bg-blue-500/10 border border-blue-500/20 p-3 text-xs text-blue-600 dark:text-blue-400">
+            <span class="font-bold">Low Income Tax Offset (LITO): </span>
+            <span data-au-lito-display>Full $700 offset active for taxable income up to $37,500.</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- RIGHT COLUMN: RESULTS, PAYCHECK SCHEDULE & AUDIT TRAIL -->
+    <div class="space-y-6">
+
+      <!-- PAYCHECK FREQUENCY TABLE (Shared Primitive) -->
+      <div class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 sm:p-6 shadow-sm">
+        <PaycheckFrequencyTable
+          currencySymbol={profile.defaultCurrencySymbol}
+          monthly={initialResult.netIncomeMonthly}
+          biweekly={initialResult.netIncomeBiweekly}
+          weekly={initialResult.netIncomeWeekly}
+          daily={initialResult.netIncomeDaily}
+          hourly={initialResult.netIncomeHourly}
+        />
+      </div>
+
+      <!-- AUDIT TRAIL / BREAKDOWN TABLE -->
+      <div class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 sm:p-6 shadow-sm space-y-4">
+        <div class="flex items-center justify-between border-b border-[color:var(--border)] pb-3">
+          <h3 class="text-sm font-bold uppercase tracking-wider text-[color:var(--fg)] flex items-center gap-2">
+            <Icon name="table" class="w-4 h-4 text-[color:var(--accent)]" />
+            <span>ATO Tax Audit Trail</span>
+          </h3>
+          <span class="text-xs font-mono font-bold text-[color:var(--accent)]" data-effective-rate>
+            {formatPercent(initialResult.effectiveTaxRate, 1)}
+          </span>
+        </div>
+
+        <div class="space-y-2 text-xs">
+          <div class="flex justify-between py-1.5 border-b border-[color:var(--border)]/40 font-medium">
+            <span class="text-[color:var(--muted)]">Gross Employment Income</span>
+            <span class="font-bold text-[color:var(--fg)]" data-res-gross>
+              {formatCurrency(initialResult.grossIncome, profile.defaultCurrency, profile.defaultCurrencySymbol)}
+            </span>
+          </div>
+
+          <div class="flex justify-between py-1.5 border-b border-[color:var(--border)]/40">
+            <span class="text-[color:var(--muted)]">Less: Allowable Deductions</span>
+            <span class="font-bold text-emerald-500" data-res-deductions>
+              -$0
+            </span>
+          </div>
+
+          <div class="flex justify-between py-1.5 border-b border-[color:var(--border)]/40 font-bold bg-[color:var(--bg)] px-2 rounded-lg">
+            <span class="text-[color:var(--fg)]">Taxable Income</span>
+            <span class="text-[color:var(--fg)]" data-res-taxable>
+              {formatCurrency(initialResult.taxableIncome, profile.defaultCurrency, profile.defaultCurrencySymbol)}
+            </span>
+          </div>
+
+          <div class="flex justify-between py-1.5 border-b border-[color:var(--border)]/40">
+            <span class="text-[color:var(--muted)]">Base Income Tax (Stage 3)</span>
+            <span class="font-bold text-blue-500" data-res-base-tax>
+              $0
+            </span>
+          </div>
+
+          <div class="flex justify-between py-1.5 border-b border-[color:var(--border)]/40">
+            <span class="text-[color:var(--muted)]">Less: Low Income Tax Offset (LITO)</span>
+            <span class="font-bold text-emerald-500" data-res-lito>
+              -$0
+            </span>
+          </div>
+
+          <div class="flex justify-between py-1.5 border-b border-[color:var(--border)]/40 font-bold">
+            <span class="text-[color:var(--fg)]">Net Income Tax (ATO)</span>
+            <span class="text-blue-600 dark:text-blue-400" data-res-net-incometax>
+              {formatCurrency(initialResult.nationalIncomeTax, profile.defaultCurrency, profile.defaultCurrencySymbol)}
+            </span>
+          </div>
+
+          <div class="flex justify-between py-1.5 border-b border-[color:var(--border)]/40">
+            <span class="text-[color:var(--muted)]">Medicare Levy (2.0%)</span>
+            <span class="font-bold text-amber-500" data-res-medicare>
+              {formatCurrency(initialResult.medicareLevy, profile.defaultCurrency, profile.defaultCurrencySymbol)}
+            </span>
+          </div>
+
+          <div class="flex justify-between py-1.5 border-b border-[color:var(--border)]/40">
+            <span class="text-[color:var(--muted)]">Medicare Levy Surcharge (MLS)</span>
+            <span class="font-bold text-amber-600" data-res-mls>
+              $0
+            </span>
+          </div>
+
+          <div class="flex justify-between py-2 border-t-2 border-[color:var(--border)] text-sm font-extrabold">
+            <span class="text-[color:var(--fg)]">Total Tax &amp; Levies</span>
+            <span class="text-red-500" data-res-total-tax>
+              {formatCurrency(initialResult.totalTaxAndDeductions, profile.defaultCurrency, profile.defaultCurrencySymbol)}
+            </span>
+          </div>
+
+          <div class="flex justify-between py-2 rounded-xl bg-[color:var(--accent)]/10 px-3 text-sm font-black text-[color:var(--accent)]">
+            <span>Net Annual Take-Home</span>
+            <span data-res-net-takehome>
+              {formatCurrency(initialResult.netIncomeAnnual, profile.defaultCurrency, profile.defaultCurrencySymbol)}
+            </span>
+          </div>
+        </div>
+
+        <div class="pt-2 flex justify-between text-xs text-[color:var(--muted)] border-t border-[color:var(--border)]/40">
+          <span>Top Marginal Rate: <strong class="text-[color:var(--fg)]" data-marginal-rate>{formatPercent(initialResult.marginalTaxRate, 0)}</strong></span>
+          <span>Effective Tax Rate: <strong class="text-[color:var(--fg)]" data-effective-tax-rate>{formatPercent(initialResult.effectiveTaxRate, 1)}</strong></span>
+        </div>
+      </div>
+
+      <!-- STAGE 3 TAX BRACKETS TABLE (Shared Primitive) -->
+      <div class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 sm:p-6 shadow-sm">
+        <TaxBracketsTable
+          breakdown={initialResult.bracketBreakdown || []}
+          currencySymbol={profile.defaultCurrencySymbol}
+        />
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Parameter Explanations -->
+  <div class="mt-8 border-t border-[color:var(--border)] pt-8">
+    <CalculatorParameterGuide parameters={taxParameterGuide} />
+  </div>
+
+  <!-- Disclaimer Footer -->
+  <div class="mt-8">
+    <TaxDisclaimer />
+  </div>
+</div>
+
+<script>
+  import { calculateAuTax } from '../../utils/tax/au-engine';
+
+  function setupAuTaxCalculator() {
+    const apps = document.querySelectorAll('[data-tax-app][data-country-id="au"]');
+
+    apps.forEach((app) => {
+      try {
+        const profileJson = app.getAttribute('data-profile-json');
+        if (!profileJson) return;
+        const profile = JSON.parse(profileJson);
+
+        // Controls
+        const yearSelect = app.querySelector('[data-tax-year]') as HTMLSelectElement | null;
+        const engineTabs = Array.from(app.querySelectorAll('[data-engine-tab]')) as HTMLElement[];
+        const salaryInput = app.querySelector('[data-au-salary]') as HTMLInputElement | null;
+        const residencySelect = app.querySelector('[data-au-residency]') as HTMLSelectElement | null;
+        const phiRadios = Array.from(app.querySelectorAll('[data-au-phi]')) as HTMLInputElement[];
+        const familyTypeSelect = app.querySelector('[data-au-family-type]') as HTMLSelectElement | null;
+        const spouseInput = app.querySelector('[data-au-spouse]') as HTMLInputElement | null;
+        const spouseWrap = app.querySelector('#au-spouse-wrap');
+        const deductionsInput = app.querySelector('[data-au-deductions]') as HTMLInputElement | null;
+        const litoNotice = app.querySelector('#au-lito-notice');
+        const litoDisplay = app.querySelector('[data-au-lito-display]');
+        const superAmountEl = app.querySelector('[data-au-super-amount]');
+
+        // Mode State
+        let currentMode: 'advanced' | 'quick' = 'advanced';
+
+        // Hero Outputs
+        const heroAmount = app.querySelector('[data-hero-amount]');
+        const heroSubtext = app.querySelector('[data-hero-subtext]');
+        const heroIncomeTax = app.querySelector('[data-hero-incometax]');
+        const heroMedicare = app.querySelector('[data-hero-medicare]');
+        const marginalRateEl = app.querySelector('[data-marginal-rate]');
+        const effectiveRateEl = app.querySelector('[data-effective-rate]');
+        const effectiveTaxRateEl = app.querySelector('[data-effective-tax-rate]');
+
+        // Allocation Bar
+        const barTakehome = app.querySelector('[data-bar-takehome]') as HTMLElement | null;
+        const barFedtax = app.querySelector('[data-bar-fedtax]') as HTMLElement | null;
+        const barFica = app.querySelector('[data-bar-fica]') as HTMLElement | null;
+        const barPretax = app.querySelector('[data-bar-pretax]') as HTMLElement | null;
+        const allocationLabel = app.querySelector('[data-allocation-label]');
+
+        // Paycheck Schedule
+        const schedMonthly = app.querySelector('[data-sched-monthly]');
+        const schedSemiMonthly = app.querySelector('[data-sched-semimonthly]');
+        const schedBiweekly = app.querySelector('[data-sched-biweekly]');
+        const schedWeekly = app.querySelector('[data-sched-weekly]');
+        const schedDaily = app.querySelector('[data-sched-daily]');
+        const schedHourly = app.querySelector('[data-sched-hourly]');
+
+        // Audit Trail Elements
+        const resGross = app.querySelector('[data-res-gross]');
+        const resDeductions = app.querySelector('[data-res-deductions]');
+        const resTaxable = app.querySelector('[data-res-taxable]');
+        const resBaseTax = app.querySelector('[data-res-base-tax]');
+        const resLito = app.querySelector('[data-res-lito]');
+        const resNetIncomeTax = app.querySelector('[data-res-net-incometax]');
+        const resMedicare = app.querySelector('[data-res-medicare]');
+        const resMls = app.querySelector('[data-res-mls]');
+        const resTotalTax = app.querySelector('[data-res-total-tax]');
+        const resNetTakeHome = app.querySelector('[data-res-net-takehome]');
+        const bracketTbody = app.querySelector('[data-bracket-tbody]');
+        const copySummaryBtn = app.querySelector('[data-copy-summary-btn]');
+
+        function fmt(n: number): string {
+          return '$' + Math.round(n).toLocaleString('en-US');
+        }
+
+        function calculate() {
+          const selectedYear = yearSelect ? yearSelect.value : profile.defaultTaxYear;
+          const gross = Math.max(0, parseFloat(salaryInput?.value || '0') || 0);
+          const deductions = currentMode === 'advanced' ? Math.max(0, parseFloat(deductionsInput?.value || '0') || 0) : 0;
+          const hasPhi = phiRadios.find((r) => r.checked)?.value === 'yes';
+          const isFamily = familyTypeSelect?.value === 'family';
+          const spouseIncome = currentMode === 'advanced' && isFamily ? Math.max(0, parseFloat(spouseInput?.value || '0') || 0) : undefined;
+
+          // Superannuation Guarantee (12% for 2026-27, 11.5% for 2024-25, 12% for 2025-26)
+          const superRate = selectedYear === '2024-25' ? 0.115 : 0.12;
+          const superAmount = gross * superRate;
+          if (superAmountEl) {
+            superAmountEl.textContent = `${fmt(superAmount)} / yr (${(superRate * 100).toFixed(1)}%)`;
+          }
+
+          const res = calculateAuTax({
+            grossIncome: gross,
+            taxYear: selectedYear,
+            hasPrivateHealthInsurance: hasPhi || currentMode === 'quick',
+            spouseIncome,
+            customDeductions: deductions,
+          });
+
+          if (litoDisplay) {
+            if (res.litoAmount > 0) {
+              litoDisplay.textContent = `Offset of ${fmt(res.litoAmount)} applied to reduce your tax.`;
+              if (litoNotice) litoNotice.className = 'rounded-xl bg-blue-500/10 border border-blue-500/20 p-3 text-xs text-blue-600 dark:text-blue-400 block';
+            } else {
+              if (litoNotice) litoNotice.className = 'hidden';
+            }
+          }
+
+          // Update Hero
+          if (heroAmount) heroAmount.textContent = fmt(res.netIncomeAnnual);
+          if (heroSubtext) heroSubtext.textContent = `${fmt(res.netIncomeAnnual / 12)}/month · ${fmt(res.netIncomeAnnual / 52)}/week`;
+          if (heroIncomeTax) heroIncomeTax.textContent = fmt(res.totalIncomeTax);
+          if (heroMedicare) heroMedicare.textContent = fmt(res.medicareLevy + res.medicareLevySurcharge);
+          if (effectiveRateEl) effectiveRateEl.textContent = `${res.effectiveTotalDeductionRate.toFixed(1)}%`;
+          if (effectiveTaxRateEl) effectiveTaxRateEl.textContent = `${res.effectiveTotalDeductionRate.toFixed(1)}%`;
+          if (marginalRateEl) marginalRateEl.textContent = `${res.marginalTaxRate.toFixed(0)}%`;
+
+          // Paycheck Schedule
+          if (schedMonthly) schedMonthly.textContent = fmt(res.netIncomeMonthly);
+          if (schedSemiMonthly) schedSemiMonthly.textContent = fmt(res.netIncomeAnnual / 24);
+          if (schedBiweekly) schedBiweekly.textContent = fmt(res.netIncomeBiweekly);
+          if (schedWeekly) schedWeekly.textContent = fmt(res.netIncomeWeekly);
+          if (schedDaily) schedDaily.textContent = fmt(res.netIncomeDaily);
+          if (schedHourly) schedHourly.textContent = fmt(res.netIncomeHourly);
+
+          // Audit Trail
+          if (resGross) resGross.textContent = fmt(gross);
+          if (resDeductions) resDeductions.textContent = deductions > 0 ? `-${fmt(deductions)}` : '$0';
+          if (resTaxable) resTaxable.textContent = fmt(res.taxableIncome);
+          if (resBaseTax) resBaseTax.textContent = fmt(res.nationalIncomeTax + res.litoAmount);
+          if (resLito) resLito.textContent = res.litoAmount > 0 ? `-${fmt(res.litoAmount)}` : '$0';
+          if (resNetIncomeTax) resNetIncomeTax.textContent = fmt(res.totalIncomeTax);
+          if (resMedicare) resMedicare.textContent = fmt(res.medicareLevy);
+          if (resMls) resMls.textContent = fmt(res.medicareLevySurcharge);
+          if (resTotalTax) resTotalTax.textContent = fmt(res.totalTaxAndDeductions);
+          if (resNetTakeHome) resNetTakeHome.textContent = fmt(res.netIncomeAnnual);
+
+          // Allocation Bar
+          if (gross > 0) {
+            const pctTakehome = Math.max(0, (res.netIncomeAnnual / gross) * 100);
+            const pctIncomeTax = Math.max(0, (res.totalIncomeTax / gross) * 100);
+            const pctMedicare = Math.max(0, ((res.medicareLevy + res.medicareLevySurcharge) / gross) * 100);
+            const pctDeductions = Math.max(0, (deductions / gross) * 100);
+
+            if (barTakehome) barTakehome.style.width = `${pctTakehome}%`;
+            if (barFedtax) barFedtax.style.width = `${pctIncomeTax}%`;
+            if (barFica) barFica.style.width = `${pctMedicare}%`;
+            if (barPretax) barPretax.style.width = `${pctDeductions}%`;
+
+            if (allocationLabel) {
+              allocationLabel.textContent = `Take-Home: ${pctTakehome.toFixed(1)}% · Tax: ${pctIncomeTax.toFixed(1)}% · Medicare: ${pctMedicare.toFixed(1)}%`;
+            }
+          }
+
+          // Bracket Table
+          if (bracketTbody) {
+            bracketTbody.innerHTML = res.bracketBreakdown
+              .map(
+                (row) => `
+                <tr class="border-b border-[color:var(--border)]/40 hover:bg-[color:var(--bg)]/50 transition">
+                  <td class="py-2 px-3 font-medium text-[color:var(--fg)]">${row.bracketRange}</td>
+                  <td class="py-2 px-3 text-right font-mono text-[color:var(--muted)]">${row.ratePercent}</td>
+                  <td class="py-2 px-3 text-right font-mono font-medium text-[color:var(--fg)]">${fmt(row.taxableInBracket)}</td>
+                  <td class="py-2 px-3 text-right font-mono font-bold text-blue-500">${fmt(row.taxAmount)}</td>
+                </tr>
+              `
+              )
+              .join('');
+          }
+        }
+
+        // Mode Switching
+        engineTabs.forEach((tab) => {
+          tab.addEventListener('click', () => {
+            const mode = tab.getAttribute('data-engine-tab') as 'advanced' | 'quick';
+            if (!mode) return;
+            currentMode = mode;
+
+            engineTabs.forEach((t) => {
+              if (t === tab) {
+                t.className = 'shrink-0 min-w-max cursor-pointer rounded-xl px-3 py-1.5 text-xs font-bold transition inline-flex items-center gap-1.5 bg-[color:var(--accent)] text-white shadow-xs active';
+              } else {
+                t.className = 'shrink-0 min-w-max cursor-pointer rounded-xl px-3 py-1.5 text-xs font-semibold text-[color:var(--muted)] hover:text-[color:var(--fg)] transition inline-flex items-center gap-1.5';
+              }
+            });
+
+            const advSections = app.querySelectorAll('[data-advanced-section]');
+            advSections.forEach((sec) => {
+              if (mode === 'quick') {
+                sec.classList.add('hidden');
+              } else {
+                sec.classList.remove('hidden');
+              }
+            });
+
+            calculate();
+          });
+        });
+
+        // Event Listeners
+        salaryInput?.addEventListener('input', calculate);
+        deductionsInput?.addEventListener('input', calculate);
+        yearSelect?.addEventListener('change', calculate);
+        residencySelect?.addEventListener('change', calculate);
+        phiRadios.forEach(r => r.addEventListener('change', calculate));
+
+        familyTypeSelect?.addEventListener('change', () => {
+          if (familyTypeSelect.value === 'family') {
+            spouseWrap?.classList.remove('hidden');
+          } else {
+            spouseWrap?.classList.add('hidden');
+          }
+          calculate();
+        });
+        spouseInput?.addEventListener('input', calculate);
+
+        // Copy Report
+        copySummaryBtn?.addEventListener('click', () => {
+          const gross = salaryInput?.value || '0';
+          const net = heroAmount?.textContent || '$0';
+          const tax = heroIncomeTax?.textContent || '$0';
+          const med = heroMedicare?.textContent || '$0';
+          const eff = effectiveRateEl?.textContent || '0%';
+          const summary = `--- Australia Tax Calculation (ATO 2026–27) ---\nGross Salary: $${gross}\nNet Take-Home: ${net}\nIncome Tax: ${tax}\nMedicare Levy: ${med}\nEffective Tax Rate: ${eff}\nCalculated via Toolscastle Tax Platform`;
+
+          navigator.clipboard.writeText(summary).then(() => {
+            const btnSpan = copySummaryBtn.querySelector('span');
+            if (btnSpan) {
+              const orig = btnSpan.textContent;
+              btnSpan.textContent = 'Copied to Clipboard!';
+              setTimeout(() => {
+                btnSpan.textContent = orig;
+              }, 2000);
+            }
+          });
+        });
+
+        // Initialize
+        calculate();
+      } catch (err) {
+        console.error('Error initializing AU tax calculator:', err);
+      }
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', setupAuTaxCalculator);
+  } else {
+    setupAuTaxCalculator();
+  }
+</script>
+

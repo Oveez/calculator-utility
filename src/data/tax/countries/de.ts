@@ -133,4 +133,9 @@ export const deProfile: CountryTaxProfile = {
       assumptions: ['Steuerklasse 1 for tax year 2025'],
     },
   },
+  sourceMetadata: {
+    name: 'Bundesministerium der Finanzen (BMF)',
+    url: 'https://www.bundesfinanzministerium.de',
+    verifiedAt: '2026-10-01'
+  }
 };

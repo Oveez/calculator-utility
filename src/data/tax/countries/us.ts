@@ -249,6 +249,11 @@ export const usProfile: CountryTaxProfile = {
       officialSourceName: 'IRS (Internal Revenue Service) - Rev. Proc. 2025-32 & SSA',
       officialSourceUrl: 'https://www.irs.gov',
       lastVerifiedDate: '2026-09-01',
+      sourceMetadata: {
+        sourceName: 'Internal Revenue Service (IRS)',
+        sourceUrl: 'https://www.irs.gov',
+        dateVerified: '2026-10-01',
+      },
       assumptions: [
         'Official 2026 IRS Rev. Proc. 2025-32 tax brackets and inflation adjustments',
         'Social Security maximum wage base: $184,500 at 6.2%',

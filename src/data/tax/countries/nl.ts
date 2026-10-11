@@ -50,6 +50,11 @@ export const nlProfile: CountryTaxProfile = {
       officialSourceName: 'Belastingdienst (Dutch Tax Administration) & Rijksoverheid',
       officialSourceUrl: 'https://www.belastingdienst.nl',
       lastVerifiedDate: '2026-09-01',
+      sourceMetadata: {
+        sourceName: 'Belastingdienst (Dutch Tax Administration) & Rijksoverheid',
+        sourceUrl: 'https://www.belastingdienst.nl',
+        dateVerified: '2026-09-01',
+      },
       assumptions: [
         'Single employee under state pension age (AOW-leeftijd)',
         'Full year Dutch tax resident',

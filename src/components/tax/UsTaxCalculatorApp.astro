@@ -1,0 +1,1173 @@
+---
+import type { CountryTaxProfile } from '../../data/tax/types';
+import { calculateTaxForCountry, calculateAdvancedTax } from '../../utils/tax/us-engine';
+import { formatCurrency, formatPercent } from '../../utils/tax/formatters';
+import TaxDisclaimer from './TaxDisclaimer.astro';
+import CalculatorParameterGuide from '../calculator/CalculatorParameterGuide.astro';
+import Icon from '../Icon.astro';
+import TaxYearSelector from './shared/TaxYearSelector.astro';
+import TaxAllocationBar from './shared/TaxAllocationBar.astro';
+import PaycheckFrequencyTable from './shared/PaycheckFrequencyTable.astro';
+import TaxBreakdownTable from './shared/TaxBreakdownTable.astro';
+import TaxBracketsTable from './shared/TaxBracketsTable.astro';
+import type { CalculatorParameterInfo } from '../../types/calculator';
+
+interface Props {
+  profile: CountryTaxProfile;
+  initialIncome?: number;
+}
+
+const { profile, initialIncome = 0 } = Astro.props;
+
+// Initial server-rendered baseline calculations
+const initialResult = calculateTaxForCountry(profile, 0);
+const defaultYearData = profile.years[profile.defaultTaxYear];
+
+const initialAdvancedResult = calculateAdvancedTax(profile, {
+  primaryW2Income: 0,
+  filingStatus: 'single',
+  taxYear: profile.defaultTaxYear,
+  federalTaxWithheld: 0,
+});
+
+const taxParameterGuide: CalculatorParameterInfo[] = [
+  {
+    id: 'grossIncome',
+    name: 'Gross Annual Income / Wages',
+    description: `Total gross employment earnings, compensation, business profits, and investment yields before any deductions in the United States.`,
+    whyItMatters: 'The starting baseline figure from which all statutory allowances, adjustments, and tax obligations are computed.',
+    typicalRange: 'Any positive earnings',
+    unit: profile.defaultCurrency,
+  },
+  {
+    id: 'filingStatus',
+    name: 'Filing Status & Household Mode',
+    description: 'Your statutory tax classification (Single, Married Filing Jointly, Head of Household, Married Filing Separately, or Surviving Spouse).',
+    whyItMatters: 'Dictates your standard deduction allowance, marginal tax bracket thresholds, and phase-out levels for tax credits.',
+    typicalRange: 'Single / Married / HOH',
+    unit: 'Status',
+  },
+  {
+    id: 'agi',
+    name: 'Adjusted Gross Income (AGI)',
+    description: 'Gross income minus above-the-line adjustments such as 401(k), IRA contributions, HSA deductions, and half of self-employment tax.',
+    whyItMatters: 'The universal benchmark used by the IRS to evaluate itemized deduction floors, credit eligibility, and surtaxes.',
+    typicalRange: 'Gross Income - Adjustments',
+    unit: profile.defaultCurrency,
+  },
+  {
+    id: 'standardVsItemized',
+    name: 'Standard vs. Itemized Deductions',
+    description: 'The statutory fixed deduction vs. the itemized total of mortgage interest, state & local taxes (SALT capped at $10k), charity, and medical expenses.',
+    whyItMatters: 'Taxpayers should always claim whichever method yields the higher deduction to minimize taxable income.',
+    typicalRange: 'Auto-maximized',
+    unit: profile.defaultCurrency,
+  },
+  {
+    id: 'taxCredits',
+    name: 'Tax Credits (Child & Dependents)',
+    description: 'Direct dollar-for-dollar reductions of tax liability, such as the $2,000 Child Tax Credit and $500 Credit for Other Dependents.',
+    whyItMatters: 'Far more valuable than deductions because credits reduce your tax bill dollar-for-dollar rather than just reducing taxable income.',
+    typicalRange: '$0 – $8,000+',
+    unit: profile.defaultCurrency,
+  },
+  {
+    id: 'socialContributions',
+    name: 'Social Security & FICA / Payroll Taxes',
+    description: 'Mandatory employee contributions for Social Security (6.2% up to $184,500 in 2026) and Medicare (1.45% un-capped + 0.9% additional above $200k/$250k).',
+    whyItMatters: 'Guarantees retirement annuities, disability protection, and Medicare health insurance.',
+    typicalRange: '7.65% FICA',
+    unit: profile.defaultCurrency,
+  },
+  {
+    id: 'withholdingRefundOwed',
+    name: 'Estimated Refund or Balance Owed',
+    description: 'The net difference between total taxes withheld from paychecks (W-2 Box 2) and your actual calculated tax liability.',
+    whyItMatters: 'Reveals whether you will receive a cash refund from the IRS or owe a balance due at filing time.',
+    typicalRange: 'Positive (Refund) or Negative (Owed)',
+    unit: profile.defaultCurrency,
+  },
+  {
+    id: 'effectiveVsMarginal',
+    name: 'Effective vs. Marginal Tax Rate',
+    description: 'Effective rate is your blended percentage (Total Tax / Gross Income). Marginal rate is the tax rate applied to your highest dollar earned.',
+    whyItMatters: 'Your effective rate measures true tax burden, while your marginal rate tells you how much tax will be deducted from your next raise or bonus.',
+    typicalRange: '0% – 50%+',
+    unit: '%',
+  },
+];
+---
+
+<div
+  class="relative overflow-hidden rounded-[2.5rem] border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-5 shadow-[var(--shadow)] sm:p-8 lg:p-10"
+  data-tax-app
+  data-country-id="us"
+  data-profile-json={JSON.stringify(profile)}
+>
+  <!-- Top Bar: Country Info & Mode Switcher -->
+  <div class="flex flex-col gap-4 border-b border-[color:var(--border)] pb-6 sm:flex-row sm:items-center sm:justify-between">
+    <div class="flex items-center gap-3">
+      <span class="text-3xl sm:text-4xl select-none">{profile.flagEmoji}</span>
+      <div>
+        <div class="flex items-center gap-2 flex-wrap">
+          <h2 class="text-xl font-bold tracking-tight text-[color:var(--fg)] sm:text-2xl">
+            United States Federal &amp; State Tax Calculator
+          </h2>
+          <span class="inline-flex items-center rounded-full bg-cyan-500/10 px-2.5 py-0.5 text-xs font-semibold text-cyan-600 dark:text-cyan-400 border border-cyan-500/20">
+            Official 2026 IRS Data
+          </span>
+        </div>
+        <p class="text-xs text-[color:var(--muted)]">
+          Source: <a href={defaultYearData.officialSourceUrl} target="_blank" rel="noopener noreferrer" class="font-medium text-[color:var(--accent)] hover:underline">{defaultYearData.officialSourceName}</a> • Verified {defaultYearData.lastVerifiedDate}
+        </p>
+      </div>
+    </div>
+
+    <!-- App Tabs & Tax Year -->
+    <div class="flex flex-wrap items-center gap-2">
+      <TaxYearSelector profile={profile} id="tax-year-select" />
+
+      <!-- Engine View Toggle: Quick Salary vs Advanced 1040 -->
+      <div class="flex items-center rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-1 text-xs font-semibold overflow-x-auto no-scrollbar max-w-full shrink-0">
+        <button
+          type="button"
+          class="shrink-0 min-w-max cursor-pointer rounded-xl px-3 py-1.5 text-xs font-bold transition inline-flex items-center gap-1.5 bg-[color:var(--accent)] text-white shadow-xs active"
+          data-engine-tab="advanced"
+        >
+          <Icon name="bolt" class="w-3.5 h-3.5" />
+          <span>Advanced Tax Mode</span>
+        </button>
+        <button
+          type="button"
+          class="shrink-0 min-w-max cursor-pointer rounded-xl px-3 py-1.5 text-xs font-semibold text-[color:var(--muted)] hover:text-[color:var(--fg)] transition inline-flex items-center gap-1.5"
+          data-engine-tab="quick"
+        >
+          <Icon name="calculator" class="w-3.5 h-3.5" />
+          <span>Quick Salary</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- HERO DYNAMIC REFUND / OWED / TAKE-HOME BANNER -->
+  <div class="mt-6 rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 sm:p-6 shadow-sm">
+    <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+      <div>
+        <div class="flex items-center gap-2">
+          <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Tax Return Outcome</span>
+          <span
+            data-hero-badge
+            class="inline-flex items-center gap-1 rounded-full bg-slate-500/10 px-2.5 py-0.5 text-xs font-bold text-[color:var(--muted)] border border-[color:var(--border)]"
+          >
+            Awaiting Income
+          </span>
+        </div>
+        <p class="mt-1 text-3xl font-black tracking-tight sm:text-4xl lg:text-5xl text-[color:var(--fg)]" data-hero-amount>
+          {formatCurrency(0, profile.defaultCurrency, profile.defaultCurrencySymbol)}
+        </p>
+        <p class="mt-1 text-xs text-[color:var(--muted)]" data-hero-subtext>
+          Enter your annual salary or income above to compute refund or tax due.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-2 gap-3 sm:grid-cols-3 border-t border-[color:var(--border)]/60 pt-3 md:border-t-0 md:pt-0">
+        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] p-3">
+          <p class="text-[11px] font-medium text-[color:var(--muted)]">Net Take-Home</p>
+          <p class="text-base font-extrabold text-[color:var(--fg)]" data-hero-takehome>
+            {formatCurrency(initialAdvancedResult.netAnnualTakeHome, profile.defaultCurrency, profile.defaultCurrencySymbol)}
+          </p>
+          <p class="text-[10px] text-[color:var(--muted)]">After all taxes &amp; pre-tax</p>
+        </div>
+        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] p-3">
+          <p class="text-[11px] font-medium text-[color:var(--muted)]">Effective Tax Rate</p>
+          <p class="text-base font-extrabold text-amber-500" data-hero-effective-rate>
+            {formatPercent(initialAdvancedResult.effectiveTotalTaxRate, 1)}
+          </p>
+          <p class="text-[10px] text-[color:var(--muted)]">All taxes / Gross income</p>
+        </div>
+        <div class="col-span-2 sm:col-span-1 rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] p-3 flex flex-col justify-between">
+          <p class="text-[11px] font-medium text-[color:var(--muted)]">Action</p>
+          <button
+            type="button"
+            data-copy-summary-btn
+            class="inline-flex items-center justify-center gap-1.5 rounded-xl bg-[color:var(--surface)] px-2.5 py-1.5 text-xs font-bold text-[color:var(--fg)] border border-[color:var(--border)] hover:border-[color:var(--accent)] hover:shadow-[0_0_12px_var(--accent-glow)] transition cursor-pointer"
+          >
+            <Icon name="copy" class="w-3.5 h-3.5" />
+            <span>Copy Tax Report</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Reusable Income Allocation Bar -->
+    <TaxAllocationBar />
+  </div>
+
+  <!-- CALCULATOR MAIN BODY -->
+  <div class="mt-8 grid gap-8 lg:grid-cols-[1.15fr_0.85fr]">
+    <!-- LEFT COLUMN: INPUT FORMS -->
+    <div class="space-y-6">
+
+      <!-- SECTION 1: Filing Status, State & Dependents -->
+      <div class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 sm:p-6 space-y-4 shadow-sm">
+        <h3 class="text-sm font-bold uppercase tracking-wider text-[color:var(--fg)] flex items-center gap-2">
+          <Icon name="user" class="w-4 h-4 text-[color:var(--accent)]" />
+          <span>1. Filing Status &amp; Jurisdiction</span>
+        </h3>
+
+        <div class="grid gap-4 sm:grid-cols-2">
+          <!-- Filing Status -->
+          <div>
+            <label for="adv-filing-status" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">
+              Filing Status
+            </label>
+            <select
+              id="adv-filing-status"
+              class="mt-1.5 w-full cursor-pointer rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3.5 py-2.5 text-sm font-semibold text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)]"
+              data-adv-status
+            >
+              <option value="single" selected>Single (Standard Deduction $16,100)</option>
+              <option value="married_joint">Married Filing Jointly ($32,200)</option>
+              <option value="head_of_household">Head of Household ($24,150)</option>
+              <option value="married_separate">Married Filing Separately ($16,100)</option>
+              <option value="qualifying_widow">Qualifying Surviving Spouse ($32,200)</option>
+            </select>
+          </div>
+
+          <!-- US State / Jurisdiction -->
+          <div>
+            <label for="adv-region" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">
+              State / Jurisdiction
+            </label>
+            <select
+              id="adv-region"
+              class="mt-1.5 w-full cursor-pointer rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3.5 py-2.5 text-sm font-semibold text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)]"
+              data-adv-region
+            >
+              <option value="">Federal Only (0% State)</option>
+              {defaultYearData.regions?.map((reg) => (
+                <option value={reg.code}>
+                  {reg.name} {reg.flatRate !== undefined ? `(${formatPercent(reg.flatRate * 100, 1)} flat)` : ''}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+
+        <!-- Dependents & Age Allowances (Advanced Mode) -->
+        <div class="border-t border-[color:var(--border)]/60 pt-4 space-y-3" data-adv-only>
+          <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Household Dependents &amp; Age Allowances</span>
+          <div class="grid gap-3 sm:grid-cols-2">
+            <div>
+              <label for="adv-kids" class="block text-xs font-medium text-[color:var(--fg)]">
+                Children Under 17 ($2,000 CTC each)
+              </label>
+              <input
+                id="adv-kids"
+                type="number"
+                min="0"
+                max="15"
+                placeholder="0"
+                class="mt-1 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-sm font-bold text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)]"
+                data-adv-kids />
+            </div>
+            <div>
+              <label for="adv-other-deps" class="block text-xs font-medium text-[color:var(--fg)]">
+                Other Dependents ($500 ODC each)
+              </label>
+              <input
+                id="adv-other-deps"
+                type="number"
+                min="0"
+                max="15"
+                placeholder="0"
+                class="mt-1 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-sm font-bold text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)]"
+                data-adv-other-deps />
+            </div>
+          </div>
+
+          <div class="flex flex-wrap items-center gap-4 text-xs font-medium pt-1">
+            <label class="flex items-center gap-1.5 cursor-pointer">
+              <input type="checkbox" data-adv-taxpayer-65 class="rounded border-[color:var(--border)] text-[color:var(--accent)]" />
+              <span>Taxpayer age 65 or older (+$2,000 standard deduction)</span>
+            </label>
+            <label class="flex items-center gap-1.5 cursor-pointer" data-adv-spouse-age-wrap>
+              <input type="checkbox" data-adv-spouse-65 class="rounded border-[color:var(--border)] text-[color:var(--accent)]" />
+              <span>Spouse age 65 or older</span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- SECTION 2: Income Sources -->
+      <div class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 sm:p-6 space-y-4 shadow-sm">
+        <h3 class="text-sm font-bold uppercase tracking-wider text-[color:var(--fg)] flex items-center gap-2">
+          <Icon name="finance" class="w-4 h-4 text-[color:var(--accent)]" />
+          <span>2. Earned &amp; Investment Income Streams</span>
+        </h3>
+
+        <div class="space-y-3">
+          <!-- Primary Salary W-2 -->
+          <div>
+            <div class="flex justify-between items-center text-xs">
+              <label for="adv-w2" class="font-bold text-[color:var(--fg)]">
+                Primary Employment Wages / Salary (W-2)
+              </label>
+              <span class="text-[color:var(--muted)] font-mono">Box 1 Gross</span>
+            </div>
+            <div class="relative mt-1">
+              <span class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-sm font-bold text-[color:var(--muted)]">
+                {profile.defaultCurrencySymbol}
+              </span>
+              <input
+                id="adv-w2"
+                type="number"
+                min="0"
+                step="1000"
+                placeholder="e.g. 85,000"
+                class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] py-3 pl-8 pr-4 text-base font-black text-[color:var(--fg)] outline-none transition focus:border-[color:var(--accent)] focus:ring-2 focus:ring-[color:var(--accent)]/20"
+                data-adv-w2 />
+            </div>
+          </div>
+
+          <!-- Spouse Salary W-2 -->
+          <div data-adv-spouse-wrap class="hidden">
+            <div class="flex justify-between items-center text-xs">
+              <label for="adv-spouse-w2" class="font-bold text-[color:var(--fg)]">Spouse Wages / Salary (W-2)</label>
+              <span class="text-[color:var(--muted)] font-mono">Box 1 Gross</span>
+            </div>
+            <div class="relative mt-1">
+              <span class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-sm font-bold text-[color:var(--muted)]">
+                {profile.defaultCurrencySymbol}
+              </span>
+              <input
+                id="adv-spouse-w2"
+                type="number"
+                min="0"
+                step="1000"
+                placeholder="e.g. 65,000"
+                class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] py-2.5 pl-8 pr-4 text-sm font-bold text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)]"
+                data-adv-spouse-w2 />
+            </div>
+          </div>
+
+          <!-- Business / Freelance 1099 Net -->
+          <div data-adv-only>
+            <div class="flex justify-between items-center text-xs">
+              <label for="adv-business" class="font-bold text-[color:var(--fg)]">
+                Business &amp; 1099 Self-Employment Profit
+              </label>
+              <span class="text-[color:var(--muted)]">Schedule C Net</span>
+            </div>
+            <div class="relative mt-1">
+              <span class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-sm font-bold text-[color:var(--muted)]">
+                {profile.defaultCurrencySymbol}
+              </span>
+              <input
+                id="adv-business"
+                type="number"
+                min="0"
+                step="1000"
+                placeholder="e.g. 25,000"
+                class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] py-2.5 pl-8 pr-4 text-sm font-bold text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)]"
+                data-adv-business />
+            </div>
+            <p class="text-[10px] text-[color:var(--muted)] mt-1">
+              Automatically subjects to 15.3% SE tax with a 50% above-the-line deduction for AGI.
+            </p>
+          </div>
+
+          <!-- Investments (Advanced Only) -->
+          <div class="grid gap-3 sm:grid-cols-3 border-t border-[color:var(--border)]/60 pt-3" data-adv-only>
+            <div>
+              <label for="adv-interest" class="block text-xs font-medium text-[color:var(--fg)]">
+                Taxable Interest
+              </label>
+              <input
+                id="adv-interest"
+                type="number"
+                min="0"
+                step="250"
+                placeholder="e.g. 1,500"
+                class="mt-1 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-sm font-bold text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)]"
+                data-adv-interest />
+            </div>
+            <div>
+              <label for="adv-qualified-div" class="block text-xs font-medium text-[color:var(--fg)]">
+                Qualified Dividends / LTCG
+              </label>
+              <input
+                id="adv-qualified-div"
+                type="number"
+                min="0"
+                step="500"
+                placeholder="e.g. 4,000"
+                class="mt-1 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-sm font-bold text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)]"
+                data-adv-qualified-div />
+              <span class="text-[9px] text-cyan-600 dark:text-cyan-400 font-semibold">Taxed at 0%, 15%, or 20%</span>
+            </div>
+            <div>
+              <label for="adv-other-inc" class="block text-xs font-medium text-[color:var(--fg)]">
+                Other Income
+              </label>
+              <input
+                id="adv-other-inc"
+                type="number"
+                min="0"
+                step="500"
+                placeholder="e.g. 2,000"
+                class="mt-1 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-sm font-bold text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)]"
+                data-adv-other-inc />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SECTION 3: Above-the-Line Pre-Tax Deductions (Adjustments) -->
+      <div class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 sm:p-6 space-y-4 shadow-sm" data-adv-only>
+        <h3 class="text-sm font-bold uppercase tracking-wider text-[color:var(--fg)] flex items-center gap-2">
+          <Icon name="math" class="w-4 h-4 text-[color:var(--accent)]" />
+          <span>3. Pre-Tax Deductions (Adjustments to AGI)</span>
+        </h3>
+
+        <div class="grid gap-3 sm:grid-cols-2">
+          <div>
+            <div class="flex justify-between items-center text-xs">
+              <label for="adv-401k" class="font-medium text-[color:var(--fg)]">401(k) / 403(b) / TSP</label>
+              <span class="text-[color:var(--muted)]">Max $24,000</span>
+            </div>
+            <input
+              id="adv-401k"
+              type="number"
+              min="0"
+              max="31500"
+              step="500"
+              placeholder="e.g. 10,000"
+              class="mt-1 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-sm font-bold text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)]"
+              data-adv-401k />
+          </div>
+
+          <div>
+            <div class="flex justify-between items-center text-xs">
+              <label for="adv-ira" class="font-medium text-[color:var(--fg)]">Traditional IRA</label>
+              <span class="text-[color:var(--muted)]">Max $7,500</span>
+            </div>
+            <input
+              id="adv-ira"
+              type="number"
+              min="0"
+              max="8500"
+              step="500"
+              placeholder="e.g. 5,000"
+              class="mt-1 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-sm font-bold text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)]"
+              data-adv-ira />
+          </div>
+
+          <div>
+            <div class="flex justify-between items-center text-xs">
+              <label for="adv-hsa" class="font-medium text-[color:var(--fg)]">Health Savings Account (HSA)</label>
+              <span class="text-[color:var(--muted)]">Max $4,400 / $8,750</span>
+            </div>
+            <input
+              id="adv-hsa"
+              type="number"
+              min="0"
+              max="9750"
+              step="250"
+              placeholder="e.g. 3,500"
+              class="mt-1 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-sm font-bold text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)]"
+              data-adv-hsa />
+          </div>
+
+          <div>
+            <div class="flex justify-between items-center text-xs">
+              <label for="adv-student-loan" class="font-medium text-[color:var(--fg)]">Student Loan Interest</label>
+              <span class="text-[color:var(--muted)]">Max $2,500</span>
+            </div>
+            <input
+              id="adv-student-loan"
+              type="number"
+              min="0"
+              max="2500"
+              step="250"
+              placeholder="e.g. 1,200"
+              class="mt-1 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-sm font-bold text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)]"
+              data-adv-student-loan />
+          </div>
+        </div>
+      </div>
+
+      <!-- SECTION 4: Deductions Optimizer -->
+      <div class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 sm:p-6 space-y-4 shadow-sm" data-adv-only>
+        <div class="flex items-center justify-between">
+          <h3 class="text-sm font-bold uppercase tracking-wider text-[color:var(--fg)] flex items-center gap-2">
+            <Icon name="scale" class="w-4 h-4 text-[color:var(--accent)]" />
+            <span>4. Deductions Optimizer: Standard vs. Itemized</span>
+          </h3>
+          <span data-deduction-badge class="rounded-full bg-cyan-500/10 px-2.5 py-0.5 text-xs font-bold text-cyan-600 dark:text-cyan-400 border border-cyan-500/20 inline-flex items-center gap-1.5">
+            <Icon name="check" class="w-3.5 h-3.5" />
+            <span>Auto-Selected: Standard ($16,100)</span>
+          </span>
+        </div>
+
+        <div class="grid gap-3 sm:grid-cols-2">
+          <div>
+            <label for="adv-mortgage" class="block text-xs font-medium text-[color:var(--fg)]">
+              Home Mortgage Interest
+            </label>
+            <input
+              id="adv-mortgage"
+              type="number"
+              min="0"
+              step="500"
+              placeholder="e.g. 12,000"
+              class="mt-1 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-sm font-bold text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)]"
+              data-adv-mortgage />
+          </div>
+
+          <div>
+            <label for="adv-salt" class="block text-xs font-medium text-[color:var(--fg)]">
+              State &amp; Local Taxes (SALT capped at $10k)
+            </label>
+            <input
+              id="adv-salt"
+              type="number"
+              min="0"
+              step="500"
+              placeholder="e.g. 8,000"
+              class="mt-1 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-sm font-bold text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)]"
+              data-adv-salt />
+          </div>
+
+          <div>
+            <label for="adv-charity" class="block text-xs font-medium text-[color:var(--fg)]">
+              Charitable Donations (Gifts to Charity)
+            </label>
+            <input
+              id="adv-charity"
+              type="number"
+              min="0"
+              step="250"
+              placeholder="e.g. 3,000"
+              class="mt-1 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-sm font-bold text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)]"
+              data-adv-charity />
+          </div>
+
+          <div>
+            <label for="adv-medical" class="block text-xs font-medium text-[color:var(--fg)]">
+              Medical &amp; Dental Expenses (Above 7.5% AGI)
+            </label>
+            <input
+              id="adv-medical"
+              type="number"
+              min="0"
+              step="500"
+              placeholder="e.g. 5,000"
+              class="mt-1 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-sm font-bold text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)]"
+              data-adv-medical />
+          </div>
+        </div>
+      </div>
+
+      <!-- SECTION 5: Taxes Already Paid / Withheld -->
+      <div class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 sm:p-6 space-y-4 shadow-sm" data-adv-only>
+        <h3 class="text-sm font-bold uppercase tracking-wider text-[color:var(--fg)] flex items-center gap-2">
+          <Icon name="document" class="w-4 h-4 text-[color:var(--accent)]" />
+          <span>5. Taxes Already Paid / Withheld (Form W-2 / 1040-ES)</span>
+        </h3>
+
+        <div class="grid gap-4 sm:grid-cols-2">
+          <div>
+            <div class="flex justify-between items-center text-xs">
+              <label for="adv-fed-withheld" class="font-bold text-[color:var(--fg)]">Federal Income Tax Withheld</label>
+              <span class="text-[color:var(--muted)]">W-2 Box 2</span>
+            </div>
+            <div class="relative mt-1">
+              <span class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-xs font-bold text-[color:var(--muted)]">
+                {profile.defaultCurrencySymbol}
+              </span>
+              <input
+                id="adv-fed-withheld"
+                type="number"
+                min="0"
+                step="500"
+                placeholder="e.g. 9,000"
+                class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] py-2 pl-7 pr-3 text-sm font-bold text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)]"
+                data-adv-fed-withheld />
+            </div>
+          </div>
+
+          <div>
+            <div class="flex justify-between items-center text-xs">
+              <label for="adv-state-withheld" class="font-bold text-[color:var(--fg)]">State Income Tax Withheld</label>
+              <span class="text-[color:var(--muted)]">W-2 Box 17</span>
+            </div>
+            <div class="relative mt-1">
+              <span class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-xs font-bold text-[color:var(--muted)]">
+                {profile.defaultCurrencySymbol}
+              </span>
+              <input
+                id="adv-state-withheld"
+                type="number"
+                min="0"
+                step="250"
+                placeholder="e.g. 3,000"
+                class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] py-2 pl-7 pr-3 text-sm font-bold text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)]"
+                data-adv-state-withheld />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT COLUMN: RESULTS, PAYCHECK SCHEDULE & AUDIT TRAIL -->
+    <div class="space-y-6">
+      <!-- Reusable Paycheck Schedule Card -->
+      <PaycheckFrequencyTable
+        netAnnualTakeHome={initialAdvancedResult.netAnnualTakeHome}
+        currency={profile.defaultCurrency}
+        currencySymbol={profile.defaultCurrencySymbol}
+      />
+
+      <!-- Reusable Form 1040 Audit Trail -->
+      <TaxBreakdownTable
+        title="Tax Return Audit Breakdown (Form 1040)"
+        currency={profile.defaultCurrency}
+        currencySymbol={profile.defaultCurrencySymbol}
+        totalGrossIncome={initialAdvancedResult.totalGrossIncome}
+        totalAdjustments={initialAdvancedResult.totalAdjustmentsToIncome}
+        adjustedGrossIncome={initialAdvancedResult.adjustedGrossIncome}
+        deductionAmount={initialAdvancedResult.deductionAmount}
+        deductionLabel="Deductions (Standard Claimed)"
+        taxableIncome={initialAdvancedResult.taxableIncome}
+        regularIncomeTax={initialAdvancedResult.regularIncomeTax}
+        preferentialCapitalGainsTax={initialAdvancedResult.preferentialCapitalGainsTax}
+        totalTaxCredits={initialAdvancedResult.totalTaxCredits}
+        netFederalIncomeTax={initialAdvancedResult.netFederalIncomeTax}
+        totalFicaTax={initialAdvancedResult.totalFicaTax}
+        ficaLabel="FICA (Social Security & Medicare)"
+        selfEmploymentTax={initialAdvancedResult.selfEmploymentTax}
+        stateIncomeTax={initialAdvancedResult.stateIncomeTax}
+        stateTaxName="Regional / State Tax"
+        totalAllTaxes={initialAdvancedResult.totalAllTaxes}
+        totalPaymentsAndWithholdings={initialAdvancedResult.totalPaymentsAndWithholdings}
+        federalRefundOrOwed={initialAdvancedResult.federalRefundOrOwed}
+      />
+
+      <!-- Marginal Rates Summary Card -->
+      <div class="grid grid-cols-2 gap-3">
+        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 shadow-sm">
+          <p class="text-xs font-medium text-[color:var(--muted)]">Top Marginal Rate</p>
+          <p class="mt-1 text-2xl font-bold text-rose-500" data-marginal-rate>
+            {formatPercent(initialAdvancedResult.marginalFederalRate, 1)}
+          </p>
+          <p class="text-[10px] text-[color:var(--muted)]">On your next dollar earned</p>
+        </div>
+
+        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 shadow-sm">
+          <p class="text-xs font-medium text-[color:var(--muted)]">Total Effective Rate</p>
+          <p class="mt-1 text-2xl font-bold text-amber-500" data-effective-rate>
+            {formatPercent(initialAdvancedResult.effectiveTotalTaxRate, 1)}
+          </p>
+          <p class="text-[10px] text-[color:var(--muted)]">Blended percentage of gross</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Reusable Progressive Tax Bracket Table -->
+  <TaxBracketsTable
+    taxYear={profile.defaultTaxYear}
+    brackets={initialResult.bracketBreakdown}
+    currency={profile.defaultCurrency}
+    currencySymbol={profile.defaultCurrencySymbol}
+  />
+
+  <!-- Step-by-Step Worked Calculation Example -->
+  <section class="mt-8 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 sm:p-6 space-y-4">
+    <h3 class="text-base font-bold text-[color:var(--fg)] flex items-center gap-2">
+      <Icon name="document" class="w-4 h-4 text-[color:var(--accent)]" />
+      <span>Step-by-Step Worked Calculation Example ({defaultYearData.taxYear})</span>
+    </h3>
+    <div class="space-y-3 text-xs sm:text-sm text-[color:var(--muted)] leading-relaxed">
+      <p>
+        Here is how take-home pay is computed for an annual gross salary of <strong class="text-[color:var(--fg)] font-mono">{formatCurrency(initialIncome, profile.defaultCurrency, profile.defaultCurrencySymbol)}</strong>:
+      </p>
+      <ol class="list-decimal pl-5 space-y-2">
+        <li>
+          <strong class="text-[color:var(--fg)]">Subtract Statutory Allowances &amp; Deductions:</strong><br />
+          Gross income is reduced by the standard deduction ({formatCurrency(defaultYearData.standardDeduction, profile.defaultCurrency, profile.defaultCurrencySymbol)} for Single filers), arriving at a taxable base of <strong class="text-[color:var(--fg)] font-mono">{formatCurrency(initialResult.taxableIncome, profile.defaultCurrency, profile.defaultCurrencySymbol)}</strong>.
+        </li>
+        <li>
+          <strong class="text-[color:var(--fg)]">Calculate Progressive Marginal Tax Slices:</strong><br />
+          Tax is calculated slice-by-slice across statutory IRS brackets, totaling <strong class="text-rose-500 font-bold">{formatCurrency(initialResult.totalIncomeTax, profile.defaultCurrency, profile.defaultCurrencySymbol)}</strong> in total income tax.
+        </li>
+        <li>
+          <strong class="text-[color:var(--fg)]">Deduct Social Insurance Contributions:</strong><br />
+          Employee FICA contributions (6.2% Social Security + 1.45% Medicare) total <strong class="text-indigo-500 font-bold">{formatCurrency(initialResult.totalSocialContributions, profile.defaultCurrency, profile.defaultCurrencySymbol)}</strong>.
+        </li>
+        <li>
+          <strong class="text-[color:var(--fg)]">Net Disposable Take-Home Pay:</strong><br />
+          Subtracting all taxes from gross income yields an estimated take-home pay of <strong class="text-cyan-500 font-extrabold font-mono">{formatCurrency(initialResult.netIncomeAnnual, profile.defaultCurrency, profile.defaultCurrencySymbol)}</strong>/yr ({formatCurrency(initialResult.netIncomeMonthly, profile.defaultCurrency, profile.defaultCurrencySymbol)}/mo).
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- Parameter Documentation Guide -->
+  <div class="mt-8">
+    <CalculatorParameterGuide parameters={taxParameterGuide} />
+  </div>
+
+  <!-- Statutory Assumptions & Official Source -->
+  <footer class="mt-8 pt-6 border-t border-[color:var(--border)] text-xs text-[color:var(--muted)] space-y-3">
+    <div class="flex flex-wrap items-center justify-between gap-3">
+      <div class="flex items-center gap-2">
+        <span class="inline-block w-2 h-2 rounded-full bg-cyan-500"></span>
+        <span class="font-medium text-[color:var(--fg)]">Official Authority:</span>
+        <a href={defaultYearData.officialSourceUrl} target="_blank" rel="noopener noreferrer" class="text-[color:var(--accent)] hover:underline font-semibold">
+          {defaultYearData.officialSourceName} ({defaultYearData.taxYear})
+        </a>
+      </div>
+      <span>Last data audit: <time datetime={defaultYearData.lastVerifiedDate}>{defaultYearData.lastVerifiedDate}</time></span>
+    </div>
+    <ul class="list-disc pl-5 space-y-1 text-[11px]">
+      {defaultYearData.assumptions.map((asm) => (
+        <li>{asm}</li>
+      ))}
+    </ul>
+    <TaxDisclaimer countryName={profile.name} taxYear={defaultYearData.taxYear} />
+  </footer>
+</div>
+
+<script>
+  import { calculateAdvancedTax } from '../../utils/tax/us-engine';
+
+  function initUsTaxCalculator() {
+    const apps = document.querySelectorAll('[data-tax-app][data-country-id="us"]');
+
+    apps.forEach((app) => {
+      try {
+        const profileJson = app.getAttribute('data-profile-json');
+        if (!profileJson) return;
+        const profile = JSON.parse(profileJson);
+
+        // Controls
+        const yearSelect = app.querySelector('[data-tax-year]') as HTMLSelectElement | null;
+        const engineTabs = Array.from(app.querySelectorAll('[data-engine-tab]')) as HTMLElement[];
+        const statusSelect = app.querySelector('[data-adv-status]') as HTMLSelectElement | null;
+        const regionSelect = app.querySelector('[data-adv-region]') as HTMLSelectElement | null;
+
+        // Current mode state
+        let currentMode: 'advanced' | 'quick' = 'advanced';
+
+        // Inputs
+        const w2Input = app.querySelector('[data-adv-w2]') as HTMLInputElement | null;
+        const spouseW2Input = app.querySelector('[data-adv-spouse-w2]') as HTMLInputElement | null;
+        const spouseWrap = app.querySelector('[data-adv-spouse-wrap]') as HTMLElement | null;
+        const spouseAgeWrap = app.querySelector('[data-adv-spouse-age-wrap]') as HTMLElement | null;
+        const businessInput = app.querySelector('[data-adv-business]') as HTMLInputElement | null;
+        const otherIncInput = app.querySelector('[data-adv-other-inc]') as HTMLInputElement | null;
+        const qualifiedDivInput = app.querySelector('[data-adv-qualified-div]') as HTMLInputElement | null;
+        const interestInput = app.querySelector('[data-adv-interest]') as HTMLInputElement | null;
+
+        // Dependents & Age
+        const kidsInput = app.querySelector('[data-adv-kids]') as HTMLInputElement | null;
+        const otherDepsInput = app.querySelector('[data-adv-other-deps]') as HTMLInputElement | null;
+        const taxpayer65Check = app.querySelector('[data-adv-taxpayer-65]') as HTMLInputElement | null;
+        const spouse65Check = app.querySelector('[data-adv-spouse-65]') as HTMLInputElement | null;
+
+        // Pre-tax deductions
+        const ret401kInput = app.querySelector('[data-adv-401k]') as HTMLInputElement | null;
+        const iraInput = app.querySelector('[data-adv-ira]') as HTMLInputElement | null;
+        const hsaInput = app.querySelector('[data-adv-hsa]') as HTMLInputElement | null;
+        const studentLoanInput = app.querySelector('[data-adv-student-loan]') as HTMLInputElement | null;
+
+        // Itemized deductions
+        const mortgageInput = app.querySelector('[data-adv-mortgage]') as HTMLInputElement | null;
+        const saltInput = app.querySelector('[data-adv-salt]') as HTMLInputElement | null;
+        const charityInput = app.querySelector('[data-adv-charity]') as HTMLInputElement | null;
+        const medicalInput = app.querySelector('[data-adv-medical]') as HTMLInputElement | null;
+
+        // Withholding
+        const fedWithheldInput = app.querySelector('[data-adv-fed-withheld]') as HTMLInputElement | null;
+        const stateWithheldInput = app.querySelector('[data-adv-state-withheld]') as HTMLInputElement | null;
+
+        // Dynamic Outputs
+        const heroBadge = app.querySelector('[data-hero-badge]');
+        const heroAmount = app.querySelector('[data-hero-amount]');
+        const heroSubtext = app.querySelector('[data-hero-subtext]');
+        const heroTakehome = app.querySelector('[data-hero-takehome]');
+        const heroEffectiveRate = app.querySelector('[data-hero-effective-rate]');
+        const deductionBadge = app.querySelector('[data-deduction-badge]');
+
+        // Allocation Bar
+        const barTakehome = app.querySelector('[data-bar-takehome]') as HTMLElement | null;
+        const barFedtax = app.querySelector('[data-bar-fedtax]') as HTMLElement | null;
+        const barFica = app.querySelector('[data-bar-fica]') as HTMLElement | null;
+        const barStatetax = app.querySelector('[data-bar-statetax]') as HTMLElement | null;
+        const barPretax = app.querySelector('[data-bar-pretax]') as HTMLElement | null;
+        const allocationLabel = app.querySelector('[data-allocation-label]');
+
+        // Paycheck Schedule
+        const schedMonthly = app.querySelector('[data-sched-monthly]');
+        const schedSemiMonthly = app.querySelector('[data-sched-semimonthly]');
+        const schedBiweekly = app.querySelector('[data-sched-biweekly]');
+        const schedWeekly = app.querySelector('[data-sched-weekly]');
+        const schedDaily = app.querySelector('[data-sched-daily]');
+        const schedHourly = app.querySelector('[data-sched-hourly]');
+
+        // Audit Trail Elements
+        const resGross = app.querySelector('[data-res-gross]');
+        const resAdjustments = app.querySelector('[data-res-adjustments]');
+        const resAgi = app.querySelector('[data-res-agi]');
+        const resDeduction = app.querySelector('[data-res-deduction]');
+        const resTaxable = app.querySelector('[data-res-taxable]');
+        const resRegularTax = app.querySelector('[data-res-regular-tax]');
+        const resCapGainsTax = app.querySelector('[data-res-capgains-tax]');
+        const resCredits = app.querySelector('[data-res-credits]');
+        const resCreditsWrap = app.querySelector('[data-res-credits-wrap]') as HTMLElement | null;
+        const resNetFed = app.querySelector('[data-res-net-fed]');
+        const resFica = app.querySelector('[data-res-fica]');
+        const resSe = app.querySelector('[data-res-se]');
+        const resSeWrap = app.querySelector('[data-res-se-wrap]') as HTMLElement | null;
+        const resStateName = app.querySelector('[data-res-state-name]');
+        const resStateTax = app.querySelector('[data-res-state-tax]');
+        const resTotalTax = app.querySelector('[data-res-total-tax]');
+        const resWithheld = app.querySelector('[data-res-withheld]');
+        const resRefundLabel = app.querySelector('[data-res-refund-label]');
+        const resRefundVal = app.querySelector('[data-res-refund-val]');
+        const marginalRateEl = app.querySelector('[data-marginal-rate]');
+        const effectiveRateEl = app.querySelector('[data-effective-rate]');
+        const bracketTbody = app.querySelector('[data-bracket-tbody]');
+        const copySummaryBtn = app.querySelector('[data-copy-summary-btn]');
+
+        function formatMoney(amount: number, currency?: string, symbol?: string): string {
+          try {
+            return new Intl.NumberFormat('en-US', {
+              style: 'currency',
+              currency: currency || profile.defaultCurrency || 'USD',
+              minimumFractionDigits: 0,
+              maximumFractionDigits: 0,
+            }).format(amount);
+          } catch (e) {
+            return (symbol || profile.defaultCurrencySymbol || '$') + Math.round(amount).toLocaleString('en-US');
+          }
+        }
+
+        function calculate() {
+          const selectedYear = yearSelect ? yearSelect.value : profile.defaultTaxYear;
+          const yearData = profile.years[selectedYear] || profile.years[profile.defaultTaxYear];
+          const cur = yearData.currency;
+          const sym = yearData.currencySymbol;
+          const status = statusSelect ? statusSelect.value : 'single';
+
+          const isJoint = status === 'married_joint' || status === 'qualifying_widow';
+          if (spouseWrap) spouseWrap.className = isJoint ? 'block' : 'hidden';
+          if (spouseAgeWrap) spouseAgeWrap.className = isJoint ? 'flex items-center gap-1.5 cursor-pointer' : 'hidden';
+
+          const rawW2 = w2Input?.value?.trim();
+          const primaryW2 = rawW2 !== '' && rawW2 !== undefined ? Math.max(0, parseFloat(rawW2) || 0) : 0;
+          const spouseW2 = (isJoint && currentMode === 'advanced') ? Math.max(0, parseFloat(spouseW2Input?.value || '0') || 0) : 0;
+          const businessNet = currentMode === 'advanced' ? Math.max(0, parseFloat(businessInput?.value || '0') || 0) : 0;
+          const otherInc = currentMode === 'advanced' ? Math.max(0, parseFloat(otherIncInput?.value || '0') || 0) : 0;
+          const qualifiedDiv = currentMode === 'advanced' ? Math.max(0, parseFloat(qualifiedDivInput?.value || '0') || 0) : 0;
+          const interest = currentMode === 'advanced' ? Math.max(0, parseFloat(interestInput?.value || '0') || 0) : 0;
+
+          // Pre-tax deductions
+          const ret401k = currentMode === 'advanced' ? Math.max(0, parseFloat(ret401kInput?.value || '0') || 0) : 0;
+          const tradIra = currentMode === 'advanced' ? Math.max(0, parseFloat(iraInput?.value || '0') || 0) : 0;
+          const hsa = currentMode === 'advanced' ? Math.max(0, parseFloat(hsaInput?.value || '0') || 0) : 0;
+          const studentLoan = currentMode === 'advanced' ? Math.max(0, parseFloat(studentLoanInput?.value || '0') || 0) : 0;
+
+          // Itemized Deductions
+          const mortgage = currentMode === 'advanced' ? Math.max(0, parseFloat(mortgageInput?.value || '0') || 0) : 0;
+          const saltRaw = currentMode === 'advanced' ? Math.max(0, parseFloat(saltInput?.value || '0') || 0) : 0;
+          const charity = currentMode === 'advanced' ? Math.max(0, parseFloat(charityInput?.value || '0') || 0) : 0;
+          const medicalRaw = currentMode === 'advanced' ? Math.max(0, parseFloat(medicalInput?.value || '0') || 0) : 0;
+
+          // Taxpayer / Spouse age 65
+          const taxpayerAge65OrOver = taxpayer65Check?.checked || false;
+          const spouseAge65OrOver = (isJoint && spouse65Check?.checked) || false;
+
+          // Dependents
+          const kids = currentMode === 'advanced' ? Math.max(0, parseInt(kidsInput?.value || '0', 10) || 0) : 0;
+          const otherDeps = currentMode === 'advanced' ? Math.max(0, parseInt(otherDepsInput?.value || '0', 10) || 0) : 0;
+
+          // Withholding
+          const fedWithheld = currentMode === 'advanced' ? Math.max(0, parseFloat(fedWithheldInput?.value || '0') || 0) : 0;
+          const stateWithheld = currentMode === 'advanced' ? Math.max(0, parseFloat(stateWithheldInput?.value || '0') || 0) : 0;
+
+          const regCode = regionSelect ? regionSelect.value : undefined;
+
+          const res = calculateAdvancedTax(profile, {
+            taxYear: selectedYear,
+            filingStatus: status,
+            regionCode: regCode,
+            primaryW2Income: primaryW2,
+            spouseW2Income: spouseW2,
+            businessNetIncome: businessNet,
+            taxableInterest: interest,
+            qualifiedDividends: qualifiedDiv,
+            otherIncome: otherInc,
+            preTaxRetirement401k: ret401k,
+            traditionalIraDeduction: tradIra,
+            hsaDeduction: hsa,
+            studentLoanInterest: studentLoan,
+            itemizedSaltStateLocalTax: saltRaw,
+            itemizedMortgageInterest: mortgage,
+            itemizedCharitableDonations: charity,
+            itemizedMedicalDentalExpenses: medicalRaw,
+            taxpayerAge65OrOver,
+            spouseAge65OrOver,
+            numChildrenUnder17: kids,
+            numOtherDependents: otherDeps,
+            federalTaxWithheld: fedWithheld,
+            stateTaxWithheld: stateWithheld,
+            deductionMode: currentMode === 'quick' ? 'standard' : 'auto',
+          });
+
+          if (deductionBadge) {
+            deductionBadge.innerHTML = res.deductionUsed === 'itemized'
+              ? `<span class="h-1.5 w-1.5 rounded-full bg-cyan-500"></span> Itemized Claimed: ${formatMoney(res.deductionAmount, cur, sym)}`
+              : `<span class="h-1.5 w-1.5 rounded-full bg-cyan-500"></span> Standard: ${formatMoney(res.deductionAmount, cur, sym)}`;
+          }
+
+          // Brackets Calculation for display table
+          const fsConfig = yearData.filingStatuses?.[status];
+          const brackets = fsConfig?.brackets || yearData.nationalBrackets || [];
+          const bracketBreakdown: any[] = [];
+
+          for (let i = 0; i < brackets.length; i++) {
+            const b = brackets[i];
+            if (res.ordinaryTaxableIncome > b.threshold) {
+              const slice = b.upTo !== undefined ? Math.min(res.ordinaryTaxableIncome, b.upTo) - b.threshold : res.ordinaryTaxableIncome - b.threshold;
+              const tax = slice * b.rate;
+              const range = b.upTo !== undefined ? `${formatMoney(b.threshold, cur, sym)} – ${formatMoney(b.upTo, cur, sym)}` : `Over ${formatMoney(b.threshold, cur, sym)}`;
+              bracketBreakdown.push({ range, rate: (b.rate * 100).toFixed(1) + '%', taxable: slice, tax });
+            } else {
+              const range = b.upTo !== undefined ? `${formatMoney(b.threshold, cur, sym)} – ${formatMoney(b.upTo, cur, sym)}` : `Over ${formatMoney(b.threshold, cur, sym)}`;
+              bracketBreakdown.push({ range, rate: (b.rate * 100).toFixed(1) + '%', taxable: 0, tax: 0 });
+            }
+          }
+
+          const netFedIncomeTax = res.netFederalIncomeTax;
+          const totalFica = res.totalFicaTax;
+          const stateTax = res.stateIncomeTax;
+          const stateName = res.stateTaxName;
+          const selfEmploymentTax = res.selfEmploymentTax;
+          const totalAdjustments = res.totalAdjustmentsToIncome;
+          const agi = res.adjustedGrossIncome;
+          const chosenDeduction = res.deductionAmount;
+          const taxableIncome = res.taxableIncome;
+          const regularIncomeTax = res.regularIncomeTax;
+          const preferentialTax = res.preferentialCapitalGainsTax;
+          const totalCredits = res.totalTaxCredits;
+          const netTakeHome = res.netAnnualTakeHome;
+          const netBalance = res.combinedRefundOrOwed;
+          const totalGrossIncome = res.totalGrossIncome;
+          const totalPayments = res.totalPaymentsAndWithholdings;
+          const totalTaxes = res.totalAllTaxes;
+          const effRate = res.effectiveTotalTaxRate;
+          const marginalRate = res.marginalFederalRate;
+
+          // Update Hero UI
+          if (heroAmount) {
+            if (currentMode === 'quick') {
+              heroAmount.textContent = formatMoney(netTakeHome, cur, sym);
+            } else {
+              heroAmount.textContent = (netBalance >= 0 ? '+' : '-') + formatMoney(Math.abs(netBalance), cur, sym);
+            }
+          }
+
+          if (heroBadge) {
+            if (currentMode === 'quick') {
+              heroBadge.textContent = totalGrossIncome === 0 ? 'Awaiting Income' : 'Estimated Take-Home Pay';
+              heroBadge.className = totalGrossIncome === 0
+                ? 'inline-flex items-center rounded-full bg-slate-500/10 px-2.5 py-0.5 text-xs font-bold text-[color:var(--muted)] border border-[color:var(--border)]'
+                : 'inline-flex items-center rounded-full bg-cyan-500/10 px-2.5 py-0.5 text-xs font-bold text-cyan-600 dark:text-cyan-400 border border-cyan-500/20';
+            } else {
+              if (totalPayments === 0 && totalTaxes > 0) {
+                heroBadge.textContent = 'Estimated Balance Owed';
+                heroBadge.className = 'inline-flex items-center rounded-full bg-amber-500/10 px-2.5 py-0.5 text-xs font-bold text-amber-500 border border-amber-500/20';
+              } else if (netBalance >= 0) {
+                heroBadge.textContent = 'Estimated IRS Refund';
+                heroBadge.className = 'inline-flex items-center rounded-full bg-cyan-500/10 px-2.5 py-0.5 text-xs font-bold text-cyan-600 dark:text-cyan-400 border border-cyan-500/20';
+              } else {
+                heroBadge.textContent = 'Balance Due (Tax Owed)';
+                heroBadge.className = 'inline-flex items-center rounded-full bg-rose-500/10 px-2.5 py-0.5 text-xs font-bold text-rose-500 border border-rose-500/20';
+              }
+            }
+          }
+
+          if (heroSubtext) {
+            heroSubtext.textContent = currentMode === 'quick'
+              ? `Estimated net disposable salary after federal tax, FICA, and state deductions.`
+              : (totalPayments === 0
+                  ? `Computed tax liability before payments. Enter withholding in Step 5 for refund calculation.`
+                  : `Estimated ${netBalance >= 0 ? 'refund' : 'balance due'} based on withholding entered.`);
+          }
+
+          if (heroTakehome) heroTakehome.textContent = formatMoney(netTakeHome, cur, sym);
+          if (heroEffectiveRate) heroEffectiveRate.textContent = `${effRate.toFixed(1)}%`;
+          if (effectiveRateEl) effectiveRateEl.textContent = `${effRate.toFixed(1)}%`;
+          if (marginalRateEl) marginalRateEl.textContent = `${marginalRate.toFixed(1)}%`;
+
+          // Paycheck Schedule
+          if (schedMonthly) schedMonthly.textContent = formatMoney(netTakeHome / 12, cur, sym);
+          if (schedSemiMonthly) schedSemiMonthly.textContent = formatMoney(netTakeHome / 24, cur, sym);
+          if (schedBiweekly) schedBiweekly.textContent = formatMoney(netTakeHome / 26, cur, sym);
+          if (schedWeekly) schedWeekly.textContent = formatMoney(netTakeHome / 52, cur, sym);
+          if (schedDaily) schedDaily.textContent = formatMoney(netTakeHome / 260, cur, sym);
+          if (schedHourly) schedHourly.textContent = formatMoney(netTakeHome / 2080, cur, sym);
+
+          // Allocation Bar
+          const pretaxSum = ret401k + tradIra + hsa;
+          const denom = Math.max(totalGrossIncome, 1);
+          const thPct = Math.min(100, Math.max(0, (netTakeHome / denom) * 100));
+          const fedPct = Math.min(100, Math.max(0, (netFedIncomeTax / denom) * 100));
+          const ficaPct = Math.min(100, Math.max(0, (totalFica / denom) * 100));
+          const stPct = Math.min(100, Math.max(0, (stateTax / denom) * 100));
+          const ptPct = Math.min(100, Math.max(0, (pretaxSum / denom) * 100));
+
+          if (barTakehome) barTakehome.style.width = `${thPct}%`;
+          if (barFedtax) barFedtax.style.width = `${fedPct}%`;
+          if (barFica) barFica.style.width = `${ficaPct}%`;
+          if (barStatetax) barStatetax.style.width = `${stPct}%`;
+          if (barPretax) barPretax.style.width = `${ptPct}%`;
+          if (allocationLabel) {
+            allocationLabel.textContent = `Take-Home: ${thPct.toFixed(0)}% | Taxes: ${((totalTaxes / denom) * 100).toFixed(0)}%`;
+          }
+
+          // Audit Breakdown Values
+          if (resGross) resGross.textContent = formatMoney(totalGrossIncome, cur, sym);
+          if (resAdjustments) resAdjustments.textContent = `-${formatMoney(totalAdjustments, cur, sym)}`;
+          if (resAgi) resAgi.textContent = formatMoney(agi, cur, sym);
+          if (resDeduction) resDeduction.textContent = `-${formatMoney(chosenDeduction, cur, sym)}`;
+          if (resTaxable) resTaxable.textContent = formatMoney(taxableIncome, cur, sym);
+          if (resRegularTax) resRegularTax.textContent = formatMoney(regularIncomeTax, cur, sym);
+          if (resCapGainsTax) resCapGainsTax.textContent = formatMoney(preferentialTax, cur, sym);
+          if (resCredits) resCredits.textContent = `-${formatMoney(totalCredits, cur, sym)}`;
+          if (resCreditsWrap) resCreditsWrap.className = totalCredits > 0 ? 'flex justify-between text-cyan-500 font-semibold' : 'hidden';
+          if (resNetFed) resNetFed.textContent = formatMoney(netFedIncomeTax, cur, sym);
+          if (resFica) resFica.textContent = formatMoney(totalFica, cur, sym);
+          if (resSe) resSe.textContent = formatMoney(selfEmploymentTax, cur, sym);
+          if (resSeWrap) resSeWrap.className = selfEmploymentTax > 0 ? 'flex justify-between text-purple-500' : 'hidden';
+          if (resStateName) resStateName.textContent = stateName;
+          if (resStateTax) resStateTax.textContent = formatMoney(stateTax, cur, sym);
+          if (resTotalTax) resTotalTax.textContent = formatMoney(totalTaxes, cur, sym);
+          if (resWithheld) resWithheld.textContent = formatMoney(totalPayments, cur, sym);
+
+          if (resRefundLabel && resRefundVal) {
+            if (netBalance >= 0) {
+              resRefundLabel.textContent = 'Net Estimated Refund';
+              resRefundLabel.className = 'text-cyan-500 dark:text-cyan-400';
+              resRefundVal.textContent = `+${formatMoney(netBalance, cur, sym)}`;
+              resRefundVal.className = 'text-cyan-500 dark:text-cyan-400 font-mono font-bold';
+            } else {
+              resRefundLabel.textContent = 'Net Balance Owed';
+              resRefundLabel.className = 'text-rose-500';
+              resRefundVal.textContent = `-${formatMoney(Math.abs(netBalance), cur, sym)}`;
+              resRefundVal.className = 'text-rose-500 font-mono font-bold';
+            }
+          }
+
+          // Bracket Table Render
+          if (bracketTbody) {
+            bracketTbody.innerHTML = bracketBreakdown
+              .map(
+                (row) => `
+              <tr>
+                <td class="px-4 py-2.5 font-mono">${row.range}</td>
+                <td class="px-4 py-2.5 font-bold">${row.rate}</td>
+                <td class="px-4 py-2.5">${formatMoney(row.taxable, cur, sym)}</td>
+                <td class="px-4 py-2.5 text-right font-mono font-bold text-rose-500">${formatMoney(row.tax, cur, sym)}</td>
+              </tr>
+            `
+              )
+              .join('');
+          }
+        }
+
+        // Mode Switching
+        function switchMode(newMode: 'advanced' | 'quick') {
+          currentMode = newMode;
+          engineTabs.forEach((tab) => {
+            const tabMode = tab.getAttribute('data-engine-tab');
+            if (tabMode === newMode) {
+              tab.className = 'shrink-0 min-w-max cursor-pointer rounded-xl px-3 py-1.5 text-xs font-bold transition inline-flex items-center gap-1.5 bg-[color:var(--accent)] text-white shadow-xs active';
+            } else {
+              tab.className = 'shrink-0 min-w-max cursor-pointer rounded-xl px-3 py-1.5 text-xs font-semibold text-[color:var(--muted)] hover:text-[color:var(--fg)] transition inline-flex items-center gap-1.5';
+            }
+          });
+
+          const advOnlyElements = app.querySelectorAll('[data-adv-only]');
+          advOnlyElements.forEach((el) => {
+            if (newMode === 'quick') {
+              (el as HTMLElement).style.display = 'none';
+            } else {
+              (el as HTMLElement).style.display = '';
+            }
+          });
+
+          calculate();
+        }
+
+        // Event Listeners
+        engineTabs.forEach((tab) => {
+          tab.addEventListener('click', () => {
+            const m = tab.getAttribute('data-engine-tab') as 'advanced' | 'quick';
+            if (m) switchMode(m);
+          });
+        });
+
+        const allInputs = app.querySelectorAll('input, select');
+        allInputs.forEach((inp) => {
+          inp.addEventListener('input', calculate);
+          inp.addEventListener('change', calculate);
+        });
+
+        // Copy Summary Button
+        if (copySummaryBtn) {
+          copySummaryBtn.addEventListener('click', async () => {
+            const takeHome = heroTakehome?.textContent || '$0';
+            const effRate = heroEffectiveRate?.textContent || '0%';
+            const gross = resGross?.textContent || '$0';
+            const totalTax = resTotalTax?.textContent || '$0';
+            const status = statusSelect ? statusSelect.options[statusSelect.selectedIndex].text : 'Single';
+            const year = yearSelect ? yearSelect.value : profile.defaultTaxYear;
+
+            const summary = `US Federal & State Tax Estimate (${year}):\n` +
+              `Status: ${status}\n` +
+              `Gross Income: ${gross}\n` +
+              `Total Estimated Taxes: ${totalTax}\n` +
+              `Effective Tax Rate: ${effRate}\n` +
+              `Net Annual Take-Home: ${takeHome}\n` +
+              `Calculated via Toolscastle Tax Platform`;
+
+            try {
+              await navigator.clipboard.writeText(summary);
+              const originalHtml = copySummaryBtn.innerHTML;
+              copySummaryBtn.innerHTML = `<span>Copied!</span>`;
+              setTimeout(() => {
+                copySummaryBtn.innerHTML = originalHtml;
+              }, 2000);
+            } catch (err) {
+              console.error('Clipboard copy failed', err);
+            }
+          });
+        }
+
+        // Initial run
+        calculate();
+      } catch (err) {
+        console.error('Tax calculator initialization error:', err);
+      }
+    });
+  }
+
+  // Initialize on load and on view transitions
+  initUsTaxCalculator();
+  document.addEventListener('astro:page-load', initUsTaxCalculator);
+</script>
+

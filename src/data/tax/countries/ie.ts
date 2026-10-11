@@ -30,10 +30,10 @@ export const ieProfile: CountryTaxProfile = {
       taxYear: '2026',
       currency: 'EUR',
       currencySymbol: '€',
-      standardDeduction: 20000, // Equivalent value of €4,000 tax credits (€2,000 Personal + €2,000 PAYE) at 20%
+      standardDeduction: 0,
       nationalBrackets: [
-        { threshold: 0, upTo: 24000, rate: 0.20, label: 'Standard Rate (20%)' }, // €20,000 to €44,000
-        { threshold: 24000, rate: 0.40, label: 'Higher Rate (40%)' }, // Over €44,000
+        { threshold: 0, upTo: 44000, rate: 0.20, label: 'Standard Rate (20%)' },
+        { threshold: 44000, rate: 0.40, label: 'Higher Rate (40%)' },
       ],
       socialContributions: [
         {
@@ -62,7 +62,12 @@ export const ieProfile: CountryTaxProfile = {
       },
       officialSourceName: 'Revenue Commissioners (Irish Tax and Customs)',
       officialSourceUrl: 'https://www.revenue.ie',
-      lastVerifiedDate: '2026-09-01',
+      lastVerifiedDate: '2026-10-01',
+      sourceMetadata: {
+        sourceName: 'Revenue Commissioners',
+        sourceUrl: 'https://www.revenue.ie/en/jobs-and-pensions/calculating-your-income-tax/index.aspx',
+        dateVerified: '2026-10-01'
+      },
       assumptions: [
         'Single person claiming standard Single Person Tax Credit (€2,000) and Employee Tax Credit (€2,000)',
         'Class A PRSI contributor (4.20%)',
@@ -73,10 +78,10 @@ export const ieProfile: CountryTaxProfile = {
       taxYear: '2025',
       currency: 'EUR',
       currencySymbol: '€',
-      standardDeduction: 20000,
+      standardDeduction: 0,
       nationalBrackets: [
-        { threshold: 0, upTo: 24000, rate: 0.20, label: 'Standard Rate (20%)' },
-        { threshold: 24000, rate: 0.40, label: 'Higher Rate (40%)' },
+        { threshold: 0, upTo: 44000, rate: 0.20, label: 'Standard Rate (20%)' },
+        { threshold: 44000, rate: 0.40, label: 'Higher Rate (40%)' },
       ],
       socialContributions: [
         {

@@ -31,11 +31,11 @@ export const itProfile: CountryTaxProfile = {
       taxYear: '2026',
       currency: 'EUR',
       currencySymbol: '€',
-      standardDeduction: 8500, // No-tax area (Detrazioni lavoro dipendente)
+      standardDeduction: 0,
       nationalBrackets: [
-        { threshold: 0, upTo: 19500, rate: 0.23, label: 'Scaglione 23%' }, // €8,500 to €28,000
-        { threshold: 19500, upTo: 41500, rate: 0.33, label: 'Scaglione 33%' }, // €28,001 to €50,000 (reduced to 33%)
-        { threshold: 41500, rate: 0.43, label: 'Scaglione 43%' }, // Over €50,000
+        { threshold: 0, upTo: 28000, rate: 0.23, label: '1° Scaglione (23%)' },
+        { threshold: 28000, upTo: 50000, rate: 0.33, label: '2° Scaglione (33%)' },
+        { threshold: 50000, rate: 0.43, label: '3° Scaglione (43%)' },
       ],
       socialContributions: [
         {
@@ -81,6 +81,11 @@ export const itProfile: CountryTaxProfile = {
       officialSourceName: 'Agenzia delle Entrate & Ministero dell’Economia e delle Finanze',
       officialSourceUrl: 'https://www.agenziaentrate.gov.it',
       lastVerifiedDate: '2026-09-01',
+      sourceMetadata: {
+        sourceName: 'Agenzia delle Entrate & Ministero dell’Economia e delle Finanze',
+        sourceUrl: 'https://www.agenziaentrate.gov.it',
+        dateVerified: '2026-10-01',
+      },
       assumptions: [
         'Single employee without dependents (Lavoratore dipendente a tempo indeterminato)',
         'Standard INPS rate (9.19%) applied',
@@ -92,11 +97,11 @@ export const itProfile: CountryTaxProfile = {
       taxYear: '2025',
       currency: 'EUR',
       currencySymbol: '€',
-      standardDeduction: 8500,
+      standardDeduction: 0,
       nationalBrackets: [
-        { threshold: 0, upTo: 19500, rate: 0.23, label: 'Scaglione 23%' },
-        { threshold: 19500, upTo: 41500, rate: 0.35, label: 'Scaglione 35%' },
-        { threshold: 41500, rate: 0.43, label: 'Scaglione 43%' },
+        { threshold: 0, upTo: 28000, rate: 0.23, label: '1° Scaglione (23%)' },
+        { threshold: 28000, upTo: 50000, rate: 0.35, label: '2° Scaglione (35%)' },
+        { threshold: 50000, rate: 0.43, label: '3° Scaglione (43%)' },
       ],
       socialContributions: [
         {

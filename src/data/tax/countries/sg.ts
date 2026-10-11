@@ -60,6 +60,11 @@ export const sgProfile: CountryTaxProfile = {
       officialSourceName: 'Inland Revenue Authority of Singapore (IRAS) & Central Provident Fund (CPF)',
       officialSourceUrl: 'https://www.iras.gov.sg',
       lastVerifiedDate: '2026-09-01',
+      sourceMetadata: {
+        sourceName: 'Inland Revenue Authority of Singapore (IRAS) & Central Provident Fund (CPF)',
+        sourceUrl: 'https://www.iras.gov.sg',
+        dateVerified: '2026-09-01'
+      },
       assumptions: [
         'Tax resident individual for the Year of Assessment (YA)',
         'Singapore Citizen / Permanent Resident aged 55 or below for standard 20% CPF rate (cap $8,000/mo)',
@@ -102,6 +107,11 @@ export const sgProfile: CountryTaxProfile = {
       officialSourceName: 'IRAS',
       officialSourceUrl: 'https://www.iras.gov.sg',
       lastVerifiedDate: '2025-01-15',
+      sourceMetadata: {
+        sourceName: 'IRAS',
+        sourceUrl: 'https://www.iras.gov.sg',
+        dateVerified: '2025-01-15'
+      },
       assumptions: ['Tax resident individual for 2025'],
     },
   },

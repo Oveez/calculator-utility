@@ -84,6 +84,11 @@ export const frProfile: CountryTaxProfile = {
       officialSourceName: 'Direction Générale des Finances Publiques (DGFiP) / Service-Public.fr',
       officialSourceUrl: 'https://www.service-public.fr',
       lastVerifiedDate: '2026-09-01',
+      sourceMetadata: {
+        sourceName: 'DGFiP / Service-Public.fr',
+        sourceUrl: 'https://www.service-public.fr',
+        dateVerified: '2026-09-01'
+      },
       assumptions: [
         'Single adult (1 part de quotient familial)',
         'Salaried employee (salarié non-cadre / cadre standard)',
@@ -129,6 +134,11 @@ export const frProfile: CountryTaxProfile = {
       officialSourceName: 'DGFiP / Service-Public.fr',
       officialSourceUrl: 'https://www.impots.gouv.fr',
       lastVerifiedDate: '2025-01-15',
+      sourceMetadata: {
+        sourceName: 'DGFiP / Service-Public.fr',
+        sourceUrl: 'https://www.impots.gouv.fr',
+        dateVerified: '2025-01-15'
+      },
       assumptions: ['Single adult for 2025 tax year'],
     },
   },

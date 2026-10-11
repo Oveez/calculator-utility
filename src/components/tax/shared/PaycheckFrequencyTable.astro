@@ -1,0 +1,69 @@
+---
+import { formatCurrency } from '../../../utils/tax/formatters';
+
+interface Props {
+  netAnnualTakeHome: number;
+  currency?: string;
+  currencySymbol?: string;
+  class?: string;
+}
+
+const {
+  netAnnualTakeHome,
+  currency = 'USD',
+  currencySymbol = '$',
+  class: className = '',
+} = Astro.props;
+
+const monthly = netAnnualTakeHome / 12;
+const semiMonthly = netAnnualTakeHome / 24;
+const biWeekly = netAnnualTakeHome / 26;
+const weekly = netAnnualTakeHome / 52;
+const daily = netAnnualTakeHome / 260;
+const hourly = netAnnualTakeHome / 2080;
+---
+
+<div class={`rounded-3xl border border-[color:var(--accent)]/40 bg-gradient-to-br from-[color:var(--accent-soft)] to-transparent p-6 shadow-sm space-y-4 ${className}`}>
+  <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--accent)]">
+    Net Disposable Paycheck Schedule
+  </span>
+  <div class="grid grid-cols-2 gap-3 sm:grid-cols-3">
+    <div>
+      <p class="text-[11px] font-medium text-[color:var(--muted)]">Monthly (12x)</p>
+      <p class="text-base font-extrabold text-[color:var(--fg)]" data-sched-monthly>
+        {formatCurrency(monthly, currency, currencySymbol)}
+      </p>
+    </div>
+    <div>
+      <p class="text-[11px] font-medium text-[color:var(--muted)]">Semi-Monthly (24x)</p>
+      <p class="text-base font-extrabold text-[color:var(--fg)]" data-sched-semimonthly>
+        {formatCurrency(semiMonthly, currency, currencySymbol)}
+      </p>
+    </div>
+    <div>
+      <p class="text-[11px] font-medium text-[color:var(--muted)]">Bi-Weekly (26x)</p>
+      <p class="text-base font-extrabold text-[color:var(--fg)]" data-sched-biweekly>
+        {formatCurrency(biWeekly, currency, currencySymbol)}
+      </p>
+    </div>
+    <div>
+      <p class="text-[11px] font-medium text-[color:var(--muted)]">Weekly (52x)</p>
+      <p class="text-base font-extrabold text-[color:var(--fg)]" data-sched-weekly>
+        {formatCurrency(weekly, currency, currencySymbol)}
+      </p>
+    </div>
+    <div>
+      <p class="text-[11px] font-medium text-[color:var(--muted)]">Daily (260d)</p>
+      <p class="text-base font-extrabold text-[color:var(--fg)]" data-sched-daily>
+        {formatCurrency(daily, currency, currencySymbol)}
+      </p>
+    </div>
+    <div>
+      <p class="text-[11px] font-medium text-[color:var(--muted)]">Hourly (2,080h)</p>
+      <p class="text-base font-extrabold text-[color:var(--fg)]" data-sched-hourly>
+        {formatCurrency(hourly, currency, currencySymbol)}
+      </p>
+    </div>
+  </div>
+</div>
+

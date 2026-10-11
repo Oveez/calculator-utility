@@ -1,0 +1,577 @@
+---
+import type { CountryTaxProfile } from '../../data/tax/types';
+import { calculatePlTax } from '../../utils/tax/pl-engine';
+import { formatCurrency, formatPercent } from '../../utils/tax/formatters';
+import TaxDisclaimer from './TaxDisclaimer.astro';
+import CalculatorParameterGuide from '../calculator/CalculatorParameterGuide.astro';
+import Icon from '../Icon.astro';
+import TaxYearSelector from './shared/TaxYearSelector.astro';
+import TaxAllocationBar from './shared/TaxAllocationBar.astro';
+import PaycheckFrequencyTable from './shared/PaycheckFrequencyTable.astro';
+import TaxBreakdownTable from './shared/TaxBreakdownTable.astro';
+import TaxBracketsTable from './shared/TaxBracketsTable.astro';
+import type { CalculatorParameterInfo } from '../../types/calculator';
+
+interface Props {
+  profile: CountryTaxProfile;
+  initialIncome?: number;
+}
+
+const { profile, initialIncome = 0 } = Astro.props;
+
+// Initial server-rendered baseline calculations for Poland
+const initialResult = calculatePlTax({
+  grossIncome: initialIncome,
+  taxYear: '2026',
+});
+
+const defaultYearData = profile.years[profile.defaultTaxYear];
+
+const taxParameterGuide: CalculatorParameterInfo[] = [
+  {
+    id: 'wynagrodzenieBrutto',
+    name: 'Wynagrodzenie Brutto (Gross Monthly/Annual Salary)',
+    description: 'Contractual pre-tax employment remuneration on an employment contract (Umowa o pracę) before ZUS, NFZ, or PIT withholdings.',
+    whyItMatters: 'Forms the statutory foundation for ZUS social security and Podatki.gov.pl tax calculations.',
+    typicalRange: 'Any positive earnings',
+    unit: 'PLN (zł)',
+  },
+  {
+    id: 'zusSpoleczne',
+    name: 'Składki ZUS Społeczne (13.71% Employee Social Security)',
+    description: 'Mandatory employee social insurance comprising retirement (9.76%), disability (1.50%), and sickness insurance (2.45%), capped annually at 260,000 zł.',
+    whyItMatters: 'Directly deducted from gross pay and reduces taxable income for PIT.',
+    typicalRange: '13.71% (capped at 260,000 zł)',
+    unit: '%',
+  },
+  {
+    id: 'nfzZdrowotna',
+    name: 'Składka Zdrowotna NFZ (9.00% Health Insurance)',
+    description: 'Mandatory non-deductible public healthcare contribution assessed on gross salary minus employee ZUS social contributions.',
+    whyItMatters: 'Funds the Polish National Health Fund (NFZ); not deductible from PIT income tax.',
+    typicalRange: '9.00% flat uncapped',
+    unit: '%',
+  },
+  {
+    id: 'kwotaWolna',
+    name: 'Kwota Wolna od Podatku (30,000 PLN Tax-Free Allowance)',
+    description: 'Statutory 30,000 zł annual tax-free threshold, providing a 3,600 zł annual tax reduction (Kwota zmniejszająca podatek 300 zł/month).',
+    whyItMatters: 'Completely eliminates income tax on earnings within the first 30,000 zł tier.',
+    typicalRange: '30,000 zł per year',
+    unit: 'PLN (zł)',
+  },
+  {
+    id: 'skalaPodatkowa',
+    name: 'Skala Podatkowa (12% and 32% Tax Brackets)',
+    description: 'Progressive tax tiers: 12% on income from 30,000 zł up to 120,000 zł, and 32% on income exceeding 120,000 zł.',
+    whyItMatters: 'General tax scale for standard employment contracts and civil law agreements.',
+    typicalRange: '12% up to 120,000 zł, 32% above',
+    unit: '%',
+  },
+];
+---
+
+<div
+  class="relative overflow-hidden rounded-[2.5rem] border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-5 shadow-[var(--shadow)] sm:p-8 lg:p-10"
+  data-tax-app
+  data-country-id="pl"
+  data-profile-json={JSON.stringify(profile)}
+>
+  <!-- Top Bar: Country Info & Mode Switcher -->
+  <div class="flex flex-col gap-4 border-b border-[color:var(--border)] pb-6 sm:flex-row sm:items-center sm:justify-between">
+    <div class="flex items-center gap-3">
+      <span class="text-3xl sm:text-4xl select-none">{profile.flagEmoji}</span>
+      <div>
+        <div class="flex items-center gap-2 flex-wrap">
+          <h2 class="text-xl font-bold tracking-tight text-[color:var(--fg)] sm:text-2xl">
+            Poland Income Tax &amp; Net Salary Calculator
+          </h2>
+          <span class="inline-flex items-center rounded-full bg-rose-500/10 px-2.5 py-0.5 text-xs font-semibold text-rose-600 dark:text-rose-400 border border-rose-500/20">
+            Official 2026 KAS / Podatki.gov.pl
+          </span>
+        </div>
+        <p class="text-xs text-[color:var(--muted)]">
+          Source: <a href={defaultYearData.officialSourceUrl} target="_blank" rel="noopener noreferrer" class="font-medium text-[color:var(--accent)] hover:underline">{defaultYearData.officialSourceName}</a> • Verified {defaultYearData.lastVerifiedDate}
+        </p>
+      </div>
+    </div>
+
+    <!-- App Tabs & Tax Year -->
+    <div class="flex flex-wrap items-center gap-2">
+      <TaxYearSelector profile={profile} id="pl-tax-year-select" />
+
+      <!-- Engine View Toggle -->
+      <div class="flex items-center rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-1 text-xs font-semibold overflow-x-auto no-scrollbar max-w-full shrink-0">
+        <button
+          type="button"
+          class="shrink-0 min-w-max cursor-pointer rounded-xl px-3 py-1.5 text-xs font-bold transition inline-flex items-center gap-1.5 bg-[color:var(--accent)] text-white shadow-xs active"
+          data-engine-tab="advanced"
+        >
+          <Icon name="bolt" class="w-3.5 h-3.5" />
+          <span>Detailed PIT &amp; ZUS</span>
+        </button>
+        <button
+          type="button"
+          class="shrink-0 min-w-max cursor-pointer rounded-xl px-3 py-1.5 text-xs font-semibold text-[color:var(--muted)] hover:text-[color:var(--fg)] transition inline-flex items-center gap-1.5"
+          data-engine-tab="quick"
+        >
+          <Icon name="calculator" class="w-3.5 h-3.5" />
+          <span>Quick Net Salary</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- HERO DYNAMIC TAKE-HOME BANNER -->
+  <div class="mt-6 rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 sm:p-6 shadow-sm">
+    <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+      <div>
+        <div class="flex items-center gap-2">
+          <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Annual Net Take-Home (Wynagrodzenie Netto na Rękę)</span>
+          <span
+            data-hero-badge
+            class="inline-flex items-center gap-1 rounded-full bg-rose-500/10 px-2.5 py-0.5 text-xs font-bold text-rose-600 dark:text-rose-400 border border-rose-500/20"
+          >
+            Net Salary
+          </span>
+        </div>
+        <p class="mt-1 text-3xl font-black tracking-tight sm:text-4xl lg:text-5xl text-[color:var(--fg)]" data-hero-amount>
+          {formatCurrency(initialResult.netTakeHome, profile.defaultCurrency, profile.defaultCurrencySymbol)}
+        </p>
+        <p class="mt-1 text-xs text-[color:var(--muted)]" data-hero-subtext>
+          {formatCurrency(initialResult.netTakeHome / 12, profile.defaultCurrency, profile.defaultCurrencySymbol)}/month · {formatCurrency(initialResult.netTakeHome / 52, profile.defaultCurrency, profile.defaultCurrencySymbol)}/week
+        </p>
+      </div>
+
+      <div class="grid grid-cols-2 gap-3 sm:grid-cols-3 border-t border-[color:var(--border)]/60 pt-3 md:border-t-0 md:pt-0">
+        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] p-3">
+          <p class="text-[11px] font-medium text-[color:var(--muted)]">Podatek PIT (12% / 32%)</p>
+          <p class="text-base font-extrabold text-blue-500" data-hero-incometax>
+            {formatCurrency(initialResult.totalTax, profile.defaultCurrency, profile.defaultCurrencySymbol)}
+          </p>
+          <p class="text-[10px] text-[color:var(--muted)]">Skala podatkowa</p>
+        </div>
+        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] p-3">
+          <p class="text-[11px] font-medium text-[color:var(--muted)]">ZUS &amp; NFZ (22.71%)</p>
+          <p class="text-base font-extrabold text-amber-500" data-hero-social>
+            {formatCurrency(initialResult.totalSocialContributions, profile.defaultCurrency, profile.defaultCurrencySymbol)}
+          </p>
+          <p class="text-[10px] text-[color:var(--muted)]">Społeczne + Zdrowotna</p>
+        </div>
+        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] p-3 col-span-2 sm:col-span-1">
+          <p class="text-[11px] font-medium text-[color:var(--muted)]">Total Deductions</p>
+          <p class="text-base font-extrabold text-purple-500" data-hero-effective-rate>
+            {formatPercent(initialResult.effectiveTaxRate, 1)}
+          </p>
+          <p class="text-[10px] text-[color:var(--muted)]">PIT effective rate</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN CALCULATOR WORKSPACE -->
+  <div class="mt-8 grid gap-8 lg:grid-cols-12">
+    <!-- LEFT PANE: INPUT CONTROLS -->
+    <div class="space-y-6 lg:col-span-5">
+      <!-- Income Input Card -->
+      <div class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 sm:p-6 shadow-sm space-y-5">
+        <div class="flex items-center justify-between border-b border-[color:var(--border)]/60 pb-3">
+          <h3 class="text-base font-bold text-[color:var(--fg)] flex items-center gap-2">
+            <Icon name="dollar-sign" class="w-4 h-4 text-rose-500" />
+            <span>Salary &amp; Contract Details</span>
+          </h3>
+          <span class="text-xs font-semibold text-[color:var(--muted)]">PLN (zł)</span>
+        </div>
+
+        <div>
+          <label for="pl-salary-input" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--fg)] mb-1">
+            Annual Gross Salary (Wynagrodzenie Brutto Rocznie)
+          </label>
+          <div class="relative rounded-2xl shadow-inner">
+            <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4 font-bold text-[color:var(--muted)]">
+              zł
+            </div>
+            <input
+              type="number"
+              id="pl-salary-input"
+              min="0"
+              step="500"
+              value={initialIncome || ''}
+              placeholder="e.g. 120,000"
+              class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] py-3.5 pl-10 pr-4 text-base font-bold text-[color:var(--fg)] transition focus:border-[color:var(--accent)] focus:outline-none focus:ring-2 focus:ring-[color:var(--accent)]/20"
+            />
+          </div>
+          <p class="mt-1.5 text-[11px] text-[color:var(--muted)]">
+            Gross annual salary on an employment contract (Umowa o pracę).
+          </p>
+        </div>
+
+        <!-- Relief for Young Persons (Ulga dla młodych) -->
+        <div>
+          <label for="pl-youth-relief" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--fg)] mb-1">
+            Tax Relief for Youth (Ulga dla Młodych do 26 lat)
+          </label>
+          <select
+            id="pl-youth-relief"
+            class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] py-3 px-4 text-sm font-semibold text-[color:var(--fg)] transition focus:border-[color:var(--accent)] focus:outline-none focus:ring-2 focus:ring-[color:var(--accent)]/20"
+          >
+            <option value="no" selected>Standard (Over 26 years old — Standard PIT)</option>
+            <option value="yes">Under 26 years old (0% PIT up to 85,528 zł)</option>
+          </select>
+          <p class="mt-1.5 text-[11px] text-[color:var(--muted)]">
+            Exempts employment income up to 85,528 zł from PIT for individuals under 26.
+          </p>
+        </div>
+
+        <!-- PPK Participation -->
+        <div data-advanced-section>
+          <label for="pl-ppk-select" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--fg)] mb-1">
+            Employee Capital Plans (PPK Employee 2.0%)
+          </label>
+          <select
+            id="pl-ppk-select"
+            class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] py-3 px-4 text-sm font-semibold text-[color:var(--fg)] transition focus:border-[color:var(--accent)] focus:outline-none focus:ring-2 focus:ring-[color:var(--accent)]/20"
+          >
+            <option value="no" selected>Opted Out (0% PPK employee contribution)</option>
+            <option value="yes">Participating (2.0% employee contribution)</option>
+          </select>
+          <p class="mt-1.5 text-[11px] text-[color:var(--muted)]">
+            Voluntary occupational pension savings scheme matching employer funds.
+          </p>
+        </div>
+
+        <!-- Copyright / Author Costs (50% KUP) -->
+        <div data-advanced-section>
+          <label for="pl-author-costs" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--fg)] mb-1">
+            Author / Creative Costs (50% KUP Autorskie)
+          </label>
+          <select
+            id="pl-author-costs"
+            class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] py-3 px-4 text-sm font-semibold text-[color:var(--fg)] transition focus:border-[color:var(--accent)] focus:outline-none focus:ring-2 focus:ring-[color:var(--accent)]/20"
+          >
+            <option value="none" selected>Standard 3,000 zł annual KUP</option>
+            <option value="creative_50">50% Copyright Deductible (IT / Creative work)</option>
+          </select>
+          <p class="mt-1.5 text-[11px] text-[color:var(--muted)]">
+            Preferential 50% tax-deductible expense rate for creative/software copyright work.
+          </p>
+        </div>
+      </div>
+
+      <!-- Quick Action / Copy Summary Card -->
+      <div class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 shadow-sm flex items-center justify-between">
+        <div>
+          <p class="text-xs font-bold text-[color:var(--fg)]">Export Calculation</p>
+          <p class="text-[11px] text-[color:var(--muted)]">Copy clean text breakdown to clipboard</p>
+        </div>
+        <button
+          type="button"
+          id="pl-copy-summary-btn"
+          class="inline-flex items-center gap-1.5 rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3.5 py-2 text-xs font-bold text-[color:var(--fg)] transition hover:bg-[color:var(--surface)] active:scale-95"
+        >
+          <Icon name="copy" class="w-3.5 h-3.5" />
+          <span>Copy Summary</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- RIGHT PANE: TAX BREAKDOWN & SCHEDULE -->
+    <div class="space-y-6 lg:col-span-7">
+      <!-- Visual Allocation Bar -->
+      <TaxAllocationBar
+        profile={profile}
+        netPercentage={100}
+        taxPercentage={0}
+        socialPercentage={0}
+        otherPercentage={0}
+      />
+
+      <!-- Paycheck Frequency Breakdown -->
+      <PaycheckFrequencyTable
+        profile={profile}
+        annualTakeHome={initialResult.netTakeHome}
+      />
+
+      <!-- Line-Item Audit Trail -->
+      <div class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 sm:p-6 shadow-sm">
+        <h3 class="text-base font-bold text-[color:var(--fg)] mb-4 flex items-center gap-2">
+          <Icon name="list" class="w-4 h-4 text-[color:var(--accent)]" />
+          <span>KAS Official Tax &amp; ZUS Breakdown</span>
+        </h3>
+        <div class="space-y-2 text-xs">
+          <div class="flex justify-between py-1.5 border-b border-[color:var(--border)]/40">
+            <span class="text-[color:var(--muted)]">Gross Remuneration (Brutto)</span>
+            <span class="font-mono font-bold text-[color:var(--fg)]" data-res-gross>0 zł</span>
+          </div>
+          <div class="flex justify-between py-1.5 border-b border-[color:var(--border)]/40">
+            <span class="text-[color:var(--muted)]">ZUS Social Security (13.71%)</span>
+            <span class="font-mono font-bold text-amber-500" data-res-zus>-0 zł</span>
+          </div>
+          <div class="flex justify-between py-1.5 border-b border-[color:var(--border)]/40">
+            <span class="text-[color:var(--muted)]">NFZ Health Insurance (9.00% Składka Zdrowotna)</span>
+            <span class="font-mono font-bold text-amber-600" data-res-nfz>-0 zł</span>
+          </div>
+          <div class="flex justify-between py-1.5 border-b border-[color:var(--border)]/40">
+            <span class="text-[color:var(--muted)]">Tax-Free Allowance (Kwota Wolna 30,000 zł)</span>
+            <span class="font-mono font-semibold text-emerald-500" data-res-allowance>-30,000 zł</span>
+          </div>
+          <div class="flex justify-between py-1.5 border-b border-[color:var(--border)]/40">
+            <span class="text-[color:var(--muted)]">Taxable PIT Base (Podstawa opodatkowania)</span>
+            <span class="font-mono font-semibold text-[color:var(--fg)]" data-res-taxable>0 zł</span>
+          </div>
+          <div class="flex justify-between py-1.5 border-b border-[color:var(--border)]/40">
+            <span class="text-[color:var(--muted)]">Income Tax (Zaliczka na PIT 12% / 32%)</span>
+            <span class="font-mono font-bold text-blue-500" data-res-pit>-0 zł</span>
+          </div>
+          <div class="flex justify-between py-1.5 border-b border-[color:var(--border)]/40">
+            <span class="text-[color:var(--muted)]">Total Deductions (PIT + ZUS + NFZ)</span>
+            <span class="font-mono font-bold text-red-500" data-res-total-taxes>-0 zł</span>
+          </div>
+          <div class="flex justify-between py-2 border-t-2 border-[color:var(--border)] font-bold text-sm">
+            <span class="text-[color:var(--fg)]">Net Annual Take-Home (Wynagrodzenie Netto)</span>
+            <span class="font-mono text-emerald-600 dark:text-emerald-400" data-res-net-takehome>0 zł</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Progressive Tax Brackets Table -->
+      <div class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 sm:p-6 shadow-sm">
+        <h3 class="text-base font-bold text-[color:var(--fg)] mb-3 flex items-center gap-2">
+          <Icon name="bar-chart-2" class="w-4 h-4 text-[color:var(--accent)]" />
+          <span>2026 Polish Tax Scale (Skala Podatkowa)</span>
+        </h3>
+        <p class="text-xs text-[color:var(--muted)] mb-4">
+          Earnings up to 30,000 zł are tax-free. Income between 30,000 zł and 120,000 zł is taxed at 12%, and income above 120,000 zł at 32%.
+        </p>
+        <div class="overflow-x-auto">
+          <table class="w-full text-xs">
+            <thead>
+              <tr class="border-b border-[color:var(--border)] text-[color:var(--muted)]">
+                <th class="py-2 px-3 text-left font-semibold">Tax Bracket Tier</th>
+                <th class="py-2 px-3 text-right font-semibold">Tax Rate</th>
+                <th class="py-2 px-3 text-right font-semibold">Taxable Slice</th>
+                <th class="py-2 px-3 text-right font-semibold">Tax in Tier</th>
+              </tr>
+            </thead>
+            <tbody data-bracket-tbody>
+              <!-- Filled dynamically by JavaScript -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PARAMETER GUIDE & DISCLAIMER -->
+  <div class="mt-12 space-y-8 border-t border-[color:var(--border)] pt-8">
+    <CalculatorParameterGuide parameters={taxParameterGuide} />
+    <TaxDisclaimer officialSourceName={defaultYearData.officialSourceName} officialSourceUrl={defaultYearData.officialSourceUrl} />
+  </div>
+</div>
+
+<script>
+  import { calculatePlTax } from '../../utils/tax/pl-engine';
+
+  function setupPlTaxCalculator() {
+    const apps = document.querySelectorAll('[data-tax-app][data-country-id="pl"]');
+
+    apps.forEach((app) => {
+      try {
+        const salaryInput = app.querySelector('#pl-salary-input') as HTMLInputElement | null;
+        const youthReliefSelect = app.querySelector('#pl-youth-relief') as HTMLSelectElement | null;
+        const ppkSelect = app.querySelector('#pl-ppk-select') as HTMLSelectElement | null;
+        const authorCostsSelect = app.querySelector('#pl-author-costs') as HTMLSelectElement | null;
+        const yearSelect = app.querySelector('#pl-tax-year-select') as HTMLSelectElement | null;
+        const copySummaryBtn = app.querySelector('#pl-copy-summary-btn') as HTMLButtonElement | null;
+
+        // Hero Elements
+        const heroAmount = app.querySelector('[data-hero-amount]');
+        const heroSubtext = app.querySelector('[data-hero-subtext]');
+        const heroIncomeTax = app.querySelector('[data-hero-incometax]');
+        const heroSocial = app.querySelector('[data-hero-social]');
+        const heroEffectiveRate = app.querySelector('[data-hero-effective-rate]');
+
+        // Paycheck Schedule Elements
+        const schedMonthly = app.querySelector('[data-sched-monthly]');
+        const schedSemiMonthly = app.querySelector('[data-sched-semimonthly]');
+        const schedBiweekly = app.querySelector('[data-sched-biweekly]');
+        const schedWeekly = app.querySelector('[data-sched-weekly]');
+        const schedDaily = app.querySelector('[data-sched-daily]');
+        const schedHourly = app.querySelector('[data-sched-hourly]');
+
+        // Audit Trail Elements
+        const resGross = app.querySelector('[data-res-gross]');
+        const resZus = app.querySelector('[data-res-zus]');
+        const resNfz = app.querySelector('[data-res-nfz]');
+        const resAllowance = app.querySelector('[data-res-allowance]');
+        const resTaxable = app.querySelector('[data-res-taxable]');
+        const resPit = app.querySelector('[data-res-pit]');
+        const resTotalTaxes = app.querySelector('[data-res-total-taxes]');
+        const resNetTakeHome = app.querySelector('[data-res-net-takehome]');
+
+        // Visual Allocation Bar
+        const barTakehome = app.querySelector('[data-bar-takehome]') as HTMLElement | null;
+        const barFedtax = app.querySelector('[data-bar-fedtax]') as HTMLElement | null;
+        const barFica = app.querySelector('[data-bar-fica]') as HTMLElement | null;
+        const barPretax = app.querySelector('[data-bar-pretax]') as HTMLElement | null;
+        const allocationLabel = app.querySelector('[data-allocation-label]');
+
+        // Bracket Table Body
+        const bracketTbody = app.querySelector('[data-bracket-tbody]');
+
+        // Mode Switching
+        const engineTabs = app.querySelectorAll('[data-engine-tab]');
+        let currentMode: 'advanced' | 'quick' = 'advanced';
+
+        const fmt = (n: number) => {
+          return new Intl.NumberFormat('pl-PL', {
+            style: 'currency',
+            currency: 'PLN',
+            maximumFractionDigits: 0,
+          }).format(Math.round(n));
+        };
+
+        function calculate() {
+          const gross = Math.max(0, parseFloat(salaryInput?.value || '0') || 0);
+          const isUnder26 = youthReliefSelect?.value === 'yes';
+          const hasPpk = currentMode === 'advanced' && ppkSelect?.value === 'yes';
+          const hasAuthorCosts = currentMode === 'advanced' && authorCostsSelect?.value === 'creative_50';
+          const selectedYear = yearSelect?.value || '2026';
+
+          const res = calculatePlTax({
+            grossIncome: gross,
+            taxYear: selectedYear,
+            isUnder26,
+            hasAuthorCosts,
+            hasPpk,
+          });
+
+          // Update Hero
+          if (heroAmount) heroAmount.textContent = fmt(res.netTakeHome);
+          if (heroSubtext) heroSubtext.textContent = `${fmt(res.netTakeHome / 12)}/month · ${fmt(res.netTakeHome / 52)}/week`;
+          if (heroIncomeTax) heroIncomeTax.textContent = fmt(res.pitTax);
+          if (heroSocial) heroSocial.textContent = fmt(res.totalSocialContributions);
+          if (heroEffectiveRate) heroEffectiveRate.textContent = `${res.effectiveTaxRate.toFixed(1)}%`;
+
+          // Paycheck Schedule
+          if (schedMonthly) schedMonthly.textContent = fmt(res.netTakeHome / 12);
+          if (schedSemiMonthly) schedSemiMonthly.textContent = fmt(res.netTakeHome / 24);
+          if (schedBiweekly) schedBiweekly.textContent = fmt(res.netTakeHome / 26);
+          if (schedWeekly) schedWeekly.textContent = fmt(res.netTakeHome / 52);
+          if (schedDaily) schedDaily.textContent = fmt(res.netTakeHome / 260);
+          if (schedHourly) schedHourly.textContent = fmt(res.netTakeHome / 2080);
+
+          // Audit Trail
+          if (resGross) resGross.textContent = fmt(gross);
+          if (resZus) resZus.textContent = `-${fmt(res.zusSocial)}`;
+          if (resNfz) resNfz.textContent = `-${fmt(res.nfzHealth)}`;
+          if (resAllowance) resAllowance.textContent = `-${fmt(res.kwotaWolna + res.kupDeduction)}`;
+          if (resTaxable) resTaxable.textContent = fmt(res.taxablePitBase);
+          if (resPit) resPit.textContent = `-${fmt(res.pitTax)}`;
+          if (resTotalTaxes) resTotalTaxes.textContent = `-${fmt(res.totalDeductions)}`;
+          if (resNetTakeHome) resNetTakeHome.textContent = fmt(res.netTakeHome);
+
+          // Visual Allocation Bar
+          if (gross > 0) {
+            const pctTakehome = Math.max(0, (res.netTakeHome / gross) * 100);
+            const pctPit = Math.max(0, (res.pitTax / gross) * 100);
+            const pctSocial = Math.max(0, (res.totalSocialContributions / gross) * 100);
+
+            if (barTakehome) barTakehome.style.width = `${pctTakehome}%`;
+            if (barFedtax) barFedtax.style.width = `${pctPit}%`;
+            if (barFica) barFica.style.width = `${pctSocial}%`;
+            if (barPretax) barPretax.style.width = `0%`;
+
+            if (allocationLabel) {
+              allocationLabel.textContent = `Netto: ${pctTakehome.toFixed(1)}% · PIT: ${pctPit.toFixed(1)}% · ZUS & NFZ: ${pctSocial.toFixed(1)}%`;
+            }
+          }
+
+          // Bracket Table
+          if (bracketTbody) {
+            bracketTbody.innerHTML = res.bracketBreakdown
+              .map(
+                (row) => `
+                <tr class="border-b border-[color:var(--border)]/40 hover:bg-[color:var(--bg)]/50 transition">
+                  <td class="py-2 px-3 font-medium text-[color:var(--fg)]">${row.range}</td>
+                  <td class="py-2 px-3 text-right font-mono text-[color:var(--muted)]">${row.rate}</td>
+                  <td class="py-2 px-3 text-right font-mono font-medium text-[color:var(--fg)]">${fmt(row.taxable)}</td>
+                  <td class="py-2 px-3 text-right font-mono font-bold text-blue-500">${fmt(row.tax)}</td>
+                </tr>
+              `
+              )
+              .join('');
+          }
+        }
+
+        // Mode Switching
+        engineTabs.forEach((tab) => {
+          tab.addEventListener('click', () => {
+            const mode = tab.getAttribute('data-engine-tab') as 'advanced' | 'quick';
+            if (!mode) return;
+            currentMode = mode;
+
+            engineTabs.forEach((t) => {
+              if (t === tab) {
+                t.className = 'shrink-0 min-w-max cursor-pointer rounded-xl px-3 py-1.5 text-xs font-bold transition inline-flex items-center gap-1.5 bg-[color:var(--accent)] text-white shadow-xs active';
+              } else {
+                t.className = 'shrink-0 min-w-max cursor-pointer rounded-xl px-3 py-1.5 text-xs font-semibold text-[color:var(--muted)] hover:text-[color:var(--fg)] transition inline-flex items-center gap-1.5';
+              }
+            });
+
+            const advSections = app.querySelectorAll('[data-advanced-section]');
+            advSections.forEach((sec) => {
+              if (mode === 'quick') {
+                sec.classList.add('hidden');
+              } else {
+                sec.classList.remove('hidden');
+              }
+            });
+
+            calculate();
+          });
+        });
+
+        // Event Listeners
+        salaryInput?.addEventListener('input', calculate);
+        youthReliefSelect?.addEventListener('change', calculate);
+        ppkSelect?.addEventListener('change', calculate);
+        authorCostsSelect?.addEventListener('change', calculate);
+        yearSelect?.addEventListener('change', calculate);
+
+        // Copy Summary
+        copySummaryBtn?.addEventListener('click', () => {
+          const gross = salaryInput?.value || '0';
+          const net = heroAmount?.textContent || '0 zł';
+          const tax = heroIncomeTax?.textContent || '0 zł';
+          const soc = heroSocial?.textContent || '0 zł';
+          const eff = heroEffectiveRate?.textContent || '0%';
+          const summary = `--- Poland Income Tax Summary (2026 Podatki.gov.pl) ---\nWynagrodzenie Brutto: ${gross} zł\nWynagrodzenie Netto na Rękę: ${net}\nPodatek PIT: ${tax}\nSkładki ZUS & NFZ: ${soc}\nEfektywna Stopa PIT: ${eff}\nCalculated via Toolscastle Tax Platform`;
+
+          navigator.clipboard.writeText(summary).then(() => {
+            const btnSpan = copySummaryBtn.querySelector('span');
+            if (btnSpan) {
+              const orig = btnSpan.textContent;
+              btnSpan.textContent = 'Copied to clipboard!';
+              setTimeout(() => {
+                btnSpan.textContent = orig;
+              }, 2000);
+            }
+          });
+        });
+
+        // Initial Calculation
+        calculate();
+      } catch (err) {
+        console.error('Error initializing Poland tax calculator:', err);
+      }
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', setupPlTaxCalculator);
+  } else {
+    setupPlTaxCalculator();
+  }
+</script>
+

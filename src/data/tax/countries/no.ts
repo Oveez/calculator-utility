@@ -55,6 +55,11 @@ export const noProfile: CountryTaxProfile = {
       officialSourceName: 'Skatteetaten (Norwegian Tax Administration) & Regjeringen',
       officialSourceUrl: 'https://www.skatteetaten.no',
       lastVerifiedDate: '2026-09-01',
+      sourceMetadata: {
+        sourceName: 'Skatteetaten',
+        sourceUrl: 'https://www.skatteetaten.no',
+        dateVerified: '2026-10-01'
+      },
       assumptions: [
         'Class 1 single wage earner resident in Norway',
         'Personfradrag applied (NOK 114,540)',

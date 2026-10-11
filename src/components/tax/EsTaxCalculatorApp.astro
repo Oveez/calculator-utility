@@ -1,0 +1,649 @@
+---
+import type { CountryTaxProfile } from '../../data/tax/types';
+import { calculateEsTax } from '../../utils/tax/es-engine';
+import { formatCurrency, formatPercent } from '../../utils/tax/formatters';
+import TaxDisclaimer from './TaxDisclaimer.astro';
+import CalculatorParameterGuide from '../calculator/CalculatorParameterGuide.astro';
+import Icon from '../Icon.astro';
+import TaxYearSelector from './shared/TaxYearSelector.astro';
+import TaxAllocationBar from './shared/TaxAllocationBar.astro';
+import PaycheckFrequencyTable from './shared/PaycheckFrequencyTable.astro';
+import TaxBreakdownTable from './shared/TaxBreakdownTable.astro';
+import TaxBracketsTable from './shared/TaxBracketsTable.astro';
+import type { CalculatorParameterInfo } from '../../types/calculator';
+
+interface Props {
+  profile: CountryTaxProfile;
+  initialIncome?: number;
+}
+
+const { profile, initialIncome = 0 } = Astro.props;
+
+// Initial server-rendered baseline calculations for Spain
+const initialResult = calculateEsTax({
+  primaryW2Income: initialIncome,
+  taxYear: profile.defaultTaxYear,
+  regionCode: 'general',
+}, profile);
+
+const defaultYearData = profile.years[profile.defaultTaxYear];
+
+const taxParameterGuide: CalculatorParameterInfo[] = [
+  {
+    id: 'grossSalary',
+    name: 'Salario Bruto Anual (Gross Salary)',
+    description: 'Total agreed annual compensation before income tax withholding (IRPF) or employee social security contributions.',
+    whyItMatters: 'Baseline earnings assessed by the Agencia Tributaria and the Tesorería General de la Seguridad Social (TGSS).',
+    typicalRange: 'Any positive earnings',
+    unit: 'EUR (€)',
+  },
+  {
+    id: 'minimoPersonal',
+    name: 'Mínimo Personal y Familiar (€5,550 base)',
+    description: 'The statutory portion of income destined to cover basic personal and family existential needs, exempt from tax via lower bracket credits.',
+    whyItMatters: 'Ensures subsistence income is protected from IRPF taxation.',
+    typicalRange: '€5,550 (single)',
+    unit: 'EUR (€)',
+  },
+  {
+    id: 'irpfTramos',
+    name: 'Tramos IRPF (State & Regional Brackets)',
+    description: 'Progressive tax scale split roughly 50/50 between the State (tramo estatal) and the Autonomous Community (tramo autonómico): 19%, 24%, 30%, 37%, 45%, and 47%.',
+    whyItMatters: 'Determines the progressive withholding rate deducted monthly on employee paychecks.',
+    typicalRange: '19% to 47%',
+    unit: '%',
+  },
+  {
+    id: 'seguridadSocial',
+    name: 'Seguridad Social (6.47% Employee Share)',
+    description: 'Mandatory social security contributions: Contingencias comunes (4.70%), Desempleo (1.55%), Formación profesional (0.10%), and MEI (0.12%), capped at €61,214.40/yr.',
+    whyItMatters: 'Finances universal healthcare, unemployment benefits, sick leave, and contributory retirement pensions.',
+    typicalRange: '6.47% (up to €3,960.57)',
+    unit: '%',
+  },
+  {
+    id: 'comunidades',
+    name: 'Comunidad Autónoma (Autonomous Region)',
+    description: 'Autonomous Communities in Spain have legislative authority over their regional IRPF scale, with Madrid having lower rates and Cataluña/Valencia having differentiated scales.',
+    whyItMatters: 'Regional residence on December 31 dictates the regional tax liability.',
+    typicalRange: 'Regions of Spain',
+    unit: 'Region',
+  },
+];
+---
+
+<div
+  class="relative overflow-hidden rounded-[2.5rem] border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-5 shadow-[var(--shadow)] sm:p-8 lg:p-10"
+  data-tax-app
+  data-country-id="es"
+  data-profile-json={JSON.stringify(profile)}
+>
+  <!-- Top Bar: Country Info & Mode Switcher -->
+  <div class="flex flex-col gap-4 border-b border-[color:var(--border)] pb-6 sm:flex-row sm:items-center sm:justify-between">
+    <div class="flex items-center gap-3">
+      <span class="text-3xl sm:text-4xl select-none">{profile.flagEmoji}</span>
+      <div>
+        <div class="flex items-center gap-2 flex-wrap">
+          <h2 class="text-xl font-bold tracking-tight text-[color:var(--fg)] sm:text-2xl">
+            Spain Income Tax &amp; Salary Calculator (Sueldo Neto IRPF)
+          </h2>
+          <span class="inline-flex items-center rounded-full bg-cyan-500/10 px-2.5 py-0.5 text-xs font-semibold text-cyan-600 dark:text-cyan-400 border border-cyan-500/20">
+            Official 2026 AEAT Data
+          </span>
+        </div>
+        <p class="text-xs text-[color:var(--muted)]">
+          Source: <a href={defaultYearData.officialSourceUrl} target="_blank" rel="noopener noreferrer" class="font-medium text-[color:var(--accent)] hover:underline">{defaultYearData.officialSourceName}</a> • Verified {defaultYearData.lastVerifiedDate}
+        </p>
+      </div>
+    </div>
+
+    <!-- App Tabs & Tax Year -->
+    <div class="flex flex-wrap items-center gap-2">
+      <TaxYearSelector profile={profile} id="es-tax-year-select" />
+
+      <!-- Engine View Toggle -->
+      <div class="flex items-center rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-1 text-xs font-semibold overflow-x-auto no-scrollbar max-w-full shrink-0">
+        <button
+          type="button"
+          class="shrink-0 min-w-max cursor-pointer rounded-xl px-3 py-1.5 text-xs font-bold transition inline-flex items-center gap-1.5 bg-[color:var(--accent)] text-white shadow-xs active"
+          data-engine-tab="advanced"
+        >
+          <Icon name="bolt" class="w-3.5 h-3.5" />
+          <span>Detailed IRPF Mode</span>
+        </button>
+        <button
+          type="button"
+          class="shrink-0 min-w-max cursor-pointer rounded-xl px-3 py-1.5 text-xs font-semibold text-[color:var(--muted)] hover:text-[color:var(--fg)] transition inline-flex items-center gap-1.5"
+          data-engine-tab="quick"
+        >
+          <Icon name="calculator" class="w-3.5 h-3.5" />
+          <span>Quick Salary</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- HERO DYNAMIC TAKE-HOME BANNER -->
+  <div class="mt-6 rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 sm:p-6 shadow-sm">
+    <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+      <div>
+        <div class="flex items-center gap-2">
+          <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Sueldo Neto Anual (Take-Home)</span>
+          <span
+            data-hero-badge
+            class="inline-flex items-center gap-1 rounded-full bg-cyan-500/10 px-2.5 py-0.5 text-xs font-bold text-cyan-600 dark:text-cyan-400 border border-cyan-500/20"
+          >
+            Neto a Percibir
+          </span>
+        </div>
+        <p class="mt-1 text-3xl font-black tracking-tight sm:text-4xl lg:text-5xl text-[color:var(--fg)]" data-hero-amount>
+          {formatCurrency(initialResult.netAnnualTakeHome, profile.defaultCurrency, profile.defaultCurrencySymbol)}
+        </p>
+        <p class="mt-1 text-xs text-[color:var(--muted)]" data-hero-subtext>
+          {formatCurrency(initialResult.netMonthlyTakeHome, profile.defaultCurrency, profile.defaultCurrencySymbol)}/mes (12 pagas) · {formatCurrency(initialResult.netWeeklyTakeHome, profile.defaultCurrency, profile.defaultCurrencySymbol)}/semana
+        </p>
+      </div>
+
+      <div class="grid grid-cols-2 gap-3 sm:grid-cols-3 border-t border-[color:var(--border)]/60 pt-3 md:border-t-0 md:pt-0">
+        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] p-3">
+          <p class="text-[11px] font-medium text-[color:var(--muted)]">Retención IRPF (Total)</p>
+          <p class="text-base font-extrabold text-blue-500" data-hero-incometax>
+            {formatCurrency(initialResult.totalOrdinaryTax, profile.defaultCurrency, profile.defaultCurrencySymbol)}
+          </p>
+          <p class="text-[10px] text-[color:var(--muted)]">Estatal + Autonómico</p>
+        </div>
+        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] p-3">
+          <p class="text-[11px] font-medium text-[color:var(--muted)]">Seguridad Social (6.47%)</p>
+          <p class="text-base font-extrabold text-amber-500" data-hero-social>
+            {formatCurrency(initialResult.totalSocialContributions, profile.defaultCurrency, profile.defaultCurrencySymbol)}
+          </p>
+          <p class="text-[10px] text-[color:var(--muted)]">Aportación trabajador</p>
+        </div>
+        <div class="col-span-2 sm:col-span-1 rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] p-3 flex flex-col justify-between">
+          <p class="text-[11px] font-medium text-[color:var(--muted)]">Acción</p>
+          <button
+            type="button"
+            data-copy-summary-btn
+            class="inline-flex items-center justify-center gap-1.5 rounded-xl bg-[color:var(--surface)] px-2.5 py-1.5 text-xs font-bold text-[color:var(--fg)] border border-[color:var(--border)] hover:border-[color:var(--accent)] hover:shadow-[0_0_12px_var(--accent-glow)] transition cursor-pointer"
+          >
+            <Icon name="copy" class="w-3.5 h-3.5" />
+            <span>Copiar Informe Fiscal</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Reusable Income Allocation Bar -->
+    <TaxAllocationBar />
+  </div>
+
+  <!-- CALCULATOR MAIN BODY -->
+  <div class="mt-8 grid gap-8 lg:grid-cols-[1.15fr_0.85fr]">
+    <!-- LEFT COLUMN: INPUT FORMS -->
+    <div class="space-y-6">
+
+      <!-- SECTION 1: Salario Bruto & Comunidad Autónoma -->
+      <div class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 sm:p-6 space-y-4 shadow-sm">
+        <h3 class="text-sm font-bold uppercase tracking-wider text-[color:var(--fg)] flex items-center gap-2">
+          <Icon name="user" class="w-4 h-4 text-[color:var(--accent)]" />
+          <span>1. Salario Bruto &amp; Comunidad Autónoma</span>
+        </h3>
+
+        <div class="space-y-4">
+          <!-- Gross Salary -->
+          <div>
+            <div class="flex justify-between items-center text-xs">
+              <label for="es-gross-salary" class="font-bold text-[color:var(--fg)]">
+                Salario Bruto Anual (€ EUR)
+              </label>
+              <span class="text-[color:var(--muted)] font-mono">Nómina Bruta</span>
+            </div>
+            <div class="relative mt-1.5">
+              <span class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-sm font-bold text-[color:var(--muted)]">
+                €
+              </span>
+              <input
+                id="es-gross-salary"
+                type="number"
+                min="0"
+                step="1000"
+                placeholder="e.g. 35,000"
+                class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] py-3 pl-8 pr-4 text-base font-black text-[color:var(--fg)] outline-none transition focus:border-[color:var(--accent)] focus:ring-2 focus:ring-[color:var(--accent)]/20"
+                data-es-salary
+              />
+            </div>
+            <p class="mt-1 text-[11px] text-[color:var(--muted)]">
+              Sueldo bruto pactado en contrato antes de retenciones de IRPF y Seguridad Social.
+            </p>
+          </div>
+
+          <!-- Number of Payments (12 vs 14 pagas) -->
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label for="es-payments" class="block text-xs font-bold text-[color:var(--fg)]">
+                Número de Pagas
+              </label>
+              <select
+                id="es-payments"
+                data-es-payments
+                class="mt-1.5 w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] py-2.5 px-3 text-xs font-semibold text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)] cursor-pointer"
+              >
+                <option value="12" selected>12 pagas (Prorrateadas)</option>
+                <option value="14">14 pagas (2 pagas extras)</option>
+              </select>
+            </div>
+
+            <div>
+              <label for="es-region" class="block text-xs font-bold text-[color:var(--fg)]">
+                Comunidad Autónoma
+              </label>
+              <select
+                id="es-region"
+                data-es-region
+                class="mt-1.5 w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] py-2.5 px-3 text-xs font-semibold text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)] cursor-pointer"
+              >
+                <option value="general" selected>Régimen General (Escala Común)</option>
+                <option value="madrid">Comunidad de Madrid (-0.5% a -1%)</option>
+                <option value="catalonia">Cataluña (Escala Autonómica)</option>
+                <option value="andalusia">Andalucía</option>
+                <option value="valencia">Comunitat Valenciana</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SECTION 2: Mínimo Personal y Seguridad Social (Advanced Only) -->
+      <div class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 sm:p-6 space-y-4 shadow-sm" data-advanced-section>
+        <div class="flex items-center justify-between">
+          <h3 class="text-sm font-bold uppercase tracking-wider text-[color:var(--fg)] flex items-center gap-2">
+            <Icon name="shield-check" class="w-4 h-4 text-emerald-500" />
+            <span>2. Mínimo Personal y Cotizaciones</span>
+          </h3>
+          <span class="text-[10px] font-bold text-emerald-600 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">
+            AEAT &amp; TGSS
+          </span>
+        </div>
+
+        <div class="space-y-3">
+          <!-- Mínimo Personal Card -->
+          <div class="rounded-2xl border border-emerald-500/20 bg-emerald-500/5 p-4 space-y-2">
+            <div class="flex justify-between items-center text-xs">
+              <span class="font-bold text-emerald-800 dark:text-emerald-300">Mínimo Personal y Familiar:</span>
+              <span class="font-extrabold text-emerald-800 dark:text-emerald-300">€5,550 base</span>
+            </div>
+            <p class="text-[11px] text-[color:var(--muted)]">
+              Se aplica una reducción a los primeros 5.550 € tributando al tipo mínimo del tramo para garantizar el mínimo vital exento.
+            </p>
+          </div>
+
+          <!-- Seguridad Social Rates Breakdown -->
+          <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] p-3 text-xs space-y-1">
+            <p class="font-bold text-[color:var(--fg)]">Tipos de cotización del trabajador (2026):</p>
+            <div class="grid grid-cols-2 gap-2 text-[11px] text-[color:var(--muted)]">
+              <div>Contingencias Comunes: <strong class="text-[color:var(--fg)]">4.70%</strong></div>
+              <div>Desempleo: <strong class="text-[color:var(--fg)]">1.55%</strong></div>
+              <div>Formación Profesional: <strong class="text-[color:var(--fg)]">0.10%</strong></div>
+              <div>MEI (Equidad Intergen.): <strong class="text-[color:var(--fg)]">0.12%</strong></div>
+              <div class="col-span-2 pt-1 border-t border-[color:var(--border)]/40">
+                Total trabajador: <strong class="text-[color:var(--fg)]">6.47%</strong> (Base máxima: 61.214,40 €/año)
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- RIGHT COLUMN: RESULTS, PAYCHECK SCHEDULE & AUDIT TRAIL -->
+    <div class="space-y-6">
+
+      <!-- PAYCHECK FREQUENCY TABLE (Shared Primitive) -->
+      <div class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 sm:p-6 shadow-sm">
+        <PaycheckFrequencyTable
+          currencySymbol={profile.defaultCurrencySymbol}
+          monthly={initialResult.netMonthlyTakeHome}
+          biweekly={initialResult.netBiweeklyTakeHome}
+          weekly={initialResult.netWeeklyTakeHome}
+          daily={initialResult.netAnnualTakeHome / 260}
+          hourly={initialResult.netHourlyTakeHome}
+        />
+      </div>
+
+      <!-- AUDIT TRAIL / BREAKDOWN TABLE -->
+      <div class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 sm:p-6 shadow-sm space-y-4">
+        <div class="flex items-center justify-between border-b border-[color:var(--border)] pb-3">
+          <h3 class="text-sm font-bold uppercase tracking-wider text-[color:var(--fg)] flex items-center gap-2">
+            <Icon name="table" class="w-4 h-4 text-[color:var(--accent)]" />
+            <span>Desglose Nómina IRPF &amp; TGSS</span>
+          </h3>
+          <span class="text-xs font-mono font-bold text-[color:var(--accent)]" data-effective-rate>
+            {formatPercent(initialResult.effectiveTotalTaxRate, 1)}
+          </span>
+        </div>
+
+        <div class="space-y-2 text-xs">
+          <div class="flex justify-between py-1.5 border-b border-[color:var(--border)]/40 font-medium">
+            <span class="text-[color:var(--muted)]">Salario Bruto Anual</span>
+            <span class="font-bold text-[color:var(--fg)]" data-res-gross>
+              {formatCurrency(initialResult.totalGrossIncome, profile.defaultCurrency, profile.defaultCurrencySymbol)}
+            </span>
+          </div>
+
+          <div class="flex justify-between py-1.5 border-b border-[color:var(--border)]/40">
+            <span class="text-[color:var(--muted)]">Mínimo Personal Exento</span>
+            <span class="font-bold text-emerald-500" data-res-minimo>
+              €5,550
+            </span>
+          </div>
+
+          <div class="flex justify-between py-1.5 border-b border-[color:var(--border)]/40 font-bold bg-[color:var(--bg)] px-2 rounded-lg">
+            <span class="text-[color:var(--fg)]">Base Liquidable General</span>
+            <span class="text-[color:var(--fg)]" data-res-taxable>
+              {formatCurrency(initialResult.taxableIncome, profile.defaultCurrency, profile.defaultCurrencySymbol)}
+            </span>
+          </div>
+
+          <div class="flex justify-between py-1.5 border-b border-[color:var(--border)]/40">
+            <span class="text-[color:var(--muted)]">Cuota IRPF Estatal</span>
+            <span class="font-bold text-blue-500" data-res-state-tax>
+              {formatCurrency(initialResult.stateTax, profile.defaultCurrency, profile.defaultCurrencySymbol)}
+            </span>
+          </div>
+
+          <div class="flex justify-between py-1.5 border-b border-[color:var(--border)]/40">
+            <span class="text-[color:var(--muted)]">Cuota IRPF Autonómica</span>
+            <span class="font-bold text-purple-500" data-res-regional-tax>
+              {formatCurrency(initialResult.regionalTax, profile.defaultCurrency, profile.defaultCurrencySymbol)}
+            </span>
+          </div>
+
+          <div class="flex justify-between py-1.5 border-b border-[color:var(--border)]/40 font-bold">
+            <span class="text-[color:var(--fg)]">Retención Total IRPF</span>
+            <span class="text-blue-600 dark:text-blue-400" data-res-irpf-total>
+              {formatCurrency(initialResult.totalOrdinaryTax, profile.defaultCurrency, profile.defaultCurrencySymbol)}
+            </span>
+          </div>
+
+          <div class="flex justify-between py-1.5 border-b border-[color:var(--border)]/40">
+            <span class="text-[color:var(--muted)]">Seguridad Social (6.47%)</span>
+            <span class="font-bold text-amber-500" data-res-social>
+              {formatCurrency(initialResult.totalSocialContributions, profile.defaultCurrency, profile.defaultCurrencySymbol)}
+            </span>
+          </div>
+
+          <div class="flex justify-between py-2 border-t-2 border-[color:var(--border)] text-sm font-extrabold">
+            <span class="text-[color:var(--fg)]">Total Retenciones y Descuentos</span>
+            <span class="text-red-500" data-res-total-taxes>
+              {formatCurrency(initialResult.totalAllTaxes, profile.defaultCurrency, profile.defaultCurrencySymbol)}
+            </span>
+          </div>
+
+          <div class="flex justify-between py-2 rounded-xl bg-[color:var(--accent)]/10 px-3 text-sm font-black text-[color:var(--accent)]">
+            <span>Sueldo Neto Anual</span>
+            <span data-res-net-takehome>
+              {formatCurrency(initialResult.netAnnualTakeHome, profile.defaultCurrency, profile.defaultCurrencySymbol)}
+            </span>
+          </div>
+        </div>
+
+        <div class="pt-2 flex justify-between text-xs text-[color:var(--muted)] border-t border-[color:var(--border)]/40">
+          <span>Tipo Marginal: <strong class="text-[color:var(--fg)]" data-marginal-rate>{formatPercent(initialResult.marginalTaxRate, 1)}</strong></span>
+          <span>Tipo Efectivo Total: <strong class="text-[color:var(--fg)]" data-effective-tax-rate>{formatPercent(initialResult.effectiveTotalTaxRate, 1)}</strong></span>
+        </div>
+      </div>
+
+      <!-- TRAMOS IRPF PROGRESSIVE BRACKETS TABLE (Shared Primitive) -->
+      <div class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 sm:p-6 shadow-sm">
+        <TaxBracketsTable
+          breakdown={initialResult.bracketBreakdown || []}
+          currencySymbol={profile.defaultCurrencySymbol}
+        />
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Parameter Explanations -->
+  <div class="mt-8 border-t border-[color:var(--border)] pt-8">
+    <CalculatorParameterGuide parameters={taxParameterGuide} />
+  </div>
+
+  <!-- Disclaimer Footer -->
+  <div class="mt-8">
+    <TaxDisclaimer />
+  </div>
+</div>
+
+<script>
+  import { calculateEsTax } from '../../utils/tax/es-engine';
+
+  function setupEsTaxCalculator() {
+    const apps = document.querySelectorAll('[data-tax-app][data-country-id="es"]');
+
+    apps.forEach((app) => {
+      try {
+        const profileJson = app.getAttribute('data-profile-json');
+        if (!profileJson) return;
+        const profile = JSON.parse(profileJson);
+
+        // Controls
+        const yearSelect = app.querySelector('[data-tax-year]') as HTMLSelectElement | null;
+        const engineTabs = Array.from(app.querySelectorAll('[data-engine-tab]')) as HTMLElement[];
+        const salaryInput = app.querySelector('[data-es-salary]') as HTMLInputElement | null;
+        const paymentsSelect = app.querySelector('[data-es-payments]') as HTMLSelectElement | null;
+        const regionSelect = app.querySelector('[data-es-region]') as HTMLSelectElement | null;
+
+        // Mode State
+        let currentMode: 'advanced' | 'quick' = 'advanced';
+
+        // Hero Outputs
+        const heroAmount = app.querySelector('[data-hero-amount]');
+        const heroSubtext = app.querySelector('[data-hero-subtext]');
+        const heroIncomeTax = app.querySelector('[data-hero-incometax]');
+        const heroSocial = app.querySelector('[data-hero-social]');
+        const marginalRateEl = app.querySelector('[data-marginal-rate]');
+        const effectiveRateEl = app.querySelector('[data-effective-rate]');
+        const effectiveTaxRateEl = app.querySelector('[data-effective-tax-rate]');
+
+        // Allocation Bar
+        const barTakehome = app.querySelector('[data-bar-takehome]') as HTMLElement | null;
+        const barFedtax = app.querySelector('[data-bar-fedtax]') as HTMLElement | null;
+        const barFica = app.querySelector('[data-bar-fica]') as HTMLElement | null;
+        const barPretax = app.querySelector('[data-bar-pretax]') as HTMLElement | null;
+        const allocationLabel = app.querySelector('[data-allocation-label]');
+
+        // Paycheck Schedule
+        const schedMonthly = app.querySelector('[data-sched-monthly]');
+        const schedSemiMonthly = app.querySelector('[data-sched-semimonthly]');
+        const schedBiweekly = app.querySelector('[data-sched-biweekly]');
+        const schedWeekly = app.querySelector('[data-sched-weekly]');
+        const schedDaily = app.querySelector('[data-sched-daily]');
+        const schedHourly = app.querySelector('[data-sched-hourly]');
+
+        // Audit Trail Elements
+        const resGross = app.querySelector('[data-res-gross]');
+        const resMinimo = app.querySelector('[data-res-minimo]');
+        const resTaxable = app.querySelector('[data-res-taxable]');
+        const resStateTax = app.querySelector('[data-res-state-tax]');
+        const resRegionalTax = app.querySelector('[data-res-regional-tax]');
+        const resIrpfTotal = app.querySelector('[data-res-irpf-total]');
+        const resSocial = app.querySelector('[data-res-social]');
+        const resTotalTaxes = app.querySelector('[data-res-total-taxes]');
+        const resNetTakeHome = app.querySelector('[data-res-net-takehome]');
+        const bracketTbody = app.querySelector('[data-bracket-tbody]');
+        const copySummaryBtn = app.querySelector('[data-copy-summary-btn]');
+
+        function fmt(n: number): string {
+          return '€' + Math.round(n).toLocaleString('es-ES');
+        }
+
+        function calculate() {
+          const selectedYear = yearSelect ? yearSelect.value : profile.defaultTaxYear;
+          const numPayments = paymentsSelect ? parseInt(paymentsSelect.value || '12', 10) : 12;
+          const region = regionSelect ? regionSelect.value : 'general';
+          const res = calculateEsTax({
+            grossIncome: gross,
+            taxYear: selectedYear,
+            regionCode: region,
+          }, profile);
+
+          const socialSecurity = res.totalSocialContributions;
+          const personalMinimum = res.deductionAmount;
+          const stateTax = res.stateTax || 0;
+          const regionalTax = res.regionalTax || 0;
+          const totalIrpf = res.totalOrdinaryTax;
+          const totalDeductions = res.totalAllTaxes;
+          const netTakeHome = res.netAnnualTakeHome;
+          const effectiveTaxRate = res.effectiveTotalTaxRate;
+          const marginalRate = res.marginalTaxRate;
+
+          // Update Hero
+          if (heroAmount) heroAmount.textContent = fmt(netTakeHome);
+          if (heroSubtext) {
+            heroSubtext.textContent = numPayments === 14
+              ? `${fmt(netTakeHome / 14)}/mes (14 pagas) · ${fmt(netTakeHome / 52)}/semana`
+              : `${fmt(netTakeHome / 12)}/mes (12 pagas) · ${fmt(netTakeHome / 52)}/semana`;
+          }
+          if (heroIncomeTax) heroIncomeTax.textContent = fmt(totalIrpf);
+          if (heroSocial) heroSocial.textContent = fmt(socialSecurity);
+          if (effectiveRateEl) effectiveRateEl.textContent = `${effectiveTaxRate.toFixed(1)}%`;
+          if (effectiveTaxRateEl) effectiveTaxRateEl.textContent = `${effectiveTaxRate.toFixed(1)}%`;
+          if (marginalRateEl) marginalRateEl.textContent = `${marginalRate.toFixed(1)}%`;
+
+          // Paycheck Schedule
+          if (schedMonthly) schedMonthly.textContent = fmt(netTakeHome / numPayments);
+          if (schedSemiMonthly) schedSemiMonthly.textContent = fmt(netTakeHome / (numPayments * 2));
+          if (schedBiweekly) schedBiweekly.textContent = fmt(netTakeHome / 26);
+          if (schedWeekly) schedWeekly.textContent = fmt(netTakeHome / 52);
+          if (schedDaily) schedDaily.textContent = fmt(netTakeHome / 260);
+          if (schedHourly) schedHourly.textContent = fmt(netTakeHome / 2080);
+
+          // Audit Trail
+          if (resGross) resGross.textContent = fmt(gross);
+          if (resMinimo) resMinimo.textContent = fmt(personalMinimum);
+          if (resTaxable) resTaxable.textContent = fmt(gross);
+          if (resStateTax) resStateTax.textContent = fmt(stateTax);
+          if (resRegionalTax) resRegionalTax.textContent = fmt(regionalTax);
+          if (resIrpfTotal) resIrpfTotal.textContent = fmt(totalIrpf);
+          if (resSocial) resSocial.textContent = fmt(socialSecurity);
+          if (resTotalTaxes) resTotalTaxes.textContent = fmt(totalDeductions);
+          if (resNetTakeHome) resNetTakeHome.textContent = fmt(netTakeHome);
+
+          // Allocation Bar
+          if (gross > 0) {
+            const pctTakehome = Math.max(0, (netTakeHome / gross) * 100);
+            const pctIrpf = Math.max(0, (totalIrpf / gross) * 100);
+            const pctSocial = Math.max(0, (socialSecurity / gross) * 100);
+
+            if (barTakehome) barTakehome.style.width = `${pctTakehome}%`;
+            if (barFedtax) barFedtax.style.width = `${pctIrpf}%`;
+            if (barFica) barFica.style.width = `${pctSocial}%`;
+            if (barPretax) barPretax.style.width = `0%`;
+
+            if (allocationLabel) {
+              allocationLabel.textContent = `Neto: ${pctTakehome.toFixed(1)}% · IRPF: ${pctIrpf.toFixed(1)}% · Seguridad Social: ${pctSocial.toFixed(1)}%`;
+            }
+          }
+
+          // Combined Brackets Table
+          const combinedBrackets = [
+            { range: '€0 – €12,450', rate: '19.0%', upTo: 12450, threshold: 0, r: 0.19 },
+            { range: '€12,450 – €20,200', rate: '24.0%', upTo: 20200, threshold: 12450, r: 0.24 },
+            { range: '€20,200 – €35,200', rate: '30.0%', upTo: 35200, threshold: 20200, r: 0.30 },
+            { range: '€35,200 – €60,000', rate: '37.0%', upTo: 60000, threshold: 35200, r: 0.37 },
+            { range: '€60,000 – €300,000', rate: '45.0%', upTo: 300000, threshold: 60000, r: 0.45 },
+            { range: 'Más de €300,000', rate: '47.0%', upTo: Infinity, threshold: 300000, r: 0.47 },
+          ];
+
+          if (bracketTbody) {
+            bracketTbody.innerHTML = combinedBrackets
+              .map((b) => {
+                let slice = 0;
+                if (gross > b.threshold) {
+                  slice = Math.min(gross, b.upTo) - b.threshold;
+                }
+                const tax = slice * b.r;
+                return `
+                  <tr class="border-b border-[color:var(--border)]/40 hover:bg-[color:var(--bg)]/50 transition">
+                    <td class="py-2 px-3 font-medium text-[color:var(--fg)]">${b.range}</td>
+                    <td class="py-2 px-3 text-right font-mono text-[color:var(--muted)]">${b.rate}</td>
+                    <td class="py-2 px-3 text-right font-mono font-medium text-[color:var(--fg)]">${fmt(slice)}</td>
+                    <td class="py-2 px-3 text-right font-mono font-bold text-blue-500">${fmt(tax)}</td>
+                  </tr>
+                `;
+              })
+              .join('');
+          }
+        }
+
+        // Mode Switching
+        engineTabs.forEach((tab) => {
+          tab.addEventListener('click', () => {
+            const mode = tab.getAttribute('data-engine-tab') as 'advanced' | 'quick';
+            if (!mode) return;
+            currentMode = mode;
+
+            engineTabs.forEach((t) => {
+              if (t === tab) {
+                t.className = 'shrink-0 min-w-max cursor-pointer rounded-xl px-3 py-1.5 text-xs font-bold transition inline-flex items-center gap-1.5 bg-[color:var(--accent)] text-white shadow-xs active';
+              } else {
+                t.className = 'shrink-0 min-w-max cursor-pointer rounded-xl px-3 py-1.5 text-xs font-semibold text-[color:var(--muted)] hover:text-[color:var(--fg)] transition inline-flex items-center gap-1.5';
+              }
+            });
+
+            const advSections = app.querySelectorAll('[data-advanced-section]');
+            advSections.forEach((sec) => {
+              if (mode === 'quick') {
+                sec.classList.add('hidden');
+              } else {
+                sec.classList.remove('hidden');
+              }
+            });
+
+            calculate();
+          });
+        });
+
+        // Event Listeners
+        salaryInput?.addEventListener('input', calculate);
+        paymentsSelect?.addEventListener('change', calculate);
+        regionSelect?.addEventListener('change', calculate);
+        yearSelect?.addEventListener('change', calculate);
+
+        // Copy Report
+        copySummaryBtn?.addEventListener('click', () => {
+          const gross = salaryInput?.value || '0';
+          const net = heroAmount?.textContent || '€0';
+          const tax = heroIncomeTax?.textContent || '€0';
+          const soc = heroSocial?.textContent || '€0';
+          const eff = effectiveRateEl?.textContent || '0%';
+          const summary = `--- Cálculo Sueldo Neto España (AEAT 2026 IRPF) ---\nSalario Bruto: €${gross}\nSueldo Neto Anual: ${net}\nRetención IRPF: ${tax}\nSeguridad Social (6.47%): ${soc}\nTipo Efectivo: ${eff}\nCalculado vía Toolscastle Tax Platform`;
+
+          navigator.clipboard.writeText(summary).then(() => {
+            const btnSpan = copySummaryBtn.querySelector('span');
+            if (btnSpan) {
+              const orig = btnSpan.textContent;
+              btnSpan.textContent = '¡Copiado al portapapeles!';
+              setTimeout(() => {
+                btnSpan.textContent = orig;
+              }, 2000);
+            }
+          });
+        });
+
+        // Initialize
+        calculate();
+      } catch (err) {
+        console.error('Error initializing ES tax calculator:', err);
+      }
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', setupEsTaxCalculator);
+  } else {
+    setupEsTaxCalculator();
+  }
+</script>
+

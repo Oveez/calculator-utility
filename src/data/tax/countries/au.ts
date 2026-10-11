@@ -51,7 +51,12 @@ export const auProfile: CountryTaxProfile = {
       },
       officialSourceName: 'Australian Taxation Office (ATO)',
       officialSourceUrl: 'https://www.ato.gov.au/tax-rates-and-codes/tax-rates-australian-residents',
-      lastVerifiedDate: '2026-09-01',
+      lastVerifiedDate: '2026-10-01',
+      sourceMetadata: {
+        sourceName: 'Australian Taxation Office (ATO)',
+        sourceUrl: 'https://www.ato.gov.au/tax-rates-and-codes/tax-rates-australian-residents',
+        dateVerified: '2026-10-01'
+      },
       assumptions: [
         'Australian resident for tax purposes for the full 2026–27 financial year',
         'Standard Medicare Levy (2.0%) applied above threshold',

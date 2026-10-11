@@ -1,0 +1,676 @@
+---
+import type { CountryTaxProfile } from '../../data/tax/types';
+import { calculateIeTax } from '../../utils/tax/ie-engine';
+import { formatCurrency, formatPercent } from '../../utils/tax/formatters';
+import TaxDisclaimer from './TaxDisclaimer.astro';
+import CalculatorParameterGuide from '../calculator/CalculatorParameterGuide.astro';
+import Icon from '../Icon.astro';
+import TaxYearSelector from './shared/TaxYearSelector.astro';
+import TaxAllocationBar from './shared/TaxAllocationBar.astro';
+import PaycheckFrequencyTable from './shared/PaycheckFrequencyTable.astro';
+import TaxBreakdownTable from './shared/TaxBreakdownTable.astro';
+import TaxBracketsTable from './shared/TaxBracketsTable.astro';
+import type { CalculatorParameterInfo } from '../../types/calculator';
+
+interface Props {
+  profile: CountryTaxProfile;
+  initialIncome?: number;
+}
+
+const { profile, initialIncome = 0 } = Astro.props;
+
+// Initial server-rendered baseline calculations for Ireland
+const initialResult = calculateIeTax({
+  primaryW2Income: initialIncome,
+  taxYear: profile.defaultTaxYear,
+  filingStatus: 'single',
+}, profile);
+
+const defaultYearData = profile.years[profile.defaultTaxYear];
+
+const taxParameterGuide: CalculatorParameterInfo[] = [
+  {
+    id: 'grossSalary',
+    name: 'Gross Annual Employment Income',
+    description: 'Total annual earnings from employment before PAYE income tax, Universal Social Charge (USC), or PRSI deductions.',
+    whyItMatters: 'The baseline figure used by Revenue to calculate your standard rate band and statutory payroll charges.',
+    typicalRange: 'Any positive earnings',
+    unit: 'EUR (€)',
+  },
+  {
+    id: 'standardRateBand',
+    name: 'Standard Rate Cut-Off Point (€44,000 for single)',
+    description: 'The amount of your income taxed at the standard 20% rate. Income above this threshold is taxed at the higher 40% rate.',
+    whyItMatters: 'Higher threshold for married couples (€53,000 with one income, up to €88,000 with two incomes).',
+    typicalRange: '€44,000 to €88,000',
+    unit: 'EUR (€)',
+  },
+  {
+    id: 'taxCredits',
+    name: 'Personal & Employee Tax Credits (€4,000 total)',
+    description: 'Non-refundable tax credits (€2,000 Personal Tax Credit + €2,000 Employee/PAYE Credit in 2026) that directly reduce gross tax payable.',
+    whyItMatters: 'Ensures that an individual earning up to €20,000 pays zero net income tax (€20,000 × 20% = €4,000 gross tax minus €4,000 credits = €0).',
+    typicalRange: '€4,000 standard',
+    unit: 'EUR (€)',
+  },
+  {
+    id: 'usc',
+    name: 'Universal Social Charge (USC)',
+    description: 'Progressive individual charge on total gross income: 0.5% up to €12,012; 2% to €28,700; 3% to €70,044; 8% on the balance (exempt if total income ≤ €13,000).',
+    whyItMatters: 'Applies with minimal deductions or relief to broaden the tax revenue base.',
+    typicalRange: '0.5% to 8.0%',
+    unit: '%',
+  },
+  {
+    id: 'prsi',
+    name: 'PRSI (Pay Related Social Insurance - Class A)',
+    description: 'Mandatory employee social insurance of 4.2% on total reckonable earnings if weekly pay exceeds €352 (€18,304/yr).',
+    whyItMatters: 'Qualifies workers for statutory state benefits including Jobseeker\'s Benefit, illness benefits, and State Pension (Contributory).',
+    typicalRange: '4.20%',
+    unit: '%',
+  },
+];
+---
+
+<div
+  class="relative overflow-hidden rounded-[2.5rem] border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-5 shadow-[var(--shadow)] sm:p-8 lg:p-10"
+  data-tax-app
+  data-country-id="ie"
+  data-profile-json={JSON.stringify(profile)}
+>
+  <!-- Top Bar: Country Info & Mode Switcher -->
+  <div class="flex flex-col gap-4 border-b border-[color:var(--border)] pb-6 sm:flex-row sm:items-center sm:justify-between">
+    <div class="flex items-center gap-3">
+      <span class="text-3xl sm:text-4xl select-none">{profile.flagEmoji}</span>
+      <div>
+        <div class="flex items-center gap-2 flex-wrap">
+          <h2 class="text-xl font-bold tracking-tight text-[color:var(--fg)] sm:text-2xl">
+            Ireland Income Tax &amp; Salary Calculator (Revenue PAYE)
+          </h2>
+          <span class="inline-flex items-center rounded-full bg-cyan-500/10 px-2.5 py-0.5 text-xs font-semibold text-cyan-600 dark:text-cyan-400 border border-cyan-500/20">
+            Official 2026 Revenue Ireland Data
+          </span>
+        </div>
+        <p class="text-xs text-[color:var(--muted)]">
+          Source: <a href={defaultYearData.officialSourceUrl} target="_blank" rel="noopener noreferrer" class="font-medium text-[color:var(--accent)] hover:underline">{defaultYearData.officialSourceName}</a> • Verified {defaultYearData.lastVerifiedDate}
+        </p>
+      </div>
+    </div>
+
+    <!-- App Tabs & Tax Year -->
+    <div class="flex flex-wrap items-center gap-2">
+      <TaxYearSelector profile={profile} id="ie-tax-year-select" />
+
+      <!-- Engine View Toggle -->
+      <div class="flex items-center rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-1 text-xs font-semibold overflow-x-auto no-scrollbar max-w-full shrink-0">
+        <button
+          type="button"
+          class="shrink-0 min-w-max cursor-pointer rounded-xl px-3 py-1.5 text-xs font-bold transition inline-flex items-center gap-1.5 bg-[color:var(--accent)] text-white shadow-xs active"
+          data-engine-tab="advanced"
+        >
+          <Icon name="bolt" class="w-3.5 h-3.5" />
+          <span>Detailed Revenue Mode</span>
+        </button>
+        <button
+          type="button"
+          class="shrink-0 min-w-max cursor-pointer rounded-xl px-3 py-1.5 text-xs font-semibold text-[color:var(--muted)] hover:text-[color:var(--fg)] transition inline-flex items-center gap-1.5"
+          data-engine-tab="quick"
+        >
+          <Icon name="calculator" class="w-3.5 h-3.5" />
+          <span>Quick Salary</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- HERO DYNAMIC TAKE-HOME BANNER -->
+  <div class="mt-6 rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 sm:p-6 shadow-sm">
+    <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+      <div>
+        <div class="flex items-center gap-2">
+          <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Net Take-Home Pay</span>
+          <span
+            data-hero-badge
+            class="inline-flex items-center gap-1 rounded-full bg-cyan-500/10 px-2.5 py-0.5 text-xs font-bold text-cyan-600 dark:text-cyan-400 border border-cyan-500/20"
+          >
+            Estimated Take-Home
+          </span>
+        </div>
+        <p class="mt-1 text-3xl font-black tracking-tight sm:text-4xl lg:text-5xl text-[color:var(--fg)]" data-hero-amount>
+          {formatCurrency(initialResult.netAnnualTakeHome, profile.defaultCurrency, profile.defaultCurrencySymbol)}
+        </p>
+        <p class="mt-1 text-xs text-[color:var(--muted)]" data-hero-subtext>
+          {formatCurrency(initialResult.netMonthlyTakeHome, profile.defaultCurrency, profile.defaultCurrencySymbol)}/month · {formatCurrency(initialResult.netWeeklyTakeHome, profile.defaultCurrency, profile.defaultCurrencySymbol)}/week
+        </p>
+      </div>
+
+      <div class="grid grid-cols-2 gap-3 sm:grid-cols-3 border-t border-[color:var(--border)]/60 pt-3 md:border-t-0 md:pt-0">
+        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] p-3">
+          <p class="text-[11px] font-medium text-[color:var(--muted)]">Income Tax (PAYE)</p>
+          <p class="text-base font-extrabold text-blue-500" data-hero-incometax>
+            {formatCurrency(initialResult.netFederalIncomeTax, profile.defaultCurrency, profile.defaultCurrencySymbol)}
+          </p>
+          <p class="text-[10px] text-[color:var(--muted)]">After Tax Credits</p>
+        </div>
+        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] p-3">
+          <p class="text-[11px] font-medium text-[color:var(--muted)]">USC &amp; PRSI</p>
+          <p class="text-base font-extrabold text-amber-500" data-hero-social>
+            {formatCurrency(initialResult.totalFicaTax, profile.defaultCurrency, profile.defaultCurrencySymbol)}
+          </p>
+          <p class="text-[10px] text-[color:var(--muted)]">Social Levies</p>
+        </div>
+        <div class="col-span-2 sm:col-span-1 rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] p-3 flex flex-col justify-between">
+          <p class="text-[11px] font-medium text-[color:var(--muted)]">Action</p>
+          <button
+            type="button"
+            data-copy-summary-btn
+            class="inline-flex items-center justify-center gap-1.5 rounded-xl bg-[color:var(--surface)] px-2.5 py-1.5 text-xs font-bold text-[color:var(--fg)] border border-[color:var(--border)] hover:border-[color:var(--accent)] hover:shadow-[0_0_12px_var(--accent-glow)] transition cursor-pointer"
+          >
+            <Icon name="copy" class="w-3.5 h-3.5" />
+            <span>Copy Ireland Tax Report</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Reusable Income Allocation Bar -->
+    <TaxAllocationBar />
+  </div>
+
+  <!-- CALCULATOR MAIN BODY -->
+  <div class="mt-8 grid gap-8 lg:grid-cols-[1.15fr_0.85fr]">
+    <!-- LEFT COLUMN: INPUT FORMS -->
+    <div class="space-y-6">
+
+      <!-- SECTION 1: Earnings & Marital Status -->
+      <div class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 sm:p-6 space-y-4 shadow-sm">
+        <h3 class="text-sm font-bold uppercase tracking-wider text-[color:var(--fg)] flex items-center gap-2">
+          <Icon name="user" class="w-4 h-4 text-[color:var(--accent)]" />
+          <span>1. Gross Salary &amp; Marital Status</span>
+        </h3>
+
+        <div class="space-y-4">
+          <!-- Gross Salary -->
+          <div>
+            <div class="flex justify-between items-center text-xs">
+              <label for="ie-gross-salary" class="font-bold text-[color:var(--fg)]">
+                Annual Gross Salary / Wages (€ EUR)
+              </label>
+              <span class="text-[color:var(--muted)] font-mono">Revenue Gross</span>
+            </div>
+            <div class="relative mt-1.5">
+              <span class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-sm font-bold text-[color:var(--muted)]">
+                €
+              </span>
+              <input
+                id="ie-gross-salary"
+                type="number"
+                min="0"
+                step="1000"
+                placeholder="e.g. 50,000"
+                class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] py-3 pl-8 pr-4 text-base font-black text-[color:var(--fg)] outline-none transition focus:border-[color:var(--accent)] focus:ring-2 focus:ring-[color:var(--accent)]/20"
+                data-ie-salary
+              />
+            </div>
+            <p class="mt-1 text-[11px] text-[color:var(--muted)]">
+              Total annual salary before PAYE, PRSI, USC, or pension contributions.
+            </p>
+          </div>
+
+          <!-- Marital Status for Standard Rate Cut-Off Point -->
+          <div>
+            <label for="ie-marital-status" class="block text-xs font-bold text-[color:var(--fg)]">
+              Marital Status (Standard Rate Cut-Off Band)
+            </label>
+            <select
+              id="ie-marital-status"
+              data-ie-status
+              class="mt-1.5 w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] py-2.5 px-3 text-xs font-semibold text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)] cursor-pointer"
+            >
+              <option value="single" selected>Single Person (20% up to €44,000)</option>
+              <option value="married_one">Married / Civil Partner (One Earner - €53,000 @ 20%)</option>
+              <option value="married_two">Married / Civil Partner (Both Earners - up to €88,000 @ 20%)</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- SECTION 2: Tax Credits & Pension (Advanced Only) -->
+      <div class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 sm:p-6 space-y-4 shadow-sm" data-advanced-section>
+        <div class="flex items-center justify-between">
+          <h3 class="text-sm font-bold uppercase tracking-wider text-[color:var(--fg)] flex items-center gap-2">
+            <Icon name="shield-check" class="w-4 h-4 text-emerald-500" />
+            <span>2. Tax Credits &amp; Pension Relief</span>
+          </h3>
+          <span class="text-[10px] font-bold text-emerald-600 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">
+            Revenue Credits
+          </span>
+        </div>
+
+        <div class="space-y-4">
+          <!-- Standard Tax Credits Info -->
+          <div class="rounded-2xl border border-emerald-500/20 bg-emerald-500/5 p-3 text-xs space-y-1">
+            <div class="flex justify-between items-center font-bold text-emerald-700 dark:text-emerald-400">
+              <span>Standard Tax Credits Applied:</span>
+              <span data-ie-credits-display>€4,000 / yr</span>
+            </div>
+            <p class="text-[11px] text-[color:var(--muted)]">
+              Includes €2,000 Single Personal Tax Credit and €2,000 Employee (PAYE) Tax Credit.
+            </p>
+          </div>
+
+          <!-- Workplace Pension Contributions -->
+          <div>
+            <div class="flex justify-between items-center text-xs">
+              <label for="ie-pension" class="font-bold text-[color:var(--fg)]">
+                Workplace Pension Contribution (€ EUR)
+              </label>
+              <span class="text-[color:var(--muted)]">Reduces Income Tax at 40%/20%</span>
+            </div>
+            <div class="relative mt-1.5">
+              <span class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-sm font-bold text-[color:var(--muted)]">
+                €
+              </span>
+              <input
+                id="ie-pension"
+                type="number"
+                min="0"
+                step="500"
+                placeholder="0"
+                class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] py-2.5 pl-8 pr-4 text-sm font-bold text-[color:var(--fg)] outline-none transition focus:border-[color:var(--accent)]"
+                data-ie-pension
+              />
+            </div>
+            <p class="mt-1 text-[11px] text-[color:var(--muted)]">
+              Occupational pension contributions are exempt from income tax (subject to Revenue age-related percentage limits).
+            </p>
+          </div>
+
+          <!-- Other Tax Credits -->
+          <div>
+            <div class="flex justify-between items-center text-xs">
+              <label for="ie-other-credits" class="font-bold text-[color:var(--fg)]">
+                Additional Tax Credits (€ EUR)
+              </label>
+              <span class="text-[color:var(--muted)]">Rent Credit, Home Carer, etc.</span>
+            </div>
+            <div class="relative mt-1.5">
+              <span class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-sm font-bold text-[color:var(--muted)]">
+                €
+              </span>
+              <input
+                id="ie-other-credits"
+                type="number"
+                min="0"
+                step="250"
+                placeholder="0"
+                class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] py-2.5 pl-8 pr-4 text-sm font-bold text-[color:var(--fg)] outline-none transition focus:border-[color:var(--accent)]"
+                data-ie-other-credits
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- RIGHT COLUMN: RESULTS, PAYCHECK SCHEDULE & AUDIT TRAIL -->
+    <div class="space-y-6">
+
+      <!-- PAYCHECK FREQUENCY TABLE (Shared Primitive) -->
+      <div class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 sm:p-6 shadow-sm">
+        <PaycheckFrequencyTable
+          currencySymbol={profile.defaultCurrencySymbol}
+          monthly={initialResult.netMonthlyTakeHome}
+          biweekly={initialResult.netBiweeklyTakeHome}
+          weekly={initialResult.netWeeklyTakeHome}
+          daily={initialResult.netAnnualTakeHome / 260}
+          hourly={initialResult.netHourlyTakeHome}
+        />
+      </div>
+
+      <!-- AUDIT TRAIL / BREAKDOWN TABLE -->
+      <div class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 sm:p-6 shadow-sm space-y-4">
+        <div class="flex items-center justify-between border-b border-[color:var(--border)] pb-3">
+          <h3 class="text-sm font-bold uppercase tracking-wider text-[color:var(--fg)] flex items-center gap-2">
+            <Icon name="table" class="w-4 h-4 text-[color:var(--accent)]" />
+            <span>Revenue Ireland Audit Trail</span>
+          </h3>
+          <span class="text-xs font-mono font-bold text-[color:var(--accent)]" data-effective-rate>
+            {formatPercent(initialResult.effectiveTotalTaxRate, 1)}
+          </span>
+        </div>
+
+        <div class="space-y-2 text-xs">
+          <div class="flex justify-between py-1.5 border-b border-[color:var(--border)]/40 font-medium">
+            <span class="text-[color:var(--muted)]">Gross Employment Earnings</span>
+            <span class="font-bold text-[color:var(--fg)]" data-res-gross>
+              {formatCurrency(initialResult.totalGrossIncome, profile.defaultCurrency, profile.defaultCurrencySymbol)}
+            </span>
+          </div>
+
+          <div class="flex justify-between py-1.5 border-b border-[color:var(--border)]/40">
+            <span class="text-[color:var(--muted)]">Less: Pension Contributions</span>
+            <span class="font-bold text-emerald-500" data-res-pension>
+              -€0
+            </span>
+          </div>
+
+          <div class="flex justify-between py-1.5 border-b border-[color:var(--border)]/40 font-bold bg-[color:var(--bg)] px-2 rounded-lg">
+            <span class="text-[color:var(--fg)]">Taxable Employment Pay</span>
+            <span class="text-[color:var(--fg)]" data-res-taxable>
+              {formatCurrency(initialResult.taxableIncome, profile.defaultCurrency, profile.defaultCurrencySymbol)}
+            </span>
+          </div>
+
+          <div class="flex justify-between py-1.5 border-b border-[color:var(--border)]/40">
+            <span class="text-[color:var(--muted)]">Gross Income Tax (20% &amp; 40%)</span>
+            <span class="font-bold text-blue-500" data-res-gross-tax>
+              {formatCurrency(initialResult.regularIncomeTax, profile.defaultCurrency, profile.defaultCurrencySymbol)}
+            </span>
+          </div>
+
+          <div class="flex justify-between py-1.5 border-b border-[color:var(--border)]/40">
+            <span class="text-[color:var(--muted)]">Less: Tax Credits Applied</span>
+            <span class="font-bold text-emerald-500" data-res-credits>
+              -{formatCurrency(initialResult.totalTaxCredits, profile.defaultCurrency, profile.defaultCurrencySymbol)}
+            </span>
+          </div>
+
+          <div class="flex justify-between py-1.5 border-b border-[color:var(--border)]/40 font-bold">
+            <span class="text-[color:var(--fg)]">Net PAYE Income Tax</span>
+            <span class="text-blue-600 dark:text-blue-400" data-res-net-incometax>
+              {formatCurrency(initialResult.netFederalIncomeTax, profile.defaultCurrency, profile.defaultCurrencySymbol)}
+            </span>
+          </div>
+
+          <div class="flex justify-between py-1.5 border-b border-[color:var(--border)]/40">
+            <span class="text-[color:var(--muted)]">Universal Social Charge (USC)</span>
+            <span class="font-bold text-amber-500" data-res-usc>
+              €0
+            </span>
+          </div>
+
+          <div class="flex justify-between py-1.5 border-b border-[color:var(--border)]/40">
+            <span class="text-[color:var(--muted)]">PRSI (Class A 4.2%)</span>
+            <span class="font-bold text-amber-600" data-res-prsi>
+              €0
+            </span>
+          </div>
+
+          <div class="flex justify-between py-2 border-t-2 border-[color:var(--border)] text-sm font-extrabold">
+            <span class="text-[color:var(--fg)]">Total Taxes &amp; Social Levies</span>
+            <span class="text-red-500" data-res-total-taxes>
+              {formatCurrency(initialResult.totalAllTaxes, profile.defaultCurrency, profile.defaultCurrencySymbol)}
+            </span>
+          </div>
+
+          <div class="flex justify-between py-2 rounded-xl bg-[color:var(--accent)]/10 px-3 text-sm font-black text-[color:var(--accent)]">
+            <span>Net Annual Take-Home</span>
+            <span data-res-net-takehome>
+              {formatCurrency(initialResult.netAnnualTakeHome, profile.defaultCurrency, profile.defaultCurrencySymbol)}
+            </span>
+          </div>
+        </div>
+
+        <div class="pt-2 flex justify-between text-xs text-[color:var(--muted)] border-t border-[color:var(--border)]/40">
+          <span>Top Marginal Rate: <strong class="text-[color:var(--fg)]" data-marginal-rate>{formatPercent(initialResult.marginalFederalRate, 0)}</strong></span>
+          <span>Effective Deduction Rate: <strong class="text-[color:var(--fg)]" data-effective-tax-rate>{formatPercent(initialResult.effectiveTotalTaxRate, 1)}</strong></span>
+        </div>
+      </div>
+
+      <!-- STANDARD & HIGHER BRACKETS TABLE (Shared Primitive) -->
+      <div class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 sm:p-6 shadow-sm">
+        <TaxBracketsTable
+          breakdown={initialResult.bracketBreakdown || []}
+          currencySymbol={profile.defaultCurrencySymbol}
+        />
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Parameter Explanations -->
+  <div class="mt-8 border-t border-[color:var(--border)] pt-8">
+    <CalculatorParameterGuide parameters={taxParameterGuide} />
+  </div>
+
+  <!-- Disclaimer Footer -->
+  <div class="mt-8">
+    <TaxDisclaimer />
+  </div>
+</div>
+
+<script>
+  import { calculateIeTax } from '../../utils/tax/ie-engine';
+
+  function setupIeTaxCalculator() {
+    const apps = document.querySelectorAll('[data-tax-app][data-country-id="ie"]');
+
+    apps.forEach((app) => {
+      try {
+        const profileJson = app.getAttribute('data-profile-json');
+        if (!profileJson) return;
+        const profile = JSON.parse(profileJson);
+
+        // Controls
+        const yearSelect = app.querySelector('[data-tax-year]') as HTMLSelectElement | null;
+        const engineTabs = Array.from(app.querySelectorAll('[data-engine-tab]')) as HTMLElement[];
+        const salaryInput = app.querySelector('[data-ie-salary]') as HTMLInputElement | null;
+        const statusSelect = app.querySelector('[data-ie-status]') as HTMLSelectElement | null;
+        const pensionInput = app.querySelector('[data-ie-pension]') as HTMLInputElement | null;
+        const otherCreditsInput = app.querySelector('[data-ie-other-credits]') as HTMLInputElement | null;
+        const creditsDisplay = app.querySelector('[data-ie-credits-display]');
+
+        // Mode State
+        let currentMode: 'advanced' | 'quick' = 'advanced';
+
+        // Hero Outputs
+        const heroAmount = app.querySelector('[data-hero-amount]');
+        const heroSubtext = app.querySelector('[data-hero-subtext]');
+        const heroIncomeTax = app.querySelector('[data-hero-incometax]');
+        const heroSocial = app.querySelector('[data-hero-social]');
+        const marginalRateEl = app.querySelector('[data-marginal-rate]');
+        const effectiveRateEl = app.querySelector('[data-effective-rate]');
+        const effectiveTaxRateEl = app.querySelector('[data-effective-tax-rate]');
+
+        // Allocation Bar
+        const barTakehome = app.querySelector('[data-bar-takehome]') as HTMLElement | null;
+        const barFedtax = app.querySelector('[data-bar-fedtax]') as HTMLElement | null;
+        const barFica = app.querySelector('[data-bar-fica]') as HTMLElement | null;
+        const barPretax = app.querySelector('[data-bar-pretax]') as HTMLElement | null;
+        const allocationLabel = app.querySelector('[data-allocation-label]');
+
+        // Paycheck Schedule
+        const schedMonthly = app.querySelector('[data-sched-monthly]');
+        const schedSemiMonthly = app.querySelector('[data-sched-semimonthly]');
+        const schedBiweekly = app.querySelector('[data-sched-biweekly]');
+        const schedWeekly = app.querySelector('[data-sched-weekly]');
+        const schedDaily = app.querySelector('[data-sched-daily]');
+        const schedHourly = app.querySelector('[data-sched-hourly]');
+
+        // Audit Trail Elements
+        const resGross = app.querySelector('[data-res-gross]');
+        const resPension = app.querySelector('[data-res-pension]');
+        const resTaxable = app.querySelector('[data-res-taxable]');
+        const resGrossTax = app.querySelector('[data-res-gross-tax]');
+        const resCredits = app.querySelector('[data-res-credits]');
+        const resNetIncomeTax = app.querySelector('[data-res-net-incometax]');
+        const resUsc = app.querySelector('[data-res-usc]');
+        const resPrsi = app.querySelector('[data-res-prsi]');
+        const resTotalTaxes = app.querySelector('[data-res-total-taxes]');
+        const resNetTakeHome = app.querySelector('[data-res-net-takehome]');
+        const bracketTbody = app.querySelector('[data-bracket-tbody]');
+        const copySummaryBtn = app.querySelector('[data-copy-summary-btn]');
+
+        function fmt(n: number): string {
+          return '€' + Math.round(n).toLocaleString('en-IE');
+        }
+
+        function calculate() {
+          const selectedYear = yearSelect ? yearSelect.value : profile.defaultTaxYear;
+          const yearData = profile.years[selectedYear] || profile.years[profile.defaultTaxYear];
+          const status = statusSelect ? statusSelect.value : 'single';
+
+          const gross = Math.max(0, parseFloat(salaryInput?.value || '0') || 0);
+          const pension = currentMode === 'advanced' ? Math.max(0, parseFloat(pensionInput?.value || '0') || 0) : 0;
+          const extraCredits = currentMode === 'advanced' ? Math.max(0, parseFloat(otherCreditsInput?.value || '0') || 0) : 0;
+
+          const res = calculateIeTax({
+            grossIncome: gross,
+            taxYear: selectedYear,
+            maritalStatus: status,
+            pensionContributions: pension,
+            additionalTaxCredits: extraCredits,
+          }, profile);
+
+          const taxable = res.taxableIncome;
+          const totalCredits = res.totalTaxCredits;
+          if (creditsDisplay) {
+            creditsDisplay.textContent = `${fmt(totalCredits)} / yr`;
+          }
+
+          const grossTax = res.grossIncomeTax;
+          const marginalRate = res.marginalFederalRate;
+          const netIncomeTax = res.netIncomeTax;
+          const totalUsc = res.totalUsc;
+          const totalPrsi = res.totalPrsi;
+          const totalSocial = res.totalFicaTax;
+          const totalTaxes = res.totalAllTaxes;
+          const netTakeHome = res.netAnnualTakeHome;
+          const effectiveTaxRate = res.effectiveTotalTaxRate;
+
+          // Update Hero
+          if (heroAmount) heroAmount.textContent = fmt(netTakeHome);
+          if (heroSubtext) heroSubtext.textContent = `${fmt(netTakeHome / 12)}/month · ${fmt(netTakeHome / 52)}/week`;
+          if (heroIncomeTax) heroIncomeTax.textContent = fmt(netIncomeTax);
+          if (heroSocial) heroSocial.textContent = fmt(totalSocial);
+          if (effectiveRateEl) effectiveRateEl.textContent = `${effectiveTaxRate.toFixed(1)}%`;
+          if (effectiveTaxRateEl) effectiveTaxRateEl.textContent = `${effectiveTaxRate.toFixed(1)}%`;
+          if (marginalRateEl) marginalRateEl.textContent = `${marginalRate.toFixed(0)}%`;
+
+          // Paycheck Schedule
+          if (schedMonthly) schedMonthly.textContent = fmt(netTakeHome / 12);
+          if (schedSemiMonthly) schedSemiMonthly.textContent = fmt(netTakeHome / 24);
+          if (schedBiweekly) schedBiweekly.textContent = fmt(netTakeHome / 26);
+          if (schedWeekly) schedWeekly.textContent = fmt(netTakeHome / 52);
+          if (schedDaily) schedDaily.textContent = fmt(netTakeHome / 260);
+          if (schedHourly) schedHourly.textContent = fmt(netTakeHome / 2080);
+
+          // Audit Trail
+          if (resGross) resGross.textContent = fmt(gross);
+          if (resPension) resPension.textContent = pension > 0 ? `-${fmt(pension)}` : '-€0';
+          if (resTaxable) resTaxable.textContent = fmt(taxable);
+          if (resGrossTax) resGrossTax.textContent = fmt(grossTax);
+          if (resCredits) resCredits.textContent = `-${fmt(totalCredits)}`;
+          if (resNetIncomeTax) resNetIncomeTax.textContent = fmt(netIncomeTax);
+          if (resUsc) resUsc.textContent = fmt(totalUsc);
+          if (resPrsi) resPrsi.textContent = fmt(totalPrsi);
+          if (resTotalTaxes) resTotalTaxes.textContent = fmt(totalTaxes);
+          if (resNetTakeHome) resNetTakeHome.textContent = fmt(netTakeHome);
+
+          // Allocation Bar
+          if (gross > 0) {
+            const pctTakehome = Math.max(0, (netTakeHome / gross) * 100);
+            const pctTax = Math.max(0, (netIncomeTax / gross) * 100);
+            const pctSocial = Math.max(0, (totalSocial / gross) * 100);
+            const pctPretax = Math.max(0, (pension / gross) * 100);
+
+            if (barTakehome) barTakehome.style.width = `${pctTakehome}%`;
+            if (barFedtax) barFedtax.style.width = `${pctTax}%`;
+            if (barFica) barFica.style.width = `${pctSocial}%`;
+            if (barPretax) barPretax.style.width = `${pctPretax}%`;
+
+            if (allocationLabel) {
+              allocationLabel.textContent = `Net: ${pctTakehome.toFixed(1)}% · PAYE: ${pctTax.toFixed(1)}% · USC/PRSI: ${pctSocial.toFixed(1)}%`;
+            }
+          }
+
+          // Bracket Table
+          if (bracketTbody) {
+            bracketTbody.innerHTML = res.bracketBreakdown
+              .map(
+                (row) => `
+                <tr class="border-b border-[color:var(--border)]/40 hover:bg-[color:var(--bg)]/50 transition">
+                  <td class="py-2 px-3 font-medium text-[color:var(--fg)]">${row.bracketRange}</td>
+                  <td class="py-2 px-3 text-right font-mono text-[color:var(--muted)]">${row.ratePercent}</td>
+                  <td class="py-2 px-3 text-right font-mono font-medium text-[color:var(--fg)]">${fmt(row.taxableInBracket)}</td>
+                  <td class="py-2 px-3 text-right font-mono font-bold text-blue-500">${fmt(row.taxAmount)}</td>
+                </tr>
+              `
+              )
+              .join('');
+          }
+        }
+
+        // Mode Switching
+        engineTabs.forEach((tab) => {
+          tab.addEventListener('click', () => {
+            const mode = tab.getAttribute('data-engine-tab') as 'advanced' | 'quick';
+            if (!mode) return;
+            currentMode = mode;
+
+            engineTabs.forEach((t) => {
+              if (t === tab) {
+                t.className = 'shrink-0 min-w-max cursor-pointer rounded-xl px-3 py-1.5 text-xs font-bold transition inline-flex items-center gap-1.5 bg-[color:var(--accent)] text-white shadow-xs active';
+              } else {
+                t.className = 'shrink-0 min-w-max cursor-pointer rounded-xl px-3 py-1.5 text-xs font-semibold text-[color:var(--muted)] hover:text-[color:var(--fg)] transition inline-flex items-center gap-1.5';
+              }
+            });
+
+            const advSections = app.querySelectorAll('[data-advanced-section]');
+            advSections.forEach((sec) => {
+              if (mode === 'quick') {
+                sec.classList.add('hidden');
+              } else {
+                sec.classList.remove('hidden');
+              }
+            });
+
+            calculate();
+          });
+        });
+
+        // Event Listeners
+        salaryInput?.addEventListener('input', calculate);
+        statusSelect?.addEventListener('change', calculate);
+        pensionInput?.addEventListener('input', calculate);
+        otherCreditsInput?.addEventListener('input', calculate);
+        yearSelect?.addEventListener('change', calculate);
+
+        // Copy Report
+        copySummaryBtn?.addEventListener('click', () => {
+          const gross = salaryInput?.value || '0';
+          const net = heroAmount?.textContent || '€0';
+          const tax = heroIncomeTax?.textContent || '€0';
+          const soc = heroSocial?.textContent || '€0';
+          const eff = effectiveRateEl?.textContent || '0%';
+          const summary = `--- Ireland Tax Calculation (Revenue 2026 PAYE) ---\nGross Salary: €${gross}\nNet Take-Home: ${net}\nIncome Tax (PAYE): ${tax}\nUSC & PRSI: ${soc}\nEffective Deduction Rate: ${eff}\nCalculated via Toolscastle Tax Platform`;
+
+          navigator.clipboard.writeText(summary).then(() => {
+            const btnSpan = copySummaryBtn.querySelector('span');
+            if (btnSpan) {
+              const orig = btnSpan.textContent;
+              btnSpan.textContent = 'Copied to Clipboard!';
+              setTimeout(() => {
+                btnSpan.textContent = orig;
+              }, 2000);
+            }
+          });
+        });
+
+        // Initialize
+        calculate();
+      } catch (err) {
+        console.error('Error initializing IE tax calculator:', err);
+      }
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', setupIeTaxCalculator);
+  } else {
+    setupIeTaxCalculator();
+  }
+</script>
+

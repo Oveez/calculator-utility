@@ -11,7 +11,7 @@ const logosBaseUrl = (configuredCdn && !configuredCdn.includes('logos.toolscastl
 const institutionsDataUrl = withBasePath('/data/institutions.json');
 
 const pageTitle = `Assignment Cover Maker (Free PDF Generator) · ${siteName}`;
-const pageDesc = 'Create professional university assignment covers instantly. Choose from 5 academic templates, custom color themes, search thousands of institutions, and generate a print-ready A4 PDF.';
+const pageDesc = 'Create professional university assignment covers instantly. Choose from 10 academic templates, custom color themes, search thousands of institutions, and generate a print-ready A4 PDF.';
 const canonicalUrl = toAbsoluteUrl('/education-tools/assignment-cover-maker/');
 
 const breadcrumbItems = [
@@ -325,6 +325,95 @@ const schemaGraph = [
               </div>
               <span class="text-xs font-bold text-[color:var(--fg)] leading-tight">Bold Academic</span>
               <span class="text-[10px] text-[color:var(--muted)] group-hover:text-[color:var(--fg)] mt-0.5 font-medium">High Impact Banner</span>
+              <span class="active-badge absolute top-2 right-2 w-2 h-2 rounded-full bg-[color:var(--accent)] hidden"></span>
+            </button>
+
+            <!-- Template 6: University Standard -->
+            <button
+              type="button"
+              data-template="university"
+              class="template-card relative flex flex-col items-start p-3 rounded-xl border border-[color:var(--border-strong)] bg-[color:var(--surface)] text-left transition hover:border-[color:var(--accent)] cursor-pointer group"
+            >
+              <div class="w-full aspect-[4/3] rounded-lg bg-white border border-slate-200 p-2 flex flex-col items-center justify-between mb-2 shadow-xs group-hover:scale-[1.02] transition">
+                <div class="w-full flex justify-between items-center">
+                  <div class="w-7 h-7 rounded-full border-2 border-slate-400"></div>
+                  <div class="w-16 h-1 bg-slate-800 rounded-full"></div>
+                </div>
+                <div class="w-20 h-1.5 bg-slate-900 rounded-full"></div>
+                <div class="w-full border-t border-b border-slate-300 py-1"></div>
+              </div>
+              <span class="text-xs font-bold text-[color:var(--fg)] leading-tight">University Standard</span>
+              <span class="text-[10px] text-[color:var(--muted)] group-hover:text-[color:var(--fg)] mt-0.5 font-medium">Traditional Cover Sheet</span>
+              <span class="active-badge absolute top-2 right-2 w-2 h-2 rounded-full bg-[color:var(--accent)] hidden"></span>
+            </button>
+
+            <!-- Template 7: Research Report -->
+            <button
+              type="button"
+              data-template="research"
+              class="template-card relative flex flex-col items-start p-3 rounded-xl border border-[color:var(--border-strong)] bg-[color:var(--surface)] text-left transition hover:border-[color:var(--accent)] cursor-pointer group"
+            >
+              <div class="w-full aspect-[4/3] rounded-lg bg-white border border-slate-200 p-2 flex flex-col justify-between mb-2 shadow-xs group-hover:scale-[1.02] transition">
+                <div class="w-full h-5 bg-slate-100 border-l-4 border-slate-700"></div>
+                <div class="space-y-1">
+                  <div class="w-16 h-1.5 bg-slate-900 rounded-full"></div>
+                  <div class="w-12 h-0.5 bg-slate-400 rounded-full"></div>
+                </div>
+                <div class="w-full grid grid-cols-3 gap-1">
+                  <div class="h-2 bg-slate-200"></div><div class="h-2 bg-slate-200"></div><div class="h-2 bg-slate-200"></div>
+                </div>
+              </div>
+              <span class="text-xs font-bold text-[color:var(--fg)] leading-tight">Research Report</span>
+              <span class="text-[10px] text-[color:var(--muted)] group-hover:text-[color:var(--fg)] mt-0.5 font-medium">Thesis & Project Format</span>
+              <span class="active-badge absolute top-2 right-2 w-2 h-2 rounded-full bg-[color:var(--accent)] hidden"></span>
+            </button>
+
+            <!-- Template 8: Departmental -->
+            <button
+              type="button"
+              data-template="departmental"
+              class="template-card relative flex flex-col items-start p-3 rounded-xl border border-[color:var(--border-strong)] bg-[color:var(--surface)] text-left transition hover:border-[color:var(--accent)] cursor-pointer group"
+            >
+              <div class="w-full aspect-[4/3] rounded-lg bg-white border border-slate-200 p-2 flex flex-col items-center justify-between mb-2 shadow-xs group-hover:scale-[1.02] transition">
+                <div class="w-full h-1 bg-slate-800 rounded-full"></div>
+                <div class="w-12 h-12 border border-slate-400 rounded-full flex items-center justify-center"><div class="w-7 h-7 border border-slate-300 rounded-full"></div></div>
+                <div class="w-24 h-1 bg-slate-900 rounded-full"></div>
+                <div class="w-16 h-0.5 bg-slate-400 rounded-full"></div>
+              </div>
+              <span class="text-xs font-bold text-[color:var(--fg)] leading-tight">Departmental</span>
+              <span class="text-[10px] text-[color:var(--muted)] group-hover:text-[color:var(--fg)] mt-0.5 font-medium">Clean Office Format</span>
+              <span class="active-badge absolute top-2 right-2 w-2 h-2 rounded-full bg-[color:var(--accent)] hidden"></span>
+            </button>
+
+            <!-- Template 9: Faculty Report -->
+            <button
+              type="button"
+              data-template="faculty"
+              class="template-card relative flex flex-col items-start p-3 rounded-xl border border-[color:var(--border-strong)] bg-[color:var(--surface)] text-left transition hover:border-[color:var(--accent)] cursor-pointer group"
+            >
+              <div class="w-full aspect-[4/3] rounded-lg bg-white border border-slate-200 p-2 flex flex-col justify-between mb-2 shadow-xs group-hover:scale-[1.02] transition">
+                <div class="w-full h-2 bg-slate-800"></div>
+                <div class="w-full border border-slate-200 p-2 space-y-1"><div class="w-16 h-1 bg-slate-800"></div><div class="w-12 h-0.5 bg-slate-400"></div></div>
+                <div class="w-full flex justify-between border-t border-slate-300 pt-1"><div class="w-8 h-0.5 bg-slate-400"></div><div class="w-8 h-0.5 bg-slate-400"></div></div>
+              </div>
+              <span class="text-xs font-bold text-[color:var(--fg)] leading-tight">Faculty Report</span>
+              <span class="text-[10px] text-[color:var(--muted)] group-hover:text-[color:var(--fg)] mt-0.5 font-medium">Formal Report Layout</span>
+              <span class="active-badge absolute top-2 right-2 w-2 h-2 rounded-full bg-[color:var(--accent)] hidden"></span>
+            </button>
+
+            <!-- Template 10: Parchment -->
+            <button
+              type="button"
+              data-template="parchment"
+              class="template-card relative flex flex-col items-start p-3 rounded-xl border border-[color:var(--border-strong)] bg-[color:var(--surface)] text-left transition hover:border-[color:var(--accent)] cursor-pointer group"
+            >
+              <div class="w-full aspect-[4/3] rounded-lg bg-amber-50 border border-amber-200 p-2 flex flex-col items-center justify-between mb-2 shadow-xs group-hover:scale-[1.02] transition">
+                <div class="w-full border-t border-b border-amber-700/50 py-1"><div class="w-12 h-1 bg-amber-900 mx-auto"></div></div>
+                <div class="w-20 h-1.5 bg-amber-900 rounded-full"></div>
+                <div class="w-full flex justify-between"><div class="w-10 h-0.5 bg-amber-700/50"></div><div class="w-10 h-0.5 bg-amber-700/50"></div></div>
+              </div>
+              <span class="text-xs font-bold text-[color:var(--fg)] leading-tight">Parchment</span>
+              <span class="text-[10px] text-[color:var(--muted)] group-hover:text-[color:var(--fg)] mt-0.5 font-medium">Classic Formal Study</span>
               <span class="active-badge absolute top-2 right-2 w-2 h-2 rounded-full bg-[color:var(--accent)] hidden"></span>
             </button>
           </div>
@@ -1454,8 +1543,127 @@ const schemaGraph = [
           const footerText = termText ? `${s.date || ''}   •   ${termText}` : (s.date || '');
           drawCenteredText(page, fontSerif, footerText, footerY, 9, colMuted);
 
+        } else if (template === 'university' || template === 'research' || template === 'departmental' || template === 'faculty' || template === 'parchment') {
+          // Additional standard academic templates
+          const isResearch = template === 'research';
+          const isDepartmental = template === 'departmental';
+          const isFaculty = template === 'faculty';
+          const isParchment = template === 'parchment';
+          const margin = isResearch ? 50 : 60;
+          const accentY = isDepartmental ? H - 48 : H - 62;
+
+          if (isParchment) {
+            page.drawRectangle({ x: 0, y: 0, width: W, height: H, color: colSoft });
+            for (let y = 18; y < H; y += 18) page.drawLine({ start: { x: 0, y }, end: { x: W, y }, thickness: 0.25, color: colBorder });
+          } else if (isFaculty) {
+            for (let x = 28; x < W; x += 32) page.drawLine({ start: { x, y: 0 }, end: { x, y: H }, thickness: 0.2, color: colBorder });
+            for (let y = 28; y < H; y += 32) page.drawLine({ start: { x: 0, y }, end: { x: W, y }, thickness: 0.2, color: colBorder });
+          } else if (isResearch) {
+            page.drawRectangle({ x: 0, y: H - 290, width: W, height: 290, color: colSoft });
+            page.drawCircle({ x: W - 20, y: H - 45, size: 145, color: colPrimary, opacity: 0.92 });
+            page.drawCircle({ x: W - 50, y: H - 25, size: 85, borderColor: colSecondary, borderWidth: 16, opacity: 0.75 });
+          } else if (isDepartmental) {
+            page.drawRectangle({ x: W - 210, y: 130, width: 210, height: 470, color: colSoft });
+            page.drawCircle({ x: W - 45, y: 430, size: 115, color: colPrimary, opacity: 0.9 });
+            page.drawCircle({ x: W - 65, y: 430, size: 78, borderColor: colSecondary, borderWidth: 14, opacity: 0.75 });
+          } else {
+            page.drawRectangle({ x: 0, y: 0, width: W * 0.31, height: H, color: colPrimary });
+            page.drawCircle({ x: W * 0.29, y: H * 0.72, size: 54, borderColor: colSecondary, borderWidth: 12, opacity: 0.5 });
+          }
+
+          if (isDepartmental) {
+            page.drawLine({ start: { x: margin, y: accentY }, end: { x: W - margin, y: accentY }, thickness: 4, color: colPrimary });
+          } else {
+            page.drawRectangle({
+              x: margin,
+              y: accentY - (isResearch ? 62 : 48),
+              width: W - (margin * 2),
+              height: isResearch ? 62 : 48,
+              color: colSoft,
+              borderColor: colBorder,
+              borderWidth: 1
+            });
+          }
+
+          if (embeddedLogo) {
+            const maxLogoW = isResearch ? 78 : 62;
+            const maxLogoH = isResearch ? 48 : 42;
+            const aspect = embeddedLogo.width / embeddedLogo.height;
+            let logoW = maxLogoW;
+            let logoH = maxLogoW / aspect;
+            if (logoH > maxLogoH) {
+              logoH = maxLogoH;
+              logoW = maxLogoH * aspect;
+            }
+            page.drawImage(embeddedLogo, {
+              x: isResearch ? W - margin - logoW : (W - logoW) / 2,
+              y: isResearch ? accentY - 48 : accentY - logoH - 12,
+              width: logoW,
+              height: logoH
+            });
+          }
+
+          const headerX = isResearch ? margin + 18 : margin;
+          page.drawText(instText, { x: headerX, y: isResearch ? accentY - 24 : accentY - 70, size: isResearch ? 13 : 15, font: fontSansBold, color: colPrimary });
+          page.drawText(deptText, { x: headerX, y: isResearch ? accentY - 41 : accentY - 86, size: 9.5, font: fontSans, color: colMuted });
+
+          const titleY = isResearch ? 505 : 475;
+          if (isResearch) {
+            page.drawText('COURSE REPORT', { x: margin, y: titleY + 58, size: 8.5, font: fontSansBold, color: colSecondary });
+          } else if (isFaculty) {
+            page.drawText('FACULTY REPORT', { x: margin, y: titleY + 58, size: 8.5, font: fontSansBold, color: colSecondary });
+          } else if (isParchment) {
+            page.drawText('COURSE DETAILS', { x: margin, y: titleY + 58, size: 8.5, font: fontSansBold, color: colSecondary });
+          } else if (isDepartmental) {
+            drawCenteredText(page, fontSansBold, 'ASSIGNMENT / REPORT', titleY + 48, 9, colSecondary);
+          } else {
+            drawCenteredText(page, fontSansBold, 'ASSIGNMENT COVER SHEET', titleY + 48, 9, colSecondary);
+          }
+
+          let titleCursor = isResearch
+            ? drawLeftText(page, fontSansBold, titleText, margin, titleY + 22, 24, colDark, W - (margin * 2))
+            : drawCenteredText(page, fontSerifBold, titleText, titleY + 16, 23, colDark, W - (margin * 2));
+          if (subtitleText) {
+            titleCursor -= 4;
+            if (isResearch) {
+              titleCursor = drawLeftText(page, fontSans, subtitleText, margin, titleCursor, 11, colMuted, W - (margin * 2));
+            } else {
+              titleCursor = drawCenteredText(page, fontSerifItalic, subtitleText, titleCursor, 11, colMuted, W - 150);
+            }
+          }
+
+          const courseY = isResearch ? titleCursor - 30 : titleY - 58;
+          drawCenteredText(page, fontSansBold, courseCodeText ? `${courseCodeText}  —  ${courseNameText}` : courseNameText, courseY, 11, colPrimary, W - 140);
+
+          const metaTop = 235;
+          page.drawLine({ start: { x: margin, y: metaTop }, end: { x: W - margin, y: metaTop }, thickness: 1.2, color: colBorder });
+          const splitX = W / 2 + 12;
+          page.drawText(isResearch ? 'RESEARCHER / AUTHOR' : 'SUBMITTED BY', { x: margin, y: metaTop - 22, size: 8.5, font: fontSansBold, color: colSecondary });
+          let studentY = metaTop - 42;
+          for (const st of s.students.slice(0, 5)) {
+            page.drawText(st.name || 'Student Name', { x: margin, y: studentY, size: 10.5, font: fontSansBold, color: colDark });
+            studentY -= 14;
+            if (st.id) {
+              page.drawText(`ID: ${st.id}`, { x: margin, y: studentY, size: 8.5, font: fontSans, color: colMuted });
+              studentY -= 13;
+            }
+          }
+
+          page.drawText(isResearch ? 'FACULTY SUPERVISOR' : 'SUBMITTED TO', { x: splitX, y: metaTop - 22, size: 8.5, font: fontSansBold, color: colSecondary });
+          page.drawText(teacherNameText, { x: splitX, y: metaTop - 42, size: 11, font: fontSansBold, color: colDark });
+          page.drawText(teacherTitleText, { x: splitX, y: metaTop - 58, size: 9.5, font: fontSans, color: colMuted });
+          if (deptText) {
+            page.drawText(deptText, { x: splitX, y: metaTop - 73, size: 8.5, font: fontSans, color: colMuted });
+          }
+
+          page.drawLine({ start: { x: margin, y: 78 }, end: { x: W - margin, y: 78 }, thickness: 0.6, color: colBorder });
+          page.drawText(s.date || 'Submission Date', { x: margin, y: 60, size: 9, font: fontSans, color: colMuted });
+          if (termText) {
+            drawRightText(page, fontSans, termText, W - margin, 60, 9, colMuted);
+          }
+
         } else if (template === 'bold') {
-          // 5. BOLD ACADEMIC BANNER TEMPLATE
+          // 8. BOLD ACADEMIC BANNER TEMPLATE
           const bannerH = 95;
           page.drawRectangle({ x: 0, y: H - bannerH, width: W, height: bannerH, color: colPrimary });
 
@@ -2437,7 +2645,104 @@ const schemaGraph = [
         `;
       }
 
-      // 5. BOLD ACADEMIC (Full Banner)
+      // 5. UNIVERSITY STANDARD
+      function renderTemplateUniversity() {
+        const s = getFormattedData(state);
+        const studentsHtml = s.students.map(st => `
+          <div class="space-y-1">
+            <p class="font-bold text-slate-900 text-sm">${escapeHtml(st.name || 'Student Name')}</p>
+            <p class="text-xs text-slate-600">Student ID: ${escapeHtml(st.id || 'N/A')}</p>
+            ${st.section ? `<p class="text-[11px] text-slate-500">${escapeHtml(st.section)}</p>` : ''}
+          </div>
+        `).join('');
+
+        return `
+          <div class="absolute inset-y-0 left-0 w-[31%] bg-[var(--cov-primary)]"></div>
+          <div class="absolute left-[24%] top-[19%] w-32 h-32 rounded-full border-[18px] border-[var(--cov-accent)] opacity-40"></div>
+          <div class="relative h-full grid grid-cols-[31%_69%] text-left">
+            <div class="flex flex-col justify-between pr-5 text-white">
+              <div>${renderLogoHtml('justify-start', 'max-h-16 max-w-[120px]')}<p class="text-[10px] font-bold uppercase tracking-widest mt-5 text-white/70">Department</p><p class="text-xs leading-relaxed text-white/90">${escapeHtml(s.department || 'Department / Faculty')}</p></div>
+              <div class="text-[10px] leading-relaxed text-white/70"><p>${escapeHtml(s.term || 'Academic Term')}</p><p>${escapeHtml(s.date || 'Submission Date')}</p></div>
+            </div>
+            <div class="flex flex-col justify-between pl-10 py-5">
+              <div class="border-b border-[var(--cov-border)] pb-5"><p class="text-xs font-bold uppercase tracking-widest text-[var(--cov-accent)]">${escapeHtml(s.institution || 'Institution Name')}</p><p class="text-[10px] text-slate-500 mt-1">Assignment submission</p></div>
+              <div class="my-auto py-8"><p class="text-xs font-bold uppercase tracking-[0.22em] text-[var(--cov-accent)] mb-5">${escapeHtml(s.courseCode || 'Course')}</p><h2 class="text-4xl font-black text-slate-900 leading-tight break-words">${escapeHtml(s.title || 'Assignment Title')}</h2>${s.subtitle ? `<p class="text-base text-slate-600 mt-4 max-w-sm">${escapeHtml(s.subtitle)}</p>` : ''}<div class="w-16 h-1 bg-[var(--cov-primary)] mt-7"></div><p class="text-sm font-bold text-slate-800 mt-5">${escapeHtml(s.courseName || 'Course Name')}</p></div>
+              <div class="border-t border-slate-200 pt-5 grid grid-cols-2 gap-5 text-left"><div><p class="text-[10px] font-bold uppercase tracking-widest text-[var(--cov-accent)]">Submitted By</p><div class="mt-2 space-y-1">${studentsHtml}</div></div><div><p class="text-[10px] font-bold uppercase tracking-widest text-[var(--cov-accent)]">Submitted To</p><p class="text-sm font-bold text-slate-900 mt-2">${escapeHtml(s.teacherName || 'Instructor Name')}</p><p class="text-xs text-slate-600">${escapeHtml(s.teacherTitle || 'Designation')}</p></div></div>
+            </div>
+          </div>
+        `;
+      }
+
+      // 6. RESEARCH REPORT
+      function renderTemplateResearch() {
+        const s = getFormattedData(state);
+        const studentsHtml = s.students.map(st => `<p class="text-sm text-slate-800">${escapeHtml(st.name || 'Student Name')}${st.id ? ` <span class="text-xs text-slate-500">(${escapeHtml(st.id)})</span>` : ''}</p>`).join('');
+
+        return `
+          <div class="absolute top-0 right-0 w-[48%] h-[38%] bg-[var(--cov-primary)]" style="clip-path: polygon(18% 0, 100% 0, 100% 100%, 0 70%);"></div>
+          <div class="absolute top-8 right-10 w-24 h-24 rounded-full border-[10px] border-[var(--cov-accent)] opacity-70"></div>
+          <div class="relative h-full flex flex-col text-left">
+            <div class="flex justify-between items-start border-b border-slate-200 pb-5"><div><p class="text-xs font-bold uppercase tracking-widest text-[var(--cov-primary)]">${escapeHtml(s.institution || 'Institution Name')}</p><p class="text-xs text-slate-500 mt-1">${escapeHtml(s.department || 'Department / Faculty')}</p></div>${renderLogoHtml('relative z-10 h-14 w-auto', 'max-h-14 max-w-[120px]')}</div>
+            <div class="my-auto max-w-[82%] py-10"><p class="text-xs font-bold uppercase tracking-[0.24em] text-[var(--cov-accent)]">${escapeHtml(s.courseCode || 'Course Report')}</p><h2 class="text-4xl font-black text-slate-900 leading-tight mt-5 break-words">${escapeHtml(s.title || 'Assignment Title')}</h2>${s.subtitle ? `<p class="text-base text-slate-600 mt-4">${escapeHtml(s.subtitle)}</p>` : ''}<div class="border-l-4 border-[var(--cov-primary)] pl-4 mt-8"><p class="text-[10px] uppercase tracking-widest text-slate-500">Course</p><p class="text-lg font-bold text-slate-900">${escapeHtml(s.courseName || 'Course Name')}</p></div></div>
+            <div class="grid grid-cols-2 border-t border-slate-300 pt-5 gap-8"><div><p class="text-[10px] font-bold uppercase tracking-widest text-[var(--cov-accent)]">Author</p><div class="mt-2 space-y-1">${studentsHtml}</div></div><div><p class="text-[10px] font-bold uppercase tracking-widest text-[var(--cov-accent)]">Supervisor</p><p class="text-sm font-bold text-slate-900 mt-2">${escapeHtml(s.teacherName || 'Instructor Name')}</p><p class="text-xs text-slate-600">${escapeHtml(s.teacherTitle || 'Designation')}</p></div><p class="col-span-2 text-xs text-slate-500">${escapeHtml(s.date || 'Submission Date')}${s.term ? ` • ${escapeHtml(s.term)}` : ''}</p></div>
+          </div>
+        `;
+      }
+
+      // 7. DEPARTMENTAL
+      function renderTemplateDepartmental() {
+        const s = getFormattedData(state);
+        const studentsHtml = s.students.map(st => `<div class="flex justify-between border-b border-slate-200 py-2 text-sm"><span class="font-bold text-slate-900">${escapeHtml(st.name || 'Student Name')}</span><span class="text-xs text-slate-500">${escapeHtml(st.id || 'N/A')}</span></div>`).join('');
+
+        return `
+          <div class="absolute inset-0 bg-gradient-to-br from-[var(--cov-soft)] via-white to-[var(--cov-badge)]"></div>
+          <div class="absolute -right-20 top-[28%] w-72 h-72 rounded-full bg-[var(--cov-primary)] opacity-90"></div>
+          <div class="absolute -right-10 top-[36%] w-52 h-52 rounded-full border-[18px] border-[var(--cov-accent)] opacity-70"></div>
+          <div class="relative h-full flex flex-col">
+            <div class="flex items-center gap-5 border-b border-[var(--cov-border)] pb-5">${renderLogoHtml('', 'max-h-16 max-w-[130px]')}<div><h1 class="text-xl font-black uppercase text-[var(--cov-primary)]">${escapeHtml(s.institution || 'Institution Name')}</h1><p class="text-xs text-slate-600 mt-1">${escapeHtml(s.department || 'Department / Faculty')}</p></div></div>
+            <div class="my-auto max-w-[72%] py-10"><p class="text-xs font-bold uppercase tracking-[0.22em] text-[var(--cov-accent)]">${escapeHtml(s.courseCode || 'Assignment')}</p><h2 class="text-4xl font-black text-slate-900 leading-tight mt-4 break-words">${escapeHtml(s.title || 'Assignment Title')}</h2>${s.subtitle ? `<p class="text-base text-slate-600 mt-4">${escapeHtml(s.subtitle)}</p>` : ''}<p class="text-sm font-bold text-[var(--cov-primary)] mt-7">${escapeHtml(s.courseName || 'Course Name')}</p></div>
+            <div class="relative border-t border-slate-300 pt-5 grid grid-cols-2 gap-8"><div><p class="text-[10px] font-bold uppercase tracking-widest text-[var(--cov-accent)]">Student Details</p><div class="mt-2">${studentsHtml}</div></div><div><p class="text-[10px] font-bold uppercase tracking-widest text-[var(--cov-accent)]">Instructor</p><p class="text-sm font-bold text-slate-900 mt-2">${escapeHtml(s.teacherName || 'Instructor Name')}</p><p class="text-xs text-slate-600">${escapeHtml(s.teacherTitle || 'Designation')}</p></div><p class="col-span-2 text-xs text-slate-500">${escapeHtml(s.date || 'Submission Date')}${s.term ? ` • ${escapeHtml(s.term)}` : ''}</p></div>
+          </div>
+        `;
+      }
+
+      // 8. FACULTY REPORT
+      function renderTemplateFaculty() {
+        const s = getFormattedData(state);
+        const studentsHtml = s.students.map(st => `
+          <div class="flex justify-between border-b border-slate-200 py-2">
+            <span class="font-bold text-slate-900 text-sm">${escapeHtml(st.name || 'Student Name')}</span>
+            <span class="text-xs text-slate-500">${escapeHtml(st.id || 'N/A')}</span>
+          </div>
+        `).join('');
+
+        return `
+          <div class="absolute inset-0 pointer-events-none opacity-35" style="background-image: linear-gradient(var(--cov-border) 1px, transparent 1px), linear-gradient(90deg, var(--cov-border) 1px, transparent 1px); background-size: 34px 34px;"></div>
+          <div class="relative h-full flex flex-col">
+            <div class="flex justify-between items-start"><div><p class="text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--cov-accent)]">Faculty Report</p><h1 class="text-xl font-black text-[var(--cov-primary)] mt-2">${escapeHtml(s.institution || 'Institution Name')}</h1><p class="text-xs text-slate-600 mt-1">${escapeHtml(s.department || 'Department / Faculty')}</p></div>${renderLogoHtml('', 'max-h-16 max-w-[130px]')}</div>
+            <div class="my-auto py-8"><div class="w-20 h-1 bg-[var(--cov-primary)] mb-6"></div><h2 class="text-4xl font-black text-slate-900 leading-tight max-w-xl break-words">${escapeHtml(s.title || 'Assignment Title')}</h2>${s.subtitle ? `<p class="text-base text-slate-600 mt-4 max-w-lg">${escapeHtml(s.subtitle)}</p>` : ''}<p class="text-sm font-bold text-[var(--cov-primary)] mt-7">${s.courseCode ? `${escapeHtml(s.courseCode)} · ` : ''}${escapeHtml(s.courseName || 'Course Name')}</p></div>
+            <div class="border-t border-slate-300 pt-5 grid grid-cols-2 gap-8"><div><p class="text-[10px] font-bold uppercase tracking-widest text-[var(--cov-accent)]">Students</p><div class="mt-2">${studentsHtml}</div></div><div><p class="text-[10px] font-bold uppercase tracking-widest text-[var(--cov-accent)]">Instructor</p><p class="text-sm font-bold text-slate-900 mt-2">${escapeHtml(s.teacherName || 'Instructor Name')}</p><p class="text-xs text-slate-600">${escapeHtml(s.teacherTitle || 'Designation')}</p></div><p class="col-span-2 text-xs text-slate-500">${escapeHtml(s.date || 'Submission Date')}${s.term ? ` • ${escapeHtml(s.term)}` : ''}</p></div>
+          </div>
+        `;
+      }
+
+      // 9. PARCHMENT
+      function renderTemplateParchment() {
+        const s = getFormattedData(state);
+        const studentsHtml = s.students.map(st => `<p class="text-sm text-slate-800">${escapeHtml(st.name || 'Student Name')} <span class="text-xs text-slate-500">${escapeHtml(st.id || '')}</span></p>`).join('');
+
+        return `
+          <div class="absolute -top-20 -right-20 w-80 h-80 bg-[var(--cov-primary)] opacity-90 rotate-12"></div>
+          <div class="absolute -top-10 -right-8 w-52 h-52 border-[24px] border-[var(--cov-accent)] opacity-80 rotate-12"></div>
+          <div class="relative h-full flex flex-col">
+            <div class="flex items-center gap-4 border-b-2 border-[var(--cov-primary)] pb-5">${renderLogoHtml('', 'max-h-14 max-w-[120px]')}<div><h1 class="text-xl font-serif font-bold uppercase tracking-wide text-[var(--cov-primary)]">${escapeHtml(s.institution || 'Institution Name')}</h1><p class="text-xs text-slate-600 mt-1">${escapeHtml(s.department || 'Department / Faculty')}</p></div></div>
+            <div class="my-auto py-10 max-w-[80%]"><p class="text-xs font-bold uppercase tracking-[0.22em] text-[var(--cov-accent)]">${escapeHtml(s.courseCode || 'Course Details')}</p><h2 class="text-4xl font-serif font-bold text-slate-900 leading-tight mt-5 break-words">${escapeHtml(s.title || 'Assignment Title')}</h2>${s.subtitle ? `<p class="text-base font-serif italic text-slate-600 mt-4">${escapeHtml(s.subtitle)}</p>` : ''}<div class="border-l-4 border-[var(--cov-primary)] pl-4 mt-8"><p class="text-xs uppercase tracking-widest text-slate-500">Course</p><p class="text-lg font-bold text-slate-900">${escapeHtml(s.courseName || 'Course Name')}</p></div></div>
+            <div class="border-t border-[var(--cov-border)] pt-5 grid grid-cols-2 gap-8"><div><p class="text-[10px] font-bold uppercase tracking-widest text-[var(--cov-accent)]">Submitted By</p><div class="mt-2">${studentsHtml}</div></div><div><p class="text-[10px] font-bold uppercase tracking-widest text-[var(--cov-accent)]">Submitted To</p><p class="text-sm font-bold text-slate-900 mt-2">${escapeHtml(s.teacherName || 'Instructor Name')}</p><p class="text-xs text-slate-600">${escapeHtml(s.teacherTitle || 'Designation')}</p></div><p class="col-span-2 text-xs text-slate-500">${escapeHtml(s.date || 'Submission Date')}${s.term ? ` • ${escapeHtml(s.term)}` : ''}</p></div>
+          </div>
+        `;
+      }
+
+      // 8. BOLD ACADEMIC (Full Banner)
       function renderTemplateBold() {
         const s = getFormattedData(state);
         const studentsHtml = s.students.map(st => `
@@ -2532,6 +2837,21 @@ const schemaGraph = [
           case 'elegant':
             html = renderTemplateElegant();
             break;
+          case 'university':
+            html = renderTemplateUniversity();
+            break;
+          case 'research':
+            html = renderTemplateResearch();
+            break;
+          case 'departmental':
+            html = renderTemplateDepartmental();
+            break;
+          case 'faculty':
+            html = renderTemplateFaculty();
+            break;
+          case 'parchment':
+            html = renderTemplateParchment();
+            break;
           case 'bold':
             html = renderTemplateBold();
             break;
@@ -2563,7 +2883,12 @@ const schemaGraph = [
           modern: 'Modern Minimal',
           professional: 'Professional',
           elegant: 'Elegant',
-          bold: 'Bold Academic'
+          bold: 'Bold Academic',
+          university: 'University Standard',
+          research: 'Research Report',
+          departmental: 'Departmental',
+          faculty: 'Faculty Report',
+          parchment: 'Parchment'
         };
         return map[key] || 'Classic Academic';
       }

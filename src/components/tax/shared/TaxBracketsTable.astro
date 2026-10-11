@@ -1,0 +1,53 @@
+---
+import type { BracketCalculationDetail } from '../../../data/tax/types';
+import { formatCurrency } from '../../../utils/tax/formatters';
+
+interface Props {
+  taxYear: string;
+  brackets?: BracketCalculationDetail[];
+  currency?: string;
+  currencySymbol?: string;
+  class?: string;
+}
+
+const {
+  taxYear,
+  brackets = [],
+  currency = 'USD',
+  currencySymbol = '$',
+  class: className = '',
+} = Astro.props;
+---
+
+<div class={`mt-10 space-y-3 ${className}`}>
+  <div class="flex items-center justify-between">
+    <h3 class="text-sm font-bold uppercase tracking-wider text-[color:var(--fg)]">
+      Progressive Tax Bracket Breakdown
+    </h3>
+    <span class="text-xs text-[color:var(--muted)]">Official Marginal Slices ({taxYear})</span>
+  </div>
+
+  <div class="overflow-x-auto rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)]">
+    <table class="w-full text-left text-xs text-[color:var(--fg)]">
+      <thead class="border-b border-[color:var(--border)] bg-[color:var(--surface-strong)] text-[color:var(--muted)] uppercase font-semibold">
+        <tr>
+          <th class="px-4 py-3">Taxable Bracket</th>
+          <th class="px-4 py-3">Rate</th>
+          <th class="px-4 py-3">Taxable in Bracket</th>
+          <th class="px-4 py-3 text-right">Tax Paid</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-[color:var(--border)]" data-bracket-tbody>
+        {brackets.map((row) => (
+          <tr>
+            <td class="px-4 py-2.5 font-mono">{row.bracketRange}</td>
+            <td class="px-4 py-2.5 font-bold">{row.ratePercent}</td>
+            <td class="px-4 py-2.5">{formatCurrency(row.taxableInBracket, currency, currencySymbol)}</td>
+            <td class="px-4 py-2.5 text-right font-mono font-bold text-rose-500">{formatCurrency(row.taxAmount, currency, currencySymbol)}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+</div>
+

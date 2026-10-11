@@ -1,0 +1,730 @@
+---
+import type { CountryTaxProfile } from '../../data/tax/types';
+import { calculateDeTax } from '../../utils/tax/de-engine';
+import { formatCurrency, formatPercent } from '../../utils/tax/formatters';
+import TaxDisclaimer from './TaxDisclaimer.astro';
+import CalculatorParameterGuide from '../calculator/CalculatorParameterGuide.astro';
+import Icon from '../Icon.astro';
+import TaxYearSelector from './shared/TaxYearSelector.astro';
+import TaxAllocationBar from './shared/TaxAllocationBar.astro';
+import PaycheckFrequencyTable from './shared/PaycheckFrequencyTable.astro';
+import TaxBreakdownTable from './shared/TaxBreakdownTable.astro';
+import TaxBracketsTable from './shared/TaxBracketsTable.astro';
+import type { CalculatorParameterInfo } from '../../types/calculator';
+
+interface Props {
+  profile: CountryTaxProfile;
+  initialIncome?: number;
+}
+
+const { profile, initialIncome = 0 } = Astro.props;
+
+// Initial server-rendered baseline calculations for Germany
+const initialResult = calculateDeTax({
+  grossIncome: initialIncome,
+  taxYear: profile.defaultTaxYear,
+  steuerklasse: '1',
+  hasChurchTax: false,
+});
+
+const defaultYearData = profile.years[profile.defaultTaxYear];
+
+const taxParameterGuide: CalculatorParameterInfo[] = [
+  {
+    id: 'grossSalary',
+    name: 'Gross Annual Salary (Bruttogehalt)',
+    description: 'Total annual employment earnings before statutory payroll tax (Lohnsteuer), solidarity surcharge, or social security deductions.',
+    whyItMatters: 'The starting baseline from which German taxable income and social contribution ceilings are assessed.',
+    typicalRange: 'Any positive earnings',
+    unit: 'EUR (€)',
+  },
+  {
+    id: 'steuerklasse',
+    name: 'Tax Class (Lohnsteuerklasse I – VI)',
+    description: 'Class I (Single), Class II (Single parent), Class III (Married higher earner), Class IV (Married equal earners), Class V (Married secondary earner), Class VI (Second job).',
+    whyItMatters: 'Dictates the applicable Grundfreibetrag (basic allowance) and monthly withholding scale.',
+    typicalRange: 'Class I to VI',
+    unit: 'Tax Class',
+  },
+  {
+    id: 'grundfreibetrag',
+    name: 'Basic Tax-Free Allowance (Grundfreibetrag)',
+    description: 'The statutory threshold below which personal income is completely exempt from income tax (€12,348 for 2026 for Class I, doubled for Class III).',
+    whyItMatters: 'Protects the constitutional existential subsistence minimum from taxation.',
+    typicalRange: '€12,348 (Class 1)',
+    unit: 'EUR (€)',
+  },
+  {
+    id: 'soli',
+    name: 'Solidarity Surcharge (Solidaritätszuschlag)',
+    description: 'A 5.5% surcharge on income tax liability, exempt for single individuals with income tax under €18,130 (and €36,260 for married couples).',
+    whyItMatters: 'Only high-income earners pay Soli under current German legislation.',
+    typicalRange: '0% or 5.5%',
+    unit: '%',
+  },
+  {
+    id: 'kirchensteuer',
+    name: 'Church Tax (Kirchensteuer)',
+    description: 'Statutory religious tax collected by the tax office: 8% in Bavaria and Baden-Württemberg, 9% in all other federal states, calculated as a percentage of income tax.',
+    whyItMatters: 'Applies only to registered members of Catholic, Protestant, or recognized Jewish congregations.',
+    typicalRange: '8% or 9% of income tax',
+    unit: '%',
+  },
+  {
+    id: 'sozialversicherung',
+    name: 'Social Insurance Contributions (Sozialversicherungen)',
+    description: 'Statutory employee shares: Pension (RV: 9.3%), Health (KV: 8.15% avg), Nursing Care (PV: 2.2%), Unemployment (AV: 1.3%), capped at statutory Beitragsbemessungsgrenzen.',
+    whyItMatters: 'Funds retirement pensions, public healthcare coverage, care benefits, and unemployment safety nets.',
+    typicalRange: '~20.95% employee share',
+    unit: '%',
+  },
+];
+---
+
+<div
+  class="relative overflow-hidden rounded-[2.5rem] border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-5 shadow-[var(--shadow)] sm:p-8 lg:p-10"
+  data-tax-app
+  data-country-id="de"
+  data-profile-json={JSON.stringify(profile)}
+>
+  <!-- Top Bar: Country Info & Mode Switcher -->
+  <div class="flex flex-col gap-4 border-b border-[color:var(--border)] pb-6 sm:flex-row sm:items-center sm:justify-between">
+    <div class="flex items-center gap-3">
+      <span class="text-3xl sm:text-4xl select-none">{profile.flagEmoji}</span>
+      <div>
+        <div class="flex items-center gap-2 flex-wrap">
+          <h2 class="text-xl font-bold tracking-tight text-[color:var(--fg)] sm:text-2xl">
+            Germany Income Tax &amp; Salary Calculator (Brutto-Netto)
+          </h2>
+          <span class="inline-flex items-center rounded-full bg-cyan-500/10 px-2.5 py-0.5 text-xs font-semibold text-cyan-600 dark:text-cyan-400 border border-cyan-500/20">
+            Official 2026 BMF Data (€12,348 Freibetrag)
+          </span>
+        </div>
+        <p class="text-xs text-[color:var(--muted)]">
+          Source: <a href={defaultYearData.officialSourceUrl} target="_blank" rel="noopener noreferrer" class="font-medium text-[color:var(--accent)] hover:underline">{defaultYearData.officialSourceName}</a> • Verified {defaultYearData.lastVerifiedDate}
+        </p>
+      </div>
+    </div>
+
+    <!-- App Tabs & Tax Year -->
+    <div class="flex flex-wrap items-center gap-2">
+      <TaxYearSelector profile={profile} id="de-tax-year-select" />
+
+      <!-- Engine View Toggle -->
+      <div class="flex items-center rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-1 text-xs font-semibold overflow-x-auto no-scrollbar max-w-full shrink-0">
+        <button
+          type="button"
+          class="shrink-0 min-w-max cursor-pointer rounded-xl px-3 py-1.5 text-xs font-bold transition inline-flex items-center gap-1.5 bg-[color:var(--accent)] text-white shadow-xs active"
+          data-engine-tab="advanced"
+        >
+          <Icon name="bolt" class="w-3.5 h-3.5" />
+          <span>Detailed BMF Mode</span>
+        </button>
+        <button
+          type="button"
+          class="shrink-0 min-w-max cursor-pointer rounded-xl px-3 py-1.5 text-xs font-semibold text-[color:var(--muted)] hover:text-[color:var(--fg)] transition inline-flex items-center gap-1.5"
+          data-engine-tab="quick"
+        >
+          <Icon name="calculator" class="w-3.5 h-3.5" />
+          <span>Quick Salary</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- HERO DYNAMIC TAKE-HOME BANNER -->
+  <div class="mt-6 rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 sm:p-6 shadow-sm">
+    <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+      <div>
+        <div class="flex items-center gap-2">
+          <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Net Salary (Netto-Gehalt)</span>
+          <span
+            data-hero-badge
+            class="inline-flex items-center gap-1 rounded-full bg-cyan-500/10 px-2.5 py-0.5 text-xs font-bold text-cyan-600 dark:text-cyan-400 border border-cyan-500/20"
+          >
+            Estimated Netto
+          </span>
+        </div>
+        <p class="mt-1 text-3xl font-black tracking-tight sm:text-4xl lg:text-5xl text-[color:var(--fg)]" data-hero-amount>
+          {formatCurrency(initialResult.netIncomeAnnual, profile.defaultCurrency, profile.defaultCurrencySymbol)}
+        </p>
+        <p class="mt-1 text-xs text-[color:var(--muted)]" data-hero-subtext>
+          {formatCurrency(initialResult.netIncomeMonthly, profile.defaultCurrency, profile.defaultCurrencySymbol)}/month · {formatCurrency(initialResult.netIncomeWeekly, profile.defaultCurrency, profile.defaultCurrencySymbol)}/week
+        </p>
+      </div>
+
+      <div class="grid grid-cols-2 gap-3 sm:grid-cols-3 border-t border-[color:var(--border)]/60 pt-3 md:border-t-0 md:pt-0">
+        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] p-3">
+          <p class="text-[11px] font-medium text-[color:var(--muted)]">Lohnsteuer (Income Tax)</p>
+          <p class="text-base font-extrabold text-blue-500" data-hero-incometax>
+            {formatCurrency(initialResult.incomeTax, profile.defaultCurrency, profile.defaultCurrencySymbol)}
+          </p>
+          <p class="text-[10px] text-[color:var(--muted)]">Including Soli</p>
+        </div>
+        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] p-3">
+          <p class="text-[11px] font-medium text-[color:var(--muted)]">Social Security (Sozialabgaben)</p>
+          <p class="text-base font-extrabold text-amber-500" data-hero-social>
+            {formatCurrency(initialResult.socialInsurances.total, profile.defaultCurrency, profile.defaultCurrencySymbol)}
+          </p>
+          <p class="text-[10px] text-[color:var(--muted)]">RV, KV, PV, AV</p>
+        </div>
+        <div class="col-span-2 sm:col-span-1 rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] p-3 flex flex-col justify-between">
+          <p class="text-[11px] font-medium text-[color:var(--muted)]">Action</p>
+          <button
+            type="button"
+            data-copy-summary-btn
+            class="inline-flex items-center justify-center gap-1.5 rounded-xl bg-[color:var(--surface)] px-2.5 py-1.5 text-xs font-bold text-[color:var(--fg)] border border-[color:var(--border)] hover:border-[color:var(--accent)] hover:shadow-[0_0_12px_var(--accent-glow)] transition cursor-pointer"
+          >
+            <Icon name="copy" class="w-3.5 h-3.5" />
+            <span>Copy German Tax Report</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Reusable Income Allocation Bar -->
+    <TaxAllocationBar />
+  </div>
+
+  <!-- CALCULATOR MAIN BODY -->
+  <div class="mt-8 grid gap-8 lg:grid-cols-[1.15fr_0.85fr]">
+    <!-- LEFT COLUMN: INPUT FORMS -->
+    <div class="space-y-6">
+
+      <!-- SECTION 1: Bruttoeinkommen & Steuerklasse -->
+      <div class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 sm:p-6 space-y-4 shadow-sm">
+        <h3 class="text-sm font-bold uppercase tracking-wider text-[color:var(--fg)] flex items-center gap-2">
+          <Icon name="user" class="w-4 h-4 text-[color:var(--accent)]" />
+          <span>1. Bruttoeinkommen &amp; Steuerklasse</span>
+        </h3>
+
+        <div class="space-y-4">
+          <!-- Gross Salary -->
+          <div>
+            <div class="flex justify-between items-center text-xs">
+              <label for="de-gross-salary" class="font-bold text-[color:var(--fg)]">
+                Annual Gross Salary / Bruttoeinkommen (€ EUR)
+              </label>
+              <span class="text-[color:var(--muted)] font-mono">Bruttolohn</span>
+            </div>
+            <div class="relative mt-1.5">
+              <span class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-sm font-bold text-[color:var(--muted)]">
+                €
+              </span>
+              <input
+                id="de-gross-salary"
+                type="number"
+                min="0"
+                step="1000"
+                placeholder="e.g. 60,000"
+                class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] py-3 pl-8 pr-4 text-base font-black text-[color:var(--fg)] outline-none transition focus:border-[color:var(--accent)] focus:ring-2 focus:ring-[color:var(--accent)]/20"
+                data-de-salary
+              />
+            </div>
+            <p class="mt-1 text-[11px] text-[color:var(--muted)]">
+              Agreed annual salary before statutory deductions and employer contributions.
+            </p>
+          </div>
+
+          <!-- Steuerklasse Selection -->
+          <div>
+            <label for="de-steuerklasse" class="block text-xs font-bold text-[color:var(--fg)]">
+              Lohnsteuerklasse (Tax Class)
+            </label>
+            <select
+              id="de-steuerklasse"
+              data-de-steuerklasse
+              class="mt-1.5 w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] py-2.5 px-3 text-xs font-semibold text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)] cursor-pointer"
+            >
+              <option value="1" selected>Steuerklasse I (Single, divorced, or separated)</option>
+              <option value="2">Steuerklasse II (Single parent with child relief allowance)</option>
+              <option value="3">Steuerklasse III (Married, higher / primary earner)</option>
+              <option value="4">Steuerklasse IV (Married, equal earnings)</option>
+              <option value="5">Steuerklasse V (Married, secondary earner with partner in Class III)</option>
+              <option value="6">Steuerklasse VI (Second or additional job)</option>
+            </select>
+            <p class="mt-1 text-[11px] text-[color:var(--muted)]">
+              Tax Class III doubles the Grundfreibetrag (€24,696); Class V and VI have no basic allowance.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- SECTION 2: Kirchensteuer & Bundesland (Advanced Only) -->
+      <div class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 sm:p-6 space-y-4 shadow-sm" data-advanced-section>
+        <div class="flex items-center justify-between">
+          <h3 class="text-sm font-bold uppercase tracking-wider text-[color:var(--fg)] flex items-center gap-2">
+            <Icon name="shield-check" class="w-4 h-4 text-purple-500" />
+            <span>2. Kirchensteuer (Church Tax)</span>
+          </h3>
+          <span class="text-[10px] font-bold text-purple-600 bg-purple-500/10 px-2 py-0.5 rounded-full border border-purple-500/20">
+            Religionsgemeinschaft
+          </span>
+        </div>
+
+        <div class="space-y-4">
+          <!-- Church Tax Toggle -->
+          <div>
+            <label class="block text-xs font-bold text-[color:var(--fg)] mb-2">
+              Are you liable for German Church Tax (Kirchensteuerpflichtig)?
+            </label>
+            <div class="grid grid-cols-2 gap-3">
+              <label class="flex items-center gap-2.5 p-3 rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] cursor-pointer hover:border-[color:var(--accent)] transition">
+                <input type="radio" name="de-church" value="no" checked data-de-church-radio class="text-[color:var(--accent)]" />
+                <span class="text-xs font-bold text-[color:var(--fg)]">No (Nicht kirchensteuerpflichtig)</span>
+              </label>
+              <label class="flex items-center gap-2.5 p-3 rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] cursor-pointer hover:border-[color:var(--accent)] transition">
+                <input type="radio" name="de-church" value="yes" data-de-church-radio class="text-[color:var(--accent)]" />
+                <span class="text-xs font-bold text-[color:var(--fg)]">Yes (Member of church)</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Federal State Rate Selection -->
+          <div id="de-church-region-wrap" class="hidden">
+            <label for="de-church-rate" class="block text-xs font-bold text-[color:var(--fg)]">
+              Kirchensteuersatz by Bundesland
+            </label>
+            <select
+              id="de-church-rate"
+              data-de-church-rate
+              class="mt-1.5 w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] py-2.5 px-3 text-xs font-semibold text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)] cursor-pointer"
+            >
+              <option value="0.09" selected>9.0% (Berlin, Hamburg, NRW, Hessen, etc.)</option>
+              <option value="0.08">8.0% (Bayern &amp; Baden-Württemberg)</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- SECTION 3: Sozialversicherung & Freibeträge (Advanced Only) -->
+      <div class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 sm:p-6 space-y-4 shadow-sm" data-advanced-section>
+        <div class="flex items-center justify-between">
+          <h3 class="text-sm font-bold uppercase tracking-wider text-[color:var(--fg)] flex items-center gap-2">
+            <Icon name="briefcase" class="w-4 h-4 text-emerald-500" />
+            <span>3. Sozialversicherung &amp; Freibeträge</span>
+          </h3>
+          <span class="text-[10px] font-bold text-emerald-600 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">
+            Gesetzliche Abzüge
+          </span>
+        </div>
+
+        <div class="space-y-4">
+          <!-- Deductions / Werbungskosten -->
+          <div>
+            <div class="flex justify-between items-center text-xs">
+              <label for="de-deductions" class="font-bold text-[color:var(--fg)]">
+                Additional Tax Allowances / Werbungskosten (€ EUR)
+              </label>
+              <span class="text-[color:var(--muted)]">Freibetrag / Pauschbetrag</span>
+            </div>
+            <div class="relative mt-1.5">
+              <span class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-sm font-bold text-[color:var(--muted)]">
+                €
+              </span>
+              <input
+                id="de-deductions"
+                type="number"
+                min="0"
+                step="500"
+                placeholder="0"
+                class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] py-2.5 pl-8 pr-4 text-sm font-bold text-[color:var(--fg)] outline-none transition focus:border-[color:var(--accent)]"
+                data-de-deductions
+              />
+            </div>
+            <p class="mt-1 text-[11px] text-[color:var(--muted)]">
+              Expenses exceeding standard Pauschbetrag: commute, work equipment, home office, or certified training costs.
+            </p>
+          </div>
+
+          <!-- Social Contributions Breakdown Card -->
+          <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] p-4 space-y-2">
+            <p class="text-xs font-bold text-[color:var(--fg)]">Statutory Social Rates (Arbeitnehmeranteil 2026):</p>
+            <div class="grid grid-cols-2 gap-2 text-[11px] text-[color:var(--muted)]">
+              <div>Rentenversicherung: <strong class="text-[color:var(--fg)]">9.3%</strong> (max €101,400)</div>
+              <div>Krankenversicherung: <strong class="text-[color:var(--fg)]">8.15%</strong> (max €69,750)</div>
+              <div>Pflegeversicherung: <strong class="text-[color:var(--fg)]">2.2%</strong> (max €69,750)</div>
+              <div>Arbeitslosenvers.: <strong class="text-[color:var(--fg)]">1.3%</strong> (max €101,400)</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- RIGHT COLUMN: RESULTS, PAYCHECK SCHEDULE & AUDIT TRAIL -->
+    <div class="space-y-6">
+
+      <!-- PAYCHECK FREQUENCY TABLE (Shared Primitive) -->
+      <div class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 sm:p-6 shadow-sm">
+        <PaycheckFrequencyTable
+          currencySymbol={profile.defaultCurrencySymbol}
+          monthly={initialResult.netIncomeMonthly}
+          biweekly={initialResult.netIncomeBiweekly}
+          weekly={initialResult.netIncomeWeekly}
+          daily={initialResult.netIncomeDaily}
+          hourly={initialResult.netIncomeHourly}
+        />
+      </div>
+
+      <!-- AUDIT TRAIL / BREAKDOWN TABLE -->
+      <div class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 sm:p-6 shadow-sm space-y-4">
+        <div class="flex items-center justify-between border-b border-[color:var(--border)] pb-3">
+          <h3 class="text-sm font-bold uppercase tracking-wider text-[color:var(--fg)] flex items-center gap-2">
+            <Icon name="table" class="w-4 h-4 text-[color:var(--accent)]" />
+            <span>BMF Gehalts-Audit Trail</span>
+          </h3>
+          <span class="text-xs font-mono font-bold text-[color:var(--accent)]" data-effective-rate>
+            {formatPercent(initialResult.effectiveTotalDeductionRate, 1)}
+          </span>
+        </div>
+
+        <div class="space-y-2 text-xs">
+          <div class="flex justify-between py-1.5 border-b border-[color:var(--border)]/40 font-medium">
+            <span class="text-[color:var(--muted)]">Bruttogehalt (Gross Income)</span>
+            <span class="font-bold text-[color:var(--fg)]" data-res-gross>
+              {formatCurrency(initialResult.grossIncome, profile.defaultCurrency, profile.defaultCurrencySymbol)}
+            </span>
+          </div>
+
+          <div class="flex justify-between py-1.5 border-b border-[color:var(--border)]/40">
+            <span class="text-[color:var(--muted)]">Grundfreibetrag &amp; Freibeträge</span>
+            <span class="font-bold text-emerald-500" data-res-deductions>
+              -{formatCurrency(initialResult.standardDeduction, profile.defaultCurrency, profile.defaultCurrencySymbol)}
+            </span>
+          </div>
+
+          <div class="flex justify-between py-1.5 border-b border-[color:var(--border)]/40 font-bold bg-[color:var(--bg)] px-2 rounded-lg">
+            <span class="text-[color:var(--fg)]">Zu versteuerndes Einkommen (zvE)</span>
+            <span class="text-[color:var(--fg)]" data-res-taxable>
+              {formatCurrency(initialResult.taxableIncome, profile.defaultCurrency, profile.defaultCurrencySymbol)}
+            </span>
+          </div>
+
+          <div class="flex justify-between py-1.5 border-b border-[color:var(--border)]/40">
+            <span class="text-[color:var(--muted)]">Lohnsteuer (Income Tax)</span>
+            <span class="font-bold text-blue-500" data-res-incometax>
+              {formatCurrency(initialResult.incomeTax, profile.defaultCurrency, profile.defaultCurrencySymbol)}
+            </span>
+          </div>
+
+          <div class="flex justify-between py-1.5 border-b border-[color:var(--border)]/40">
+            <span class="text-[color:var(--muted)]">Solidaritätszuschlag (Soli)</span>
+            <span class="font-bold text-blue-600" data-res-soli>
+              €0
+            </span>
+          </div>
+
+          <div class="flex justify-between py-1.5 border-b border-[color:var(--border)]/40">
+            <span class="text-[color:var(--muted)]">Kirchensteuer (Church Tax)</span>
+            <span class="font-bold text-purple-500" data-res-church>
+              €0
+            </span>
+          </div>
+
+          <div class="flex justify-between py-1.5 border-b border-[color:var(--border)]/40">
+            <span class="text-[color:var(--muted)]">Rentenversicherung (9.3%)</span>
+            <span class="font-bold text-amber-500" data-res-rv>
+              {formatCurrency(initialResult.socialInsurances.rentenversicherung, profile.defaultCurrency, profile.defaultCurrencySymbol)}
+            </span>
+          </div>
+
+          <div class="flex justify-between py-1.5 border-b border-[color:var(--border)]/40">
+            <span class="text-[color:var(--muted)]">Krankenversicherung (8.15%)</span>
+            <span class="font-bold text-amber-500" data-res-kv>
+              {formatCurrency(initialResult.socialInsurances.krankenversicherung, profile.defaultCurrency, profile.defaultCurrencySymbol)}
+            </span>
+          </div>
+
+          <div class="flex justify-between py-1.5 border-b border-[color:var(--border)]/40">
+            <span class="text-[color:var(--muted)]">Pflegeversicherung (2.2%)</span>
+            <span class="font-bold text-amber-500" data-res-pv>
+              {formatCurrency(initialResult.socialInsurances.pflegeversicherung, profile.defaultCurrency, profile.defaultCurrencySymbol)}
+            </span>
+          </div>
+
+          <div class="flex justify-between py-1.5 border-b border-[color:var(--border)]/40">
+            <span class="text-[color:var(--muted)]">Arbeitslosenversicherung (1.3%)</span>
+            <span class="font-bold text-amber-500" data-res-av>
+              {formatCurrency(initialResult.socialInsurances.arbeitslosenversicherung, profile.defaultCurrency, profile.defaultCurrencySymbol)}
+            </span>
+          </div>
+
+          <div class="flex justify-between py-2 border-t-2 border-[color:var(--border)] text-sm font-extrabold">
+            <span class="text-[color:var(--fg)]">Gesamtabzüge (Total Deductions)</span>
+            <span class="text-red-500" data-res-total-deductions>
+              {formatCurrency(initialResult.totalTax, profile.defaultCurrency, profile.defaultCurrencySymbol)}
+            </span>
+          </div>
+
+          <div class="flex justify-between py-2 rounded-xl bg-[color:var(--accent)]/10 px-3 text-sm font-black text-[color:var(--accent)]">
+            <span>Netto-Jahresgehalt (Net Pay)</span>
+            <span data-res-net-takehome>
+              {formatCurrency(initialResult.netIncomeAnnual, profile.defaultCurrency, profile.defaultCurrencySymbol)}
+            </span>
+          </div>
+        </div>
+
+        <div class="pt-2 flex justify-between text-xs text-[color:var(--muted)] border-t border-[color:var(--border)]/40">
+          <span>Spitzensteuersatz: <strong class="text-[color:var(--fg)]" data-marginal-rate>{formatPercent(initialResult.marginalTaxRate, 0)}</strong></span>
+          <span>Abgabenquote: <strong class="text-[color:var(--fg)]" data-effective-tax-rate>{formatPercent(initialResult.effectiveTotalDeductionRate, 1)}</strong></span>
+        </div>
+      </div>
+
+      <!-- PROGRESSIVE BRACKETS TABLE (Shared Primitive) -->
+      <div class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 sm:p-6 shadow-sm">
+        <TaxBracketsTable
+          breakdown={initialResult.bracketBreakdown || []}
+          currencySymbol={profile.defaultCurrencySymbol}
+        />
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Parameter Explanations -->
+  <div class="mt-8 border-t border-[color:var(--border)] pt-8">
+    <CalculatorParameterGuide parameters={taxParameterGuide} />
+  </div>
+
+  <!-- Disclaimer Footer -->
+  <div class="mt-8">
+    <TaxDisclaimer />
+  </div>
+</div>
+
+<script>
+  import { calculateDeTax } from '../../utils/tax/de-engine';
+
+  function setupDeTaxCalculator() {
+    const apps = document.querySelectorAll('[data-tax-app][data-country-id="de"]');
+
+    apps.forEach((app) => {
+      try {
+        const profileJson = app.getAttribute('data-profile-json');
+        if (!profileJson) return;
+        const profile = JSON.parse(profileJson);
+
+        // Controls
+        const yearSelect = app.querySelector('[data-tax-year]') as HTMLSelectElement | null;
+        const engineTabs = Array.from(app.querySelectorAll('[data-engine-tab]')) as HTMLElement[];
+        const salaryInput = app.querySelector('[data-de-salary]') as HTMLInputElement | null;
+        const steuerklasseSelect = app.querySelector('[data-de-steuerklasse]') as HTMLSelectElement | null;
+        const churchRadios = Array.from(app.querySelectorAll('[data-de-church-radio]')) as HTMLInputElement[];
+        const churchRateSelect = app.querySelector('[data-de-church-rate]') as HTMLSelectElement | null;
+        const churchRegionWrap = app.querySelector('#de-church-region-wrap');
+        const deductionsInput = app.querySelector('[data-de-deductions]') as HTMLInputElement | null;
+
+        // Mode State
+        let currentMode: 'advanced' | 'quick' = 'advanced';
+
+        // Hero Outputs
+        const heroAmount = app.querySelector('[data-hero-amount]');
+        const heroSubtext = app.querySelector('[data-hero-subtext]');
+        const heroIncomeTax = app.querySelector('[data-hero-incometax]');
+        const heroSocial = app.querySelector('[data-hero-social]');
+        const marginalRateEl = app.querySelector('[data-marginal-rate]');
+        const effectiveRateEl = app.querySelector('[data-effective-rate]');
+        const effectiveTaxRateEl = app.querySelector('[data-effective-tax-rate]');
+
+        // Allocation Bar
+        const barTakehome = app.querySelector('[data-bar-takehome]') as HTMLElement | null;
+        const barFedtax = app.querySelector('[data-bar-fedtax]') as HTMLElement | null;
+        const barFica = app.querySelector('[data-bar-fica]') as HTMLElement | null;
+        const barPretax = app.querySelector('[data-bar-pretax]') as HTMLElement | null;
+        const allocationLabel = app.querySelector('[data-allocation-label]');
+
+        // Paycheck Schedule
+        const schedMonthly = app.querySelector('[data-sched-monthly]');
+        const schedSemiMonthly = app.querySelector('[data-sched-semimonthly]');
+        const schedBiweekly = app.querySelector('[data-sched-biweekly]');
+        const schedWeekly = app.querySelector('[data-sched-weekly]');
+        const schedDaily = app.querySelector('[data-sched-daily]');
+        const schedHourly = app.querySelector('[data-sched-hourly]');
+
+        // Audit Trail Elements
+        const resGross = app.querySelector('[data-res-gross]');
+        const resDeductions = app.querySelector('[data-res-deductions]');
+        const resTaxable = app.querySelector('[data-res-taxable]');
+        const resIncomeTax = app.querySelector('[data-res-incometax]');
+        const resSoli = app.querySelector('[data-res-soli]');
+        const resChurch = app.querySelector('[data-res-church]');
+        const resRv = app.querySelector('[data-res-rv]');
+        const resKv = app.querySelector('[data-res-kv]');
+        const resPv = app.querySelector('[data-res-pv]');
+        const resAv = app.querySelector('[data-res-av]');
+        const resTotalDeductions = app.querySelector('[data-res-total-deductions]');
+        const resNetTakeHome = app.querySelector('[data-res-net-takehome]');
+        const bracketTbody = app.querySelector('[data-bracket-tbody]');
+        const copySummaryBtn = app.querySelector('[data-copy-summary-btn]');
+
+        function fmt(n: number): string {
+          return '€' + Math.round(n).toLocaleString('de-DE');
+        }
+
+        function calculate() {
+          const selectedYear = yearSelect ? yearSelect.value : profile.defaultTaxYear;
+          const steuerklasse = (steuerklasseSelect ? steuerklasseSelect.value : '1') as any;
+          const gross = Math.max(0, parseFloat(salaryInput?.value || '0') || 0);
+          const customDeductions = currentMode === 'advanced' ? Math.max(0, parseFloat(deductionsInput?.value || '0') || 0) : 0;
+          const hasChurch = churchRadios.find((r) => r.checked)?.value === 'yes';
+          const churchRate = churchRateSelect ? parseFloat(churchRateSelect.value) : 0.09;
+
+          const res = calculateDeTax({
+            grossIncome: gross,
+            taxYear: selectedYear,
+            steuerklasse,
+            hasChurchTax: hasChurch && currentMode === 'advanced',
+            churchTaxRate: churchRate,
+            customDeductions,
+          });
+
+          // Update Hero
+          if (heroAmount) heroAmount.textContent = fmt(res.netIncome);
+          if (heroSubtext) heroSubtext.textContent = `${fmt(res.netIncome / 12)}/Monat · ${fmt(res.netIncome / 52)}/Woche`;
+          if (heroIncomeTax) heroIncomeTax.textContent = fmt(res.incomeTax + res.solidaritySurcharge + res.churchTax);
+          if (heroSocial) heroSocial.textContent = fmt(res.totalSocialContributions);
+          if (effectiveRateEl) effectiveRateEl.textContent = `${res.effectiveTotalDeductionRate.toFixed(1)}%`;
+          if (effectiveTaxRateEl) effectiveTaxRateEl.textContent = `${res.effectiveTotalDeductionRate.toFixed(1)}%`;
+          if (marginalRateEl) marginalRateEl.textContent = `${res.marginalTaxRate.toFixed(0)}%`;
+
+          // Paycheck Schedule
+          if (schedMonthly) schedMonthly.textContent = fmt(res.netIncome / 12);
+          if (schedSemiMonthly) schedSemiMonthly.textContent = fmt(res.netIncome / 24);
+          if (schedBiweekly) schedBiweekly.textContent = fmt(res.netIncome / 26);
+          if (schedWeekly) schedWeekly.textContent = fmt(res.netIncome / 52);
+          if (schedDaily) schedDaily.textContent = fmt(res.netIncome / 260);
+          if (schedHourly) schedHourly.textContent = fmt(res.netIncome / 2080);
+
+          // Audit Trail
+          if (resGross) resGross.textContent = fmt(gross);
+          if (resDeductions) resDeductions.textContent = `-${fmt(res.standardDeduction + customDeductions)}`;
+          if (resTaxable) resTaxable.textContent = fmt(res.taxableIncome);
+          if (resIncomeTax) resIncomeTax.textContent = fmt(res.incomeTax);
+          if (resSoli) resSoli.textContent = res.solidaritySurcharge > 0 ? fmt(res.solidaritySurcharge) : '€0';
+          if (resChurch) resChurch.textContent = res.churchTax > 0 ? fmt(res.churchTax) : '€0';
+          if (resRv) resRv.textContent = fmt(res.socialInsurances.rentenversicherung);
+          if (resKv) resKv.textContent = fmt(res.socialInsurances.krankenversicherung);
+          if (resPv) resPv.textContent = fmt(res.socialInsurances.pflegeversicherung);
+          if (resAv) resAv.textContent = fmt(res.socialInsurances.arbeitslosenversicherung);
+          if (resTotalDeductions) resTotalDeductions.textContent = fmt(res.totalTax);
+          if (resNetTakeHome) resNetTakeHome.textContent = fmt(res.netIncome);
+
+          // Allocation Bar
+          if (gross > 0) {
+            const totalTaxes = res.incomeTax + res.solidaritySurcharge + res.churchTax;
+            const pctTakehome = Math.max(0, (res.netIncome / gross) * 100);
+            const pctTax = Math.max(0, (totalTaxes / gross) * 100);
+            const pctSocial = Math.max(0, (res.totalSocialContributions / gross) * 100);
+            const pctPretax = Math.max(0, (customDeductions / gross) * 100);
+
+            if (barTakehome) barTakehome.style.width = `${pctTakehome}%`;
+            if (barFedtax) barFedtax.style.width = `${pctTax}%`;
+            if (barFica) barFica.style.width = `${pctSocial}%`;
+            if (barPretax) barPretax.style.width = `${pctPretax}%`;
+
+            if (allocationLabel) {
+              allocationLabel.textContent = `Netto: ${pctTakehome.toFixed(1)}% · Steuern: ${pctTax.toFixed(1)}% · Sozialabgaben: ${pctSocial.toFixed(1)}%`;
+            }
+          }
+
+          // Bracket Table
+          if (bracketTbody) {
+            bracketTbody.innerHTML = res.bracketBreakdown
+              .map(
+                (row) => `
+                <tr class="border-b border-[color:var(--border)]/40 hover:bg-[color:var(--bg)]/50 transition">
+                  <td class="py-2 px-3 font-medium text-[color:var(--fg)]">${row.bracketRange}</td>
+                  <td class="py-2 px-3 text-right font-mono text-[color:var(--muted)]">${row.ratePercent}</td>
+                  <td class="py-2 px-3 text-right font-mono font-medium text-[color:var(--fg)]">${fmt(row.taxableInBracket)}</td>
+                  <td class="py-2 px-3 text-right font-mono font-bold text-blue-500">${fmt(row.taxAmount)}</td>
+                </tr>
+              `
+              )
+              .join('');
+          }
+        }
+
+        // Mode Switching
+        engineTabs.forEach((tab) => {
+          tab.addEventListener('click', () => {
+            const mode = tab.getAttribute('data-engine-tab') as 'advanced' | 'quick';
+            if (!mode) return;
+            currentMode = mode;
+
+            engineTabs.forEach((t) => {
+              if (t === tab) {
+                t.className = 'shrink-0 min-w-max cursor-pointer rounded-xl px-3 py-1.5 text-xs font-bold transition inline-flex items-center gap-1.5 bg-[color:var(--accent)] text-white shadow-xs active';
+              } else {
+                t.className = 'shrink-0 min-w-max cursor-pointer rounded-xl px-3 py-1.5 text-xs font-semibold text-[color:var(--muted)] hover:text-[color:var(--fg)] transition inline-flex items-center gap-1.5';
+              }
+            });
+
+            const advSections = app.querySelectorAll('[data-advanced-section]');
+            advSections.forEach((sec) => {
+              if (mode === 'quick') {
+                sec.classList.add('hidden');
+              } else {
+                sec.classList.remove('hidden');
+              }
+            });
+
+            calculate();
+          });
+        });
+
+        // Event Listeners
+        salaryInput?.addEventListener('input', calculate);
+        deductionsInput?.addEventListener('input', calculate);
+        yearSelect?.addEventListener('change', calculate);
+        steuerklasseSelect?.addEventListener('change', calculate);
+
+        churchRadios.forEach(r => {
+          r.addEventListener('change', () => {
+            const isMember = churchRadios.find(rad => rad.checked)?.value === 'yes';
+            if (isMember) {
+              churchRegionWrap?.classList.remove('hidden');
+            } else {
+              churchRegionWrap?.classList.add('hidden');
+            }
+            calculate();
+          });
+        });
+        churchRateSelect?.addEventListener('change', calculate);
+
+        // Copy Report
+        copySummaryBtn?.addEventListener('click', () => {
+          const gross = salaryInput?.value || '0';
+          const net = heroAmount?.textContent || '€0';
+          const tax = heroIncomeTax?.textContent || '€0';
+          const soc = heroSocial?.textContent || '€0';
+          const eff = effectiveRateEl?.textContent || '0%';
+          const summary = `--- Germany Tax Calculation (BMF 2026 Brutto-Netto) ---\nBruttogehalt: €${gross}\nNetto-Gehalt: ${net}\nSteuern (Lohnsteuer + Soli): ${tax}\nSozialabgaben: ${soc}\nGesamtabgabenquote: ${eff}\nCalculated via Toolscastle Tax Platform`;
+
+          navigator.clipboard.writeText(summary).then(() => {
+            const btnSpan = copySummaryBtn.querySelector('span');
+            if (btnSpan) {
+              const orig = btnSpan.textContent;
+              btnSpan.textContent = 'In die Zwischenablage kopiert!';
+              setTimeout(() => {
+                btnSpan.textContent = orig;
+              }, 2000);
+            }
+          });
+        });
+
+        // Initialize
+        calculate();
+      } catch (err) {
+        console.error('Error initializing DE tax calculator:', err);
+      }
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', setupDeTaxCalculator);
+  } else {
+    setupDeTaxCalculator();
+  }
+</script>
+

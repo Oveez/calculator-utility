@@ -1,0 +1,599 @@
+---
+import type { CountryTaxProfile } from '../../data/tax/types';
+import { calculateSeTax } from '../../utils/tax/se-engine';
+import { formatCurrency, formatPercent } from '../../utils/tax/formatters';
+import TaxDisclaimer from './TaxDisclaimer.astro';
+import CalculatorParameterGuide from '../calculator/CalculatorParameterGuide.astro';
+import Icon from '../Icon.astro';
+import TaxYearSelector from './shared/TaxYearSelector.astro';
+import TaxAllocationBar from './shared/TaxAllocationBar.astro';
+import PaycheckFrequencyTable from './shared/PaycheckFrequencyTable.astro';
+import TaxBreakdownTable from './shared/TaxBreakdownTable.astro';
+import TaxBracketsTable from './shared/TaxBracketsTable.astro';
+import type { CalculatorParameterInfo } from '../../types/calculator';
+
+interface Props {
+  profile: CountryTaxProfile;
+  initialIncome?: number;
+}
+
+const { profile, initialIncome = 0 } = Astro.props;
+
+// Initial server-rendered baseline calculations for Sweden
+const initialResult = calculateSeTax(
+  {
+    grossIncome: initialIncome,
+    taxYear: '2026',
+    municipality: 'national_avg',
+  },
+  profile
+);
+
+const defaultYearData = profile.years[profile.defaultTaxYear];
+
+const taxParameterGuide: CalculatorParameterInfo[] = [
+  {
+    id: 'bruttolon',
+    name: 'Bruttolön / Fast lön (Annual Gross Salary)',
+    description: 'Contractual pre-tax wage compensation before municipal tax, state tax, or pension fee withholdings.',
+    whyItMatters: 'Statutory basis for Skatteverket income assessment and public pension credit entitlements.',
+    typicalRange: 'Any positive earnings',
+    unit: 'SEK (kr)',
+  },
+  {
+    id: 'kommunalskatt',
+    name: 'Kommunalskatt (Municipal Tax ~32.38%)',
+    description: 'Combined municipal and regional healthcare tax, varying by municipality between ~29.82% (Stockholm) and ~35%.',
+    whyItMatters: 'Constitutes the primary income tax paid by all employed workers in Sweden.',
+    typicalRange: '29.8% to 35.3%',
+    unit: '%',
+  },
+  {
+    id: 'grundavdrag',
+    name: 'Grundavdrag (Basic Tax Deduction 25,000 kr)',
+    description: 'Statutory tax-free deduction applied to annual wage earnings before calculating municipal and state taxes.',
+    whyItMatters: 'Reduces taxable income progressively for low and medium wage earners.',
+    typicalRange: '25,000 kr (2026 baseline)',
+    unit: 'SEK (kr)',
+  },
+  {
+    id: 'statligSkatt',
+    name: 'Statlig Inkomstskatt (20% State Income Tax)',
+    description: 'National income tax tier levied on taxable earnings exceeding the statutory threshold (skiktgräns 643,000 kr).',
+    whyItMatters: 'Imposes a higher marginal tax rate (52.38% combined) on upper earners.',
+    typicalRange: '20.00% (above 643,000 kr)',
+    unit: '%',
+  },
+  {
+    id: 'pensionsavgift',
+    name: 'Allmän Pensionsavgift (Public Pension Fee 7%)',
+    description: 'Statutory 7% public pension fee capped at 643,000 kr (45,010 kr max), which is credited back against income tax for wage earners.',
+    whyItMatters: 'Funds the state public earnings-related pension system (Inkomstpension).',
+    typicalRange: '7.00% (capped at 643,000 kr)',
+    unit: '%',
+  },
+];
+---
+
+<div
+  class="relative overflow-hidden rounded-[2.5rem] border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-5 shadow-[var(--shadow)] sm:p-8 lg:p-10"
+  data-tax-app
+  data-country-id="se"
+  data-profile-json={JSON.stringify(profile)}
+>
+  <!-- Top Bar: Country Info & Mode Switcher -->
+  <div class="flex flex-col gap-4 border-b border-[color:var(--border)] pb-6 sm:flex-row sm:items-center sm:justify-between">
+    <div class="flex items-center gap-3">
+      <span class="text-3xl sm:text-4xl select-none">{profile.flagEmoji}</span>
+      <div>
+        <div class="flex items-center gap-2 flex-wrap">
+          <h2 class="text-xl font-bold tracking-tight text-[color:var(--fg)] sm:text-2xl">
+            Sweden Income Tax &amp; Net Salary Calculator
+          </h2>
+          <span class="inline-flex items-center rounded-full bg-amber-500/10 px-2.5 py-0.5 text-xs font-semibold text-amber-600 dark:text-amber-400 border border-amber-500/20">
+            Official 2026 Skatteverket
+          </span>
+        </div>
+        <p class="text-xs text-[color:var(--muted)]">
+          Source: <a href={defaultYearData.officialSourceUrl} target="_blank" rel="noopener noreferrer" class="font-medium text-[color:var(--accent)] hover:underline">{defaultYearData.officialSourceName}</a> • Verified {defaultYearData.lastVerifiedDate}
+        </p>
+      </div>
+    </div>
+
+    <!-- App Tabs & Tax Year -->
+    <div class="flex flex-wrap items-center gap-2">
+      <TaxYearSelector profile={profile} id="se-tax-year-select" />
+
+      <!-- Engine View Toggle -->
+      <div class="flex items-center rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-1 text-xs font-semibold overflow-x-auto no-scrollbar max-w-full shrink-0">
+        <button
+          type="button"
+          class="shrink-0 min-w-max cursor-pointer rounded-xl px-3 py-1.5 text-xs font-bold transition inline-flex items-center gap-1.5 bg-[color:var(--accent)] text-white shadow-xs active"
+          data-engine-tab="advanced"
+        >
+          <Icon name="bolt" class="w-3.5 h-3.5" />
+          <span>Detailed Skatt Mode</span>
+        </button>
+        <button
+          type="button"
+          class="shrink-0 min-w-max cursor-pointer rounded-xl px-3 py-1.5 text-xs font-semibold text-[color:var(--muted)] hover:text-[color:var(--fg)] transition inline-flex items-center gap-1.5"
+          data-engine-tab="quick"
+        >
+          <Icon name="calculator" class="w-3.5 h-3.5" />
+          <span>Quick Salary</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- HERO DYNAMIC TAKE-HOME BANNER -->
+  <div class="mt-6 rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 sm:p-6 shadow-sm">
+    <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+      <div>
+        <div class="flex items-center gap-2">
+          <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Annual Net Take-Home (Netto Lön Efter Skatt)</span>
+          <span
+            data-hero-badge
+            class="inline-flex items-center gap-1 rounded-full bg-amber-500/10 px-2.5 py-0.5 text-xs font-bold text-amber-600 dark:text-amber-400 border border-amber-500/20"
+          >
+            Net Pay
+          </span>
+        </div>
+        <p class="mt-1 text-3xl font-black tracking-tight sm:text-4xl lg:text-5xl text-[color:var(--fg)]" data-hero-amount>
+          {formatCurrency(initialResult.netAnnualTakeHome, profile.defaultCurrency, profile.defaultCurrencySymbol)}
+        </p>
+        <p class="mt-1 text-xs text-[color:var(--muted)]" data-hero-subtext>
+          {formatCurrency(initialResult.netMonthlyTakeHome, profile.defaultCurrency, profile.defaultCurrencySymbol)}/month · {formatCurrency(initialResult.netWeeklyTakeHome, profile.defaultCurrency, profile.defaultCurrencySymbol)}/week
+        </p>
+      </div>
+
+      <div class="grid grid-cols-2 gap-3 sm:grid-cols-3 border-t border-[color:var(--border)]/60 pt-3 md:border-t-0 md:pt-0">
+        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] p-3">
+          <p class="text-[11px] font-medium text-[color:var(--muted)]">Inkomstskatt (Kommun + Stat)</p>
+          <p class="text-base font-extrabold text-blue-500" data-hero-incometax>
+            {formatCurrency(initialResult.regularIncomeTax, profile.defaultCurrency, profile.defaultCurrencySymbol)}
+          </p>
+          <p class="text-[10px] text-[color:var(--muted)]">Municipal &amp; State</p>
+        </div>
+        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] p-3">
+          <p class="text-[11px] font-medium text-[color:var(--muted)]">Pensionsavgift (7%)</p>
+          <p class="text-base font-extrabold text-amber-500" data-hero-social>
+            {formatCurrency(initialResult.totalFicaTax, profile.defaultCurrency, profile.defaultCurrencySymbol)}
+          </p>
+          <p class="text-[10px] text-[color:var(--muted)]">Public Pension Fee</p>
+        </div>
+        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] p-3 col-span-2 sm:col-span-1">
+          <p class="text-[11px] font-medium text-[color:var(--muted)]">Effective Tax Rate</p>
+          <p class="text-base font-extrabold text-purple-500" data-hero-effective-rate>
+            {formatPercent(initialResult.effectiveTotalTaxRate, 1)}
+          </p>
+          <p class="text-[10px] text-[color:var(--muted)]">Total tax burden</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN CALCULATOR WORKSPACE -->
+  <div class="mt-8 grid gap-8 lg:grid-cols-12">
+    <!-- LEFT PANE: INPUT CONTROLS -->
+    <div class="space-y-6 lg:col-span-5">
+      <!-- Income Input Card -->
+      <div class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 sm:p-6 shadow-sm space-y-5">
+        <div class="flex items-center justify-between border-b border-[color:var(--border)]/60 pb-3">
+          <h3 class="text-base font-bold text-[color:var(--fg)] flex items-center gap-2">
+            <Icon name="dollar-sign" class="w-4 h-4 text-amber-500" />
+            <span>Salary &amp; Compensation</span>
+          </h3>
+          <span class="text-xs font-semibold text-[color:var(--muted)]">SEK (kr)</span>
+        </div>
+
+        <div>
+          <label for="se-salary-input" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--fg)] mb-1">
+            Annual Gross Salary (Bruttolön)
+          </label>
+          <div class="relative rounded-2xl shadow-inner">
+            <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4 font-bold text-[color:var(--muted)]">
+              kr
+            </div>
+            <input
+              type="number"
+              id="se-salary-input"
+              min="0"
+              step="1000"
+              value={initialIncome || ''}
+              placeholder="e.g. 520,000"
+              class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] py-3.5 pl-10 pr-4 text-base font-bold text-[color:var(--fg)] transition focus:border-[color:var(--accent)] focus:outline-none focus:ring-2 focus:ring-[color:var(--accent)]/20"
+            />
+          </div>
+          <p class="mt-1.5 text-[11px] text-[color:var(--muted)]">
+            Total annual earnings before municipal tax and pension fee.
+          </p>
+        </div>
+
+        <!-- Municipality (Kommun) Selector -->
+        <div>
+          <label for="se-kommun-select" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--fg)] mb-1">
+            Municipality (Kommun)
+          </label>
+          <select
+            id="se-kommun-select"
+            class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] py-3 px-4 text-sm font-semibold text-[color:var(--fg)] transition focus:border-[color:var(--accent)] focus:outline-none focus:ring-2 focus:ring-[color:var(--accent)]/20"
+          >
+            <option value="national_avg" selected>National Average (~32.38% Kommun)</option>
+            <option value="stockholm">Stockholm (29.82% — Lowest major tier)</option>
+            <option value="gothenburg">Göteborg (32.60%)</option>
+            <option value="malmo">Malmö (32.42%)</option>
+            <option value="uppsala">Uppsala (32.22%)</option>
+            <option value="linkoping">Linköping (31.94%)</option>
+          </select>
+          <p class="mt-1.5 text-[11px] text-[color:var(--muted)]">
+            Municipal rates range from ~29.8% to over 35% across Sweden.
+          </p>
+        </div>
+
+        <!-- Church Tax (Kyrkoavgift) -->
+        <div data-advanced-section>
+          <label for="se-church-tax-select" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--fg)] mb-1">
+            Church Membership (Svenska Kyrkan)
+          </label>
+          <select
+            id="se-church-tax-select"
+            class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] py-3 px-4 text-sm font-semibold text-[color:var(--fg)] transition focus:border-[color:var(--accent)] focus:outline-none focus:ring-2 focus:ring-[color:var(--accent)]/20"
+          >
+            <option value="no" selected>No (Begravningsavgift only ~0.25%)</option>
+            <option value="yes">Yes (Svenska Kyrkan ~1.00%)</option>
+          </select>
+          <p class="mt-1.5 text-[11px] text-[color:var(--muted)]">
+            Non-members pay only the mandatory statutory burial charge (~0.25%).
+          </p>
+        </div>
+
+        <!-- Additional Deductions (Avdrag) -->
+        <div data-advanced-section>
+          <label for="se-extra-deductions" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--fg)] mb-1">
+            Commuting &amp; Other Deductions (Reseavdrag)
+          </label>
+          <div class="relative rounded-2xl shadow-inner">
+            <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4 font-bold text-[color:var(--muted)]">
+              kr
+            </div>
+            <input
+              type="number"
+              id="se-extra-deductions"
+              min="0"
+              step="500"
+              value="0"
+              placeholder="e.g. Travel expenses exceeding threshold"
+              class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] py-3 pl-10 pr-4 text-sm font-bold text-[color:var(--fg)] transition focus:border-[color:var(--accent)] focus:outline-none focus:ring-2 focus:ring-[color:var(--accent)]/20"
+            />
+          </div>
+          <p class="mt-1.5 text-[11px] text-[color:var(--muted)]">
+            Travel expenses exceeding the statutory 11,000 kr self-deductible floor.
+          </p>
+        </div>
+      </div>
+
+      <!-- Quick Action / Copy Summary Card -->
+      <div class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 shadow-sm flex items-center justify-between">
+        <div>
+          <p class="text-xs font-bold text-[color:var(--fg)]">Export Calculation</p>
+          <p class="text-[11px] text-[color:var(--muted)]">Copy clean text breakdown to clipboard</p>
+        </div>
+        <button
+          type="button"
+          id="se-copy-summary-btn"
+          class="inline-flex items-center gap-1.5 rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3.5 py-2 text-xs font-bold text-[color:var(--fg)] transition hover:bg-[color:var(--surface)] active:scale-95"
+        >
+          <Icon name="copy" class="w-3.5 h-3.5" />
+          <span>Copy Summary</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- RIGHT PANE: TAX BREAKDOWN & SCHEDULE -->
+    <div class="space-y-6 lg:col-span-7">
+      <!-- Visual Allocation Bar -->
+      <TaxAllocationBar
+        profile={profile}
+        netPercentage={100}
+        taxPercentage={0}
+        socialPercentage={0}
+        otherPercentage={0}
+      />
+
+      <!-- Paycheck Frequency Breakdown -->
+      <PaycheckFrequencyTable
+        profile={profile}
+        annualTakeHome={initialResult.netAnnualTakeHome}
+      />
+
+      <!-- Line-Item Audit Trail -->
+      <div class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 sm:p-6 shadow-sm">
+        <h3 class="text-base font-bold text-[color:var(--fg)] mb-4 flex items-center gap-2">
+          <Icon name="list" class="w-4 h-4 text-[color:var(--accent)]" />
+          <span>Skatteverket Official Tax Breakdown</span>
+        </h3>
+        <div class="space-y-2 text-xs">
+          <div class="flex justify-between py-1.5 border-b border-[color:var(--border)]/40">
+            <span class="text-[color:var(--muted)]">Gross Remuneration (Bruttolön)</span>
+            <span class="font-mono font-bold text-[color:var(--fg)]" data-res-gross>0 kr</span>
+          </div>
+          <div class="flex justify-between py-1.5 border-b border-[color:var(--border)]/40">
+            <span class="text-[color:var(--muted)]">Public Pension Fee (Allmän pensionsavgift 7%)</span>
+            <span class="font-mono font-bold text-amber-500" data-res-pension>-0 kr</span>
+          </div>
+          <div class="flex justify-between py-1.5 border-b border-[color:var(--border)]/40">
+            <span class="text-[color:var(--muted)]">Basic Deduction (Grundavdrag 25,000 kr)</span>
+            <span class="font-mono font-semibold text-emerald-500" data-res-allowance>-25,000 kr</span>
+          </div>
+          <div class="flex justify-between py-1.5 border-b border-[color:var(--border)]/40">
+            <span class="text-[color:var(--muted)]">Taxable Base (Taxerad inkomst)</span>
+            <span class="font-mono font-semibold text-[color:var(--fg)]" data-res-taxable>0 kr</span>
+          </div>
+          <div class="flex justify-between py-1.5 border-b border-[color:var(--border)]/40">
+            <span class="text-[color:var(--muted)]">Municipal Tax (Kommunalskatt ~32.38%)</span>
+            <span class="font-mono font-bold text-blue-500" data-res-kommun>-0 kr</span>
+          </div>
+          <div class="flex justify-between py-1.5 border-b border-[color:var(--border)]/40">
+            <span class="text-[color:var(--muted)]">State Tax (Statlig inkomstskatt 20%)</span>
+            <span class="font-mono font-bold text-blue-600" data-res-statlig>-0 kr</span>
+          </div>
+          <div class="flex justify-between py-1.5 border-b border-[color:var(--border)]/40">
+            <span class="text-[color:var(--muted)]">Jobbskatteavdrag (EITC Credit)</span>
+            <span class="font-mono font-bold text-emerald-500" data-res-jobb>+0 kr</span>
+          </div>
+          <div class="flex justify-between py-1.5 border-b border-[color:var(--border)]/40">
+            <span class="text-[color:var(--muted)]">Total Taxes &amp; Pension Fee</span>
+            <span class="font-mono font-bold text-red-500" data-res-total-taxes>-0 kr</span>
+          </div>
+          <div class="flex justify-between py-2 border-t-2 border-[color:var(--border)] font-bold text-sm">
+            <span class="text-[color:var(--fg)]">Net Annual Take-Home (Netto Lön)</span>
+            <span class="font-mono text-emerald-600 dark:text-emerald-400" data-res-net-takehome>0 kr</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Progressive Tax Brackets Table -->
+      <div class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 sm:p-6 shadow-sm">
+        <h3 class="text-base font-bold text-[color:var(--fg)] mb-3 flex items-center gap-2">
+          <Icon name="bar-chart-2" class="w-4 h-4 text-[color:var(--accent)]" />
+          <span>2026 Swedish Tax Tiers (Kommunal &amp; Statlig)</span>
+        </h3>
+        <p class="text-xs text-[color:var(--muted)] mb-4">
+          Municipal tax applies on taxable income above Grundavdrag. State tax (20%) applies above skiktgräns 643,000 kr.
+        </p>
+        <div class="overflow-x-auto">
+          <table class="w-full text-xs">
+            <thead>
+              <tr class="border-b border-[color:var(--border)] text-[color:var(--muted)]">
+                <th class="py-2 px-3 text-left font-semibold">Tax Tier</th>
+                <th class="py-2 px-3 text-right font-semibold">Total Rate</th>
+                <th class="py-2 px-3 text-right font-semibold">Taxable Slice</th>
+                <th class="py-2 px-3 text-right font-semibold">Tax in Tier</th>
+              </tr>
+            </thead>
+            <tbody data-bracket-tbody>
+              <!-- Filled dynamically by JavaScript -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PARAMETER GUIDE & DISCLAIMER -->
+  <div class="mt-12 space-y-8 border-t border-[color:var(--border)] pt-8">
+    <CalculatorParameterGuide parameters={taxParameterGuide} />
+    <TaxDisclaimer officialSourceName={defaultYearData.officialSourceName} officialSourceUrl={defaultYearData.officialSourceUrl} />
+  </div>
+</div>
+
+<script>
+  import { calculateSeTax } from '../../utils/tax/se-engine';
+
+  function setupSeTaxCalculator() {
+    const apps = document.querySelectorAll('[data-tax-app][data-country-id="se"]');
+
+    apps.forEach((app) => {
+      try {
+        const salaryInput = app.querySelector('#se-salary-input') as HTMLInputElement | null;
+        const kommunSelect = app.querySelector('#se-kommun-select') as HTMLSelectElement | null;
+        const churchTaxSelect = app.querySelector('#se-church-tax-select') as HTMLSelectElement | null;
+        const extraDeductionsInput = app.querySelector('#se-extra-deductions') as HTMLInputElement | null;
+        const yearSelect = app.querySelector('#se-tax-year-select') as HTMLSelectElement | null;
+        const copySummaryBtn = app.querySelector('#se-copy-summary-btn') as HTMLButtonElement | null;
+
+        // Hero Elements
+        const heroAmount = app.querySelector('[data-hero-amount]');
+        const heroSubtext = app.querySelector('[data-hero-subtext]');
+        const heroIncomeTax = app.querySelector('[data-hero-incometax]');
+        const heroSocial = app.querySelector('[data-hero-social]');
+        const heroEffectiveRate = app.querySelector('[data-hero-effective-rate]');
+
+        // Paycheck Schedule Elements
+        const schedMonthly = app.querySelector('[data-sched-monthly]');
+        const schedSemiMonthly = app.querySelector('[data-sched-semimonthly]');
+        const schedBiweekly = app.querySelector('[data-sched-biweekly]');
+        const schedWeekly = app.querySelector('[data-sched-weekly]');
+        const schedDaily = app.querySelector('[data-sched-daily]');
+        const schedHourly = app.querySelector('[data-sched-hourly]');
+
+        // Audit Trail Elements
+        const resGross = app.querySelector('[data-res-gross]');
+        const resPension = app.querySelector('[data-res-pension]');
+        const resAllowance = app.querySelector('[data-res-allowance]');
+        const resTaxable = app.querySelector('[data-res-taxable]');
+        const resKommun = app.querySelector('[data-res-kommun]');
+        const resStatlig = app.querySelector('[data-res-statlig]');
+        const resJobb = app.querySelector('[data-res-jobb]');
+        const resTotalTaxes = app.querySelector('[data-res-total-taxes]');
+        const resNetTakeHome = app.querySelector('[data-res-net-takehome]');
+
+        // Visual Allocation Bar
+        const barTakehome = app.querySelector('[data-bar-takehome]') as HTMLElement | null;
+        const barFedtax = app.querySelector('[data-bar-fedtax]') as HTMLElement | null;
+        const barFica = app.querySelector('[data-bar-fica]') as HTMLElement | null;
+        const barPretax = app.querySelector('[data-bar-pretax]') as HTMLElement | null;
+        const allocationLabel = app.querySelector('[data-allocation-label]');
+
+        // Bracket Table Body
+        const bracketTbody = app.querySelector('[data-bracket-tbody]');
+
+        // Mode Switching
+        const engineTabs = app.querySelectorAll('[data-engine-tab]');
+        let currentMode: 'advanced' | 'quick' = 'advanced';
+
+        const fmt = (n: number) => {
+          return new Intl.NumberFormat('sv-SE', {
+            style: 'currency',
+            currency: 'SEK',
+            maximumFractionDigits: 0,
+          }).format(Math.round(n));
+        };
+
+        function calculate() {
+          const selectedYear = (yearSelect ? yearSelect.value : '2026') as '2025' | '2026';
+          const gross = Math.max(0, parseFloat(salaryInput?.value || '0') || 0);
+          const extraDeductions = currentMode === 'advanced' ? Math.max(0, parseFloat(extraDeductionsInput?.value || '0') || 0) : 0;
+          const churchTaxSelected = currentMode === 'advanced' && churchTaxSelect?.value === 'yes';
+          const kommunCode = kommunSelect?.value || 'national_avg';
+
+          const res = calculateSeTax({
+            grossIncome: gross,
+            taxYear: selectedYear,
+            municipality: kommunCode,
+            isChurchMember: churchTaxSelected,
+            customDeductions: extraDeductions,
+          });
+
+          // Update Hero
+          if (heroAmount) heroAmount.textContent = fmt(res.netIncome);
+          if (heroSubtext) heroSubtext.textContent = `${fmt(res.netIncome / 12)}/month · ${fmt(res.netIncome / 52)}/week`;
+          if (heroIncomeTax) heroIncomeTax.textContent = fmt(res.incomeTax);
+          if (heroSocial) heroSocial.textContent = fmt(res.pensionFee);
+          if (heroEffectiveRate) heroEffectiveRate.textContent = `${res.effectiveTaxRate.toFixed(1)}%`;
+
+          // Paycheck Schedule
+          if (schedMonthly) schedMonthly.textContent = fmt(res.netIncome / 12);
+          if (schedSemiMonthly) schedSemiMonthly.textContent = fmt(res.netIncome / 24);
+          if (schedBiweekly) schedBiweekly.textContent = fmt(res.netIncome / 26);
+          if (schedWeekly) schedWeekly.textContent = fmt(res.netIncome / 52);
+          if (schedDaily) schedDaily.textContent = fmt(res.netIncome / 260);
+          if (schedHourly) schedHourly.textContent = fmt(res.netIncome / 2080);
+
+          // Audit Trail
+          if (resGross) resGross.textContent = fmt(gross);
+          if (resPension) resPension.textContent = `-${fmt(res.pensionFee)}`;
+          if (resAllowance) resAllowance.textContent = `-${fmt(res.grundavdrag + res.customDeductions)}`;
+          if (resTaxable) resTaxable.textContent = fmt(res.taxableIncome);
+          if (resKommun) resKommun.textContent = `-${fmt(res.municipalTax)}`;
+          if (resStatlig) resStatlig.textContent = `-${fmt(res.stateTax)}`;
+          if (resJobb) resJobb.textContent = `+${fmt(res.jobbskatteavdrag)}`;
+          if (resTotalTaxes) resTotalTaxes.textContent = `-${fmt(res.totalTax)}`;
+          if (resNetTakeHome) resNetTakeHome.textContent = fmt(res.netIncome);
+
+          // Visual Allocation Bar
+          if (gross > 0) {
+            const pctTakehome = Math.max(0, (res.netIncome / gross) * 100);
+            const pctTax = Math.max(0, (res.incomeTax / gross) * 100);
+            const pctPension = Math.max(0, (res.pensionFee / gross) * 100);
+            const pctAllowance = Math.max(0, ((res.grundavdrag + res.customDeductions) / gross) * 100);
+
+            if (barTakehome) barTakehome.style.width = `${pctTakehome}%`;
+            if (barFedtax) barFedtax.style.width = `${pctTax}%`;
+            if (barFica) barFica.style.width = `${pctPension}%`;
+            if (barPretax) barPretax.style.width = `${pctAllowance}%`;
+
+            if (allocationLabel) {
+              allocationLabel.textContent = `Net Pay: ${pctTakehome.toFixed(1)}% · Inkomstskatt: ${pctTax.toFixed(1)}% · Pension: ${pctPension.toFixed(1)}%`;
+            }
+          }
+
+          // Bracket Table
+          if (bracketTbody) {
+            bracketTbody.innerHTML = res.bracketBreakdown
+              .map(
+                (row) => `
+                <tr class="border-b border-[color:var(--border)]/40 hover:bg-[color:var(--bg)]/50 transition">
+                  <td class="py-2 px-3 font-medium text-[color:var(--fg)]">${row.range}</td>
+                  <td class="py-2 px-3 text-right font-mono text-[color:var(--muted)]">${row.rate}</td>
+                  <td class="py-2 px-3 text-right font-mono font-medium text-[color:var(--fg)]">${fmt(row.taxable)}</td>
+                  <td class="py-2 px-3 text-right font-mono font-bold text-blue-500">${fmt(row.tax)}</td>
+                </tr>
+              `
+              )
+              .join('');
+          }
+        }
+
+        // Mode Switching
+        engineTabs.forEach((tab) => {
+          tab.addEventListener('click', () => {
+            const mode = tab.getAttribute('data-engine-tab') as 'advanced' | 'quick';
+            if (!mode) return;
+            currentMode = mode;
+
+            engineTabs.forEach((t) => {
+              if (t === tab) {
+                t.className = 'shrink-0 min-w-max cursor-pointer rounded-xl px-3 py-1.5 text-xs font-bold transition inline-flex items-center gap-1.5 bg-[color:var(--accent)] text-white shadow-xs active';
+              } else {
+                t.className = 'shrink-0 min-w-max cursor-pointer rounded-xl px-3 py-1.5 text-xs font-semibold text-[color:var(--muted)] hover:text-[color:var(--fg)] transition inline-flex items-center gap-1.5';
+              }
+            });
+
+            const advSections = app.querySelectorAll('[data-advanced-section]');
+            advSections.forEach((sec) => {
+              if (mode === 'quick') {
+                sec.classList.add('hidden');
+              } else {
+                sec.classList.remove('hidden');
+              }
+            });
+
+            calculate();
+          });
+        });
+
+        // Event Listeners
+        salaryInput?.addEventListener('input', calculate);
+        kommunSelect?.addEventListener('change', calculate);
+        churchTaxSelect?.addEventListener('change', calculate);
+        extraDeductionsInput?.addEventListener('input', calculate);
+        yearSelect?.addEventListener('change', calculate);
+
+        // Copy Summary
+        copySummaryBtn?.addEventListener('click', () => {
+          const gross = salaryInput?.value || '0';
+          const net = heroAmount?.textContent || '0 kr';
+          const tax = heroIncomeTax?.textContent || '0 kr';
+          const soc = heroSocial?.textContent || '0 kr';
+          const eff = heroEffectiveRate?.textContent || '0%';
+          const summary = `--- Sweden Income Tax Summary (2026 Skatteverket) ---\nGross Salary: ${gross} kr\nNet Take-Home: ${net}\nInkomstskatt (Kommun + Stat): ${tax}\nAllmän pensionsavgift (7%): ${soc}\nEffective Tax Rate: ${eff}\nCalculated via Toolscastle Tax Platform`;
+
+          navigator.clipboard.writeText(summary).then(() => {
+            const btnSpan = copySummaryBtn.querySelector('span');
+            if (btnSpan) {
+              const orig = btnSpan.textContent;
+              btnSpan.textContent = 'Copied to clipboard!';
+              setTimeout(() => {
+                btnSpan.textContent = orig;
+              }, 2000);
+            }
+          });
+        });
+
+        // Initial Calculation
+        calculate();
+      } catch (err) {
+        console.error('Error initializing Sweden tax calculator:', err);
+      }
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', setupSeTaxCalculator);
+  } else {
+    setupSeTaxCalculator();
+  }
+</script>
+

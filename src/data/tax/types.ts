@@ -72,10 +72,23 @@ export interface TaxYearData {
   officialSourceName: string;
   officialSourceUrl: string;
   lastVerifiedDate: string; // YYYY-MM-DD
+  sourceMetadata?: {
+    sourceName: string;
+    sourceUrl: string;
+    dateVerified: string;
+  };
   assumptions: string[];
   notes?: string;
 }
 
+export interface BaseTaxParams {
+  taxYear?: string;
+  grossIncome?: number;
+}
+
+/**
+ * @deprecated US Form 1040-specific input interface. Non-US engines must use country-specific parameter interfaces (e.g., UkTaxParams, DeTaxParams).
+ */
 export interface AdvancedTaxInputs {
   taxYear?: string;
   filingStatus?: FilingStatus;
@@ -108,6 +121,9 @@ export interface AdvancedTaxInputs {
   stateTaxWithheld?: number;
 }
 
+/**
+ * @deprecated US Form 1040-specific calculation result interface. Non-US engines must use country-specific result interfaces (e.g., UkTaxResult, DeTaxResult).
+ */
 export interface AdvancedTaxResult {
   totalGrossIncome: number;
   earnedIncome: number;
@@ -154,6 +170,7 @@ export interface AdvancedTaxResult {
   effectiveFederalRate: number;
   effectiveTotalTaxRate: number;
   marginalFederalRate: number;
+  bracketBreakdown?: BracketCalculationDetail[];
 }
 
 export interface CountryTaxProfile {

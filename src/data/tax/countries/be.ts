@@ -92,4 +92,9 @@ export const beProfile: CountryTaxProfile = {
       assumptions: ['Single employee for 2025 tax year'],
     },
   },
+  sourceMetadata: {
+    name: 'SPF Finances / FOD Financiën (Belgium Federal Public Service)',
+    url: 'https://finances.belgium.be',
+    verifiedAt: '2026-10-01'
+  }
 };

@@ -61,6 +61,11 @@ export const mxProfile: CountryTaxProfile = {
       officialSourceName: 'Servicio de Administración Tributaria (SAT) - RMF Anexo 8 & DOF',
       officialSourceUrl: 'https://www.sat.gob.mx',
       lastVerifiedDate: '2026-09-01',
+      sourceMetadata: {
+        sourceName: 'Servicio de Administración Tributaria (SAT) - RMF Anexo 8 & DOF',
+        sourceUrl: 'https://www.sat.gob.mx',
+        dateVerified: '2026-09-01'
+      },
       assumptions: [
         'Employee under standard Mexican labor contract (Sueldos y Salarios)',
         'Tarifa anual Art. 96 de la Ley del Impuesto Sobre la Renta (LISR) RMF 2026 applied',
@@ -101,6 +106,11 @@ export const mxProfile: CountryTaxProfile = {
       officialSourceName: 'SAT / Secretaría de Hacienda',
       officialSourceUrl: 'https://www.sat.gob.mx',
       lastVerifiedDate: '2025-01-15',
+      sourceMetadata: {
+        sourceName: 'SAT / Secretaría de Hacienda',
+        sourceUrl: 'https://www.sat.gob.mx',
+        dateVerified: '2025-01-15'
+      },
       assumptions: ['Sueldos y Salarios for 2025'],
     },
   },

@@ -1,0 +1,583 @@
+---
+import type { CountryTaxProfile } from '../../data/tax/types';
+import { calculatePtTax } from '../../utils/tax/pt-engine';
+import { formatCurrency, formatPercent } from '../../utils/tax/formatters';
+import TaxDisclaimer from './TaxDisclaimer.astro';
+import CalculatorParameterGuide from '../calculator/CalculatorParameterGuide.astro';
+import Icon from '../Icon.astro';
+import TaxYearSelector from './shared/TaxYearSelector.astro';
+import TaxAllocationBar from './shared/TaxAllocationBar.astro';
+import PaycheckFrequencyTable from './shared/PaycheckFrequencyTable.astro';
+import TaxBreakdownTable from './shared/TaxBreakdownTable.astro';
+import TaxBracketsTable from './shared/TaxBracketsTable.astro';
+import type { CalculatorParameterInfo } from '../../types/calculator';
+
+interface Props {
+  profile: CountryTaxProfile;
+  initialIncome?: number;
+}
+
+const { profile, initialIncome = 0 } = Astro.props;
+
+// Initial server-rendered baseline calculations for Portugal
+const initialResult = calculatePtTax(
+  {
+    grossIncome: initialIncome,
+    taxYear: '2026',
+  },
+  profile
+);
+
+const defaultYearData = profile.years[profile.defaultTaxYear];
+
+const taxParameterGuide: CalculatorParameterInfo[] = [
+  {
+    id: 'vencimentoBruto',
+    name: 'Vencimento / Salário Bruto Anual (Annual Gross Salary)',
+    description: 'Contractual annual employment remuneration before withholding of Segurança Social or IRS retention taxes.',
+    whyItMatters: 'Forms the statutory foundation for Autoridade Tributária e Aduaneira (AT) assessment.',
+    typicalRange: 'Any positive earnings',
+    unit: 'EUR (€)',
+  },
+  {
+    id: 'segurancaSocial',
+    name: 'Segurança Social Trabalhador (11.00% Social Security)',
+    description: 'Mandatory employee contribution to the Social Security system (Taxa Social Única) withheld directly from monthly wages.',
+    whyItMatters: 'Guarantees pension, invalidity, sickness, and parental benefit coverage; uncapped.',
+    typicalRange: '11.00% flat uncapped',
+    unit: '%',
+  },
+  {
+    id: 'deducaoEspecifica',
+    name: 'Dedução Específica (€4,462.15 Standard Allowance)',
+    description: 'Statutory standard deduction for category A dependent employment income (€4,462.15 or actual Segurança Social contributions if higher).',
+    whyItMatters: 'Directly subtracts from gross salary to establish the net taxable base for IRS.',
+    typicalRange: '€4,462.15 or actual SS',
+    unit: 'EUR (€)',
+  },
+  {
+    id: 'escaloesIrs',
+    name: 'Escalões de IRS (9 Progressive Brackets 12.5%–48%)',
+    description: 'Progressive marginal tax brackets applied to net taxable income across 9 statutory tiers.',
+    whyItMatters: 'Administered directly by Autoridade Tributária with rates from 12.50% up to 48.00%.',
+    typicalRange: '12.50% to 48.00%',
+    unit: '%',
+  },
+  {
+    id: 'irsJovem',
+    name: 'IRS Jovem (Youth Tax Relief Regime)',
+    description: 'Statutory tax exemption regime for young workers entering the labor market, offering substantial multi-year tax exemptions.',
+    whyItMatters: 'Significantly boosts net disposable take-home pay for eligible young workers.',
+    typicalRange: '25% to 100% tax exemption',
+    unit: '%',
+  },
+];
+---
+
+<div
+  class="relative overflow-hidden rounded-[2.5rem] border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-5 shadow-[var(--shadow)] sm:p-8 lg:p-10"
+  data-tax-app
+  data-country-id="pt"
+  data-profile-json={JSON.stringify(profile)}
+>
+  <!-- Top Bar: Country Info & Mode Switcher -->
+  <div class="flex flex-col gap-4 border-b border-[color:var(--border)] pb-6 sm:flex-row sm:items-center sm:justify-between">
+    <div class="flex items-center gap-3">
+      <span class="text-3xl sm:text-4xl select-none">{profile.flagEmoji}</span>
+      <div>
+        <div class="flex items-center gap-2 flex-wrap">
+          <h2 class="text-xl font-bold tracking-tight text-[color:var(--fg)] sm:text-2xl">
+            Portugal Income Tax &amp; Net Salary Calculator
+          </h2>
+          <span class="inline-flex items-center rounded-full bg-emerald-500/10 px-2.5 py-0.5 text-xs font-semibold text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+            Official 2026 Autoridade Tributária
+          </span>
+        </div>
+        <p class="text-xs text-[color:var(--muted)]">
+          Source: <a href={defaultYearData.officialSourceUrl} target="_blank" rel="noopener noreferrer" class="font-medium text-[color:var(--accent)] hover:underline">{defaultYearData.officialSourceName}</a> • Verified {defaultYearData.lastVerifiedDate}
+        </p>
+      </div>
+    </div>
+
+    <!-- App Tabs & Tax Year -->
+    <div class="flex flex-wrap items-center gap-2">
+      <TaxYearSelector profile={profile} id="pt-tax-year-select" />
+
+      <!-- Engine View Toggle -->
+      <div class="flex items-center rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-1 text-xs font-semibold overflow-x-auto no-scrollbar max-w-full shrink-0">
+        <button
+          type="button"
+          class="shrink-0 min-w-max cursor-pointer rounded-xl px-3 py-1.5 text-xs font-bold transition inline-flex items-center gap-1.5 bg-[color:var(--accent)] text-white shadow-xs active"
+          data-engine-tab="advanced"
+        >
+          <Icon name="bolt" class="w-3.5 h-3.5" />
+          <span>Detailed IRS Mode</span>
+        </button>
+        <button
+          type="button"
+          class="shrink-0 min-w-max cursor-pointer rounded-xl px-3 py-1.5 text-xs font-semibold text-[color:var(--muted)] hover:text-[color:var(--fg)] transition inline-flex items-center gap-1.5"
+          data-engine-tab="quick"
+        >
+          <Icon name="calculator" class="w-3.5 h-3.5" />
+          <span>Quick Net Salary</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- HERO DYNAMIC TAKE-HOME BANNER -->
+  <div class="mt-6 rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 sm:p-6 shadow-sm">
+    <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+      <div>
+        <div class="flex items-center gap-2">
+          <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Annual Net Take-Home (Salário Líquido Anual)</span>
+          <span
+            data-hero-badge
+            class="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-2.5 py-0.5 text-xs font-bold text-emerald-600 dark:text-emerald-400 border border-emerald-500/20"
+          >
+            Net Pay
+          </span>
+        </div>
+        <p class="mt-1 text-3xl font-black tracking-tight sm:text-4xl lg:text-5xl text-[color:var(--fg)]" data-hero-amount>
+          {formatCurrency(initialResult.netTakeHome, profile.defaultCurrency, profile.defaultCurrencySymbol)}
+        </p>
+        <p class="mt-1 text-xs text-[color:var(--muted)]" data-hero-subtext>
+          {formatCurrency(initialResult.netTakeHome / 12, profile.defaultCurrency, profile.defaultCurrencySymbol)}/month (12x) · {formatCurrency(initialResult.netTakeHome / 14, profile.defaultCurrency, profile.defaultCurrencySymbol)}/month (14x)
+        </p>
+      </div>
+
+      <div class="grid grid-cols-2 gap-3 sm:grid-cols-3 border-t border-[color:var(--border)]/60 pt-3 md:border-t-0 md:pt-0">
+        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] p-3">
+          <p class="text-[11px] font-medium text-[color:var(--muted)]">Imposto IRS (9 Escalões)</p>
+          <p class="text-base font-extrabold text-blue-500" data-hero-incometax>
+            {formatCurrency(initialResult.totalTax, profile.defaultCurrency, profile.defaultCurrencySymbol)}
+          </p>
+          <p class="text-[10px] text-[color:var(--muted)]">Escalões progressivos</p>
+        </div>
+        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] p-3">
+          <p class="text-[11px] font-medium text-[color:var(--muted)]">Segurança Social (11%)</p>
+          <p class="text-base font-extrabold text-amber-500" data-hero-social>
+            {formatCurrency(initialResult.totalSocialContributions, profile.defaultCurrency, profile.defaultCurrencySymbol)}
+          </p>
+          <p class="text-[10px] text-[color:var(--muted)]">TSU Trabalhador</p>
+        </div>
+        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] p-3 col-span-2 sm:col-span-1">
+          <p class="text-[11px] font-medium text-[color:var(--muted)]">Effective Tax Rate</p>
+          <p class="text-base font-extrabold text-purple-500" data-hero-effective-rate>
+            {formatPercent(initialResult.effectiveTaxRate * 100, 1)}
+          </p>
+          <p class="text-[10px] text-[color:var(--muted)]">IRS effective burden</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN CALCULATOR WORKSPACE -->
+  <div class="mt-8 grid gap-8 lg:grid-cols-12">
+    <!-- LEFT PANE: INPUT CONTROLS -->
+    <div class="space-y-6 lg:col-span-5">
+      <!-- Income Input Card -->
+      <div class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 sm:p-6 shadow-sm space-y-5">
+        <div class="flex items-center justify-between border-b border-[color:var(--border)]/60 pb-3">
+          <h3 class="text-base font-bold text-[color:var(--fg)] flex items-center gap-2">
+            <Icon name="dollar-sign" class="w-4 h-4 text-emerald-500" />
+            <span>Salary &amp; Remuneration</span>
+          </h3>
+          <span class="text-xs font-semibold text-[color:var(--muted)]">Euros (EUR)</span>
+        </div>
+
+        <div>
+          <label for="pt-salary-input" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--fg)] mb-1">
+            Annual Gross Salary (Salário Bruto Anual)
+          </label>
+          <div class="relative rounded-2xl shadow-inner">
+            <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4 font-bold text-[color:var(--muted)]">
+              €
+            </div>
+            <input
+              type="number"
+              id="pt-salary-input"
+              min="0"
+              step="500"
+              value={initialIncome || ''}
+              placeholder="e.g. 35,000"
+              class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] py-3.5 pl-10 pr-4 text-base font-bold text-[color:var(--fg)] transition focus:border-[color:var(--accent)] focus:outline-none focus:ring-2 focus:ring-[color:var(--accent)]/20"
+            />
+          </div>
+          <p class="mt-1.5 text-[11px] text-[color:var(--muted)]">
+            Total annual earnings including holiday and Christmas allowances (14 months).
+          </p>
+        </div>
+
+        <!-- IRS Jovem Regime -->
+        <div>
+          <label for="pt-irs-jovem" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--fg)] mb-1">
+            IRS Jovem Regime (Youth Tax Relief)
+          </label>
+          <select
+            id="pt-irs-jovem"
+            class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] py-3 px-4 text-sm font-semibold text-[color:var(--fg)] transition focus:border-[color:var(--accent)] focus:outline-none focus:ring-2 focus:ring-[color:var(--accent)]/20"
+          >
+            <option value="none" selected>Standard (No IRS Jovem applied)</option>
+            <option value="year1">1st Year (100% IRS exemption)</option>
+            <option value="year2">2nd Year (75% IRS exemption)</option>
+            <option value="year3">3rd / 4th Year (50% IRS exemption)</option>
+            <option value="year5">5th Year (25% IRS exemption)</option>
+          </select>
+          <p class="mt-1.5 text-[11px] text-[color:var(--muted)]">
+            Preferential multi-year tax exemption for qualifying young graduates.
+          </p>
+        </div>
+
+        <!-- Number of Salary Installments (12 vs 14 payments) -->
+        <div data-advanced-section>
+          <label for="pt-months-select" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--fg)] mb-1">
+            Monthly Distribution (Meses de Pagamento)
+          </label>
+          <select
+            id="pt-months-select"
+            class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] py-3 px-4 text-sm font-semibold text-[color:var(--fg)] transition focus:border-[color:var(--accent)] focus:outline-none focus:ring-2 focus:ring-[color:var(--accent)]/20"
+          >
+            <option value="14" selected>14 Payments (Standard: 12 months + Férias + Natal)</option>
+            <option value="12">12 Payments (Duodécimos included monthly)</option>
+          </select>
+          <p class="mt-1.5 text-[11px] text-[color:var(--muted)]">
+            Standard Portuguese payroll distributes pay across 14 installments.
+          </p>
+        </div>
+
+        <!-- Dependents Deduction -->
+        <div data-advanced-section>
+          <label for="pt-dependents-input" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--fg)] mb-1">
+            Dependents (Número de Dependentes)
+          </label>
+          <select
+            id="pt-dependents-input"
+            class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] py-3 px-4 text-sm font-semibold text-[color:var(--fg)] transition focus:border-[color:var(--accent)] focus:outline-none focus:ring-2 focus:ring-[color:var(--accent)]/20"
+          >
+            <option value="0" selected>0 Dependents</option>
+            <option value="1">1 Dependent (€600 deduction)</option>
+            <option value="2">2 Dependents (€1,200 deduction)</option>
+            <option value="3">3+ Dependents (€1,800+ deduction)</option>
+          </select>
+          <p class="mt-1.5 text-[11px] text-[color:var(--muted)]">
+            Each dependent provides an automatic fixed deduction against IRS liability.
+          </p>
+        </div>
+      </div>
+
+      <!-- Quick Action / Copy Summary Card -->
+      <div class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 shadow-sm flex items-center justify-between">
+        <div>
+          <p class="text-xs font-bold text-[color:var(--fg)]">Export Calculation</p>
+          <p class="text-[11px] text-[color:var(--muted)]">Copy clean text breakdown to clipboard</p>
+        </div>
+        <button
+          type="button"
+          id="pt-copy-summary-btn"
+          class="inline-flex items-center gap-1.5 rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3.5 py-2 text-xs font-bold text-[color:var(--fg)] transition hover:bg-[color:var(--surface)] active:scale-95"
+        >
+          <Icon name="copy" class="w-3.5 h-3.5" />
+          <span>Copy Summary</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- RIGHT PANE: TAX BREAKDOWN & SCHEDULE -->
+    <div class="space-y-6 lg:col-span-7">
+      <!-- Visual Allocation Bar -->
+      <TaxAllocationBar
+        profile={profile}
+        netPercentage={100}
+        taxPercentage={0}
+        socialPercentage={0}
+        otherPercentage={0}
+      />
+
+      <!-- Paycheck Frequency Breakdown -->
+      <PaycheckFrequencyTable
+        profile={profile}
+        annualTakeHome={initialResult.netTakeHome}
+      />
+
+      <!-- Line-Item Audit Trail -->
+      <div class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 sm:p-6 shadow-sm">
+        <h3 class="text-base font-bold text-[color:var(--fg)] mb-4 flex items-center gap-2">
+          <Icon name="list" class="w-4 h-4 text-[color:var(--accent)]" />
+          <span>Autoridade Tributária Official Tax Breakdown</span>
+        </h3>
+        <div class="space-y-2 text-xs">
+          <div class="flex justify-between py-1.5 border-b border-[color:var(--border)]/40">
+            <span class="text-[color:var(--muted)]">Rendimento Bruto Anual (Gross Salary)</span>
+            <span class="font-mono font-bold text-[color:var(--fg)]" data-res-gross>€0</span>
+          </div>
+          <div class="flex justify-between py-1.5 border-b border-[color:var(--border)]/40">
+            <span class="text-[color:var(--muted)]">Segurança Social (11% TSU Trabalhador)</span>
+            <span class="font-mono font-bold text-amber-500" data-res-ss>-€0</span>
+          </div>
+          <div class="flex justify-between py-1.5 border-b border-[color:var(--border)]/40">
+            <span class="text-[color:var(--muted)]">Dedução Específica (€4,462.15 Allowance)</span>
+            <span class="font-mono font-semibold text-emerald-500" data-res-allowance>-€4,462</span>
+          </div>
+          <div class="flex justify-between py-1.5 border-b border-[color:var(--border)]/40">
+            <span class="text-[color:var(--muted)]">Rendimento Coletável IRS (Taxable Base)</span>
+            <span class="font-mono font-semibold text-[color:var(--fg)]" data-res-taxable>€0</span>
+          </div>
+          <div class="flex justify-between py-1.5 border-b border-[color:var(--border)]/40">
+            <span class="text-[color:var(--muted)]">Imposto IRS Coleta Total</span>
+            <span class="font-mono font-bold text-blue-500" data-res-irs>-€0</span>
+          </div>
+          <div class="flex justify-between py-1.5 border-b border-[color:var(--border)]/40">
+            <span class="text-[color:var(--muted)]">Total Descontos (IRS + Segurança Social)</span>
+            <span class="font-mono font-bold text-red-500" data-res-total-taxes>-€0</span>
+          </div>
+          <div class="flex justify-between py-2 border-t-2 border-[color:var(--border)] font-bold text-sm">
+            <span class="text-[color:var(--fg)]">Salário Líquido Anual (Net Take-Home)</span>
+            <span class="font-mono text-emerald-600 dark:text-emerald-400" data-res-net-takehome>€0</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Progressive Tax Brackets Table -->
+      <div class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 sm:p-6 shadow-sm">
+        <h3 class="text-base font-bold text-[color:var(--fg)] mb-3 flex items-center gap-2">
+          <Icon name="bar-chart-2" class="w-4 h-4 text-[color:var(--accent)]" />
+          <span>2026 Portuguese IRS Brackets (9 Escalões)</span>
+        </h3>
+        <p class="text-xs text-[color:var(--muted)] mb-4">
+          Applied progressively to taxable income after standard deduction (Dedução específica).
+        </p>
+        <div class="overflow-x-auto">
+          <table class="w-full text-xs">
+            <thead>
+              <tr class="border-b border-[color:var(--border)] text-[color:var(--muted)]">
+                <th class="py-2 px-3 text-left font-semibold">Escalão de IRS</th>
+                <th class="py-2 px-3 text-right font-semibold">Taxa Normal</th>
+                <th class="py-2 px-3 text-right font-semibold">Matéria Coletável</th>
+                <th class="py-2 px-3 text-right font-semibold">Coleta no Escalão</th>
+              </tr>
+            </thead>
+            <tbody data-bracket-tbody>
+              <!-- Filled dynamically by JavaScript -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PARAMETER GUIDE & DISCLAIMER -->
+  <div class="mt-12 space-y-8 border-t border-[color:var(--border)] pt-8">
+    <CalculatorParameterGuide parameters={taxParameterGuide} />
+    <TaxDisclaimer officialSourceName={defaultYearData.officialSourceName} officialSourceUrl={defaultYearData.officialSourceUrl} />
+  </div>
+</div>
+
+<script>
+  import { calculatePtTax } from '../../utils/tax/pt-engine';
+
+  function setupPtTaxCalculator() {
+    const apps = document.querySelectorAll('[data-tax-app][data-country-id="pt"]');
+
+    apps.forEach((app) => {
+      try {
+        const salaryInput = app.querySelector('#pt-salary-input') as HTMLInputElement | null;
+        const irsJovemSelect = app.querySelector('#pt-irs-jovem') as HTMLSelectElement | null;
+        const monthsSelect = app.querySelector('#pt-months-select') as HTMLSelectElement | null;
+        const dependentsSelect = app.querySelector('#pt-dependents-input') as HTMLSelectElement | null;
+        const yearSelect = app.querySelector('#pt-tax-year-select') as HTMLSelectElement | null;
+        const copySummaryBtn = app.querySelector('#pt-copy-summary-btn') as HTMLButtonElement | null;
+
+        // Hero Elements
+        const heroAmount = app.querySelector('[data-hero-amount]');
+        const heroSubtext = app.querySelector('[data-hero-subtext]');
+        const heroIncomeTax = app.querySelector('[data-hero-incometax]');
+        const heroSocial = app.querySelector('[data-hero-social]');
+        const heroEffectiveRate = app.querySelector('[data-hero-effective-rate]');
+
+        // Paycheck Schedule Elements
+        const schedMonthly = app.querySelector('[data-sched-monthly]');
+        const schedSemiMonthly = app.querySelector('[data-sched-semimonthly]');
+        const schedBiweekly = app.querySelector('[data-sched-biweekly]');
+        const schedWeekly = app.querySelector('[data-sched-weekly]');
+        const schedDaily = app.querySelector('[data-sched-daily]');
+        const schedHourly = app.querySelector('[data-sched-hourly]');
+
+        // Audit Trail Elements
+        const resGross = app.querySelector('[data-res-gross]');
+        const resSs = app.querySelector('[data-res-ss]');
+        const resAllowance = app.querySelector('[data-res-allowance]');
+        const resTaxable = app.querySelector('[data-res-taxable]');
+        const resIrs = app.querySelector('[data-res-irs]');
+        const resTotalTaxes = app.querySelector('[data-res-total-taxes]');
+        const resNetTakeHome = app.querySelector('[data-res-net-takehome]');
+
+        // Visual Allocation Bar
+        const barTakehome = app.querySelector('[data-bar-takehome]') as HTMLElement | null;
+        const barFedtax = app.querySelector('[data-bar-fedtax]') as HTMLElement | null;
+        const barFica = app.querySelector('[data-bar-fica]') as HTMLElement | null;
+        const barPretax = app.querySelector('[data-bar-pretax]') as HTMLElement | null;
+        const allocationLabel = app.querySelector('[data-allocation-label]');
+
+        // Bracket Table Body
+        const bracketTbody = app.querySelector('[data-bracket-tbody]');
+
+        // Mode Switching
+        const engineTabs = app.querySelectorAll('[data-engine-tab]');
+        let currentMode: 'advanced' | 'quick' = 'advanced';
+
+        const fmt = (n: number) => {
+          return new Intl.NumberFormat('pt-PT', {
+            style: 'currency',
+            currency: 'EUR',
+            maximumFractionDigits: 0,
+          }).format(Math.round(n));
+        };
+
+        function calculate() {
+          const selectedYear = (yearSelect ? yearSelect.value : '2026') as '2025' | '2026';
+          const gross = Math.max(0, parseFloat(salaryInput?.value || '0') || 0);
+          const jovemTier = (irsJovemSelect?.value || 'none') as 'none' | 'year1' | 'year2' | 'year3' | 'year5';
+          const dependentsCount = currentMode === 'advanced' ? parseInt(dependentsSelect?.value || '0', 10) : 0;
+          const numMonths = currentMode === 'advanced' && monthsSelect?.value === '12' ? 12 : 14;
+
+          const res = calculatePtTax({
+            grossIncome: gross,
+            taxYear: selectedYear,
+            irsJovem: jovemTier,
+            dependents: dependentsCount,
+            months: numMonths,
+          });
+
+          // Update Hero
+          if (heroAmount) heroAmount.textContent = fmt(res.netIncome);
+          if (heroSubtext) {
+            heroSubtext.textContent = `${fmt(res.netIncome / 12)}/month (12x) · ${fmt(res.netIncome / 14)}/month (14x)`;
+          }
+          if (heroIncomeTax) heroIncomeTax.textContent = fmt(res.irsTax);
+          if (heroSocial) heroSocial.textContent = fmt(res.socialSecurity);
+          if (heroEffectiveRate) heroEffectiveRate.textContent = `${res.effectiveTaxRate.toFixed(1)}%`;
+
+          // Paycheck Schedule
+          const monthlyPay = res.netIncome / numMonths;
+          if (schedMonthly) schedMonthly.textContent = fmt(monthlyPay);
+          if (schedSemiMonthly) schedSemiMonthly.textContent = fmt(res.netIncome / 24);
+          if (schedBiweekly) schedBiweekly.textContent = fmt(res.netIncome / 26);
+          if (schedWeekly) schedWeekly.textContent = fmt(res.netIncome / 52);
+          if (schedDaily) schedDaily.textContent = fmt(res.netIncome / 260);
+          if (schedHourly) schedHourly.textContent = fmt(res.netIncome / 2080);
+
+          // Audit Trail
+          if (resGross) resGross.textContent = fmt(gross);
+          if (resSs) resSs.textContent = `-${fmt(res.socialSecurity)}`;
+          if (resAllowance) resAllowance.textContent = `-${fmt(res.deducaoEspecifica)}`;
+          if (resTaxable) resTaxable.textContent = fmt(res.taxableIncome);
+          if (resIrs) resIrs.textContent = `-${fmt(res.irsTax)}`;
+          if (resTotalTaxes) resTotalTaxes.textContent = `-${fmt(res.irsTax + res.socialSecurity)}`;
+          if (resNetTakeHome) resNetTakeHome.textContent = fmt(res.netIncome);
+
+          // Visual Allocation Bar
+          if (gross > 0) {
+            const pctTakehome = Math.max(0, (res.netIncome / gross) * 100);
+            const pctIrs = Math.max(0, (res.irsTax / gross) * 100);
+            const pctSocial = Math.max(0, (res.socialSecurity / gross) * 100);
+            const pctPretax = Math.max(0, (res.deducaoEspecifica / gross) * 100);
+
+            if (barTakehome) barTakehome.style.width = `${pctTakehome}%`;
+            if (barFedtax) barFedtax.style.width = `${pctIrs}%`;
+            if (barFica) barFica.style.width = `${pctSocial}%`;
+            if (barPretax) barPretax.style.width = `${pctPretax}%`;
+
+            if (allocationLabel) {
+              allocationLabel.textContent = `Salário Líquido: ${pctTakehome.toFixed(1)}% · IRS: ${pctIrs.toFixed(1)}% · Segurança Social: ${pctSocial.toFixed(1)}%`;
+            }
+          }
+
+          // Bracket Table
+          if (bracketTbody) {
+            bracketTbody.innerHTML = res.bracketBreakdown
+              .map(
+                (row) => `
+                <tr class="border-b border-[color:var(--border)]/40 hover:bg-[color:var(--bg)]/50 transition">
+                  <td class="py-2 px-3 font-medium text-[color:var(--fg)]">${row.range}</td>
+                  <td class="py-2 px-3 text-right font-mono text-[color:var(--muted)]">${row.rate}</td>
+                  <td class="py-2 px-3 text-right font-mono font-medium text-[color:var(--fg)]">${fmt(row.taxable)}</td>
+                  <td class="py-2 px-3 text-right font-mono font-bold text-blue-500">${fmt(row.tax)}</td>
+                </tr>
+              `
+              )
+              .join('');
+          }
+        }
+
+        // Mode Switching
+        engineTabs.forEach((tab) => {
+          tab.addEventListener('click', () => {
+            const mode = tab.getAttribute('data-engine-tab') as 'advanced' | 'quick';
+            if (!mode) return;
+            currentMode = mode;
+
+            engineTabs.forEach((t) => {
+              if (t === tab) {
+                t.className = 'shrink-0 min-w-max cursor-pointer rounded-xl px-3 py-1.5 text-xs font-bold transition inline-flex items-center gap-1.5 bg-[color:var(--accent)] text-white shadow-xs active';
+              } else {
+                t.className = 'shrink-0 min-w-max cursor-pointer rounded-xl px-3 py-1.5 text-xs font-semibold text-[color:var(--muted)] hover:text-[color:var(--fg)] transition inline-flex items-center gap-1.5';
+              }
+            });
+
+            const advSections = app.querySelectorAll('[data-advanced-section]');
+            advSections.forEach((sec) => {
+              if (mode === 'quick') {
+                sec.classList.add('hidden');
+              } else {
+                sec.classList.remove('hidden');
+              }
+            });
+
+            calculate();
+          });
+        });
+
+        // Event Listeners
+        salaryInput?.addEventListener('input', calculate);
+        irsJovemSelect?.addEventListener('change', calculate);
+        monthsSelect?.addEventListener('change', calculate);
+        dependentsSelect?.addEventListener('change', calculate);
+        yearSelect?.addEventListener('change', calculate);
+
+        // Copy Summary
+        copySummaryBtn?.addEventListener('click', () => {
+          const gross = salaryInput?.value || '0';
+          const net = heroAmount?.textContent || '€0';
+          const tax = heroIncomeTax?.textContent || '€0';
+          const soc = heroSocial?.textContent || '€0';
+          const eff = heroEffectiveRate?.textContent || '0%';
+          const summary = `--- Portugal Income Tax Summary (2026 Autoridade Tributária) ---\nSalário Bruto: €${gross}\nSalário Líquido na Conta: ${net}\nImposto IRS (9 Escalões): ${tax}\nSegurança Social (11% TSU): ${soc}\nTaxa Efetiva de IRS: ${eff}\nCalculated via Toolscastle Tax Platform`;
+
+          navigator.clipboard.writeText(summary).then(() => {
+            const btnSpan = copySummaryBtn.querySelector('span');
+            if (btnSpan) {
+              const orig = btnSpan.textContent;
+              btnSpan.textContent = 'Copied to clipboard!';
+              setTimeout(() => {
+                btnSpan.textContent = orig;
+              }, 2000);
+            }
+          });
+        });
+
+        // Initial Calculation
+        calculate();
+      } catch (err) {
+        console.error('Error initializing Portugal tax calculator:', err);
+      }
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', setupPtTaxCalculator);
+  } else {
+    setupPtTaxCalculator();
+  }
+</script>
+

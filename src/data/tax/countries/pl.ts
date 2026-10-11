@@ -59,6 +59,11 @@ export const plProfile: CountryTaxProfile = {
       officialSourceName: 'Krajowa Administracja Skarbowa (KAS) / Ministerstwo Finansów (Podatki.gov.pl)',
       officialSourceUrl: 'https://www.podatki.gov.pl',
       lastVerifiedDate: '2026-09-01',
+      sourceMetadata: {
+        sourceName: 'Krajowa Administracja Skarbowa (KAS) / Ministerstwo Finansów (Podatki.gov.pl)',
+        sourceUrl: 'https://www.podatki.gov.pl',
+        dateVerified: '2026-09-01',
+      },
       assumptions: [
         'Standard full-time employment contract (Umowa o pracę)',
         'Kwota zmniejszająca podatek (3,600 zł) applied via 30,000 zł base allowance',

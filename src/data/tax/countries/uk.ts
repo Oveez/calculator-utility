@@ -34,9 +34,9 @@ export const ukProfile: CountryTaxProfile = {
       standardDeduction: 12570,
       personalAllowance: 12570,
       nationalBrackets: [
-        { threshold: 0, upTo: 37700, rate: 0.20, label: 'Basic Rate (20%)' }, // £12,571 to £50,270 taxable
-        { threshold: 37700, upTo: 112570, rate: 0.40, label: 'Higher Rate (40%)' }, // £50,271 to £125,140
-        { threshold: 112570, rate: 0.45, label: 'Additional Rate (45%)' }, // Over £125,140
+        { threshold: 0, upTo: 37700, rate: 0.20, label: 'Basic Rate (20%)' }, // £12,571 to £50,270 with standard PA
+        { threshold: 37700, upTo: 125140, rate: 0.40, label: 'Higher Rate (40%)' }, // £50,271 to £125,140
+        { threshold: 125140, rate: 0.45, label: 'Additional Rate (45%)' }, // Over £125,140
       ],
       socialContributions: [
         {
@@ -59,8 +59,8 @@ export const ukProfile: CountryTaxProfile = {
             { threshold: 3967, upTo: 16956, rate: 0.20, label: 'Basic Rate (20%)' }, // £16,538 to £29,526
             { threshold: 16956, upTo: 31092, rate: 0.21, label: 'Intermediate Rate (21%)' }, // £29,527 to £43,662
             { threshold: 31092, upTo: 62430, rate: 0.42, label: 'Higher Rate (42%)' }, // £43,663 to £75,000
-            { threshold: 62430, upTo: 112570, rate: 0.45, label: 'Advanced Rate (45%)' }, // £75,001 to £125,140
-            { threshold: 112570, rate: 0.48, label: 'Top Rate (48%)' }, // Over £125,140
+            { threshold: 62430, upTo: 125140, rate: 0.45, label: 'Advanced Rate (45%)' }, // £75,001 to £125,140
+            { threshold: 125140, rate: 0.48, label: 'Top Rate (48%)' }, // Over £125,140
           ],
         },
       ],
@@ -75,6 +75,11 @@ export const ukProfile: CountryTaxProfile = {
       officialSourceName: 'HM Revenue & Customs (HMRC) & Scottish Government / GOV.UK',
       officialSourceUrl: 'https://www.gov.uk/income-tax-rates',
       lastVerifiedDate: '2026-09-01',
+      sourceMetadata: {
+        sourceName: 'HM Revenue & Customs (HMRC) & Scottish Government / GOV.UK',
+        sourceUrl: 'https://www.gov.uk/income-tax-rates',
+        dateVerified: '2026-10-02'
+      },
       assumptions: [
         'Standard 1257L tax code (Personal Allowance £12,570)',
         'Personal Allowance phased out at £1 for every £2 earned above £100,000',
@@ -90,8 +95,8 @@ export const ukProfile: CountryTaxProfile = {
       personalAllowance: 12570,
       nationalBrackets: [
         { threshold: 0, upTo: 37700, rate: 0.20, label: 'Basic Rate (20%)' },
-        { threshold: 37700, upTo: 112570, rate: 0.40, label: 'Higher Rate (40%)' },
-        { threshold: 112570, rate: 0.45, label: 'Additional Rate (45%)' },
+        { threshold: 37700, upTo: 125140, rate: 0.40, label: 'Higher Rate (40%)' },
+        { threshold: 125140, rate: 0.45, label: 'Additional Rate (45%)' },
       ],
       socialContributions: [
         {

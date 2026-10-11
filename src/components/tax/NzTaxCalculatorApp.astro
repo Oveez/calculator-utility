@@ -1,0 +1,607 @@
+---
+import type { CountryTaxProfile } from '../../data/tax/types';
+import { calculateNzTax } from '../../utils/tax/nz-engine';
+import { formatCurrency, formatPercent } from '../../utils/tax/formatters';
+import TaxDisclaimer from './TaxDisclaimer.astro';
+import CalculatorParameterGuide from '../calculator/CalculatorParameterGuide.astro';
+import Icon from '../Icon.astro';
+import TaxYearSelector from './shared/TaxYearSelector.astro';
+import TaxAllocationBar from './shared/TaxAllocationBar.astro';
+import PaycheckFrequencyTable from './shared/PaycheckFrequencyTable.astro';
+import TaxBreakdownTable from './shared/TaxBreakdownTable.astro';
+import TaxBracketsTable from './shared/TaxBracketsTable.astro';
+import type { CalculatorParameterInfo } from '../../types/calculator';
+
+interface Props {
+  profile: CountryTaxProfile;
+  initialIncome?: number;
+}
+
+const { profile, initialIncome = 0 } = Astro.props;
+
+// Initial server-rendered baseline calculations for New Zealand
+const initialResult = calculateNzTax({
+  grossIncome: initialIncome,
+  taxYear: (profile.defaultTaxYear as '2026/27' | '2025/26' | '2024/25') || '2026/27',
+});
+
+const defaultYearData = profile.years[profile.defaultTaxYear];
+
+const taxParameterGuide: CalculatorParameterInfo[] = [
+  {
+    id: 'grossSalary',
+    name: 'Annual Gross Salary / PAYE Income',
+    description: 'Contractual pre-tax salary, wages, and bonuses before PAYE tax, ACC, or KiwiSaver deductions.',
+    whyItMatters: 'Forms the statutory foundation for Inland Revenue (IRD) assessment and ACC earner levy calculations.',
+    typicalRange: 'Any positive earnings',
+    unit: 'NZD ($)',
+  },
+  {
+    id: 'accLevy',
+    name: 'ACC Earner’s Levy (1.75%)',
+    description: 'Mandatory statutory levy funding no-fault 24/7 personal injury cover for all workers in New Zealand. Capped at $156,641 maximum earnings ($2,741.21 cap).',
+    whyItMatters: 'Deducted directly from salary at source alongside PAYE tax.',
+    typicalRange: '1.75% (capped at $156,641 earnings)',
+    unit: '%',
+  },
+  {
+    id: 'kiwiSaver',
+    name: 'KiwiSaver Employee Contribution (3%–10%)',
+    description: 'Voluntary retirement savings scheme deducted from gross salary. Default rate is 3% (with options for 4%, 6%, 8%, 10%, or opt-out).',
+    whyItMatters: 'Builds long-term retirement savings and qualifies for government/employer matching contributions.',
+    typicalRange: '0% (opt-out) to 10%',
+    unit: '%',
+  },
+  {
+    id: 'irdIncomeTax',
+    name: 'IRD PAYE Income Tax (10.5%–39%)',
+    description: 'Progressive individual income tax evaluated across 5 indexed tax thresholds administered by Inland Revenue (Te Tari Taake).',
+    whyItMatters: 'Central government income tax withheld by employers under the PAYE (Pay-As-You-Earn) system.',
+    typicalRange: '10.5% to 39.0%',
+    unit: '%',
+  },
+];
+---
+
+<div
+  class="relative overflow-hidden rounded-[2.5rem] border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-5 shadow-[var(--shadow)] sm:p-8 lg:p-10"
+  data-tax-app
+  data-country-id="nz"
+  data-profile-json={JSON.stringify(profile)}
+>
+  <!-- Top Bar: Country Info & Mode Switcher -->
+  <div class="flex flex-col gap-4 border-b border-[color:var(--border)] pb-6 sm:flex-row sm:items-center sm:justify-between">
+    <div class="flex items-center gap-3">
+      <span class="text-3xl sm:text-4xl select-none">{profile.flagEmoji}</span>
+      <div>
+        <div class="flex items-center gap-2 flex-wrap">
+          <h2 class="text-xl font-bold tracking-tight text-[color:var(--fg)] sm:text-2xl">
+            New Zealand PAYE Income Tax &amp; Salary Calculator
+          </h2>
+          <span class="inline-flex items-center rounded-full bg-cyan-500/10 px-2.5 py-0.5 text-xs font-semibold text-cyan-600 dark:text-cyan-400 border border-cyan-500/20">
+            Official 2026/27 IRD &amp; ACC
+          </span>
+        </div>
+        <p class="text-xs text-[color:var(--muted)]">
+          Source: <a href={defaultYearData.officialSourceUrl} target="_blank" rel="noopener noreferrer" class="font-medium text-[color:var(--accent)] hover:underline">{defaultYearData.officialSourceName}</a> • Verified {defaultYearData.lastVerifiedDate}
+        </p>
+      </div>
+    </div>
+
+    <!-- App Tabs & Tax Year -->
+    <div class="flex flex-wrap items-center gap-2">
+      <TaxYearSelector profile={profile} id="nz-tax-year-select" />
+
+      <!-- Engine View Toggle -->
+      <div class="flex items-center rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-1 text-xs font-semibold overflow-x-auto no-scrollbar max-w-full shrink-0">
+        <button
+          type="button"
+          class="shrink-0 min-w-max cursor-pointer rounded-xl px-3 py-1.5 text-xs font-bold transition inline-flex items-center gap-1.5 bg-[color:var(--accent)] text-white shadow-xs active"
+          data-engine-tab="advanced"
+        >
+          <Icon name="bolt" class="w-3.5 h-3.5" />
+          <span>Detailed IRD Mode</span>
+        </button>
+        <button
+          type="button"
+          class="shrink-0 min-w-max cursor-pointer rounded-xl px-3 py-1.5 text-xs font-semibold text-[color:var(--muted)] hover:text-[color:var(--fg)] transition inline-flex items-center gap-1.5"
+          data-engine-tab="quick"
+        >
+          <Icon name="calculator" class="w-3.5 h-3.5" />
+          <span>Quick Salary</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- HERO DYNAMIC TAKE-HOME BANNER -->
+  <div class="mt-6 rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 sm:p-6 shadow-sm">
+    <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+      <div>
+        <div class="flex items-center gap-2">
+          <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Annual Net Take-Home (After PAYE &amp; ACC)</span>
+          <span
+            data-hero-badge
+            class="inline-flex items-center gap-1 rounded-full bg-cyan-500/10 px-2.5 py-0.5 text-xs font-bold text-cyan-600 dark:text-cyan-400 border border-cyan-500/20"
+          >
+            Take-Home Pay
+          </span>
+        </div>
+        <p class="mt-1 text-3xl font-black tracking-tight sm:text-4xl lg:text-5xl text-[color:var(--fg)]" data-hero-amount>
+          {formatCurrency(initialResult.netAnnualTakeHome, profile.defaultCurrency, profile.defaultCurrencySymbol)}
+        </p>
+        <p class="mt-1 text-xs text-[color:var(--muted)]" data-hero-subtext>
+          {formatCurrency(initialResult.netMonthlyTakeHome, profile.defaultCurrency, profile.defaultCurrencySymbol)}/month · {formatCurrency(initialResult.netWeeklyTakeHome, profile.defaultCurrency, profile.defaultCurrencySymbol)}/week
+        </p>
+      </div>
+
+      <div class="grid grid-cols-2 gap-3 sm:grid-cols-3 border-t border-[color:var(--border)]/60 pt-3 md:border-t-0 md:pt-0">
+        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] p-3">
+          <p class="text-[11px] font-medium text-[color:var(--muted)]">IRD Income Tax</p>
+          <p class="text-base font-extrabold text-blue-500" data-hero-incometax>
+            {formatCurrency(initialResult.netFederalIncomeTax, profile.defaultCurrency, profile.defaultCurrencySymbol)}
+          </p>
+          <p class="text-[10px] text-[color:var(--muted)]">PAYE Progressive</p>
+        </div>
+        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] p-3">
+          <p class="text-[11px] font-medium text-[color:var(--muted)]">ACC &amp; KiwiSaver</p>
+          <p class="text-base font-extrabold text-amber-500" data-hero-social>
+            {formatCurrency(initialResult.totalFicaTax, profile.defaultCurrency, profile.defaultCurrencySymbol)}
+          </p>
+          <p class="text-[10px] text-[color:var(--muted)]">ACC Levy + Savings</p>
+        </div>
+        <div class="col-span-2 sm:col-span-1 rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] p-3 flex flex-col justify-between">
+          <p class="text-[11px] font-medium text-[color:var(--muted)]">Action</p>
+          <button
+            type="button"
+            data-copy-summary-btn
+            class="inline-flex items-center justify-center gap-1.5 rounded-xl bg-[color:var(--surface)] px-2.5 py-1.5 text-xs font-bold text-[color:var(--fg)] border border-[color:var(--border)] hover:border-[color:var(--accent)] hover:shadow-[0_0_12px_var(--accent-glow)] transition cursor-pointer"
+          >
+            <Icon name="copy" class="w-3.5 h-3.5" />
+            <span>Copy Tax Report</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Reusable Income Allocation Bar -->
+    <TaxAllocationBar />
+  </div>
+
+  <!-- CALCULATOR MAIN BODY -->
+  <div class="mt-8 grid gap-8 lg:grid-cols-[1.15fr_0.85fr]">
+    <!-- LEFT COLUMN: INPUT FORMS -->
+    <div class="space-y-6">
+
+      <!-- SECTION 1: Gross Salary & Deductions -->
+      <div class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 sm:p-6 space-y-4 shadow-sm">
+        <h3 class="text-sm font-bold uppercase tracking-wider text-[color:var(--fg)] flex items-center gap-2">
+          <Icon name="user" class="w-4 h-4 text-[color:var(--accent)]" />
+          <span>1. Gross Earnings &amp; ACC Levy</span>
+        </h3>
+
+        <div class="space-y-4">
+          <!-- Gross Salary -->
+          <div>
+            <div class="flex justify-between items-center text-xs">
+              <label for="nz-gross-salary" class="font-bold text-[color:var(--fg)]">
+                Annual Gross Salary ($ NZD)
+              </label>
+              <span class="text-[color:var(--muted)] font-mono">Contractual Salary / Wages</span>
+            </div>
+            <div class="relative mt-1.5">
+              <span class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-sm font-bold text-[color:var(--muted)]">
+                $
+              </span>
+              <input
+                id="nz-gross-salary"
+                type="number"
+                min="0"
+                step="1000"
+                placeholder="e.g. 85,000"
+                class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] py-3 pl-8 pr-4 text-base font-black text-[color:var(--fg)] outline-none transition focus:border-[color:var(--accent)] focus:ring-2 focus:ring-[color:var(--accent)]/20"
+                data-nz-salary
+              />
+            </div>
+            <p class="mt-1 text-[11px] text-[color:var(--muted)]">
+              Total annual gross income from employment before PAYE or ACC earner levy deductions.
+            </p>
+          </div>
+
+          <!-- KiwiSaver Rate & Student Loan -->
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label for="nz-kiwisaver-rate" class="block text-xs font-bold text-[color:var(--fg)]">
+                KiwiSaver Rate
+              </label>
+              <select
+                id="nz-kiwisaver-rate"
+                data-nz-kiwisaver
+                class="mt-1.5 w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] py-2.5 px-3 text-xs font-semibold text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)] cursor-pointer"
+              >
+                <option value="0.03" selected>3% (Standard Default)</option>
+                <option value="0.04">4%</option>
+                <option value="0.06">6%</option>
+                <option value="0.08">8%</option>
+                <option value="0.10">10%</option>
+                <option value="0.00">0% (Opted Out)</option>
+              </select>
+            </div>
+
+            <div>
+              <label for="nz-acc-levy" class="block text-xs font-bold text-[color:var(--fg)]">
+                ACC Earner's Levy
+              </label>
+              <select
+                id="nz-acc-levy"
+                data-nz-acc
+                class="mt-1.5 w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] py-2.5 px-3 text-xs font-semibold text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)] cursor-pointer"
+              >
+                <option value="standard" selected>Standard Rate (1.75%)</option>
+                <option value="exempt">Exempt (0%)</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- ACC Cap Callout -->
+          <div class="rounded-2xl border border-blue-500/20 bg-blue-500/5 p-3 flex justify-between items-center text-xs">
+            <span class="text-[color:var(--muted)]">ACC Maximum Earnings Cap :</span>
+            <span class="font-extrabold text-blue-600 dark:text-blue-400">$156,641 ($2,741.21 max levy)</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- SECTION 2: Student Loan & Other Credits (Advanced) -->
+      <div class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 sm:p-6 space-y-4 shadow-sm" data-advanced-section>
+        <div class="flex items-center justify-between">
+          <h3 class="text-sm font-bold uppercase tracking-wider text-[color:var(--fg)] flex items-center gap-2">
+            <Icon name="briefcase" class="w-4 h-4 text-emerald-500" />
+            <span>2. Optional Deductions &amp; Student Loan</span>
+          </h3>
+          <span class="text-[10px] font-bold text-emerald-600 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">
+            IRD Codes
+          </span>
+        </div>
+
+        <div class="space-y-4">
+          <div>
+            <div class="flex justify-between items-center text-xs">
+              <label for="nz-student-loan" class="font-bold text-[color:var(--fg)]">
+                NZ Student Loan Repayment
+              </label>
+              <span class="text-[color:var(--muted)]">12% over $24,128</span>
+            </div>
+            <select
+              id="nz-student-loan"
+              data-nz-student-loan
+              class="mt-1.5 w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] py-2.5 px-3 text-xs font-semibold text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)] cursor-pointer"
+            >
+              <option value="none" selected>No Student Loan (Tax Code M)</option>
+              <option value="has_loan">Has Student Loan (Tax Code M SL)</option>
+            </select>
+            <p class="mt-1 text-[11px] text-[color:var(--muted)]">
+              Under tax code M SL, student loan repayments are deducted at 12% on income earned above the $24,128 threshold.
+            </p>
+          </div>
+
+          <!-- IRD Tax Brackets Note -->
+          <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] p-3 text-xs space-y-1">
+            <p class="font-bold text-[color:var(--fg)]">Official IRD Progressive Brackets (2026/27) :</p>
+            <div class="grid grid-cols-2 gap-2 text-[11px] text-[color:var(--muted)]">
+              <div>Up to $15,600: <strong class="text-[color:var(--fg)]">10.5%</strong></div>
+              <div>$15,601 – $53,500: <strong class="text-[color:var(--fg)]">17.5%</strong></div>
+              <div>$53,501 – $78,100: <strong class="text-[color:var(--fg)]">30.0%</strong></div>
+              <div>$78,101 – $180,000: <strong class="text-[color:var(--fg)]">33.0%</strong></div>
+              <div>Over $180,000: <strong class="text-[color:var(--fg)]">39.0%</strong></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- RIGHT COLUMN: RESULTS, PAYCHECK SCHEDULE & AUDIT TRAIL -->
+    <div class="space-y-6">
+
+      <!-- PAYCHECK FREQUENCY TABLE (Shared Primitive) -->
+      <div class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 sm:p-6 shadow-sm">
+        <PaycheckFrequencyTable
+          currencySymbol={profile.defaultCurrencySymbol}
+          monthly={initialResult.netMonthlyTakeHome}
+          biweekly={initialResult.netBiweeklyTakeHome}
+          weekly={initialResult.netWeeklyTakeHome}
+          daily={initialResult.netAnnualTakeHome / 260}
+          hourly={initialResult.netHourlyTakeHome}
+        />
+      </div>
+
+      <!-- AUDIT TRAIL / BREAKDOWN TABLE -->
+      <div class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 sm:p-6 shadow-sm space-y-4">
+        <div class="flex items-center justify-between border-b border-[color:var(--border)] pb-3">
+          <h3 class="text-sm font-bold uppercase tracking-wider text-[color:var(--fg)] flex items-center gap-2">
+            <Icon name="table" class="w-4 h-4 text-[color:var(--accent)]" />
+            <span>IRD PAYE &amp; ACC Tax Breakdown</span>
+          </h3>
+          <span class="text-xs font-mono font-bold text-[color:var(--accent)]" data-effective-rate>
+            {formatPercent(initialResult.effectiveTotalTaxRate, 1)}
+          </span>
+        </div>
+
+        <div class="space-y-2 text-xs">
+          <div class="flex justify-between py-1.5 border-b border-[color:var(--border)]/40 font-medium">
+            <span class="text-[color:var(--muted)]">Annual Gross Earnings</span>
+            <span class="font-bold text-[color:var(--fg)]" data-res-gross>
+              {formatCurrency(initialResult.totalGrossIncome, profile.defaultCurrency, profile.defaultCurrencySymbol)}
+            </span>
+          </div>
+
+          <div class="flex justify-between py-1.5 border-b border-[color:var(--border)]/40">
+            <span class="text-[color:var(--muted)]">IRD Income Tax (PAYE)</span>
+            <span class="font-bold text-blue-500" data-res-paye>
+              {formatCurrency(initialResult.netFederalIncomeTax, profile.defaultCurrency, profile.defaultCurrencySymbol)}
+            </span>
+          </div>
+
+          <div class="flex justify-between py-1.5 border-b border-[color:var(--border)]/40">
+            <span class="text-[color:var(--muted)]">ACC Earner's Levy (1.75%)</span>
+            <span class="font-bold text-amber-500" data-res-acc>
+              {formatCurrency(initialResult.totalFicaTax, profile.defaultCurrency, profile.defaultCurrencySymbol)}
+            </span>
+          </div>
+
+          <div class="flex justify-between py-1.5 border-b border-[color:var(--border)]/40">
+            <span class="text-[color:var(--muted)]">KiwiSaver Contribution</span>
+            <span class="font-bold text-emerald-500" data-res-kiwisaver>
+              $0
+            </span>
+          </div>
+
+          <div class="flex justify-between py-2 border-t-2 border-[color:var(--border)] text-sm font-extrabold">
+            <span class="text-[color:var(--fg)]">Total Deductions</span>
+            <span class="text-red-500" data-res-total-taxes>
+              {formatCurrency(initialResult.totalAllTaxes, profile.defaultCurrency, profile.defaultCurrencySymbol)}
+            </span>
+          </div>
+
+          <div class="flex justify-between py-2 rounded-xl bg-[color:var(--accent)]/10 px-3 text-sm font-black text-[color:var(--accent)]">
+            <span>Net Take-Home Pay</span>
+            <span data-res-net-takehome>
+              {formatCurrency(initialResult.netAnnualTakeHome, profile.defaultCurrency, profile.defaultCurrencySymbol)}
+            </span>
+          </div>
+        </div>
+
+        <div class="pt-2 flex justify-between text-xs text-[color:var(--muted)] border-t border-[color:var(--border)]/40">
+          <span>Marginal Rate: <strong class="text-[color:var(--fg)]" data-marginal-rate>{formatPercent(initialResult.marginalFederalRate, 1)}</strong></span>
+          <span>Effective Rate: <strong class="text-[color:var(--fg)]" data-effective-tax-rate>{formatPercent(initialResult.effectiveTotalTaxRate, 1)}</strong></span>
+        </div>
+      </div>
+
+      <!-- BRACKETS TABLE (Shared Primitive) -->
+      <div class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 sm:p-6 shadow-sm">
+        <TaxBracketsTable
+          breakdown={[]}
+          currencySymbol={profile.defaultCurrencySymbol}
+        />
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Parameter Explanations -->
+  <div class="mt-8 border-t border-[color:var(--border)] pt-8">
+    <CalculatorParameterGuide parameters={taxParameterGuide} />
+  </div>
+
+  <!-- Disclaimer Footer -->
+  <div class="mt-8">
+    <TaxDisclaimer />
+  </div>
+</div>
+
+<script>
+  import { calculateNzTax } from '../../utils/tax/nz-engine';
+
+  function setupNzTaxCalculator() {
+    const apps = document.querySelectorAll('[data-tax-app][data-country-id="nz"]');
+
+    apps.forEach((app) => {
+      try {
+        const profileJson = app.getAttribute('data-profile-json');
+        if (!profileJson) return;
+        const profile = JSON.parse(profileJson);
+
+        // Controls
+        const yearSelect = app.querySelector('[data-tax-year]') as HTMLSelectElement | null;
+        const engineTabs = Array.from(app.querySelectorAll('[data-engine-tab]')) as HTMLElement[];
+        const salaryInput = app.querySelector('[data-nz-salary]') as HTMLInputElement | null;
+        const kiwisaverSelect = app.querySelector('[data-nz-kiwisaver]') as HTMLSelectElement | null;
+        const accSelect = app.querySelector('[data-nz-acc]') as HTMLSelectElement | null;
+        const studentLoanSelect = app.querySelector('[data-nz-student-loan]') as HTMLSelectElement | null;
+
+        // Mode State
+        let currentMode: 'advanced' | 'quick' = 'advanced';
+
+        // Hero Outputs
+        const heroAmount = app.querySelector('[data-hero-amount]');
+        const heroSubtext = app.querySelector('[data-hero-subtext]');
+        const heroIncomeTax = app.querySelector('[data-hero-incometax]');
+        const heroSocial = app.querySelector('[data-hero-social]');
+        const marginalRateEl = app.querySelector('[data-marginal-rate]');
+        const effectiveRateEl = app.querySelector('[data-effective-rate]');
+        const effectiveTaxRateEl = app.querySelector('[data-effective-tax-rate]');
+
+        // Allocation Bar
+        const barTakehome = app.querySelector('[data-bar-takehome]') as HTMLElement | null;
+        const barFedtax = app.querySelector('[data-bar-fedtax]') as HTMLElement | null;
+        const barFica = app.querySelector('[data-bar-fica]') as HTMLElement | null;
+        const barPretax = app.querySelector('[data-bar-pretax]') as HTMLElement | null;
+        const allocationLabel = app.querySelector('[data-allocation-label]');
+
+        // Paycheck Schedule
+        const schedMonthly = app.querySelector('[data-sched-monthly]');
+        const schedSemiMonthly = app.querySelector('[data-sched-semimonthly]');
+        const schedBiweekly = app.querySelector('[data-sched-biweekly]');
+        const schedWeekly = app.querySelector('[data-sched-weekly]');
+        const schedDaily = app.querySelector('[data-sched-daily]');
+        const schedHourly = app.querySelector('[data-sched-hourly]');
+
+        // Audit Trail Elements
+        const resGross = app.querySelector('[data-res-gross]');
+        const resPaye = app.querySelector('[data-res-paye]');
+        const resAcc = app.querySelector('[data-res-acc]');
+        const resKiwisaver = app.querySelector('[data-res-kiwisaver]');
+        const resTotalTaxes = app.querySelector('[data-res-total-taxes]');
+        const resNetTakeHome = app.querySelector('[data-res-net-takehome]');
+        const bracketTbody = app.querySelector('[data-bracket-tbody]');
+        const copySummaryBtn = app.querySelector('[data-copy-summary-btn]');
+
+        function fmt(n: number): string {
+          return '$' + Math.round(n).toLocaleString('en-NZ');
+        }
+
+        function calculate() {
+          const selectedYear = (yearSelect ? yearSelect.value : profile.defaultTaxYear) as '2026/27' | '2025/26' | '2024/25';
+          const gross = Math.max(0, parseFloat(salaryInput?.value || '0') || 0);
+          const hasAcc = accSelect ? accSelect.value !== 'exempt' : true;
+          const kiwiRate = kiwisaverSelect ? parseFloat(kiwisaverSelect.value || '0.03') : 0.03;
+          const hasStudentLoan = currentMode === 'advanced' && studentLoanSelect ? studentLoanSelect.value === 'has_loan' : false;
+
+          const res = calculateNzTax({
+            grossIncome: gross,
+            taxYear: selectedYear,
+            hasAccLevy: hasAcc,
+            kiwiSaverRate: kiwiRate,
+            hasStudentLoan,
+          });
+
+          // Update Hero
+          if (heroAmount) heroAmount.textContent = fmt(res.netIncomeAnnual);
+          if (heroSubtext) heroSubtext.textContent = `${fmt(res.netIncomeMonthly)}/month · ${fmt(res.netIncomeWeekly)}/week`;
+          if (heroIncomeTax) heroIncomeTax.textContent = fmt(res.totalIncomeTax);
+          if (heroSocial) heroSocial.textContent = fmt(res.totalSocialContributions);
+          if (effectiveRateEl) effectiveRateEl.textContent = `${res.effectiveTotalDeductionRate.toFixed(1)}%`;
+          if (effectiveTaxRateEl) effectiveTaxRateEl.textContent = `${res.effectiveTotalDeductionRate.toFixed(1)}%`;
+          if (marginalRateEl) marginalRateEl.textContent = `${res.marginalTaxRate.toFixed(1)}%`;
+
+          // Paycheck Schedule
+          if (schedMonthly) schedMonthly.textContent = fmt(res.netIncomeMonthly);
+          if (schedSemiMonthly) schedSemiMonthly.textContent = fmt(res.netIncomeMonthly / 2);
+          if (schedBiweekly) schedBiweekly.textContent = fmt(res.netIncomeBiweekly);
+          if (schedWeekly) schedWeekly.textContent = fmt(res.netIncomeWeekly);
+          if (schedDaily) schedDaily.textContent = fmt(res.netIncomeDaily);
+          if (schedHourly) schedHourly.textContent = fmt(res.netIncomeHourly);
+
+          // Audit Trail
+          if (resGross) resGross.textContent = fmt(gross);
+          if (resPaye) resPaye.textContent = fmt(res.payeNetTax);
+          if (resAcc) resAcc.textContent = fmt(res.accLevy);
+          if (resKiwisaver) resKiwisaver.textContent = fmt(res.kiwiSaver);
+          if (resTotalTaxes) resTotalTaxes.textContent = fmt(res.totalTaxAndDeductions);
+          if (resNetTakeHome) resNetTakeHome.textContent = fmt(res.netIncomeAnnual);
+
+          // Allocation Bar
+          if (gross > 0) {
+            const pctTakehome = Math.max(0, (res.netIncomeAnnual / gross) * 100);
+            const pctPaye = Math.max(0, (res.payeNetTax / gross) * 100);
+            const pctAccKiwi = Math.max(0, (res.totalSocialContributions / gross) * 100);
+            const pctOther = Math.max(0, (res.studentLoan / gross) * 100);
+
+            if (barTakehome) barTakehome.style.width = `${pctTakehome}%`;
+            if (barFedtax) barFedtax.style.width = `${pctPaye}%`;
+            if (barFica) barFica.style.width = `${pctAccKiwi}%`;
+            if (barPretax) barPretax.style.width = `${pctOther}%`;
+
+            if (allocationLabel) {
+              allocationLabel.textContent = `Take-Home: ${pctTakehome.toFixed(1)}% · PAYE: ${pctPaye.toFixed(1)}% · ACC/Kiwi: ${pctAccKiwi.toFixed(1)}%`;
+            }
+          }
+
+          // Bracket Table
+          if (bracketTbody) {
+            bracketTbody.innerHTML = res.bracketBreakdown
+              .map(
+                (row) => `
+                <tr class="border-b border-[color:var(--border)]/40 hover:bg-[color:var(--bg)]/50 transition">
+                  <td class="py-2 px-3 font-medium text-[color:var(--fg)]">${row.bracketRange}</td>
+                  <td class="py-2 px-3 text-right font-mono text-[color:var(--muted)]">${row.ratePercent}</td>
+                  <td class="py-2 px-3 text-right font-mono font-medium text-[color:var(--fg)]">${fmt(row.taxableInBracket)}</td>
+                  <td class="py-2 px-3 text-right font-mono font-bold text-blue-500">${fmt(row.taxAmount)}</td>
+                </tr>
+              `
+              )
+              .join('');
+          }
+        }
+
+        // Mode Switching
+        engineTabs.forEach((tab) => {
+          tab.addEventListener('click', () => {
+            const mode = tab.getAttribute('data-engine-tab') as 'advanced' | 'quick';
+            if (!mode) return;
+            currentMode = mode;
+
+            engineTabs.forEach((t) => {
+              if (t === tab) {
+                t.className = 'shrink-0 min-w-max cursor-pointer rounded-xl px-3 py-1.5 text-xs font-bold transition inline-flex items-center gap-1.5 bg-[color:var(--accent)] text-white shadow-xs active';
+              } else {
+                t.className = 'shrink-0 min-w-max cursor-pointer rounded-xl px-3 py-1.5 text-xs font-semibold text-[color:var(--muted)] hover:text-[color:var(--fg)] transition inline-flex items-center gap-1.5';
+              }
+            });
+
+            const advSections = app.querySelectorAll('[data-advanced-section]');
+            advSections.forEach((sec) => {
+              if (mode === 'quick') {
+                sec.classList.add('hidden');
+              } else {
+                sec.classList.remove('hidden');
+              }
+            });
+
+            calculate();
+          });
+        });
+
+        // Event Listeners
+        salaryInput?.addEventListener('input', calculate);
+        kiwisaverSelect?.addEventListener('change', calculate);
+        accSelect?.addEventListener('change', calculate);
+        studentLoanSelect?.addEventListener('change', calculate);
+        yearSelect?.addEventListener('change', calculate);
+
+        // Copy Report
+        copySummaryBtn?.addEventListener('click', () => {
+          const gross = salaryInput?.value || '0';
+          const net = heroAmount?.textContent || '$0';
+          const tax = heroIncomeTax?.textContent || '$0';
+          const soc = heroSocial?.textContent || '$0';
+          const eff = effectiveRateEl?.textContent || '0%';
+          const summary = `--- New Zealand Income Tax Summary (2026/27 IRD PAYE) ---\nGross Earnings: $${gross}\nNet Take-Home: ${net}\nIRD Income Tax: ${tax}\nACC Levy & KiwiSaver: ${soc}\nEffective Rate: ${eff}\nCalculated via Toolscastle Tax Platform`;
+
+          navigator.clipboard.writeText(summary).then(() => {
+            const btnSpan = copySummaryBtn.querySelector('span');
+            if (btnSpan) {
+              const orig = btnSpan.textContent;
+              btnSpan.textContent = 'Copied to clipboard!';
+              setTimeout(() => {
+                btnSpan.textContent = orig;
+              }, 2000);
+            }
+          });
+        });
+
+        // Initialize
+        calculate();
+      } catch (err) {
+        console.error('Error initializing New Zealand tax calculator:', err);
+      }
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', setupNzTaxCalculator);
+  } else {
+    setupNzTaxCalculator();
+  }
+</script>
+

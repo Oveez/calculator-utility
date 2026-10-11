@@ -1,0 +1,637 @@
+---
+import type { CountryTaxProfile } from '../../data/tax/types';
+import { calculateChTax } from '../../utils/tax/ch-engine';
+import { formatCurrency, formatPercent } from '../../utils/tax/formatters';
+import TaxDisclaimer from './TaxDisclaimer.astro';
+import CalculatorParameterGuide from '../calculator/CalculatorParameterGuide.astro';
+import Icon from '../Icon.astro';
+import TaxYearSelector from './shared/TaxYearSelector.astro';
+import TaxAllocationBar from './shared/TaxAllocationBar.astro';
+import PaycheckFrequencyTable from './shared/PaycheckFrequencyTable.astro';
+import TaxBreakdownTable from './shared/TaxBreakdownTable.astro';
+import TaxBracketsTable from './shared/TaxBracketsTable.astro';
+import type { CalculatorParameterInfo } from '../../types/calculator';
+
+interface Props {
+  profile: CountryTaxProfile;
+  initialIncome?: number;
+}
+
+const { profile, initialIncome = 0 } = Astro.props;
+
+// Initial server-rendered baseline calculations for Switzerland
+const initialResult = calculateChTax({
+  grossIncome: initialIncome,
+  taxYear: '2026',
+  regionCode: 'zh',
+});
+
+const defaultYearData = profile.years[profile.defaultTaxYear];
+
+const taxParameterGuide: CalculatorParameterInfo[] = [
+  {
+    id: 'grossSalary',
+    name: 'Bruttoeinkommen / Salaire Brut (Gross Annual Salary)',
+    description: 'Total contractual gross compensation before employee mandatory 1st pillar deductions or withholding tax.',
+    whyItMatters: 'Baseline earnings used by the Swiss Federal Tax Administration (ESTV) and Cantonal Tax Offices.',
+    typicalRange: 'Any positive earnings',
+    unit: 'CHF',
+  },
+  {
+    id: 'cantonSelection',
+    name: 'Canton of Residence (Kanton / Canton)',
+    description: 'Swiss income tax varies greatly depending on the canton and municipality of residence. Cantonal tax (Staatssteuer) and communal tax (Gemeindesteuer) are levied alongside federal tax.',
+    whyItMatters: 'Cantonal/communal taxes represent the majority of total income tax in Switzerland.',
+    typicalRange: '~5% (Zug) to ~18% (Geneva)',
+    unit: '%',
+  },
+  {
+    id: 'ahvIvEo',
+    name: 'AHV / IV / EO (1st Pillar 5.30%)',
+    description: 'Mandatory employee contribution to old-age and survivors insurance (AHV 4.35%), disability insurance (IV 0.70%), and loss of earnings compensation (EO 0.25%).',
+    whyItMatters: 'Compulsory first pillar state pension; levied on 100% of gross earnings with no income ceiling.',
+    typicalRange: '5.30% uncapped',
+    unit: '%',
+  },
+  {
+    id: 'alv',
+    name: 'ALV (Unemployment Insurance 1.10%)',
+    description: 'Statutory unemployment insurance (Arbeitslosenversicherung) contribution of 1.10% capped at annual earnings of CHF 148,200.',
+    whyItMatters: 'Protects employees against job loss; capped at CHF 1,630.20 per year.',
+    typicalRange: '1.10% (capped at CHF 148,200)',
+    unit: '%',
+  },
+  {
+    id: 'bundessteuer',
+    name: 'Direkte Bundessteuer (Direct Federal Tax)',
+    description: 'Central government income tax levied on taxable income above the CHF 15,400 basic allowance, scaling from 0.77% to a top marginal rate of 11.50%.',
+    whyItMatters: 'Ensures equal federal contributions across all 26 Swiss cantons.',
+    typicalRange: '0.77% to 11.50%',
+    unit: '%',
+  },
+];
+---
+
+<div
+  class="relative overflow-hidden rounded-[2.5rem] border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-5 shadow-[var(--shadow)] sm:p-8 lg:p-10"
+  data-tax-app
+  data-country-id="ch"
+  data-profile-json={JSON.stringify(profile)}
+>
+  <!-- Top Bar: Country Info & Mode Switcher -->
+  <div class="flex flex-col gap-4 border-b border-[color:var(--border)] pb-6 sm:flex-row sm:items-center sm:justify-between">
+    <div class="flex items-center gap-3">
+      <span class="text-3xl sm:text-4xl select-none">{profile.flagEmoji}</span>
+      <div>
+        <div class="flex items-center gap-2 flex-wrap">
+          <h2 class="text-xl font-bold tracking-tight text-[color:var(--fg)] sm:text-2xl">
+            Switzerland Tax Calculator (Lohn &amp; Steuerrechner Schweiz)
+          </h2>
+          <span class="inline-flex items-center rounded-full bg-cyan-500/10 px-2.5 py-0.5 text-xs font-semibold text-cyan-600 dark:text-cyan-400 border border-cyan-500/20">
+            Official 2026 ESTV / AFC Data
+          </span>
+        </div>
+        <p class="text-xs text-[color:var(--muted)]">
+          Source: <a href={defaultYearData.officialSourceUrl} target="_blank" rel="noopener noreferrer" class="font-medium text-[color:var(--accent)] hover:underline">{defaultYearData.officialSourceName}</a> • Verified {defaultYearData.lastVerifiedDate}
+        </p>
+      </div>
+    </div>
+
+    <!-- App Tabs & Tax Year -->
+    <div class="flex flex-wrap items-center gap-2">
+      <TaxYearSelector profile={profile} id="ch-tax-year-select" />
+
+      <!-- Engine View Toggle -->
+      <div class="flex items-center rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-1 text-xs font-semibold overflow-x-auto no-scrollbar max-w-full shrink-0">
+        <button
+          type="button"
+          class="shrink-0 min-w-max cursor-pointer rounded-xl px-3 py-1.5 text-xs font-bold transition inline-flex items-center gap-1.5 bg-[color:var(--accent)] text-white shadow-xs active"
+          data-engine-tab="advanced"
+        >
+          <Icon name="bolt" class="w-3.5 h-3.5" />
+          <span>Detailed Canton Mode</span>
+        </button>
+        <button
+          type="button"
+          class="shrink-0 min-w-max cursor-pointer rounded-xl px-3 py-1.5 text-xs font-semibold text-[color:var(--muted)] hover:text-[color:var(--fg)] transition inline-flex items-center gap-1.5"
+          data-engine-tab="quick"
+        >
+          <Icon name="calculator" class="w-3.5 h-3.5" />
+          <span>Quick Salary</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- HERO DYNAMIC TAKE-HOME BANNER -->
+  <div class="mt-6 rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 sm:p-6 shadow-sm">
+    <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+      <div>
+        <div class="flex items-center gap-2">
+          <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Nettolohn / Salaire Net (Take-Home Pay)</span>
+          <span
+            data-hero-badge
+            class="inline-flex items-center gap-1 rounded-full bg-cyan-500/10 px-2.5 py-0.5 text-xs font-bold text-cyan-600 dark:text-cyan-400 border border-cyan-500/20"
+          >
+            Net Take-Home
+          </span>
+        </div>
+        <p class="mt-1 text-3xl font-black tracking-tight sm:text-4xl lg:text-5xl text-[color:var(--fg)]" data-hero-amount>
+          {formatCurrency(initialResult.netIncome, profile.defaultCurrency, profile.defaultCurrencySymbol)}
+        </p>
+        <p class="mt-1 text-xs text-[color:var(--muted)]" data-hero-subtext>
+          {formatCurrency(initialResult.netIncome / 12, profile.defaultCurrency, profile.defaultCurrencySymbol)}/month · {formatCurrency(initialResult.netIncome / 52, profile.defaultCurrency, profile.defaultCurrencySymbol)}/week
+        </p>
+      </div>
+
+      <div class="grid grid-cols-2 gap-3 sm:grid-cols-3 border-t border-[color:var(--border)]/60 pt-3 md:border-t-0 md:pt-0">
+        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] p-3">
+          <p class="text-[11px] font-medium text-[color:var(--muted)]">Total Steuern (Federal + Canton)</p>
+          <p class="text-base font-extrabold text-blue-500" data-hero-incometax>
+            {formatCurrency(initialResult.totalIncomeTax, profile.defaultCurrency, profile.defaultCurrencySymbol)}
+          </p>
+          <p class="text-[10px] text-[color:var(--muted)]">Direct Federal &amp; Cantonal</p>
+        </div>
+        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] p-3">
+          <p class="text-[11px] font-medium text-[color:var(--muted)]">Sozialabgaben (AHV/IV/ALV)</p>
+          <p class="text-base font-extrabold text-amber-500" data-hero-social>
+            {formatCurrency(initialResult.totalSocialContributions, profile.defaultCurrency, profile.defaultCurrencySymbol)}
+          </p>
+          <p class="text-[10px] text-[color:var(--muted)]">1st Pillar Social Security</p>
+        </div>
+        <div class="col-span-2 sm:col-span-1 rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] p-3 flex flex-col justify-between">
+          <p class="text-[11px] font-medium text-[color:var(--muted)]">Action</p>
+          <button
+            type="button"
+            data-copy-summary-btn
+            class="inline-flex items-center justify-center gap-1.5 rounded-xl bg-[color:var(--surface)] px-2.5 py-1.5 text-xs font-bold text-[color:var(--fg)] border border-[color:var(--border)] hover:border-[color:var(--accent)] hover:shadow-[0_0_12px_var(--accent-glow)] transition cursor-pointer"
+          >
+            <Icon name="copy" class="w-3.5 h-3.5" />
+            <span>Copy Tax Report</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Reusable Income Allocation Bar -->
+    <TaxAllocationBar />
+  </div>
+
+  <!-- CALCULATOR MAIN BODY -->
+  <div class="mt-8 grid gap-8 lg:grid-cols-[1.15fr_0.85fr]">
+    <!-- LEFT COLUMN: INPUT FORMS -->
+    <div class="space-y-6">
+
+      <!-- SECTION 1: Bruttoeinkommen & Kanton -->
+      <div class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 sm:p-6 space-y-4 shadow-sm">
+        <h3 class="text-sm font-bold uppercase tracking-wider text-[color:var(--fg)] flex items-center gap-2">
+          <Icon name="user" class="w-4 h-4 text-[color:var(--accent)]" />
+          <span>1. Bruttoeinkommen &amp; Kanton</span>
+        </h3>
+
+        <div class="space-y-4">
+          <!-- Gross Salary -->
+          <div>
+            <div class="flex justify-between items-center text-xs">
+              <label for="ch-gross-salary" class="font-bold text-[color:var(--fg)]">
+                Annual Gross Salary (Bruttolohn) (CHF)
+              </label>
+              <span class="text-[color:var(--muted)] font-mono">Vertraglicher Jahreslohn</span>
+            </div>
+            <div class="relative mt-1.5">
+              <span class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-sm font-bold text-[color:var(--muted)]">
+                CHF
+              </span>
+              <input
+                id="ch-gross-salary"
+                type="number"
+                min="0"
+                step="1000"
+                placeholder="e.g. 100,000"
+                class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] py-3 pl-12 pr-4 text-base font-black text-[color:var(--fg)] outline-none transition focus:border-[color:var(--accent)] focus:ring-2 focus:ring-[color:var(--accent)]/20"
+                data-ch-salary
+              />
+            </div>
+            <p class="mt-1 text-[11px] text-[color:var(--muted)]">
+              Total annual pre-tax compensation before AHV/IV/ALV deductions and withholding taxes.
+            </p>
+          </div>
+
+          <!-- Canton Selection & Civil Status -->
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label for="ch-canton-select" class="block text-xs font-bold text-[color:var(--fg)]">
+                Kanton (Canton of Residence)
+              </label>
+              <select
+                id="ch-canton-select"
+                data-ch-canton
+                class="mt-1.5 w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] py-2.5 px-3 text-xs font-semibold text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)] cursor-pointer"
+              >
+                <option value="zh" selected>Zürich (~12%)</option>
+                <option value="be">Bern (~15%)</option>
+                <option value="ge">Genève (~18%)</option>
+                <option value="zg">Zug (~5%)</option>
+                <option value="vd">Vaud (~16%)</option>
+                <option value="fed_only">Federal Tax Only (0% cantonal)</option>
+              </select>
+            </div>
+
+            <div>
+              <label for="ch-marital-status" class="block text-xs font-bold text-[color:var(--fg)]">
+                Zivilstand (Marital Status)
+              </label>
+              <select
+                id="ch-marital-status"
+                data-ch-marital
+                class="mt-1.5 w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] py-2.5 px-3 text-xs font-semibold text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)] cursor-pointer"
+              >
+                <option value="single" selected>Ledig (Single)</option>
+                <option value="married">Verheiratet (Married)</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Federal Exemption Callout -->
+          <div class="rounded-2xl border border-blue-500/20 bg-blue-500/5 p-3 flex justify-between items-center text-xs">
+            <span class="text-[color:var(--muted)]">2026 Direct Federal Tax Exemption :</span>
+            <span class="font-extrabold text-blue-600 dark:text-blue-400">CHF 15,400</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- SECTION 2: 2nd Pillar BVG & 3a Deductions (Advanced) -->
+      <div class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 sm:p-6 space-y-4 shadow-sm" data-advanced-section>
+        <div class="flex items-center justify-between">
+          <h3 class="text-sm font-bold uppercase tracking-wider text-[color:var(--fg)] flex items-center gap-2">
+            <Icon name="briefcase" class="w-4 h-4 text-emerald-500" />
+            <span>2. Säule 3a &amp; Berufliche Vorsorge (BVG)</span>
+          </h3>
+          <span class="text-[10px] font-bold text-emerald-600 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">
+            Steuerabzüge
+          </span>
+        </div>
+
+        <div class="space-y-4">
+          <div>
+            <div class="flex justify-between items-center text-xs">
+              <label for="ch-extra-deductions" class="font-bold text-[color:var(--fg)]">
+                Säule 3a Contribution / Berufsauslagen (CHF)
+              </label>
+              <span class="text-[color:var(--muted)]">Max CHF 7,258 for 2026</span>
+            </div>
+            <div class="relative mt-1.5">
+              <span class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-sm font-bold text-[color:var(--muted)]">
+                CHF
+              </span>
+              <input
+                id="ch-extra-deductions"
+                type="number"
+                min="0"
+                step="500"
+                placeholder="0"
+                class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] py-2.5 pl-12 pr-4 text-sm font-bold text-[color:var(--fg)] outline-none transition focus:border-[color:var(--accent)]"
+                data-ch-extra-deductions
+              />
+            </div>
+            <p class="mt-1 text-[11px] text-[color:var(--muted)]">
+              Payments into the tied pension scheme (Säule 3a) reduce taxable income directly at both federal and cantonal levels.
+            </p>
+          </div>
+
+          <!-- Social Security Rates Note -->
+          <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] p-3 text-xs space-y-1">
+            <p class="font-bold text-[color:var(--fg)]">Mandatory Social Security Contributions (2026) :</p>
+            <div class="grid grid-cols-2 gap-2 text-[11px] text-[color:var(--muted)]">
+              <div>AHV / IV / EO (1st Pillar): <strong class="text-[color:var(--fg)]">5.30%</strong> (Uncapped)</div>
+              <div>ALV (Unemployment): <strong class="text-[color:var(--fg)]">1.10%</strong> (Cap CHF 148,200)</div>
+              <div>Total 1st Pillar Deductions: <strong class="text-[color:var(--fg)]">6.40%</strong></div>
+              <div>Top Marginal Federal Rate: <strong class="text-[color:var(--fg)]">11.50%</strong></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- RIGHT COLUMN: RESULTS, PAYCHECK SCHEDULE & AUDIT TRAIL -->
+    <div class="space-y-6">
+
+      <!-- PAYCHECK FREQUENCY TABLE (Shared Primitive) -->
+      <div class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 sm:p-6 shadow-sm">
+        <PaycheckFrequencyTable
+          currencySymbol={profile.defaultCurrencySymbol}
+          monthly={initialResult.netIncome / 12}
+          biweekly={initialResult.netIncome / 26}
+          weekly={initialResult.netIncome / 52}
+          daily={initialResult.netIncome / 260}
+          hourly={initialResult.netIncome / 2080}
+        />
+      </div>
+
+      <!-- AUDIT TRAIL / BREAKDOWN TABLE -->
+      <div class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 sm:p-6 shadow-sm space-y-4">
+        <div class="flex items-center justify-between border-b border-[color:var(--border)] pb-3">
+          <h3 class="text-sm font-bold uppercase tracking-wider text-[color:var(--fg)] flex items-center gap-2">
+            <Icon name="table" class="w-4 h-4 text-[color:var(--accent)]" />
+            <span>ESTV &amp; Steueramt Abrechnung</span>
+          </h3>
+          <span class="text-xs font-mono font-bold text-[color:var(--accent)]" data-effective-rate>
+            {formatPercent(initialResult.effectiveTaxRate * 100, 1)}
+          </span>
+        </div>
+
+        <div class="space-y-2 text-xs">
+          <div class="flex justify-between py-1.5 border-b border-[color:var(--border)]/40 font-medium">
+            <span class="text-[color:var(--muted)]">Bruttoeinkommen (Gross)</span>
+            <span class="font-bold text-[color:var(--fg)]" data-res-gross>
+              {formatCurrency(initialResult.grossIncome, profile.defaultCurrency, profile.defaultCurrencySymbol)}
+            </span>
+          </div>
+
+          <div class="flex justify-between py-1.5 border-b border-[color:var(--border)]/40">
+            <span class="text-[color:var(--muted)]">AHV/IV/EO + ALV (1st Pillar)</span>
+            <span class="font-bold text-amber-500" data-res-social>
+              -{formatCurrency(initialResult.totalSocialContributions, profile.defaultCurrency, profile.defaultCurrencySymbol)}
+            </span>
+          </div>
+
+          <div class="flex justify-between py-1.5 border-b border-[color:var(--border)]/40">
+            <span class="text-[color:var(--muted)]">Freibetrag / Säule 3a Abzug</span>
+            <span class="font-bold text-emerald-500" data-res-deduction>
+              -CHF 15,400
+            </span>
+          </div>
+
+          <div class="flex justify-between py-1.5 border-b border-[color:var(--border)]/40 font-bold bg-[color:var(--bg)] px-2 rounded-lg">
+            <span class="text-[color:var(--fg)]">Steuerbares Einkommen (Taxable)</span>
+            <span class="text-[color:var(--fg)]" data-res-taxable>
+              {formatCurrency(initialResult.taxableIncome, profile.defaultCurrency, profile.defaultCurrencySymbol)}
+            </span>
+          </div>
+
+          <div class="flex justify-between py-1.5 border-b border-[color:var(--border)]/40">
+            <span class="text-[color:var(--muted)]">Direkte Bundessteuer (Federal)</span>
+            <span class="font-bold text-blue-500" data-res-fedtax>
+              {formatCurrency(initialResult.federalTax, profile.defaultCurrency, profile.defaultCurrencySymbol)}
+            </span>
+          </div>
+
+          <div class="flex justify-between py-1.5 border-b border-[color:var(--border)]/40">
+            <span class="text-[color:var(--muted)]">Kantons- &amp; Gemeindesteuer</span>
+            <span class="font-bold text-indigo-500" data-res-cantontax>
+              {formatCurrency(initialResult.cantonalTax, profile.defaultCurrency, profile.defaultCurrencySymbol)}
+            </span>
+          </div>
+
+          <div class="flex justify-between py-2 border-t-2 border-[color:var(--border)] text-sm font-extrabold">
+            <span class="text-[color:var(--fg)]">Total Abzüge &amp; Steuern</span>
+            <span class="text-red-500" data-res-total-taxes>
+              {formatCurrency(initialResult.totalTax, profile.defaultCurrency, profile.defaultCurrencySymbol)}
+            </span>
+          </div>
+
+          <div class="flex justify-between py-2 rounded-xl bg-[color:var(--accent)]/10 px-3 text-sm font-black text-[color:var(--accent)]">
+            <span>Nettolohn (Take-Home Pay)</span>
+            <span data-res-net-takehome>
+              {formatCurrency(initialResult.netIncome, profile.defaultCurrency, profile.defaultCurrencySymbol)}
+            </span>
+          </div>
+        </div>
+
+        <div class="pt-2 flex justify-between text-xs text-[color:var(--muted)] border-t border-[color:var(--border)]/40">
+          <span>Kantonaler Satz: <strong class="text-[color:var(--fg)]" data-canton-rate>~12.0%</strong></span>
+          <span>Effektiver Steuersatz: <strong class="text-[color:var(--fg)]" data-effective-tax-rate>{formatPercent(initialResult.effectiveTaxRate * 100, 1)}</strong></span>
+        </div>
+      </div>
+
+      <!-- BRACKETS TABLE (Shared Primitive) -->
+      <div class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 sm:p-6 shadow-sm">
+        <TaxBracketsTable
+          breakdown={[]}
+          currencySymbol={profile.defaultCurrencySymbol}
+        />
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Parameter Explanations -->
+  <div class="mt-8 border-t border-[color:var(--border)] pt-8">
+    <CalculatorParameterGuide parameters={taxParameterGuide} />
+  </div>
+
+  <!-- Disclaimer Footer -->
+  <div class="mt-8">
+    <TaxDisclaimer />
+  </div>
+</div>
+
+<script>
+  import { calculateChTax } from '../../utils/tax/ch-engine';
+
+  function setupChTaxCalculator() {
+    const apps = document.querySelectorAll('[data-tax-app][data-country-id="ch"]');
+
+    apps.forEach((app) => {
+      try {
+        const profileJson = app.getAttribute('data-profile-json');
+        if (!profileJson) return;
+        const profile = JSON.parse(profileJson);
+
+        // Controls
+        const yearSelect = app.querySelector('[data-tax-year]') as HTMLSelectElement | null;
+        const engineTabs = Array.from(app.querySelectorAll('[data-engine-tab]')) as HTMLElement[];
+        const salaryInput = app.querySelector('[data-ch-salary]') as HTMLInputElement | null;
+        const cantonSelect = app.querySelector('[data-ch-canton]') as HTMLSelectElement | null;
+        const maritalSelect = app.querySelector('[data-ch-marital]') as HTMLSelectElement | null;
+        const extraDeductionsInput = app.querySelector('[data-ch-extra-deductions]') as HTMLInputElement | null;
+
+        // Mode State
+        let currentMode: 'advanced' | 'quick' = 'advanced';
+
+        // Hero Outputs
+        const heroAmount = app.querySelector('[data-hero-amount]');
+        const heroSubtext = app.querySelector('[data-hero-subtext]');
+        const heroIncomeTax = app.querySelector('[data-hero-incometax]');
+        const heroSocial = app.querySelector('[data-hero-social]');
+        const cantonRateEl = app.querySelector('[data-canton-rate]');
+        const effectiveRateEl = app.querySelector('[data-effective-rate]');
+        const effectiveTaxRateEl = app.querySelector('[data-effective-tax-rate]');
+
+        // Allocation Bar
+        const barTakehome = app.querySelector('[data-bar-takehome]') as HTMLElement | null;
+        const barFedtax = app.querySelector('[data-bar-fedtax]') as HTMLElement | null;
+        const barFica = app.querySelector('[data-bar-fica]') as HTMLElement | null;
+        const barPretax = app.querySelector('[data-bar-pretax]') as HTMLElement | null;
+        const allocationLabel = app.querySelector('[data-allocation-label]');
+
+        // Paycheck Schedule
+        const schedMonthly = app.querySelector('[data-sched-monthly]');
+        const schedSemiMonthly = app.querySelector('[data-sched-semimonthly]');
+        const schedBiweekly = app.querySelector('[data-sched-biweekly]');
+        const schedWeekly = app.querySelector('[data-sched-weekly]');
+        const schedDaily = app.querySelector('[data-sched-daily]');
+        const schedHourly = app.querySelector('[data-sched-hourly]');
+
+        // Audit Trail Elements
+        const resGross = app.querySelector('[data-res-gross]');
+        const resSocial = app.querySelector('[data-res-social]');
+        const resDeduction = app.querySelector('[data-res-deduction]');
+        const resTaxable = app.querySelector('[data-res-taxable]');
+        const resFedtax = app.querySelector('[data-res-fedtax]');
+        const resCantontax = app.querySelector('[data-res-cantontax]');
+        const resTotalTaxes = app.querySelector('[data-res-total-taxes]');
+        const resNetTakeHome = app.querySelector('[data-res-net-takehome]');
+        const bracketTbody = app.querySelector('[data-bracket-tbody]');
+        const copySummaryBtn = app.querySelector('[data-copy-summary-btn]');
+
+        function fmt(n: number): string {
+          return 'CHF ' + Math.round(n).toLocaleString('de-CH');
+        }
+
+        function calculate() {
+          const selectedYear = (yearSelect ? yearSelect.value : profile.defaultTaxYear) as '2025' | '2026';
+          const gross = Math.max(0, parseFloat(salaryInput?.value || '0') || 0);
+          const cantonCode = cantonSelect ? cantonSelect.value : 'zh';
+          const pillar3a = currentMode === 'advanced' ? Math.max(0, parseFloat(extraDeductionsInput?.value || '0') || 0) : 0;
+
+          const res = calculateChTax({
+            grossIncome: gross,
+            taxYear: selectedYear,
+            regionCode: cantonCode,
+            pillar3a,
+          });
+
+          // Update Hero
+          if (heroAmount) heroAmount.textContent = fmt(res.netIncomeAnnual);
+          if (heroSubtext) heroSubtext.textContent = `${fmt(res.netIncomeMonthly)}/month · ${fmt(res.netIncomeWeekly)}/week`;
+          if (heroIncomeTax) heroIncomeTax.textContent = fmt(res.totalIncomeTax);
+          if (heroSocial) heroSocial.textContent = fmt(res.totalSocialContributions);
+          if (effectiveRateEl) effectiveRateEl.textContent = `${res.effectiveTotalDeductionRate.toFixed(1)}%`;
+          if (effectiveTaxRateEl) effectiveTaxRateEl.textContent = `${res.effectiveTotalDeductionRate.toFixed(1)}%`;
+          if (cantonRateEl) cantonRateEl.textContent = `~${(res.cantonRate * 100).toFixed(1)}%`;
+
+          // Paycheck Schedule
+          if (schedMonthly) schedMonthly.textContent = fmt(res.netIncomeMonthly);
+          if (schedSemiMonthly) schedSemiMonthly.textContent = fmt(res.netIncomeMonthly / 2);
+          if (schedBiweekly) schedBiweekly.textContent = fmt(res.netIncomeBiweekly);
+          if (schedWeekly) schedWeekly.textContent = fmt(res.netIncomeWeekly);
+          if (schedDaily) schedDaily.textContent = fmt(res.netIncomeDaily);
+          if (schedHourly) schedHourly.textContent = fmt(res.netIncomeHourly);
+
+          // Audit Trail
+          if (resGross) resGross.textContent = fmt(gross);
+          if (resSocial) resSocial.textContent = `-${fmt(res.totalSocialContributions)}`;
+          if (resDeduction) resDeduction.textContent = `-${fmt(res.standardDeduction)}`;
+          if (resTaxable) resTaxable.textContent = fmt(res.taxableIncome);
+          if (resFedtax) resFedtax.textContent = fmt(res.federalTax);
+          if (resCantontax) resCantontax.textContent = fmt(res.cantonalTax);
+          if (resTotalTaxes) resTotalTaxes.textContent = fmt(res.totalTaxAndDeductions);
+          if (resNetTakeHome) resNetTakeHome.textContent = fmt(res.netIncomeAnnual);
+
+          // Allocation Bar
+          if (gross > 0) {
+            const pctTakehome = Math.max(0, (res.netIncomeAnnual / gross) * 100);
+            const pctTax = Math.max(0, (res.totalIncomeTax / gross) * 100);
+            const pctSocial = Math.max(0, (res.totalSocialContributions / gross) * 100);
+            const pctPretax = Math.max(0, (res.standardDeduction / gross) * 100);
+
+            if (barTakehome) barTakehome.style.width = `${pctTakehome}%`;
+            if (barFedtax) barFedtax.style.width = `${pctTax}%`;
+            if (barFica) barFica.style.width = `${pctSocial}%`;
+            if (barPretax) barPretax.style.width = `${pctPretax}%`;
+
+            if (allocationLabel) {
+              allocationLabel.textContent = `Net: ${pctTakehome.toFixed(1)}% · Taxes: ${pctTax.toFixed(1)}% · AHV/ALV: ${pctSocial.toFixed(1)}%`;
+            }
+          }
+
+          // Bracket Table
+          if (bracketTbody) {
+            bracketTbody.innerHTML = res.bracketBreakdown
+              .map(
+                (row) => `
+                <tr class="border-b border-[color:var(--border)]/40 hover:bg-[color:var(--bg)]/50 transition">
+                  <td class="py-2 px-3 font-medium text-[color:var(--fg)]">${row.bracketRange}</td>
+                  <td class="py-2 px-3 text-right font-mono text-[color:var(--muted)]">${row.ratePercent}</td>
+                  <td class="py-2 px-3 text-right font-mono font-medium text-[color:var(--fg)]">${fmt(row.taxableInBracket)}</td>
+                  <td class="py-2 px-3 text-right font-mono font-bold text-blue-500">${fmt(row.taxAmount)}</td>
+                </tr>
+              `
+              )
+              .join('');
+          }
+        }
+
+        // Mode Switching
+        engineTabs.forEach((tab) => {
+          tab.addEventListener('click', () => {
+            const mode = tab.getAttribute('data-engine-tab') as 'advanced' | 'quick';
+            if (!mode) return;
+            currentMode = mode;
+
+            engineTabs.forEach((t) => {
+              if (t === tab) {
+                t.className = 'shrink-0 min-w-max cursor-pointer rounded-xl px-3 py-1.5 text-xs font-bold transition inline-flex items-center gap-1.5 bg-[color:var(--accent)] text-white shadow-xs active';
+              } else {
+                t.className = 'shrink-0 min-w-max cursor-pointer rounded-xl px-3 py-1.5 text-xs font-semibold text-[color:var(--muted)] hover:text-[color:var(--fg)] transition inline-flex items-center gap-1.5';
+              }
+            });
+
+            const advSections = app.querySelectorAll('[data-advanced-section]');
+            advSections.forEach((sec) => {
+              if (mode === 'quick') {
+                sec.classList.add('hidden');
+              } else {
+                sec.classList.remove('hidden');
+              }
+            });
+
+            calculate();
+          });
+        });
+
+        // Event Listeners
+        salaryInput?.addEventListener('input', calculate);
+        cantonSelect?.addEventListener('change', calculate);
+        maritalSelect?.addEventListener('change', calculate);
+        extraDeductionsInput?.addEventListener('input', calculate);
+        yearSelect?.addEventListener('change', calculate);
+
+        // Copy Report
+        copySummaryBtn?.addEventListener('click', () => {
+          const gross = salaryInput?.value || '0';
+          const net = heroAmount?.textContent || 'CHF 0';
+          const tax = heroIncomeTax?.textContent || 'CHF 0';
+          const soc = heroSocial?.textContent || 'CHF 0';
+          const eff = effectiveRateEl?.textContent || '0%';
+          const summary = `--- Switzerland Tax Summary (2026 ESTV / Cantonal) ---\nGross Salary: CHF ${gross}\nNet Take-Home: ${net}\nTotal Income Tax: ${tax}\nSocial Security (AHV/IV/ALV): ${soc}\nEffective Rate: ${eff}\nCalculated via Toolscastle Tax Platform`;
+
+          navigator.clipboard.writeText(summary).then(() => {
+            const btnSpan = copySummaryBtn.querySelector('span');
+            if (btnSpan) {
+              const orig = btnSpan.textContent;
+              btnSpan.textContent = 'Copied to clipboard!';
+              setTimeout(() => {
+                btnSpan.textContent = orig;
+              }, 2000);
+            }
+          });
+        });
+
+        // Initialize
+        calculate();
+      } catch (err) {
+        console.error('Error initializing Switzerland tax calculator:', err);
+      }
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', setupChTaxCalculator);
+  } else {
+    setupChTaxCalculator();
+  }
+</script>
+

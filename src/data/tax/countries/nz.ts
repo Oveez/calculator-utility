@@ -59,6 +59,11 @@ export const nzProfile: CountryTaxProfile = {
       officialSourceName: 'Inland Revenue Department (IRD) - Te Tari Taake',
       officialSourceUrl: 'https://www.ird.govt.nz/income-tax/income-tax-for-individuals/tax-codes-and-tax-rates-for-individuals/tax-rates-for-individuals',
       lastVerifiedDate: '2026-09-01',
+      sourceMetadata: {
+        sourceName: 'Inland Revenue Department (IRD)',
+        sourceUrl: 'https://www.ird.govt.nz/income-tax/income-tax-for-individuals/tax-codes-and-tax-rates-for-individuals/tax-rates-for-individuals',
+        dateVerified: '2026-09-01'
+      },
       assumptions: [
         'Tax resident individual using primary M tax code for the 2026/27 tax year',
         'Standard ACC Earners’ levy (1.75%) applied up to $156,641 ceiling',
@@ -100,6 +105,11 @@ export const nzProfile: CountryTaxProfile = {
       officialSourceName: 'Inland Revenue Department (IRD)',
       officialSourceUrl: 'https://www.ird.govt.nz',
       lastVerifiedDate: '2025-01-15',
+      sourceMetadata: {
+        sourceName: 'Inland Revenue Department (IRD)',
+        sourceUrl: 'https://www.ird.govt.nz',
+        dateVerified: '2025-01-15'
+      },
       assumptions: ['Tax resident individual (M tax code) for 2025/26'],
     },
     '2024/25': {
@@ -130,6 +140,11 @@ export const nzProfile: CountryTaxProfile = {
       officialSourceName: 'Inland Revenue Department (IRD)',
       officialSourceUrl: 'https://www.ird.govt.nz',
       lastVerifiedDate: '2024-07-31',
+      sourceMetadata: {
+        sourceName: 'Inland Revenue Department (IRD)',
+        sourceUrl: 'https://www.ird.govt.nz',
+        dateVerified: '2024-07-31'
+      },
       assumptions: ['New Zealand resident individual (M tax code)'],
     },
   },

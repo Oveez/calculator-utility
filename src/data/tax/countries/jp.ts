@@ -58,6 +58,11 @@ export const jpProfile: CountryTaxProfile = {
       officialSourceName: 'National Tax Agency of Japan (NTA / 国税庁)',
       officialSourceUrl: 'https://www.nta.go.jp',
       lastVerifiedDate: '2026-09-01',
+      sourceMetadata: {
+        sourceName: 'National Tax Agency of Japan (NTA / 国税庁)',
+        sourceUrl: 'https://www.nta.go.jp',
+        dateVerified: '2026-09-01'
+      },
       assumptions: [
         'Single employee resident in Japan for tax purposes',
         '2026 tax reform baseline deduction (¥1,780,000 non-taxable threshold) applied',
@@ -98,6 +103,11 @@ export const jpProfile: CountryTaxProfile = {
       officialSourceName: 'National Tax Agency of Japan (NTA)',
       officialSourceUrl: 'https://www.nta.go.jp',
       lastVerifiedDate: '2025-01-15',
+      sourceMetadata: {
+        sourceName: 'National Tax Agency of Japan (NTA)',
+        sourceUrl: 'https://www.nta.go.jp',
+        dateVerified: '2025-01-15'
+      },
       assumptions: ['Single employee for 2025 tax year'],
     },
   },

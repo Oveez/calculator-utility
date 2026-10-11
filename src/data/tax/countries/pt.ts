@@ -62,6 +62,11 @@ export const ptProfile: CountryTaxProfile = {
       officialSourceName: 'Autoridade Tributária e Aduaneira (AT) - Portal das Finanças',
       officialSourceUrl: 'https://www.portaldasfinancas.gov.pt',
       lastVerifiedDate: '2026-09-01',
+      sourceMetadata: {
+        sourceName: 'Autoridade Tributária e Aduaneira (AT) - Portal das Finanças',
+        sourceUrl: 'https://www.portaldasfinancas.gov.pt',
+        dateVerified: '2026-09-01',
+      },
       assumptions: [
         'Single taxpayer with no dependents (Trabalho dependente / Categoria A)',
         'Dedução específica of €4,462.15 applied',

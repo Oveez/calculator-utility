@@ -95,7 +95,12 @@ export const chProfile: CountryTaxProfile = {
       },
       officialSourceName: 'Eidgenössische Steuerverwaltung (ESTV) / Federal Tax Administration',
       officialSourceUrl: 'https://www.estv.admin.ch',
-      lastVerifiedDate: '2026-09-01',
+      lastVerifiedDate: '2026-10-01',
+      sourceMetadata: {
+        sourceName: 'Federal Tax Administration (ESTV)',
+        sourceUrl: 'https://www.estv.admin.ch',
+        dateVerified: '2026-10-01'
+      },
       assumptions: [
         'Single taxpayer without children (Tarif A)',
         'Standard 1st pillar social insurance contributions (AHV/IV/EO 5.3%, ALV 1.1%)',
@@ -168,7 +173,12 @@ export const chProfile: CountryTaxProfile = {
       },
       officialSourceName: 'ESTV',
       officialSourceUrl: 'https://www.estv.admin.ch',
-      lastVerifiedDate: '2025-01-15',
+      lastVerifiedDate: '2026-10-01',
+      sourceMetadata: {
+        sourceName: 'Federal Tax Administration (ESTV)',
+        sourceUrl: 'https://www.estv.admin.ch',
+        dateVerified: '2026-10-01'
+      },
       assumptions: ['Single taxpayer for 2025 tax year'],
     },
   },

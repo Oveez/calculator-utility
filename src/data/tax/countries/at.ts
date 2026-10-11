@@ -94,4 +94,9 @@ export const atProfile: CountryTaxProfile = {
       assumptions: ['Single employee for 2025 tax year'],
     },
   },
+  sourceMetadata: {
+    name: 'Bundesministerium für Finanzen (BMF)',
+    url: 'https://www.bmf.gv.at',
+    verifiedAt: '2026-10-01'
+  }
 };
