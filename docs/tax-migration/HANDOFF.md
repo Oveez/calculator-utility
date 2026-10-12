@@ -1,24 +1,20 @@
 # AI Agent Handoff State
 
-**Last Updated:** 2026-10-11
+**Last Updated:** 2026-10-12
 **Current Phase:** PHASE R5 COMPLETE (Platform-Wide Integration Verification & Cloudflare Deployment Ready)
 **Current Objective:** Production Sign-Off Achieved. All 24 national income tax calculators verified, isomorphic, tested, and deployed to Cloudflare Pages.
 
 ## State
-- **Last Completed Task:** Investigated Cloudflare Pages build failure, resolved package-lock synchronization and Node runtime pinning, and pushed deployment to `main`:
-  1. **Root Cause Analysis of Cloudflare Build Failure:**
-     - `package.json` had added `vitest` dependency in recent commits, but `package-lock.json` had not been synchronized and committed. Cloudflare Pages executes `npm ci` during deployment, which failed with `npm error code EUSAGE: 'npm ci' can only install packages when your package.json and package-lock.json are in sync`.
-     - Astro v7 (`^7.3.1`) strictly requires Node.js `>=22.12.0`. Cloudflare Pages defaults to Node 18 or 20 when unconfigured. There were no `.nvmrc` or `.node-version` files in the repository root.
-  2. **Remediation & Fixes Implemented:**
-     - Executed `npm install` to synchronize and update `package-lock.json`.
-     - Verified `npm ci` executes with exit code 0.
-     - Created `.nvmrc` and `.node-version` pinning Node `22.14.0` for Cloudflare Pages build environment.
-     - Added `"engines": { "node": ">=22.12.0" }` in `package.json`.
-     - Updated `DEPLOYMENT.md` to reflect `NODE_VERSION: 22.14.0`.
-  3. **Verification & Deployment:**
-     - Verified all 25 test suites pass (149/149 tests green).
-     - Verified local production build compiles 212/212 pages cleanly in 32.76s.
-     - Committed and pushed fix commit (`bc8c36a`) to `origin/main` to trigger the Cloudflare Pages deployment.
+- **Last Completed Task:** Fixed Assignment Cover Maker PDF parity so exported PDFs now use the rendered `#cover-preview-page` DOM (single source of truth) via `html2pdf`, replacing the active divergent vector export path.
+  1. **Implementation:**
+     - Switched active export pipeline from `compileVectorCoverPdf()` call sites to `compilePreviewCoverPdf()` in `src/pages/education-tools/assignment-cover-maker.astro`.
+     - Export now clones the native A4 preview node (794x1123), removes viewport-only scaling (`transform: none`), waits for `document.fonts.ready` and image load completion, and serializes that exact preview to PDF.
+     - Download and “Merge with Assignment” flows now both use the same preview-based PDF bytes path.
+  2. **Regression Coverage:**
+     - Added `tests/assignment-cover-pdf-export-engine.test.ts` to assert preview-based export usage, native A4 clone export settings, and retention of the five newer themes (`blue`, `green`, `burgundy`, `dark`, `neutral`) plus CSS variable theme application in `renderPreview()`.
+  3. **Verification:**
+     - Targeted test passed: `npm run test -- tests/assignment-cover-pdf-export-engine.test.ts` (3/3).
+     - Production build passed: `npm run build` (212/212 pages).
 
 ## Active Context & Key Findings
 - **Tax Data Cutoff:** October 1, 2026 verified across all 24 country profiles.
