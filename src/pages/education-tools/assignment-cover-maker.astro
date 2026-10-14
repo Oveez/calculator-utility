@@ -1248,6 +1248,7 @@ const schemaGraph = [
         const colMuted = PDFLib.rgb(0.4, 0.45, 0.5);
         const colDark = PDFLib.rgb(0.06, 0.09, 0.16);
         const colWhite = PDFLib.rgb(1, 1, 1);
+        const colAccent = hexToRgbColor(PDFLib, theme.accent, { r: 0.28, g: 0.33, b: 0.41 });
 
         let embeddedLogo = null;
         if (logoPngBytes && state.logoMode !== 'none') {
@@ -1543,51 +1544,26 @@ const schemaGraph = [
           const footerText = termText ? `${s.date || ''}   •   ${termText}` : (s.date || '');
           drawCenteredText(page, fontSerif, footerText, footerY, 9, colMuted);
 
-        } else if (template === 'university' || template === 'research' || template === 'departmental' || template === 'faculty' || template === 'parchment') {
-          // Additional standard academic templates
-          const isResearch = template === 'research';
-          const isDepartmental = template === 'departmental';
-          const isFaculty = template === 'faculty';
-          const isParchment = template === 'parchment';
-          const margin = isResearch ? 50 : 60;
-          const accentY = isDepartmental ? H - 48 : H - 62;
+        } else if (template === 'university') {
+          // 5. UNIVERSITY STANDARD (Left Sidebar & Academic Body)
+          const sidebarW = W * 0.31;
+          page.drawRectangle({ x: 0, y: 0, width: sidebarW, height: H, color: colPrimary });
 
-          if (isParchment) {
-            page.drawRectangle({ x: 0, y: 0, width: W, height: H, color: colSoft });
-            for (let y = 18; y < H; y += 18) page.drawLine({ start: { x: 0, y }, end: { x: W, y }, thickness: 0.25, color: colBorder });
-          } else if (isFaculty) {
-            for (let x = 28; x < W; x += 32) page.drawLine({ start: { x, y: 0 }, end: { x, y: H }, thickness: 0.2, color: colBorder });
-            for (let y = 28; y < H; y += 32) page.drawLine({ start: { x: 0, y }, end: { x: W, y }, thickness: 0.2, color: colBorder });
-          } else if (isResearch) {
-            page.drawRectangle({ x: 0, y: H - 290, width: W, height: 290, color: colSoft });
-            page.drawCircle({ x: W - 20, y: H - 45, size: 145, color: colPrimary, opacity: 0.92 });
-            page.drawCircle({ x: W - 50, y: H - 25, size: 85, borderColor: colSecondary, borderWidth: 16, opacity: 0.75 });
-          } else if (isDepartmental) {
-            page.drawRectangle({ x: W - 210, y: 130, width: 210, height: 470, color: colSoft });
-            page.drawCircle({ x: W - 45, y: 430, size: 115, color: colPrimary, opacity: 0.9 });
-            page.drawCircle({ x: W - 65, y: 430, size: 78, borderColor: colSecondary, borderWidth: 14, opacity: 0.75 });
-          } else {
-            page.drawRectangle({ x: 0, y: 0, width: W * 0.31, height: H, color: colPrimary });
-            page.drawCircle({ x: W * 0.29, y: H * 0.72, size: 54, borderColor: colSecondary, borderWidth: 12, opacity: 0.5 });
-          }
+          // Decorative accent circle overlapping the sidebar boundary
+          page.drawCircle({
+            x: sidebarW * 0.78,
+            y: H * 0.78,
+            size: 55,
+            borderColor: colAccent,
+            borderWidth: 14,
+            opacity: 0.4
+          });
 
-          if (isDepartmental) {
-            page.drawLine({ start: { x: margin, y: accentY }, end: { x: W - margin, y: accentY }, thickness: 4, color: colPrimary });
-          } else {
-            page.drawRectangle({
-              x: margin,
-              y: accentY - (isResearch ? 62 : 48),
-              width: W - (margin * 2),
-              height: isResearch ? 62 : 48,
-              color: colSoft,
-              borderColor: colBorder,
-              borderWidth: 1
-            });
-          }
-
+          // Left Sidebar Content
+          let sideY = H - 55;
           if (embeddedLogo) {
-            const maxLogoW = isResearch ? 78 : 62;
-            const maxLogoH = isResearch ? 48 : 42;
+            const maxLogoW = 115;
+            const maxLogoH = 55;
             const aspect = embeddedLogo.width / embeddedLogo.height;
             let logoW = maxLogoW;
             let logoH = maxLogoW / aspect;
@@ -1596,71 +1572,351 @@ const schemaGraph = [
               logoW = maxLogoH * aspect;
             }
             page.drawImage(embeddedLogo, {
-              x: isResearch ? W - margin - logoW : (W - logoW) / 2,
-              y: isResearch ? accentY - 48 : accentY - logoH - 12,
+              x: 24,
+              y: sideY - logoH,
               width: logoW,
               height: logoH
             });
-          }
-
-          const headerX = isResearch ? margin + 18 : margin;
-          page.drawText(instText, { x: headerX, y: isResearch ? accentY - 24 : accentY - 70, size: isResearch ? 13 : 15, font: fontSansBold, color: colPrimary });
-          page.drawText(deptText, { x: headerX, y: isResearch ? accentY - 41 : accentY - 86, size: 9.5, font: fontSans, color: colMuted });
-
-          const titleY = isResearch ? 505 : 475;
-          if (isResearch) {
-            page.drawText('COURSE REPORT', { x: margin, y: titleY + 58, size: 8.5, font: fontSansBold, color: colSecondary });
-          } else if (isFaculty) {
-            page.drawText('FACULTY REPORT', { x: margin, y: titleY + 58, size: 8.5, font: fontSansBold, color: colSecondary });
-          } else if (isParchment) {
-            page.drawText('COURSE DETAILS', { x: margin, y: titleY + 58, size: 8.5, font: fontSansBold, color: colSecondary });
-          } else if (isDepartmental) {
-            drawCenteredText(page, fontSansBold, 'ASSIGNMENT / REPORT', titleY + 48, 9, colSecondary);
+            sideY = sideY - logoH - 24;
           } else {
-            drawCenteredText(page, fontSansBold, 'ASSIGNMENT COVER SHEET', titleY + 48, 9, colSecondary);
+            sideY -= 20;
           }
 
-          let titleCursor = isResearch
-            ? drawLeftText(page, fontSansBold, titleText, margin, titleY + 22, 24, colDark, W - (margin * 2))
-            : drawCenteredText(page, fontSerifBold, titleText, titleY + 16, 23, colDark, W - (margin * 2));
-          if (subtitleText) {
-            titleCursor -= 4;
-            if (isResearch) {
-              titleCursor = drawLeftText(page, fontSans, subtitleText, margin, titleCursor, 11, colMuted, W - (margin * 2));
-            } else {
-              titleCursor = drawCenteredText(page, fontSerifItalic, subtitleText, titleCursor, 11, colMuted, W - 150);
-            }
-          }
+          page.drawText('DEPARTMENT', { x: 24, y: sideY, size: 7.5, font: fontSansBold, color: PDFLib.rgb(0.85, 0.88, 0.94) });
+          sideY = drawLeftText(page, fontSans, deptText, 24, sideY - 14, 9.5, PDFLib.rgb(0.92, 0.94, 0.98), 135);
 
-          const courseY = isResearch ? titleCursor - 30 : titleY - 58;
-          drawCenteredText(page, fontSansBold, courseCodeText ? `${courseCodeText}  —  ${courseNameText}` : courseNameText, courseY, 11, colPrimary, W - 140);
-
-          const metaTop = 235;
-          page.drawLine({ start: { x: margin, y: metaTop }, end: { x: W - margin, y: metaTop }, thickness: 1.2, color: colBorder });
-          const splitX = W / 2 + 12;
-          page.drawText(isResearch ? 'RESEARCHER / AUTHOR' : 'SUBMITTED BY', { x: margin, y: metaTop - 22, size: 8.5, font: fontSansBold, color: colSecondary });
-          let studentY = metaTop - 42;
-          for (const st of s.students.slice(0, 5)) {
-            page.drawText(st.name || 'Student Name', { x: margin, y: studentY, size: 10.5, font: fontSansBold, color: colDark });
-            studentY -= 14;
-            if (st.id) {
-              page.drawText(`ID: ${st.id}`, { x: margin, y: studentY, size: 8.5, font: fontSans, color: colMuted });
-              studentY -= 13;
-            }
-          }
-
-          page.drawText(isResearch ? 'FACULTY SUPERVISOR' : 'SUBMITTED TO', { x: splitX, y: metaTop - 22, size: 8.5, font: fontSansBold, color: colSecondary });
-          page.drawText(teacherNameText, { x: splitX, y: metaTop - 42, size: 11, font: fontSansBold, color: colDark });
-          page.drawText(teacherTitleText, { x: splitX, y: metaTop - 58, size: 9.5, font: fontSans, color: colMuted });
-          if (deptText) {
-            page.drawText(deptText, { x: splitX, y: metaTop - 73, size: 8.5, font: fontSans, color: colMuted });
-          }
-
-          page.drawLine({ start: { x: margin, y: 78 }, end: { x: W - margin, y: 78 }, thickness: 0.6, color: colBorder });
-          page.drawText(s.date || 'Submission Date', { x: margin, y: 60, size: 9, font: fontSans, color: colMuted });
           if (termText) {
-            drawRightText(page, fontSans, termText, W - margin, 60, 9, colMuted);
+            page.drawText(termText, { x: 24, y: 68, size: 8.5, font: fontSans, color: PDFLib.rgb(0.85, 0.88, 0.94) });
           }
+          page.drawText(s.date || 'Submission Date', { x: 24, y: 52, size: 8.5, font: fontSans, color: PDFLib.rgb(0.85, 0.88, 0.94) });
+
+          // Right Column Content
+          const rightX = sidebarW + 36;
+          const rightW = W - 40 - rightX;
+
+          // Header: Institution
+          page.drawText(instText, { x: rightX, y: H - 65, size: 10.5, font: fontSansBold, color: colAccent });
+          page.drawText('Assignment submission', { x: rightX, y: H - 79, size: 8, font: fontSans, color: colMuted });
+          page.drawLine({ start: { x: rightX, y: H - 94 }, end: { x: W - 40, y: H - 94 }, thickness: 0.75, color: colBorder });
+
+          // Middle Area: Title & Course
+          let mainY = H - 180;
+          page.drawText((courseCodeText || 'COURSE').toUpperCase(), { x: rightX, y: mainY, size: 9, font: fontSansBold, color: colAccent });
+          mainY -= 22;
+          mainY = drawLeftText(page, fontSansBold, titleText, rightX, mainY, 26, colDark, rightW);
+          if (subtitleText) {
+            mainY -= 6;
+            mainY = drawLeftText(page, fontSans, subtitleText, rightX, mainY, 11, colMuted, rightW);
+          }
+          mainY -= 18;
+          page.drawRectangle({ x: rightX, y: mainY, width: 45, height: 3.5, color: colPrimary });
+          mainY -= 20;
+          drawLeftText(page, fontSansBold, courseNameText, rightX, mainY, 12, colDark, rightW);
+
+          // Metadata Section: Submitted By & Submitted To
+          const metaDividerY = 195;
+          page.drawLine({ start: { x: rightX, y: metaDividerY }, end: { x: W - 40, y: metaDividerY }, thickness: 0.75, color: colBorder });
+
+          const col1X = rightX;
+          const col2X = rightX + 170;
+
+          page.drawText('SUBMITTED BY', { x: col1X, y: metaDividerY - 18, size: 7.5, font: fontSansBold, color: colAccent });
+          let stuY = metaDividerY - 34;
+          for (const st of s.students.slice(0, 4)) {
+            page.drawText(st.name || 'Student Name', { x: col1X, y: stuY, size: 9.5, font: fontSansBold, color: colDark });
+            stuY -= 12;
+            if (st.id) {
+              page.drawText(`Student ID: ${st.id}`, { x: col1X, y: stuY, size: 8, font: fontSans, color: colMuted });
+              stuY -= 11;
+            }
+            if (st.section) {
+              page.drawText(st.section, { x: col1X, y: stuY, size: 7.5, font: fontSans, color: colMuted });
+              stuY -= 10;
+            }
+            stuY -= 2;
+          }
+
+          page.drawText('SUBMITTED TO', { x: col2X, y: metaDividerY - 18, size: 7.5, font: fontSansBold, color: colAccent });
+          page.drawText(teacherNameText, { x: col2X, y: metaDividerY - 34, size: 10, font: fontSansBold, color: colDark });
+          drawLeftText(page, fontSans, teacherTitleText, col2X, metaDividerY - 48, 8.5, colMuted, 160);
+
+        } else if (template === 'research') {
+          // 6. RESEARCH REPORT (Geometric Accent Header & Modern Grid)
+          page.drawRectangle({ x: W - 230, y: H - 240, width: 230, height: 240, color: colSoft, opacity: 0.6 });
+          page.drawCircle({ x: W - 75, y: H - 75, size: 45, borderColor: colAccent, borderWidth: 9, opacity: 0.6 });
+
+          const margin = 54;
+          const contentW = W - (margin * 2);
+
+          // Top Header: Institution left, Logo right
+          page.drawText(instText, { x: margin, y: H - 65, size: 12, font: fontSansBold, color: colPrimary });
+          page.drawText(deptText, { x: margin, y: H - 80, size: 9.5, font: fontSans, color: colMuted });
+
+          if (embeddedLogo) {
+            const maxLogoW = 105;
+            const maxLogoH = 46;
+            const aspect = embeddedLogo.width / embeddedLogo.height;
+            let lW = maxLogoW;
+            let lH = maxLogoW / aspect;
+            if (lH > maxLogoH) {
+              lH = maxLogoH;
+              lW = maxLogoH * aspect;
+            }
+            page.drawImage(embeddedLogo, {
+              x: W - margin - lW,
+              y: H - 54 - lH,
+              width: lW,
+              height: lH
+            });
+          }
+
+          page.drawLine({ start: { x: margin, y: H - 96 }, end: { x: W - margin, y: H - 96 }, thickness: 0.8, color: colBorder });
+
+          // Middle Area: Course Report, Title, Subtitle, Course Block
+          let curY = H - 170;
+          page.drawText((courseCodeText || 'COURSE REPORT').toUpperCase(), { x: margin, y: curY, size: 9, font: fontSansBold, color: colAccent });
+          curY -= 24;
+          curY = drawLeftText(page, fontSansBold, titleText, margin, curY, 26, colDark, contentW * 0.85);
+          if (subtitleText) {
+            curY -= 8;
+            curY = drawLeftText(page, fontSans, subtitleText, margin, curY, 11, colMuted, contentW * 0.85);
+          }
+          curY -= 28;
+          page.drawRectangle({ x: margin, y: curY - 32, width: 3.5, height: 40, color: colPrimary });
+          page.drawText('COURSE', { x: margin + 12, y: curY + 2, size: 7.5, font: fontSansBold, color: colMuted });
+          page.drawText(courseNameText, { x: margin + 12, y: curY - 16, size: 13, font: fontSansBold, color: colDark });
+
+          // Bottom Metadata: Author & Supervisor
+          const metaTop = 195;
+          page.drawLine({ start: { x: margin, y: metaTop }, end: { x: W - margin, y: metaTop }, thickness: 0.8, color: colBorder });
+
+          const col1X = margin;
+          const col2X = margin + 256;
+
+          page.drawText('AUTHOR', { x: col1X, y: metaTop - 18, size: 8, font: fontSansBold, color: colAccent });
+          let stuY = metaTop - 34;
+          for (const st of s.students.slice(0, 4)) {
+            const stLine = st.id ? `${st.name || 'Student Name'} (${st.id})` : (st.name || 'Student Name');
+            page.drawText(stLine, { x: col1X, y: stuY, size: 9.5, font: fontSans, color: colDark });
+            stuY -= 14;
+          }
+
+          page.drawText('SUPERVISOR', { x: col2X, y: metaTop - 18, size: 8, font: fontSansBold, color: colAccent });
+          page.drawText(teacherNameText, { x: col2X, y: metaTop - 34, size: 10.5, font: fontSansBold, color: colDark });
+          drawLeftText(page, fontSans, teacherTitleText, col2X, metaTop - 48, 8.5, colMuted, 220);
+
+          const footY = 56;
+          const footText = termText ? `${s.date || 'Submission Date'}   •   ${termText}` : (s.date || 'Submission Date');
+          page.drawText(footText, { x: margin, y: footY, size: 8.5, font: fontSans, color: colMuted });
+
+        } else if (template === 'departmental') {
+          // 7. DEPARTMENTAL (Side Accents, Horizontal Header & Clean Rows)
+          page.drawRectangle({ x: 0, y: 0, width: W, height: H, color: colSoft, opacity: 0.35 });
+          page.drawCircle({ x: W + 20, y: H * 0.62, size: 95, color: colPrimary, opacity: 0.88 });
+          page.drawCircle({ x: W - 10, y: H * 0.55, size: 68, borderColor: colAccent, borderWidth: 14, opacity: 0.65 });
+
+          const margin = 54;
+          let headerTextX = margin;
+          if (embeddedLogo) {
+            const maxLogoW = 75;
+            const maxLogoH = 50;
+            const aspect = embeddedLogo.width / embeddedLogo.height;
+            let lW = maxLogoW;
+            let lH = maxLogoW / aspect;
+            if (lH > maxLogoH) {
+              lH = maxLogoH;
+              lW = maxLogoH * aspect;
+            }
+            page.drawImage(embeddedLogo, {
+              x: margin,
+              y: H - 54 - lH,
+              width: lW,
+              height: lH
+            });
+            headerTextX = margin + lW + 16;
+          }
+
+          page.drawText(instText, { x: headerTextX, y: H - 65, size: 13, font: fontSansBold, color: colPrimary });
+          page.drawText(deptText, { x: headerTextX, y: H - 80, size: 9.5, font: fontSans, color: colMuted });
+          page.drawLine({ start: { x: margin, y: H - 96 }, end: { x: W - margin, y: H - 96 }, thickness: 1, color: colBorder });
+
+          // Middle Area
+          let curY = H - 170;
+          page.drawText((courseCodeText || 'ASSIGNMENT').toUpperCase(), { x: margin, y: curY, size: 9, font: fontSansBold, color: colAccent });
+          curY -= 24;
+          curY = drawLeftText(page, fontSansBold, titleText, margin, curY, 26, colDark, 380);
+          if (subtitleText) {
+            curY -= 8;
+            curY = drawLeftText(page, fontSans, subtitleText, margin, curY, 11, colMuted, 380);
+          }
+          curY -= 20;
+          page.drawText(courseNameText, { x: margin, y: curY, size: 12, font: fontSansBold, color: colPrimary });
+
+          // Bottom Metadata
+          const metaTop = 195;
+          page.drawLine({ start: { x: margin, y: metaTop }, end: { x: W - margin, y: metaTop }, thickness: 0.8, color: colBorder });
+
+          const col1X = margin;
+          const col2X = margin + 266;
+
+          page.drawText('STUDENT DETAILS', { x: col1X, y: metaTop - 18, size: 8, font: fontSansBold, color: colAccent });
+          let stuY = metaTop - 34;
+          for (const st of s.students.slice(0, 4)) {
+            page.drawText(st.name || 'Student Name', { x: col1X, y: stuY, size: 9.5, font: fontSansBold, color: colDark });
+            if (st.id) {
+              drawRightText(page, fontSans, st.id, col1X + 230, stuY, 8.5, colMuted);
+            }
+            page.drawLine({ start: { x: col1X, y: stuY - 5 }, end: { x: col1X + 230, y: stuY - 5 }, thickness: 0.4, color: colBorder });
+            stuY -= 17;
+          }
+
+          page.drawText('INSTRUCTOR', { x: col2X, y: metaTop - 18, size: 8, font: fontSansBold, color: colAccent });
+          page.drawText(teacherNameText, { x: col2X, y: metaTop - 34, size: 10.5, font: fontSansBold, color: colDark });
+          drawLeftText(page, fontSans, teacherTitleText, col2X, metaTop - 48, 8.5, colMuted, 210);
+
+          const footY = 56;
+          const footText = termText ? `${s.date || 'Submission Date'}   •   ${termText}` : (s.date || 'Submission Date');
+          page.drawText(footText, { x: margin, y: footY, size: 8.5, font: fontSans, color: colMuted });
+
+        } else if (template === 'faculty') {
+          // 8. FACULTY REPORT (Subtle Technical Grid, Accent Bar & Header)
+          for (let x = 34; x < W; x += 34) {
+            page.drawLine({ start: { x, y: 0 }, end: { x, y: H }, thickness: 0.25, color: colBorder, opacity: 0.35 });
+          }
+          for (let y = 34; y < H; y += 34) {
+            page.drawLine({ start: { x: 0, y }, end: { x: W, y }, thickness: 0.25, color: colBorder, opacity: 0.35 });
+          }
+
+          const margin = 54;
+          page.drawText('FACULTY REPORT', { x: margin, y: H - 58, size: 8, font: fontSansBold, color: colAccent });
+          page.drawText(instText, { x: margin, y: H - 74, size: 14, font: fontSansBold, color: colPrimary });
+          page.drawText(deptText, { x: margin, y: H - 89, size: 9.5, font: fontSans, color: colMuted });
+
+          if (embeddedLogo) {
+            const maxLogoW = 110;
+            const maxLogoH = 50;
+            const aspect = embeddedLogo.width / embeddedLogo.height;
+            let lW = maxLogoW;
+            let lH = maxLogoW / aspect;
+            if (lH > maxLogoH) {
+              lH = maxLogoH;
+              lW = maxLogoH * aspect;
+            }
+            page.drawImage(embeddedLogo, {
+              x: W - margin - lW,
+              y: H - 54 - lH,
+              width: lW,
+              height: lH
+            });
+          }
+
+          // Middle Area
+          let curY = H - 180;
+          page.drawRectangle({ x: margin, y: curY, width: 55, height: 3.5, color: colPrimary });
+          curY -= 24;
+          curY = drawLeftText(page, fontSansBold, titleText, margin, curY, 26, colDark, 440);
+          if (subtitleText) {
+            curY -= 8;
+            curY = drawLeftText(page, fontSans, subtitleText, margin, curY, 11, colMuted, 440);
+          }
+          curY -= 20;
+          const courseFull = courseCodeText ? `${courseCodeText}   ·   ${courseNameText}` : courseNameText;
+          page.drawText(courseFull, { x: margin, y: curY, size: 11, font: fontSansBold, color: colPrimary });
+
+          // Bottom Metadata
+          const metaTop = 195;
+          page.drawLine({ start: { x: margin, y: metaTop }, end: { x: W - margin, y: metaTop }, thickness: 0.8, color: colBorder });
+
+          const col1X = margin;
+          const col2X = margin + 266;
+
+          page.drawText('STUDENTS', { x: col1X, y: metaTop - 18, size: 8, font: fontSansBold, color: colAccent });
+          let stuY = metaTop - 34;
+          for (const st of s.students.slice(0, 4)) {
+            page.drawText(st.name || 'Student Name', { x: col1X, y: stuY, size: 9.5, font: fontSansBold, color: colDark });
+            if (st.id) {
+              drawRightText(page, fontSans, st.id, col1X + 230, stuY, 8.5, colMuted);
+            }
+            page.drawLine({ start: { x: col1X, y: stuY - 5 }, end: { x: col1X + 230, y: stuY - 5 }, thickness: 0.4, color: colBorder });
+            stuY -= 17;
+          }
+
+          page.drawText('INSTRUCTOR', { x: col2X, y: metaTop - 18, size: 8, font: fontSansBold, color: colAccent });
+          page.drawText(teacherNameText, { x: col2X, y: metaTop - 34, size: 10.5, font: fontSansBold, color: colDark });
+          drawLeftText(page, fontSans, teacherTitleText, col2X, metaTop - 48, 8.5, colMuted, 210);
+
+          const footY = 56;
+          const footText = termText ? `${s.date || 'Submission Date'}   •   ${termText}` : (s.date || 'Submission Date');
+          page.drawText(footText, { x: margin, y: footY, size: 8.5, font: fontSans, color: colMuted });
+
+        } else if (template === 'parchment') {
+          // 9. PARCHMENT (Classical Serif, Angular Header & Dual Columns)
+          page.drawRectangle({ x: 0, y: 0, width: W, height: H, color: colSoft, opacity: 0.5 });
+          const deg12 = PDFLib.degrees ? PDFLib.degrees(12) : undefined;
+          page.drawRectangle({ x: W - 140, y: H - 140, width: 190, height: 190, color: colPrimary, rotate: deg12, opacity: 0.88 });
+          page.drawRectangle({ x: W - 105, y: H - 105, width: 130, height: 130, borderColor: colAccent, borderWidth: 14, rotate: deg12, opacity: 0.72 });
+
+          const margin = 54;
+          let headerTextX = margin;
+          if (embeddedLogo) {
+            const maxLogoW = 75;
+            const maxLogoH = 48;
+            const aspect = embeddedLogo.width / embeddedLogo.height;
+            let lW = maxLogoW;
+            let lH = maxLogoW / aspect;
+            if (lH > maxLogoH) {
+              lH = maxLogoH;
+              lW = maxLogoH * aspect;
+            }
+            page.drawImage(embeddedLogo, {
+              x: margin,
+              y: H - 54 - lH,
+              width: lW,
+              height: lH
+            });
+            headerTextX = margin + lW + 16;
+          }
+
+          page.drawText(instText, { x: headerTextX, y: H - 65, size: 13, font: fontSerifBold, color: colPrimary });
+          page.drawText(deptText, { x: headerTextX, y: H - 80, size: 9.5, font: fontSerif, color: colMuted });
+          page.drawLine({ start: { x: margin, y: H - 96 }, end: { x: W - margin, y: H - 96 }, thickness: 2, color: colPrimary });
+
+          // Middle Area
+          let curY = H - 170;
+          page.drawText((courseCodeText || 'COURSE DETAILS').toUpperCase(), { x: margin, y: curY, size: 9, font: fontSansBold, color: colAccent });
+          curY -= 24;
+          curY = drawLeftText(page, fontSerifBold, titleText, margin, curY, 26, colDark, 430);
+          if (subtitleText) {
+            curY -= 8;
+            curY = drawLeftText(page, fontSerifItalic, subtitleText, margin, curY, 12, colMuted, 430);
+          }
+          curY -= 28;
+          page.drawRectangle({ x: margin, y: curY - 32, width: 3.5, height: 40, color: colPrimary });
+          page.drawText('COURSE', { x: margin + 12, y: curY + 2, size: 7.5, font: fontSansBold, color: colMuted });
+          page.drawText(courseNameText, { x: margin + 12, y: curY - 16, size: 13, font: fontSerifBold, color: colDark });
+
+          // Bottom Metadata
+          const metaTop = 195;
+          page.drawLine({ start: { x: margin, y: metaTop }, end: { x: W - margin, y: metaTop }, thickness: 0.8, color: colBorder });
+
+          const col1X = margin;
+          const col2X = margin + 256;
+
+          page.drawText('SUBMITTED BY', { x: col1X, y: metaTop - 18, size: 8, font: fontSansBold, color: colAccent });
+          let stuY = metaTop - 34;
+          for (const st of s.students.slice(0, 4)) {
+            const stLine = st.id ? `${st.name || 'Student Name'} (${st.id})` : (st.name || 'Student Name');
+            page.drawText(stLine, { x: col1X, y: stuY, size: 9.5, font: fontSerif, color: colDark });
+            stuY -= 14;
+          }
+
+          page.drawText('SUBMITTED TO', { x: col2X, y: metaTop - 18, size: 8, font: fontSansBold, color: colAccent });
+          page.drawText(teacherNameText, { x: col2X, y: metaTop - 34, size: 10.5, font: fontSerifBold, color: colDark });
+          drawLeftText(page, fontSerifItalic, teacherTitleText, col2X, metaTop - 48, 8.5, colMuted, 220);
+
+          const footY = 56;
+          const footText = termText ? `${s.date || 'Submission Date'}   •   ${termText}` : (s.date || 'Submission Date');
+          page.drawText(footText, { x: margin, y: footY, size: 8.5, font: fontSerif, color: colMuted });
 
         } else if (template === 'bold') {
           // 8. BOLD ACADEMIC BANNER TEMPLATE
