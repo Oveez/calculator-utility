@@ -161,20 +161,6 @@ const websiteSchema = {
       <slot />
     </main>
 
-    <!-- Adsterra desktop rail: only shown when the viewport has room beside the main content. -->
-    <aside class="adsterra-desktop-rail" aria-label="Advertisement">
-      <script is:inline>
-        atOptions = {
-          'key' : 'e1a4b96b5bf2fa6b1efb3843ea4e2a01',
-          'format' : 'iframe',
-          'height' : 300,
-          'width' : 160,
-          'params' : {}
-        };
-      </script>
-      <script is:inline src="https://www.highrevenueformat.com/e1a4b96b5bf2fa6b1efb3843ea4e2a01/invoke.js"></script>
-    </aside>
-
     <!-- Clean, High-Contrast SaaS Dark Footer -->
     <Footer />
 
@@ -191,21 +177,3 @@ const websiteSchema = {
     <CookieConsent />
   </body>
 </html>
-
-<style>
-  .adsterra-desktop-rail {
-    display: none;
-  }
-
-  @media (min-width: 1536px) {
-    .adsterra-desktop-rail {
-      position: fixed;
-      z-index: 20;
-      top: 50%;
-      right: calc((100vw - 72rem) / 2 - 176px);
-      width: 160px;
-      height: 300px;
-      transform: translateY(-50%);
-    }
-  }
-</style>
