@@ -22,9 +22,10 @@
 ## Active Context & Key Findings
 - **Tax Data Cutoff:** October 1, 2026 verified across all datasets.
 - **Engine Version:** `policyengine-us==2.44.0`.
-- **Vitest Suite:** 27 suites, 162 tests passing 100%.
+- **Vitest Suite:** 28 suites, 169 tests passing 100% (including Adsterra integration suite).
 - **Pytest Suite:** 30 tests passing 100%.
 - **Astro Build:** 212 pages built cleanly.
-- **Production Status:** READY FOR DEPLOYMENT. All 9 integration phases successfully completed and verified.
+- **Adsterra Advertising:** Integrated globally across all 212 pages with responsive top banners, content rectangle units, and native ad recommendations; zero impact on tax engines or AdSense tags.
+- **Production Status:** READY FOR DEPLOYMENT. All 9 integration phases and Adsterra advertising rollout successfully completed and verified.
 
 

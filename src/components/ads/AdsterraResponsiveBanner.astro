@@ -11,39 +11,30 @@ const { class: className = '' } = Astro.props as Props;
   aria-label="Advertisement"
 >
   <span class="adsterra-label">Advertisement</span>
-  <div id="adsterra-responsive-frame" class="adsterra-frame">
-    <script is:inline>
-      (function() {
-        var frame = document.getElementById('adsterra-responsive-frame');
-        if (!frame) return;
-        var isDesktop = window.matchMedia('(min-width: 768px)').matches;
-        if (isDesktop) {
-          // 4. Desktop leaderboard: 728 x 90
-          window.atOptions = {
-            'key' : '128ec5e03e4921d4d2751a9cc07d2808',
-            'format' : 'iframe',
-            'height' : 90,
-            'width' : 728,
-            'params' : {}
-          };
-          var s = document.createElement('script');
-          s.src = 'https://www.highrevenueformat.com/128ec5e03e4921d4d2751a9cc07d2808/invoke.js';
-          frame.appendChild(s);
-        } else {
-          // 5. Mobile banner: 320 x 50
-          window.atOptions = {
-            'key' : '7972ace1d0daa4818b81871a83db36a8',
-            'format' : 'iframe',
-            'height' : 50,
-            'width' : 320,
-            'params' : {}
-          };
-          var s = document.createElement('script');
-          s.src = 'https://www.highrevenueformat.com/7972ace1d0daa4818b81871a83db36a8/invoke.js';
-          frame.appendChild(s);
-        }
-      })();
-    </script>
+  <div class="adsterra-frame">
+    <!-- Desktop: 728x90 Leaderboard -->
+    <iframe
+      class="hidden md:block mx-auto"
+      srcdoc={`<!DOCTYPE html><html><head><style>body{margin:0;padding:0;overflow:hidden;display:flex;justify-content:center;align-items:center;background:transparent;}</style></head><body><script>atOptions = {'key' : '128ec5e03e4921d4d2751a9cc07d2808','format' : 'iframe','height' : 90,'width' : 728,'params' : {}};</script><script src="https://www.highrevenueformat.com/128ec5e03e4921d4d2751a9cc07d2808/invoke.js"></script></body></html>`}
+      width="728"
+      height="90"
+      style="border:none;overflow:hidden;max-width:100%;"
+      scrolling="no"
+      loading="lazy"
+      title="Advertisement"
+    ></iframe>
+
+    <!-- Mobile: 320x50 Banner -->
+    <iframe
+      class="block md:hidden mx-auto"
+      srcdoc={`<!DOCTYPE html><html><head><style>body{margin:0;padding:0;overflow:hidden;display:flex;justify-content:center;align-items:center;background:transparent;}</style></head><body><script>atOptions = {'key' : '7972ace1d0daa4818b81871a83db36a8','format' : 'iframe','height' : 50,'width' : 320,'params' : {}};</script><script src="https://www.highrevenueformat.com/7972ace1d0daa4818b81871a83db36a8/invoke.js"></script></body></html>`}
+      width="320"
+      height="50"
+      style="border:none;overflow:hidden;max-width:100%;"
+      scrolling="no"
+      loading="lazy"
+      title="Advertisement"
+    ></iframe>
   </div>
 </aside>
 
@@ -82,4 +73,3 @@ const { class: className = '' } = Astro.props as Props;
     }
   }
 </style>
-

@@ -13,16 +13,15 @@ const { class: className = '' } = Astro.props as Props;
 >
   <span class="adsterra-label">Advertisement</span>
   <div class="adsterra-frame">
-    <script is:inline>
-      atOptions = {
-        'key' : 'e1a4b96b5bf2fa6b1efb3843ea4e2a01',
-        'format' : 'iframe',
-        'height' : 300,
-        'width' : 160,
-        'params' : {}
-      };
-    </script>
-    <script is:inline src="https://www.highrevenueformat.com/e1a4b96b5bf2fa6b1efb3843ea4e2a01/invoke.js"></script>
+    <iframe
+      srcdoc={`<!DOCTYPE html><html><head><style>body{margin:0;padding:0;overflow:hidden;display:flex;justify-content:center;align-items:center;background:transparent;}</style></head><body><script>atOptions = {'key' : 'e1a4b96b5bf2fa6b1efb3843ea4e2a01','format' : 'iframe','height' : 300,'width' : 160,'params' : {}};</script><script src="https://www.highrevenueformat.com/e1a4b96b5bf2fa6b1efb3843ea4e2a01/invoke.js"></script></body></html>`}
+      width="160"
+      height="300"
+      style="border:none;overflow:hidden;max-width:100%;"
+      scrolling="no"
+      loading="lazy"
+      title="Advertisement"
+    ></iframe>
   </div>
 </aside>
 
@@ -51,4 +50,3 @@ const { class: className = '' } = Astro.props as Props;
     overflow: hidden;
   }
 </style>
-

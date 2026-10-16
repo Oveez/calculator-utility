@@ -86,6 +86,17 @@ describe('Adsterra Ads Integration Verification', () => {
     expect(content).toContain(EXPECTED_UNITS['mobile-banner'].scriptUrl);
   });
 
+  it('SiteLayout renders both AdsterraResponsiveBanner and AdsterraNativeAd globally', () => {
+    const siteLayoutPath = path.resolve(__dirname, '../src/layouts/SiteLayout.astro');
+    expect(fs.existsSync(siteLayoutPath)).toBe(true);
+    const content = fs.readFileSync(siteLayoutPath, 'utf8');
+
+    expect(content).toContain('AdsterraResponsiveBanner');
+    expect(content).toContain('AdsterraNativeAd');
+    expect(content).toContain('<AdsterraResponsiveBanner');
+    expect(content).toContain('<AdsterraNativeAd');
+  });
+
   it('preserves Google AdSense verification code and script in SiteLayout.astro', () => {
     const siteLayoutPath = path.resolve(__dirname, '../src/layouts/SiteLayout.astro');
     expect(fs.existsSync(siteLayoutPath)).toBe(true);
@@ -118,4 +129,3 @@ describe('Adsterra Ads Integration Verification', () => {
     expect(displayContent).toContain('AdsterraMobileBanner');
   });
 });
-
