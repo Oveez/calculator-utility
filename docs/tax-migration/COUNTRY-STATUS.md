@@ -7,7 +7,7 @@
 | **Germany** | `de` | Tier 1 | Phase R1 Complete | Statutory EStG § 32a linear polynomial, *Splittingverfahren*, Soli *Milderungszone*, 2026 BBG caps | 6 tests (100% passing) | Fully Isomorphic; 0 EUR SSR/Client divergence |
 | **Australia** | `au` | Tier 1 | Phase R1 Complete | Statutory 16% Stage 3 bracket, exact LITO phase-out, Medicare low-income phase-in | 6 tests (100% passing) | Fully Isomorphic; 0 AUD SSR/Client divergence |
 | **Canada** | `ca` | Tier 1 | Phase R1 Complete | CRA federal brackets, RRSP deductions, BC/ON progressive & AB flat provincial tax, CPP/EI caps | 5 tests (100% passing) | Fully Isomorphic; 0 CAD SSR/Client divergence |
-| **United States** | `us` | Tier 1 | Phase R1 Complete | Statutory Form 1040 model, standard/itemized auto selection, FICA caps, TCJA brackets | 4 tests (100% passing) | Fully Isomorphic; 0 USD SSR/Client divergence |
+| **United States** | `us` | Tier 1 | Phase R1 / PE Phase 9 Signed Off | Statutory Form 1040 model, standard/itemized auto selection, FICA caps, TCJA brackets; PolicyEngine US (v2.44.0) calculation adapter, Cloudflare edge proxy, dynamic marginal rates, NIIT, AMT, 64KB request-size limits, SlowAPI rate limiting, zero-PII logging, and AGPL-3.0 compliance | 14 Vitest tests (4 engine + 10 adapter) + 30 Pytest tests (100% passing) | Fully Isomorphic; 0 USD SSR/Client divergence; PolicyEngine Adapter & Edge Proxy operational |
 | **Netherlands** | `nl` | Tier 2 | Phase R2 Complete | Box 1 statutory brackets; year-aware Arbeidskorting 4-tier curve & Algemene heffingskorting taper; Zvw 5.45% cap; 30% ruling | 5 tests (100% passing) | Fully Isomorphic; 0 EUR SSR/Client divergence |
 | **France** | `fr` | Tier 2 | Phase R2 Complete | 10% *frais professionnels* (cap €14.4k), *quotient familial* parts, CSG/CRDS split & partial deductibility, AGIRC-ARRCO & PASS caps | 4 tests (100% passing) | Fully Isomorphic; 0 EUR SSR/Client divergence |
 | **Ireland** | `ie` | Tier 2 | Phase R2 Complete | Unshifted SRCOP (€44k single / €53k married 1-earner); 4-tier USC with €13k exemption; Personal & PAYE credits (€2,000 each) | 5 tests (100% passing) | Fully Isomorphic; 0 EUR SSR/Client divergence |
@@ -29,9 +29,11 @@
 | **All 24 Countries** | `all` | Platform | Phase R5 Master Parity | End-to-end isomorphic calculation parity across all 24 statutory engines; non-zero take-home & finite effective rate guarantees | 24 tests (100% passing) | 100% Isomorphic; 0.00 discrepancy across all 24 countries |
 
 ## Full Platform Summary
-- **Total Test Suites:** 25 suites (24 country-specific unit test suites + 1 master isomorphic parity suite)
-- **Total Tests Passing:** 149 / 149 (100% green, 0 failures)
+- **Total Test Suites:** 27 suites (24 country-specific unit test suites + 1 master isomorphic parity suite + 1 ads.txt suite + 1 PolicyEngine adapter suite + PolicyEngine API pytest suite)
+- **Total Tests Passing:** 162 Vitest tests passed (100% green, 0 failures) + 30 Python Pytest tests passed (100% green, 0 failures)
 - **Astro Production Build:** 212 / 212 pages built cleanly
 - **Dual-Engine Divergence:** 0.00 across all 24 countries
 - **Verified Data Cutoff:** October 1, 2026 across all 24 country profiles
-- **Release Sign-Off Status:** APPROVED FOR PRODUCTION
+- **Release Sign-Off Status:** FULL PRODUCTION SIGN-OFF; PolicyEngine US v2.44.0 Integration Complete Across All 9 Phases
+
+

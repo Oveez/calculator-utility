@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  policyengine-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: toolcastle/policyengine-api:2.44.0
+    container_name: policyengine-api
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      - PORT=8000
+      - ENVIRONMENT=development
+      - ALLOWED_ORIGINS=["http://localhost:4321","http://localhost:3000","https://toolcastle.app"]
+      - API_SECRET_KEY=dev_secret_key_only
+      - RATE_LIMIT_PER_MINUTE=60
+    deploy:
+      resources:
+        limits:
+          memory: 1536M
+        reservations:
+          memory: 768M
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 40s
+

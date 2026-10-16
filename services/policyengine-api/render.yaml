@@ -1,0 +1,21 @@
+services:
+  - type: web
+    name: toolcastle-policyengine-api
+    runtime: docker
+    dockerfilePath: services/policyengine-api/Dockerfile
+    dockerContext: services/policyengine-api
+    plan: starter # Starter plan provides 1 GB RAM, ideal for PolicyEngine
+    region: oregon
+    envVars:
+      - key: PORT
+        value: 8000
+      - key: ENVIRONMENT
+        value: production
+      - key: ALLOWED_ORIGINS
+        value: '["https://toolcastle.app","https://www.toolcastle.app"]'
+      - key: RATE_LIMIT_PER_MINUTE
+        value: 60
+      - key: REQUIRE_API_KEY
+        value: false
+    healthCheckPath: /health
+

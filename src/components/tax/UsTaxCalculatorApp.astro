@@ -95,6 +95,22 @@ const taxParameterGuide: CalculatorParameterInfo[] = [
     typicalRange: '0% – 50%+',
     unit: '%',
   },
+  {
+    id: 'federalVsState',
+    name: 'Federal vs. State Income Tax',
+    description: 'Federal tax is calculated across statutory progressive IRS tax brackets (10% to 37%). State income tax is computed using state-specific tax legislation, with 9 states imposing zero wage tax (AK, FL, NV, NH, SD, TN, TX, WA, WY).',
+    whyItMatters: 'Separating federal and state obligations prevents double counting and delivers precise geographical take-home projections.',
+    typicalRange: 'Federal 10%–37% | State 0%–13.3%',
+    unit: profile.defaultCurrency,
+  },
+  {
+    id: 'employerFicaExclusion',
+    name: 'Employer-Paid Payroll Taxes',
+    description: 'Mandatory employer contributions for Social Security (6.2% matching up to $184,500 in 2026) and Medicare (1.45% matching).',
+    whyItMatters: 'These contributions are remitted directly by employers above your salary and are excluded from your employee take-home pay deductions.',
+    typicalRange: '7.65% (Employer match)',
+    unit: profile.defaultCurrency,
+  },
 ];
 ---
 
@@ -115,6 +131,14 @@ const taxParameterGuide: CalculatorParameterInfo[] = [
           </h2>
           <span class="inline-flex items-center rounded-full bg-cyan-500/10 px-2.5 py-0.5 text-xs font-semibold text-cyan-600 dark:text-cyan-400 border border-cyan-500/20">
             Official 2026 IRS Data
+          </span>
+          <span
+            data-engine-status-badge
+            class="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/10 px-2.5 py-0.5 text-xs font-semibold text-emerald-600 dark:text-emerald-400 border border-emerald-500/20"
+            title="Calculations powered by PolicyEngine US v2.44.0 microsimulation engine with IRS Rev. Proc. 2025-32 inflation adjustments"
+          >
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500" data-engine-status-dot></span>
+            <span data-engine-status-text>PolicyEngine US v2.44.0</span>
           </span>
         </div>
         <p class="text-xs text-[color:var(--muted)]">
@@ -251,6 +275,9 @@ const taxParameterGuide: CalculatorParameterInfo[] = [
                 </option>
               ))}
             </select>
+            <p class="text-[10px] text-[color:var(--muted)] mt-1">
+              Computes state taxes via PolicyEngine US statutory rules. No-income-tax states (AK, FL, NV, NH, SD, TN, TX, WA, WY) or Federal-Only incur $0 state liability.
+            </p>
           </div>
         </div>
 
@@ -672,6 +699,47 @@ const taxParameterGuide: CalculatorParameterInfo[] = [
           <p class="text-[10px] text-[color:var(--muted)]">Blended percentage of gross</p>
         </div>
       </div>
+
+      <!-- Phase 5: Tax Architecture & Interpretation Callout -->
+      <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-xs space-y-2.5 shadow-sm">
+        <h4 class="font-bold text-[color:var(--fg)] flex items-center gap-1.5 text-xs">
+          <Icon name="info" class="w-3.5 h-3.5 text-[color:var(--accent)]" />
+          <span>Tax Architecture &amp; Result Interpretation</span>
+        </h4>
+        <div class="space-y-2 text-[color:var(--muted)] leading-relaxed text-[11px]">
+          <p>
+            <strong class="text-[color:var(--fg)]">Marginal vs. Effective Rate:</strong> Your top marginal rate represents the tax applied to your next dollar earned (evaluated via a +$100 income increment perturbation in PolicyEngine US, accounting for statutory brackets, payroll taxes, state rates, and credit phase-outs). The effective rate is your blended tax burden divided by total gross income.
+          </p>
+          <p>
+            <strong class="text-[color:var(--fg)]">Employer-Paid Taxes Excluded:</strong> Mandatory employer payroll contributions (6.2% Social Security matching up to $184,500 in 2026 and 1.45% Medicare matching) are legally mandated obligations paid by employers and are <span class="font-semibold text-[color:var(--fg)]">excluded</span> from your employee take-home pay deductions.
+          </p>
+          <p>
+            <strong class="text-[color:var(--fg)]">Estimated Refund or Balance Due:</strong> Net outcome compares total computed statutory tax liabilities against entered Form W-2 / 1040-ES withholdings. Actual results depend on personal filing specifics and official IRS review.
+          </p>
+        </div>
+      </div>
+
+      <!-- Phase 6: Statutory Scope & Edge Case Disclosures -->
+      <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-xs space-y-2.5 shadow-sm">
+        <h4 class="font-bold text-[color:var(--fg)] flex items-center gap-1.5 text-xs">
+          <Icon name="shield-check" class="w-3.5 h-3.5 text-emerald-500" />
+          <span>Statutory Scope &amp; Edge Case Disclosures</span>
+        </h4>
+        <div class="space-y-2 text-[color:var(--muted)] leading-relaxed text-[11px]">
+          <p>
+            <strong class="text-[color:var(--fg)]">Full-Year Resident Modeling:</strong> This engine models federal and state tax liabilities for full-year US residents across all 5 statutory filing statuses. Non-resident alien returns (<code class="font-mono text-[color:var(--fg)]">Form 1040-NR</code>), dual-status returns, and part-year state resident returns are <span class="font-semibold text-rose-500 dark:text-rose-400">unsupported</span>.
+          </p>
+          <p>
+            <strong class="text-[color:var(--fg)]">NIIT &amp; AMT Provisions:</strong> The 3.8% Net Investment Income Tax (<code class="font-mono text-[color:var(--fg)]">IRC § 1411</code>) and Alternative Minimum Tax (<code class="font-mono text-[color:var(--fg)]">Form 6251</code>) are dynamically evaluated by PolicyEngine US when income or preference items exceed statutory thresholds.
+          </p>
+          <p>
+            <strong class="text-[color:var(--fg)]">W-2 &amp; 1099 FICA Coordination:</strong> If you report both W-2 wages and self-employment income, Social Security OASDI tax is coordinated under <code class="font-mono text-[color:var(--fg)]">IRC § 1402(b)</code>, ensuring combined taxable earnings never exceed the statutory cap ($184,500 in 2026; $176,100 in 2025).
+          </p>
+          <p>
+            <strong class="text-[color:var(--fg)]">Local &amp; Foreign Tax Disclosures:</strong> Local municipal income taxes (e.g. NYC, Yonkers, Philadelphia, Ohio municipal RITA) and international items (<code class="font-mono text-[color:var(--fg)]">Form 2555</code> / <code class="font-mono text-[color:var(--fg)]">Form 1116</code>) are not modeled.
+          </p>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -728,6 +796,10 @@ const taxParameterGuide: CalculatorParameterInfo[] = [
         <a href={defaultYearData.officialSourceUrl} target="_blank" rel="noopener noreferrer" class="text-[color:var(--accent)] hover:underline font-semibold">
           {defaultYearData.officialSourceName} ({defaultYearData.taxYear})
         </a>
+        <span class="text-[color:var(--muted)]">•</span>
+        <a href="https://github.com/PolicyEngine/policyengine-us" target="_blank" rel="noopener noreferrer" class="text-[color:var(--accent)] hover:underline font-semibold">
+          PolicyEngine US v2.44.0
+        </a>
       </div>
       <span>Last data audit: <time datetime={defaultYearData.lastVerifiedDate}>{defaultYearData.lastVerifiedDate}</time></span>
     </div>
@@ -742,6 +814,8 @@ const taxParameterGuide: CalculatorParameterInfo[] = [
 
 <script>
   import { calculateAdvancedTax } from '../../utils/tax/us-engine';
+  import { calculateWithPolicyEngine } from '../../utils/tax/us-api-adapter';
+  import type { AdvancedTaxInputs, AdvancedTaxResult } from '../../data/tax/types';
 
   function initUsTaxCalculator() {
     const apps = document.querySelectorAll('[data-tax-app][data-country-id="us"]');
@@ -842,6 +916,14 @@ const taxParameterGuide: CalculatorParameterInfo[] = [
         const bracketTbody = app.querySelector('[data-bracket-tbody]');
         const copySummaryBtn = app.querySelector('[data-copy-summary-btn]');
 
+        // Engine Status Badge Elements
+        const engineDot = app.querySelector('[data-engine-status-dot]');
+        const engineText = app.querySelector('[data-engine-status-text]');
+
+        let debounceTimer: any = null;
+        let abortController: AbortController | null = null;
+        let currentRequestId = 0;
+
         function formatMoney(amount: number, currency?: string, symbol?: string): string {
           try {
             return new Intl.NumberFormat('en-US', {
@@ -855,78 +937,7 @@ const taxParameterGuide: CalculatorParameterInfo[] = [
           }
         }
 
-        function calculate() {
-          const selectedYear = yearSelect ? yearSelect.value : profile.defaultTaxYear;
-          const yearData = profile.years[selectedYear] || profile.years[profile.defaultTaxYear];
-          const cur = yearData.currency;
-          const sym = yearData.currencySymbol;
-          const status = statusSelect ? statusSelect.value : 'single';
-
-          const isJoint = status === 'married_joint' || status === 'qualifying_widow';
-          if (spouseWrap) spouseWrap.className = isJoint ? 'block' : 'hidden';
-          if (spouseAgeWrap) spouseAgeWrap.className = isJoint ? 'flex items-center gap-1.5 cursor-pointer' : 'hidden';
-
-          const rawW2 = w2Input?.value?.trim();
-          const primaryW2 = rawW2 !== '' && rawW2 !== undefined ? Math.max(0, parseFloat(rawW2) || 0) : 0;
-          const spouseW2 = (isJoint && currentMode === 'advanced') ? Math.max(0, parseFloat(spouseW2Input?.value || '0') || 0) : 0;
-          const businessNet = currentMode === 'advanced' ? Math.max(0, parseFloat(businessInput?.value || '0') || 0) : 0;
-          const otherInc = currentMode === 'advanced' ? Math.max(0, parseFloat(otherIncInput?.value || '0') || 0) : 0;
-          const qualifiedDiv = currentMode === 'advanced' ? Math.max(0, parseFloat(qualifiedDivInput?.value || '0') || 0) : 0;
-          const interest = currentMode === 'advanced' ? Math.max(0, parseFloat(interestInput?.value || '0') || 0) : 0;
-
-          // Pre-tax deductions
-          const ret401k = currentMode === 'advanced' ? Math.max(0, parseFloat(ret401kInput?.value || '0') || 0) : 0;
-          const tradIra = currentMode === 'advanced' ? Math.max(0, parseFloat(iraInput?.value || '0') || 0) : 0;
-          const hsa = currentMode === 'advanced' ? Math.max(0, parseFloat(hsaInput?.value || '0') || 0) : 0;
-          const studentLoan = currentMode === 'advanced' ? Math.max(0, parseFloat(studentLoanInput?.value || '0') || 0) : 0;
-
-          // Itemized Deductions
-          const mortgage = currentMode === 'advanced' ? Math.max(0, parseFloat(mortgageInput?.value || '0') || 0) : 0;
-          const saltRaw = currentMode === 'advanced' ? Math.max(0, parseFloat(saltInput?.value || '0') || 0) : 0;
-          const charity = currentMode === 'advanced' ? Math.max(0, parseFloat(charityInput?.value || '0') || 0) : 0;
-          const medicalRaw = currentMode === 'advanced' ? Math.max(0, parseFloat(medicalInput?.value || '0') || 0) : 0;
-
-          // Taxpayer / Spouse age 65
-          const taxpayerAge65OrOver = taxpayer65Check?.checked || false;
-          const spouseAge65OrOver = (isJoint && spouse65Check?.checked) || false;
-
-          // Dependents
-          const kids = currentMode === 'advanced' ? Math.max(0, parseInt(kidsInput?.value || '0', 10) || 0) : 0;
-          const otherDeps = currentMode === 'advanced' ? Math.max(0, parseInt(otherDepsInput?.value || '0', 10) || 0) : 0;
-
-          // Withholding
-          const fedWithheld = currentMode === 'advanced' ? Math.max(0, parseFloat(fedWithheldInput?.value || '0') || 0) : 0;
-          const stateWithheld = currentMode === 'advanced' ? Math.max(0, parseFloat(stateWithheldInput?.value || '0') || 0) : 0;
-
-          const regCode = regionSelect ? regionSelect.value : undefined;
-
-          const res = calculateAdvancedTax(profile, {
-            taxYear: selectedYear,
-            filingStatus: status,
-            regionCode: regCode,
-            primaryW2Income: primaryW2,
-            spouseW2Income: spouseW2,
-            businessNetIncome: businessNet,
-            taxableInterest: interest,
-            qualifiedDividends: qualifiedDiv,
-            otherIncome: otherInc,
-            preTaxRetirement401k: ret401k,
-            traditionalIraDeduction: tradIra,
-            hsaDeduction: hsa,
-            studentLoanInterest: studentLoan,
-            itemizedSaltStateLocalTax: saltRaw,
-            itemizedMortgageInterest: mortgage,
-            itemizedCharitableDonations: charity,
-            itemizedMedicalDentalExpenses: medicalRaw,
-            taxpayerAge65OrOver,
-            spouseAge65OrOver,
-            numChildrenUnder17: kids,
-            numOtherDependents: otherDeps,
-            federalTaxWithheld: fedWithheld,
-            stateTaxWithheld: stateWithheld,
-            deductionMode: currentMode === 'quick' ? 'standard' : 'auto',
-          });
-
+        function updateUI(res: AdvancedTaxResult, selectedYear: string, yearData: any, cur: string, sym: string, status: string) {
           if (deductionBadge) {
             deductionBadge.innerHTML = res.deductionUsed === 'itemized'
               ? `<span class="h-1.5 w-1.5 rounded-full bg-cyan-500"></span> Itemized Claimed: ${formatMoney(res.deductionAmount, cur, sym)}`
@@ -1022,13 +1033,13 @@ const taxParameterGuide: CalculatorParameterInfo[] = [
           if (schedHourly) schedHourly.textContent = formatMoney(netTakeHome / 2080, cur, sym);
 
           // Allocation Bar
-          const pretaxSum = ret401k + tradIra + hsa;
+          const rawPretax = totalAdjustments;
           const denom = Math.max(totalGrossIncome, 1);
           const thPct = Math.min(100, Math.max(0, (netTakeHome / denom) * 100));
           const fedPct = Math.min(100, Math.max(0, (netFedIncomeTax / denom) * 100));
           const ficaPct = Math.min(100, Math.max(0, (totalFica / denom) * 100));
           const stPct = Math.min(100, Math.max(0, (stateTax / denom) * 100));
-          const ptPct = Math.min(100, Math.max(0, (pretaxSum / denom) * 100));
+          const ptPct = Math.min(100, Math.max(0, (rawPretax / denom) * 100));
 
           if (barTakehome) barTakehome.style.width = `${thPct}%`;
           if (barFedtax) barFedtax.style.width = `${fedPct}%`;
@@ -1089,6 +1100,124 @@ const taxParameterGuide: CalculatorParameterInfo[] = [
           }
         }
 
+        function calculate(triggerRemote: boolean = true) {
+          const selectedYear = yearSelect ? yearSelect.value : profile.defaultTaxYear;
+          const yearData = profile.years[selectedYear] || profile.years[profile.defaultTaxYear];
+          const cur = yearData.currency;
+          const sym = yearData.currencySymbol;
+          const status = statusSelect ? statusSelect.value : 'single';
+
+          const isJoint = status === 'married_joint' || status === 'qualifying_widow';
+          if (spouseWrap) spouseWrap.className = isJoint ? 'block' : 'hidden';
+          if (spouseAgeWrap) spouseAgeWrap.className = isJoint ? 'flex items-center gap-1.5 cursor-pointer' : 'hidden';
+
+          const rawW2 = w2Input?.value?.trim();
+          const primaryW2 = rawW2 !== '' && rawW2 !== undefined ? Math.max(0, parseFloat(rawW2) || 0) : 0;
+          const spouseW2 = (isJoint && currentMode === 'advanced') ? Math.max(0, parseFloat(spouseW2Input?.value || '0') || 0) : 0;
+          const businessNet = currentMode === 'advanced' ? Math.max(0, parseFloat(businessInput?.value || '0') || 0) : 0;
+          const otherInc = currentMode === 'advanced' ? Math.max(0, parseFloat(otherIncInput?.value || '0') || 0) : 0;
+          const qualifiedDiv = currentMode === 'advanced' ? Math.max(0, parseFloat(qualifiedDivInput?.value || '0') || 0) : 0;
+          const interest = currentMode === 'advanced' ? Math.max(0, parseFloat(interestInput?.value || '0') || 0) : 0;
+
+          // Pre-tax deductions
+          const ret401k = currentMode === 'advanced' ? Math.max(0, parseFloat(ret401kInput?.value || '0') || 0) : 0;
+          const tradIra = currentMode === 'advanced' ? Math.max(0, parseFloat(iraInput?.value || '0') || 0) : 0;
+          const hsa = currentMode === 'advanced' ? Math.max(0, parseFloat(hsaInput?.value || '0') || 0) : 0;
+          const studentLoan = currentMode === 'advanced' ? Math.max(0, parseFloat(studentLoanInput?.value || '0') || 0) : 0;
+
+          // Itemized Deductions
+          const mortgage = currentMode === 'advanced' ? Math.max(0, parseFloat(mortgageInput?.value || '0') || 0) : 0;
+          const saltRaw = currentMode === 'advanced' ? Math.max(0, parseFloat(saltInput?.value || '0') || 0) : 0;
+          const charity = currentMode === 'advanced' ? Math.max(0, parseFloat(charityInput?.value || '0') || 0) : 0;
+          const medicalRaw = currentMode === 'advanced' ? Math.max(0, parseFloat(medicalInput?.value || '0') || 0) : 0;
+
+          // Taxpayer / Spouse age 65
+          const taxpayerAge65OrOver = taxpayer65Check?.checked || false;
+          const spouseAge65OrOver = (isJoint && spouse65Check?.checked) || false;
+
+          // Dependents
+          const kids = currentMode === 'advanced' ? Math.max(0, parseInt(kidsInput?.value || '0', 10) || 0) : 0;
+          const otherDeps = currentMode === 'advanced' ? Math.max(0, parseInt(otherDepsInput?.value || '0', 10) || 0) : 0;
+
+          // Withholding
+          const fedWithheld = currentMode === 'advanced' ? Math.max(0, parseFloat(fedWithheldInput?.value || '0') || 0) : 0;
+          const stateWithheld = currentMode === 'advanced' ? Math.max(0, parseFloat(stateWithheldInput?.value || '0') || 0) : 0;
+
+          const regCode = regionSelect ? regionSelect.value : undefined;
+
+          const inputs: AdvancedTaxInputs = {
+            taxYear: selectedYear,
+            filingStatus: status,
+            regionCode: regCode,
+            primaryW2Income: primaryW2,
+            spouseW2Income: spouseW2,
+            businessNetIncome: businessNet,
+            taxableInterest: interest,
+            qualifiedDividends: qualifiedDiv,
+            otherIncome: otherInc,
+            preTaxRetirement401k: ret401k,
+            traditionalIraDeduction: tradIra,
+            hsaDeduction: hsa,
+            studentLoanInterest: studentLoan,
+            itemizedSaltStateLocalTax: saltRaw,
+            itemizedMortgageInterest: mortgage,
+            itemizedCharitableDonations: charity,
+            itemizedMedicalDentalExpenses: medicalRaw,
+            taxpayerAge65OrOver,
+            spouseAge65OrOver,
+            numChildrenUnder17: kids,
+            numOtherDependents: otherDeps,
+            federalTaxWithheld: fedWithheld,
+            stateTaxWithheld: stateWithheld,
+            deductionMode: currentMode === 'quick' ? 'standard' : 'auto',
+          };
+
+          // Step 1: Instant local computation (<1ms) for responsive 60fps UI
+          const localRes = calculateAdvancedTax(profile, inputs);
+          updateUI(localRes, selectedYear, yearData, cur, sym, status);
+
+          // Step 2: Asynchronously debounced PolicyEngine simulation
+          if (triggerRemote) {
+            if (debounceTimer) clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(async () => {
+              if (abortController) {
+                abortController.abort();
+              }
+              abortController = new AbortController();
+              const thisRequestId = ++currentRequestId;
+
+              if (engineDot) engineDot.className = 'w-1.5 h-1.5 rounded-full bg-cyan-400 animate-ping';
+              if (engineText) engineText.textContent = 'PolicyEngine US (calculating...)';
+
+              try {
+                const execution = await calculateWithPolicyEngine(profile, inputs, {
+                  signal: abortController.signal,
+                });
+
+                // Guarantee stale responses from superseded requests are discarded
+                if (thisRequestId !== currentRequestId) {
+                  return;
+                }
+
+                updateUI(execution.result, selectedYear, yearData, cur, sym, status);
+
+                if (execution.source === 'policyengine_api') {
+                  if (engineDot) engineDot.className = 'w-1.5 h-1.5 rounded-full bg-emerald-500';
+                  if (engineText) engineText.textContent = `PolicyEngine US v${execution.engineVersion || '2.44.0'} (${execution.latencyMs}ms)`;
+                } else {
+                  if (engineDot) engineDot.className = 'w-1.5 h-1.5 rounded-full bg-cyan-500';
+                  if (engineText) engineText.textContent = 'Statutory Engine (Verified Local)';
+                }
+              } catch (e: any) {
+                if (e.name !== 'AbortError') {
+                  if (engineDot) engineDot.className = 'w-1.5 h-1.5 rounded-full bg-slate-400';
+                  if (engineText) engineText.textContent = 'Statutory Rules (Local)';
+                }
+              }
+            }, 250);
+          }
+        }
+
         // Mode Switching
         function switchMode(newMode: 'advanced' | 'quick') {
           currentMode = newMode;
@@ -1110,7 +1239,7 @@ const taxParameterGuide: CalculatorParameterInfo[] = [
             }
           });
 
-          calculate();
+          calculate(true);
         }
 
         // Event Listeners
@@ -1123,8 +1252,8 @@ const taxParameterGuide: CalculatorParameterInfo[] = [
 
         const allInputs = app.querySelectorAll('input, select');
         allInputs.forEach((inp) => {
-          inp.addEventListener('input', calculate);
-          inp.addEventListener('change', calculate);
+          inp.addEventListener('input', () => calculate(true));
+          inp.addEventListener('change', () => calculate(true));
         });
 
         // Copy Summary Button

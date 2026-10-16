@@ -146,6 +146,7 @@ export interface AdvancedTaxResult {
   preferentialCapitalGainsTax: number;
   additionalMedicareTax: number;
   netInvestmentIncomeTax: number;
+  alternativeMinimumTax?: number;
   grossFederalTax: number;
   childTaxCredit: number;
   otherDependentCredit: number;

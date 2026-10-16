@@ -1,5 +1,6 @@
 ---
 import SiteLayout from '../../layouts/SiteLayout.astro';
+import AdsterraDisplayAd from '../../components/AdsterraDisplayAd.astro';
 import SiteHero from '../../components/SiteHero.astro';
 import CountryTaxSelector from '../../components/tax/CountryTaxSelector.astro';
 import Icon from '../../components/Icon.astro';
@@ -25,10 +26,11 @@ const breadcrumbItems = [
     description="Accurate, high-precision salary and tax calculator tools for income tax, payroll deductions, and consumption taxes. Powered by verified official data from national revenue authorities (IRS, CRA, HMRC, ATO, BZSt, DGFiP, and more)."
   />
 
-  <div class="mx-auto max-w-5xl space-y-8">
-
-    <!-- Feature Categories Grid -->
-    <section class="space-y-4">
+  <div class="mx-auto max-w-5xl">
+    <div class="grid gap-8 xl:grid-cols-[minmax(0,1fr)_160px] xl:items-start">
+      <div class="space-y-8">
+        <!-- Feature Categories Grid -->
+        <section class="space-y-4">
       <div class="space-y-0.5">
         <p class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Specialized Tax Engines</p>
         <h2 class="text-lg sm:text-xl font-bold tracking-tight text-[color:var(--fg)]">Global Tax &amp; Payroll Suites</h2>
@@ -122,12 +124,16 @@ const breadcrumbItems = [
           </div>
         </a>
       </div>
-    </section>
+        </section>
 
-    <!-- 24 Country Tax Calculators Grid -->
-    <CountryTaxSelector
-      title="All 24 Supported Country Tax Engines"
-      subtitle="Select any country below to compute progressive income tax, social security contributions, and net take-home salary."
-    />
+        <!-- 24 Country Tax Calculators Grid -->
+        <CountryTaxSelector
+          title="All 24 Supported Country Tax Engines"
+          subtitle="Select any country below to compute progressive income tax, social security contributions, and net take-home salary."
+        />
+      </div>
+
+      <AdsterraDisplayAd format="vertical" />
+    </div>
   </div>
 </SiteLayout>
