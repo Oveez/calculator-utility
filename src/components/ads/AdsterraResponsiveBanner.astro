@@ -1,0 +1,85 @@
+---
+interface Props {
+  class?: string;
+}
+
+const { class: className = '' } = Astro.props as Props;
+---
+
+<aside
+  class={`adsterra-responsive-slot mx-auto max-w-full overflow-hidden ${className}`}
+  aria-label="Advertisement"
+>
+  <span class="adsterra-label">Advertisement</span>
+  <div id="adsterra-responsive-frame" class="adsterra-frame">
+    <script is:inline>
+      (function() {
+        var frame = document.getElementById('adsterra-responsive-frame');
+        if (!frame) return;
+        var isDesktop = window.matchMedia('(min-width: 768px)').matches;
+        if (isDesktop) {
+          // 4. Desktop leaderboard: 728 x 90
+          window.atOptions = {
+            'key' : '128ec5e03e4921d4d2751a9cc07d2808',
+            'format' : 'iframe',
+            'height' : 90,
+            'width' : 728,
+            'params' : {}
+          };
+          var s = document.createElement('script');
+          s.src = 'https://www.highrevenueformat.com/128ec5e03e4921d4d2751a9cc07d2808/invoke.js';
+          frame.appendChild(s);
+        } else {
+          // 5. Mobile banner: 320 x 50
+          window.atOptions = {
+            'key' : '7972ace1d0daa4818b81871a83db36a8',
+            'format' : 'iframe',
+            'height' : 50,
+            'width' : 320,
+            'params' : {}
+          };
+          var s = document.createElement('script');
+          s.src = 'https://www.highrevenueformat.com/7972ace1d0daa4818b81871a83db36a8/invoke.js';
+          frame.appendChild(s);
+        }
+      })();
+    </script>
+  </div>
+</aside>
+
+<style>
+  .adsterra-responsive-slot {
+    box-sizing: border-box;
+    width: min(728px, 100%);
+    min-height: calc(50px + 1.25rem);
+    text-align: center;
+  }
+  @media (min-width: 768px) {
+    .adsterra-responsive-slot {
+      min-height: calc(90px + 1.25rem);
+    }
+  }
+  .adsterra-label {
+    display: block;
+    height: 1.25rem;
+    color: var(--muted);
+    font-size: 0.625rem;
+    line-height: 1.25rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .adsterra-frame {
+    width: 100%;
+    min-height: 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+  }
+  @media (min-width: 768px) {
+    .adsterra-frame {
+      min-height: 90px;
+    }
+  }
+</style>
+

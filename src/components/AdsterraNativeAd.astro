@@ -1,15 +1,11 @@
-<aside class="adsterra-native mx-auto my-8 max-w-full overflow-hidden" aria-label="Advertisement">
-  <span class="adsterra-label">Advertisement</span>
-  <script
-  is:inline
-  async
-  data-cfasync="false"
-  src="https://pl31859911.profitableratecpmnetwork.com/629bc705a7b59e4369aca4b34d42b8b8/invoke.js"
-  ></script>
-  <div id="container-629bc705a7b59e4369aca4b34d42b8b8" />
-</aside>
+---
+import AdsterraNativeUnit from './ads/AdsterraNativeAd.astro';
 
-<style>
-  .adsterra-native { min-height: 9rem; }
-  .adsterra-label { display: block; color: var(--muted); font-size: 0.625rem; }
-</style>
+interface Props {
+  class?: string;
+}
+
+const { class: className = '' } = Astro.props as Props;
+---
+
+<AdsterraNativeUnit class={className} />
