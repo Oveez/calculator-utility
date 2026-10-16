@@ -1031,8 +1031,8 @@ const schemaGraph = [
     </div>
   </div>
 
-  <!-- Load local self-hosted pdf-lib bundle for instant zero-latency client-side vector PDF compilation -->
-  <script is:inline src="/js/pdf-lib.min.js"></script>
+  <!-- Load local self-hosted html2pdf bundle to export the exact rendered A4 preview -->
+  <script is:inline src="/js/html2pdf.bundle.min.js"></script>
 
   <!-- Assignment Cover Maker Client Logic & Template Engine -->
   <script is:inline>
@@ -3584,52 +3584,136 @@ const schemaGraph = [
       }
 
       // ==========================================
-      // VECTOR PDF COMPILER & EXPORT ENGINE
-      // Real Selectable Text & Zoom Sharpness
+      // PREVIEW-DOM PDF EXPORT ENGINE
+      // Uses the same rendered A4 preview as single source of truth
       // ==========================================
       const genPdfBtn = document.getElementById('generate-pdf-btn');
       const btnPdfText = document.getElementById('btn-pdf-text');
 
-      async function compileVectorCoverPdf() {
-        const PDFLib = await getPDFLib();
-        const activeTheme = THEMES[state.theme] || THEMES.classic;
-        let logoPngBytes = null;
-
-        if (state.logoMode === 'none') {
-          logoPngBytes = null;
-        } else if (state.logoMode === 'emblem') {
-          const svgDataUrl = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(getEmblemSvg(activeTheme.primary));
-          logoPngBytes = await getLogoPngBytes(svgDataUrl);
-        } else if (state.logoMode === 'custom') {
-          if (state.customLogoBase64) {
-            logoPngBytes = await getLogoPngBytes(state.customLogoBase64);
-          } else {
-            const svgDataUrl = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(getEmblemSvg(activeTheme.primary));
-            logoPngBytes = await getLogoPngBytes(svgDataUrl);
-          }
-        } else {
-          // 'stored' mode
-          const effectiveSrc = state.logoBase64 || state.logoUrl;
-          if (effectiveSrc) {
-            logoPngBytes = await getLogoPngBytes(effectiveSrc);
-          }
-          if (!logoPngBytes) {
-            const svgDataUrl = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(getEmblemSvg(activeTheme.primary));
-            logoPngBytes = await getLogoPngBytes(svgDataUrl);
-          }
+      function getHtml2Pdf() {
+        if (typeof window.html2pdf !== 'undefined') {
+          return Promise.resolve(window.html2pdf);
         }
+        return new Promise((resolve, reject) => {
+          const local = document.createElement('script');
+          local.src = '/js/html2pdf.bundle.min.js';
+          local.onload = () => {
+            if (typeof window.html2pdf !== 'undefined') resolve(window.html2pdf);
+            else reject(new Error('html2pdf is not available after local script load'));
+          };
+          local.onerror = () => {
+            const cdn = document.createElement('script');
+            cdn.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js';
+            cdn.onload = () => {
+              if (typeof window.html2pdf !== 'undefined') resolve(window.html2pdf);
+              else reject(new Error('html2pdf is not available after CDN load'));
+            };
+            cdn.onerror = () => reject(new Error('Failed to load PDF export library. Please check your internet connection.'));
+            document.head.appendChild(cdn);
+          };
+          document.head.appendChild(local);
+        });
+      }
 
-        return await renderVectorCoverPdf(PDFLib, state, activeTheme, logoPngBytes);
+      async function waitForImagesToLoad(root) {
+        if (!root) return;
+        const images = Array.from(root.querySelectorAll('img'));
+        await Promise.all(images.map((img) => {
+          if (img.complete && img.naturalWidth > 0) return Promise.resolve();
+          return new Promise((resolve) => {
+            img.addEventListener('load', () => resolve(), { once: true });
+            img.addEventListener('error', () => resolve(), { once: true });
+          });
+        }));
+      }
+
+      function createExportClone() {
+        const wrapper = document.createElement('div');
+        wrapper.style.position = 'fixed';
+        wrapper.style.left = '-10000px';
+        wrapper.style.top = '0';
+        wrapper.style.width = '794px';
+        wrapper.style.height = '1123px';
+        wrapper.style.overflow = 'hidden';
+        wrapper.style.background = '#ffffff';
+        wrapper.style.pointerEvents = 'none';
+        wrapper.style.opacity = '0';
+        wrapper.style.zIndex = '-1';
+
+        const clone = previewPage.cloneNode(true);
+        clone.removeAttribute('id');
+        clone.style.transform = 'none';
+        clone.style.transformOrigin = 'top left';
+        clone.style.width = '794px';
+        clone.style.minWidth = '794px';
+        clone.style.maxWidth = '794px';
+        clone.style.height = '1123px';
+        clone.style.minHeight = '1123px';
+        clone.style.maxHeight = '1123px';
+        clone.style.margin = '0';
+        clone.style.border = 'none';
+        clone.style.borderRadius = '0';
+        clone.style.boxShadow = 'none';
+
+        wrapper.appendChild(clone);
+        document.body.appendChild(wrapper);
+        return { wrapper, clone };
+      }
+
+      async function compilePreviewCoverPdf() {
+        const html2pdf = await getHtml2Pdf();
+        renderPreview();
+
+        if (document.fonts && document.fonts.ready) {
+          try {
+            await document.fonts.ready;
+          } catch {}
+        }
+        await waitForImagesToLoad(previewPage);
+
+        const { wrapper, clone } = createExportClone();
+        try {
+          await waitForImagesToLoad(clone);
+          const worker = html2pdf()
+            .set({
+              margin: 0,
+              filename: 'assignment-cover.pdf',
+              image: { type: 'jpeg', quality: 1 },
+              html2canvas: {
+                scale: 2,
+                useCORS: true,
+                allowTaint: false,
+                backgroundColor: '#ffffff',
+                width: 794,
+                height: 1123,
+                windowWidth: 794,
+                windowHeight: 1123
+              },
+              jsPDF: {
+                unit: 'pt',
+                format: 'a4',
+                orientation: 'portrait',
+                compress: true
+              }
+            })
+            .from(clone)
+            .toPdf();
+
+          const pdfArrayBuffer = await worker.outputPdf('arraybuffer');
+          return new Uint8Array(pdfArrayBuffer);
+        } finally {
+          wrapper.remove();
+        }
       }
 
       genPdfBtn.addEventListener('click', async () => {
         const originalText = btnPdfText.textContent;
-        btnPdfText.textContent = 'Generating Crisp Vector PDF...';
+        btnPdfText.textContent = 'Generating PDF from Preview...';
         genPdfBtn.style.opacity = '0.75';
         genPdfBtn.disabled = true;
 
         try {
-          const pdfBytes = await compileVectorCoverPdf();
+          const pdfBytes = await compilePreviewCoverPdf();
           const blob = new Blob([pdfBytes], { type: 'application/pdf' });
           const url = URL.createObjectURL(blob);
           const safeFilename = `${(toAcademicTitleCase(state.title) || 'Assignment_Cover').slice(0, 32).replace(/[^a-zA-Z0-9_-]/g, '_')}_Cover.pdf`;
@@ -3676,7 +3760,7 @@ const schemaGraph = [
           btnMergeAssignment.disabled = true;
 
           try {
-            const pdfBytes = await compileVectorCoverPdf();
+            const pdfBytes = await compilePreviewCoverPdf();
             const safeFilename = `${(toAcademicTitleCase(state.title) || 'Assignment_Cover').slice(0, 32).replace(/[^a-zA-Z0-9_-]/g, '_')}_Cover.pdf`;
 
             let binary = '';

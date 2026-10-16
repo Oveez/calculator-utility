@@ -35,3 +35,4 @@
 - **Dual-Engine Divergence:** 0.00 across all 24 countries
 - **Verified Data Cutoff:** October 1, 2026 across all 24 country profiles
 - **Release Sign-Off Status:** APPROVED FOR PRODUCTION
+- **Post-Signoff Maintenance (2026-10-12):** Assignment Cover Maker PDF export path now uses the live preview DOM as single source of truth (themes/templates/logo parity fix); regression assertions added in `tests/assignment-cover-pdf-export-engine.test.ts`; targeted test/build verification passed.

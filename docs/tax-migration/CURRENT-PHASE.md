@@ -49,6 +49,12 @@ Execute final full-platform integration verification across all 24 country tax c
   - **Full Vitest Test Suite:** 25/25 test suites passing (149/149 tests passed, 0 failures).
   - **Production Build:** 212/212 pages built cleanly in 30.29s with 0 errors.
 
+- [x] **Post-R5 Maintenance (2026-10-12): Assignment Cover Maker PDF/Preview Parity Fix**
+  - Replaced active divergent vector export call path with preview-DOM export path in `src/pages/education-tools/assignment-cover-maker.astro`.
+  - Export now uses cloned native A4 preview (`#cover-preview-page`, 794x1123), waits for fonts/images, and removes viewport-only scaling before PDF generation.
+  - Added regression coverage in `tests/assignment-cover-pdf-export-engine.test.ts` (five newer themes + preview-export parity assertions).
+  - Verification complete: targeted test pass (3/3) and Astro production build pass (212 pages).
+
 ## Test & Build Verification
 - **Test Suite Status:** 25/25 test suites pass (149/149 tests passed, 0 failures, 100% green).
 - **Production Build:** 212/212 pages built cleanly in 30.29s (Astro v7.3.1).
