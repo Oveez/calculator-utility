@@ -178,8 +178,12 @@ Our site is pre-built to meet all Google AdSense Publisher Policies:
 3. Copy your **AdSense Publisher Client ID** (format: `ca-pub-XXXXXXXXXXXXXXXX`).
 4. Set the environment variable in your hosting dashboard:
    - `PUBLIC_ADSENSE_CLIENT_ID`: `ca-pub-XXXXXXXXXXXXXXXX`
-5. Submit site for review. Review usually completes in 24 to 72 hours.
-6. Once approved, real ads will automatically populate the designated `AdPlacement` and `AdSlot` locations.
+5. **Verify `ads.txt`**: Ensure `public/ads.txt` contains your publisher ID with `pub-` (NOT `ca-pub-`):
+   ```text
+   google.com, pub-XXXXXXXXXXXXXXXX, DIRECT, f08c47fec0942fa0
+   ```
+6. Submit site for review. Review usually completes in 24 to 72 hours.
+7. Once approved, real ads will automatically populate the designated `AdPlacement` and `AdSlot` locations.
 
 ---
 
