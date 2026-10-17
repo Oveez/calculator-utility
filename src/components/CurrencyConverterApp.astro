@@ -42,7 +42,7 @@ const faqs = [
 ---
 
 <div
-  class="relative overflow-hidden rounded-[2.5rem] border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-6 shadow-[var(--shadow)] sm:p-8 lg:p-10"
+  class="relative overflow-hidden rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-4 shadow-[var(--shadow)] sm:p-6"
   data-currency-app
   data-baseline-rates={JSON.stringify(baselineExchangeRates)}
   data-initial-from={initialFrom}
@@ -195,7 +195,8 @@ const faqs = [
     </div>
 
     <!-- Conversion Result Card -->
-    <div class="rounded-3xl border border-[color:var(--accent)]/30 bg-gradient-to-br from-[color:var(--accent-soft)] via-[color:var(--surface)] to-transparent p-6 shadow-sm sm:p-8 space-y-6">
+    <!-- Conversion Result Card -->
+    <div class="rounded-xl border border-[color:var(--accent)]/30 bg-gradient-to-br from-[color:var(--accent-soft)] via-[color:var(--surface)] to-transparent p-5 shadow-sm sm:p-6 space-y-5">
       <div>
         <p class="text-xs font-bold uppercase tracking-wider text-[color:var(--accent)]" data-conversion-label>
           Converted Result
@@ -209,7 +210,7 @@ const faqs = [
       </div>
 
       <!-- Live Exchange Rate Indicators -->
-      <div class="space-y-2.5 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-xs">
+      <div class="space-y-2 rounded-lg border border-[color:var(--border)] bg-[color:var(--surface)] p-3.5 text-xs">
         <div class="flex items-center justify-between">
           <span class="text-[color:var(--muted)]">Direct Rate:</span>
           <span class="font-mono font-bold text-[color:var(--fg)]" data-direct-rate>1 USD = 0.9250 EUR</span>
@@ -220,7 +221,7 @@ const faqs = [
         </div>
       </div>
 
-      <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3 text-center text-xs text-[color:var(--muted)]">
+      <div class="border-t border-[color:var(--border)]/60 pt-2 text-center text-xs text-[color:var(--muted)]">
         Mid-market rates with 0% markup or bank spreads.
       </div>
     </div>
@@ -240,7 +241,7 @@ const faqs = [
         const info = allCurrencies[code] || { code, flag: '', symbol: '$', name: code };
         return (
           <div
-            class="group flex flex-col justify-between rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3.5 transition hover:border-[color:var(--accent)] hover:shadow-sm"
+            class="group flex flex-col justify-between rounded-lg border border-[color:var(--border)] bg-[color:var(--surface)] p-3 transition hover:border-[color:var(--accent)] hover:shadow-xs"
             data-matrix-item={code}
           >
             <div class="flex items-center justify-between text-xs">
@@ -262,37 +263,37 @@ const faqs = [
   </div>
 
   <!-- Educational Section -->
-  <section class="mt-10 space-y-4 rounded-[2rem] border border-[color:var(--border)] bg-[color:var(--surface)] p-6 sm:p-8">
+  <section class="mt-8 space-y-4">
     <h3 class="text-xl font-bold text-[color:var(--fg)]">
       Understanding Real-Time Currency Exchange Rates
     </h3>
     <p class="text-sm leading-relaxed text-[color:var(--muted)]">
       Foreign exchange (Forex) rates fluctuate continuously based on global trade, interest rate decisions by central banks (such as the Federal Reserve, European Central Bank, and Bank of England), inflation reports, and geopolitical factors.
     </p>
-    <div class="grid gap-4 sm:grid-cols-3 pt-2">
-      <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] p-4">
+    <div class="grid gap-4 sm:grid-cols-3 pt-1">
+      <div class="space-y-1 border-l-2 border-[color:var(--border)] pl-3.5">
         <p class="font-bold text-[color:var(--fg)]">Mid-Market Rate</p>
-        <p class="mt-1 text-xs text-[color:var(--muted)]">The fair midpoint between wholesale buy and sell rates in international banking.</p>
+        <p class="text-xs text-[color:var(--muted)] leading-relaxed">The fair midpoint between wholesale buy and sell rates in international banking.</p>
       </div>
-      <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] p-4">
+      <div class="space-y-1 border-l-2 border-[color:var(--border)] pl-3.5">
         <p class="font-bold text-[color:var(--fg)]">Zero Retail Markup</p>
-        <p class="mt-1 text-xs text-[color:var(--muted)]">Calculated without credit card fees or 2-4% retail foreign transaction margins.</p>
+        <p class="text-xs text-[color:var(--muted)] leading-relaxed">Calculated without credit card fees or 2-4% retail foreign transaction margins.</p>
       </div>
-      <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] p-4">
+      <div class="space-y-1 border-l-2 border-[color:var(--border)] pl-3.5">
         <p class="font-bold text-[color:var(--fg)]">Real-Time Sync</p>
-        <p class="mt-1 text-xs text-[color:var(--muted)]">Live API feed with automatic local storage caching for offline resiliency.</p>
+        <p class="text-xs text-[color:var(--muted)] leading-relaxed">Live API feed with automatic local storage caching for offline resiliency.</p>
       </div>
     </div>
   </section>
 
   <!-- FAQs Accordion -->
-  <section class="mt-10 space-y-4">
+  <section class="mt-8 space-y-4">
     <h3 class="text-xl font-bold text-[color:var(--fg)]">
       Frequently Asked Questions
     </h3>
-    <div class="space-y-3">
+    <div class="divide-y divide-[color:var(--border)] border-y border-[color:var(--border)]">
       {faqs.map((faq) => (
-        <details class="group rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 transition open:bg-[color:var(--surface-strong)]">
+        <details class="group py-3.5">
           <summary class="flex cursor-pointer list-none items-center justify-between text-sm font-semibold text-[color:var(--fg)]">
             <span>{faq.q}</span>
             <span class="text-base text-[color:var(--accent)] transition-transform group-open:rotate-45">+</span>

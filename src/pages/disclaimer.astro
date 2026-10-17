@@ -1,5 +1,4 @@
 ---
-import SiteHero from '../components/SiteHero.astro';
 import SiteLayout from '../layouts/SiteLayout.astro';
 import { siteName, toAbsoluteUrl, withBasePath } from '../utils/site';
 
@@ -13,20 +12,42 @@ const breadcrumbItems = [
 ];
 ---
 
-<SiteLayout title={pageTitle} description={pageDesc} canonical={canonicalUrl} heroCompact={true}>
-  <SiteHero
-    slot="hero"
-    breadcrumbs={breadcrumbItems}
-    badge="Legal & Compliance"
-    title="Website Disclaimer"
-    description="General informational, financial, medical, and career tool disclaimers."
-  />
+<SiteLayout title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
   <article class="mx-auto max-w-3xl space-y-8 py-4">
+    <!-- Breadcrumb / compact page context -->
+    <nav class="site-tool-breadcrumb mb-2" aria-label="Breadcrumb">
+      <ol class="flex flex-wrap items-center gap-2 text-xs text-[color:var(--muted)]">
+        {breadcrumbItems.map((item, index) => (
+          <li class="flex items-center gap-2">
+            {index > 0 && <span aria-hidden="true" class="opacity-50">/</span>}
+            {item.href ? (
+              <a class="transition hover:text-[color:var(--fg)]" href={item.href}>
+                {item.label}
+              </a>
+            ) : (
+              <span aria-current="page" class="font-semibold text-[color:var(--fg)]">
+                {item.label}
+              </span>
+            )}
+          </li>
+        ))}
+      </ol>
+    </nav>
+
+    <header class="space-y-3">
+      <p class="text-xs font-bold uppercase tracking-wider text-[color:var(--accent)]">Legal &amp; Compliance</p>
+      <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-[color:var(--fg)]">
+        Website Disclaimer
+      </h1>
+      <p class="max-w-3xl text-sm sm:text-base leading-relaxed text-[color:var(--muted)]">
+        General informational, financial, medical, and career tool disclaimers.
+      </p>
+    </header>
 
     <div class="space-y-6 text-sm leading-relaxed text-[color:var(--muted)]">
       
       <!-- 1. General Disclaimer -->
-      <section class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-6 space-y-3 shadow-sm">
+      <section class="space-y-3">
         <h2 class="text-lg font-bold text-[color:var(--fg)]">1. General Informational Use Only</h2>
         <p>
           All information, interactive calculation tools, converters, guides, and resume builders provided on <strong>{siteName}</strong> are published in good faith and for general educational, personal estimation, and informational purposes only. {siteName} makes no warranties about the completeness, reliability, or absolute accuracy of this information. Any action you take upon the information you find on this website is strictly at your own risk.
@@ -34,7 +55,7 @@ const breadcrumbItems = [
       </section>
 
       <!-- 2. Financial & Tax Disclaimer -->
-      <section class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-6 space-y-3 shadow-sm">
+      <section class="space-y-3">
         <h2 class="text-lg font-bold text-[color:var(--fg)]">2. Financial, Mortgage &amp; Tax Calculation Disclaimer</h2>
         <p>
           Calculators including mortgage repayment estimators, progressive income tax calculators across 24 national jurisdictions, currency converters, compound interest models, and VAT calculators are mathematical models based on publicly available formulas and standard tax brackets.
@@ -45,8 +66,8 @@ const breadcrumbItems = [
       </section>
 
       <!-- 3. Health & Medical Disclaimer -->
-      <section class="rounded-3xl border border-amber-500/20 bg-amber-500/5 p-6 space-y-3">
-        <h2 class="text-lg font-bold text-amber-900 dark:text-amber-300">3. Health, Fitness &amp; Medical Disclaimer (BMI &amp; Nutrition)</h2>
+      <section class="space-y-3">
+        <h2 class="text-lg font-bold text-[color:var(--fg)]">3. Health, Fitness &amp; Medical Disclaimer (BMI &amp; Nutrition)</h2>
         <p>
           Health tools such as the <strong>Body Mass Index (BMI) Calculator</strong>, <strong>Daily Calorie Calculator</strong>, and <strong>Water Intake Calculator</strong> are designed strictly as general population screening estimates based on formulas published by the World Health Organization (WHO) and Centers for Disease Control and Prevention (CDC).
         </p>
@@ -56,7 +77,7 @@ const breadcrumbItems = [
       </section>
 
       <!-- 4. Career Tools & Resume Disclaimer -->
-      <section class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-6 space-y-3 shadow-sm">
+      <section class="space-y-3">
         <h2 class="text-lg font-bold text-[color:var(--fg)]">4. Career Tools &amp; Resume Builder Disclaimer</h2>
         <p>
           The <strong>CV Maker / Resume Builder</strong> and career guides provide formatting frameworks and ATS best-practice recommendations. {siteName} does not guarantee employment, interview callbacks, hiring outcomes, or specific salary offers resulting from resumes created with our tool. Hiring decisions are solely at the discretion of prospective employers.

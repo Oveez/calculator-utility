@@ -2,7 +2,6 @@
 import SiteHeader from '../components/SiteHeader.astro';
 import MobileDrawer from '../components/MobileDrawer.astro';
 import MobileSearchModal from '../components/MobileSearchModal.astro';
-import ScrollToggle from '../components/ScrollToggle.astro';
 import Analytics from '../components/Analytics.astro';
 import CookieConsent from '../components/CookieConsent.astro';
 import Footer from '../components/Footer.astro';
@@ -76,13 +75,12 @@ const websiteSchema = {
     </script>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <meta name="theme-color" content="#F8FAFC" media="(prefers-color-scheme: light)" />
-    <meta name="theme-color" content="#0B0F19" media="(prefers-color-scheme: dark)" />
-    <link rel="icon" type="image/x-icon" href={withBasePath('/favicon.ico')} />
-    <link rel="icon" type="image/svg+xml" href={withBasePath('/favicon.svg')} />
-    <link rel="icon" type="image/png" sizes="32x32" href={withBasePath('/calc.png')} />
-    <link rel="apple-touch-icon" href={withBasePath('/apple-touch-icon.png')} />
-    <link rel="manifest" href={withBasePath('/site.webmanifest')} />
+    <meta name="theme-color" content="#F8FAFC" />
+    <link rel="icon" type="image/x-icon" href={withBasePath('/favicon.ico?v=2')} />
+    <link rel="icon" type="image/svg+xml" href={withBasePath('/favicon.svg?v=2')} />
+    <link rel="icon" type="image/png" sizes="32x32" href={withBasePath('/calc.png?v=2')} />
+    <link rel="apple-touch-icon" href={withBasePath('/apple-touch-icon.png?v=2')} />
+    <link rel="manifest" href={withBasePath('/site.webmanifest?v=2')} />
     <!-- Google Fonts: Plus Jakarta Sans — Modern geometric SaaS typeface -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -110,31 +108,15 @@ const websiteSchema = {
     {/* Google AdSense Auto Ads */}
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7945473545268589"
          crossorigin="anonymous"></script>
-
-    <script is:inline>
-      (function() {
-        try {
-          const savedTheme = localStorage.getItem('calculator-theme');
-          const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-          const theme = savedTheme || (prefersDark ? 'dark' : 'light');
-          document.documentElement.setAttribute('data-theme', theme);
-          document.documentElement.classList.toggle('dark', theme === 'dark');
-        } catch (e) {}
-      })();
-    </script>
-    <script>
-      import { initThemeToggle } from '../scripts/theme';
-      initThemeToggle();
-    </script>
   </head>
   <body class="relative min-h-screen flex flex-col bg-[color:var(--bg)] text-[color:var(--fg)] antialiased transition-colors duration-150">
     <div class="pointer-events-none fixed inset-0 -z-10 overflow-hidden w-full max-w-full" style="contain: paint;">
       <!-- Faint dot pattern -->
-      <div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMiIgY3k9IjIiIHI9IjEiIGZpbGw9IiMwMDAiIGZpbGwtb3BhY2l0eT0iMC4wNCIvPjwvc3ZnPg==')] opacity-60 dark:opacity-20 [mask-image:radial-gradient(ellipse_at_center,black,transparent_80%)]"></div>
+      <div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMiIgY3k9IjIiIHI9IjEiIGZpbGw9IiMwMDAiIGZpbGwtb3BhY2l0eT0iMC4wNCIvPjwvc3ZnPg==')] opacity-60 [mask-image:radial-gradient(ellipse_at_center,black,transparent_80%)]"></div>
       <!-- Subtle geometric blobs -->
-      <div class="absolute -top-[20%] -right-[10%] h-[700px] w-[700px] rounded-full bg-[color:var(--accent)] opacity-[0.08] dark:opacity-[0.03] blur-[120px]"></div>
-      <div class="absolute top-[30%] -left-[10%] h-[600px] w-[600px] rounded-full bg-blue-400 opacity-[0.06] dark:opacity-[0.02] blur-[120px]"></div>
-      <div class="absolute -bottom-[20%] right-[10%] h-[800px] w-[800px] rounded-full bg-orange-300 opacity-[0.08] dark:opacity-[0.03] blur-[140px]"></div>
+      <div class="absolute -top-[20%] -right-[10%] h-[700px] w-[700px] rounded-full bg-[color:var(--accent)] opacity-[0.08] blur-[120px]"></div>
+      <div class="absolute top-[30%] -left-[10%] h-[600px] w-[600px] rounded-full bg-orange-400 opacity-[0.06] blur-[120px]"></div>
+      <div class="absolute -bottom-[20%] right-[10%] h-[800px] w-[800px] rounded-full bg-orange-300 opacity-[0.08] blur-[140px]"></div>
     </div>
 
     <a
@@ -147,20 +129,17 @@ const websiteSchema = {
     <!-- Top Sticky Header -->
     <SiteHeader />
 
-    <!-- Edge-to-Edge Full-Width Hero Section -->
+    <!-- Hero content preserved for homepage / category pages in a non-visible source without visible hero banner styling and layout -->
     {Astro.slots.has('hero') && (
-      <div class={`site-hero-banner ${heroCompact ? 'site-hero-banner--compact' : ''}`}>
-        <div class="site-hero-banner-dots" aria-hidden="true" />
-        <div class="site-hero-inner">
-          <slot name="hero" />
-        </div>
+      <div class="sr-only">
+        <slot name="hero" />
       </div>
     )}
 
     <!-- Main Content Container -->
     <main
       id="content"
-      class={`relative z-0 flex-1 mx-auto w-full max-w-6xl px-3 sm:px-6 lg:px-8 pb-10 ${heroLayout ? 'pt-0' : Astro.slots.has('hero') ? 'pt-6 sm:pt-8' : 'py-5 sm:py-8'}`}
+      class={`relative z-0 flex-1 mx-auto w-full max-w-6xl px-3 sm:px-6 lg:px-8 pb-10 ${heroLayout ? 'pt-0' : 'py-5 sm:py-8'}`}
     >
       {showAds && <AdsterraResponsiveBanner class="mb-6" />}
       <slot />
@@ -175,9 +154,6 @@ const websiteSchema = {
 
     <!-- Global / Mobile Quick Search Modal -->
     <MobileSearchModal />
-
-    <!-- Global Floating Scroll to Bottom / Top Button -->
-    <ScrollToggle />
 
     {/* Cookie Consent Banner */}
     <CookieConsent />

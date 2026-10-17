@@ -31,18 +31,18 @@
   --nav-surface-hover: #334155;
   --nav-muted: #94A3B8;
 
-  /* Brand Accent — Electric Indigo */
-  --accent: #4F46E5;
-  --accent-hover: #4338CA;
-  --accent-strong: #3730A3;
-  --accent-soft: rgba(79, 70, 229, 0.10);
+  /* Brand Accent — Logo Coral Orange (#FA4619) */
+  --accent: #FA4619;
+  --accent-hover: #E03810;
+  --accent-strong: #C22F0B;
+  --accent-soft: rgba(250, 70, 25, 0.10);
   --accent-fg: #FFFFFF;
-  --primary: #4F46E5;
+  --primary: #FA4619;
   --accent-secondary: #0F172A;
 
-  /* High-Intent Action CTA — Vibrant Coral Red (iLovePDF style) */
-  --cta-action: #EF4444;
-  --cta-action-hover: #DC2626;
+  /* High-Intent Action CTA — Logo Coral Orange */
+  --cta-action: #FA4619;
+  --cta-action-hover: #E03810;
   --cta-action-fg: #FFFFFF;
 
   /* Glass surfaces */
@@ -59,8 +59,8 @@
   /* Shadows — clean layered depth, zero neon */
   --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.06), 0 1px 2px -1px rgba(0, 0, 0, 0.04);
   --shadow-card: 0 2px 8px -2px rgba(15, 23, 42, 0.05), 0 8px 24px -4px rgba(15, 23, 42, 0.07);
-  --shadow-cta: 0 10px 25px -5px rgba(239, 68, 68, 0.35), 0 4px 6px -2px rgba(239, 68, 68, 0.2);
-  --shadow-cta-indigo: 0 10px 25px -5px rgba(79, 70, 229, 0.35), 0 4px 6px -2px rgba(79, 70, 229, 0.15);
+  --shadow-cta: 0 10px 25px -5px rgba(250, 70, 25, 0.35), 0 4px 6px -2px rgba(250, 70, 25, 0.2);
+  --shadow-cta-indigo: 0 10px 25px -5px rgba(250, 70, 25, 0.35), 0 4px 6px -2px rgba(250, 70, 25, 0.15);
   --shadow-dropdown: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 10px 15px -3px rgba(0, 0, 0, 0.08);
 
   /* Tabs — Solid iLovePDF-style dark pill for active, clean muted for inactive */
@@ -78,70 +78,7 @@
   --tab-badge-active-text: #FFFFFF;
 }
 
-/* ==========================================================================
-   DESIGN TOKENS — DARK MODE (Deep OLED Slate, High-Contrast)
-   ========================================================================== */
-html[data-theme='dark'],
-html.dark {
-  color-scheme: dark;
 
-  --bg: #0B0F19;
-  --fg: #F8FAFC;
-  --surface: #151E2E;
-  --surface-strong: #1E293B;
-  --muted: #94A3B8;
-  --border: #1E293B;
-  --border-strong: #334155;
-
-  /* Navigation Bar Tokens — Solid Dark Slate / Navy (#0F172A) */
-  --nav-bg: #0F172A;
-  --nav-fg: #F8FAFC;
-  --nav-border: #1E293B;
-  --nav-surface: #1E293B;
-  --nav-surface-hover: #334155;
-  --nav-muted: #94A3B8;
-
-  --accent: #6366F1;
-  --accent-hover: #818CF8;
-  --accent-strong: #A5B4FC;
-  --accent-soft: rgba(99, 102, 241, 0.15);
-  --accent-fg: #FFFFFF;
-  --primary: #6366F1;
-  --accent-secondary: #38BDF8;
-
-  --cta-action: #F87171;
-  --cta-action-hover: #EF4444;
-  --cta-action-fg: #FFFFFF;
-
-  --glass-surface: rgba(21, 30, 46, 0.92);
-  --glass-surface-hover: rgba(30, 41, 59, 0.98);
-  --glass-border: rgba(255, 255, 255, 0.08);
-  --glass-border-strong: rgba(255, 255, 255, 0.15);
-
-  --success: #34D399;
-  --warning: #FBBF24;
-  --error: #F87171;
-
-  --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
-  --shadow-card: 0 4px 12px -2px rgba(0, 0, 0, 0.4), 0 10px 24px -4px rgba(0, 0, 0, 0.3);
-  --shadow-cta: 0 10px 25px -5px rgba(248, 113, 113, 0.45), 0 4px 6px -2px rgba(248, 113, 113, 0.25);
-  --shadow-cta-indigo: 0 10px 25px -5px rgba(99, 102, 241, 0.45), 0 4px 6px -2px rgba(99, 102, 241, 0.2);
-  --shadow-dropdown: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 10px 15px -3px rgba(0, 0, 0, 0.5);
-
-  /* Tabs — Indigo pill for active in dark mode */
-  --tab-surface: #151E2E;
-  --tab-surface-hover: #1E293B;
-  --tab-surface-active: #4F46E5;
-  --tab-surface-active-hover: #6366F1;
-  --tab-border: #1E293B;
-  --tab-border-hover: #334155;
-  --tab-border-active: #6366F1;
-  --tab-text: #94A3B8;
-  --tab-text-hover: #F8FAFC;
-  --tab-text-active: #FFFFFF;
-  --tab-badge-active-bg: rgba(255, 255, 255, 0.18);
-  --tab-badge-active-text: #FFFFFF;
-}
 
 /* ==========================================================================
    BASE STYLES
@@ -215,6 +152,32 @@ a[class*="bg-accent"] *,
 a[class*="bg-blue-"] *,
 a[class*="bg-indigo-"] * {
   color: inherit !important;
+}
+
+/* ==========================================================================
+   STANDARD GREY ICONS (FontAwesome / SVGRepo style)
+   - Default: Standard neutral grey (#64748B / text-slate-500)
+   - Hover / Focus: Transitions to theme color (var(--accent) / #FA4619)
+   ========================================================================== */
+svg[stroke="currentColor"],
+svg.stroke-current {
+  transition: color 150ms ease, stroke 150ms ease, border-color 150ms ease;
+}
+
+/* Standalone grey icon hover */
+svg.text-slate-400:hover,
+svg.text-slate-500:hover,
+svg.text-slate-600:hover,
+.tool-icon-wrapper:hover svg {
+  color: var(--accent) !important;
+}
+
+/* Hovering buttons, links, or tool cards smoothly transitions neutral child icons to theme color */
+button:not([class*="bg-[color:var(--accent)]"]):not([class*="bg-accent"]):hover > svg.text-slate-500,
+button:not([class*="bg-[color:var(--accent)]"]):not([class*="bg-accent"]):hover > svg.text-slate-400,
+a:not([class*="bg-[color:var(--accent)]"]):not([class*="bg-accent"]):hover > svg.text-slate-500,
+a:not([class*="bg-[color:var(--accent)]"]):not([class*="bg-accent"]):hover > svg.text-slate-400 {
+  color: var(--accent);
 }
 
 select option {
@@ -599,7 +562,7 @@ a {
 .btn-action-indigo:hover {
   background-color: var(--accent-hover);
   transform: translateY(-2px);
-  box-shadow: 0 16px 30px -6px rgba(79, 70, 229, 0.45);
+  box-shadow: 0 16px 30px -6px rgba(250, 70, 25, 0.45);
   color: #FFFFFF;
 }
 
@@ -667,7 +630,7 @@ a {
   transform: translateY(-1px);
 }
 
-nav[aria-label="Primary"] a:not(.active):not([aria-current="page"]):hover {
+nav[aria-label="Primary"] > a:not(.active):not([aria-current="page"]):hover {
   background-color: rgba(255, 255, 255, 0.06) !important;
   color: #FFFFFF !important;
   transform: translateY(-1px);
@@ -889,85 +852,7 @@ button[type="submit"]:active,
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
 }
 
-/* ==========================================================================
-   SEGMENTED THEME SWITCHER
-   ========================================================================== */
-.theme-switch-wrapper {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  user-select: none;
-}
 
-.theme-switch-slider {
-  left: 2px;
-  width: calc(50% - 2px);
-  transform: translateX(0%);
-  background-color: #334155;
-  border: 1px solid #475569;
-  transition: transform 320ms cubic-bezier(0.34, 1.56, 0.64, 1),
-              background-color 180ms ease,
-              border-color 180ms ease,
-              box-shadow 180ms ease;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
-}
-
-html[data-theme='dark'] .theme-switch-slider,
-html.dark .theme-switch-slider {
-  transform: translateX(100%);
-  background-color: #334155;
-  border-color: #475569;
-}
-
-html:not([data-theme='dark']):not(.dark) [data-set-theme="light"] {
-  color: #FFFFFF;
-  font-weight: 700;
-}
-
-html:not([data-theme='dark']):not(.dark) [data-set-theme="light"] .theme-sun-icon {
-  color: #FBBF24;
-  transform: rotate(0deg) scale(1.15);
-}
-
-html:not([data-theme='dark']):not(.dark) [data-set-theme="dark"] {
-  color: #E2E8F0;
-}
-
-html:not([data-theme='dark']):not(.dark) [data-set-theme="dark"] .theme-moon-icon {
-  transform: rotate(-15deg) scale(0.9);
-  color: #E2E8F0;
-}
-
-html[data-theme='dark'] [data-set-theme="dark"],
-html.dark [data-set-theme="dark"] {
-  color: #FFFFFF;
-  font-weight: 700;
-}
-
-html[data-theme='dark'] [data-set-theme="dark"] .theme-moon-icon,
-html.dark [data-set-theme="dark"] .theme-moon-icon {
-  color: #818CF8;
-  transform: rotate(0deg) scale(1.15);
-}
-
-html[data-theme='dark'] [data-set-theme="light"],
-html.dark [data-set-theme="light"] {
-  color: #E2E8F0;
-}
-
-html[data-theme='dark'] [data-set-theme="light"] .theme-sun-icon,
-html.dark [data-set-theme="light"] .theme-sun-icon {
-  transform: rotate(-25deg) scale(0.9);
-  color: #E2E8F0;
-}
-
-.theme-switch-btn:hover {
-  transform: translateY(-1px);
-}
-
-.theme-switch-btn:active {
-  transform: translateY(0) scale(0.95);
-}
 
 /* ==========================================================================
    INPUTS — Clean high-contrast focus ring, no neon haze
@@ -1018,13 +903,114 @@ textarea:focus-visible {
 }
 
 /* ==========================================================================
+   GLOBAL BRAND COLOR COMPLIANCE — Theme, Black, and Neutral Grey Only
+   Harmonize legacy arbitrary colors across all tool categories into clean,
+   unified theme tokens (Theme Accent #FA4619, Dark #0F172A, Neutral Greys).
+   ========================================================================== */
+
+/* 1. Stat metrics, large highlights, and output labels */
+.text-cyan-600,
+.text-cyan-500,
+.text-cyan-400,
+.text-cyan-300,
+.text-indigo-600,
+.text-indigo-500,
+.text-indigo-400,
+.text-purple-600,
+.text-purple-500,
+.text-purple-400,
+.text-teal-600,
+.text-teal-500,
+.text-pink-500 {
+  color: var(--fg) !important;
+}
+
+/* Accent-specific key text (like primary total profit or take-home summaries) */
+[data-res-retail],
+[data-direct-profit],
+[data-net-profit],
+[data-net-order],
+[data-res-sample-size],
+[data-res-gross-yield],
+[data-res-units] {
+  color: var(--accent) !important;
+}
+
+/* 2. Soft status badges & alert pills -> subtle neutral grey or subtle theme tint */
+.bg-cyan-500\/10,
+.bg-cyan-500\/15,
+.bg-cyan-500\/20,
+.bg-cyan-500\/5,
+.bg-indigo-500\/10,
+.bg-indigo-500\/15,
+.bg-purple-500\/10,
+.bg-purple-500\/15,
+.bg-teal-500\/10,
+.bg-teal-500\/15 {
+  background-color: var(--surface-strong) !important;
+  color: var(--fg) !important;
+  border-color: var(--border) !important;
+}
+
+.border-cyan-500\/20,
+.border-cyan-500\/30,
+.border-cyan-500\/40,
+.border-indigo-500\/20,
+.border-purple-500\/20,
+.border-purple-500\/30,
+.border-teal-500\/30 {
+  border-color: var(--border) !important;
+}
+
+/* 3. Solid indicator dots & accents */
+.bg-cyan-500,
+.bg-cyan-400 {
+  background-color: var(--accent) !important;
+}
+
+/* 4. Multi-segment Data Visualizations (e.g. Allocation Bars & Breakdowns)
+   Use intentional shades of brand theme, black, and neutral grey */
+[data-bar-takehome] {
+  background-color: var(--accent) !important;
+}
+[data-bar-fedtax] {
+  background-color: #0F172A !important; /* solid black/slate */
+}
+[data-bar-fica] {
+  background-color: #475569 !important; /* slate-600 */
+}
+[data-bar-statetax] {
+  background-color: #94A3B8 !important; /* slate-400 */
+}
+[data-bar-pretax] {
+  background-color: #CBD5E1 !important; /* slate-300 */
+}
+
+/* Legend dots matching data allocation bars */
+span:has(> .bg-cyan-500) .bg-cyan-500 {
+  background-color: var(--accent) !important;
+}
+span:has(> .bg-blue-500) .bg-blue-500 {
+  background-color: #0F172A !important;
+}
+span:has(> .bg-indigo-500) .bg-indigo-500 {
+  background-color: #475569 !important;
+}
+span:has(> .bg-purple-500) .bg-purple-500 {
+  background-color: #94A3B8 !important;
+}
+span:has(> .bg-amber-500) .bg-amber-500 {
+  background-color: #CBD5E1 !important;
+}
+
+/* ==========================================================================
    ANIMATION KEYFRAMES
    ========================================================================== */
 
 /* Calculation result pulse */
 @keyframes calcResultPulse {
-  0%   { box-shadow: 0 0 0 0 rgba(79, 70, 229, 0.18); transform: scale(1); }
-  50%  { box-shadow: 0 0 14px 2px rgba(79, 70, 229, 0.22); border-color: var(--accent); transform: scale(1.01); }
+  0%   { box-shadow: 0 0 0 0 rgba(250, 70, 25, 0.18); transform: scale(1); }
+  50%  { box-shadow: 0 0 14px 2px rgba(250, 70, 25, 0.22); border-color: var(--accent); transform: scale(1.01); }
   100% { box-shadow: 0 0 0 0 transparent; transform: scale(1); }
 }
 
@@ -1087,104 +1073,11 @@ textarea:focus-visible {
 }
 
 /* ==========================================================================
-   SITE HERO BANNER — Full-Width CSS/SVG Background System
-   Dark indigo/navy gradient with decorative arc rings & floating tool icons.
-   Inspired by PDF House / iLovePDF premium hero style.
-   Applied via .site-hero-banner wrapper — no image files needed.
+   SITE HERO STYLES (Clean / Fallback)
+   Standard typography & layout styles for site headers.
+   Hero banner backgrounds and decorative overlays have been removed.
    ========================================================================== */
 
-/* ── Outer wrapper: full width, dark indigo hero with castle & tool category photo ── */
-.site-hero-banner {
-  position: relative;
-  width: 100%;
-  overflow: hidden;
-  background-color: #0F172A;
-  background-image: url('/images/hero-bg.webp'), url('/images/hero-bg.jpg');
-  background-size: cover;
-  background-position: center right;
-  background-repeat: no-repeat;
-  /* Standard tall banner for homepage */
-  min-height: 320px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
-
-/* When placed inside a content container like <main>, fit cleanly with rounded-3xl corners */
-main .site-hero-banner {
-  width: 100%;
-  max-width: 100%;
-  margin-left: 0;
-  margin-right: 0;
-  border-radius: 1.5rem;
-}
-
-/* Compact variant for category / sub-pages */
-.site-hero-banner--compact {
-  min-height: 190px;
-}
-
-/* ── Subtle text readability gradient on left half, transparent on right ── */
-.site-hero-banner::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    90deg,
-    rgba(15, 23, 42, 0.85) 0%,
-    rgba(15, 23, 42, 0.50) 45%,
-    rgba(15, 23, 42, 0.15) 75%,
-    transparent 100%
-  );
-  z-index: 1;
-  pointer-events: none;
-}
-
-/* ── Dot-grid overlay ── */
-.site-hero-banner-dots {
-  position: absolute;
-  inset: 0;
-  z-index: 2;
-  pointer-events: none;
-  background-image: radial-gradient(circle, rgba(255,255,255,0.06) 1px, transparent 1px);
-  background-size: 28px 28px;
-  mask-image: radial-gradient(ellipse 80% 100% at 40% 50%, black 30%, transparent 90%);
-  -webkit-mask-image: radial-gradient(ellipse 80% 100% at 40% 50%, black 30%, transparent 90%);
-}
-
-/* ── Inner content wrapper — re-applies max-width centering ── */
-.site-hero-inner {
-  position: relative;
-  z-index: 10;
-  width: 100%;
-  max-width: 72rem; /* max-w-6xl */
-  margin: 0 auto;
-  padding: 2.75rem 1.5rem;
-}
-
-@media (min-width: 640px) {
-  .site-hero-inner {
-    padding: 3.75rem 1.5rem;
-  }
-}
-
-@media (min-width: 1024px) {
-  .site-hero-inner {
-    padding: 4.25rem 2rem;
-  }
-}
-
-.site-hero-banner--compact .site-hero-inner {
-  padding: 1.75rem 1.5rem;
-}
-
-@media (min-width: 640px) {
-  .site-hero-banner--compact .site-hero-inner {
-    padding: 2.25rem 1.5rem;
-  }
-}
-
-/* ── Text styles optimized for the dark hero background ── */
 .site-hero-header {
   display: flex;
   flex-direction: column;
@@ -1197,36 +1090,30 @@ main .site-hero-banner {
   align-items: center;
   gap: 0.5rem;
   border-radius: 9999px;
-  border: 1px solid rgba(255,255,255,0.18);
-  background: rgba(255,255,255,0.08);
-  backdrop-filter: blur(8px);
+  border: 1px solid var(--border);
+  background: var(--surface);
   padding: 0.25rem 0.875rem;
   font-size: 0.75rem;
   font-weight: 700;
   letter-spacing: 0.05em;
   text-transform: uppercase;
-  color: rgba(255,255,255,0.92);
-  box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+  color: var(--fg);
   width: fit-content;
 }
 
 .site-hero-h1 {
-  font-size: clamp(1.875rem, 4vw, 3.25rem);
+  font-size: clamp(1.75rem, 3.5vw, 2.75rem);
   font-weight: 800;
   letter-spacing: -0.025em;
   line-height: 1.15;
-  color: #FFFFFF;
-}
-
-.site-hero-banner--compact .site-hero-h1 {
-  font-size: clamp(1.625rem, 3.2vw, 2.375rem);
+  color: var(--fg);
 }
 
 .site-hero-desc {
   max-width: 48rem;
   font-size: 1rem;
   line-height: 1.7;
-  color: rgba(224, 231, 255, 0.90); /* indigo-100/90 */
+  color: var(--muted);
 }
 
 @media (min-width: 640px) {
@@ -1241,87 +1128,107 @@ main .site-hero-banner {
   align-items: center;
   gap: 0.5rem;
   font-size: 0.75rem;
-  color: rgba(199, 210, 254, 0.75);
+  color: var(--muted);
   margin-bottom: 0.25rem;
 }
 
 .site-hero-breadcrumb a {
-  color: rgba(199, 210, 254, 0.75);
+  color: var(--muted);
   transition: color 0.15s ease;
 }
 
 .site-hero-breadcrumb a:hover {
-  color: #FFFFFF;
+  color: var(--fg);
 }
 
 .site-hero-breadcrumb [aria-current="page"] {
-  color: #FFFFFF;
+  color: var(--fg);
   font-weight: 600;
 }
 
-/* ── Global inner overrides for any elements slotted into .site-hero-banner ── */
-.site-hero-banner h1 {
-  color: #FFFFFF !important;
-  font-weight: 800;
-  letter-spacing: -0.025em;
-  line-height: 1.15;
+/* Header dropdown tools use the same orange accent as their category triggers. */
+nav[aria-label="Primary"] .nav-tool-link:hover,
+nav[aria-label="Primary"] .nav-tool-link:focus-visible {
+  background-color: var(--accent-soft) !important;
+  color: var(--accent) !important;
+  font-weight: 500;
 }
 
-.site-hero-banner--compact h1 {
-  font-size: clamp(1.625rem, 3.2vw, 2.375rem);
+/* ==========================================================================
+   LAYOUT NORMALIZATION — UNBOXED TEXT & STREAMLINED FORMS
+   - Removes rounded-box card layouts around informational text, guides, & FAQs
+   - Replaces bulbous capsule inputs with crisp, compact, modern inputs (0.375rem)
+   - Eliminates bloated padding and radii on mobile screens (< 640px)
+   ========================================================================== */
+
+/* 1. Unbox Informational / Educational Content Across All Pages */
+section[aria-labelledby="how-it-works-heading"],
+article > section[class*="rounded-[2rem]"],
+main article section[class*="rounded-[2rem]"],
+main article section[class*="rounded-3xl"] {
+  border: none !important;
+  background: transparent !important;
+  border-radius: 0 !important;
+  padding: 0 !important;
+  box-shadow: none !important;
 }
 
-.site-hero-banner p:not(.site-hero-breadcrumb p) {
-  color: rgba(224, 231, 255, 0.90) !important;
+section[aria-labelledby="how-it-works-heading"] .grid > div {
+  border: none !important;
+  background: transparent !important;
+  border-radius: 0 !important;
+  padding: 0.25rem 0 0.25rem 1rem !important;
+  border-left: 2px solid var(--border) !important;
 }
 
-.site-hero-banner nav,
-.site-hero-banner nav ol {
-  color: rgba(199, 210, 254, 0.75) !important;
+/* 2. Unbox FAQs Across the Entire Website to Clean Line-by-Line Accordions */
+details.group[class*="rounded-"],
+details[class*="rounded-2xl"],
+details[class*="rounded-3xl"] {
+  border: none !important;
+  border-bottom: 1px solid var(--border) !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  padding: 0.875rem 0 !important;
 }
 
-.site-hero-banner nav a {
-  color: rgba(199, 210, 254, 0.75) !important;
-  transition: color 0.15s ease;
+details.group[class*="rounded-"] > summary,
+details[class*="rounded-2xl"] > summary,
+details[class*="rounded-3xl"] > summary {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
 }
 
-.site-hero-banner nav a:hover {
-  color: #FFFFFF !important;
+/* 3. Textbox Modernization: Crisp, Compact, Non-Bulbous Inputs */
+input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="submit"]):not([type="button"]):not([type="reset"]),
+select,
+textarea {
+  border-radius: 0.375rem !important;
+  font-size: 0.875rem !important;
+  line-height: 1.25rem !important;
 }
 
-.site-hero-banner nav [aria-current="page"],
-.site-hero-banner nav span.font-semibold,
-.site-hero-banner nav span.font-medium {
-  color: #FFFFFF !important;
-  font-weight: 600;
+/* 4. Mobile Layout Optimization (< 640px) */
+@media (max-width: 639px) {
+  /* Flatten huge card radii and reduce excessive internal padding */
+  [data-tax-app],
+  [data-currency-app],
+  [data-keypad-calc],
+  [data-calculator-root],
+  .site-tool-engine-wrapper > section {
+    border-radius: 0.75rem !important;
+    padding: 0.875rem !important;
+  }
+
+  /* Form inner paddings */
+  form[data-calculator-form] {
+    padding: 0.75rem 0.5rem !important;
+  }
+
+  /* Educational sections on mobile */
+  section[aria-labelledby="how-it-works-heading"] .grid {
+    gap: 0.75rem !important;
+  }
 }
 
-.site-hero-banner nav span[aria-hidden="true"] {
-  opacity: 0.5;
-}
-
-/* Frosted glass pill badge for any category/pill container in hero */
-.site-hero-banner header > div:first-child,
-.site-hero-banner header > p:first-child,
-.site-hero-banner .site-hero-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  border-radius: 9999px;
-  border: 1px solid rgba(255, 255, 255, 0.18) !important;
-  background: rgba(255, 255, 255, 0.08) !important;
-  backdrop-filter: blur(8px);
-  padding: 0.25rem 0.875rem;
-  font-size: 0.75rem;
-  font-weight: 700;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.92) !important;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
-  width: fit-content;
-}
-
-.site-hero-banner header > div:first-child *,
-.site-hero-banner header > p:first-child * {
-  color: rgba(255, 255, 255, 0.92) !important;
-}

@@ -22,12 +22,10 @@ const {
 const config = getToolIconConfig(slug || url, title, category);
 
 /**
- * iLovePDF-style solid squircle tile:
- *   - Solid vibrant background (e.g. bg-rose-500)
- *   - White SVG icon (text-white) — bold 2.5 stroke
- *   - No border (border-transparent)
- *   - Slight drop shadow for depth
- *   - Scale-up on parent group hover
+ * Standard Grey Outline Icon System (FontAwesome / SVGRepo style):
+ *   - Clean, neutral outline tile (slate-50 background, slate-200 border)
+ *   - Standard grey icon (text-slate-500)
+ *   - On hover / cursor placement: transitions to brand theme color (var(--accent))
  */
 const sizeClasses = {
   sm: 'w-8 h-8 rounded-xl p-1.5',
@@ -44,20 +42,17 @@ const svgSizes = {
 
 <div
   class:list={[
-    'inline-flex shrink-0 items-center justify-center transition-transform duration-150 ease-out group-hover:scale-110',
-    config.badgeBg,
-    config.iconColor,
+    'inline-flex shrink-0 items-center justify-center rounded-xl border border-slate-200/90 bg-slate-50 text-slate-500 hover:text-[color:var(--accent)] hover:border-[color:var(--accent)]/40 hover:bg-[color:var(--accent-soft)] group-hover:text-[color:var(--accent)] group-hover:border-[color:var(--accent)]/40 group-hover:bg-[color:var(--accent-soft)] transition-all duration-200 shadow-2xs',
     sizeClasses,
     className,
   ]}
-  style="box-shadow: 0 2px 6px rgba(0,0,0,0.14), 0 1px 2px rgba(0,0,0,0.08);"
 >
   <svg
-    class:list={[svgSizes]}
+    class:list={[svgSizes, 'stroke-current transition-colors duration-200']}
     viewBox={config.viewBox || '0 0 24 24'}
     fill="none"
     stroke="currentColor"
-    stroke-width="2.5"
+    stroke-width="2"
     stroke-linecap="round"
     stroke-linejoin="round"
     set:html={config.svgPath}

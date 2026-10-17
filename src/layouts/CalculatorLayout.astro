@@ -1,7 +1,6 @@
 ---
 import CalculatorEngine from '../components/CalculatorEngine.astro';
 import AdsterraDisplayAd from '../components/AdsterraDisplayAd.astro';
-import SiteHero from '../components/SiteHero.astro';
 import SiteLayout from './SiteLayout.astro';
 import type { BreadcrumbItem, CalculatorConfig, CalculatorFaqItem } from '../types/calculator';
 import { siteName, toAbsoluteUrl } from '../utils/site';
@@ -98,17 +97,15 @@ const schemaGraph = [
 
   <AdsterraDisplayAd format="rectangle" class="my-8" />
 
-  <!-- 3. Existing full SEO hero/banner -->
-  <div class="site-hero-banner site-hero-banner--compact my-10">
-    <div class="site-hero-banner-dots" aria-hidden="true" />
-    <div class="site-hero-inner">
-      <SiteHero
-        badge={calculator.category}
-        title={calculator.title}
-        description={calculator.metaDescription}
-      />
-    </div>
-  </div>
+  <!-- 3. Description Section Header -->
+  <header class="space-y-3 mb-8">
+    <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-[color:var(--fg)]">
+      {calculator.title}
+    </h1>
+    <p class="max-w-3xl text-sm sm:text-base leading-relaxed text-[color:var(--muted)]">
+      {calculator.metaDescription}
+    </p>
+  </header>
 
   <!-- 4. Existing supporting content -->
   <slot />

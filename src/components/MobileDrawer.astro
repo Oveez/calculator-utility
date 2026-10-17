@@ -56,7 +56,7 @@ const categoriesWithTools = uniqueCategories.map((category) => {
 <!-- Mobile Navigation Drawer -->
 <div
   id="mobile-drawer-root"
-  class="fixed inset-0 z-50 pointer-events-none opacity-0 transition-opacity duration-300 xl:hidden"
+  class="fixed inset-0 z-50 pointer-events-none opacity-0 transition-opacity duration-300 lg:hidden"
   role="dialog"
   aria-modal="true"
   aria-label="Navigation Drawer"
@@ -72,19 +72,19 @@ const categoriesWithTools = uniqueCategories.map((category) => {
     id="mobile-drawer-panel"
     class="relative flex h-full w-[84vw] max-w-sm flex-col border-r border-[color:var(--border)] bg-[color:var(--bg)] shadow-2xl transition-transform duration-300 -translate-x-full overflow-hidden"
   >
-    <!-- Drawer Header -->
-    <div class="flex items-center justify-between border-b border-slate-800 p-4 bg-[#0F172A] text-white">
+    <!-- Drawer Header (Solid White with dark logo for contrast) -->
+    <div class="flex items-center justify-between border-b border-slate-200/90 p-4 bg-white text-slate-800">
       <a class="flex items-center gap-2.5" href={withBasePath('/')} id="drawer-brand-link" aria-label={`${siteName} Home`}>
-        <BrandMark size="sm" variant="light" />
+        <BrandMark size="sm" variant="default" />
       </a>
 
       <button
         type="button"
         id="close-mobile-drawer"
-        class="flex h-9 w-9 items-center justify-center rounded-xl border border-slate-700/80 bg-slate-800/90 text-white hover:border-slate-500 hover:text-white transition cursor-pointer"
+        class="flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 bg-slate-50 text-slate-700 hover:border-slate-300 hover:text-[color:var(--accent)] hover:bg-slate-100 transition cursor-pointer"
         aria-label="Close navigation drawer"
       >
-        <Icon name="close" class="w-4 h-4 text-white stroke-[2.5]" />
+        <Icon name="close" class="w-4 h-4 stroke-[2.5]" />
       </button>
     </div>
 
@@ -96,8 +96,8 @@ const categoriesWithTools = uniqueCategories.map((category) => {
           <details class="drawer-group group rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] overflow-hidden transition-colors">
             <summary class="flex cursor-pointer list-none items-center justify-between p-3 text-xs font-bold text-[color:var(--fg)] select-none hover:bg-[color:var(--surface-strong)] transition">
               <div class="flex items-center gap-2.5 min-w-0">
-                <span class={`flex h-6 w-6 items-center justify-center rounded-lg ${cat.iconConfig.badgeBg} text-white shadow-xs shrink-0`}>
-                  <svg class="w-3.5 h-3.5 stroke-current" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" set:html={cat.iconConfig.svgPath} />
+                <span class="flex h-7 w-7 items-center justify-center rounded-lg border border-slate-200/80 bg-slate-50 text-slate-500 group-hover:text-[color:var(--accent)] group-hover:border-[color:var(--accent)]/40 group-hover:bg-[color:var(--accent-soft)] transition-colors shrink-0 shadow-2xs">
+                  <svg class="w-4 h-4 stroke-current transition-colors" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" set:html={cat.iconConfig.svgPath} />
                 </span>
                 <span class="truncate">{cat.name}</span>
                 <span class="text-[10px] font-medium text-[color:var(--muted)] shrink-0">({cat.count})</span>
@@ -108,7 +108,7 @@ const categoriesWithTools = uniqueCategories.map((category) => {
               {cat.tools.map((tool) => (
                 <a
                   href={withBasePath(tool.url)}
-                  class="drawer-nav-item block rounded-xl px-3 py-1.5 text-xs font-medium text-[color:var(--muted)] hover:text-[color:var(--fg)] hover:bg-[color:var(--surface)] transition"
+                  class="drawer-nav-item block rounded-xl px-3 py-1.5 text-xs font-medium text-[color:var(--muted)] hover:text-[color:var(--accent)] hover:bg-[color:var(--accent-soft)] transition"
                 >
                   {tool.title}
                 </a>

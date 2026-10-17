@@ -14,19 +14,19 @@ const {
 } = Astro.props;
 ---
 
-<header class="site-hero-header">
+<header class="space-y-3">
   {breadcrumbs && breadcrumbs.length > 0 && (
-    <nav aria-label="Breadcrumb" class="site-hero-breadcrumb">
+    <nav aria-label="Breadcrumb" class="site-tool-breadcrumb mb-2 text-xs text-[color:var(--muted)]">
       <ol class="flex flex-wrap items-center gap-2">
         {breadcrumbs.map((item, index) => (
           <li class="flex items-center gap-2">
             {index > 0 && <span aria-hidden="true" class="opacity-50">/</span>}
             {item.href ? (
-              <a class="transition hover:text-white" href={item.href}>
+              <a class="transition hover:text-[color:var(--fg)]" href={item.href}>
                 {item.label}
               </a>
             ) : (
-              <span aria-current="page" class="font-semibold text-white">
+              <span aria-current="page" class="font-semibold text-[color:var(--fg)]">
                 {item.label}
               </span>
             )}
@@ -37,18 +37,18 @@ const {
   )}
 
   {badge && (
-    <div class="site-hero-badge">
+    <div class="inline-flex items-center gap-2 rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1 text-xs font-semibold text-[color:var(--fg)]">
       <span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#34d399;flex-shrink:0;"></span>
       <span>{badge}</span>
     </div>
   )}
 
   {title && (
-    <h1 class="site-hero-h1" set:html={title} />
+    <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-[color:var(--fg)]" set:html={title} />
   )}
 
   {description && (
-    <p class="site-hero-desc" set:html={description} />
+    <p class="max-w-3xl text-sm sm:text-base leading-relaxed text-[color:var(--muted)]" set:html={description} />
   )}
 
   <slot />

@@ -70,13 +70,13 @@ const searchCategories = [
             data-color-class={activeTextColor}
             data-bg-class={activeBgColor}
             class:list={[
-              'search-filter-chip shrink-0 rounded-xl px-2.5 py-1 text-xs transition inline-flex items-center gap-1.5 border',
+              'search-filter-chip shrink-0 rounded-xl px-2.5 py-1 text-xs transition inline-flex items-center gap-1.5 border group',
               idx === 0
                 ? 'active font-bold border-[color:var(--border-strong)] bg-[color:var(--surface-strong)] text-[color:var(--fg)] shadow-xs'
                 : 'border-[color:var(--border)] bg-[color:var(--bg)] text-[color:var(--muted)] font-medium hover:text-[color:var(--fg)] hover:border-[color:var(--border-strong)]',
             ]}
           >
-            <svg class={`w-3.5 h-3.5 stroke-current shrink-0 ${catConfig.textColor}`} viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" set:html={catConfig.svgPath} />
+            <svg class="w-3.5 h-3.5 stroke-current shrink-0 text-slate-500 group-hover:text-[color:var(--accent)] group-[.active]:text-[color:var(--accent)] transition-colors" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" set:html={catConfig.svgPath} />
             <span>{cat.label}</span>
           </button>
         );
@@ -176,8 +176,8 @@ const searchCategories = [
           class="flex items-center justify-between gap-3 p-3 rounded-2xl hover:bg-[color:var(--surface-strong)] transition group"
         >
           <div class="flex items-center gap-3 min-w-0">
-            <div class="inline-flex shrink-0 items-center justify-center w-8 h-8 rounded-xl border ${tool.iconConfig.badgeBg} ${tool.iconConfig.badgeBorder} ${tool.iconConfig.iconColor} p-1.5 shadow-xs">
-              <svg class="w-4 h-4 stroke-current" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <div class="inline-flex shrink-0 items-center justify-center w-8 h-8 rounded-xl border border-slate-200/90 bg-slate-50 text-slate-500 group-hover:text-[color:var(--accent)] group-hover:border-[color:var(--accent)]/40 group-hover:bg-[color:var(--accent-soft)] transition-colors p-1.5 shadow-2xs">
+              <svg class="w-4 h-4 stroke-current transition-colors" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 ${tool.iconConfig.svgPath}
               </svg>
             </div>

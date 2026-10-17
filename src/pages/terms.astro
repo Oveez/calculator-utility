@@ -1,22 +1,24 @@
 ---
-import SiteHero from '../components/SiteHero.astro';
 import SiteLayout from '../layouts/SiteLayout.astro';
 import { siteName, withBasePath } from '../utils/site';
 ---
 
-<SiteLayout title={`Terms of Use · ${siteName}`} description="Terms of service and informational disclaimer for Toolscastle." heroCompact={true}>
-  <SiteHero
-    slot="hero"
-    badge="Legal & Terms"
-    title="Terms of Use"
-    description="Terms of service, educational usage guidelines, and informational disclaimers."
-  />
+<SiteLayout title={`Terms of Use · ${siteName}`} description="Terms of service and informational disclaimer for Toolscastle.">
   <article class="mx-auto max-w-3xl space-y-8 py-6">
+    <header class="space-y-3">
+      <p class="text-xs font-bold uppercase tracking-wider text-[color:var(--accent)]">Legal &amp; Terms</p>
+      <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-[color:var(--fg)]">
+        Terms of Use
+      </h1>
+      <p class="max-w-3xl text-sm sm:text-base leading-relaxed text-[color:var(--muted)]">
+        Terms of service, educational usage guidelines, and informational disclaimers.
+      </p>
+    </header>
 
     <div class="space-y-6 text-sm leading-7 text-[color:var(--muted)]">
-      <section class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-6 shadow-sm">
+      <section class="space-y-3">
         <h2 class="text-lg font-semibold text-[color:var(--fg)]">1. Informational & Estimation Purposes Only</h2>
-        <p class="mt-2">
+        <p>
           The calculation tools provided on <strong>{siteName}</strong> are designed for educational, informational, and personal estimation purposes only. While formulas are built to standard mathematical, financial, and scientific guidelines, outputs do not constitute professional financial, medical, tax, legal, or real estate advice.
         </p>
       </section>

@@ -30,30 +30,27 @@ const relatedCalculators = calculator.relatedSlugs
 
 <CalculatorLayout calculator={calculator} breadcrumbs={getCalculatorBreadcrumbs(calculator)} canonical={getCalculatorPath(calculator.slug)}>
   <article class="space-y-10">
-    <section class="grid gap-6 lg:grid-cols-2">
-      <article class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 sm:p-7 shadow-xs transition hover:border-[color:var(--border-strong)]">
-        <h2 class="text-xl sm:text-2xl font-bold tracking-tight text-[color:var(--fg)] flex items-center gap-2">
-          <Icon name="sparkles" class="w-5 h-5 text-[color:var(--accent)]" />
-          <span>Introduction</span>
+    <section class="grid gap-8 lg:grid-cols-2">
+      <div>
+        <h2 class="text-xl sm:text-2xl font-bold tracking-tight text-[color:var(--fg)]">
+          Introduction
         </h2>
-        <p class="mt-3.5 text-sm sm:text-base leading-relaxed text-[color:var(--muted)]">{calculator.content.intro}</p>
-      </article>
+        <p class="mt-2 text-sm sm:text-base leading-relaxed text-[color:var(--muted)]">{calculator.content.intro}</p>
+      </div>
 
-      <article class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 sm:p-7 shadow-xs transition hover:border-[color:var(--border-strong)]">
-        <h2 class="text-xl sm:text-2xl font-bold tracking-tight text-[color:var(--fg)] flex items-center gap-2">
-          <Icon name="gear" class="w-5 h-5 text-[color:var(--accent)]" />
-          <span>How It Works</span>
+      <div>
+        <h2 class="text-xl sm:text-2xl font-bold tracking-tight text-[color:var(--fg)]">
+          How It Works
         </h2>
-        <p class="mt-3.5 text-sm sm:text-base leading-relaxed text-[color:var(--muted)]">{calculator.content.howItWorks}</p>
-      </article>
+        <p class="mt-2 text-sm sm:text-base leading-relaxed text-[color:var(--muted)]">{calculator.content.howItWorks}</p>
+      </div>
     </section>
 
-    <section class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 sm:p-7 shadow-xs transition hover:border-[color:var(--border-strong)]">
-      <h2 class="text-xl sm:text-2xl font-bold tracking-tight text-[color:var(--fg)] flex items-center gap-2">
-        <Icon name="math" class="w-5 h-5 text-[color:var(--accent)]" />
-        <span>Formula Explanation</span>
+    <section class="space-y-2">
+      <h2 class="text-xl sm:text-2xl font-bold tracking-tight text-[color:var(--fg)]">
+        Formula Explanation
       </h2>
-      <p class="mt-3.5 max-w-4xl text-sm sm:text-base leading-relaxed text-[color:var(--muted)]">{calculator.content.formulaExplanation}</p>
+      <p class="max-w-4xl text-sm sm:text-base leading-relaxed text-[color:var(--muted)]">{calculator.content.formulaExplanation}</p>
     </section>
 
     <CalculatorParameterGuide
@@ -65,22 +62,19 @@ const relatedCalculators = calculator.relatedSlugs
       <AcademicGradingGuide />
     )}
 
-    <section class="space-y-6">
+    <section class="space-y-4">
       <div>
         <p class="text-xs font-bold uppercase tracking-[0.2em] text-[color:var(--accent)]">Examples</p>
-        <h2 class="mt-1 text-2xl font-bold tracking-tight text-[color:var(--fg)] flex items-center gap-2">
-          <Icon name="document" class="w-5 h-5 text-[color:var(--accent)]" />
-          <span>Worked Examples</span>
-        </h2>
+        <h2 class="mt-1 text-2xl font-bold tracking-tight text-[color:var(--fg)]">Worked Examples</h2>
       </div>
 
       {calculator.content.examples.length > 0 ? (
-        <div class="grid gap-4 lg:grid-cols-2">
+        <div class="grid gap-6 lg:grid-cols-2">
           {calculator.content.examples.map((example) => (
-            <article class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 shadow-xs transition hover:border-[color:var(--border-strong)]">
-              <h3 class="text-lg font-bold tracking-tight text-[color:var(--fg)]">{example.title}</h3>
-              <p class="mt-1.5 text-xs sm:text-sm leading-relaxed text-[color:var(--muted)]">{example.description}</p>
-              <dl class="mt-4 space-y-2 rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-strong)]/40 p-4 text-xs sm:text-sm text-[color:var(--muted)]">
+            <div class="space-y-2.5 border-l-2 border-[color:var(--border)] pl-4">
+              <h3 class="text-base font-bold tracking-tight text-[color:var(--fg)]">{example.title}</h3>
+              <p class="text-xs sm:text-sm leading-relaxed text-[color:var(--muted)]">{example.description}</p>
+              <dl class="mt-2 space-y-1.5 text-xs sm:text-sm text-[color:var(--muted)]">
                 {Object.entries(example.values).map(([key, value]) => (
                   <div class="flex items-start justify-between gap-4">
                     <dt class="font-medium text-[color:var(--fg)]">{key}</dt>
@@ -88,47 +82,39 @@ const relatedCalculators = calculator.relatedSlugs
                   </div>
                 ))}
                 {example.result && (
-                  <div class="flex items-start justify-between gap-4 border-t border-[color:var(--border)] pt-2.5 text-[color:var(--accent)] font-bold">
+                  <div class="flex items-start justify-between gap-4 border-t border-[color:var(--border)] pt-1.5 text-[color:var(--accent)] font-bold">
                     <dt>Result</dt>
                     <dd>{example.result}</dd>
                   </div>
                 )}
               </dl>
-            </article>
+            </div>
           ))}
         </div>
-      ) : (
-        <div class="rounded-2xl border border-dashed border-[color:var(--border)] bg-[color:var(--surface)] p-6 text-xs text-[color:var(--muted)]">
-          Add examples to this calculator config to show worked walkthroughs here.
-        </div>
-      )}
+      ) : null}
     </section>
 
-    <section class="space-y-6">
+    <section class="space-y-4">
       <div>
         <p class="text-xs font-bold uppercase tracking-[0.2em] text-[color:var(--accent)]">FAQ</p>
         <h2 class="mt-1 text-2xl font-bold tracking-tight text-[color:var(--fg)]">Frequently asked questions</h2>
       </div>
 
       {calculator.faq.length > 0 ? (
-        <div class="grid gap-3.5">
+        <div class="divide-y divide-[color:var(--border)] border-y border-[color:var(--border)]">
           {calculator.faq.map((item) => (
-            <details class="group rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 shadow-xs transition hover:border-[color:var(--border-strong)]">
-              <summary class="cursor-pointer list-none text-base font-bold tracking-tight text-[color:var(--fg)] flex items-center justify-between gap-4 select-none">
+            <details class="group py-3.5">
+              <summary class="cursor-pointer list-none text-base font-semibold tracking-tight text-[color:var(--fg)] flex items-center justify-between gap-4 select-none">
                 <span>{item.question}</span>
                 <svg class="h-4 w-4 shrink-0 text-[color:var(--muted)] transition-transform duration-200 group-open:rotate-180" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                   <polyline points="6 9 12 15 18 9"></polyline>
                 </svg>
               </summary>
-              <p class="mt-3.5 text-xs sm:text-sm leading-relaxed text-[color:var(--muted)] border-t border-[color:var(--border)]/60 pt-3">{item.answer}</p>
+              <p class="mt-2.5 text-xs sm:text-sm leading-relaxed text-[color:var(--muted)]">{item.answer}</p>
             </details>
           ))}
         </div>
-      ) : (
-        <div class="rounded-2xl border border-dashed border-[color:var(--border)] bg-[color:var(--surface)] p-6 text-xs text-[color:var(--muted)]">
-          FAQs are optional. Add them in the calculator config when needed.
-        </div>
-      )}
+      ) : null}
     </section>
 
     <section class="space-y-6">

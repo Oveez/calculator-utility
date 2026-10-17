@@ -43,7 +43,7 @@ function isInputConditionMet(input: CalculatorInput, values: Record<string, numb
       return (
         <div
           class:list={[
-            'flex flex-col justify-between rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface-strong)]/30 p-3.5 sm:p-4 transition hover:border-[color:var(--border-strong)] focus-within:border-[color:var(--accent)] focus-within:ring-2 focus-within:ring-[color:var(--accent)]/15',
+            'flex flex-col justify-end space-y-1.5',
             getColSpanClass(input, basicInputs.length)
           ]}
           data-input-wrapper={input.id}
@@ -123,7 +123,7 @@ function isInputConditionMet(input: CalculatorInput, values: Record<string, numb
             ) : input.type === 'textarea' ? (
               <textarea
                 id={`calc-input-${input.id}`}
-                class="w-full resize-y rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3.5 py-2.5 text-sm text-[color:var(--fg)] shadow-xs outline-none transition focus:border-[color:var(--accent)] focus:ring-2 focus:ring-[color:var(--accent-soft)]"
+                class="w-full resize-y rounded-md border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-sm text-[color:var(--fg)] shadow-xs outline-none transition focus:border-[color:var(--accent)] focus:ring-1 focus:ring-[color:var(--accent)]"
                 name={input.id}
                 rows={input.rows ?? 3}
                 placeholder={input.placeholder ?? input.label}
@@ -134,7 +134,7 @@ function isInputConditionMet(input: CalculatorInput, values: Record<string, numb
               <div class="relative w-full">
                 <select
                   id={`calc-input-${input.id}`}
-                  class="w-full cursor-pointer appearance-none rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] pl-3.5 pr-9 py-2.5 text-sm font-medium text-[color:var(--fg)] shadow-xs outline-none transition focus:border-[color:var(--accent)] focus:ring-2 focus:ring-[color:var(--accent-soft)]"
+                  class="w-full cursor-pointer appearance-none rounded-md border border-[color:var(--border)] bg-[color:var(--bg)] pl-3 pr-8 py-2 text-sm font-medium text-[color:var(--fg)] shadow-xs outline-none transition focus:border-[color:var(--accent)] focus:ring-1 focus:ring-[color:var(--accent)]"
                   name={input.id}
                   aria-label={input.label}
                   disabled={!isMet}
@@ -167,9 +167,9 @@ function isInputConditionMet(input: CalculatorInput, values: Record<string, numb
               <input
                 id={`calc-input-${input.id}`}
                 class:list={[
-                  'w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] py-2.5 text-sm font-semibold text-[color:var(--fg)] shadow-xs outline-none transition focus:border-[color:var(--accent)] focus:ring-2 focus:ring-[color:var(--accent-soft)]',
-                  input.prefix ? 'pl-8' : 'pl-3.5',
-                  input.suffix ? 'pr-12' : 'pr-3.5',
+                  'w-full rounded-md border border-[color:var(--border)] bg-[color:var(--bg)] py-2 text-sm font-medium text-[color:var(--fg)] shadow-xs outline-none transition focus:border-[color:var(--accent)] focus:ring-1 focus:ring-[color:var(--accent)]',
+                  input.prefix ? 'pl-8' : 'pl-3',
+                  input.suffix ? 'pr-12' : 'pr-3',
                 ]}
                 type={input.type === 'date' ? 'date' : input.type === 'datetime-local' ? 'datetime-local' : input.type === 'number' ? 'number' : 'text'}
                 name={input.id}
@@ -197,9 +197,10 @@ function isInputConditionMet(input: CalculatorInput, values: Record<string, numb
   </div>
 
   <!-- Advanced Options (Collapsible Progressive Disclosure) -->
+  <!-- Advanced Options (Toggled via clean disclosure) -->
   {advancedInputs.length > 0 && (
-    <details class="group rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] transition-all">
-      <summary class="flex cursor-pointer select-none items-center justify-between px-5 py-3.5 text-xs font-bold uppercase tracking-wider text-[color:var(--fg)] hover:text-[color:var(--accent)]">
+    <details class="group rounded-lg border border-[color:var(--border)] bg-[color:var(--surface)] transition-all">
+      <summary class="flex cursor-pointer select-none items-center justify-between px-4 py-3 text-xs font-bold uppercase tracking-wider text-[color:var(--fg)] hover:text-[color:var(--accent)]">
         <span class="flex items-center gap-2">
           <svg class="h-4 w-4 text-[color:var(--accent)] transition-transform group-open:rotate-90" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
             <polyline points="9 18 15 12 9 6"></polyline>
@@ -210,13 +211,13 @@ function isInputConditionMet(input: CalculatorInput, values: Record<string, numb
           {advancedInputs.length} optional {advancedInputs.length === 1 ? 'parameter' : 'parameters'}
         </span>
       </summary>
-      <div class="grid gap-3.5 border-t border-[color:var(--border)] p-4 sm:grid-cols-2">
+      <div class="grid gap-4 border-t border-[color:var(--border)] p-4 sm:grid-cols-2">
         {advancedInputs.map((input) => {
           const isMet = isInputConditionMet(input, initialValues);
           return (
             <div
               class:list={[
-                'flex flex-col justify-between rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3.5 transition hover:border-[color:var(--border-strong)] focus-within:border-[color:var(--accent)] focus-within:ring-2 focus-within:ring-[color:var(--accent)]/15',
+                'flex flex-col justify-end space-y-1.5',
                 getColSpanClass(input, advancedInputs.length)
               ]}
               data-input-wrapper={input.id}
@@ -224,7 +225,7 @@ function isInputConditionMet(input: CalculatorInput, values: Record<string, numb
               data-show-when-value={input.showWhen ? (Array.isArray(input.showWhen.value) ? input.showWhen.value.join(',') : String(input.showWhen.value)) : undefined}
               style={!isMet ? 'display: none;' : undefined}
             >
-              <div class="mb-2 flex items-center justify-between gap-2">
+              <div class="flex items-center justify-between gap-2">
                 <label for={`calc-input-${input.id}`} class="text-xs font-semibold uppercase tracking-wider text-[color:var(--fg)]">
                   {input.label}
                 </label>
@@ -236,7 +237,7 @@ function isInputConditionMet(input: CalculatorInput, values: Record<string, numb
               </div>
 
               {input.helpText && (
-                <p class="mb-2 text-[11px] leading-tight text-[color:var(--muted)]">{input.helpText}</p>
+                <p class="text-[11px] leading-tight text-[color:var(--muted)]">{input.helpText}</p>
               )}
 
               <div class="relative flex items-center">
@@ -250,7 +251,7 @@ function isInputConditionMet(input: CalculatorInput, values: Record<string, numb
                   <div class="relative w-full">
                     <select
                       id={`calc-input-${input.id}`}
-                      class="w-full cursor-pointer appearance-none rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] pl-3.5 pr-9 py-2 text-sm font-medium text-[color:var(--fg)] shadow-xs outline-none transition focus:border-[color:var(--accent)] focus:ring-2 focus:ring-[color:var(--accent-soft)]"
+                      class="w-full cursor-pointer appearance-none rounded-md border border-[color:var(--border)] bg-[color:var(--surface)] pl-3 pr-8 py-2 text-sm font-medium text-[color:var(--fg)] shadow-xs outline-none transition focus:border-[color:var(--accent)] focus:ring-1 focus:ring-[color:var(--accent)]"
                       name={input.id}
                       aria-label={input.label}
                       disabled={!isMet}
@@ -271,9 +272,9 @@ function isInputConditionMet(input: CalculatorInput, values: Record<string, numb
                   <input
                     id={`calc-input-${input.id}`}
                     class:list={[
-                      'w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] py-2 text-sm font-semibold text-[color:var(--fg)] shadow-xs outline-none transition focus:border-[color:var(--accent)] focus:ring-2 focus:ring-[color:var(--accent-soft)]',
-                      input.prefix ? 'pl-8' : 'pl-3.5',
-                      input.suffix ? 'pr-12' : 'pr-3.5',
+                      'w-full rounded-md border border-[color:var(--border)] bg-[color:var(--surface)] py-2 text-sm font-medium text-[color:var(--fg)] shadow-xs outline-none transition focus:border-[color:var(--accent)] focus:ring-1 focus:ring-[color:var(--accent)]',
+                      input.prefix ? 'pl-8' : 'pl-3',
+                      input.suffix ? 'pr-12' : 'pr-3',
                     ]}
                     type={input.type === 'date' ? 'date' : input.type === 'datetime-local' ? 'datetime-local' : input.type === 'number' ? 'number' : 'text'}
                     name={input.id}
@@ -300,25 +301,25 @@ function isInputConditionMet(input: CalculatorInput, values: Record<string, numb
 
   <!-- Extended Options (Optional Niche Settings) -->
   {extendedInputs.length > 0 && (
-    <details class="group rounded-2xl border border-dashed border-[color:var(--border)] bg-[color:var(--surface)] transition-all">
-      <summary class="flex cursor-pointer select-none items-center justify-between px-5 py-3 text-xs font-bold uppercase tracking-wider text-[color:var(--muted)] hover:text-[color:var(--fg)]">
+    <details class="group rounded-lg border border-dashed border-[color:var(--border)] bg-[color:var(--surface)] transition-all">
+      <summary class="flex cursor-pointer select-none items-center justify-between px-4 py-3 text-xs font-bold uppercase tracking-wider text-[color:var(--muted)] hover:text-[color:var(--fg)]">
         <span class="flex items-center gap-2">
           <svg class="h-3.5 w-3.5 text-[color:var(--muted)] transition-transform group-open:rotate-90" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <polyline points="9 18 15 12 9 6"></polyline>
           </svg>
-          Extended Assumptions & Adjustments
+          Extended Assumptions &amp; Adjustments
         </span>
         <span class="text-[10px] font-medium text-[color:var(--muted)]">
           {extendedInputs.length} additional
         </span>
       </summary>
-      <div class="grid gap-3.5 border-t border-[color:var(--border)] p-4 sm:grid-cols-2">
+      <div class="grid gap-4 border-t border-[color:var(--border)] p-4 sm:grid-cols-2">
         {extendedInputs.map((input) => {
           const isMet = isInputConditionMet(input, initialValues);
           return (
             <div
               class:list={[
-                'rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] p-3.5',
+                'flex flex-col justify-end space-y-1.5',
                 getColSpanClass(input, extendedInputs.length)
               ]}
               data-input-wrapper={input.id}
@@ -326,7 +327,7 @@ function isInputConditionMet(input: CalculatorInput, values: Record<string, numb
               data-show-when-value={input.showWhen ? (Array.isArray(input.showWhen.value) ? input.showWhen.value.join(',') : String(input.showWhen.value)) : undefined}
               style={!isMet ? 'display: none;' : undefined}
             >
-              <div class="mb-1.5 flex items-center justify-between">
+              <div class="flex items-center justify-between">
                 <label for={`calc-input-${input.id}`} class="text-xs font-semibold uppercase tracking-wider text-[color:var(--fg)]">
                   {input.label}
                 </label>
@@ -334,7 +335,7 @@ function isInputConditionMet(input: CalculatorInput, values: Record<string, numb
               </div>
               <input
                 id={`calc-input-${input.id}`}
-                class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-2 text-sm font-semibold text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)]"
+                class="w-full rounded-md border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-2 text-sm font-medium text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)] focus:ring-1 focus:ring-[color:var(--accent)]"
                 type={input.type === 'number' ? 'number' : 'text'}
                 name={input.id}
                 min={input.min}

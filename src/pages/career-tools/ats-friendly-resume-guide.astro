@@ -8,7 +8,7 @@ const canonicalUrl = toAbsoluteUrl('/career-tools/ats-friendly-resume-guide/');
 
 const breadcrumbItems = [
   { label: 'Home', href: toAbsoluteUrl('/') },
-  { label: 'Career Tools', href: toAbsoluteUrl('/career-tools/') },
+  { label: 'Career Tools' },
   { label: 'ATS Resume Guide' },
 ];
 
@@ -68,23 +68,22 @@ const schemaGraph = [
 ];
 ---
 
-<SiteLayout heroCompact={true} title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
+<SiteLayout title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
   <script is:inline type="application/ld+json" set:html={JSON.stringify(schemaGraph)} />
 
-  
-  <div slot="hero" class="site-hero-header">
+  <article class="mx-auto max-w-4xl space-y-10 py-4">
     <!-- Breadcrumbs -->
-    <nav aria-label="Breadcrumb">
-      <ol class="flex flex-wrap items-center gap-2 text-sm text-[color:var(--muted)]">
+    <nav class="site-tool-breadcrumb mb-2" aria-label="Breadcrumb">
+      <ol class="flex flex-wrap items-center gap-2 text-xs text-[color:var(--muted)]">
         {breadcrumbItems.map((item, index) => (
           <li class="flex items-center gap-2">
-            {index > 0 && <span aria-hidden="true">/</span>}
+            {index > 0 && <span aria-hidden="true" class="opacity-50">/</span>}
             {item.href ? (
               <a class="transition hover:text-[color:var(--fg)]" href={item.href}>
                 {item.label}
               </a>
             ) : (
-              <span aria-current="page" class="font-medium text-[color:var(--fg)]">
+              <span aria-current="page" class="font-semibold text-[color:var(--fg)]">
                 {item.label}
               </span>
             )}
@@ -95,19 +94,16 @@ const schemaGraph = [
 
     <!-- Header -->
     <header class="space-y-3">
-      <div class="inline-flex items-center gap-2 rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3.5 py-1 text-xs font-bold text-[color:var(--fg)]">
+      <div class="inline-flex items-center gap-2 rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3.5 py-1 text-xs font-semibold text-[color:var(--fg)]">
         <span>ATS Standards &amp; Formatting Guide</span>
       </div>
-      <h1 class="text-2xl font-bold tracking-tight text-[color:var(--fg)] sm:text-3xl lg:text-4xl">
+      <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-[color:var(--fg)]">
         How to Make an ATS-Friendly Resume — Resume Format &amp; Guidelines
       </h1>
-      <p class="text-xs sm:text-sm leading-relaxed text-[color:var(--muted)]">
+      <p class="max-w-3xl text-sm sm:text-base leading-relaxed text-[color:var(--muted)]">
         Actionable resume advice on how applicant tracking system algorithms scan your document. Learn the best resume format for ATS, avoid layout traps, and optimize your keywords to win more interviews.
       </p>
     </header>
-  </div>
-
-  <article class="mx-auto max-w-4xl space-y-10 py-4">
 
     <!-- Content Sections -->
     <div class="space-y-8 text-sm leading-relaxed text-[color:var(--muted)]">

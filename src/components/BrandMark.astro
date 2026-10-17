@@ -1,9 +1,10 @@
 ---
 /**
- * BrandMark — Toolscastle inline SVG logo.
- * Clean geometric castle rook mark + wordmark.
- * Uses Electric Indigo #4F46E5 — matching the new --accent design token.
+ * BrandMark — Toolscastle official logo component.
+ * Uses official logo variants (dark text on white for light headers, transparent white text for dark surfaces).
  */
+import { withBasePath } from '../utils/site';
+
 interface Props {
   size?: 'sm' | 'md' | 'lg';
   showWordmark?: boolean;
@@ -18,69 +19,32 @@ const {
   variant = 'default',
 } = Astro.props;
 
-const iconSize = size === 'sm' ? 28 : size === 'lg' ? 44 : 36;
-const wordmarkClass =
-  size === 'sm'
-    ? 'text-base font-black tracking-tight leading-none'
-    : size === 'lg'
-    ? 'text-3xl font-black tracking-tight leading-none'
-    : 'text-xl sm:text-2xl font-black tracking-tight leading-none';
-
-// Unique ID to avoid SVG clipPath conflicts when the component is used multiple times
-const uid = `bm-${Math.random().toString(36).slice(2, 7)}`;
-
-// Brand color — Electric Indigo matching new --accent CSS token
-const brandColor = '#4F46E5';
+const logoHeight = size === 'sm' ? 'h-7' : size === 'lg' ? 'h-11' : 'h-9 sm:h-10';
+const iconSize = size === 'sm' ? 'w-7 h-7' : size === 'lg' ? 'w-10 h-10' : 'w-8 h-8 sm:w-9 sm:h-9';
+const logoSrc = variant === 'light'
+  ? withBasePath('/logo-footer-transparent.png')
+  : withBasePath('/logo.png');
 ---
 
-<span class={`inline-flex items-center gap-2.5 ${extraClass}`}>
-  <!--
-    Castle Rook SVG Mark
-    Viewport: 36×36
-    Design:
-      - 3 merlons (rectangular battlements) at the top
-      - Trapezoid tower body tapering slightly toward base
-      - Arched gate opening punched out via fill-rule evenodd
-    Color: #4F46E5 (Electric Indigo) — matches new --accent token.
-  -->
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    width={iconSize}
-    height={iconSize}
-    viewBox="0 0 36 36"
-    aria-hidden="true"
-    role="img"
-  >
-    <defs>
-      <clipPath id={uid}>
-        <rect x="0" y="0" width="36" height="36" />
-      </clipPath>
-    </defs>
+{showWordmark ? (
+  <span class={`inline-flex items-center ${extraClass}`}>
+    <img
+      src={logoSrc}
+      alt="ToolsCastle"
+      class={`${logoHeight} w-auto object-contain rounded-sm`}
+      loading="eager"
+      decoding="async"
+    />
+  </span>
+) : (
+  <span class={`inline-flex items-center ${extraClass}`}>
+    <img
+      src={withBasePath('/calc.png')}
+      alt="ToolsCastle Logo"
+      class={`${iconSize} object-contain rounded-md`}
+      loading="eager"
+      decoding="async"
+    />
+  </span>
+)}
 
-    <g>
-      <!-- Battlements: 3 rectangular merlons -->
-      <rect x="4"    y="2" width="7" height="8" rx="1.5" fill={brandColor}/>
-      <rect x="14.5" y="2" width="7" height="8" rx="1.5" fill={brandColor}/>
-      <rect x="25"   y="2" width="7" height="8" rx="1.5" fill={brandColor}/>
-
-      <!--
-        Tower body with arch gate punched out via evenodd fill-rule.
-      -->
-      <path
-        fill-rule="evenodd"
-        clip-rule="evenodd"
-        fill={brandColor}
-        d="
-          M3 10 H33 L30 34 H6 Z
-          M13.5 34 L13.5 23.5 Q18 17.5 22.5 23.5 L22.5 34 Z
-        "
-      />
-    </g>
-  </svg>
-
-  {showWordmark && (
-    <span class={wordmarkClass}>
-      <span class={variant === 'light' ? 'text-white' : 'text-[color:var(--fg)]'}>Tools</span><span style={`color:${brandColor}`}>castle</span>
-    </span>
-  )}
-</span>

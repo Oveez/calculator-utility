@@ -1,5 +1,4 @@
 ---
-import SiteHero from '../components/SiteHero.astro';
 import SiteLayout from '../layouts/SiteLayout.astro';
 import { siteName, withBasePath } from '../utils/site';
 
@@ -7,19 +6,22 @@ const pageTitle = `Privacy Policy · ${siteName}`;
 const pageDesc = "Privacy policy, cookie disclosures, client-side data handling, and third-party advertising compliance.";
 ---
 
-<SiteLayout title={pageTitle} description={pageDesc} canonical={withBasePath('/privacy/')} heroCompact={true}>
-  <SiteHero
-    slot="hero"
-    badge="Legal & Privacy"
-    title="Privacy Policy"
-    description="Privacy-first architecture: zero server logging, client-side execution, and full data privacy compliance."
-  />
+<SiteLayout title={pageTitle} description={pageDesc} canonical={withBasePath('/privacy/')}>
   <article class="mx-auto max-w-3xl space-y-8 py-6">
+    <header class="space-y-3">
+      <p class="text-xs font-bold uppercase tracking-wider text-[color:var(--accent)]">Legal &amp; Privacy</p>
+      <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-[color:var(--fg)]">
+        Privacy Policy
+      </h1>
+      <p class="max-w-3xl text-sm sm:text-base leading-relaxed text-[color:var(--muted)]">
+        Privacy-first architecture: zero server logging, client-side execution, and full data privacy compliance.
+      </p>
+    </header>
 
     <div class="space-y-6 text-sm leading-7 text-[color:var(--muted)]">
-      <section class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-6 shadow-sm">
+      <section class="space-y-3">
         <h2 class="text-lg font-semibold text-[color:var(--fg)]">Summary: Privacy-First Architecture</h2>
-        <p class="mt-2">
+        <p>
           At <strong>{siteName}</strong>, we believe online tool websites shouldn't spy on your financial, medical, or academic data. All calculation engines (including our 24-country progressive tax models, currency conversions, and loan formulas) execute 100% client-side in your browser memory. None of your input numbers are ever sent to our servers.
         </p>
       </section>
