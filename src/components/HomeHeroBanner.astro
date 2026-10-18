@@ -1,0 +1,273 @@
+---
+import { castleParticlePoints } from '../data/castleParticlePoints';
+import { withBasePath } from '../utils/site';
+---
+
+<section id="home-hero-banner" class="relative w-full overflow-hidden bg-[#FA4619] text-white">
+  <!-- Subtle decorative ambient layered sweeps matching reference aesthetic -->
+  <div class="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
+    <div
+      class="absolute -left-40 -top-40 h-[600px] w-[600px] rounded-full opacity-25 mix-blend-multiply blur-2xl"
+      style="background: radial-gradient(circle, #9E1F00 0%, transparent 70%);"
+    ></div>
+    <div
+      class="absolute left-[-15%] bottom-[-30%] h-[550px] w-[550px] rounded-full opacity-20 blur-3xl"
+      style="background: radial-gradient(circle, #781700 0%, transparent 65%);"
+    ></div>
+    <!-- Layered subtle wave curves on the left edge like in reference -->
+    <svg
+      class="absolute -left-20 top-0 h-full w-[420px] opacity-15 pointer-events-none"
+      viewBox="0 0 400 800"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path d="M-100 0 C150 150 200 350 -100 500" stroke="#781700" stroke-width="80" stroke-linecap="round" />
+      <path d="M-120 180 C180 320 220 520 -80 700" stroke="#781700" stroke-width="70" stroke-linecap="round" />
+      <path d="M-140 360 C190 480 240 680 -60 880" stroke="#781700" stroke-width="60" stroke-linecap="round" />
+    </svg>
+  </div>
+
+  <div class="relative mx-auto flex w-full max-w-7xl flex-col-reverse items-center justify-between gap-10 px-4 py-12 sm:px-6 sm:py-16 md:py-20 lg:flex-row lg:gap-12 lg:px-8 xl:py-24">
+    <!-- Left Column: High-Impact Typography & Action Buttons -->
+    <div class="z-10 flex flex-col items-center text-center lg:items-start lg:text-left max-w-2xl space-y-6">
+      <!-- Main Headline (H1) -->
+      <h1 class="text-3xl font-extrabold tracking-tight text-white sm:text-4xl md:text-5xl lg:text-6xl leading-[1.08]">
+        Advanced Online Tools <br class="hidden sm:inline" />
+        <span class="text-white/95">&amp; Precision Calculators</span>
+      </h1>
+
+      <!-- Subtitle Description -->
+      <p class="text-sm font-normal leading-relaxed text-white/90 sm:text-base md:text-lg max-w-xl">
+        Access 180+ free calculators, statutory international tax engines, PDF tools, image converters, and developer utilities with instant in-browser execution.
+      </p>
+
+      <!-- Action Buttons (Sharp-edged, High Contrast) -->
+      <div class="flex flex-wrap items-center justify-center lg:justify-start gap-4 pt-2">
+        <a
+          href="#calculators"
+          class="inline-flex items-center justify-center gap-2.5 bg-white px-7 py-3.5 text-xs sm:text-sm font-bold text-[#FA4619] shadow-md transition-all hover:bg-slate-100 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-white group"
+          style="border-radius: 0;"
+        >
+          <span>EXPLORE ALL TOOLS</span>
+          <span class="text-base leading-none transition-transform group-hover:translate-x-1">→</span>
+        </a>
+
+        <a
+          href="#tax-suite"
+          class="inline-flex items-center justify-center gap-2.5 border-2 border-white px-6 py-3.5 text-xs sm:text-sm font-bold text-white transition-all hover:bg-white/15 focus:outline-none focus:ring-2 focus:ring-white group"
+          style="border-radius: 0;"
+        >
+          <span>TAX CALCULATORS</span>
+          <span class="text-base leading-none transition-transform group-hover:translate-x-1">→</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- Right Column: Animated Dotted Castle Logo Canvas -->
+    <div class="relative z-10 flex w-full max-w-[460px] sm:max-w-[500px] lg:max-w-[520px] aspect-square items-center justify-center">
+      <canvas
+        id="castle-particle-canvas"
+        class="h-full w-full select-none"
+        aria-label="Animated ToolsCastle logo particle constellation"
+      ></canvas>
+    </div>
+  </div>
+</section>
+
+<!-- Particle Points Data (compact JSON island for hydration) -->
+<script id="castle-particle-data" type="application/json" set:html={JSON.stringify(castleParticlePoints)}></script>
+
+<script is:inline>
+  (function () {
+    const canvas = document.getElementById('castle-particle-canvas');
+    const dataScript = document.getElementById('castle-particle-data');
+    if (!canvas || !dataScript) return;
+
+    let rawPoints = [];
+    try {
+      rawPoints = JSON.parse(dataScript.textContent || '[]');
+    } catch (e) {
+      return;
+    }
+    if (!rawPoints.length) return;
+
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    let animId = null;
+    let isVisible = true;
+    let width = 0;
+    let height = 0;
+    let dpr = 1;
+
+    // Mouse coordinates relative to canvas
+    let mouse = { x: -9999, y: -9999, isOver: false };
+
+    // Build particle array with varied sizes, twinkling phases, and spring physics
+    const particles = rawPoints.map(([nx, ny]) => {
+      // Small randomized offset to avoid rigid grid
+      const jx = (Math.random() - 0.5) * 0.008;
+      const jy = (Math.random() - 0.5) * 0.008;
+      const baseAlpha = Math.random() * 0.55 + 0.45;
+      return {
+        baseNx: nx + jx,
+        baseNy: ny + jy,
+        x: 0,
+        y: 0,
+        vx: 0,
+        vy: 0,
+        radius: Math.random() * 1.6 + 0.8,
+        baseAlpha: baseAlpha,
+        alpha: baseAlpha,
+        phase: Math.random() * Math.PI * 2,
+        shimmerSpeed: Math.random() * 1.8 + 0.8,
+        driftFreqX: Math.random() * 1.2 + 0.4,
+        driftFreqY: Math.random() * 1.2 + 0.4,
+        driftAmp: Math.random() * 1.6 + 0.5,
+      };
+    });
+
+    // Add 250 ambient floating stardust particles around the logo
+    for (let i = 0; i < 250; i++) {
+      const parent = rawPoints[Math.floor(Math.random() * rawPoints.length)];
+      const spreadX = (Math.random() - 0.5) * 0.22;
+      const spreadY = (Math.random() - 0.5) * 0.22;
+      const baseAlpha = Math.random() * 0.45 + 0.2;
+      particles.push({
+        baseNx: Math.max(0.02, Math.min(0.98, parent[0] + spreadX)),
+        baseNy: Math.max(0.02, Math.min(0.98, parent[1] + spreadY)),
+        x: 0,
+        y: 0,
+        vx: 0,
+        vy: 0,
+        radius: Math.random() * 1.3 + 0.6,
+        baseAlpha: baseAlpha,
+        alpha: baseAlpha,
+        phase: Math.random() * Math.PI * 2,
+        shimmerSpeed: Math.random() * 2.2 + 0.6,
+        driftFreqX: Math.random() * 1.4 + 0.3,
+        driftFreqY: Math.random() * 1.4 + 0.3,
+        driftAmp: Math.random() * 2.5 + 1.0,
+      });
+    }
+
+    function resize() {
+      const rect = canvas.getBoundingClientRect();
+      width = Math.floor(rect.width);
+      height = Math.floor(rect.height);
+      if (width === 0 || height === 0) return;
+
+      dpr = Math.min(window.devicePixelRatio || 1, 2);
+      canvas.width = width * dpr;
+      canvas.height = height * dpr;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+      // Re-initialize particle coordinate caches
+      for (let i = 0; i < particles.length; i++) {
+        const p = particles[i];
+        p.x = p.baseNx * width;
+        p.y = p.baseNy * height;
+        p.vx = 0;
+        p.vy = 0;
+      }
+    }
+
+    // Interactive mouse listeners
+    canvas.addEventListener('mousemove', function (e) {
+      const rect = canvas.getBoundingClientRect();
+      mouse.x = e.clientX - rect.left;
+      mouse.y = e.clientY - rect.top;
+      mouse.isOver = true;
+    });
+
+    canvas.addEventListener('mouseleave', function () {
+      mouse.isOver = false;
+      mouse.x = -9999;
+      mouse.y = -9999;
+    });
+
+    window.addEventListener('resize', resize);
+    resize();
+
+    // Main animation loop
+    function animate() {
+      if (!isVisible) {
+        animId = null;
+        return;
+      }
+
+      ctx.clearRect(0, 0, width, height);
+      const time = performance.now() * 0.001;
+      const repelRadius = 85;
+      const repelRadiusSq = repelRadius * repelRadius;
+
+      for (let i = 0; i < particles.length; i++) {
+        const p = particles[i];
+
+        // 1. Twinkling shimmer effect
+        p.alpha = p.baseAlpha + Math.sin(time * p.shimmerSpeed + p.phase) * 0.28;
+        if (p.alpha < 0.15) p.alpha = 0.15;
+        if (p.alpha > 1) p.alpha = 1;
+
+        // 2. Harmonic wave drift
+        const targetX = p.baseNx * width + Math.sin(time * p.driftFreqX + p.phase) * p.driftAmp;
+        const targetY = p.baseNy * height + Math.cos(time * p.driftFreqY + p.phase) * p.driftAmp;
+
+        // 3. Mouse repulsion physics
+        if (mouse.isOver) {
+          const dx = p.x - mouse.x;
+          const dy = p.y - mouse.y;
+          const distSq = dx * dx + dy * dy;
+
+          if (distSq < repelRadiusSq && distSq > 0.001) {
+            const dist = Math.sqrt(distSq);
+            const force = (1 - dist / repelRadius) * 14;
+            p.vx += (dx / dist) * force;
+            p.vy += (dy / dist) * force;
+          }
+        }
+
+        // 4. Spring-damping recovery towards target position
+        p.vx += (targetX - p.x) * 0.08;
+        p.vy += (targetY - p.y) * 0.08;
+        p.vx *= 0.82;
+        p.vy *= 0.82;
+        p.x += p.vx;
+        p.y += p.vy;
+
+        // 5. Draw glowing white particle
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(255, 255, 255, ' + p.alpha.toFixed(3) + ')';
+        ctx.fill();
+      }
+
+      animId = requestAnimationFrame(animate);
+    }
+
+    // IntersectionObserver to pause RAF when out of viewport for 0% idle CPU usage
+    if ('IntersectionObserver' in window) {
+      const observer = new IntersectionObserver(
+        function (entries) {
+          for (let i = 0; i < entries.length; i++) {
+            if (entries[i].isIntersecting) {
+              isVisible = true;
+              if (!animId) animate();
+            } else {
+              isVisible = false;
+              if (animId) {
+                cancelAnimationFrame(animId);
+                animId = null;
+              }
+            }
+          }
+        },
+        { threshold: 0.05 }
+      );
+      observer.observe(canvas);
+    } else {
+      animate();
+    }
+  })();
+</script>
+

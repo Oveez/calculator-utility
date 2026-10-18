@@ -128,29 +128,29 @@ button {
 }
 
 /* Accent buttons always use crisp white text */
-button[class*="bg-[color:var(--accent)]"],
-button[class*="bg-accent"],
-button[class*="bg-blue-"],
-button[class*="bg-indigo-"],
-button[class*="bg-violet-"],
-a[class*="bg-[color:var(--accent)]"],
-a[class*="bg-accent"],
-a[class*="bg-blue-"],
-a[class*="bg-indigo-"],
-a[class*="bg-violet-"],
+button[class*="bg-[color:var(--accent)]"]:not([class*="hover:bg-"]):not([class*="group-hover:bg-"]),
+button[class*="bg-accent"]:not([class*="hover:bg-"]):not([class*="group-hover:bg-"]),
+button[class*="bg-blue-"]:not([class*="hover:bg-"]):not([class*="group-hover:bg-"]),
+button[class*="bg-indigo-"]:not([class*="hover:bg-"]):not([class*="group-hover:bg-"]),
+button[class*="bg-violet-"]:not([class*="hover:bg-"]):not([class*="group-hover:bg-"]),
+a[class*="bg-[color:var(--accent)]"]:not([class*="hover:bg-"]):not([class*="group-hover:bg-"]),
+a[class*="bg-accent"]:not([class*="hover:bg-"]):not([class*="group-hover:bg-"]),
+a[class*="bg-blue-"]:not([class*="hover:bg-"]):not([class*="group-hover:bg-"]),
+a[class*="bg-indigo-"]:not([class*="hover:bg-"]):not([class*="group-hover:bg-"]),
+a[class*="bg-violet-"]:not([class*="hover:bg-"]):not([class*="group-hover:bg-"]),
 .btn-accent,
 .btn-primary {
   color: #FFFFFF !important;
 }
 
-button[class*="bg-[color:var(--accent)]"] *,
-button[class*="bg-accent"] *,
-button[class*="bg-blue-"] *,
-button[class*="bg-indigo-"] *,
-a[class*="bg-[color:var(--accent)]"] *,
-a[class*="bg-accent"] *,
-a[class*="bg-blue-"] *,
-a[class*="bg-indigo-"] * {
+button[class*="bg-[color:var(--accent)]"]:not([class*="hover:bg-"]):not([class*="group-hover:bg-"]) *,
+button[class*="bg-accent"]:not([class*="hover:bg-"]):not([class*="group-hover:bg-"]) *,
+button[class*="bg-blue-"]:not([class*="hover:bg-"]):not([class*="group-hover:bg-"]) *,
+button[class*="bg-indigo-"]:not([class*="hover:bg-"]):not([class*="group-hover:bg-"]) *,
+a[class*="bg-[color:var(--accent)]"]:not([class*="hover:bg-"]):not([class*="group-hover:bg-"]) *,
+a[class*="bg-accent"]:not([class*="hover:bg-"]):not([class*="group-hover:bg-"]) *,
+a[class*="bg-blue-"]:not([class*="hover:bg-"]):not([class*="group-hover:bg-"]) *,
+a[class*="bg-indigo-"]:not([class*="hover:bg-"]):not([class*="group-hover:bg-"]) * {
   color: inherit !important;
 }
 
@@ -182,8 +182,8 @@ a:not([class*="bg-[color:var(--accent)]"]):not([class*="bg-accent"]):hover > svg
 
 .nav-action-icon:hover svg,
 .nav-action-icon:focus-visible svg {
-  color: #FFFFFF !important;
-  stroke: #FFFFFF !important;
+  color: #334155 !important;
+  stroke: #334155 !important;
 }
 
 select option {
@@ -1152,11 +1152,11 @@ span:has(> .bg-amber-500) .bg-amber-500 {
   font-weight: 600;
 }
 
-/* Header dropdown tools use the same orange accent as their category triggers. */
+/* Header dropdown tools: Theme's solid orange background with existing slate grey text */
 nav[aria-label="Primary"] .nav-tool-link:hover,
 nav[aria-label="Primary"] .nav-tool-link:focus-visible {
-  background-color: var(--accent-soft) !important;
-  color: var(--accent) !important;
+  background-color: var(--accent) !important;
+  color: #334155 !important;
   font-weight: 500;
 }
 

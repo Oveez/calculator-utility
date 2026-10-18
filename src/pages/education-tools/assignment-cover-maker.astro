@@ -15,7 +15,6 @@ const canonicalUrl = toAbsoluteUrl('/education-tools/assignment-cover-maker/');
 
 const breadcrumbItems = [
   { label: 'Home', href: toAbsoluteUrl('/') },
-  { label: 'Education Tools' },
   { label: 'Assignment Cover Maker' },
 ];
 
@@ -569,10 +568,19 @@ const schemaGraph = [
             <input type="file" id="custom-logo-file" accept="image/png,image/jpeg,image/svg+xml,image/webp" class="hidden" />
 
             <!-- Custom Logo Upload Prompt (revealed when custom mode active) -->
-            <div id="custom-logo-prompt" class="hidden pt-1">
-              <label for="custom-logo-file" class="inline-flex items-center gap-2 px-3 py-2.5 rounded-none border-2 border-dashed border-[color:var(--accent)] bg-[color:var(--surface)] hover:bg-[color:var(--accent-soft)] text-xs font-bold text-[color:var(--fg)] transition cursor-pointer w-full justify-center group shadow-xs">
-                <Icon name="image" class="w-4 h-4 text-[color:var(--accent)]" />
-                <span id="custom-logo-filename">Choose PNG, JPG, or SVG file...</span>
+            <div id="custom-logo-prompt" class="hidden pt-2">
+              <label for="custom-logo-file" class="flex flex-col items-center justify-center gap-2 p-4 rounded-none border-2 border-dashed border-[color:var(--border)] bg-[color:var(--surface)] hover:border-[color:var(--accent)] transition cursor-pointer text-center group">
+                <div class="flex h-10 w-10 items-center justify-center rounded-none bg-[color:var(--surface-strong)] text-[color:var(--accent)] shadow-xs transition group-hover:scale-105">
+                  <Icon name="image" class="w-5 h-5 text-[color:var(--accent)]" />
+                </div>
+                <div class="space-y-0.5">
+                  <span id="custom-logo-filename" class="text-xs font-bold text-[color:var(--fg)] block">Choose PNG, JPG, or SVG Logo</span>
+                  <span class="text-[11px] text-[color:var(--muted)]">Click to browse or drop an emblem/logo</span>
+                </div>
+                <span class="inline-flex items-center gap-1.5 rounded-none bg-[color:var(--accent)] px-4 py-1.5 text-xs font-bold text-white shadow-xs hover:opacity-95 transition mt-1">
+                  <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+                  Browse File
+                </span>
               </label>
             </div>
 

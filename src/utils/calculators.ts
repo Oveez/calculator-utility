@@ -34,7 +34,6 @@ export function getCalculatorPath(slug: string): string {
 export function getCalculatorBreadcrumbs(calculator: CalculatorConfig): BreadcrumbItem[] {
   return [
     { label: 'Home', href: withBasePath('/') },
-    { label: 'Calculators', href: withBasePath('/#calculators') },
     { label: calculator.title },
   ];
 }

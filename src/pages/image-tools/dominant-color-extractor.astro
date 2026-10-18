@@ -10,7 +10,6 @@ const canonicalUrl = toAbsoluteUrl('/image-tools/dominant-color-extractor/');
 
 const breadcrumbItems = [
   { label: 'Home', href: toAbsoluteUrl('/') },
-  { label: 'Image Tools' },
   { label: 'Dominant Color Extractor' },
 ];
 
@@ -93,14 +92,26 @@ const schemaGraph = [
 
     <div class="space-y-6">
       <!-- Upload Dropzone -->
-      <div id="dropzone-box" class="space-y-3 rounded-none border-2 border-dashed border-[color:var(--border)] bg-[color:var(--surface)] p-6 sm:p-8 text-center transition hover:border-[color:var(--border-strong)]">
+      <div id="dropzone-box" class="space-y-3 rounded-none border-2 border-dashed border-[color:var(--border)] bg-[color:var(--surface)] p-8 sm:p-12 text-center transition hover:border-[color:var(--border-strong)]">
         <input type="file" id="img-file" accept="image/*" class="hidden" />
-        <label for="img-file" id="upload-prompt" class="cursor-pointer space-y-2 block">
-          <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-none bg-[color:var(--surface-strong)] text-[color:var(--fg)]">
-            <Icon name="color" class="w-6 h-6 text-[color:var(--accent)]" />
+        <label for="img-file" id="upload-prompt" class="cursor-pointer flex flex-col items-center gap-4 block py-2">
+          <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-none bg-[color:var(--surface-strong)] text-[color:var(--accent)] shadow-xs transition transform hover:scale-105">
+            <Icon name="color" class="w-8 h-8 text-[color:var(--accent)]" />
           </div>
-          <p class="text-sm font-bold text-[color:var(--fg)]">Upload an image to extract color palette</p>
-          <p class="text-xs text-[color:var(--muted)]">Supports JPG, PNG, WebP, SVG (100% private in-browser analysis)</p>
+          <div class="space-y-1">
+            <h2 class="text-lg sm:text-xl font-extrabold text-[color:var(--fg)] tracking-tight">Dominant Color Palette Extractor</h2>
+            <p class="text-xs sm:text-sm text-[color:var(--muted)]">Drop your image here to extract colors, or click the button below to browse</p>
+          </div>
+          <span class="inline-flex items-center gap-2 rounded-none bg-[color:var(--accent)] px-6 py-2.5 text-xs sm:text-sm font-bold text-white shadow-xs hover:opacity-95 transition">
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+            Select Image File
+          </span>
+          <div class="flex flex-wrap items-center justify-center gap-2 pt-2">
+            <span class="rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-2.5 py-1 text-[11px] font-semibold text-[color:var(--muted)]">🎨 Hex &amp; RGB</span>
+            <span class="rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-2.5 py-1 text-[11px] font-semibold text-[color:var(--muted)]">📊 Percentage Weight</span>
+            <span class="rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-2.5 py-1 text-[11px] font-semibold text-[color:var(--muted)]">🌈 Color Harmonies</span>
+            <span class="rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-2.5 py-1 text-[11px] font-semibold text-[color:var(--muted)]">🔒 100% Private In-Browser</span>
+          </div>
         </label>
 
         <!-- Visual Upload Preview Box -->

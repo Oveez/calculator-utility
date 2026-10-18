@@ -1,14 +1,589 @@
 ---
 import SiteLayout from '../layouts/SiteLayout.astro';
+import HomeHeroBanner from '../components/HomeHeroBanner.astro';
+import Icon from '../components/Icon.astro';
+import ToolIcon from '../components/ToolIcon.astro';
+import { calculators } from '../data/calculators';
+import { allToolsIndex } from '../data/allToolsIndex';
+import { getCalculatorPath } from '../utils/calculators';
 import { siteName, siteTagline, withBasePath } from '../utils/site';
+import { getCategoryIconConfig } from '../utils/toolIcons';
+
+// Logical category ordering for the 186 tools directory
+const categoryOrder = [
+  'Finance',
+  'Tax & Finance',
+  'Education',
+  'Academic',
+  'Health',
+  'Math',
+  'Converters',
+  'Time',
+  'Text',
+  'Data',
+  'Developer',
+  'Image',
+  'PDF',
+  'Color',
+  'Generators',
+  'Research',
+  'Business',
+  'Career',
+  'Pricing',
+  'Shipping',
+  'URL',
+];
+
+const uniqueCategories = Array.from(new Set(allToolsIndex.map((t) => t.category))).sort((a, b) => {
+  const ia = categoryOrder.indexOf(a);
+  const ib = categoryOrder.indexOf(b);
+  if (ia !== -1 && ib !== -1) return ia - ib;
+  if (ia !== -1) return -1;
+  if (ib !== -1) return 1;
+  return a.localeCompare(b);
+});
+
+const categories = uniqueCategories.map((category) => ({
+  name: category,
+  count: allToolsIndex.filter((tool) => tool.category === category).length,
+}));
+
+// Highlight top high-demand calculators for the popular section
+const popularSlugs = [
+  'currency-converter',
+  'mortgage-calculator',
+  'compound-interest-calculator',
+  'bmi-calculator',
+  'gpa-calculator',
+  'discount-calculator',
+];
+const popularCalculators = popularSlugs
+  .map((slug) => calculators.find((c) => c.slug === slug))
+  .filter((c): c is typeof calculators[0] => Boolean(c));
+
+// Sets for high-intent badge chips (POPULAR / NEW)
+const popularSet = new Set([
+  'currency-converter',
+  'mortgage-calculator',
+  'compound-interest-calculator',
+  'bmi-calculator',
+  'gpa-calculator',
+  'discount-calculator',
+  'json-formatter',
+  'percentage-calculator',
+  'sales-tax-calculator',
+  'pdf-to-image',
+  'image-compressor',
+  'cv-maker',
+]);
+
+const newToolSet = new Set([
+  'assignment-cover-maker',
+  'exam-seating-generator',
+  'study-schedule-generator',
+  'random-group-generator',
+  'jwt-decoder',
+  'regex-tester',
+  'cron-expression-generator',
+  'csv-to-json-converter',
+  'color-contrast-checker',
+]);
+
+const categoryTabs = [{ name: 'All', count: allToolsIndex.length }, ...categories];
 
 const homeTitle = "Free Calculator Online — Math, Finance & Online Tools | ToolsCastle";
 const homeDescription = "Free calculator online suite featuring 186+ fast tools: finance calculator, math calculator, mortgage, tax, salary, GPA, and developer tools. 100% private in-browser computations.";
 ---
 
 <SiteLayout title={homeTitle} description={homeDescription} canonical={withBasePath('/')}>
+  <!-- Full-Width Top Animated Banner -->
+  <HomeHeroBanner slot="top-banner" />
+
   <div class="sr-only">
     <h1>{siteName} - Free Calculator Online &amp; Smart Tools</h1>
     <p>{siteTagline}</p>
   </div>
+
+  <!-- International Tax & Salary Hub Section -->
+  <section id="tax-suite" class="mt-8 scroll-mt-24 space-y-4">
+    <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
+      <div>
+        <p class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Tax Suite</p>
+        <h2 class="mt-1 text-xl sm:text-2xl font-bold tracking-tight text-[color:var(--fg)]">24 Country Income Tax Engines</h2>
+        <p class="text-xs sm:text-sm text-[color:var(--muted)]">Official government tax brackets, social contributions, and take-home salary calculators.</p>
+      </div>
+      <a href="#calculators" class="inline-flex items-center gap-1 text-xs font-bold text-[color:var(--accent)] hover:underline whitespace-nowrap" data-hero-category="Tax & Finance">
+        <span>Explore All Tax Engines</span>
+        <Icon name="arrow-right" class="w-3 h-3" />
+      </a>
+    </div>
+
+    <!-- Country Selector Quick Flags -->
+    <div class="grid grid-cols-2 gap-2.5 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
+      <a href="/us-income-tax-calculator/" class="group flex flex-col items-center justify-center border border-[color:var(--border)] bg-[color:var(--surface)] p-3 text-center transition hover:border-[color:var(--accent)] hover:bg-slate-50" style="border-radius:0;">
+        <span class="text-2xl transition group-hover:scale-105">🇺🇸</span>
+        <span class="mt-1 text-xs font-bold text-[color:var(--fg)]">United States</span>
+        <span class="text-[10px] font-mono text-[color:var(--muted)]">IRS (USD $)</span>
+      </a>
+      <a href="/uk-income-tax-calculator/" class="group flex flex-col items-center justify-center border border-[color:var(--border)] bg-[color:var(--surface)] p-3 text-center transition hover:border-[color:var(--accent)] hover:bg-slate-50" style="border-radius:0;">
+        <span class="text-2xl transition group-hover:scale-105">🇬🇧</span>
+        <span class="mt-1 text-xs font-bold text-[color:var(--fg)]">United Kingdom</span>
+        <span class="text-[10px] font-mono text-[color:var(--muted)]">HMRC (GBP £)</span>
+      </a>
+      <a href="/canada-income-tax-calculator/" class="group flex flex-col items-center justify-center border border-[color:var(--border)] bg-[color:var(--surface)] p-3 text-center transition hover:border-[color:var(--accent)] hover:bg-slate-50" style="border-radius:0;">
+        <span class="text-2xl transition group-hover:scale-105">🇨🇦</span>
+        <span class="mt-1 text-xs font-bold text-[color:var(--fg)]">Canada</span>
+        <span class="text-[10px] font-mono text-[color:var(--muted)]">CRA (CAD $)</span>
+      </a>
+      <a href="/australia-income-tax-calculator/" class="group flex flex-col items-center justify-center border border-[color:var(--border)] bg-[color:var(--surface)] p-3 text-center transition hover:border-[color:var(--accent)] hover:bg-slate-50" style="border-radius:0;">
+        <span class="text-2xl transition group-hover:scale-105">🇦🇺</span>
+        <span class="mt-1 text-xs font-bold text-[color:var(--fg)]">Australia</span>
+        <span class="text-[10px] font-mono text-[color:var(--muted)]">ATO (AUD $)</span>
+      </a>
+      <a href="/germany-income-tax-calculator/" class="group flex flex-col items-center justify-center border border-[color:var(--border)] bg-[color:var(--surface)] p-3 text-center transition hover:border-[color:var(--accent)] hover:bg-slate-50" style="border-radius:0;">
+        <span class="text-2xl transition group-hover:scale-105">🇩🇪</span>
+        <span class="mt-1 text-xs font-bold text-[color:var(--fg)]">Germany</span>
+        <span class="text-[10px] font-mono text-[color:var(--muted)]">BMF (EUR €)</span>
+      </a>
+      <a href="/france-income-tax-calculator/" class="group flex flex-col items-center justify-center border border-[color:var(--border)] bg-[color:var(--surface)] p-3 text-center transition hover:border-[color:var(--accent)] hover:bg-slate-50" style="border-radius:0;">
+        <span class="text-2xl transition group-hover:scale-105">🇫🇷</span>
+        <span class="mt-1 text-xs font-bold text-[color:var(--fg)]">France</span>
+        <span class="text-[10px] font-mono text-[color:var(--muted)]">DGFiP (EUR €)</span>
+      </a>
+      <a href="/spain-income-tax-calculator/" class="group flex flex-col items-center justify-center border border-[color:var(--border)] bg-[color:var(--surface)] p-3 text-center transition hover:border-[color:var(--accent)] hover:bg-slate-50" style="border-radius:0;">
+        <span class="text-2xl transition group-hover:scale-105">🇪🇸</span>
+        <span class="mt-1 text-xs font-bold text-[color:var(--fg)]">Spain</span>
+        <span class="text-[10px] font-mono text-[color:var(--muted)]">AEAT (EUR €)</span>
+      </a>
+      <a href="/italy-income-tax-calculator/" class="group flex flex-col items-center justify-center border border-[color:var(--border)] bg-[color:var(--surface)] p-3 text-center transition hover:border-[color:var(--accent)] hover:bg-slate-50" style="border-radius:0;">
+        <span class="text-2xl transition group-hover:scale-105">🇮🇹</span>
+        <span class="mt-1 text-xs font-bold text-[color:var(--fg)]">Italy</span>
+        <span class="text-[10px] font-mono text-[color:var(--muted)]">IRPEF (EUR €)</span>
+      </a>
+      <a href="/netherlands-income-tax-calculator/" class="group flex flex-col items-center justify-center border border-[color:var(--border)] bg-[color:var(--surface)] p-3 text-center transition hover:border-[color:var(--accent)] hover:bg-slate-50" style="border-radius:0;">
+        <span class="text-2xl transition group-hover:scale-105">🇳🇱</span>
+        <span class="mt-1 text-xs font-bold text-[color:var(--fg)]">Netherlands</span>
+        <span class="text-[10px] font-mono text-[color:var(--muted)]">Box 1 (EUR €)</span>
+      </a>
+      <a href="/switzerland-income-tax-calculator/" class="group flex flex-col items-center justify-center border border-[color:var(--border)] bg-[color:var(--surface)] p-3 text-center transition hover:border-[color:var(--accent)] hover:bg-slate-50" style="border-radius:0;">
+        <span class="text-2xl transition group-hover:scale-105">🇨🇭</span>
+        <span class="mt-1 text-xs font-bold text-[color:var(--fg)]">Switzerland</span>
+        <span class="text-[10px] font-mono text-[color:var(--muted)]">ESTV (CHF)</span>
+      </a>
+      <a href="/singapore-income-tax-calculator/" class="group flex flex-col items-center justify-center border border-[color:var(--border)] bg-[color:var(--surface)] p-3 text-center transition hover:border-[color:var(--accent)] hover:bg-slate-50" style="border-radius:0;">
+        <span class="text-2xl transition group-hover:scale-105">🇸🇬</span>
+        <span class="mt-1 text-xs font-bold text-[color:var(--fg)]">Singapore</span>
+        <span class="text-[10px] font-mono text-[color:var(--muted)]">IRAS (SGD $)</span>
+      </a>
+      <a href="/japan-income-tax-calculator/" class="group flex flex-col items-center justify-center border border-[color:var(--border)] bg-[color:var(--surface)] p-3 text-center transition hover:border-[color:var(--accent)] hover:bg-slate-50" style="border-radius:0;">
+        <span class="text-2xl transition group-hover:scale-105">🇯🇵</span>
+        <span class="mt-1 text-xs font-bold text-[color:var(--fg)]">Japan</span>
+        <span class="text-[10px] font-mono text-[color:var(--muted)]">NTA (JPY ¥)</span>
+      </a>
+    </div>
+  </section>
+
+  <!-- Popular Calculators Section -->
+  <section id="popular" class="mt-12 scroll-mt-24 space-y-4">
+    <div class="flex items-end justify-between gap-4">
+      <div>
+        <p class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Top Picks</p>
+        <h2 class="mt-1 text-xl sm:text-2xl font-bold tracking-tight text-[color:var(--fg)]">Popular Calculators</h2>
+      </div>
+      <a href="#calculators" class="text-xs font-bold text-[color:var(--accent)] hover:underline">
+        View All {calculators.length} Tools ↓
+      </a>
+    </div>
+
+    <div class="grid gap-3.5 sm:grid-cols-2 lg:grid-cols-3">
+      {popularCalculators.map((calculator) => (
+        <a
+          class="group flex flex-col justify-between border border-[color:var(--border)] bg-white p-5 transition hover:border-[color:var(--accent)]"
+          href={getCalculatorPath(calculator.slug)}
+          style="border-radius:0;"
+          data-calculator-card
+        >
+          <div class="space-y-3">
+            <div class="flex items-center justify-between gap-2">
+              <ToolIcon slug={calculator.slug} category={calculator.category} size="md" />
+              <div class="flex items-center gap-1.5">
+                <span class="inline-flex items-center px-2 py-0.5 text-[10px] font-bold text-[color:var(--accent)] bg-orange-50 border border-orange-200" style="border-radius:0;">
+                  POPULAR
+                </span>
+                <span class="inline-flex px-2 py-0.5 text-[11px] font-semibold text-[color:var(--muted)] border border-[color:var(--border)] bg-slate-50" style="border-radius:0;">
+                  {calculator.category}
+                </span>
+              </div>
+            </div>
+            <h3 class="text-base font-bold tracking-tight text-[color:var(--fg)] group-hover:text-[color:var(--accent)] transition-colors">
+              {calculator.title}
+            </h3>
+            <p class="text-xs leading-relaxed text-[color:var(--muted)] line-clamp-2">
+              {calculator.metaDescription}
+            </p>
+          </div>
+
+          <div class="mt-5 flex items-center justify-between pt-2.5 border-t border-[color:var(--border)]/70">
+            <span class="inline-flex items-center gap-1 text-xs font-bold text-[color:var(--fg)] group-hover:text-[color:var(--accent)] transition-colors">
+              <span>Open Tool</span>
+              <Icon name="arrow-right" class="w-3.5 h-3.5 transition group-hover:translate-x-1" />
+            </span>
+            <span class="text-[10px] font-semibold uppercase tracking-wider text-[color:var(--muted)] group-hover:text-[color:var(--fg)] transition-colors">Instant</span>
+          </div>
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <!-- Full Library Directory & Filter Section -->
+  <section id="calculators" class="mt-14 scroll-mt-24 space-y-6">
+    <div class="space-y-4">
+      <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
+        <div id="categories" class="scroll-mt-24">
+          <p class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Browse By Category</p>
+          <h2 class="mt-1 text-xl sm:text-2xl font-bold tracking-tight text-[color:var(--fg)]">All Tools Directory</h2>
+        </div>
+        <div class="flex items-center gap-2 text-xs text-[color:var(--muted)]">
+          <span class="font-semibold text-[color:var(--fg)]" data-active-category-label>All Categories</span>
+          <span>•</span>
+          <span><strong class="text-[color:var(--fg)]" data-search-count>{allToolsIndex.length}</strong> of {allToolsIndex.length} tools</span>
+        </div>
+      </div>
+
+      <!-- Real-time Quick Search Input -->
+      <div class="relative w-full max-w-xl">
+        <input
+          type="search"
+          placeholder="Search 186+ tools & calculators (e.g., mortgage, tax, pdf, json, percentage)..."
+          class="w-full bg-white border border-[color:var(--border)] px-4 py-2.5 pl-10 text-xs sm:text-sm text-[color:var(--fg)] placeholder:text-[color:var(--muted)] focus:outline-none focus:border-[color:var(--accent)] shadow-xs"
+          style="border-radius:0;"
+          data-calculator-search
+        />
+        <svg class="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[color:var(--muted)] pointer-events-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+      </div>
+
+      <!-- Category Filter Tabs -->
+      <div class="flex flex-wrap gap-2" role="tablist" aria-label="Tool Categories">
+        {categoryTabs.map((category, index) => {
+          const catConfig = getCategoryIconConfig(category.name);
+          const isAll = category.name === 'All';
+          return (
+            <button
+              class:list={[
+                'inline-flex cursor-pointer items-center gap-2 border px-3 py-1.5 text-xs transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-current',
+                index === 0
+                  ? 'active font-bold border-transparent bg-slate-900 text-white shadow-xs'
+                  : 'border-[color:var(--border)] bg-white text-[color:var(--muted)] font-semibold hover:border-[color:var(--accent)] hover:text-[color:var(--fg)]',
+              ]}
+              style="border-radius:0;"
+              type="button"
+              role="tab"
+              data-category-tab
+              data-category-name={isAll ? '' : category.name}
+              data-icon-color={catConfig.textColor}
+              aria-pressed={index === 0 ? 'true' : 'false'}
+              aria-selected={index === 0 ? 'true' : 'false'}
+            >
+              <svg
+                class:list={[
+                  'w-3.5 h-3.5 stroke-current shrink-0',
+                  index === 0 ? 'text-white' : catConfig.textColor
+                ]}
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                set:html={catConfig.svgPath}
+                data-tab-icon
+              />
+              <span>{category.name}</span>
+              <span
+                class:list={[
+                  'px-1.5 py-0.2 text-[10px] font-bold',
+                  index === 0 ? 'bg-white/20 text-white' : 'bg-slate-100 text-[color:var(--muted)]'
+                ]}
+                style="border-radius:0;"
+                data-tab-count
+              >{category.count}</span>
+            </button>
+          );
+        })}
+      </div>
+
+      <!-- Active Filters Reset Bar (Hidden by default) -->
+      <div class="flex items-center justify-between gap-3 border border-[color:var(--border)] bg-slate-50 px-4 py-2 text-xs text-[color:var(--muted)]" style="border-radius:0;" data-active-filter-bar hidden>
+        <div class="flex items-center gap-2">
+          <span>Active filter:</span>
+          <span class="font-bold text-[color:var(--fg)]" data-filter-summary>None</span>
+        </div>
+        <button
+          type="button"
+          class="cursor-pointer font-bold text-[color:var(--accent)] hover:underline"
+          data-reset-filters
+        >
+          Reset Filters
+        </button>
+      </div>
+    </div>
+
+    <!-- Calculator Cards Grid (186 tools) -->
+    <div class="grid gap-3.5 sm:grid-cols-2 lg:grid-cols-3" data-calculator-grid>
+      {allToolsIndex.map((tool) => {
+        const slug = tool.url.replace(/^\/|\/$/g, '').split('/').pop() || '';
+        const isPopular = popularSet.has(slug);
+        const isNew = newToolSet.has(slug);
+        return (
+          <a
+            class="group flex flex-col justify-between border border-[color:var(--border)] bg-white p-5 transition hover:border-[color:var(--accent)]"
+            style="border-radius:0;"
+            href={withBasePath(tool.url)}
+            data-calculator-card
+            data-calculator-category={tool.category}
+            data-search-text={`${tool.title} ${tool.category} ${tool.desc} ${tool.url}`.toLowerCase()}
+          >
+            <div class="space-y-3">
+              <div class="flex items-center justify-between gap-2">
+                <ToolIcon url={tool.url} title={tool.title} category={tool.category} size="md" />
+                <div class="flex items-center gap-1.5">
+                  {isPopular && (
+                    <span class="inline-flex items-center bg-orange-50 px-2 py-0.5 text-[10px] font-bold text-[color:var(--accent)] border border-orange-200" style="border-radius:0;">
+                      POPULAR
+                    </span>
+                  )}
+                  {isNew && (
+                    <span class="inline-flex items-center bg-slate-100 px-2 py-0.5 text-[10px] font-bold text-slate-800 border border-slate-300" style="border-radius:0;">
+                      NEW
+                    </span>
+                  )}
+                  <span class="inline-flex bg-slate-50 px-2 py-0.5 text-[11px] font-semibold text-[color:var(--muted)] border border-[color:var(--border)]" style="border-radius:0;">
+                    {tool.category}
+                  </span>
+                </div>
+              </div>
+              <h3 class="text-base font-bold tracking-tight text-[color:var(--fg)] group-hover:text-[color:var(--accent)] transition-colors">
+                {tool.title}
+              </h3>
+              <p class="text-xs leading-relaxed text-[color:var(--muted)] line-clamp-2">
+                {tool.desc}
+              </p>
+            </div>
+
+            <div class="mt-5 flex items-center justify-between pt-2.5 border-t border-[color:var(--border)]/70">
+              <span class="inline-flex items-center gap-1 text-xs font-bold text-[color:var(--fg)] group-hover:text-[color:var(--accent)] transition-colors">
+                <span>Open Tool</span>
+                <Icon name="arrow-right" class="w-3.5 h-3.5 transition group-hover:translate-x-1" />
+              </span>
+              <span class="text-[10px] font-semibold uppercase tracking-wider text-[color:var(--muted)] group-hover:text-[color:var(--fg)] transition-colors">Instant</span>
+            </div>
+          </a>
+        );
+      })}
+    </div>
+
+    <!-- Empty search result alert -->
+    <div
+      class="border border-[color:var(--border)] bg-slate-50 p-8 text-center"
+      style="border-radius:0;"
+      data-search-empty
+      hidden
+    >
+      <Icon name="magnifying-glass" class="mx-auto h-8 w-8 text-[color:var(--muted)]" />
+      <p class="mt-2 text-sm font-bold text-[color:var(--fg)]">No matching tools found</p>
+      <p class="mt-1 text-xs text-[color:var(--muted)]">Try searching for a different keyword or browse through our categories above.</p>
+      <button
+        type="button"
+        class="mt-4 inline-flex items-center gap-1 text-xs font-bold text-[color:var(--accent)] hover:underline cursor-pointer"
+        data-reset-filters
+      >
+        Show All Tools
+      </button>
+    </div>
+  </section>
+
+  <!-- Client-Side Search & Category Filter Logic -->
+  <script is:inline>
+    (function () {
+      const searchInputs = Array.from(document.querySelectorAll('[data-calculator-search]'));
+      const grid = document.querySelector('[data-calculator-grid]');
+      const cards = grid ? Array.from(grid.querySelectorAll('[data-calculator-card]')) : [];
+      const categoryTabs = Array.from(document.querySelectorAll('[data-category-tab]'));
+      const resetButtons = Array.from(document.querySelectorAll('[data-reset-filters]'));
+      const searchCount = document.querySelector('[data-search-count]');
+      const activeCategoryLabel = document.querySelector('[data-active-category-label]');
+      const activeFilterBar = document.querySelector('[data-active-filter-bar]');
+      const filterSummary = document.querySelector('[data-filter-summary]');
+      const emptyState = document.querySelector('[data-search-empty]');
+
+      let activeCategory = '';
+      let currentQuery = '';
+
+      function getSearchQuery() {
+        const input = searchInputs.find((i) => i && i.value);
+        return (input ? input.value : currentQuery).trim().toLowerCase();
+      }
+
+      function updateResults() {
+        const query = getSearchQuery();
+        let visibleCount = 0;
+
+        cards.forEach((card) => {
+          const searchableText = (card.dataset.searchText || '').toLowerCase();
+          const cardCategory = (card.dataset.calculatorCategory || '').trim();
+          const matchesSearch = query.length === 0 || searchableText.includes(query);
+          const matchesCategory = activeCategory.length === 0 || cardCategory.toLowerCase() === activeCategory.toLowerCase();
+          const isVisible = matchesSearch && matchesCategory;
+
+          if (isVisible) {
+            card.removeAttribute('hidden');
+            card.style.display = '';
+            visibleCount += 1;
+          } else {
+            card.setAttribute('hidden', '');
+            card.style.display = 'none';
+          }
+        });
+
+        // Update indicators & counters
+        if (searchCount) searchCount.textContent = String(visibleCount);
+        if (activeCategoryLabel) activeCategoryLabel.textContent = activeCategory || 'All Categories';
+
+        // Update active filter summary bar
+        if (activeFilterBar && filterSummary) {
+          const hasFilters = activeCategory.length > 0 || query.length > 0;
+          if (hasFilters) {
+            activeFilterBar.removeAttribute('hidden');
+            activeFilterBar.style.display = 'flex';
+            const parts = [];
+            if (activeCategory) parts.push(`Category: "${activeCategory}"`);
+            if (query) parts.push(`Search: "${query}"`);
+            filterSummary.textContent = parts.join(' | ');
+          } else {
+            activeFilterBar.setAttribute('hidden', '');
+            activeFilterBar.style.display = 'none';
+          }
+        }
+
+        // Empty state alert
+        if (emptyState) {
+          if (visibleCount === 0) {
+            emptyState.removeAttribute('hidden');
+            emptyState.style.display = 'block';
+          } else {
+            emptyState.setAttribute('hidden', '');
+            emptyState.style.display = 'none';
+          }
+        }
+      }
+
+      function setActiveCategory(catName, shouldScroll = false) {
+        activeCategory = (catName || '').trim();
+
+        categoryTabs.forEach((tab) => {
+          const tabCat = (tab.dataset.categoryName || '').trim();
+          const isSelected = (!activeCategory && !tabCat) || (activeCategory && tabCat.toLowerCase() === activeCategory.toLowerCase());
+
+          tab.setAttribute('aria-pressed', String(isSelected));
+          tab.setAttribute('aria-selected', String(isSelected));
+
+          const icon = tab.querySelector('[data-tab-icon]');
+          const countBadge = tab.querySelector('[data-tab-count]');
+          const iconColor = tab.dataset.iconColor || 'text-[color:var(--muted)]';
+
+          if (isSelected) {
+            tab.className = 'inline-flex cursor-pointer items-center gap-2 border border-transparent bg-slate-900 text-white px-3 py-1.5 text-xs font-bold shadow-xs active transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-current';
+            if (icon) {
+              icon.className = 'w-3.5 h-3.5 stroke-current shrink-0 text-white';
+            }
+            if (countBadge) {
+              countBadge.className = 'px-1.5 py-0.2 text-[10px] font-bold bg-white/20 text-white';
+            }
+          } else {
+            tab.className = 'inline-flex cursor-pointer items-center gap-2 border border-[color:var(--border)] bg-white text-[color:var(--muted)] hover:border-[color:var(--accent)] hover:text-[color:var(--fg)] px-3 py-1.5 text-xs font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-current';
+            if (icon) {
+              icon.className = `w-3.5 h-3.5 stroke-current shrink-0 ${iconColor}`;
+            }
+            if (countBadge) {
+              countBadge.className = 'px-1.5 py-0.2 text-[10px] font-bold bg-slate-100 text-[color:var(--muted)]';
+            }
+          }
+        });
+
+        updateResults();
+
+        if (shouldScroll) {
+          const target = document.getElementById('calculators');
+          if (target) {
+            target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }
+        }
+      }
+
+      function resetAllFilters() {
+        searchInputs.forEach((input) => {
+          if (input) input.value = '';
+        });
+        currentQuery = '';
+        setActiveCategory('');
+      }
+
+      function readUrlCategory() {
+        try {
+          const params = new URLSearchParams(window.location.search);
+          let cat = params.get('category');
+          if (!cat && window.location.hash) {
+            const hash = window.location.hash;
+            if (hash.includes('category=')) {
+              const hashParams = new URLSearchParams(hash.split('?')[1] || hash.substring(1));
+              cat = hashParams.get('category');
+            }
+          }
+          if (cat) {
+            setActiveCategory(decodeURIComponent(cat));
+          }
+        } catch (e) {}
+      }
+
+      categoryTabs.forEach((tab) => {
+        tab.addEventListener('click', () => {
+          const cat = tab.dataset.categoryName || '';
+          setActiveCategory(cat);
+        });
+      });
+
+      searchInputs.forEach((input) => {
+        input.addEventListener('input', (e) => {
+          currentQuery = e.target.value;
+          searchInputs.forEach((other) => {
+            if (other !== input) other.value = currentQuery;
+          });
+          updateResults();
+        });
+      });
+
+      resetButtons.forEach((btn) => {
+        btn.addEventListener('click', resetAllFilters);
+      });
+
+      window.addEventListener('keydown', (e) => {
+        if (e.key === '/' && !['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement?.tagName)) {
+          const mainSearch = searchInputs[0];
+          if (mainSearch) {
+            e.preventDefault();
+            mainSearch.focus();
+            mainSearch.select();
+          }
+        }
+      });
+
+      window.addEventListener('popstate', readUrlCategory);
+      window.addEventListener('hashchange', readUrlCategory);
+
+      readUrlCategory();
+      updateResults();
+    })();
+  </script>
 </SiteLayout>

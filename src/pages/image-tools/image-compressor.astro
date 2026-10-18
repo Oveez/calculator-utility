@@ -10,7 +10,6 @@ const canonicalUrl = toAbsoluteUrl('/image-tools/image-compressor/');
 
 const breadcrumbItems = [
   { label: 'Home', href: toAbsoluteUrl('/') },
-  { label: 'Image Tools' },
   { label: 'Image Compressor' },
 ];
 
@@ -99,7 +98,7 @@ const schemaGraph = [
       </div>
       <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-3 text-center">
         <p class="text-[10px] font-bold uppercase tracking-wider text-[color:var(--muted)]">Compressed Size</p>
-        <p id="stat-comp" class="mt-1 font-mono text-base font-bold text-emerald-500">0 B</p>
+        <p id="stat-comp" class="mt-1 font-mono text-base font-bold text-[color:var(--accent)]">0 B</p>
       </div>
       <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-3 text-center">
         <p class="text-[10px] font-bold uppercase tracking-wider text-[color:var(--muted)]">Bytes Saved</p>
@@ -107,21 +106,33 @@ const schemaGraph = [
       </div>
       <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-3 text-center">
         <p class="text-[10px] font-bold uppercase tracking-wider text-[color:var(--muted)]">Reduction</p>
-        <p id="stat-pct" class="mt-1 font-mono text-base font-bold text-emerald-500">0%</p>
+        <p id="stat-pct" class="mt-1 font-mono text-base font-bold text-[color:var(--accent)]">0%</p>
       </div>
     </div>
 
     <div class="space-y-6">
       <!-- Upload Dropzone -->
-      <div id="dropzone-box" class="space-y-3 rounded-none border-2 border-dashed border-[color:var(--border)] bg-[color:var(--surface)] p-6 sm:p-8 text-center transition hover:border-[color:var(--border-strong)]">
+      <div id="dropzone-box" class="space-y-3 rounded-none border-2 border-dashed border-[color:var(--border)] bg-[color:var(--surface)] p-8 sm:p-12 text-center transition hover:border-[color:var(--border-strong)]">
         <input type="file" id="img-file" accept="image/*" class="hidden" />
         
-        <label for="img-file" id="upload-prompt" class="cursor-pointer space-y-2 block">
-          <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-none bg-[color:var(--surface-strong)] text-[color:var(--fg)]">
-            <Icon name="image" class="w-6 h-6 text-[color:var(--accent)]" />
+        <label for="img-file" id="upload-prompt" class="cursor-pointer flex flex-col items-center gap-4 block py-2">
+          <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-none bg-[color:var(--surface-strong)] text-[color:var(--accent)] shadow-xs transition transform hover:scale-105">
+            <Icon name="image" class="w-8 h-8 text-[color:var(--accent)]" />
           </div>
-          <p class="text-sm font-bold text-[color:var(--fg)]">Choose an image to compress or drag and drop</p>
-          <p class="text-xs text-[color:var(--muted)]">Supports JPG, JPEG, PNG, WebP, AVIF, BMP (100% private in browser)</p>
+          <div class="space-y-1">
+            <h2 class="text-lg sm:text-xl font-extrabold text-[color:var(--fg)] tracking-tight">High-Efficiency Image Compressor</h2>
+            <p class="text-xs sm:text-sm text-[color:var(--muted)]">Drop your image here to shrink file size with zero quality loss, or click the button below</p>
+          </div>
+          <span class="inline-flex items-center gap-2 rounded-none bg-[color:var(--accent)] px-6 py-2.5 text-xs sm:text-sm font-bold text-white shadow-xs hover:opacity-95 transition">
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+            Select Image File
+          </span>
+          <div class="flex flex-wrap items-center justify-center gap-2 pt-2">
+            <span class="rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-2.5 py-1 text-[11px] font-semibold text-[color:var(--muted)]">⚡ Instant Client Compression</span>
+            <span class="rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-2.5 py-1 text-[11px] font-semibold text-[color:var(--muted)]">🎚️ Visual Quality Slider</span>
+            <span class="rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-2.5 py-1 text-[11px] font-semibold text-[color:var(--muted)]">🎯 Target File Size Mode</span>
+            <span class="rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-2.5 py-1 text-[11px] font-semibold text-[color:var(--muted)]">🔒 100% Private In-Browser</span>
+          </div>
         </label>
 
         <!-- Visual Upload Preview Box -->
@@ -167,7 +178,7 @@ const schemaGraph = [
             <div class="sm:col-span-2 space-y-1.5">
               <div class="flex justify-between font-bold text-[color:var(--fg)]">
                 <span>Compression Quality:</span>
-                <span id="qual-val" class="font-mono text-emerald-500">80%</span>
+                <span id="qual-val" class="font-mono text-[color:var(--accent)]">80%</span>
               </div>
               <input
                 type="range"
@@ -246,7 +257,7 @@ const schemaGraph = [
           <div class="space-y-2 rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-4">
             <div class="flex items-center justify-between">
               <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Compressed Result</span>
-              <span id="prev-comp-size" class="text-xs font-mono font-bold text-emerald-500">-</span>
+              <span id="prev-comp-size" class="text-xs font-mono font-bold text-[color:var(--accent)]">-</span>
             </div>
             <div class="h-64 rounded-none bg-[color:var(--surface-strong)] overflow-hidden flex items-center justify-center p-2">
               <img id="img-comp-preview" alt="Compressed" class="max-h-full max-w-full object-contain" />
@@ -359,6 +370,7 @@ const schemaGraph = [
       if (!root) return;
 
       const fileIn = root.querySelector('#img-file');
+      const dropzone = root.querySelector('#dropzone-box');
       const uploadPrompt = root.querySelector('#upload-prompt');
       const uploadPreviewBox = root.querySelector('#upload-preview-box');
       const thumbPreview = root.querySelector('#thumb-preview');
@@ -391,11 +403,14 @@ const schemaGraph = [
 
       let loadedImg = null;
       let origSizeBytes = 0;
+      let compBlob = null;
       let compBlobUrl = null;
       let origFileName = 'image.jpg';
       let activeMode = 'quality';
+      let compressTimer = null;
 
       function formatBytes(bytes) {
+        if (!bytes || isNaN(bytes) || bytes <= 0) return '0 B';
         if (bytes < 1024) return bytes + ' B';
         if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
         return (bytes / 1048576).toFixed(2) + ' MB';
@@ -414,28 +429,49 @@ const schemaGraph = [
           panelQuality.classList.add('hidden');
           panelTarget.classList.remove('hidden');
         }
-        compress();
+        triggerCompress();
       }
 
       tabQuality.addEventListener('click', () => switchMode('quality'));
       tabTarget.addEventListener('click', () => switchMode('target'));
 
       function renderCanvas(scale) {
-        const targetW = Math.round(loadedImg.naturalWidth * scale);
-        const targetH = Math.round(loadedImg.naturalHeight * scale);
-        scaleInfo.textContent = `${targetW} × ${targetH} px`;
+        const rawW = loadedImg.naturalWidth || loadedImg.width || 1;
+        const rawH = loadedImg.naturalHeight || loadedImg.height || 1;
+        const targetW = Math.max(1, Math.round(rawW * scale));
+        const targetH = Math.max(1, Math.round(rawH * scale));
+        if (scaleInfo) scaleInfo.textContent = `${targetW} × ${targetH} px`;
 
         const canvas = document.createElement('canvas');
         canvas.width = targetW;
         canvas.height = targetH;
         const ctx = canvas.getContext('2d');
+        
+        // If converting transparent image to JPEG, fill white background to avoid black background
+        if (outFmt.value === 'image/jpeg') {
+          ctx.fillStyle = '#FFFFFF';
+          ctx.fillRect(0, 0, targetW, targetH);
+        }
+
         ctx.drawImage(loadedImg, 0, 0, targetW, targetH);
         return canvas;
       }
 
-      function updateStats(blobSize) {
-        if (compBlobUrl) URL.revokeObjectURL(compBlobUrl);
+      function applyCompressedBlob(blob) {
+        if (!blob) return;
+        compBlob = blob;
 
+        // Revoke the old blob URL only after we create the new one, keeping download/preview intact
+        const oldUrl = compBlobUrl;
+        compBlobUrl = URL.createObjectURL(blob);
+        imgCompPreview.src = compBlobUrl;
+
+        if (oldUrl) {
+          // Delay revoking old URL to ensure previous rendering pipeline releases it
+          setTimeout(() => URL.revokeObjectURL(oldUrl), 1000);
+        }
+
+        const blobSize = blob.size;
         statOrig.textContent = formatBytes(origSizeBytes);
         statComp.textContent = formatBytes(blobSize);
         prevOrigSize.textContent = formatBytes(origSizeBytes);
@@ -447,26 +483,28 @@ const schemaGraph = [
         statPct.textContent = `-${pct}%`;
       }
 
-      function compress() {
+      function executeCompress() {
         if (!loadedImg) return;
-        const scale = (scaleSelect.value !== '' && !isNaN(parseFloat(scaleSelect.value)) ? parseFloat(scaleSelect.value) : 0);
+        const scaleVal = parseFloat(scaleSelect.value);
+        const scale = !isNaN(scaleVal) && scaleVal > 0 ? scaleVal : 1;
         const canvas = renderCanvas(scale);
         const fmt = outFmt.value;
 
         if (activeMode === 'quality') {
-          const quality = (qualSlider.value !== '' && !isNaN(parseInt(qualSlider.value, 10)) ? parseInt(qualSlider.value, 10) : 0) / 100;
-          qualVal.textContent = `${qualSlider.value}%`;
+          const qualParsed = parseInt(qualSlider.value, 10);
+          const quality = (!isNaN(qualParsed) ? qualParsed : 80) / 100;
+          qualVal.textContent = `${Math.round(quality * 100)}%`;
 
           canvas.toBlob((blob) => {
-            if (!blob) return;
-            compBlobUrl = URL.createObjectURL(blob);
-            imgCompPreview.src = compBlobUrl;
-            updateStats(blob.size);
+            if (blob) {
+              applyCompressedBlob(blob);
+            }
           }, fmt, quality);
 
         } else {
           // Target Max File Size Mode: Binary Search for optimal quality
-          const targetBytes = ((targetKb.value !== '' && !isNaN(parseFloat(targetKb.value)) ? parseFloat(targetKb.value) : 0)) * 1024;
+          const rawTarget = parseFloat(targetKb.value);
+          const targetBytes = (!isNaN(rawTarget) && rawTarget > 0 ? rawTarget : 250) * 1024;
           let low = 0.05;
           let high = 1.0;
           let bestBlob = null;
@@ -475,9 +513,12 @@ const schemaGraph = [
           function search() {
             if (iterations >= 7 || high - low < 0.04) {
               if (bestBlob) {
-                compBlobUrl = URL.createObjectURL(bestBlob);
-                imgCompPreview.src = compBlobUrl;
-                updateStats(bestBlob.size);
+                applyCompressedBlob(bestBlob);
+              } else {
+                // Fallback to lowest compression if even min quality is over target
+                canvas.toBlob((fallbackBlob) => {
+                  if (fallbackBlob) applyCompressedBlob(fallbackBlob);
+                }, fmt, 0.05);
               }
               return;
             }
@@ -500,9 +541,16 @@ const schemaGraph = [
         }
       }
 
-      fileIn.addEventListener('change', (e) => {
-        const file = e.target.files[0];
-        if (!file) return;
+      function triggerCompress() {
+        clearTimeout(compressTimer);
+        compressTimer = setTimeout(executeCompress, 60);
+      }
+
+      function processFile(file) {
+        if (!file || !file.type.startsWith('image/')) {
+          alert('Please select a valid image file (JPEG, PNG, WebP, etc.).');
+          return;
+        }
 
         origFileName = file.name;
         origSizeBytes = file.size;
@@ -515,41 +563,87 @@ const schemaGraph = [
             thumbPreview.src = img.src;
             imgOrigPreview.src = img.src;
             thumbName.textContent = file.name;
-            thumbInfo.textContent = `${formatBytes(file.size)} &bull; ${img.naturalWidth} &times; ${img.naturalHeight} px`;
+            thumbInfo.textContent = `${formatBytes(file.size)} • ${img.naturalWidth} × ${img.naturalHeight} px`;
 
             uploadPrompt.classList.add('hidden');
             uploadPreviewBox.classList.remove('hidden');
             wrapper.classList.remove('hidden');
 
-            compress();
+            triggerCompress();
           };
           img.src = loadEvt.target.result;
         };
         reader.readAsDataURL(file);
+      }
+
+      fileIn.addEventListener('change', (e) => {
+        const file = e.target.files && e.target.files[0];
+        if (file) processFile(file);
       });
 
-      qualSlider.addEventListener('input', compress);
-      outFmt.addEventListener('change', compress);
-      scaleSelect.addEventListener('change', compress);
-      targetKb.addEventListener('input', compress);
+      // Drag and drop support
+      if (dropzone) {
+        ['dragenter', 'dragover'].forEach(eventName => {
+          dropzone.addEventListener(eventName, (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            dropzone.classList.add('border-[color:var(--accent)]');
+          }, false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+          dropzone.addEventListener(eventName, (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            dropzone.classList.remove('border-[color:var(--accent)]');
+          }, false);
+        });
+
+        dropzone.addEventListener('drop', (e) => {
+          const dt = e.dataTransfer;
+          if (dt && dt.files && dt.files.length > 0) {
+            processFile(dt.files[0]);
+          }
+        }, false);
+      }
+
+      qualSlider.addEventListener('input', triggerCompress);
+      outFmt.addEventListener('change', triggerCompress);
+      scaleSelect.addEventListener('change', triggerCompress);
+      targetKb.addEventListener('input', triggerCompress);
 
       root.querySelectorAll('[data-preset-kb]').forEach(btn => {
         btn.addEventListener('click', () => {
           targetKb.value = btn.dataset.presetKb;
-          compress();
+          triggerCompress();
         });
       });
 
-      dlBtn.addEventListener('click', () => {
-        if (!compBlobUrl) return;
+      dlBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        if (!compBlob && !compBlobUrl) return;
+
         const fmt = outFmt.value;
         const ext = fmt === 'image/webp' ? '.webp' : fmt === 'image/png' ? '.png' : '.jpg';
         const base = origFileName.substring(0, origFileName.lastIndexOf('.')) || origFileName;
+        const filename = `${base}-compressed${ext}`;
+
+        // Create a fresh object URL directly from the Blob if available, or fallback to compBlobUrl
+        const downloadUrl = compBlob ? URL.createObjectURL(compBlob) : compBlobUrl;
 
         const a = document.createElement('a');
-        a.href = compBlobUrl;
-        a.download = `${base}-compressed${ext}`;
+        a.style.display = 'none';
+        a.href = downloadUrl;
+        a.download = filename;
+        document.body.appendChild(a);
         a.click();
+
+        setTimeout(() => {
+          document.body.removeChild(a);
+          if (compBlob && downloadUrl !== compBlobUrl) {
+            URL.revokeObjectURL(downloadUrl);
+          }
+        }, 1500);
       });
     })();
   </script>

@@ -16,7 +16,6 @@ const { calculator, breadcrumbs, faq = calculator.faq, canonical } = Astro.props
 const breadcrumbItems =
   breadcrumbs ?? [
     { label: 'Home', href: toAbsoluteUrl('/') },
-    { label: 'Calculators', href: toAbsoluteUrl('/#calculators') },
     { label: calculator.title },
   ];
 const canonicalUrl = canonical ?? toAbsoluteUrl(`/calculators/${calculator.slug}/`);

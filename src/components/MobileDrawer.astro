@@ -81,10 +81,10 @@ const categoriesWithTools = uniqueCategories.map((category) => {
       <button
         type="button"
         id="close-mobile-drawer"
-        class="flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 bg-slate-50 text-slate-700 hover:border-slate-300 hover:text-[color:var(--accent)] hover:bg-slate-100 transition cursor-pointer"
+        class="flex h-9 w-9 items-center justify-center text-slate-500 hover:text-[color:var(--accent)] transition-colors cursor-pointer bg-transparent border-0"
         aria-label="Close navigation drawer"
       >
-        <Icon name="close" class="w-4 h-4 stroke-[2.5]" />
+        <Icon name="close" class="w-5 h-5 stroke-[2.2]" />
       </button>
     </div>
 
@@ -94,9 +94,9 @@ const categoriesWithTools = uniqueCategories.map((category) => {
         <p class="px-2 text-[10px] font-bold uppercase tracking-wider text-[color:var(--muted)]">Tool Categories</p>
         {categoriesWithTools.map((cat) => (
           <details class="drawer-group group rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] overflow-hidden transition-colors">
-            <summary class="flex cursor-pointer list-none items-center justify-between p-3 text-xs font-bold text-[color:var(--fg)] select-none hover:bg-[color:var(--surface-strong)] transition">
+            <summary class="flex cursor-pointer list-none items-center justify-between p-3 text-xs font-bold text-slate-800 select-none hover:bg-slate-50 transition">
               <div class="flex items-center gap-2.5 min-w-0">
-                <span class="flex h-7 w-7 items-center justify-center rounded-lg border border-slate-200/80 bg-slate-50 text-slate-500 group-hover:text-[color:var(--accent)] group-hover:border-[color:var(--accent)]/40 group-hover:bg-[color:var(--accent-soft)] transition-colors shrink-0 shadow-2xs">
+                <span class="flex h-7 w-7 items-center justify-center rounded-lg border border-slate-200/80 bg-slate-50 text-slate-500 group-hover:text-slate-600 group-hover:border-[color:var(--accent)] group-hover:bg-[color:var(--accent)] transition-colors shrink-0 shadow-2xs">
                   <svg class="w-4 h-4 stroke-current transition-colors" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" set:html={cat.iconConfig.svgPath} />
                 </span>
                 <span class="truncate">{cat.name}</span>
@@ -104,11 +104,11 @@ const categoriesWithTools = uniqueCategories.map((category) => {
               </div>
               <span class="text-[10px] text-[color:var(--muted)] group-open:rotate-180 transition-transform shrink-0 ml-2">▼</span>
             </summary>
-            <div class="border-t border-[color:var(--border)] bg-[color:var(--bg)]/50 p-2 space-y-1">
+            <div class="border-t border-[color:var(--border)] bg-slate-50/50 p-2 space-y-1">
               {cat.tools.map((tool) => (
                 <a
                   href={withBasePath(tool.url)}
-                  class="drawer-nav-item block rounded-xl px-3 py-1.5 text-xs font-medium text-[color:var(--muted)] hover:text-[color:var(--accent)] hover:bg-[color:var(--accent-soft)] transition"
+                  class="drawer-nav-item block rounded-xl px-3 py-1.5 text-xs font-medium text-slate-700 hover:text-slate-700 hover:bg-[color:var(--accent)] transition"
                 >
                   {tool.title}
                 </a>
@@ -119,21 +119,47 @@ const categoriesWithTools = uniqueCategories.map((category) => {
       </div>
 
       <!-- Legal & Company Section -->
-      <div class="pt-3 border-t border-[color:var(--border)] space-y-1 text-xs text-[color:var(--muted)]">
-        <p class="px-2 text-[10px] font-bold uppercase tracking-wider">Information</p>
-        <a href={withBasePath('/about/')} class="drawer-nav-item block rounded-xl px-3 py-1.5 hover:text-[color:var(--fg)]">About</a>
-        <a href={withBasePath('/contact/')} class="drawer-nav-item block rounded-xl px-3 py-1.5 hover:text-[color:var(--fg)]">Contact Support</a>
-        <a href={withBasePath('/privacy/')} class="drawer-nav-item block rounded-xl px-3 py-1.5 hover:text-[color:var(--fg)]">Privacy Policy</a>
-        <a href={withBasePath('/terms/')} class="drawer-nav-item block rounded-xl px-3 py-1.5 hover:text-[color:var(--fg)]">Terms of Service</a>
+      <div class="pt-3 border-t border-[color:var(--border)] space-y-1 text-xs text-slate-600">
+        <p class="px-2 text-[10px] font-bold uppercase tracking-wider text-slate-400">Information</p>
+        <a href={withBasePath('/about/')} class="drawer-nav-item block rounded-xl px-3 py-1.5 hover:text-slate-700 hover:bg-[color:var(--accent)] transition">About</a>
+        <a href={withBasePath('/contact/')} class="drawer-nav-item block rounded-xl px-3 py-1.5 hover:text-slate-700 hover:bg-[color:var(--accent)] transition">Contact Support</a>
+        <a href={withBasePath('/privacy/')} class="drawer-nav-item block rounded-xl px-3 py-1.5 hover:text-slate-700 hover:bg-[color:var(--accent)] transition">Privacy Policy</a>
+        <a href={withBasePath('/terms/')} class="drawer-nav-item block rounded-xl px-3 py-1.5 hover:text-slate-700 hover:bg-[color:var(--accent)] transition">Terms of Service</a>
       </div>
     </nav>
 
     <!-- Drawer Footer / Safe Area -->
     <div class="border-t border-[color:var(--border)] bg-[color:var(--surface)] p-3.5 text-center text-[11px] text-[color:var(--muted)]" style="padding-bottom: max(0.875rem, env(safe-area-inset-bottom));">
-      <p>© {new Date().getFullYear()} {siteName}. 100% Client-Side Privacy.</p>
+      <p>© {new Date().getFullYear()} {siteName}. All rights reserved.</p>
     </div>
   </aside>
 </div>
+
+<style>
+  #close-mobile-drawer {
+    background: transparent !important;
+    border: none !important;
+    color: #64748b !important;
+    box-shadow: none !important;
+  }
+  #close-mobile-drawer:hover {
+    background: transparent !important;
+    border: none !important;
+    color: var(--accent) !important;
+  }
+  #close-mobile-drawer svg {
+    color: inherit !important;
+    stroke: currentColor !important;
+  }
+
+  .drawer-nav-item {
+    color: #334155 !important;
+  }
+  .drawer-nav-item:hover {
+    color: #334155 !important;
+    background-color: var(--accent) !important;
+  }
+</style>
 
 <script is:inline>
   (function () {

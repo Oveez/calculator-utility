@@ -10,7 +10,6 @@ const canonicalUrl = toAbsoluteUrl('/data-tools/csv-column-extractor/');
 
 const breadcrumbItems = [
   { label: 'Home', href: toAbsoluteUrl('/') },
-  { label: 'Data Tools' },
   { label: 'CSV Column Extractor' },
 ];
 
@@ -167,11 +166,28 @@ const parameterGuide = [
             <button type="button" data-clear-btn class="text-[color:var(--muted)] hover:text-[color:var(--fg)] cursor-pointer">Clear</button>
           </div>
         </div>
-        <input
-          type="file"
-          id="csv-file-in"
-          accept=".csv,.tsv,.txt"
-          class="w-full text-xs text-[color:var(--muted)] file:mr-3 file:rounded-none file:border file:border-[color:var(--border)] file:bg-[color:var(--surface)] file:px-3 file:py-1.5 file:text-xs file:font-semibold file:text-[color:var(--fg)] hover:file:bg-[color:var(--surface-strong)]" />
+        <div class="rounded-none border-2 border-dashed border-[color:var(--border)] bg-[color:var(--surface)] p-3 sm:p-4 text-center transition hover:border-[color:var(--accent)]">
+          <input
+            type="file"
+            id="csv-file-in"
+            accept=".csv,.tsv,.txt"
+            class="hidden" />
+          <label for="csv-file-in" class="cursor-pointer flex flex-col sm:flex-row items-center justify-between gap-3 text-left">
+            <div class="flex items-center gap-3">
+              <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-none bg-[color:var(--surface-strong)] text-[color:var(--accent)] shadow-xs transition group-hover:scale-105">
+                <svg class="w-5 h-5 text-[color:var(--accent)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+              </div>
+              <div class="space-y-0.5">
+                <span class="text-xs sm:text-sm font-bold text-[color:var(--fg)] block">Upload CSV, TSV, or TXT File</span>
+                <span class="text-[11px] text-[color:var(--muted)]">Drag & drop or browse from your device</span>
+              </div>
+            </div>
+            <span class="inline-flex shrink-0 items-center gap-1.5 rounded-none bg-[color:var(--accent)] px-4 py-2 text-xs font-bold text-white shadow-xs hover:opacity-95 transition">
+              <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+              Select CSV File
+            </span>
+          </label>
+        </div>
         <textarea
           id="csv-in"
           rows="7"

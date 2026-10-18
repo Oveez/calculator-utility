@@ -55,6 +55,40 @@
   2. **Sharp-Edged Box Form & Controls:** Redesigned dropzone, toolbar buttons, select inputs, context toolbars, modals, floating format tray, and page thumbnail cards to use sharp corners (`border-radius: 0;`).
   3. **Preservation of Drawing Geometry & Swatches:** Strictly preserved circular geometry (`border-radius: 50% !important;`) on vector canvas drawing tools (e.g. circle / ellipse vector shape tool), pen ink swatches (`.ped-pcolor-btn`), signature ink swatches (`.ped-scolor-btn`), brush width indicators (`.ped-pwidth-btn span`), canvas selection handles (`.resize-dot`), and modal badges (`.ped-mp-check-badge`). Added explicit global exemptions in `src/styles/global.css` so global resets never flatten canvas tools or swatches.
   4. **Verification:** All 169 Vitest unit tests pass across 28 test suites and all 196 Astro pages compile cleanly in 31.66s.
+- **Sitewide Favicon Replacement (2026-10-18):**
+  1. **Source Asset:** Extracted and generated full favicon asset family from user-provided official ToolsCastle white castle logo on coral-orange background.
+  2. **Assets Generated:** Updated `public/favicon.svg`, `public/favicon.ico` (multi-res 16x16, 32x32, 48x48), `public/calc.png` (32x32), `public/apple-touch-icon.png` (180x180), `public/android-chrome-192x192.png`, `public/android-chrome-512x512.png`, and `public/site.webmanifest`.
+  3. **Sitewide Application & Cache Busting:** Verified all 196 pages use `SiteLayout.astro` and `pdf-editor.astro` with bumped cache-busting version (`?v=4`).
+  4. **Verification:** All 169 Vitest tests pass and all 196 pages compile cleanly in 30.12s.
+- **Homepage Animated Dotted Castle Logo Banner (2026-10-18):**
+  1. **Banner Layout & Styling:** Designed and implemented `src/components/HomeHeroBanner.astro` matching the user reference aesthetic with full-width brand theme coral-orange background (`#FA4619`), deep gradient, layered organic curve accents, status badge chip, high-impact H1 title, and sharp-box CTA buttons (`EXPLORE ALL TOOLS →`, `TAX CALCULATORS →`).
+  2. **Animated Dotted Logo Shape:** Sampled 3,100 particle points from the official ToolsCastle castle emblem (`src/data/castleParticlePoints.ts`). Built an HTML5 canvas particle engine that renders an interactive, twinkling, floating particle cloud in the exact silhouette of the castle logo with organic wave drift, shimmer, and soft mouse repulsion/spring recovery.
+  3. **Performance Optimization:** 60fps rendering with `requestAnimationFrame`, automatic pause when out of viewport via `IntersectionObserver`, and HiDPI retina scaling.
+  4. **Directory & Tools Layout:** Restored the 186 tools directory, 24-country income tax suite quick selector, and popular calculators on the homepage with sharp-edged boxes, universal white background, and instant real-time live search.
+  5. **Verification:** All 169 Vitest unit tests pass across 28 suites and all 196 Astro pages build cleanly in 29.27s.
+- **Sitewide Tool Breadcrumbs Standardization & Sitemap Sync (2026-10-18):**
+  1. **Breadcrumbs Standardization (`Home / [Tool Name]`):**
+     - Updated all 130 tool pages across `src/pages/` to simplify breadcrumbs from 3 items (`Home / Category / Tool`) to 2 items (`Home / Tool`), eliminating dead category references.
+     - Updated all 24 country income tax calculators and 3 tax tools (`hourly-to-salary.astro`, `salary-to-hourly.astro`, `vat-calculator.astro`) to remove dead links to `/tax-calculators/`, standardizing breadcrumbs to `Home / [Tool / Country Name]`.
+     - Standardized `CalculatorLayout.astro` and `src/utils/calculators.ts` breadcrumbs fallback to `Home / [Calculator Title]`.
+     - Standardized currency converter pages to `Home / Currency Converter`.
+  2. **PDF Editor Category Link Removal:**
+     - Removed obsolete header back-link `<a href="/pdf-tools/" class="ped-back-link">` from `src/pages/pdf-tools/pdf-editor.astro`.
+     - Standardized breadcrumb array in `pdf-editor.astro` to `Home / PDF Editor`.
+  3. **Sitemap Synchronization (`public/sitemap.xml`):**
+     - Audited `public/sitemap.xml` against the 196 static routes built by Astro.
+     - Purged all 16 dead category URLs (`/academic-tools/`, `/business-tools/`, `/career-tools/`, `/color-tools/`, `/data-tools/`, `/developer-tools/`, `/education-tools/`, `/generators/`, `/image-tools/`, `/pdf-tools/`, `/pricing-calculators/`, `/research-tools/`, `/shipping-calculators/`, `/tax-calculators/`, `/text-tools/`, `/url-tools/`).
+     - Exactly 195 active, verified URLs remain in the sitemap matching 100% of live static HTML pages.
+  4. **Verification:**
+     - Vitest: 169/169 unit tests passed across all 28 test suites.
+     - Astro build: 196 static HTML pages compiled cleanly with 0 errors in 29.89s.
+- **Removal of Unnecessary Badges & Telemetry Text (2026-10-18):**
+  1. **Bottom Footer Telemetry:** Removed the `Client-Side Engine Active (0ms Server Latency)` animated pill and cleansed the brand description of `with zero server latency` in `src/components/Footer.astro`. Removed the unused shield guarantee badge.
+  2. **Homepage Hero Banner Badge:** Removed the `■ Fast • 100% Client-Side • Privacy-First` status chip and cleaned `and zero server latency` from the hero subtitle in `src/components/HomeHeroBanner.astro`.
+  3. **PDF Editor Header Badge:** Removed the `100% Private — In-Browser` badge (`.ped-upload-badge`) from the upload header in `src/pages/pdf-tools/pdf-editor.astro`.
+  4. **Mobile Drawer Footer:** Replaced `100% Client-Side Privacy` with clean `All rights reserved.` in `src/components/MobileDrawer.astro`.
+  5. **Verification:** All 169 Vitest unit tests pass and all 196 static pages build with 0 errors in 36.43s.
+
 
 
 

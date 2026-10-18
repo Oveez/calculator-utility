@@ -1,15 +1,10 @@
-/**
- * Regenerates favicon assets from the new favicon.svg castle rook mark.
- * Produces: calc.png (32x32), apple-touch-icon.png (180x180), favicon.ico
- */
 const sharp = require('sharp');
-const path = require('path');
 const fs = require('fs');
+const path = require('path');
 
-const PUBLIC_DIR = path.resolve(__dirname, '../public');
-const SVG_SRC = path.join(PUBLIC_DIR, 'favicon.svg');
+const userImg = 'C:/Users/My Pc/.gemini/antigravity/brain/7222223e-7ab7-4f94-a418-5f76dd1da5b5/.user_uploaded/media_1792335429647_3843a820.jpg';
+const publicDir = path.resolve(__dirname, '../public');
 
-// Re-use the ICO builder from the main script
 function createIco(images) {
   const header = Buffer.alloc(6);
   header.writeUInt16LE(0, 0);
@@ -35,41 +30,67 @@ function createIco(images) {
 }
 
 async function run() {
-  console.log('Generating favicon assets from favicon.svg...');
+  console.log('Generating favicon assets from user image...');
 
-  const svgBuf = fs.readFileSync(SVG_SRC);
-
-  // calc.png — 32x32 (used as <link rel="icon" sizes="32x32">)
-  const png32 = await sharp(svgBuf, { density: 288 })
-    .resize(32, 32, { fit: 'contain', background: { r: 0, g: 0, b: 0, alpha: 0 } })
+  // 1. Generate 512x512 PNG
+  const png512 = await sharp(userImg)
+    .resize(512, 512, { fit: 'contain' })
     .png()
     .toBuffer();
-  fs.writeFileSync(path.join(PUBLIC_DIR, 'calc.png'), png32);
-  console.log('  ✓ calc.png (32×32)');
+  fs.writeFileSync(path.join(publicDir, 'android-chrome-512x512.png'), png512);
+  console.log('  ✓ android-chrome-512x512.png');
 
-  // apple-touch-icon.png — 180x180
-  const png180 = await sharp(svgBuf, { density: 288 })
-    .resize(180, 180, { fit: 'contain', background: { r: 0, g: 0, b: 0, alpha: 0 } })
+  // 2. Generate 192x192 PNG
+  const png192 = await sharp(userImg)
+    .resize(192, 192, { fit: 'contain' })
     .png()
     .toBuffer();
-  fs.writeFileSync(path.join(PUBLIC_DIR, 'apple-touch-icon.png'), png180);
-  console.log('  ✓ apple-touch-icon.png (180×180)');
+  fs.writeFileSync(path.join(publicDir, 'android-chrome-192x192.png'), png192);
+  console.log('  ✓ android-chrome-192x192.png');
 
-  // favicon.ico — multi-size (16, 32, 48)
+  // 3. Generate 180x180 Apple Touch Icon
+  const png180 = await sharp(userImg)
+    .resize(180, 180, { fit: 'contain' })
+    .png()
+    .toBuffer();
+  fs.writeFileSync(path.join(publicDir, 'apple-touch-icon.png'), png180);
+  console.log('  ✓ apple-touch-icon.png (180x180)');
+
+  // 4. Generate 32x32 calc.png
+  const png32 = await sharp(userImg)
+    .resize(32, 32, { fit: 'contain' })
+    .png()
+    .toBuffer();
+  fs.writeFileSync(path.join(publicDir, 'calc.png'), png32);
+  console.log('  ✓ calc.png (32x32)');
+
+  // 5. Generate multi-resolution favicon.ico (16, 32, 48)
   const sizes = [16, 32, 48];
   const icoImages = [];
   for (const sz of sizes) {
-    const buf = await sharp(svgBuf, { density: 288 })
-      .resize(sz, sz, { fit: 'contain', background: { r: 0, g: 0, b: 0, alpha: 0 } })
+    const buf = await sharp(userImg)
+      .resize(sz, sz, { fit: 'contain' })
       .png()
       .toBuffer();
     icoImages.push({ width: sz, height: sz, buffer: buf });
   }
   const icoBuf = createIco(icoImages);
-  fs.writeFileSync(path.join(PUBLIC_DIR, 'favicon.ico'), icoBuf);
+  fs.writeFileSync(path.join(publicDir, 'favicon.ico'), icoBuf);
   console.log('  ✓ favicon.ico (16, 32, 48)');
 
-  console.log('Done!');
+  // 6. Generate SVG favicon with embedded high-res PNG
+  const b64 = png512.toString('base64');
+  const svgContent = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
+  <image href="data:image/png;base64,${b64}" width="512" height="512" />
+</svg>
+`;
+  fs.writeFileSync(path.join(publicDir, 'favicon.svg'), svgContent);
+  console.log('  ✓ favicon.svg');
+
+  console.log('All favicon assets generated successfully!');
 }
 
-run().catch(e => { console.error(e); process.exit(1); });
+run().catch((err) => {
+  console.error(err);
+  process.exit(1);
+});
