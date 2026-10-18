@@ -143,29 +143,29 @@ const workedExampleData = {
 
     <div class="space-y-6">
       <!-- Dropzone -->
-      <div id="dropzone-box" class="space-y-3 rounded-3xl border-2 border-dashed border-[color:var(--border)] bg-[color:var(--surface)] p-6 sm:p-10 text-center transition hover:border-[color:var(--accent)]">
+      <div id="dropzone-box" class="space-y-3 rounded-none border-2 border-dashed border-[color:var(--border)] bg-[color:var(--surface)] p-6 sm:p-10 text-center transition hover:border-[color:var(--accent)]">
         <input type="file" id="img-files" accept="image/*" multiple class="hidden" />
         <label for="img-files" id="upload-prompt" class="cursor-pointer space-y-3 block">
-          <div class="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-[color:var(--surface-strong)] text-[color:var(--fg)] shadow-xs">
+          <div class="mx-auto flex h-14 w-14 items-center justify-center rounded-none bg-[color:var(--surface-strong)] text-[color:var(--fg)] shadow-xs">
             <Icon name="image" class="w-7 h-7 text-[color:var(--accent)]" />
           </div>
           <div>
             <p class="text-base font-bold text-[color:var(--fg)]">Choose images or drag &amp; drop photos here</p>
             <p class="text-xs text-[color:var(--muted)] mt-1">Supports JPG, PNG, WebP, SVG, BMP, and GIF (100% private in-browser)</p>
           </div>
-          <span class="inline-flex items-center gap-2 rounded-xl bg-[color:var(--accent)] px-5 py-2 text-xs font-bold text-white shadow-xs">
+          <span class="inline-flex items-center gap-2 rounded-none bg-[color:var(--accent)] px-5 py-2 text-xs font-bold text-white shadow-xs">
             Browse Images
           </span>
         </label>
       </div>
 
       <!-- Settings & Image Workspace Card -->
-      <div id="conv-card" class="hidden space-y-6 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 sm:p-6">
+      <div id="conv-card" class="hidden space-y-6 rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-5 sm:p-6">
         <!-- Live Image Queue Header -->
         <div class="flex flex-wrap items-center justify-between gap-3">
           <div class="flex items-center gap-3">
             <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Selected Images:</span>
-            <span id="stat-image-count" class="rounded-full bg-[color:var(--surface-strong)] px-2.5 py-0.5 font-mono text-[11px] font-bold text-[color:var(--accent)]">
+            <span id="stat-image-count" class="rounded-none bg-[color:var(--surface-strong)] px-2.5 py-0.5 font-mono text-[11px] font-bold text-[color:var(--accent)]">
               0 images
             </span>
           </div>
@@ -184,12 +184,12 @@ const workedExampleData = {
         <div id="image-grid" class="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5"></div>
 
         <!-- PDF Layout Controls -->
-        <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] p-4 space-y-4">
+        <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] p-4 space-y-4">
           <div class="text-[11px] font-bold uppercase tracking-wider text-[color:var(--muted)]">PDF Page Layout &amp; Formatting</div>
           <div class="grid gap-4 sm:grid-cols-2 md:grid-cols-4 text-xs">
             <div>
               <label for="page-size" class="font-bold text-[color:var(--fg)] block mb-1.5">Page Dimensions</label>
-              <select id="page-size" class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-2 text-[color:var(--fg)] font-semibold">
+              <select id="page-size" class="w-full rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-2 text-[color:var(--fg)] font-semibold">
                 <option value="A4">A4 (210 × 297 mm)</option>
                 <option value="Letter">US Letter (8.5 × 11 in)</option>
                 <option value="Legal">US Legal (8.5 × 14 in)</option>
@@ -199,7 +199,7 @@ const workedExampleData = {
 
             <div>
               <label for="page-orient" class="font-bold text-[color:var(--fg)] block mb-1.5">Orientation</label>
-              <select id="page-orient" class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-2 text-[color:var(--fg)] font-semibold">
+              <select id="page-orient" class="w-full rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-2 text-[color:var(--fg)] font-semibold">
                 <option value="auto">Auto-Detect per Image</option>
                 <option value="portrait">Always Portrait</option>
                 <option value="landscape">Always Landscape</option>
@@ -208,7 +208,7 @@ const workedExampleData = {
 
             <div>
               <label for="page-margin" class="font-bold text-[color:var(--fg)] block mb-1.5">Page Margins</label>
-              <select id="page-margin" class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-2 text-[color:var(--fg)] font-semibold">
+              <select id="page-margin" class="w-full rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-2 text-[color:var(--fg)] font-semibold">
                 <option value="0">None (0 mm / Borderless)</option>
                 <option value="20" selected>Compact (7 mm)</option>
                 <option value="40">Standard (15 mm)</option>
@@ -236,7 +236,7 @@ const workedExampleData = {
               <input
                 type="text"
                 id="pdf-filename"
-                class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-2 text-[color:var(--fg)] font-mono"
+                class="w-full rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-2 text-[color:var(--fg)] font-mono"
                 value="images-compiled.pdf" />
             </div>
             <div class="flex items-center pt-4">
@@ -253,7 +253,7 @@ const workedExampleData = {
           <button
             type="button"
             id="compile-btn"
-            class="w-full rounded-xl bg-[color:var(--accent)] py-3 text-xs font-bold text-white shadow-xs transition hover:opacity-90 active:scale-95 cursor-pointer flex items-center justify-center gap-2"
+            class="w-full rounded-none bg-[color:var(--accent)] py-3 text-xs font-bold text-white shadow-xs transition hover:opacity-90 active:scale-95 cursor-pointer flex items-center justify-center gap-2"
           >
             <Icon name="document" class="w-4 h-4" />
             <span>Compile &amp; Download PDF</span>
@@ -265,15 +265,15 @@ const workedExampleData = {
 
     <!-- Full-Page Zoom Inspection Modal -->
     <div id="page-zoom-modal" class="fixed inset-0 z-50 hidden bg-black/80 backdrop-blur-xs flex items-center justify-center p-4">
-      <div class="relative max-w-3xl w-full max-h-[92vh] bg-[color:var(--surface)] border border-[color:var(--border)] rounded-3xl p-5 shadow-2xl flex flex-col items-center">
+      <div class="relative max-w-3xl w-full max-h-[92vh] bg-[color:var(--surface)] border border-[color:var(--border)] rounded-none p-5 shadow-2xl flex flex-col items-center">
         <div class="flex w-full items-center justify-between pb-3 border-b border-[color:var(--border)] mb-3">
           <h4 id="zoom-title" class="font-bold text-sm text-[color:var(--fg)]">Image Preview</h4>
-          <button type="button" id="close-zoom-btn" class="rounded-xl bg-[color:var(--surface-strong)] text-[color:var(--fg)] px-3 py-1 text-xs font-bold hover:bg-[color:var(--border)] cursor-pointer">
+          <button type="button" id="close-zoom-btn" class="rounded-none bg-[color:var(--surface-strong)] text-[color:var(--fg)] px-3 py-1 text-xs font-bold hover:bg-[color:var(--border)] cursor-pointer">
             Close ✕
           </button>
         </div>
-        <div class="overflow-auto max-h-[75vh] w-full flex items-center justify-center bg-slate-950/20 rounded-xl p-2">
-          <img id="zoom-img" alt="Zoomed Image Preview" class="max-h-[72vh] max-w-full object-contain rounded-lg shadow-md transition-transform duration-200" />
+        <div class="overflow-auto max-h-[75vh] w-full flex items-center justify-center bg-slate-950/20 rounded-none p-2">
+          <img id="zoom-img" alt="Zoomed Image Preview" class="max-h-[72vh] max-w-full object-contain rounded-none shadow-md transition-transform duration-200" />
         </div>
       </div>
     </div>
@@ -301,7 +301,7 @@ const workedExampleData = {
       <h2 class="text-xl font-bold text-[color:var(--fg)]">Frequently Asked Questions</h2>
       <div class="space-y-3">
         {schemaFaq.map((faq) => (
-          <details class="group rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
+          <details class="group rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
             <summary class="cursor-pointer list-none font-semibold text-sm sm:text-base text-[color:var(--fg)] flex items-center justify-between gap-4">
               <span>{faq.question}</span>
               <span class="text-xs text-[color:var(--muted)] group-open:rotate-180 transition-transform">▼</span>
@@ -415,20 +415,20 @@ const workedExampleData = {
           const isLast = idx === imageItems.length - 1;
 
           html += `
-            <div class="group relative flex flex-col rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-2.5 shadow-xs transition hover:border-[color:var(--accent)]">
-              <div class="relative flex h-32 w-full items-center justify-center overflow-hidden rounded-xl bg-[color:var(--surface-strong)]">
+            <div class="group relative flex flex-col rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-2.5 shadow-xs transition hover:border-[color:var(--accent)]">
+              <div class="relative flex h-32 w-full items-center justify-center overflow-hidden rounded-none bg-[color:var(--surface-strong)]">
                 <img
                   src="${item.url}"
                   alt="Thumb"
                   class="max-h-full max-w-full object-contain transition-transform"
                   style="transform: rotate(${item.rotation}deg);"
                 />
-                <span class="absolute top-1.5 left-1.5 rounded-md bg-black/60 px-1.5 py-0.5 text-[10px] font-bold text-white backdrop-blur-xs">
+                <span class="absolute top-1.5 left-1.5 rounded-none bg-black/60 px-1.5 py-0.5 text-[10px] font-bold text-white backdrop-blur-xs">
                   #${idx + 1}
                 </span>
 
                 <!-- Zoom Inspect Button -->
-                <button type="button" data-zoom="${idx}" class="absolute top-1.5 right-1.5 rounded-md bg-white/95 dark:bg-slate-800/95 p-1 text-[color:var(--fg)] hover:scale-110 shadow-xs transition cursor-pointer" title="Zoom inspect image">
+                <button type="button" data-zoom="${idx}" class="absolute top-1.5 right-1.5 rounded-none bg-white/95 dark:bg-slate-800/95 p-1 text-[color:var(--fg)] hover:scale-110 shadow-xs transition cursor-pointer" title="Zoom inspect image">
                   <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line><line x1="11" y1="8" x2="11" y2="14"></line><line x1="8" y1="11" x2="14" y2="11"></line></svg>
                 </button>
               </div>

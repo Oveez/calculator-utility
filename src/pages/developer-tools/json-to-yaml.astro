@@ -93,19 +93,19 @@ const schemaGraph = [
 
     <!-- Telemetry Bar -->
     <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-      <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3 text-center">
+      <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-3 text-center">
         <p class="text-[10px] font-bold uppercase tracking-wider text-[color:var(--muted)]">JSON Size</p>
         <p id="stat-json-bytes" class="mt-1 font-mono text-base font-bold text-[color:var(--fg)]">0 B</p>
       </div>
-      <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3 text-center">
+      <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-3 text-center">
         <p class="text-[10px] font-bold uppercase tracking-wider text-[color:var(--muted)]">YAML Size</p>
         <p id="stat-yaml-bytes" class="mt-1 font-mono text-base font-bold text-cyan-500 dark:text-cyan-400">0 B</p>
       </div>
-      <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3 text-center">
+      <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-3 text-center">
         <p class="text-[10px] font-bold uppercase tracking-wider text-[color:var(--muted)]">Line Count</p>
         <p id="stat-lines" class="mt-1 font-mono text-base font-bold text-[color:var(--fg)]">0 lines</p>
       </div>
-      <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3 text-center">
+      <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-3 text-center">
         <p class="text-[10px] font-bold uppercase tracking-wider text-[color:var(--muted)]">Size Delta</p>
         <p id="stat-delta" class="mt-1 font-mono text-base font-bold text-[color:var(--fg)]">0%</p>
       </div>
@@ -129,17 +129,17 @@ const schemaGraph = [
         <textarea
           id="json-in"
           rows="16"
-          class="w-full font-mono text-xs leading-relaxed rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-[color:var(--fg)] focus:border-[color:var(--border-strong)] focus:outline-hidden"
+          class="w-full font-mono text-xs leading-relaxed rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-[color:var(--fg)] focus:border-[color:var(--border-strong)] focus:outline-hidden"
           placeholder='{"version": "3.8", "services": {"web": {"image": "nginx:alpine", "ports": ["80:80"]}}}'
         ></textarea>
 
         <!-- Formatting Options -->
-        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 space-y-3 text-xs">
+        <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-4 space-y-3 text-xs">
           <p class="font-bold uppercase tracking-wider text-[color:var(--muted)] text-[10px]">YAML Formatting Options</p>
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div class="flex items-center gap-2">
               <label for="indent-spaces" class="font-medium text-[color:var(--muted)]">Indentation:</label>
-              <select id="indent-spaces" class="rounded-lg border border-[color:var(--border)] bg-[color:var(--bg)] px-2.5 py-1 text-xs text-[color:var(--fg)]">
+              <select id="indent-spaces" class="rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-2.5 py-1 text-xs text-[color:var(--fg)]">
                 <option value="2">2 Spaces (Standard)</option>
                 <option value="4">4 Spaces (K8s)</option>
               </select>
@@ -153,7 +153,7 @@ const schemaGraph = [
           <button
             type="button"
             data-convert-btn
-            class="w-full rounded-xl bg-[color:var(--accent)] py-2.5 text-xs font-bold text-white shadow-xs transition hover:opacity-90"
+            class="w-full rounded-none bg-[color:var(--accent)] py-2.5 text-xs font-bold text-white shadow-xs transition hover:opacity-90"
           >
             Convert JSON to YAML
           </button>
@@ -180,11 +180,11 @@ const schemaGraph = [
           id="yaml-out"
           rows="16"
           readonly
-          class="w-full font-mono text-xs leading-relaxed rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-4 text-[color:var(--fg)] focus:outline-hidden"
+          class="w-full font-mono text-xs leading-relaxed rounded-none border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-4 text-[color:var(--fg)] focus:outline-hidden"
           placeholder="Formatted YAML will appear here..."
         ></textarea>
 
-        <div id="yaml-err" class="hidden rounded-xl border border-red-500/30 bg-red-500/10 p-3 text-xs text-red-600 dark:text-red-400 font-mono"></div>
+        <div id="yaml-err" class="hidden rounded-none border border-red-500/30 bg-red-500/10 p-3 text-xs text-red-600 dark:text-red-400 font-mono"></div>
       </div>
     </div>
 
@@ -256,7 +256,7 @@ const schemaGraph = [
       <h2 class="text-xl font-bold text-[color:var(--fg)]">Frequently Asked Questions</h2>
       <div class="space-y-3">
         {schemaFaq.map((faq) => (
-          <details class="group rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
+          <details class="group rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
             <summary class="cursor-pointer list-none font-semibold text-sm sm:text-base text-[color:var(--fg)] flex items-center justify-between gap-4">
               <span>{faq.question}</span>
               <span class="text-xs text-[color:var(--muted)] group-open:rotate-180 transition-transform">&#9660;</span>

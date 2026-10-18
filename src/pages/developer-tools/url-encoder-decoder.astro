@@ -93,19 +93,19 @@ const schemaGraph = [
 
     <!-- Telemetry Bar -->
     <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-      <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3 text-center">
+      <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-3 text-center">
         <p class="text-[10px] font-bold uppercase tracking-wider text-[color:var(--muted)]">Raw Length</p>
         <p id="stat-raw-len" class="mt-1 font-mono text-base font-bold text-[color:var(--fg)]">0 chars</p>
       </div>
-      <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3 text-center">
+      <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-3 text-center">
         <p class="text-[10px] font-bold uppercase tracking-wider text-[color:var(--muted)]">Processed Length</p>
         <p id="stat-out-len" class="mt-1 font-mono text-base font-bold text-cyan-500 dark:text-cyan-400">0 chars</p>
       </div>
-      <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3 text-center">
+      <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-3 text-center">
         <p class="text-[10px] font-bold uppercase tracking-wider text-[color:var(--muted)]">Query Parameters</p>
         <p id="stat-param-count" class="mt-1 font-mono text-base font-bold text-[color:var(--fg)]">0</p>
       </div>
-      <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3 text-center">
+      <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-3 text-center">
         <p class="text-[10px] font-bold uppercase tracking-wider text-[color:var(--muted)]">Protocol / Host</p>
         <p id="stat-host" class="mt-1 font-mono text-base font-bold text-[color:var(--fg)] truncate">None</p>
       </div>
@@ -129,16 +129,16 @@ const schemaGraph = [
         <textarea
           id="url-in"
           rows="11"
-          class="w-full font-mono text-xs leading-relaxed rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-[color:var(--fg)] focus:border-[color:var(--border-strong)] focus:outline-hidden"
+          class="w-full font-mono text-xs leading-relaxed rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-[color:var(--fg)] focus:border-[color:var(--border-strong)] focus:outline-hidden"
           placeholder="Enter text or URL to encode or decode..."
         ></textarea>
 
         <!-- Mode & Space Options -->
-        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 space-y-3">
+        <div class="py-4 border-b border-[color:var(--border)] space-y-3">
           <div class="flex flex-wrap items-center justify-between gap-3">
             <div class="flex items-center gap-2">
               <label for="mode-select" class="text-xs font-medium text-[color:var(--muted)]">Encode Type:</label>
-              <select id="mode-select" class="rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-1.5 text-xs text-[color:var(--fg)] font-semibold">
+              <select id="mode-select" class="rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-1.5 text-xs text-[color:var(--fg)] font-semibold">
                 <option value="component">Component (encodeURIComponent - Keys &amp; Values)</option>
                 <option value="full">Full URI (encodeURI - Preserves :, /, ?)</option>
               </select>
@@ -146,7 +146,7 @@ const schemaGraph = [
 
             <div class="flex items-center gap-2">
               <label for="space-mode" class="text-xs font-medium text-[color:var(--muted)]">Space Encoding:</label>
-              <select id="space-mode" class="rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-1.5 text-xs text-[color:var(--fg)]">
+              <select id="space-mode" class="rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-1.5 text-xs text-[color:var(--fg)]">
                 <option value="%20">%20 (RFC 3986 Standard)</option>
                 <option value="+">+ (application/x-www-form-urlencoded)</option>
               </select>
@@ -157,14 +157,14 @@ const schemaGraph = [
             <button
               type="button"
               data-enc-btn
-              class="flex-1 rounded-xl bg-[color:var(--accent)] py-2.5 text-xs font-bold text-white shadow-xs transition hover:opacity-90"
+              class="flex-1 rounded-none bg-[color:var(--accent)] py-2.5 text-xs font-bold text-white shadow-xs transition hover:opacity-90"
             >
               Encode URL
             </button>
             <button
               type="button"
               data-dec-btn
-              class="flex-1 rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] py-2.5 text-xs font-bold text-[color:var(--fg)] transition hover:bg-[color:var(--surface-strong)]"
+              class="flex-1 rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] py-2.5 text-xs font-bold text-[color:var(--fg)] transition hover:bg-[color:var(--surface-strong)]"
             >
               Decode URL
             </button>
@@ -188,23 +188,23 @@ const schemaGraph = [
           id="url-out"
           rows="11"
           readonly
-          class="w-full font-mono text-xs leading-relaxed rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-4 text-[color:var(--fg)] focus:outline-hidden"
+          class="w-full font-mono text-xs leading-relaxed rounded-none border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-4 text-[color:var(--fg)] focus:outline-hidden"
           placeholder="Processed URL will appear here..."
         ></textarea>
 
         <!-- URI Component Inspector -->
-        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 space-y-2 text-xs">
+        <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-4 space-y-2 text-xs">
           <p class="font-bold text-[color:var(--fg)]">Parsed URL Components:</p>
           <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 font-mono text-[11px]">
-            <div class="rounded-lg bg-[color:var(--bg)] p-2">
+            <div class="rounded-none bg-[color:var(--bg)] p-2">
               <span class="text-[color:var(--muted)] block text-[10px]">Protocol:</span>
               <span id="comp-protocol" class="text-[color:var(--fg)] font-semibold truncate block">n/a</span>
             </div>
-            <div class="rounded-lg bg-[color:var(--bg)] p-2">
+            <div class="rounded-none bg-[color:var(--bg)] p-2">
               <span class="text-[color:var(--muted)] block text-[10px]">Host:</span>
               <span id="comp-host" class="text-[color:var(--fg)] font-semibold truncate block">n/a</span>
             </div>
-            <div class="rounded-lg bg-[color:var(--bg)] p-2">
+            <div class="rounded-none bg-[color:var(--bg)] p-2">
               <span class="text-[color:var(--muted)] block text-[10px]">Pathname:</span>
               <span id="comp-path" class="text-[color:var(--fg)] font-semibold truncate block">n/a</span>
             </div>
@@ -214,7 +214,7 @@ const schemaGraph = [
     </div>
 
     <!-- Interactive Query Parameter Editor Table -->
-    <div class="space-y-4 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
+    <div class="space-y-4 rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
       <div class="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h2 class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Interactive Query Parameter Editor</h2>
@@ -223,7 +223,7 @@ const schemaGraph = [
         <button
           type="button"
           id="add-param-btn"
-          class="inline-flex items-center gap-1 rounded-xl bg-[color:var(--accent)] px-3 py-1.5 text-xs font-bold text-white shadow-xs transition hover:opacity-90"
+          class="inline-flex items-center gap-1 rounded-none bg-[color:var(--accent)] px-3 py-1.5 text-xs font-bold text-white shadow-xs transition hover:opacity-90"
         >
           <span>+ Add Parameter</span>
         </button>
@@ -251,38 +251,38 @@ const schemaGraph = [
     </div>
 
     <!-- Character Reference Card -->
-    <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5 space-y-3">
+    <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5 space-y-3">
       <h2 class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Common Percent-Encoding Hex Codes (RFC 3986)</h2>
       <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-2 text-center text-xs font-mono">
-        <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] p-2">
+        <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] p-2">
           <span class="text-[color:var(--muted)] text-[10px] block">Space</span>
           <strong class="text-cyan-500 dark:text-cyan-400 text-sm">%20</strong>
         </div>
-        <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] p-2">
+        <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] p-2">
           <span class="text-[color:var(--muted)] text-[10px] block">Forward Slash</span>
           <strong class="text-[color:var(--fg)] text-sm">%2F</strong>
         </div>
-        <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] p-2">
+        <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] p-2">
           <span class="text-[color:var(--muted)] text-[10px] block">Question Mark</span>
           <strong class="text-[color:var(--fg)] text-sm">%3F</strong>
         </div>
-        <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] p-2">
+        <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] p-2">
           <span class="text-[color:var(--muted)] text-[10px] block">Ampersand</span>
           <strong class="text-[color:var(--fg)] text-sm">%26</strong>
         </div>
-        <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] p-2">
+        <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] p-2">
           <span class="text-[color:var(--muted)] text-[10px] block">Equals</span>
           <strong class="text-[color:var(--fg)] text-sm">%3D</strong>
         </div>
-        <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] p-2">
+        <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] p-2">
           <span class="text-[color:var(--muted)] text-[10px] block">Hash (#)</span>
           <strong class="text-[color:var(--fg)] text-sm">%23</strong>
         </div>
-        <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] p-2">
+        <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] p-2">
           <span class="text-[color:var(--muted)] text-[10px] block">At Sign (@)</span>
           <strong class="text-[color:var(--fg)] text-sm">%40</strong>
         </div>
-        <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] p-2">
+        <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] p-2">
           <span class="text-[color:var(--muted)] text-[10px] block">Plus (+)</span>
           <strong class="text-[color:var(--fg)] text-sm">%2B</strong>
         </div>
@@ -363,7 +363,7 @@ const schemaGraph = [
       <h2 class="text-xl font-bold text-[color:var(--fg)]">Frequently Asked Questions</h2>
       <div class="space-y-3">
         {schemaFaq.map((faq) => (
-          <details class="group rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
+          <details class="group rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
             <summary class="cursor-pointer list-none font-semibold text-sm sm:text-base text-[color:var(--fg)] flex items-center justify-between gap-4">
               <span>{faq.question}</span>
               <span class="text-xs text-[color:var(--muted)] group-open:rotate-180 transition-transform">&#9660;</span>
@@ -466,7 +466,7 @@ const schemaGraph = [
                 type="text"
                 data-idx="${idx}"
                 data-field="key"
-                class="w-full rounded-lg border border-[color:var(--border)] bg-[color:var(--bg)] px-2 py-1 text-xs text-[color:var(--fg)] focus:outline-hidden"
+                class="w-full rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-2 py-1 text-xs text-[color:var(--fg)] focus:outline-hidden"
                 value="${escapeHtml(p.key)}" />
             </td>
             <td class="py-2 pr-2">
@@ -474,7 +474,7 @@ const schemaGraph = [
                 type="text"
                 data-idx="${idx}"
                 data-field="val"
-                class="w-full rounded-lg border border-[color:var(--border)] bg-[color:var(--bg)] px-2 py-1 text-xs text-[color:var(--fg)] focus:outline-hidden"
+                class="w-full rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-2 py-1 text-xs text-[color:var(--fg)] focus:outline-hidden"
                 value="${escapeHtml(p.val)}" />
             </td>
             <td class="py-2 text-right">

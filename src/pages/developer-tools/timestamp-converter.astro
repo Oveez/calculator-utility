@@ -137,13 +137,13 @@ const parameterGuide = [
 
 
     <!-- Live Current Epoch Hero -->
-    <div class="space-y-3 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 sm:p-6">
+    <div class="space-y-3 rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-5 sm:p-6">
       <div class="flex items-center justify-between">
         <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Current Unix Epoch Time</span>
         <div class="flex items-center gap-3 text-xs">
           <button type="button" id="btn-pause-clock" class="font-semibold text-[color:var(--primary)] hover:underline cursor-pointer">Pause Ticker</button>
           <span class="text-cyan-500 dark:text-cyan-400 font-bold flex items-center gap-1">
-            <span id="ticker-dot" class="h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span>
+            <span id="ticker-dot" class="h-2 w-2 rounded-none bg-emerald-500 animate-pulse"></span>
             <span id="ticker-label">Live</span>
           </span>
         </div>
@@ -153,12 +153,12 @@ const parameterGuide = [
           type="text"
           id="current-epoch"
           readonly
-          class="flex-1 rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] px-4 py-2.5 font-mono text-xl sm:text-2xl font-extrabold text-[color:var(--fg)] focus:outline-hidden select-all" />
+          class="flex-1 rounded-none border border-[color:var(--border)] bg-[color:var(--surface-strong)] px-4 py-2.5 font-mono text-xl sm:text-2xl font-extrabold text-[color:var(--fg)] focus:outline-hidden select-all" />
         <div class="flex gap-2">
           <button
             type="button"
             id="btn-copy-sec"
-            class="inline-flex items-center justify-center gap-1.5 rounded-xl bg-[color:var(--accent)] px-4 py-2.5 text-xs font-bold text-white shadow-xs transition hover:opacity-90 cursor-pointer"
+            class="inline-flex items-center justify-center gap-1.5 rounded-none bg-[color:var(--accent)] px-4 py-2.5 text-xs font-bold text-white shadow-xs transition hover:opacity-90 cursor-pointer"
           >
             <Icon name="copy" class="h-3.5 w-3.5" />
             <span>Copy Seconds</span>
@@ -166,7 +166,7 @@ const parameterGuide = [
           <button
             type="button"
             id="btn-copy-ms"
-            class="inline-flex items-center justify-center rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] px-3 py-2.5 text-xs font-bold text-[color:var(--fg)] hover:bg-[color:var(--bg)] cursor-pointer"
+            class="inline-flex items-center justify-center rounded-none border border-[color:var(--border)] bg-[color:var(--surface-strong)] px-3 py-2.5 text-xs font-bold text-[color:var(--fg)] hover:bg-[color:var(--bg)] cursor-pointer"
           >
             Copy MS
           </button>
@@ -177,7 +177,7 @@ const parameterGuide = [
     <!-- Conversion Grid -->
     <div class="grid gap-6 lg:grid-cols-2">
       <!-- Timestamp to Date Column -->
-      <div class="space-y-4 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5">
+      <div class="space-y-4 rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-5">
         <div class="flex items-center justify-between">
           <h2 class="font-bold text-sm text-[color:var(--fg)]">Convert Timestamp → Human Date</h2>
           <span class="rounded bg-cyan-500/15 px-2 py-0.5 text-[10px] font-bold text-cyan-600 dark:text-cyan-400 dark:text-cyan-400">Auto-Detect Sec / MS</span>
@@ -189,9 +189,9 @@ const parameterGuide = [
             <input
               type="text"
               id="ts-input"
-              class="flex-1 rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-xs text-[color:var(--fg)] focus:outline-hidden"
+              class="flex-1 rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-xs text-[color:var(--fg)] focus:outline-hidden"
               placeholder="e.g. 1772839200" />
-            <button type="button" id="btn-use-now" class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] px-3 py-1.5 text-xs font-bold text-[color:var(--fg)] hover:bg-[color:var(--bg)] cursor-pointer">
+            <button type="button" id="btn-use-now" class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface-strong)] px-3 py-1.5 text-xs font-bold text-[color:var(--fg)] hover:bg-[color:var(--bg)] cursor-pointer">
               Use Now
             </button>
           </div>
@@ -199,19 +199,19 @@ const parameterGuide = [
 
         <!-- Conversion Output Table -->
         <div class="space-y-2 font-mono text-xs pt-2">
-          <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] p-3">
+          <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] p-3">
             <span class="text-[10px] font-bold uppercase tracking-wider text-[color:var(--muted)] block font-sans">GMT / UTC Date:</span>
             <p id="out-utc" class="text-[color:var(--fg)] font-bold mt-0.5">-</p>
           </div>
-          <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] p-3">
+          <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] p-3">
             <span class="text-[10px] font-bold uppercase tracking-wider text-[color:var(--muted)] block font-sans">Your Local System Time:</span>
             <p id="out-local" class="text-[color:var(--fg)] font-bold mt-0.5">-</p>
           </div>
-          <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] p-3">
+          <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] p-3">
             <span class="text-[10px] font-bold uppercase tracking-wider text-[color:var(--muted)] block font-sans">ISO 8601 String:</span>
             <p id="out-iso" class="text-[color:var(--fg)] mt-0.5">-</p>
           </div>
-          <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] p-3">
+          <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] p-3">
             <span class="text-[10px] font-bold uppercase tracking-wider text-[color:var(--muted)] block font-sans">Relative Duration:</span>
             <p id="out-relative" class="text-cyan-600 dark:text-cyan-400 dark:text-cyan-400 font-bold mt-0.5 font-sans">-</p>
           </div>
@@ -219,7 +219,7 @@ const parameterGuide = [
       </div>
 
       <!-- Human Date to Timestamp Column -->
-      <div class="space-y-4 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5">
+      <div class="space-y-4 rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-5">
         <h2 class="font-bold text-sm text-[color:var(--fg)]">Convert Human Date → Unix Timestamp</h2>
 
         <div class="space-y-3">
@@ -228,7 +228,7 @@ const parameterGuide = [
             <input
               type="date"
               id="date-in"
-              class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-xs text-[color:var(--fg)] focus:outline-hidden" />
+              class="w-full rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-xs text-[color:var(--fg)] focus:outline-hidden" />
           </div>
 
           <div class="grid grid-cols-2 gap-3">
@@ -238,11 +238,11 @@ const parameterGuide = [
                 type="time"
                 id="time-in"
                 step="1"
-                class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-xs text-[color:var(--fg)] focus:outline-hidden" />
+                class="w-full rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-xs text-[color:var(--fg)] focus:outline-hidden" />
             </div>
             <div>
               <label for="tz-select" class="text-xs font-medium text-[color:var(--muted)] block mb-1">Timezone Basis:</label>
-              <select id="tz-select" class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-2.5 py-2 text-xs text-[color:var(--fg)]">
+              <select id="tz-select" class="w-full rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-2.5 py-2 text-xs text-[color:var(--fg)]">
                 <option value="local">Local System Time</option>
                 <option value="utc">UTC / GMT</option>
               </select>
@@ -252,15 +252,15 @@ const parameterGuide = [
 
         <!-- Resulting Timestamps -->
         <div class="space-y-2 font-mono text-xs pt-2">
-          <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] p-3">
+          <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] p-3">
             <span class="text-[10px] font-bold uppercase tracking-wider text-[color:var(--muted)] block font-sans">Epoch Seconds (10 digits):</span>
             <p id="res-sec" class="text-[color:var(--fg)] font-bold text-sm mt-0.5 select-all">-</p>
           </div>
-          <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] p-3">
+          <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] p-3">
             <span class="text-[10px] font-bold uppercase tracking-wider text-[color:var(--muted)] block font-sans">Epoch Milliseconds (13 digits):</span>
             <p id="res-ms" class="text-[color:var(--fg)] font-bold text-sm mt-0.5 select-all">-</p>
           </div>
-          <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] p-3">
+          <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] p-3">
             <span class="text-[10px] font-bold uppercase tracking-wider text-[color:var(--muted)] block font-sans">Day of Year &amp; Calendar Info:</span>
             <p id="res-info" class="text-[color:var(--muted)] mt-0.5 font-sans">-</p>
           </div>
@@ -269,25 +269,25 @@ const parameterGuide = [
     </div>
 
     <!-- Multi-Timezone Preview Card -->
-    <section class="space-y-3 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5">
+    <section class="space-y-3 rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-5">
       <h2 class="text-sm font-bold uppercase tracking-wider text-[color:var(--fg)] flex items-center gap-2">
         <Icon name="globe" class="w-4 h-4 text-[color:var(--accent)]" />
         <span>Global Hubs Timezone Preview</span>
       </h2>
       <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4 font-mono text-xs">
-        <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] p-3">
+        <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] p-3">
           <span class="text-[10px] uppercase font-bold font-sans text-[color:var(--muted)]">London (GMT / BST)</span>
           <p id="tz-london" class="text-[color:var(--fg)] font-bold mt-1">-</p>
         </div>
-        <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] p-3">
+        <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] p-3">
           <span class="text-[10px] uppercase font-bold font-sans text-[color:var(--muted)]">New York (EST / EDT)</span>
           <p id="tz-ny" class="text-[color:var(--fg)] font-bold mt-1">-</p>
         </div>
-        <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-3">
+        <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-3">
           <span class="text-[10px] uppercase font-bold font-sans text-[color:var(--muted)]">San Francisco (PST / PDT)</span>
           <p id="tz-sf" class="text-[color:var(--fg)] font-bold mt-1">-</p>
         </div>
-        <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-3">
+        <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-3">
           <span class="text-[10px] uppercase font-bold font-sans text-[color:var(--muted)]">Tokyo (JST, UTC+9)</span>
           <p id="tz-tokyo" class="text-[color:var(--fg)] font-bold mt-1">-</p>
         </div>
@@ -295,20 +295,20 @@ const parameterGuide = [
     </section>
 
     <!-- Step-by-Step Worked Example -->
-    <section class="space-y-4 rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 sm:p-8 text-xs sm:text-sm text-[color:var(--muted)] leading-relaxed">
+    <section class="space-y-4 border-t border-[color:var(--border)] pt-8 text-xs sm:text-sm text-[color:var(--muted)] leading-relaxed">
       <div class="flex items-center gap-2">
-        <span class="rounded-md bg-[color:var(--accent)]/15 px-2.5 py-1 text-xs font-bold text-[color:var(--accent)]">Worked Example</span>
+        <span class="rounded-none bg-[color:var(--accent)]/15 px-2.5 py-1 text-xs font-bold text-[color:var(--accent)]">Worked Example</span>
         <h2 class="text-base sm:text-lg font-bold text-[color:var(--fg)]">Converting Billable Cloud Incident Epoch to UTC</h2>
       </div>
       <p>
         An AWS CloudWatch log entry records an incident at timestamp <code>1741344000</code>:
       </p>
       <div class="space-y-2 font-mono text-xs">
-        <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] p-3">
+        <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] p-3">
           <span class="text-[color:var(--muted)] block font-bold font-sans text-[11px]">UTC Human Date:</span>
           Saturday, March 7, 2025 at 10:40:00 AM UTC
         </div>
-        <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] p-3">
+        <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] p-3">
           <span class="text-[color:var(--muted)] block font-bold font-sans text-[11px]">ISO 8601 String:</span>
           2025-03-07T10:40:00.000Z
         </div>
@@ -336,7 +336,7 @@ const parameterGuide = [
       <h2 class="text-xl font-bold text-[color:var(--fg)]">Frequently Asked Questions</h2>
       <div class="space-y-3">
         {schemaFaq.map((faq) => (
-          <details class="group rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
+          <details class="group rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
             <summary class="cursor-pointer list-none font-semibold text-sm sm:text-base text-[color:var(--fg)] flex items-center justify-between gap-4">
               <span>{faq.question}</span>
               <span class="text-xs text-[color:var(--muted)] group-open:rotate-180 transition-transform">▼</span>
@@ -399,11 +399,11 @@ const parameterGuide = [
         isClockPaused = !isClockPaused;
         if (isClockPaused) {
           pauseClockBtn.textContent = 'Resume Ticker';
-          tickerDot.className = 'h-2 w-2 rounded-full bg-amber-500';
+          tickerDot.className = 'h-2 w-2 rounded-none bg-amber-500';
           tickerLabel.textContent = 'Paused';
         } else {
           pauseClockBtn.textContent = 'Pause Ticker';
-          tickerDot.className = 'h-2 w-2 rounded-full bg-emerald-500 animate-pulse';
+          tickerDot.className = 'h-2 w-2 rounded-none bg-emerald-500 animate-pulse';
           tickerLabel.textContent = 'Live';
           updateClock();
         }

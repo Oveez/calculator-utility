@@ -159,7 +159,7 @@ const schemaGraph = [
 
 
     <div
-      class="rounded-[2.5rem] border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-6 shadow-[var(--shadow)] sm:p-10"
+      class="space-y-8"
       data-abtest-app
     >
       <div class="grid gap-8 lg:grid-cols-[1.1fr_0.9fr]">
@@ -181,7 +181,7 @@ const schemaGraph = [
               min="0.01"
               max="99"
               step="0.1"
-              class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none"
+              class="w-full rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none"
               data-base-cvr placeholder="e.g. 5.0" />
           </div>
 
@@ -191,9 +191,9 @@ const schemaGraph = [
               <label for="mde-input" class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">
                 Minimum Detectable Effect (MDE)
               </label>
-              <div class="flex gap-1 rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] p-0.5 text-[11px] font-semibold">
-                <button type="button" class="rounded-lg bg-[color:var(--accent)] px-2 py-0.5 text-white" data-mde-type-btn="rel">Relative %</button>
-                <button type="button" class="rounded-lg px-2 py-0.5 text-[color:var(--muted)] hover:text-[color:var(--fg)]" data-mde-type-btn="abs">Absolute pp</button>
+              <div class="flex gap-1 rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-0.5 text-[11px] font-semibold">
+                <button type="button" class="rounded-none bg-[color:var(--accent)] px-2 py-0.5 text-white" data-mde-type-btn="rel">Relative %</button>
+                <button type="button" class="rounded-none px-2 py-0.5 text-[color:var(--muted)] hover:text-[color:var(--fg)]" data-mde-type-btn="abs">Absolute pp</button>
               </div>
             </div>
             <input
@@ -202,7 +202,7 @@ const schemaGraph = [
               min="0.01"
               max="100"
               step="0.1"
-              class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none"
+              class="w-full rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none"
               data-mde-input placeholder="e.g. 10.0" />
             <p class="text-[11px] text-[color:var(--muted)]" data-mde-explanation>
               A 10.0% relative lift on a 5.00% baseline detects changes up to 5.50% (+0.50% absolute lift).
@@ -212,7 +212,7 @@ const schemaGraph = [
           <div class="grid grid-cols-2 gap-3">
             <div>
               <label for="ab-power" class="block text-xs font-medium text-[color:var(--muted)]">Statistical Power (1 - β)</label>
-              <select id="ab-power" class="mt-1 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-ab-power>
+              <select id="ab-power" class="mt-1 w-full rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-ab-power>
                 <option value="80" selected>80% Power (Standard β = 0.20)</option>
                 <option value="85">85% Power (β = 0.15)</option>
                 <option value="90">90% Power (High Rigor β = 0.10)</option>
@@ -221,7 +221,7 @@ const schemaGraph = [
             </div>
             <div>
               <label for="ab-conf" class="block text-xs font-medium text-[color:var(--muted)]">Significance Level (α)</label>
-              <select id="ab-conf" class="mt-1 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-ab-conf>
+              <select id="ab-conf" class="mt-1 w-full rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-ab-conf>
                 <option value="95" selected>95% Confidence (α = 0.05)</option>
                 <option value="90">90% Confidence (α = 0.10)</option>
                 <option value="99">99% Confidence (α = 0.01)</option>
@@ -232,7 +232,7 @@ const schemaGraph = [
           <div class="grid grid-cols-2 gap-3 pt-1">
             <div>
               <label for="ab-split" class="block text-xs font-medium text-[color:var(--muted)]">Traffic Allocation Split</label>
-              <select id="ab-split" class="mt-1 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-ab-split>
+              <select id="ab-split" class="mt-1 w-full rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-ab-split>
                 <option value="50-50" selected>50% Control / 50% Treatment (Optimal)</option>
                 <option value="80-20">80% Control / 20% Treatment</option>
                 <option value="90-10">90% Control / 10% Treatment</option>
@@ -240,7 +240,7 @@ const schemaGraph = [
             </div>
             <div>
               <label for="ab-tails" class="block text-xs font-medium text-[color:var(--muted)]">Hypothesis Sidedness</label>
-              <select id="ab-tails" class="mt-1 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-ab-tails>
+              <select id="ab-tails" class="mt-1 w-full rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-ab-tails>
                 <option value="2" selected>Two-Tailed (Detects Lift or Drop)</option>
                 <option value="1">One-Tailed (Directional Lift Only)</option>
               </select>
@@ -250,23 +250,23 @@ const schemaGraph = [
           <div class="grid grid-cols-2 gap-3 pt-1">
             <div>
               <label for="ab-variants" class="block text-xs font-medium text-[color:var(--muted)]">Variants Count (incl. Control)</label>
-              <input id="ab-variants" type="number" min="2" max="6" class="mt-1 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-ab-variants placeholder="e.g. 2" />
+              <input id="ab-variants" type="number" min="2" max="6" class="mt-1 w-full rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-ab-variants placeholder="e.g. 2" />
             </div>
             <div>
               <label for="daily-traffic" class="block text-xs font-medium text-[color:var(--muted)]">Daily Total Visitors (Opt)</label>
-              <input id="daily-traffic" type="number" min="1" class="mt-1 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-daily-traffic placeholder="e.g. 2,000" />
+              <input id="daily-traffic" type="number" min="1" class="mt-1 w-full rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-daily-traffic placeholder="e.g. 2,000" />
             </div>
           </div>
         </form>
 
-        <div class="flex flex-col justify-between space-y-6 rounded-3xl border border-[color:var(--accent)]/30 bg-gradient-to-br from-[color:var(--accent-soft)] via-[color:var(--surface)] to-transparent p-6 sm:p-8 shadow-sm">
+        <div class="space-y-6">
           <div class="space-y-5">
             <div class="flex items-center justify-between">
               <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Sample Size Requirement</span>
               <div class="flex items-center gap-1.5">
                 <button
                   type="button"
-                  class="inline-flex items-center gap-1 rounded-lg border border-[color:var(--border)] bg-[color:var(--surface)] px-2.5 py-1 text-xs font-semibold text-[color:var(--fg)] hover:bg-[color:var(--bg)] transition cursor-pointer"
+                  class="inline-flex items-center gap-1 rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] px-2.5 py-1 text-xs font-semibold text-[color:var(--fg)] hover:bg-[color:var(--bg)] transition cursor-pointer"
                   data-copy-btn
                 >
                   <Icon name="copy" class="w-3.5 h-3.5" />
@@ -274,7 +274,7 @@ const schemaGraph = [
                 </button>
                 <button
                   type="button"
-                  class="inline-flex items-center gap-1 rounded-lg border border-[color:var(--border)] bg-[color:var(--surface)] px-2.5 py-1 text-xs font-semibold text-[color:var(--fg)] hover:bg-[color:var(--bg)] transition cursor-pointer"
+                  class="inline-flex items-center gap-1 rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] px-2.5 py-1 text-xs font-semibold text-[color:var(--fg)] hover:bg-[color:var(--bg)] transition cursor-pointer"
                   data-export-csv-btn
                 >
                   <span>CSV</span>
@@ -282,7 +282,7 @@ const schemaGraph = [
               </div>
             </div>
 
-            <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 text-center">
+            <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-6 text-center">
               <p class="text-xs font-semibold text-[color:var(--muted)]" data-res-label>Sample Size Per Variant</p>
               <p class="mt-1 text-4xl sm:text-5xl font-black tracking-tight text-[color:var(--fg)] font-mono" data-res-per-variant>
                 30,378
@@ -292,7 +292,7 @@ const schemaGraph = [
               </p>
             </div>
 
-            <div class="space-y-2 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-xs">
+            <div class="space-y-2 rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-xs">
               <div class="flex justify-between">
                 <span class="text-[color:var(--muted)]">Target Conversion Rate:</span>
                 <span class="font-mono font-bold text-[color:var(--fg)]" data-target-cvr>5.50% (+0.50% lift)</span>
@@ -316,7 +316,7 @@ const schemaGraph = [
     </div>
 
     <!-- Sensitivity Matrix Table Across Various MDE Targets -->
-    <section class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 sm:p-8 space-y-4">
+    <section class="space-y-4 border-t border-[color:var(--border)] pt-8">
       <div>
         <p class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Lift Sensitivity Matrix</p>
         <h2 class="text-xl font-bold text-[color:var(--fg)]">Sample Size &amp; Duration by Minimum Detectable Effect</h2>
@@ -351,16 +351,16 @@ const schemaGraph = [
     </header>
 
     <!-- Mathematical Formulas & Statistical Power Theory -->
-    <section class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 sm:p-8 space-y-4">
+    <section class="space-y-4 border-t border-[color:var(--border)] pt-8">
       <div>
         <p class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Controlled Experimentation</p>
         <h2 class="text-xl font-bold text-[color:var(--fg)]">A/B Testing Sample Sizing Math</h2>
       </div>
 
       <div class="grid gap-4 sm:grid-cols-2 text-xs sm:text-sm">
-        <div class="rounded-2xl bg-[color:var(--bg)] p-4 border border-[color:var(--border)] space-y-2">
+        <div class="rounded-none bg-[color:var(--bg)] p-4 border border-[color:var(--border)] space-y-2">
           <p class="font-bold text-[color:var(--fg)]">1. Two-Proportion Hypothesis Test Formula</p>
-          <div class="rounded-xl bg-[color:var(--surface)] p-3 font-mono text-xs text-[color:var(--fg)] overflow-x-auto">
+          <div class="rounded-none bg-[color:var(--surface)] p-3 font-mono text-xs text-[color:var(--fg)] overflow-x-auto">
             n = [Z_(α/2)√(2p̄(1 - p̄)) + Z_β√(p₁(1 - p₁) + p₂(1 - p₂))]² ÷ δ²
           </div>
           <p class="text-xs text-[color:var(--muted)]">
@@ -368,9 +368,9 @@ const schemaGraph = [
           </p>
         </div>
 
-        <div class="rounded-2xl bg-[color:var(--bg)] p-4 border border-[color:var(--border)] space-y-2">
+        <div class="rounded-none bg-[color:var(--bg)] p-4 border border-[color:var(--border)] space-y-2">
           <p class="font-bold text-[color:var(--fg)]">2. Power &amp; Significance Trade-offs</p>
-          <div class="rounded-xl bg-[color:var(--surface)] p-3 font-mono text-xs text-[color:var(--fg)] overflow-x-auto">
+          <div class="rounded-none bg-[color:var(--surface)] p-3 font-mono text-xs text-[color:var(--fg)] overflow-x-auto">
             Power (1 - β) = 80% (Z_β = 0.842) | 90% (Z_β = 1.282)
           </div>
           <p class="text-xs text-[color:var(--muted)]">
@@ -388,7 +388,7 @@ const schemaGraph = [
       <h2 class="text-xl font-bold text-[color:var(--fg)]">Frequently Asked Questions</h2>
       <div class="space-y-3">
         {faqs.map((faq) => (
-          <details class="group rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
+          <details class="group rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
             <summary class="cursor-pointer list-none font-semibold text-sm sm:text-base text-[color:var(--fg)] flex items-center justify-between gap-4">
               <span>{faq.question}</span>
               <span class="text-xs text-[color:var(--muted)] group-open:rotate-180 transition-transform">▼</span>
@@ -571,9 +571,9 @@ const schemaGraph = [
           mdeType = btn.dataset.mdeTypeBtn || 'rel';
           mdeTypeBtns.forEach((b) => {
             if (b === btn) {
-              b.className = 'rounded-lg bg-[color:var(--accent)] px-2 py-0.5 text-white';
+              b.className = 'rounded-none bg-[color:var(--accent)] px-2 py-0.5 text-white';
             } else {
-              b.className = 'rounded-lg px-2 py-0.5 text-[color:var(--muted)] hover:text-[color:var(--fg)]';
+              b.className = 'rounded-none px-2 py-0.5 text-[color:var(--muted)] hover:text-[color:var(--fg)]';
             }
           });
           if (mdeType === 'abs' && (inMde.value !== '' && !isNaN(parseFloat(inMde.value)) ? parseFloat(inMde.value) : 0) > 20) {

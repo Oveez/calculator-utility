@@ -93,19 +93,19 @@ const schemaGraph = [
 
     <!-- Telemetry Bar -->
     <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-      <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3 text-center">
+      <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-3 text-center">
         <p class="text-[10px] font-bold uppercase tracking-wider text-[color:var(--muted)]">Dimensions</p>
         <p id="stat-dim" class="mt-1 font-mono text-base font-bold text-emerald-500">-</p>
       </div>
-      <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3 text-center">
+      <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-3 text-center">
         <p class="text-[10px] font-bold uppercase tracking-wider text-[color:var(--muted)]">Megapixels</p>
         <p id="stat-mp" class="mt-1 font-mono text-base font-bold text-[color:var(--fg)]">0 MP</p>
       </div>
-      <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3 text-center">
+      <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-3 text-center">
         <p class="text-[10px] font-bold uppercase tracking-wider text-[color:var(--muted)]">Display Standard</p>
         <p id="stat-std" class="mt-1 font-mono text-base font-bold text-[color:var(--fg)]">-</p>
       </div>
-      <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3 text-center">
+      <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-3 text-center">
         <p class="text-[10px] font-bold uppercase tracking-wider text-[color:var(--muted)]">Orientation</p>
         <p id="stat-orient" class="mt-1 font-mono text-base font-bold text-[color:var(--fg)]">-</p>
       </div>
@@ -113,10 +113,10 @@ const schemaGraph = [
 
     <div class="space-y-6">
       <!-- Upload Dropzone -->
-      <div id="dropzone-box" class="space-y-3 rounded-3xl border-2 border-dashed border-[color:var(--border)] bg-[color:var(--surface)] p-6 sm:p-8 text-center transition hover:border-[color:var(--border-strong)]">
+      <div id="dropzone-box" class="space-y-3 rounded-none border-2 border-dashed border-[color:var(--border)] bg-[color:var(--surface)] p-6 sm:p-8 text-center transition hover:border-[color:var(--border-strong)]">
         <input type="file" id="img-file" accept="image/*" class="hidden" />
         <label for="img-file" id="upload-prompt" class="cursor-pointer space-y-2 block">
-          <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-[color:var(--surface-strong)] text-[color:var(--fg)]">
+          <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-none bg-[color:var(--surface-strong)] text-[color:var(--fg)]">
             <Icon name="image" class="w-6 h-6 text-[color:var(--accent)]" />
           </div>
           <p class="text-sm font-bold text-[color:var(--fg)]">Drop an image here or click to upload</p>
@@ -124,9 +124,9 @@ const schemaGraph = [
         </label>
 
         <!-- Visual Upload Preview Box -->
-        <div id="upload-preview-box" class="hidden flex flex-col sm:flex-row items-center justify-between gap-4 rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] p-3.5 text-left">
+        <div id="upload-preview-box" class="hidden flex flex-col sm:flex-row items-center justify-between gap-4 rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] p-3.5 text-left">
           <div class="flex items-center gap-3 min-w-0">
-            <div class="h-14 w-14 rounded-xl bg-[color:var(--surface-strong)] overflow-hidden shrink-0 flex items-center justify-center border border-[color:var(--border)]">
+            <div class="h-14 w-14 rounded-none bg-[color:var(--surface-strong)] overflow-hidden shrink-0 flex items-center justify-center border border-[color:var(--border)]">
               <img id="thumb-preview" alt="Thumbnail" class="max-h-full max-w-full object-cover" />
             </div>
             <div class="min-w-0 space-y-0.5">
@@ -134,7 +134,7 @@ const schemaGraph = [
               <p id="thumb-info" class="text-[11px] text-[color:var(--muted)] font-mono">0 KB</p>
             </div>
           </div>
-          <label for="img-file" class="cursor-pointer shrink-0 rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1.5 text-xs font-semibold text-[color:var(--muted)] hover:text-[color:var(--fg)] transition">
+          <label for="img-file" class="cursor-pointer shrink-0 rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1.5 text-xs font-semibold text-[color:var(--muted)] hover:text-[color:var(--fg)] transition">
             Change Image
           </label>
         </div>
@@ -142,7 +142,7 @@ const schemaGraph = [
 
       <!-- Manual Input & Resolution Breakdown -->
       <div class="grid gap-6 lg:grid-cols-2">
-        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 space-y-4 text-xs">
+        <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-5 space-y-4 text-xs">
           <p class="font-bold uppercase tracking-wider text-[color:var(--muted)] text-[10px]">Dimension Inputs</p>
           <div class="grid gap-4 sm:grid-cols-2">
             <div>
@@ -152,7 +152,7 @@ const schemaGraph = [
                 id="inp-w"
                 placeholder="e.g. 1920"
                 min="1"
-                class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-[color:var(--fg)] font-semibold" />
+                class="w-full rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-[color:var(--fg)] font-semibold" />
             </div>
             <div>
               <label for="inp-h" class="font-bold text-[color:var(--fg)] block mb-1">Height (px):</label>
@@ -161,41 +161,41 @@ const schemaGraph = [
                 id="inp-h"
                 placeholder="e.g. 1080"
                 min="1"
-                class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-[color:var(--fg)] font-semibold" />
+                class="w-full rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-[color:var(--fg)] font-semibold" />
             </div>
           </div>
 
           <div class="pt-2 border-t border-[color:var(--border)] space-y-2">
             <span class="text-[11px] font-bold text-[color:var(--muted)]">Presets:</span>
             <div class="flex flex-wrap gap-1.5">
-              <button type="button" id="reset-dim-btn" class="rounded-lg border border-[color:var(--border)] bg-[color:var(--surface-strong)] px-2.5 py-1 text-[11px] font-semibold text-[color:var(--fg)] hover:border-[color:var(--border-strong)] cursor-pointer">Reset</button>
-              <button type="button" id="reset-dim-btn" class="rounded-lg border border-[color:var(--border)] bg-[color:var(--surface-strong)] px-2.5 py-1 text-[11px] font-semibold text-[color:var(--fg)] hover:border-[color:var(--border-strong)] cursor-pointer">Reset</button>
-              <button type="button" data-dim="1280,720" class="rounded-lg border border-[color:var(--border)] bg-[color:var(--bg)] px-2.5 py-1 text-[11px] hover:border-[color:var(--border-strong)]">HD 720p</button>
-              <button type="button" data-dim="1920,1080" class="rounded-lg border border-[color:var(--border)] bg-[color:var(--bg)] px-2.5 py-1 text-[11px] hover:border-[color:var(--border-strong)]">FHD 1080p</button>
-              <button type="button" data-dim="2560,1440" class="rounded-lg border border-[color:var(--border)] bg-[color:var(--bg)] px-2.5 py-1 text-[11px] hover:border-[color:var(--border-strong)]">2K 1440p</button>
-              <button type="button" data-dim="3840,2160" class="rounded-lg border border-[color:var(--border)] bg-[color:var(--bg)] px-2.5 py-1 text-[11px] hover:border-[color:var(--border-strong)]">4K UHD</button>
-              <button type="button" data-dim="7680,4320" class="rounded-lg border border-[color:var(--border)] bg-[color:var(--bg)] px-2.5 py-1 text-[11px] hover:border-[color:var(--border-strong)]">8K UHD</button>
+              <button type="button" id="reset-dim-btn" class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface-strong)] px-2.5 py-1 text-[11px] font-semibold text-[color:var(--fg)] hover:border-[color:var(--border-strong)] cursor-pointer">Reset</button>
+              <button type="button" id="reset-dim-btn" class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface-strong)] px-2.5 py-1 text-[11px] font-semibold text-[color:var(--fg)] hover:border-[color:var(--border-strong)] cursor-pointer">Reset</button>
+              <button type="button" data-dim="1280,720" class="rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-2.5 py-1 text-[11px] hover:border-[color:var(--border-strong)]">HD 720p</button>
+              <button type="button" data-dim="1920,1080" class="rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-2.5 py-1 text-[11px] hover:border-[color:var(--border-strong)]">FHD 1080p</button>
+              <button type="button" data-dim="2560,1440" class="rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-2.5 py-1 text-[11px] hover:border-[color:var(--border-strong)]">2K 1440p</button>
+              <button type="button" data-dim="3840,2160" class="rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-2.5 py-1 text-[11px] hover:border-[color:var(--border-strong)]">4K UHD</button>
+              <button type="button" data-dim="7680,4320" class="rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-2.5 py-1 text-[11px] hover:border-[color:var(--border-strong)]">8K UHD</button>
             </div>
           </div>
         </div>
 
         <!-- Calculated Specifications Grid -->
-        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 space-y-3 text-xs">
+        <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-5 space-y-3 text-xs">
           <p class="font-bold uppercase tracking-wider text-[color:var(--muted)] text-[10px]">Calculated Specifications</p>
           <div class="grid grid-cols-2 gap-2 font-mono">
-            <div class="rounded-xl bg-[color:var(--bg)] p-3">
+            <div class="rounded-none bg-[color:var(--bg)] p-3">
               <span class="text-[10px] text-[color:var(--muted)] block">Total Pixels:</span>
               <strong id="spec-pixels" class="text-[color:var(--fg)] text-sm">-</strong>
             </div>
-            <div class="rounded-xl bg-[color:var(--bg)] p-3">
+            <div class="rounded-none bg-[color:var(--bg)] p-3">
               <span class="text-[10px] text-[color:var(--muted)] block">Aspect Ratio:</span>
               <strong id="spec-ratio" class="text-[color:var(--fg)] text-sm">-</strong>
             </div>
-            <div class="rounded-xl bg-[color:var(--bg)] p-3">
+            <div class="rounded-none bg-[color:var(--bg)] p-3">
               <span class="text-[10px] text-[color:var(--muted)] block">Max 300 DPI Print:</span>
               <strong id="spec-print-in" class="text-[color:var(--fg)] text-sm">-</strong>
             </div>
-            <div class="rounded-xl bg-[color:var(--bg)] p-3">
+            <div class="rounded-none bg-[color:var(--bg)] p-3">
               <span class="text-[10px] text-[color:var(--muted)] block">Max 300 DPI Metric:</span>
               <strong id="spec-print-cm" class="text-[color:var(--fg)] text-sm">-</strong>
             </div>
@@ -204,26 +204,26 @@ const schemaGraph = [
       </div>
 
       <!-- Recommended Device & Media Matrix -->
-      <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 sm:p-6 space-y-4">
+      <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-5 sm:p-6 space-y-4">
         <h2 class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Recommended Media &amp; Display Suitability</h2>
         
         <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4 text-xs">
-          <div id="suit-web" class="rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] p-3.5 space-y-1">
+          <div id="suit-web" class="rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] p-3.5 space-y-1">
             <span class="font-bold text-[color:var(--fg)] block">Web &amp; Blog Images</span>
             <p class="text-[11px] text-[color:var(--muted)]">Optimal for hero banners and responsive article figures.</p>
           </div>
 
-          <div id="suit-social" class="rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] p-3.5 space-y-1">
+          <div id="suit-social" class="rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] p-3.5 space-y-1">
             <span class="font-bold text-[color:var(--fg)] block">Social Media Posts</span>
             <p class="text-[11px] text-[color:var(--muted)]">High fidelity for Instagram, LinkedIn, and X timeline cards.</p>
           </div>
 
-          <div id="suit-desktop" class="rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] p-3.5 space-y-1">
+          <div id="suit-desktop" class="rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] p-3.5 space-y-1">
             <span class="font-bold text-[color:var(--fg)] block">Desktop Display</span>
             <p class="text-[11px] text-[color:var(--muted)]">Full screen wallpaper fidelity across HD and Retina displays.</p>
           </div>
 
-          <div id="suit-print" class="rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] p-3.5 space-y-1">
+          <div id="suit-print" class="rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] p-3.5 space-y-1">
             <span class="font-bold text-[color:var(--fg)] block">Physical Print Limit</span>
             <p id="print-limit-desc" class="text-[11px] text-[color:var(--muted)]">Up to 4x6" photo print without pixelation.</p>
           </div>
@@ -299,7 +299,7 @@ const schemaGraph = [
       <h2 class="text-xl font-bold text-[color:var(--fg)]">Frequently Asked Questions</h2>
       <div class="space-y-3">
         {schemaFaq.map((faq) => (
-          <details class="group rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
+          <details class="group rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
             <summary class="cursor-pointer list-none font-semibold text-sm sm:text-base text-[color:var(--fg)] flex items-center justify-between gap-4">
               <span>{faq.question}</span>
               <span class="text-xs text-[color:var(--muted)] group-open:rotate-180 transition-transform">&#9660;</span>

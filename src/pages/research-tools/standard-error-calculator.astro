@@ -159,7 +159,7 @@ const schemaGraph = [
 
 
     <div
-      class="rounded-[2.5rem] border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-6 shadow-[var(--shadow)] sm:p-10"
+      class="space-y-8"
       data-sem-app
     >
       <div class="grid gap-8 lg:grid-cols-[1.1fr_0.9fr]">
@@ -171,14 +171,14 @@ const schemaGraph = [
             </button>
           </div>
 
-          <div class="flex items-center gap-1.5 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-1 text-xs font-semibold overflow-x-auto no-scrollbar sm:grid sm:grid-cols-3">
-            <button type="button" class="shrink-0 min-w-max sm:min-w-0 sm:shrink text-center cursor-pointer rounded-xl bg-[color:var(--accent)] px-2.5 py-2 text-white shadow-xs transition" data-mode-btn="mean">
+          <div class="flex items-center gap-1.5 rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-1 text-xs font-semibold overflow-x-auto no-scrollbar sm:grid sm:grid-cols-3">
+            <button type="button" class="shrink-0 min-w-max sm:min-w-0 sm:shrink text-center cursor-pointer rounded-none bg-[color:var(--accent)] px-2.5 py-2 text-white shadow-xs transition" data-mode-btn="mean">
               Mean (SEM)
             </button>
-            <button type="button" class="shrink-0 min-w-max sm:min-w-0 sm:shrink text-center cursor-pointer rounded-xl px-2.5 py-2 text-[color:var(--muted)] hover:text-[color:var(--fg)] transition" data-mode-btn="prop">
+            <button type="button" class="shrink-0 min-w-max sm:min-w-0 sm:shrink text-center cursor-pointer rounded-none px-2.5 py-2 text-[color:var(--muted)] hover:text-[color:var(--fg)] transition" data-mode-btn="prop">
               Proportion (SEP)
             </button>
-            <button type="button" class="shrink-0 min-w-max sm:min-w-0 sm:shrink text-center cursor-pointer rounded-xl px-2.5 py-2 text-[color:var(--muted)] hover:text-[color:var(--fg)] transition" data-mode-btn="diff">
+            <button type="button" class="shrink-0 min-w-max sm:min-w-0 sm:shrink text-center cursor-pointer rounded-none px-2.5 py-2 text-[color:var(--muted)] hover:text-[color:var(--fg)] transition" data-mode-btn="diff">
               2 Means Diff
             </button>
           </div>
@@ -187,17 +187,17 @@ const schemaGraph = [
           <div class="space-y-4" data-mean-fields>
             <div class="space-y-1.5">
               <label for="sem-sd" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Sample Standard Deviation (s)</label>
-              <input id="sem-sd" type="number" min="0.0001" step="any" class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none" data-sem-sd placeholder="e.g. 12.5" />
+              <input id="sem-sd" type="number" min="0.0001" step="any" class="w-full rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none" data-sem-sd placeholder="e.g. 12.5" />
             </div>
 
             <div class="space-y-1.5">
               <label for="sem-n" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Sample Size (n)</label>
-              <input id="sem-n" type="number" min="1" step="1" class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none" data-sem-n placeholder="e.g. 64" />
+              <input id="sem-n" type="number" min="1" step="1" class="w-full rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none" data-sem-n placeholder="e.g. 64" />
             </div>
 
             <div class="space-y-1.5">
               <label for="sem-pop" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Population Size (N - Optional for FPC)</label>
-              <input id="sem-pop" type="number" min="10" placeholder="e.g. 500 (leave empty if large/infinite)" class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-sm font-semibold text-[color:var(--fg)] outline-none" data-sem-pop />
+              <input id="sem-pop" type="number" min="10" placeholder="e.g. 500 (leave empty if large/infinite)" class="w-full rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-sm font-semibold text-[color:var(--fg)] outline-none" data-sem-pop />
             </div>
           </div>
 
@@ -205,45 +205,45 @@ const schemaGraph = [
           <div class="space-y-4" data-prop-fields hidden>
             <div class="space-y-1.5">
               <label for="prop-p" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Sample Proportion (p̂ %)</label>
-              <input id="prop-p" type="number" min="0.1" max="99.9" step="0.1" class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none" data-prop-p placeholder="e.g. 45.0" />
+              <input id="prop-p" type="number" min="0.1" max="99.9" step="0.1" class="w-full rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none" data-prop-p placeholder="e.g. 45.0" />
             </div>
             <div class="space-y-1.5">
               <label for="prop-n" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Sample Size (n)</label>
-              <input id="prop-n" type="number" min="1" step="1" class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none" data-prop-n placeholder="e.g. 200" />
+              <input id="prop-n" type="number" min="1" step="1" class="w-full rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none" data-prop-n placeholder="e.g. 200" />
             </div>
             <div class="space-y-1.5">
               <label for="prop-pop" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Population Size (N - Optional)</label>
-              <input id="prop-pop" type="number" min="10" placeholder="Leave empty if large/infinite" class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-sm font-semibold text-[color:var(--fg)] outline-none" data-prop-pop />
+              <input id="prop-pop" type="number" min="10" placeholder="Leave empty if large/infinite" class="w-full rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-sm font-semibold text-[color:var(--fg)] outline-none" data-prop-pop />
             </div>
           </div>
 
           <!-- Two Means Diff Fields (Hidden by default) -->
           <div class="space-y-4" data-diff-fields hidden>
-            <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3 space-y-2">
+            <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-3 space-y-2">
               <span class="text-xs font-bold text-[color:var(--fg)]">Group 1 Sample</span>
               <div class="grid grid-cols-2 gap-2">
-                <input type="number" min="0.001" step="any" placeholder="e.g. 8.4" class="rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-diff-s1 />
-                <input type="number" min="2" step="1" placeholder="e.g. 35" class="rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-diff-n1 />
+                <input type="number" min="0.001" step="any" placeholder="e.g. 8.4" class="rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-diff-s1 />
+                <input type="number" min="2" step="1" placeholder="e.g. 35" class="rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-diff-n1 />
               </div>
             </div>
-            <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3 space-y-2">
+            <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-3 space-y-2">
               <span class="text-xs font-bold text-[color:var(--fg)]">Group 2 Sample</span>
               <div class="grid grid-cols-2 gap-2">
-                <input type="number" min="0.001" step="any" placeholder="e.g. 9.6" class="rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-diff-s2 />
-                <input type="number" min="2" step="1" placeholder="e.g. 40" class="rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-diff-n2 />
+                <input type="number" min="0.001" step="any" placeholder="e.g. 9.6" class="rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-diff-s2 />
+                <input type="number" min="2" step="1" placeholder="e.g. 40" class="rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-diff-n2 />
               </div>
             </div>
           </div>
         </form>
 
         <!-- Result Display Card -->
-        <div class="flex flex-col justify-between space-y-6 rounded-3xl border border-[color:var(--accent)]/30 bg-gradient-to-br from-[color:var(--accent-soft)] via-[color:var(--surface)] to-transparent p-6 sm:p-8 shadow-sm">
+        <div class="space-y-6">
           <div class="space-y-5">
             <div class="flex items-center justify-between">
               <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Uncertainty Estimate</span>
               <button
                 type="button"
-                class="inline-flex items-center gap-1.5 rounded-lg border border-[color:var(--border)] bg-[color:var(--surface)] px-2.5 py-1 text-xs font-semibold text-[color:var(--fg)] hover:bg-[color:var(--bg)] transition cursor-pointer"
+                class="inline-flex items-center gap-1.5 rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] px-2.5 py-1 text-xs font-semibold text-[color:var(--fg)] hover:bg-[color:var(--bg)] transition cursor-pointer"
                 data-copy-btn
               >
                 <Icon name="copy" class="w-3.5 h-3.5" />
@@ -251,7 +251,7 @@ const schemaGraph = [
               </button>
             </div>
 
-            <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 text-center">
+            <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-6 text-center">
               <p class="text-xs font-semibold text-[color:var(--muted)]" data-res-header>Standard Error of the Mean (SEM)</p>
               <p class="mt-1 text-4xl sm:text-5xl font-black tracking-tight text-[color:var(--fg)] font-mono" data-res-sem>
                 1.5625
@@ -261,7 +261,7 @@ const schemaGraph = [
               </p>
             </div>
 
-            <div class="space-y-2 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-xs font-mono">
+            <div class="space-y-2 rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-xs font-mono">
               <div class="flex justify-between">
                 <span class="text-[color:var(--muted)] font-sans">95% Confidence Margin (±1.96 × SE):</span>
                 <span class="font-bold text-[color:var(--fg)]" data-res-margin>±3.062</span>
@@ -281,7 +281,7 @@ const schemaGraph = [
     </div>
 
     <!-- Sample Size vs Standard Error Sensitivity Matrix -->
-    <section class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 sm:p-8 space-y-4">
+    <section class="space-y-4 border-t border-[color:var(--border)] pt-8">
       <div>
         <p class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Central Limit Theorem In Action</p>
         <h2 class="text-xl font-bold text-[color:var(--fg)]">Standard Error Sensitivity by Sample Size (1/√n Law)</h2>
@@ -317,16 +317,16 @@ const schemaGraph = [
     </header>
 
     <!-- Mathematical Formulas & Sampling Distribution Theory -->
-    <section class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 sm:p-8 space-y-4">
+    <section class="space-y-4 border-t border-[color:var(--border)] pt-8">
       <div>
         <p class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Central Limit Theorem</p>
         <h2 class="text-xl font-bold text-[color:var(--fg)]">Standard Error Mathematics</h2>
       </div>
 
       <div class="grid gap-4 sm:grid-cols-3 text-xs sm:text-sm">
-        <div class="rounded-2xl bg-[color:var(--bg)] p-4 border border-[color:var(--border)] space-y-2">
+        <div class="rounded-none bg-[color:var(--bg)] p-4 border border-[color:var(--border)] space-y-2">
           <p class="font-bold text-[color:var(--fg)]">1. Mean (SEM)</p>
-          <div class="rounded-xl bg-[color:var(--surface)] p-3 font-mono text-xs text-[color:var(--fg)] overflow-x-auto">
+          <div class="rounded-none bg-[color:var(--surface)] p-3 font-mono text-xs text-[color:var(--fg)] overflow-x-auto">
             SEM = s ÷ √n
           </div>
           <p class="text-xs text-[color:var(--muted)]">
@@ -334,9 +334,9 @@ const schemaGraph = [
           </p>
         </div>
 
-        <div class="rounded-2xl bg-[color:var(--bg)] p-4 border border-[color:var(--border)] space-y-2">
+        <div class="rounded-none bg-[color:var(--bg)] p-4 border border-[color:var(--border)] space-y-2">
           <p class="font-bold text-[color:var(--fg)]">2. Proportion (SEP)</p>
-          <div class="rounded-xl bg-[color:var(--surface)] p-3 font-mono text-xs text-[color:var(--fg)] overflow-x-auto">
+          <div class="rounded-none bg-[color:var(--surface)] p-3 font-mono text-xs text-[color:var(--fg)] overflow-x-auto">
             SEP = √[p̂(1 - p̂) ÷ n]
           </div>
           <p class="text-xs text-[color:var(--muted)]">
@@ -344,9 +344,9 @@ const schemaGraph = [
           </p>
         </div>
 
-        <div class="rounded-2xl bg-[color:var(--bg)] p-4 border border-[color:var(--border)] space-y-2">
+        <div class="rounded-none bg-[color:var(--bg)] p-4 border border-[color:var(--border)] space-y-2">
           <p class="font-bold text-[color:var(--fg)]">3. Difference Between Means</p>
-          <div class="rounded-xl bg-[color:var(--surface)] p-3 font-mono text-xs text-[color:var(--fg)] overflow-x-auto">
+          <div class="rounded-none bg-[color:var(--surface)] p-3 font-mono text-xs text-[color:var(--fg)] overflow-x-auto">
             SE_diff = √[s₁²/n₁ + s₂²/n₂]
           </div>
           <p class="text-xs text-[color:var(--muted)]">
@@ -364,7 +364,7 @@ const schemaGraph = [
       <h2 class="text-xl font-bold text-[color:var(--fg)]">Frequently Asked Questions</h2>
       <div class="space-y-3">
         {faqs.map((faq) => (
-          <details class="group rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
+          <details class="group rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
             <summary class="cursor-pointer list-none font-semibold text-sm sm:text-base text-[color:var(--fg)] flex items-center justify-between gap-4">
               <span>{faq.question}</span>
               <span class="text-xs text-[color:var(--muted)] group-open:rotate-180 transition-transform">▼</span>
@@ -523,9 +523,9 @@ const schemaGraph = [
           currentMode = btn.dataset.modeBtn || 'mean';
           modeBtns.forEach(b => {
             if (b === btn) {
-              b.className = 'shrink-0 min-w-max sm:min-w-0 sm:shrink text-center cursor-pointer rounded-xl bg-[color:var(--accent)] px-2.5 py-2 text-white shadow-xs transition';
+              b.className = 'shrink-0 min-w-max sm:min-w-0 sm:shrink text-center cursor-pointer rounded-none bg-[color:var(--accent)] px-2.5 py-2 text-white shadow-xs transition';
             } else {
-              b.className = 'shrink-0 min-w-max sm:min-w-0 sm:shrink text-center cursor-pointer rounded-xl px-2.5 py-2 text-[color:var(--muted)] hover:text-[color:var(--fg)] transition';
+              b.className = 'shrink-0 min-w-max sm:min-w-0 sm:shrink text-center cursor-pointer rounded-none px-2.5 py-2 text-[color:var(--muted)] hover:text-[color:var(--fg)] transition';
             }
           });
 

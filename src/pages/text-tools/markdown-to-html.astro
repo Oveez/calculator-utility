@@ -133,12 +133,12 @@ const workedExampleData = {
 
 
     <!-- Options Bar -->
-    <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5 space-y-4">
+    <div class="py-4 border-b border-[color:var(--border)] space-y-4">
       <div class="flex flex-wrap items-center justify-between gap-4">
         <div class="flex flex-wrap items-center gap-3 w-full sm:w-auto">
           <div class="w-full sm:w-auto min-w-0">
             <label for="opt-doc-wrapper" class="block text-[11px] font-bold uppercase tracking-wider text-[color:var(--muted)] mb-1">Output Structure</label>
-            <select id="opt-doc-wrapper" class="w-full sm:w-auto max-w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-1.5 text-xs text-[color:var(--fg)] font-semibold">
+            <select id="opt-doc-wrapper" class="w-full sm:w-auto max-w-full rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-1.5 text-xs text-[color:var(--fg)] font-semibold">
               <option value="fragment">HTML Body Fragment (Snippet)</option>
               <option value="full">Full HTML5 Document (&lt;!DOCTYPE&gt;)</option>
             </select>
@@ -146,7 +146,7 @@ const workedExampleData = {
 
           <div class="w-full sm:w-auto min-w-0">
             <label for="opt-heading-ids" class="block text-[11px] font-bold uppercase tracking-wider text-[color:var(--muted)] mb-1">Heading IDs</label>
-            <select id="opt-heading-ids" class="w-full sm:w-auto max-w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-1.5 text-xs text-[color:var(--fg)] font-semibold">
+            <select id="opt-heading-ids" class="w-full sm:w-auto max-w-full rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-1.5 text-xs text-[color:var(--fg)] font-semibold">
               <option value="auto">Auto Generate Slugs (id="...")</option>
               <option value="none">Plain Headings (&lt;h1&gt;)</option>
             </select>
@@ -157,21 +157,21 @@ const workedExampleData = {
           <button
             type="button"
             id="btn-sample-doc"
-            class="rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-1.5 text-xs font-semibold text-[color:var(--accent)] hover:underline cursor-pointer"
+            class="rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-1.5 text-xs font-semibold text-[color:var(--accent)] hover:underline cursor-pointer"
           >
             Sample Docs
           </button>
           <button
             type="button"
             id="btn-sample-tables"
-            class="rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-1.5 text-xs font-semibold text-[color:var(--accent)] hover:underline cursor-pointer"
+            class="rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-1.5 text-xs font-semibold text-[color:var(--accent)] hover:underline cursor-pointer"
           >
             Sample Tables
           </button>
           <button
             type="button"
             id="btn-clear"
-            class="rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-1.5 text-xs font-semibold text-rose-600 dark:text-rose-400 hover:underline cursor-pointer"
+            class="rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-1.5 text-xs font-semibold text-rose-600 dark:text-rose-400 hover:underline cursor-pointer"
           >
             Clear All
           </button>
@@ -196,19 +196,19 @@ const workedExampleData = {
 
     <!-- Live Statistics Bar -->
     <div class="grid grid-cols-2 gap-3 sm:grid-cols-4 text-center">
-      <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3">
+      <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-3">
         <div class="text-[11px] font-bold uppercase tracking-wider text-[color:var(--muted)]">Markdown Words</div>
         <div id="stat-words" class="text-xl font-extrabold text-[color:var(--fg)] mt-1">0</div>
       </div>
-      <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3">
+      <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-3">
         <div class="text-[11px] font-bold uppercase tracking-wider text-[color:var(--muted)]">Input Characters</div>
         <div id="stat-chars" class="text-xl font-extrabold text-[color:var(--fg)] mt-1">0</div>
       </div>
-      <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3">
+      <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-3">
         <div class="text-[11px] font-bold uppercase tracking-wider text-[color:var(--muted)]">HTML Tags Produced</div>
         <div id="stat-tags" class="text-xl font-extrabold text-[color:var(--accent)] mt-1">0</div>
       </div>
-      <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3">
+      <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-3">
         <div class="text-[11px] font-bold uppercase tracking-wider text-[color:var(--muted)]">Reading Time</div>
         <div id="stat-reading" class="text-xl font-extrabold text-[color:var(--fg)] mt-1">&lt; 1 min</div>
       </div>
@@ -230,7 +230,7 @@ const workedExampleData = {
         <textarea
           id="md-in"
           rows="18"
-          class="w-full font-mono text-xs leading-relaxed rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-[color:var(--fg)] focus:border-[color:var(--accent)] focus:outline-hidden transition shadow-inner"
+          class="w-full font-mono text-xs leading-relaxed rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-[color:var(--fg)] focus:border-[color:var(--accent)] focus:outline-hidden transition shadow-inner"
           placeholder="# Enter your Markdown document here..."
         ></textarea>
       </div>
@@ -238,18 +238,18 @@ const workedExampleData = {
       <!-- Right: Output / Preview Tabs -->
       <div class="space-y-2 min-w-0 max-w-full">
         <div class="flex flex-wrap items-center justify-between gap-2">
-          <div class="flex items-center gap-1 rounded-xl bg-[color:var(--surface-strong)] p-1 text-xs shrink-0 overflow-x-auto no-scrollbar">
+          <div class="flex items-center gap-1 rounded-none bg-[color:var(--surface-strong)] p-1 text-xs shrink-0 overflow-x-auto no-scrollbar">
             <button
               type="button"
               id="tab-preview"
-              class="shrink-0 min-w-max rounded-lg px-3 py-1 font-bold bg-[color:var(--surface)] text-[color:var(--fg)] shadow-xs transition cursor-pointer flex items-center gap-1"
+              class="shrink-0 min-w-max rounded-none px-3 py-1 font-bold bg-[color:var(--surface)] text-[color:var(--fg)] shadow-xs transition cursor-pointer flex items-center gap-1"
             >
               <svg class="w-3.5 h-3.5 stroke-current text-blue-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg><span>Live Preview</span>
             </button>
             <button
               type="button"
               id="tab-html"
-              class="shrink-0 min-w-max rounded-lg px-3 py-1 font-semibold text-[color:var(--muted)] hover:text-[color:var(--fg)] transition cursor-pointer"
+              class="shrink-0 min-w-max rounded-none px-3 py-1 font-semibold text-[color:var(--muted)] hover:text-[color:var(--fg)] transition cursor-pointer"
             >
               &lt;/&gt; Raw HTML
             </button>
@@ -259,14 +259,14 @@ const workedExampleData = {
             <button
               type="button"
               id="btn-copy-html"
-              class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1 text-xs font-bold text-[color:var(--fg)] hover:border-[color:var(--accent)] transition cursor-pointer"
+              class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1 text-xs font-bold text-[color:var(--fg)] hover:border-[color:var(--accent)] transition cursor-pointer"
             >
               <Icon name="copy" class="w-3.5 h-3.5" /><span>Copy HTML</span>
             </button>
             <button
               type="button"
               id="btn-download-html"
-              class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1 text-xs font-bold text-[color:var(--fg)] hover:border-[color:var(--accent)] transition cursor-pointer"
+              class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1 text-xs font-bold text-[color:var(--fg)] hover:border-[color:var(--accent)] transition cursor-pointer"
             >
               <Icon name="download" class="w-3.5 h-3.5" /><span>Download .html</span>
             </button>
@@ -276,7 +276,7 @@ const workedExampleData = {
         <!-- Rendered Live Preview -->
         <div
           id="preview-out"
-          class="min-h-[432px] max-h-[560px] overflow-y-auto overflow-x-auto max-w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-6 text-sm text-[color:var(--fg)] leading-relaxed space-y-4 prose-preview"
+          class="min-h-[432px] max-h-[560px] overflow-y-auto overflow-x-auto max-w-full rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-6 text-sm text-[color:var(--fg)] leading-relaxed space-y-4 prose-preview"
         >
           <p class="text-[color:var(--muted)] italic">Preview will appear here once you enter Markdown.</p>
         </div>
@@ -286,7 +286,7 @@ const workedExampleData = {
           id="html-out"
           rows="18"
           readonly
-          class="hidden w-full font-mono text-xs leading-relaxed rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-4 text-[color:var(--fg)] focus:outline-hidden"
+          class="hidden w-full font-mono text-xs leading-relaxed rounded-none border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-4 text-[color:var(--fg)] focus:outline-hidden"
           placeholder="Generated HTML code will appear here..."
         ></textarea>
       </div>
@@ -315,7 +315,7 @@ const workedExampleData = {
       <h2 class="text-xl font-bold text-[color:var(--fg)]">Frequently Asked Questions</h2>
       <div class="space-y-3">
         {schemaFaq.map((faq) => (
-          <details class="group rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
+          <details class="group rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
             <summary class="cursor-pointer list-none font-semibold text-sm sm:text-base text-[color:var(--fg)] flex items-center justify-between gap-4">
               <span>{faq.question}</span>
               <span class="text-xs text-[color:var(--muted)] group-open:rotate-180 transition-transform">▼</span>
@@ -408,7 +408,7 @@ const workedExampleData = {
         // Images ![alt](src "title")
         res = res.replace(/!\[(.*?)\]\((.*?)(?:\s+"(.*?)")?\)/g, (m, alt, src, title) => {
           const t = title ? ` title="${escapeHtml(title)}"` : '';
-          return `<img src="${src}" alt="${escapeHtml(alt)}"${t} class="max-w-full rounded-lg my-2" />`;
+          return `<img src="${src}" alt="${escapeHtml(alt)}"${t} class="max-w-full rounded-none my-2" />`;
         });
 
         // Links [text](href "title")
@@ -647,15 +647,15 @@ ${result}
       tabPreview.addEventListener('click', () => {
         previewOut.classList.remove('hidden');
         htmlOut.classList.add('hidden');
-        tabPreview.className = 'rounded-lg px-3 py-1 font-bold bg-[color:var(--surface)] text-[color:var(--fg)] shadow-xs transition cursor-pointer';
-        tabHtml.className = 'rounded-lg px-3 py-1 font-semibold text-[color:var(--muted)] hover:text-[color:var(--fg)] transition cursor-pointer';
+        tabPreview.className = 'rounded-none px-3 py-1 font-bold bg-[color:var(--surface)] text-[color:var(--fg)] shadow-xs transition cursor-pointer';
+        tabHtml.className = 'rounded-none px-3 py-1 font-semibold text-[color:var(--muted)] hover:text-[color:var(--fg)] transition cursor-pointer';
       });
 
       tabHtml.addEventListener('click', () => {
         htmlOut.classList.remove('hidden');
         previewOut.classList.add('hidden');
-        tabHtml.className = 'rounded-lg px-3 py-1 font-bold bg-[color:var(--surface)] text-[color:var(--fg)] shadow-xs transition cursor-pointer';
-        tabPreview.className = 'rounded-lg px-3 py-1 font-semibold text-[color:var(--muted)] hover:text-[color:var(--fg)] transition cursor-pointer';
+        tabHtml.className = 'rounded-none px-3 py-1 font-bold bg-[color:var(--surface)] text-[color:var(--fg)] shadow-xs transition cursor-pointer';
+        tabPreview.className = 'rounded-none px-3 py-1 font-semibold text-[color:var(--muted)] hover:text-[color:var(--fg)] transition cursor-pointer';
       });
 
       // Event listeners

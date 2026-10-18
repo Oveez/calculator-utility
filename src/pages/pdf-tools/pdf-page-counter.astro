@@ -133,39 +133,39 @@ const workedExampleData = {
 
     <div class="space-y-6">
       <!-- Dropzone -->
-      <div id="dropzone-box" class="space-y-3 rounded-3xl border-2 border-dashed border-[color:var(--border)] bg-[color:var(--surface)] p-6 sm:p-10 text-center transition hover:border-[color:var(--accent)]">
+      <div id="dropzone-box" class="space-y-3 rounded-none border-2 border-dashed border-[color:var(--border)] bg-[color:var(--surface)] p-6 sm:p-10 text-center transition hover:border-[color:var(--accent)]">
         <input type="file" id="pdf-file" accept="application/pdf" multiple class="hidden" />
         <label for="pdf-file" id="upload-prompt" class="cursor-pointer space-y-3 block">
-          <div class="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-[color:var(--surface-strong)] text-[color:var(--fg)] shadow-xs">
+          <div class="mx-auto flex h-14 w-14 items-center justify-center rounded-none bg-[color:var(--surface-strong)] text-[color:var(--fg)] shadow-xs">
             <Icon name="document" class="w-7 h-7 text-[color:var(--accent)]" />
           </div>
           <div>
             <p class="text-base font-bold text-[color:var(--fg)]">Choose PDF document(s) to count pages</p>
             <p class="text-xs text-[color:var(--muted)] mt-1">Supports single or multi-file batch uploads (100% private in browser)</p>
           </div>
-          <span class="inline-flex items-center gap-2 rounded-xl bg-[color:var(--accent)] px-5 py-2 text-xs font-bold text-white shadow-xs">
+          <span class="inline-flex items-center gap-2 rounded-none bg-[color:var(--accent)] px-5 py-2 text-xs font-bold text-white shadow-xs">
             Select PDF Files
           </span>
         </label>
       </div>
 
       <!-- Results & Metrics Workspace Card -->
-      <div id="results-card" class="hidden space-y-6 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 sm:p-6">
+      <div id="results-card" class="hidden space-y-6 rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-5 sm:p-6">
         <!-- Live Summary Metrics Grid -->
         <div class="grid grid-cols-2 gap-3 sm:grid-cols-4 text-center">
-          <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] p-3">
+          <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] p-3">
             <div class="text-[11px] font-bold uppercase tracking-wider text-[color:var(--muted)]">Total Documents</div>
             <div id="stat-docs" class="text-xl font-extrabold text-[color:var(--fg)] mt-1">0</div>
           </div>
-          <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] p-3">
+          <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] p-3">
             <div class="text-[11px] font-bold uppercase tracking-wider text-[color:var(--muted)]">Cumulative Pages</div>
             <div id="stat-pages" class="text-xl font-extrabold text-emerald-600 dark:text-emerald-400 mt-1">0</div>
           </div>
-          <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] p-3">
+          <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] p-3">
             <div class="text-[11px] font-bold uppercase tracking-wider text-[color:var(--muted)]">Total Size</div>
             <div id="stat-size" class="text-xl font-extrabold text-[color:var(--fg)] mt-1">0 MB</div>
           </div>
-          <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] p-3">
+          <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] p-3">
             <div class="text-[11px] font-bold uppercase tracking-wider text-[color:var(--muted)]">Avg Pages/Doc</div>
             <div id="stat-avg" class="text-xl font-extrabold text-[color:var(--accent)] mt-1">0.0</div>
           </div>
@@ -187,21 +187,21 @@ const workedExampleData = {
             <button
               type="button"
               id="btn-copy-summary"
-              class="rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-1.5 font-semibold text-[color:var(--fg)] hover:border-[color:var(--accent)] transition cursor-pointer"
+              class="rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-1.5 font-semibold text-[color:var(--fg)] hover:border-[color:var(--accent)] transition cursor-pointer"
             >
               <Icon name="copy" class="w-3.5 h-3.5" /><span>Copy Summary</span>
             </button>
             <button
               type="button"
               id="btn-export-csv"
-              class="rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-1.5 font-semibold text-[color:var(--accent)] hover:underline cursor-pointer"
+              class="rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-1.5 font-semibold text-[color:var(--accent)] hover:underline cursor-pointer"
             >
               <Icon name="chart" class="w-3.5 h-3.5" /><span>Export CSV</span>
             </button>
             <button
               type="button"
               id="btn-export-json"
-              class="rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-1.5 font-semibold text-[color:var(--accent)] hover:underline cursor-pointer"
+              class="rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-1.5 font-semibold text-[color:var(--accent)] hover:underline cursor-pointer"
             >
               <Icon name="download" class="w-3.5 h-3.5" /><span>Export JSON</span>
             </button>
@@ -209,7 +209,7 @@ const workedExampleData = {
         </div>
 
         <!-- Breakdown Table -->
-        <div class="overflow-x-auto rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)]">
+        <div class="overflow-x-auto rounded-none border border-[color:var(--border)] bg-[color:var(--bg)]">
           <table class="w-full text-left text-xs">
             <thead class="border-b border-[color:var(--border)] bg-[color:var(--surface)] text-[11px] font-bold uppercase tracking-wider text-[color:var(--muted)]">
               <tr>
@@ -249,7 +249,7 @@ const workedExampleData = {
       <h2 class="text-xl font-bold text-[color:var(--fg)]">Frequently Asked Questions</h2>
       <div class="space-y-3">
         {schemaFaq.map((faq) => (
-          <details class="group rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
+          <details class="group rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
             <summary class="cursor-pointer list-none font-semibold text-sm sm:text-base text-[color:var(--fg)] flex items-center justify-between gap-4">
               <span>{faq.question}</span>
               <svg class="w-4 h-4 text-[color:var(--muted)] group-open:rotate-180 transition-transform shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg>
@@ -314,13 +314,13 @@ const workedExampleData = {
               <td class="p-3 text-center font-bold text-[color:var(--muted)]">${idx + 1}</td>
               <td class="p-3 font-semibold text-[color:var(--fg)] truncate max-w-xs" title="${rec.name}">
                 <div class="flex items-center gap-2">
-                  <span class="inline-block h-2 w-2 rounded-full bg-red-500"></span>
+                  <span class="inline-block h-2 w-2 rounded-none bg-red-500"></span>
                   <span class="truncate">${rec.name}</span>
                 </div>
               </td>
               <td class="p-3 text-right font-mono text-[color:var(--muted)]">${formatBytes(rec.size)}</td>
               <td class="p-3 text-center">
-                <span class="rounded-full bg-[color:var(--surface-strong)] px-2.5 py-0.5 font-mono text-[11px] font-bold text-[color:var(--accent)]">
+                <span class="rounded-none bg-[color:var(--surface-strong)] px-2.5 py-0.5 font-mono text-[11px] font-bold text-[color:var(--accent)]">
                   ${rec.pages} pages
                 </span>
               </td>

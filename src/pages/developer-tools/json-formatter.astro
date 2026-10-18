@@ -137,7 +137,7 @@ const parameterGuide = [
 
 
     <!-- Metrics Bar -->
-    <div id="stats-bar" class="grid grid-cols-2 gap-3 sm:grid-cols-5 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-center">
+    <div id="stats-bar" class="grid grid-cols-2 gap-3 sm:grid-cols-5 rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-center">
       <div>
         <span class="block text-[11px] uppercase tracking-wider text-[color:var(--muted)]">Raw Size</span>
         <span id="stat-raw-size" class="font-mono text-lg font-bold text-[color:var(--fg)]">0 B</span>
@@ -177,17 +177,17 @@ const parameterGuide = [
         <textarea
           id="json-input"
           rows="18"
-          class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 font-mono text-xs leading-relaxed text-[color:var(--fg)] focus:border-[color:var(--border-strong)] focus:outline-hidden"
+          class="w-full rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-4 font-mono text-xs leading-relaxed text-[color:var(--fg)] focus:border-[color:var(--border-strong)] focus:outline-hidden"
           placeholder='Paste raw JSON here, e.g. {"name":"Toolscastle","tools":85,"status":"active"}'
         ></textarea>
 
-        <div class="space-y-2 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3 text-xs">
+        <div class="space-y-2 rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-3 text-xs">
           <div class="flex flex-wrap items-center justify-between gap-2">
             <div class="flex items-center gap-2">
               <label for="indent-select" class="font-medium text-[color:var(--muted)]">Indent:</label>
               <select
                 id="indent-select"
-                class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] px-2.5 py-1 text-xs text-[color:var(--fg)]"
+                class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface-strong)] px-2.5 py-1 text-xs text-[color:var(--fg)]"
               >
                 <option value="2">2 Spaces</option>
                 <option value="4">4 Spaces</option>
@@ -204,14 +204,14 @@ const parameterGuide = [
             <button
               type="button"
               data-format-btn
-              class="rounded-xl bg-[color:var(--accent)] py-2 text-xs font-bold text-white shadow-xs transition hover:opacity-90 cursor-pointer"
+              class="rounded-none bg-[color:var(--accent)] py-2 text-xs font-bold text-white shadow-xs transition hover:opacity-90 cursor-pointer"
             >
               <Icon name="sparkles" class="w-3.5 h-3.5 text-white" /><span>Format JSON</span>
             </button>
             <button
               type="button"
               data-minify-btn
-              class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] py-2 text-xs font-bold text-[color:var(--fg)] transition hover:bg-[color:var(--bg)] cursor-pointer"
+              class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface-strong)] py-2 text-xs font-bold text-[color:var(--fg)] transition hover:bg-[color:var(--bg)] cursor-pointer"
             >
               <Icon name="box" class="w-3.5 h-3.5 text-[color:var(--fg)]" /><span>Minify</span>
             </button>
@@ -224,10 +224,10 @@ const parameterGuide = [
         <div class="flex flex-wrap items-center justify-between gap-2">
           <div class="flex flex-wrap items-center gap-2">
             <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Output</span>
-            <span id="status-badge" class="rounded-md bg-cyan-500/15 px-2 py-0.5 text-[10px] font-bold text-cyan-600 dark:text-cyan-400">Valid JSON</span>
-            <div class="inline-flex rounded-lg border border-[color:var(--border)] p-0.5 text-[10px] shrink-0">
-              <button type="button" id="tab-code" class="rounded-md bg-[color:var(--accent)] px-2 py-0.5 font-bold text-white cursor-pointer">Code</button>
-              <button type="button" id="tab-tree" class="rounded-md px-2 py-0.5 font-bold text-[color:var(--muted)] hover:text-[color:var(--fg)] cursor-pointer">Tree</button>
+            <span id="status-badge" class="rounded-none bg-cyan-500/15 px-2 py-0.5 text-[10px] font-bold text-cyan-600 dark:text-cyan-400">Valid JSON</span>
+            <div class="inline-flex rounded-none border border-[color:var(--border)] p-0.5 text-[10px] shrink-0">
+              <button type="button" id="tab-code" class="rounded-none bg-[color:var(--accent)] px-2 py-0.5 font-bold text-white cursor-pointer">Code</button>
+              <button type="button" id="tab-tree" class="rounded-none px-2 py-0.5 font-bold text-[color:var(--muted)] hover:text-[color:var(--fg)] cursor-pointer">Tree</button>
             </div>
           </div>
           <div class="flex items-center gap-2">
@@ -256,20 +256,20 @@ const parameterGuide = [
             id="json-output"
             rows="18"
             readonly
-            class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-4 font-mono text-xs leading-relaxed text-[color:var(--fg)] focus:outline-hidden"
+            class="w-full rounded-none border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-4 font-mono text-xs leading-relaxed text-[color:var(--fg)] focus:outline-hidden"
             placeholder="Formatted JSON will appear here..."
           ></textarea>
 
           <!-- Collapsible Tree View -->
           <div
             id="json-tree-container"
-            class="hidden h-[335px] w-full overflow-y-auto rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-4 font-mono text-xs leading-relaxed text-[color:var(--fg)]"
+            class="hidden h-[335px] w-full overflow-y-auto rounded-none border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-4 font-mono text-xs leading-relaxed text-[color:var(--fg)]"
           >
             <div id="tree-content" class="space-y-1"></div>
           </div>
         </div>
 
-        <div id="error-box" class="hidden rounded-xl border border-red-500/30 bg-red-500/10 p-3 text-xs text-red-600 dark:text-red-400 font-mono"></div>
+        <div id="error-box" class="hidden rounded-none border border-red-500/30 bg-red-500/10 p-3 text-xs text-red-600 dark:text-red-400 font-mono"></div>
       </div>
     </div>
 
@@ -284,7 +284,7 @@ const parameterGuide = [
     </header>
 
     <!-- Educational Guide & FAQs -->
-    <section class="space-y-6 rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 sm:p-8 text-xs sm:text-sm text-[color:var(--muted)] leading-relaxed">
+    <section class="space-y-6 border-t border-[color:var(--border)] pt-8 text-xs sm:text-sm text-[color:var(--muted)] leading-relaxed">
       <h2 class="text-lg font-bold text-[color:var(--fg)]">What is JSON Formatting?</h2>
       <p>
         <strong>JSON (JavaScript Object Notation)</strong> is the standard lightweight data-interchange format across modern web APIs. When transmitted over HTTP, JSON is typically minified into a single continuous line to save network bandwidth. A JSON formatter restores hierarchical indentation, line breaks, and whitespace so humans can easily inspect, debug, and understand API responses.
@@ -306,7 +306,7 @@ const parameterGuide = [
       <h2 class="text-xl font-bold text-[color:var(--fg)]">Frequently Asked Questions</h2>
       <div class="space-y-3">
         {schemaFaq.map((faq) => (
-          <details class="group rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
+          <details class="group rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
             <summary class="cursor-pointer list-none font-semibold text-sm sm:text-base text-[color:var(--fg)] flex items-center justify-between gap-4">
               <span>{faq.question}</span>
               <span class="text-xs text-[color:var(--muted)] group-open:rotate-180 transition-transform">▼</span>
@@ -323,15 +323,15 @@ const parameterGuide = [
     <section class="space-y-4 pt-4">
       <h2 class="text-lg font-bold text-[color:var(--fg)]">Related Developer Tools</h2>
       <div class="grid gap-3 sm:grid-cols-3">
-        <a href={withBasePath('/developer-tools/json-validator/')} class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 transition hover:border-[color:var(--border-strong)]">
+        <a href={withBasePath('/developer-tools/json-validator/')} class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-4 transition hover:border-[color:var(--border-strong)]">
           <h3 class="font-bold text-xs text-[color:var(--fg)]">JSON Validator →</h3>
           <p class="mt-1 text-[11px] text-[color:var(--muted)]">Locate line and column syntax errors.</p>
         </a>
-        <a href={withBasePath('/developer-tools/json-diff/')} class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 transition hover:border-[color:var(--border-strong)]">
+        <a href={withBasePath('/developer-tools/json-diff/')} class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-4 transition hover:border-[color:var(--border-strong)]">
           <h3 class="font-bold text-xs text-[color:var(--fg)]">JSON Diff →</h3>
           <p class="mt-1 text-[11px] text-[color:var(--muted)]">Compare structural differences between two JSONs.</p>
         </a>
-        <a href={withBasePath('/developer-tools/json-to-csv/')} class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 transition hover:border-[color:var(--border-strong)]">
+        <a href={withBasePath('/developer-tools/json-to-csv/')} class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-4 transition hover:border-[color:var(--border-strong)]">
           <h3 class="font-bold text-xs text-[color:var(--fg)]">JSON to CSV →</h3>
           <p class="mt-1 text-[11px] text-[color:var(--muted)]">Convert JSON arrays to Excel-ready CSV files.</p>
         </a>
@@ -493,7 +493,7 @@ const parameterGuide = [
           currentParsedObj = parsed;
 
           errorBox.classList.add('hidden');
-          statusBadge.className = 'rounded-md bg-cyan-500/15 px-2 py-0.5 text-[10px] font-bold text-cyan-600 dark:text-cyan-400 dark:text-cyan-400';
+          statusBadge.className = 'rounded-none bg-cyan-500/15 px-2 py-0.5 text-[10px] font-bold text-cyan-600 dark:text-cyan-400 dark:text-cyan-400';
           statusBadge.textContent = 'Valid JSON';
 
           const minStr = JSON.stringify(parsed);
@@ -514,7 +514,7 @@ const parameterGuide = [
           updateTreeView(parsed);
         } catch (err) {
           output.value = '';
-          statusBadge.className = 'rounded-md bg-rose-500/15 px-2 py-0.5 text-[10px] font-bold text-rose-600 dark:text-rose-400';
+          statusBadge.className = 'rounded-none bg-rose-500/15 px-2 py-0.5 text-[10px] font-bold text-rose-600 dark:text-rose-400';
           statusBadge.textContent = 'Invalid JSON';
           errorBox.classList.remove('hidden');
 
@@ -535,15 +535,15 @@ const parameterGuide = [
       });
 
       tabCode.addEventListener('click', () => {
-        tabCode.className = 'rounded-md bg-[color:var(--accent)] px-2 py-0.5 font-bold text-white cursor-pointer';
-        tabTree.className = 'rounded-md px-2 py-0.5 font-bold text-[color:var(--muted)] hover:text-[color:var(--fg)] cursor-pointer';
+        tabCode.className = 'rounded-none bg-[color:var(--accent)] px-2 py-0.5 font-bold text-white cursor-pointer';
+        tabTree.className = 'rounded-none px-2 py-0.5 font-bold text-[color:var(--muted)] hover:text-[color:var(--fg)] cursor-pointer';
         output.classList.remove('hidden');
         treeContainer.classList.add('hidden');
       });
 
       tabTree.addEventListener('click', () => {
-        tabTree.className = 'rounded-md bg-[color:var(--accent)] px-2 py-0.5 font-bold text-white cursor-pointer';
-        tabCode.className = 'rounded-md px-2 py-0.5 font-bold text-[color:var(--muted)] hover:text-[color:var(--fg)] cursor-pointer';
+        tabTree.className = 'rounded-none bg-[color:var(--accent)] px-2 py-0.5 font-bold text-white cursor-pointer';
+        tabCode.className = 'rounded-none px-2 py-0.5 font-bold text-[color:var(--muted)] hover:text-[color:var(--fg)] cursor-pointer';
         output.classList.add('hidden');
         treeContainer.classList.remove('hidden');
       });

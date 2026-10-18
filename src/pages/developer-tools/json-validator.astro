@@ -156,7 +156,7 @@ const parameterGuide = [
         <textarea
           id="val-input"
           rows="18"
-          class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 font-mono text-xs leading-relaxed text-[color:var(--fg)] focus:border-[color:var(--border-strong)] focus:outline-hidden"
+          class="w-full rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-4 font-mono text-xs leading-relaxed text-[color:var(--fg)] focus:border-[color:var(--border-strong)] focus:outline-hidden"
           placeholder="Paste raw JSON here to inspect syntax..."
         ></textarea>
 
@@ -165,14 +165,14 @@ const parameterGuide = [
             <button
               type="button"
               id="btn-auto-fix"
-              class="rounded-xl border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-xs font-bold text-amber-600 dark:text-amber-400 hover:bg-amber-500/20 cursor-pointer"
+              class="rounded-none border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-xs font-bold text-amber-600 dark:text-amber-400 hover:bg-amber-500/20 cursor-pointer"
             >
               <Icon name="refresh" class="w-3.5 h-3.5" /><span>Auto-Repair Common Errors</span>
             </button>
             <button
               type="button"
               id="btn-beautify"
-              class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-2 text-xs font-bold text-[color:var(--fg)] hover:bg-[color:var(--surface-strong)] cursor-pointer"
+              class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-2 text-xs font-bold text-[color:var(--fg)] hover:bg-[color:var(--surface-strong)] cursor-pointer"
             >
               <Icon name="sparkles" class="w-3.5 h-3.5" /><span>Beautify</span>
             </button>
@@ -180,7 +180,7 @@ const parameterGuide = [
           <button
             type="button"
             data-validate-btn
-            class="rounded-xl bg-[color:var(--accent)] px-5 py-2 text-xs font-bold text-white shadow-xs transition hover:opacity-90 cursor-pointer"
+            class="rounded-none bg-[color:var(--accent)] px-5 py-2 text-xs font-bold text-white shadow-xs transition hover:opacity-90 cursor-pointer"
           >
             <Icon name="search" class="w-3.5 h-3.5 text-white" /><span>Validate Syntax</span>
           </button>
@@ -192,8 +192,8 @@ const parameterGuide = [
         <h2 class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Validation Diagnostics</h2>
 
         <!-- Status Card -->
-        <div data-status-card class="space-y-3 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 text-center">
-          <div data-status-icon class="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-[color:var(--surface-strong)] text-[color:var(--muted)]">
+        <div data-status-card class="space-y-3 rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-5 text-center">
+          <div data-status-icon class="mx-auto flex h-12 w-12 items-center justify-center rounded-none bg-[color:var(--surface-strong)] text-[color:var(--muted)]">
             <svg class="h-6 w-6 stroke-current" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
           </div>
           <p data-status-title class="font-bold text-base text-[color:var(--fg)]">Awaiting Input</p>
@@ -201,32 +201,32 @@ const parameterGuide = [
         </div>
 
         <!-- Error Card -->
-        <div id="error-details" class="hidden space-y-2.5 rounded-2xl border border-rose-500/30 bg-rose-500/10 p-4 text-xs text-rose-600 dark:text-rose-400">
+        <div id="error-details" class="hidden space-y-2.5 rounded-none border border-rose-500/30 bg-rose-500/10 p-4 text-xs text-rose-600 dark:text-rose-400">
           <div class="flex items-center justify-between font-bold">
             <span>Syntax Error Detected</span>
             <span class="rounded bg-rose-500/20 px-1.5 py-0.5 font-mono text-[10px]" id="err-pos">Line 1, Col 1</span>
           </div>
           <p id="error-msg" class="font-mono text-[11px] leading-relaxed"></p>
-          <div id="error-snippet" class="rounded-xl border border-rose-500/20 bg-[color:var(--bg)] p-3 font-mono text-[11px] text-[color:var(--fg)] whitespace-pre overflow-x-auto"></div>
+          <div id="error-snippet" class="rounded-none border border-rose-500/20 bg-[color:var(--bg)] p-3 font-mono text-[11px] text-[color:var(--fg)] whitespace-pre overflow-x-auto"></div>
         </div>
 
         <!-- Structure Telemetry Card -->
-        <div id="structure-card" class="space-y-3 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-xs">
+        <div id="structure-card" class="space-y-3 rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-xs">
           <p class="font-bold text-[color:var(--fg)] uppercase tracking-wider text-[11px]">Payload Structure</p>
           <div class="grid grid-cols-2 gap-2 text-[11px] font-mono">
-            <div class="rounded-lg bg-[color:var(--bg)] p-2">
+            <div class="rounded-none bg-[color:var(--bg)] p-2">
               <span class="text-[color:var(--muted)] block text-[10px]">Root Type:</span>
               <strong id="meta-type" class="text-[color:var(--fg)]">-</strong>
             </div>
-            <div class="rounded-lg bg-[color:var(--bg)] p-2">
+            <div class="rounded-none bg-[color:var(--bg)] p-2">
               <span class="text-[color:var(--muted)] block text-[10px]">Max Depth:</span>
               <strong id="meta-depth" class="text-[color:var(--fg)]">-</strong>
             </div>
-            <div class="rounded-lg bg-[color:var(--bg)] p-2">
+            <div class="rounded-none bg-[color:var(--bg)] p-2">
               <span class="text-[color:var(--muted)] block text-[10px]">Total Keys:</span>
               <strong id="meta-keys" class="text-cyan-600 dark:text-cyan-400 dark:text-cyan-400">-</strong>
             </div>
-            <div class="rounded-lg bg-[color:var(--bg)] p-2">
+            <div class="rounded-none bg-[color:var(--bg)] p-2">
               <span class="text-[color:var(--muted)] block text-[10px]">Payload Size:</span>
               <strong id="meta-size" class="text-[color:var(--fg)]">-</strong>
             </div>
@@ -236,16 +236,16 @@ const parameterGuide = [
     </div>
 
     <!-- Step-by-Step Worked Example -->
-    <section class="space-y-4 rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 sm:p-8 text-xs sm:text-sm text-[color:var(--muted)] leading-relaxed">
+    <section class="space-y-4 border-t border-[color:var(--border)] pt-8 text-xs sm:text-sm text-[color:var(--muted)] leading-relaxed">
       <div class="flex items-center gap-2">
-        <span class="rounded-md bg-[color:var(--accent)]/15 px-2.5 py-1 text-xs font-bold text-[color:var(--accent)]">Worked Example</span>
+        <span class="rounded-none bg-[color:var(--accent)]/15 px-2.5 py-1 text-xs font-bold text-[color:var(--accent)]">Worked Example</span>
         <h2 class="text-base sm:text-lg font-bold text-[color:var(--fg)]">Fixing JavaScript Object Copied as JSON</h2>
       </div>
       <p>
         Developers often copy objects from console logs or JS code that fail standard JSON parsing due to unquoted keys, single quotes, and trailing commas:
       </p>
       <div class="grid gap-4 sm:grid-cols-2">
-        <div class="rounded-xl border border-rose-500/30 bg-rose-500/5 p-4 font-mono text-xs">
+        <div class="rounded-none border border-rose-500/30 bg-rose-500/5 p-4 font-mono text-xs">
           <span class="text-rose-600 dark:text-rose-400 block mb-1 font-bold font-sans">Invalid JS/Python Object:</span>
           &#123;<br/>
           &nbsp;&nbsp;id: 101,<br/>
@@ -253,7 +253,7 @@ const parameterGuide = [
           &nbsp;&nbsp;roles: ['admin', 'editor',],<br/>
           &#125;
         </div>
-        <div class="rounded-xl border border-cyan-500/30 bg-cyan-500/5 p-4 font-mono text-xs">
+        <div class="rounded-none border border-cyan-500/30 bg-cyan-500/5 p-4 font-mono text-xs">
           <span class="text-cyan-600 dark:text-cyan-400 dark:text-cyan-400 block mb-1 font-bold font-sans">Auto-Repaired Valid RFC 8259 JSON:</span>
           &#123;<br/>
           &nbsp;&nbsp;&quot;id&quot;: 101,<br/>
@@ -285,7 +285,7 @@ const parameterGuide = [
       <h2 class="text-xl font-bold text-[color:var(--fg)]">Frequently Asked Questions</h2>
       <div class="space-y-3">
         {schemaFaq.map((faq) => (
-          <details class="group rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
+          <details class="group rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
             <summary class="cursor-pointer list-none font-semibold text-sm sm:text-base text-[color:var(--fg)] flex items-center justify-between gap-4">
               <span>{faq.question}</span>
               <span class="text-xs text-[color:var(--muted)] group-open:rotate-180 transition-transform">▼</span>
@@ -361,7 +361,7 @@ const parameterGuide = [
       function validate() {
         const text = input.value.trim();
         if (!text) {
-          statusIcon.className = 'mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-[color:var(--surface-strong)] text-[color:var(--muted)]';
+          statusIcon.className = 'mx-auto flex h-12 w-12 items-center justify-center rounded-none bg-[color:var(--surface-strong)] text-[color:var(--muted)]';
           statusIcon.innerHTML = '<svg class="h-6 w-6 stroke-current" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>';
           statusTitle.textContent = 'Awaiting Input';
           statusDesc.textContent = 'Paste or type JSON code to run syntax validation.';
@@ -375,7 +375,7 @@ const parameterGuide = [
 
         try {
           const parsed = JSON.parse(text);
-          statusIcon.className = 'mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-cyan-500/15 text-cyan-600 dark:text-cyan-400 dark:text-cyan-400 border border-cyan-500/20';
+          statusIcon.className = 'mx-auto flex h-12 w-12 items-center justify-center rounded-none bg-cyan-500/15 text-cyan-600 dark:text-cyan-400 dark:text-cyan-400 border border-cyan-500/20';
           statusIcon.innerHTML = '<svg class="h-6 w-6 stroke-current" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>';
           statusTitle.textContent = 'Valid JSON Syntax';
           statusDesc.textContent = 'Code strictly complies with the RFC 8259 JSON specification.';
@@ -389,7 +389,7 @@ const parameterGuide = [
           metaKeys.textContent = keys.toLocaleString();
           metaSize.textContent = formatBytes(new Blob([text]).size);
         } catch (err) {
-          statusIcon.className = 'mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-rose-500/15 text-rose-600 dark:text-rose-400 border border-rose-500/20';
+          statusIcon.className = 'mx-auto flex h-12 w-12 items-center justify-center rounded-none bg-rose-500/15 text-rose-600 dark:text-rose-400 border border-rose-500/20';
           statusIcon.innerHTML = '<svg class="h-6 w-6 stroke-current" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>';
           statusTitle.textContent = 'Syntax Violation';
           statusDesc.textContent = 'Malformed JSON. See error pointer below.';

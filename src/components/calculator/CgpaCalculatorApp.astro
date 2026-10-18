@@ -10,13 +10,10 @@ interface Props {
 const { calculator } = Astro.props as Props;
 ---
 
-<section
-  class="overflow-hidden rounded-[2rem] border border-[color:var(--border)] bg-[color:var(--surface-strong)] shadow-[var(--shadow)] transition-all"
-  data-cgpa-calculator-app
->
+<div data-cgpa-calculator-app class="space-y-6">
   <div class="grid gap-8 xl:grid-cols-[1.35fr_0.85fr]">
     <!-- Left Column: Mode Tabs, Inputs & Semesters -->
-    <div class="space-y-6 p-6 sm:p-8">
+    <div class="space-y-6 ">
       <!-- Header Bar -->
       <div class="flex flex-wrap items-center justify-between gap-3 border-b border-[color:var(--border)] pb-4">
         <div>
@@ -26,14 +23,14 @@ const { calculator } = Astro.props as Props;
         <div class="flex items-center gap-2">
           <button
             type="button"
-            class="inline-flex items-center gap-1.5 rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1.5 text-xs font-medium text-[color:var(--muted)] hover:text-[color:var(--fg)] hover:border-[color:var(--border-strong)] transition cursor-pointer"
+            class="inline-flex items-center gap-1.5 rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1.5 text-xs font-medium text-[color:var(--muted)] hover:text-[color:var(--fg)] hover:border-[color:var(--border-strong)] transition cursor-pointer"
             data-load-sample-btn
           >
             <span>Load Example</span>
           </button>
           <button
             type="button"
-            class="inline-flex items-center gap-1.5 rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1.5 text-xs font-medium text-[color:var(--fg)] transition hover:border-[color:var(--accent)] hover:bg-[color:var(--surface-strong)] cursor-pointer"
+            class="inline-flex items-center gap-1.5 rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1.5 text-xs font-medium text-[color:var(--fg)] transition hover:border-[color:var(--accent)] hover:bg-[color:var(--surface-strong)] cursor-pointer"
             data-reset-btn
           >
             <Icon name="refresh" class="w-3.5 h-3.5" />
@@ -43,17 +40,17 @@ const { calculator } = Astro.props as Props;
       </div>
 
       <!-- Mode Selector Tabs -->
-      <div class="flex rounded-2xl bg-[color:var(--surface)] p-1.5 border border-[color:var(--border)] gap-1">
+      <div class="flex rounded-none bg-[color:var(--surface)] p-1.5 border border-[color:var(--border)] gap-1">
         <button
           type="button"
-          class="flex-1 py-2 text-xs font-bold rounded-xl transition cursor-pointer bg-[color:var(--surface-strong)] text-[color:var(--accent)] shadow-2xs border border-[color:var(--border)]"
+          class="flex-1 py-2 text-xs font-bold rounded-none transition cursor-pointer bg-[color:var(--surface-strong)] text-[color:var(--accent)] shadow-2xs border border-[color:var(--border)]"
           data-mode-tab="multi-term"
         >
           Mode A: Multiple Semesters
         </button>
         <button
           type="button"
-          class="flex-1 py-2 text-xs font-bold rounded-xl transition cursor-pointer text-[color:var(--muted)] hover:text-[color:var(--fg)]"
+          class="flex-1 py-2 text-xs font-bold rounded-none transition cursor-pointer text-[color:var(--muted)] hover:text-[color:var(--fg)]"
           data-mode-tab="prior-update"
         >
           Mode B: Prior CGPA + New Term
@@ -61,18 +58,18 @@ const { calculator } = Astro.props as Props;
       </div>
 
       <!-- Grading Standard Selector -->
-      <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5 space-y-2">
+      <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5 space-y-2">
         <div class="flex items-center justify-between">
           <label for="cgpa-standard-select" class="text-xs font-bold uppercase tracking-wider text-[color:var(--fg)]">
             Grading Standard / Scale
           </label>
-          <span class="rounded-md bg-[color:var(--surface-strong)] px-2 py-0.5 text-[11px] font-bold text-[color:var(--accent)] border border-[color:var(--border)]" data-scale-badge>
+          <span class="rounded-none bg-[color:var(--surface-strong)] px-2 py-0.5 text-[11px] font-bold text-[color:var(--accent)] border border-[color:var(--border)]" data-scale-badge>
             Scale: 4.00
           </span>
         </div>
         <select
           id="cgpa-standard-select"
-          class="w-full cursor-pointer rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3.5 py-2.5 text-sm font-medium text-[color:var(--fg)] outline-none transition focus:border-[color:var(--accent)] focus:ring-2 focus:ring-[color:var(--accent-soft)]"
+          class="w-full cursor-pointer rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-3.5 py-2.5 text-sm font-medium text-[color:var(--fg)] outline-none transition focus:border-[color:var(--accent)] focus:ring-2 focus:ring-[color:var(--accent-soft)]"
           data-standard-select
         >
           {GRADING_STANDARDS.filter(s => s.id !== 'uk-honours').map((std) => (
@@ -97,7 +94,7 @@ const { calculator } = Astro.props as Props;
               max="100"
               step="any"
               value="4.0"
-              class="w-20 rounded-lg border border-[color:var(--border)] bg-[color:var(--bg)] px-2.5 py-1 text-xs font-bold text-[color:var(--fg)] outline-none"
+              class="w-20 rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-2.5 py-1 text-xs font-bold text-[color:var(--fg)] outline-none"
               data-custom-scale-input
             />
             <span class="text-xs text-[color:var(--muted)]">pts</span>
@@ -110,13 +107,13 @@ const { calculator } = Astro.props as Props;
         <div class="flex items-center justify-between">
           <h3 class="text-sm font-bold uppercase tracking-wider text-[color:var(--fg)] flex items-center gap-2">
             <span>Academic Semesters</span>
-            <span class="rounded-full bg-[color:var(--accent-soft)] text-[color:var(--accent)] px-2 py-0.5 text-xs font-mono font-bold" data-sem-count-badge>
+            <span class="rounded-none bg-[color:var(--accent-soft)] text-[color:var(--accent)] px-2 py-0.5 text-xs font-mono font-bold" data-sem-count-badge>
               3 terms
             </span>
           </h3>
           <button
             type="button"
-            class="inline-flex items-center gap-1.5 rounded-xl bg-[color:var(--accent)] px-3.5 py-2 text-xs font-bold text-white shadow-xs transition hover:bg-[color:var(--accent-hover)] active:scale-98 cursor-pointer"
+            class="inline-flex items-center gap-1.5 rounded-none bg-[color:var(--accent)] px-3.5 py-2 text-xs font-bold text-white shadow-xs transition hover:bg-[color:var(--accent-hover)] active:scale-98 cursor-pointer"
             data-add-semester-btn
           >
             <span>+ Add Semester</span>
@@ -137,7 +134,7 @@ const { calculator } = Astro.props as Props;
 
         <button
           type="button"
-          class="w-full py-2.5 rounded-xl border border-dashed border-[color:var(--border)] text-xs font-semibold text-[color:var(--muted)] hover:text-[color:var(--accent)] hover:border-[color:var(--accent)] transition cursor-pointer"
+          class="w-full py-2.5 rounded-none border border-dashed border-[color:var(--border)] text-xs font-semibold text-[color:var(--muted)] hover:text-[color:var(--accent)] hover:border-[color:var(--accent)] transition cursor-pointer"
           data-add-semester-bottom-btn
         >
           + Add Another Semester
@@ -145,7 +142,7 @@ const { calculator } = Astro.props as Props;
       </div>
 
       <!-- MODE B VIEW: Prior CGPA + New Semester Form -->
-      <div class="hidden space-y-4 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5" data-mode-b-view>
+      <div class="hidden space-y-4 rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-5" data-mode-b-view>
         <div>
           <h3 class="text-sm font-bold text-[color:var(--fg)]">Update Existing CGPA with Current Term</h3>
           <p class="text-[11px] text-[color:var(--muted)]">
@@ -165,7 +162,7 @@ const { calculator } = Astro.props as Props;
               min="0"
               step="0.01"
               placeholder="e.g. 3.45"
-              class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3.5 py-2.5 text-sm font-bold text-[color:var(--fg)] outline-none transition focus:border-[color:var(--accent)]"
+              class="w-full rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-3.5 py-2.5 text-sm font-bold text-[color:var(--fg)] outline-none transition focus:border-[color:var(--accent)]"
               data-b-prior-gpa
             />
           </div>
@@ -181,7 +178,7 @@ const { calculator } = Astro.props as Props;
               min="0"
               step="0.5"
               placeholder="e.g. 90"
-              class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3.5 py-2.5 text-sm font-bold text-[color:var(--fg)] outline-none transition focus:border-[color:var(--accent)]"
+              class="w-full rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-3.5 py-2.5 text-sm font-bold text-[color:var(--fg)] outline-none transition focus:border-[color:var(--accent)]"
               data-b-prior-credits
             />
           </div>
@@ -197,7 +194,7 @@ const { calculator } = Astro.props as Props;
               min="0"
               step="0.01"
               placeholder="e.g. 3.70"
-              class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3.5 py-2.5 text-sm font-bold text-[color:var(--fg)] outline-none transition focus:border-[color:var(--accent)]"
+              class="w-full rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-3.5 py-2.5 text-sm font-bold text-[color:var(--fg)] outline-none transition focus:border-[color:var(--accent)]"
               data-b-current-gpa
             />
           </div>
@@ -213,13 +210,13 @@ const { calculator } = Astro.props as Props;
               min="0"
               step="0.5"
               placeholder="e.g. 18"
-              class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3.5 py-2.5 text-sm font-bold text-[color:var(--fg)] outline-none transition focus:border-[color:var(--accent)]"
+              class="w-full rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-3.5 py-2.5 text-sm font-bold text-[color:var(--fg)] outline-none transition focus:border-[color:var(--accent)]"
               data-b-current-credits
             />
           </div>
         </div>
 
-        <div class="rounded-xl bg-[color:var(--bg)] p-3 text-xs text-[color:var(--muted)] border border-[color:var(--border)]">
+        <div class="rounded-none bg-[color:var(--bg)] p-3 text-xs text-[color:var(--muted)] border border-[color:var(--border)]">
           <span class="font-bold text-[color:var(--fg)]">Formula applied:</span>
           <code class="block mt-1 font-mono text-[11px] text-[color:var(--accent)]">
             New CGPA = [(Prior CGPA × Prior Credits) + (Current GPA × Current Credits)] ÷ (Prior Credits + Current Credits)
@@ -244,7 +241,7 @@ const { calculator } = Astro.props as Props;
         </div>
 
         <!-- Primary CGPA Score -->
-        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 text-center shadow-xs">
+        <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-6 text-center shadow-xs">
           <p class="text-xs font-semibold uppercase tracking-wider text-[color:var(--muted)]">Overall Cumulative CGPA</p>
           <div class="mt-2 flex items-baseline justify-center gap-1">
             <span class="text-5xl font-black tracking-tight text-[color:var(--fg)]" data-res-cgpa>—</span>
@@ -256,10 +253,10 @@ const { calculator } = Astro.props as Props;
         </div>
 
         <!-- Degree Standing / Honors (Only displayed if standard defines it) -->
-        <div class="hidden rounded-2xl border border-[color:var(--accent)]/30 bg-gradient-to-br from-[color:var(--accent-soft)] via-[color:var(--surface)] to-transparent p-4 space-y-1" data-classification-box>
+        <div class="hidden rounded-none border border-[color:var(--accent)]/30 bg-gradient-to-br from-[color:var(--accent-soft)] via-[color:var(--surface)] to-transparent p-4 space-y-1" data-classification-box>
           <div class="flex items-center justify-between">
             <span class="text-[10px] font-bold uppercase tracking-wider text-[color:var(--muted)]">Degree Standing</span>
-            <span class="rounded-full px-2 py-0.5 text-[11px] font-bold border border-[color:var(--accent)]/30 bg-[color:var(--surface)] text-[color:var(--accent)]" data-standing-badge>
+            <span class="rounded-none px-2 py-0.5 text-[11px] font-bold border border-[color:var(--accent)]/30 bg-[color:var(--surface)] text-[color:var(--accent)]" data-standing-badge>
               First Class
             </span>
           </div>
@@ -269,11 +266,11 @@ const { calculator } = Astro.props as Props;
 
         <!-- Key Metrics Cards -->
         <div class="grid grid-cols-2 gap-3">
-          <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3.5 text-center">
+          <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-3.5 text-center">
             <span class="block text-[10px] font-bold uppercase tracking-wider text-[color:var(--muted)]">Cumulative Credits</span>
             <span class="mt-1 block text-2xl font-black text-[color:var(--fg)]" data-res-credits>0</span>
           </div>
-          <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3.5 text-center">
+          <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-3.5 text-center">
             <span class="block text-[10px] font-bold uppercase tracking-wider text-[color:var(--muted)]">Total Quality Points</span>
             <span class="mt-1 block text-2xl font-black text-[color:var(--fg)]" data-res-points>0.00</span>
           </div>
@@ -282,7 +279,7 @@ const { calculator } = Astro.props as Props;
         <!-- Semester Progression List (Mode A) -->
         <div class="space-y-2" data-progression-section>
           <span class="text-xs font-bold text-[color:var(--fg)]">Semester-by-Semester Progression</span>
-          <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] overflow-hidden">
+          <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] overflow-hidden">
             <table class="w-full text-left text-xs">
               <thead class="border-b border-[color:var(--border)] bg-[color:var(--surface-strong)] text-[color:var(--muted)]">
                 <tr>
@@ -389,9 +386,9 @@ const { calculator } = Astro.props as Props;
         modeTabs.forEach((tab) => {
           const isSelected = tab.dataset.modeTab === mode;
           if (isSelected) {
-            tab.className = 'flex-1 py-2 text-xs font-bold rounded-xl transition cursor-pointer bg-[color:var(--surface-strong)] text-[color:var(--accent)] shadow-2xs border border-[color:var(--border)]';
+            tab.className = 'flex-1 py-2 text-xs font-bold rounded-none transition cursor-pointer bg-[color:var(--surface-strong)] text-[color:var(--accent)] shadow-2xs border border-[color:var(--border)]';
           } else {
-            tab.className = 'flex-1 py-2 text-xs font-bold rounded-xl transition cursor-pointer text-[color:var(--muted)] hover:text-[color:var(--fg)]';
+            tab.className = 'flex-1 py-2 text-xs font-bold rounded-none transition cursor-pointer text-[color:var(--muted)] hover:text-[color:var(--fg)]';
           }
         });
 
@@ -414,14 +411,14 @@ const { calculator } = Astro.props as Props;
         if (!semestersContainer) return;
 
         semestersContainer.innerHTML = semesters.map((sem, idx) => `
-          <div class="grid grid-cols-1 sm:grid-cols-[2fr_1.3fr_1.3fr_40px] gap-2 p-2.5 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] items-center transition hover:border-[color:var(--border-strong)]" data-semester-row="${sem.id}">
+          <div class="grid grid-cols-1 sm:grid-cols-[2fr_1.3fr_1.3fr_40px] gap-2 p-2.5 rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] items-center transition hover:border-[color:var(--border-strong)]" data-semester-row="${sem.id}">
             <div>
               <input
                 type="text"
                 placeholder="e.g. Semester ${idx + 1}"
                 value="${sem.name}"
                 data-sem-name="${idx}"
-                class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-medium text-[color:var(--fg)] outline-none transition focus:border-[color:var(--accent)]"
+                class="w-full rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-medium text-[color:var(--fg)] outline-none transition focus:border-[color:var(--accent)]"
               />
             </div>
             <div>
@@ -433,7 +430,7 @@ const { calculator } = Astro.props as Props;
                 placeholder="e.g. 3.50"
                 value="${sem.gpa}"
                 data-sem-gpa="${idx}"
-                class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-bold text-[color:var(--fg)] outline-none transition focus:border-[color:var(--accent)]"
+                class="w-full rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-bold text-[color:var(--fg)] outline-none transition focus:border-[color:var(--accent)]"
               />
             </div>
             <div class="flex items-center gap-1">
@@ -445,14 +442,14 @@ const { calculator } = Astro.props as Props;
                 placeholder="e.g. 18"
                 value="${sem.credits}"
                 data-sem-credits="${idx}"
-                class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-bold text-[color:var(--fg)] outline-none transition focus:border-[color:var(--accent)]"
+                class="w-full rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-bold text-[color:var(--fg)] outline-none transition focus:border-[color:var(--accent)]"
               />
               <span class="text-[10px] text-[color:var(--muted)] font-medium">cr</span>
             </div>
             <div class="text-right">
               <button
                 type="button"
-                class="cursor-pointer rounded-lg p-2 text-rose-500 hover:bg-rose-500/10 transition font-bold"
+                class="cursor-pointer rounded-none p-2 text-rose-500 hover:bg-rose-500/10 transition font-bold"
                 data-remove-sem="${idx}"
                 title="Remove Semester"
                 aria-label="Remove Semester"
@@ -718,4 +715,4 @@ const { calculator } = Astro.props as Props;
 
     initCgpaCalculator();
   </script>
-</section>
+</div>

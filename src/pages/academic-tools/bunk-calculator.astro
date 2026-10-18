@@ -99,7 +99,7 @@ const schemaGraph = [
 
     <!-- Bunk App Card -->
     <div
-      class="rounded-[2.5rem] border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-6 shadow-[var(--shadow)] sm:p-10"
+      class="space-y-8"
       data-bunk-app
     >
       <div class="grid gap-8 lg:grid-cols-[1.1fr_0.9fr]">
@@ -123,7 +123,7 @@ const schemaGraph = [
               id="bunk-attended"
               type="number"
               min="0"
-              class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none transition focus:border-[color:var(--accent)]"
+              class="w-full rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none transition focus:border-[color:var(--accent)]"
               data-bunk-attended placeholder="e.g. 42" />
           </div>
 
@@ -135,7 +135,7 @@ const schemaGraph = [
               id="bunk-total"
               type="number"
               min="1"
-              class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none transition focus:border-[color:var(--accent)]"
+              class="w-full rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none transition focus:border-[color:var(--accent)]"
               data-bunk-total placeholder="e.g. 50" />
           </div>
 
@@ -144,7 +144,7 @@ const schemaGraph = [
               <label for="bunk-target" class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">
                 Required Minimum Criteria
               </label>
-              <span class="rounded-lg bg-[color:var(--surface)] border border-[color:var(--border)] px-2.5 py-0.5 text-xs font-bold text-[color:var(--fg)]" data-bunk-target-display>
+              <span class="rounded-none bg-[color:var(--surface)] border border-[color:var(--border)] px-2.5 py-0.5 text-xs font-bold text-[color:var(--fg)]" data-bunk-target-display>
                 75%
               </span>
             </div>
@@ -167,14 +167,14 @@ const schemaGraph = [
         </form>
 
         <!-- Result Box -->
-        <div class="flex flex-col justify-between space-y-6 rounded-3xl border border-[color:var(--accent)]/30 bg-gradient-to-br from-[color:var(--accent-soft)] via-[color:var(--surface)] to-transparent p-6 sm:p-8 shadow-sm">
+        <div class="space-y-6">
           <div class="space-y-5">
             <div class="flex items-center justify-between">
               <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Bunk Allowance</span>
-              <span class="rounded-full px-3 py-0.5 text-xs font-bold" data-bunk-badge>Safe</span>
+              <span class="rounded-none px-3 py-0.5 text-xs font-bold" data-bunk-badge>Safe</span>
             </div>
 
-            <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 text-center">
+            <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-6 text-center">
               <p class="text-xs font-semibold text-[color:var(--muted)]">Safe Classes You Can Skip</p>
               <p class="mt-1 text-5xl font-black tracking-tight text-[color:var(--fg)]" data-safe-bunks>
                 6
@@ -185,11 +185,11 @@ const schemaGraph = [
             </div>
 
             <div class="grid grid-cols-2 gap-3 text-xs">
-              <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3.5">
+              <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-3.5">
                 <p class="text-[11px] text-[color:var(--muted)]">Current Attendance</p>
                 <p class="mt-1 text-lg font-bold text-[color:var(--fg)]" data-curr-pct>84.00%</p>
               </div>
-              <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3.5">
+              <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-3.5">
                 <p class="text-[11px] text-[color:var(--muted)]">After Bunking 1 Class</p>
                 <p class="mt-1 text-lg font-bold text-[color:var(--fg)]" data-next-bunk-pct>82.35%</p>
               </div>
@@ -199,7 +199,7 @@ const schemaGraph = [
           <div class="pt-2 border-t border-[color:var(--border)]">
             <a
               href={withBasePath('/academic-tools/attendance-calculator/')}
-              class="block w-full text-center rounded-xl bg-[color:var(--accent)] px-4 py-2.5 text-xs font-bold text-white transition hover:opacity-90"
+              class="block w-full text-center rounded-none bg-[color:var(--accent)] px-4 py-2.5 text-xs font-bold text-white transition hover:opacity-90"
             >
               Open Full Attendance Shortage Tool →
             </a>
@@ -210,13 +210,13 @@ const schemaGraph = [
 
     <!-- Educational & Strategy Content -->
     <section class="grid gap-6 sm:grid-cols-2">
-      <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 space-y-2">
+      <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-6 space-y-2">
         <h2 class="text-base font-bold text-[color:var(--fg)]">The Mathematics of Bunking</h2>
         <p class="text-xs leading-relaxed text-[color:var(--muted)]">
           When you miss a class, your total number of conducted classes increases while your attended tally stays frozen. If you have a high safety margin (e.g. 85%), each skipped lecture reduces your percentage by a small fraction, but once you near 75%, even a single missed lecture will trigger shortage warnings.
         </p>
       </div>
-      <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 space-y-2">
+      <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-6 space-y-2">
         <h2 class="text-base font-bold text-[color:var(--fg)]">Smart Attendance Safety Strategy</h2>
         <p class="text-xs leading-relaxed text-[color:var(--muted)]">
           Never exhaust your safe bunk quota early in the semester. Keep at least 2–3 buffer classes reserved for unforeseen illness, emergency travel, project deadlines, or placement interview rounds.
@@ -242,7 +242,7 @@ const schemaGraph = [
       <h2 class="text-xl font-bold text-[color:var(--fg)]">Frequently Asked Questions</h2>
       <div class="space-y-3">
         {faqs.map((faq) => (
-          <details class="group rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
+          <details class="group rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
             <summary class="cursor-pointer list-none font-semibold text-sm sm:text-base text-[color:var(--fg)] flex items-center justify-between gap-4">
               <span>{faq.question}</span>
               <span class="text-xs text-[color:var(--muted)] group-open:rotate-180 transition-transform">▼</span>
@@ -295,7 +295,7 @@ const schemaGraph = [
               : `You can safely skip ${safe} class${safe === 1 ? '' : 'es'} without dropping below ${target}%.`;
           }
           if (badge) {
-            badge.className = 'rounded-full px-3 py-0.5 text-xs font-bold bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 dark:text-cyan-400 border border-cyan-500/20';
+            badge.className = 'rounded-none px-3 py-0.5 text-xs font-bold bg-cyan-500/10 text-[color:var(--accent)] border border-cyan-500/20';
             badge.textContent = safe === 0 ? 'Warning' : 'Safe';
           }
         } else {
@@ -305,7 +305,7 @@ const schemaGraph = [
             bunkSummary.textContent = `Shortage alert! You cannot bunk any classes. Attend ${mustAttend} consecutive class${mustAttend === 1 ? '' : 'es'} to recover.`;
           }
           if (badge) {
-            badge.className = 'rounded-full px-3 py-0.5 text-xs font-bold bg-red-500/10 text-red-600 dark:text-red-400 border border-red-500/20';
+            badge.className = 'rounded-none px-3 py-0.5 text-xs font-bold bg-red-500/10 text-red-600 dark:text-red-400 border border-red-500/20';
             badge.textContent = 'Shortage';
           }
         }

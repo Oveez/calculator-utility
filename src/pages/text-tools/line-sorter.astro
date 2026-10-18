@@ -151,30 +151,30 @@ const workedExampleData = {
 
     <!-- Metrics Summary Bar -->
     <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-      <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-center shadow-xs">
+      <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-center shadow-xs">
         <span class="block text-[11px] font-bold uppercase tracking-wider text-[color:var(--muted)]">Total Lines</span>
         <span id="stat-lines" class="mt-1 block text-xl sm:text-2xl font-black text-[color:var(--fg)] font-mono">0</span>
       </div>
-      <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-center shadow-xs">
+      <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-center shadow-xs">
         <span class="block text-[11px] font-bold uppercase tracking-wider text-[color:var(--muted)]">Unique Lines</span>
         <span id="stat-unique" class="mt-1 block text-xl sm:text-2xl font-black text-cyan-600 dark:text-cyan-400 dark:text-cyan-400 font-mono">0</span>
       </div>
-      <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-center shadow-xs">
+      <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-center shadow-xs">
         <span class="block text-[11px] font-bold uppercase tracking-wider text-[color:var(--muted)]">Word Count</span>
         <span id="stat-words" class="mt-1 block text-xl sm:text-2xl font-black text-[color:var(--accent)] font-mono">0</span>
       </div>
-      <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-center shadow-xs">
+      <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-center shadow-xs">
         <span class="block text-[11px] font-bold uppercase tracking-wider text-[color:var(--muted)]">Character Count</span>
         <span id="stat-chars" class="mt-1 block text-xl sm:text-2xl font-black text-[color:var(--fg)] font-mono">0</span>
       </div>
     </div>
 
     <!-- Controls Panel -->
-    <div class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 sm:p-6 space-y-4 shadow-sm">
+    <div class="py-4 border-b border-[color:var(--border)] space-y-4">
       <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 text-xs">
         <div>
           <label for="sort-type" class="block font-bold text-[color:var(--fg)] mb-1.5">Sorting Method</label>
-          <select id="sort-type" class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-[color:var(--fg)] font-semibold">
+          <select id="sort-type" class="w-full rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-[color:var(--fg)] font-semibold">
             <option value="alpha-asc">Alphabetical (A &rarr; Z)</option>
             <option value="alpha-desc">Reverse Alphabetical (Z &rarr; A)</option>
             <option value="natural-asc">Natural Alphanumeric (item1, item2, item10)</option>
@@ -190,7 +190,7 @@ const workedExampleData = {
 
         <div>
           <label for="opt-numbering" class="block font-bold text-[color:var(--fg)] mb-1.5">Prepend Line Numbers</label>
-          <select id="opt-numbering" class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-[color:var(--fg)]">
+          <select id="opt-numbering" class="w-full rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-[color:var(--fg)]">
             <option value="none">None (Plain Lines)</option>
             <option value="dot">1. 2. 3.</option>
             <option value="paren">1) 2) 3)</option>
@@ -242,7 +242,7 @@ const workedExampleData = {
         <textarea
           id="text-in"
           rows="15"
-          class="w-full font-mono text-xs leading-relaxed rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-[color:var(--fg)] focus:border-[color:var(--accent)] focus:outline-hidden transition shadow-inner"
+          class="w-full font-mono text-xs leading-relaxed rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-[color:var(--fg)] focus:border-[color:var(--accent)] focus:outline-hidden transition shadow-inner"
           placeholder="Paste or type lines to sort here..."
         ></textarea>
       </div>
@@ -255,7 +255,7 @@ const workedExampleData = {
             <button
               type="button"
               id="btn-copy"
-              class="inline-flex cursor-pointer items-center gap-1.5 rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1.5 text-xs font-bold text-[color:var(--fg)] shadow-xs transition hover:bg-[color:var(--surface-strong)]"
+              class="inline-flex cursor-pointer items-center gap-1.5 rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1.5 text-xs font-bold text-[color:var(--fg)] shadow-xs transition hover:bg-[color:var(--surface-strong)]"
             >
               <Icon name="copy" class="w-3.5 h-3.5" />
               <span id="copy-label">Copy</span>
@@ -263,7 +263,7 @@ const workedExampleData = {
             <button
               type="button"
               id="btn-download"
-              class="inline-flex cursor-pointer items-center gap-1.5 rounded-xl bg-[color:var(--accent)] px-3 py-1.5 text-xs font-bold text-white shadow-xs transition hover:opacity-90"
+              class="inline-flex cursor-pointer items-center gap-1.5 rounded-none bg-[color:var(--accent)] px-3 py-1.5 text-xs font-bold text-white shadow-xs transition hover:opacity-90"
             >
               <span>Download .txt</span>
             </button>
@@ -273,7 +273,7 @@ const workedExampleData = {
           id="text-out"
           rows="15"
           readonly
-          class="w-full font-mono text-xs leading-relaxed rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-4 text-[color:var(--fg)] focus:outline-hidden transition shadow-inner"
+          class="w-full font-mono text-xs leading-relaxed rounded-none border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-4 text-[color:var(--fg)] focus:outline-hidden transition shadow-inner"
           placeholder="Sorted text will appear here in real-time..."
         ></textarea>
       </div>
@@ -302,7 +302,7 @@ const workedExampleData = {
       <h2 class="text-xl font-bold text-[color:var(--fg)]">Frequently Asked Questions</h2>
       <div class="space-y-3">
         {schemaFaq.map((faq) => (
-          <details class="group rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
+          <details class="group rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
             <summary class="cursor-pointer list-none font-semibold text-sm sm:text-base text-[color:var(--fg)] flex items-center justify-between gap-4">
               <span>{faq.question}</span>
               <span class="text-xs text-[color:var(--muted)] group-open:rotate-180 transition-transform">▼</span>

@@ -83,7 +83,7 @@ const schemaGraph = [
 
 
     <div class="space-y-6">
-      <div class="grid gap-4 sm:grid-cols-2 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 text-xs">
+      <div class="grid gap-4 sm:grid-cols-2 rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-5 text-xs">
         <div>
           <label for="daily-hours" class="font-bold text-[color:var(--fg)] block mb-1">Target Daily Study Hours:</label>
           <input
@@ -91,7 +91,7 @@ const schemaGraph = [
             id="daily-hours"
             min="1"
             max="14"
-            class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-[color:var(--fg)]" placeholder="e.g. 4" />
+            class="w-full rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-[color:var(--fg)]" placeholder="e.g. 4" />
         </div>
         <div>
           <label for="start-time" class="font-bold text-[color:var(--fg)] block mb-1">Starting Time:</label>
@@ -99,7 +99,7 @@ const schemaGraph = [
             type="time"
             id="start-time"
             value="09:00"
-            class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-[color:var(--fg)]" />
+            class="w-full rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-[color:var(--fg)]" />
         </div>
       </div>
 
@@ -108,7 +108,7 @@ const schemaGraph = [
         <textarea
           id="subjects-in"
           rows="5"
-          class="w-full font-mono text-xs leading-relaxed rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-[color:var(--fg)] focus:border-[color:var(--border-strong)] focus:outline-hidden"
+          class="w-full font-mono text-xs leading-relaxed rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-[color:var(--fg)] focus:border-[color:var(--border-strong)] focus:outline-hidden"
           placeholder="Mathematics&#10;Physics&#10;Computer Science"
         >Mathematics (Calculus)
 Physics (Electromagnetism)
@@ -119,14 +119,14 @@ Organic Chemistry</textarea>
       <button
         type="button"
         id="gen-sched-btn"
-        class="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-[color:var(--accent)] py-2.5 text-xs font-bold text-white shadow-xs transition hover:opacity-90 cursor-pointer"
+        class="w-full inline-flex items-center justify-center gap-2 rounded-none bg-[color:var(--accent)] py-2.5 text-xs font-bold text-white shadow-xs transition hover:opacity-90 cursor-pointer"
       >
         <Icon name="calendar" class="w-4 h-4" />
         <span>Generate Study Timetable</span>
       </button>
 
       <!-- Timetable Card Display -->
-      <div class="space-y-4 rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 sm:p-8">
+      <div class="space-y-4 rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-6 sm:p-8">
         <div class="flex items-center justify-between">
           <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Daily Study Routine</span>
           <button type="button" data-copy-btn class="inline-flex items-center gap-1 text-xs font-bold text-[color:var(--fg)] hover:underline">
@@ -153,7 +153,7 @@ Organic Chemistry</textarea>
       <h2 class="text-xl font-bold text-[color:var(--fg)]">Frequently Asked Questions</h2>
       <div class="space-y-3">
         {schemaFaq.map((faq) => (
-          <details class="group rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
+          <details class="group rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
             <summary class="cursor-pointer list-none font-semibold text-sm sm:text-base text-[color:var(--fg)] flex items-center justify-between gap-4">
               <span>{faq.question}</span>
               <span class="text-xs text-[color:var(--muted)] group-open:rotate-180 transition-transform">▼</span>
@@ -205,7 +205,7 @@ Organic Chemistry</textarea>
           curMin = studyEnd;
 
           slots.push(`
-            <div class="flex items-center gap-4 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-3.5">
+            <div class="flex items-center gap-4 rounded-none border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-3.5">
               <span class="font-mono text-xs font-bold text-cyan-500 dark:text-cyan-400 w-36">${formatTime(studyStart)} - ${formatTime(studyEnd)}</span>
               <div class="flex-1">
                 <p class="text-xs font-extrabold text-[color:var(--fg)]">${subject}</p>
@@ -220,7 +220,7 @@ Organic Chemistry</textarea>
             curMin = breakEnd;
 
             slots.push(`
-              <div class="flex items-center gap-4 rounded-xl border border-dashed border-[color:var(--border)] px-4 py-2 opacity-60 text-xs">
+              <div class="flex items-center gap-4 rounded-none border border-dashed border-[color:var(--border)] px-4 py-2 opacity-60 text-xs">
                 <span class="font-mono text-[10px] text-[color:var(--muted)] w-36">${formatTime(breakStart)} - ${formatTime(breakEnd)}</span>
                 <span class="text-[10px] font-semibold text-[color:var(--muted)]">Rest &amp; Hydration Break (10 mins)</span>
               </div>

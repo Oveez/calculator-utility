@@ -137,22 +137,22 @@ const workedExampleData = {
 
 
     <!-- Controls & Options Bar -->
-    <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5 space-y-4">
+    <div class="py-4 border-b border-[color:var(--border)] space-y-4">
       <div class="flex flex-wrap items-center justify-between gap-4">
         <div class="flex flex-wrap items-center gap-2">
           <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)] mr-1">Display View:</span>
-          <div class="inline-flex max-w-full overflow-x-auto no-scrollbar rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] p-1">
+          <div class="inline-flex max-w-full overflow-x-auto no-scrollbar rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] p-1">
             <button
               type="button"
               id="view-side-btn"
-              class="shrink-0 min-w-max rounded-lg px-3 py-1.5 text-xs font-bold transition bg-[color:var(--accent)] text-white shadow-xs"
+              class="shrink-0 min-w-max rounded-none px-3 py-1.5 text-xs font-bold transition bg-[color:var(--accent)] text-white shadow-xs"
             >
               Side-by-Side (Split)
             </button>
             <button
               type="button"
               id="view-unified-btn"
-              class="shrink-0 min-w-max rounded-lg px-3 py-1.5 text-xs font-bold transition text-[color:var(--muted)] hover:text-[color:var(--fg)]"
+              class="shrink-0 min-w-max rounded-none px-3 py-1.5 text-xs font-bold transition text-[color:var(--muted)] hover:text-[color:var(--fg)]"
             >
               Unified View
             </button>
@@ -163,7 +163,7 @@ const workedExampleData = {
           <button
             type="button"
             id="btn-swap"
-            class="inline-flex items-center gap-1.5 rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-1.5 text-xs font-semibold text-[color:var(--fg)] hover:border-[color:var(--accent)] transition cursor-pointer"
+            class="inline-flex items-center gap-1.5 rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-1.5 text-xs font-semibold text-[color:var(--fg)] hover:border-[color:var(--accent)] transition cursor-pointer"
             title="Swap Original and Modified texts"
           >
             <span>⇄ Swap Inputs</span>
@@ -171,21 +171,21 @@ const workedExampleData = {
           <button
             type="button"
             id="btn-sample-code"
-            class="rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-1.5 text-xs font-semibold text-[color:var(--accent)] hover:underline cursor-pointer"
+            class="rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-1.5 text-xs font-semibold text-[color:var(--accent)] hover:underline cursor-pointer"
           >
             Code Sample
           </button>
           <button
             type="button"
             id="btn-sample-prose"
-            class="rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-1.5 text-xs font-semibold text-[color:var(--accent)] hover:underline cursor-pointer"
+            class="rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-1.5 text-xs font-semibold text-[color:var(--accent)] hover:underline cursor-pointer"
           >
             Prose Sample
           </button>
           <button
             type="button"
             id="btn-clear-all"
-            class="rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-1.5 text-xs font-semibold text-rose-600 dark:text-rose-400 hover:underline cursor-pointer"
+            class="rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-1.5 text-xs font-semibold text-rose-600 dark:text-rose-400 hover:underline cursor-pointer"
           >
             Clear All
           </button>
@@ -218,7 +218,7 @@ const workedExampleData = {
       <div class="space-y-2">
         <div class="flex items-center justify-between">
           <div class="flex items-center gap-2">
-            <span class="inline-block h-2.5 w-2.5 rounded-full bg-rose-500"></span>
+            <span class="inline-block h-2.5 w-2.5 rounded-none bg-rose-500"></span>
             <label for="text1-in" class="text-xs font-bold uppercase tracking-wider text-[color:var(--fg)]">Original (Before)</label>
             <span id="t1-stats" class="text-[11px] text-[color:var(--muted)]">0 lines</span>
           </div>
@@ -234,7 +234,7 @@ const workedExampleData = {
         <textarea
           id="text1-in"
           rows="12"
-          class="w-full font-mono text-xs leading-relaxed rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-[color:var(--fg)] focus:border-[color:var(--accent)] focus:outline-hidden transition shadow-inner"
+          class="w-full font-mono text-xs leading-relaxed rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-[color:var(--fg)] focus:border-[color:var(--accent)] focus:outline-hidden transition shadow-inner"
           placeholder="Paste original text or upload file..."
         ></textarea>
       </div>
@@ -243,7 +243,7 @@ const workedExampleData = {
       <div class="space-y-2">
         <div class="flex items-center justify-between">
           <div class="flex items-center gap-2">
-            <span class="inline-block h-2.5 w-2.5 rounded-full bg-emerald-500"></span>
+            <span class="inline-block h-2.5 w-2.5 rounded-none bg-emerald-500"></span>
             <label for="text2-in" class="text-xs font-bold uppercase tracking-wider text-[color:var(--fg)]">Modified (After)</label>
             <span id="t2-stats" class="text-[11px] text-[color:var(--muted)]">0 lines</span>
           </div>
@@ -259,7 +259,7 @@ const workedExampleData = {
         <textarea
           id="text2-in"
           rows="12"
-          class="w-full font-mono text-xs leading-relaxed rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-[color:var(--fg)] focus:border-[color:var(--accent)] focus:outline-hidden transition shadow-inner"
+          class="w-full font-mono text-xs leading-relaxed rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-[color:var(--fg)] focus:border-[color:var(--accent)] focus:outline-hidden transition shadow-inner"
           placeholder="Paste modified text or upload file..."
         ></textarea>
       </div>
@@ -267,23 +267,23 @@ const workedExampleData = {
 
     <!-- Live Statistics Summary -->
     <div class="grid grid-cols-2 gap-3 sm:grid-cols-5 text-center">
-      <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3">
+      <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-3">
         <div class="text-[11px] font-bold uppercase tracking-wider text-[color:var(--muted)]">Similarity</div>
         <div id="stat-similarity" class="text-xl font-extrabold text-[color:var(--fg)] mt-1">100%</div>
       </div>
-      <div class="rounded-2xl border border-cyan-500/20 bg-emerald-500/5 p-3">
+      <div class="rounded-none border border-cyan-500/20 bg-emerald-500/5 p-3">
         <div class="text-[11px] font-bold uppercase tracking-wider text-cyan-600 dark:text-cyan-400 dark:text-cyan-400">Added (+)</div>
         <div id="stat-added" class="text-xl font-extrabold text-cyan-600 dark:text-cyan-400 dark:text-cyan-400 mt-1">0 lines</div>
       </div>
-      <div class="rounded-2xl border border-rose-500/20 bg-rose-500/5 p-3">
+      <div class="rounded-none border border-rose-500/20 bg-rose-500/5 p-3">
         <div class="text-[11px] font-bold uppercase tracking-wider text-rose-600 dark:text-rose-400">Deleted (-)</div>
         <div id="stat-deleted" class="text-xl font-extrabold text-rose-600 dark:text-rose-400 mt-1">0 lines</div>
       </div>
-      <div class="rounded-2xl border border-amber-500/20 bg-amber-500/5 p-3">
+      <div class="rounded-none border border-amber-500/20 bg-amber-500/5 p-3">
         <div class="text-[11px] font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400">Modified</div>
         <div id="stat-modified" class="text-xl font-extrabold text-amber-600 dark:text-amber-400 mt-1">0 lines</div>
       </div>
-      <div class="col-span-2 sm:col-span-1 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3">
+      <div class="col-span-2 sm:col-span-1 rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-3">
         <div class="text-[11px] font-bold uppercase tracking-wider text-[color:var(--muted)]">Unchanged</div>
         <div id="stat-unchanged" class="text-xl font-extrabold text-[color:var(--fg)] mt-1">0 lines</div>
       </div>
@@ -294,20 +294,20 @@ const workedExampleData = {
       <div class="flex flex-wrap items-center justify-between gap-3">
         <div class="flex items-center gap-2">
           <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Comparison Results</span>
-          <span id="diff-status-badge" class="rounded-full bg-cyan-500/10 px-2.5 py-0.5 text-[11px] font-semibold text-cyan-600 dark:text-cyan-400 dark:text-cyan-400">Identical</span>
+          <span id="diff-status-badge" class="rounded-none bg-cyan-500/10 px-2.5 py-0.5 text-[11px] font-semibold text-cyan-600 dark:text-cyan-400 dark:text-cyan-400">Identical</span>
         </div>
         <div class="flex flex-wrap items-center gap-2">
           <button
             type="button"
             id="btn-copy-patch"
-            class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1.5 text-xs font-semibold text-[color:var(--fg)] hover:border-[color:var(--accent)] transition cursor-pointer"
+            class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1.5 text-xs font-semibold text-[color:var(--fg)] hover:border-[color:var(--accent)] transition cursor-pointer"
           >
             <Icon name="copy" class="w-3.5 h-3.5" /><span>Copy Unified Patch</span>
           </button>
           <button
             type="button"
             id="btn-download-patch"
-            class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1.5 text-xs font-semibold text-[color:var(--fg)] hover:border-[color:var(--accent)] transition cursor-pointer"
+            class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1.5 text-xs font-semibold text-[color:var(--fg)] hover:border-[color:var(--accent)] transition cursor-pointer"
           >
             <Icon name="download" class="w-3.5 h-3.5" /><span>Download .patch</span>
           </button>
@@ -315,7 +315,7 @@ const workedExampleData = {
       </div>
 
       <!-- Side-by-Side (Split) View Container -->
-      <div id="diff-split-view" class="overflow-x-auto rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] font-mono text-xs leading-relaxed">
+      <div id="diff-split-view" class="overflow-x-auto rounded-none border border-[color:var(--border)] bg-[color:var(--surface-strong)] font-mono text-xs leading-relaxed">
         <div class="grid grid-cols-2 divide-x divide-[color:var(--border)] border-b border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-2 text-[11px] font-bold uppercase tracking-wider text-[color:var(--muted)]">
           <div class="flex items-center justify-between pr-2">
             <span>Original</span>
@@ -332,7 +332,7 @@ const workedExampleData = {
       </div>
 
       <!-- Unified View Container -->
-      <div id="diff-unified-view" class="hidden overflow-x-auto rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] font-mono text-xs leading-relaxed">
+      <div id="diff-unified-view" class="hidden overflow-x-auto rounded-none border border-[color:var(--border)] bg-[color:var(--surface-strong)] font-mono text-xs leading-relaxed">
         <div class="flex items-center justify-between border-b border-[color:var(--border)] bg-[color:var(--surface)] px-4 py-2 text-[11px] font-bold uppercase tracking-wider text-[color:var(--muted)]">
           <span>Unified Diff Stream</span>
           <span id="unified-chunk-count">0 chunks</span>
@@ -366,7 +366,7 @@ const workedExampleData = {
       <h2 class="text-xl font-bold text-[color:var(--fg)]">Frequently Asked Questions</h2>
       <div class="space-y-3">
         {schemaFaq.map((faq) => (
-          <details class="group rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
+          <details class="group rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
             <summary class="cursor-pointer list-none font-semibold text-sm sm:text-base text-[color:var(--fg)] flex items-center justify-between gap-4">
               <span>{faq.question}</span>
               <span class="text-xs text-[color:var(--muted)] group-open:rotate-180 transition-transform">▼</span>
@@ -531,7 +531,7 @@ const workedExampleData = {
           statModified.textContent = '0 lines';
           statUnchanged.textContent = '0 lines';
           diffStatusBadge.textContent = 'Identical';
-          diffStatusBadge.className = 'rounded-full bg-cyan-500/10 px-2.5 py-0.5 text-[11px] font-semibold text-cyan-600 dark:text-cyan-400 dark:text-cyan-400';
+          diffStatusBadge.className = 'rounded-none bg-cyan-500/10 px-2.5 py-0.5 text-[11px] font-semibold text-cyan-600 dark:text-cyan-400 dark:text-cyan-400';
           generatedPatch = '';
           return;
         }
@@ -606,10 +606,10 @@ const workedExampleData = {
 
         if (addedCount === 0 && deletedCount === 0 && modifiedCount === 0) {
           diffStatusBadge.textContent = 'Identical (No Differences)';
-          diffStatusBadge.className = 'rounded-full bg-cyan-500/10 px-2.5 py-0.5 text-[11px] font-semibold text-cyan-600 dark:text-cyan-400 dark:text-cyan-400';
+          diffStatusBadge.className = 'rounded-none bg-cyan-500/10 px-2.5 py-0.5 text-[11px] font-semibold text-cyan-600 dark:text-cyan-400 dark:text-cyan-400';
         } else {
           diffStatusBadge.textContent = `${addedCount + deletedCount + modifiedCount} Discrepancies Found`;
-          diffStatusBadge.className = 'rounded-full bg-rose-500/10 px-2.5 py-0.5 text-[11px] font-semibold text-rose-600 dark:text-rose-400';
+          diffStatusBadge.className = 'rounded-none bg-rose-500/10 px-2.5 py-0.5 text-[11px] font-semibold text-rose-600 dark:text-rose-400';
         }
 
         // Render Side-by-Side View
@@ -739,16 +739,16 @@ const workedExampleData = {
       // View switching
       viewSideBtn.addEventListener('click', () => {
         currentView = 'side';
-        viewSideBtn.className = 'rounded-lg px-3 py-1.5 text-xs font-bold transition bg-[color:var(--accent)] text-white shadow-xs';
-        viewUnifiedBtn.className = 'rounded-lg px-3 py-1.5 text-xs font-bold transition text-[color:var(--muted)] hover:text-[color:var(--fg)]';
+        viewSideBtn.className = 'rounded-none px-3 py-1.5 text-xs font-bold transition bg-[color:var(--accent)] text-white shadow-xs';
+        viewUnifiedBtn.className = 'rounded-none px-3 py-1.5 text-xs font-bold transition text-[color:var(--muted)] hover:text-[color:var(--fg)]';
         diffSplitView.classList.remove('hidden');
         diffUnifiedView.classList.add('hidden');
       });
 
       viewUnifiedBtn.addEventListener('click', () => {
         currentView = 'unified';
-        viewUnifiedBtn.className = 'rounded-lg px-3 py-1.5 text-xs font-bold transition bg-[color:var(--accent)] text-white shadow-xs';
-        viewSideBtn.className = 'rounded-lg px-3 py-1.5 text-xs font-bold transition text-[color:var(--muted)] hover:text-[color:var(--fg)]';
+        viewUnifiedBtn.className = 'rounded-none px-3 py-1.5 text-xs font-bold transition bg-[color:var(--accent)] text-white shadow-xs';
+        viewSideBtn.className = 'rounded-none px-3 py-1.5 text-xs font-bold transition text-[color:var(--muted)] hover:text-[color:var(--fg)]';
         diffUnifiedView.classList.remove('hidden');
         diffSplitView.classList.add('hidden');
       });

@@ -95,7 +95,7 @@ const schemaGraph = [
 
     <!-- App Card -->
     <div
-      class="rounded-[2.5rem] border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-6 shadow-[var(--shadow)] sm:p-10"
+      class="space-y-8"
       data-study-hours-app
     >
       <div class="grid gap-8 lg:grid-cols-[1.1fr_0.9fr]">
@@ -117,7 +117,7 @@ const schemaGraph = [
               min="1"
               max="24"
               step="1"
-              class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none transition focus:border-[color:var(--accent)]"
+              class="w-full rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none transition focus:border-[color:var(--accent)]"
               data-study-credits placeholder="e.g. 15" />
           </div>
 
@@ -127,7 +127,7 @@ const schemaGraph = [
             </label>
             <select
               id="course-diff"
-              class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-sm font-semibold text-[color:var(--fg)] outline-none"
+              class="w-full rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-sm font-semibold text-[color:var(--fg)] outline-none"
               data-course-diff
             >
               <option value="intro">Introductory / General Education (1.5h/credit)</option>
@@ -143,7 +143,7 @@ const schemaGraph = [
             </label>
             <select
               id="target-gpa"
-              class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-sm font-semibold text-[color:var(--fg)] outline-none"
+              class="w-full rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-sm font-semibold text-[color:var(--fg)] outline-none"
               data-target-gpa
             >
               <option value="pass">Passing Grade (C / 2.0)</option>
@@ -158,7 +158,7 @@ const schemaGraph = [
               <input
                 id="work-hrs"
                 type="number"
-                class="mt-1 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none"
+                class="mt-1 w-full rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none"
                 data-work-hrs placeholder="e.g. 10" />
             </div>
             <div>
@@ -166,23 +166,23 @@ const schemaGraph = [
               <input
                 id="sleep-hrs"
                 type="number"
-                class="mt-1 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none"
+                class="mt-1 w-full rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none"
                 data-sleep-hrs placeholder="e.g. 8" />
             </div>
           </div>
         </form>
 
         <!-- Result Box -->
-        <div class="flex flex-col justify-between space-y-6 rounded-3xl border border-[color:var(--accent)]/30 bg-gradient-to-br from-[color:var(--accent-soft)] via-[color:var(--surface)] to-transparent p-6 sm:p-8 shadow-sm">
+        <div class="space-y-6">
           <div class="space-y-5">
             <div class="flex items-center justify-between">
               <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Recommended Plan</span>
-              <span class="rounded-full px-3 py-0.5 text-xs font-bold bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 dark:text-cyan-400 border border-cyan-500/20" data-feasibility-badge>
+              <span class="rounded-none px-3 py-0.5 text-xs font-bold bg-cyan-500/10 text-[color:var(--accent)] border border-cyan-500/20" data-feasibility-badge>
                 Balanced
               </span>
             </div>
 
-            <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 text-center">
+            <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-6 text-center">
               <p class="text-xs font-semibold text-[color:var(--muted)]">Weekly Outside Study Time</p>
               <p class="mt-1 text-5xl font-black tracking-tight text-[color:var(--fg)]" data-rec-weekly>
                 30.0 hrs
@@ -192,7 +192,7 @@ const schemaGraph = [
               </p>
             </div>
 
-            <div class="space-y-2 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-xs">
+            <div class="space-y-2 rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-xs">
               <div class="flex justify-between">
                 <span class="text-[color:var(--muted)]">Mon-Fri Daily Target:</span>
                 <span class="font-bold text-[color:var(--fg)]" data-weekday-study>4.2 hrs/day</span>
@@ -229,7 +229,7 @@ const schemaGraph = [
       <h2 class="text-xl font-bold text-[color:var(--fg)]">Frequently Asked Questions</h2>
       <div class="space-y-3">
         {faqs.map((faq) => (
-          <details class="group rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
+          <details class="group rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
             <summary class="cursor-pointer list-none font-semibold text-sm sm:text-base text-[color:var(--fg)] flex items-center justify-between gap-4">
               <span>{faq.question}</span>
               <span class="text-xs text-[color:var(--muted)] group-open:rotate-180 transition-transform">▼</span>
@@ -293,13 +293,13 @@ const schemaGraph = [
 
         if (badge) {
           if (totalCommitment > 168) {
-            badge.className = 'rounded-full px-3 py-0.5 text-xs font-bold bg-red-500/10 text-red-600 dark:text-red-400 border border-red-500/20';
+            badge.className = 'rounded-none px-3 py-0.5 text-xs font-bold bg-red-500/10 text-red-600 dark:text-red-400 border border-red-500/20';
             badge.textContent = 'Unsustainable (>168 hrs)';
           } else if (freeHrs < 20) {
-            badge.className = 'rounded-full px-3 py-0.5 text-xs font-bold bg-orange-500/10 text-orange-600 dark:text-orange-400 border border-orange-500/20';
+            badge.className = 'rounded-none px-3 py-0.5 text-xs font-bold bg-orange-500/10 text-orange-600 dark:text-orange-400 border border-orange-500/20';
             badge.textContent = 'Heavy Workload';
           } else {
-            badge.className = 'rounded-full px-3 py-0.5 text-xs font-bold bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 dark:text-cyan-400 border border-cyan-500/20';
+            badge.className = 'rounded-none px-3 py-0.5 text-xs font-bold bg-cyan-500/10 text-[color:var(--accent)] border border-cyan-500/20';
             badge.textContent = 'Balanced Schedule';
           }
         }

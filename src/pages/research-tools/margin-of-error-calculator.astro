@@ -127,7 +127,7 @@ const schemaGraph = [
       <button
         type="button"
         id="tab-mode-prop"
-        class="mode-tab active shrink-0 min-w-max rounded-xl bg-[color:var(--accent)] px-4 py-2 text-white transition cursor-pointer"
+        class="mode-tab active shrink-0 min-w-max rounded-none bg-[color:var(--accent)] px-4 py-2 text-white transition cursor-pointer"
         data-mode="proportion"
       >
         Survey Proportion / Percentage Mode (±%)
@@ -135,7 +135,7 @@ const schemaGraph = [
       <button
         type="button"
         id="tab-mode-mean"
-        class="mode-tab shrink-0 min-w-max rounded-xl bg-[color:var(--surface)] border border-[color:var(--border)] px-4 py-2 text-[color:var(--muted)] hover:text-[color:var(--fg)] transition cursor-pointer"
+        class="mode-tab shrink-0 min-w-max rounded-none bg-[color:var(--surface)] border border-[color:var(--border)] px-4 py-2 text-[color:var(--muted)] hover:text-[color:var(--fg)] transition cursor-pointer"
         data-mode="mean"
       >
         Continuous Sample Mean Mode (Units)
@@ -143,7 +143,7 @@ const schemaGraph = [
       <button
         type="button"
         id="tab-mode-inv"
-        class="mode-tab shrink-0 min-w-max rounded-xl bg-[color:var(--surface)] border border-[color:var(--border)] px-4 py-2 text-[color:var(--muted)] hover:text-[color:var(--fg)] transition cursor-pointer"
+        class="mode-tab shrink-0 min-w-max rounded-none bg-[color:var(--surface)] border border-[color:var(--border)] px-4 py-2 text-[color:var(--muted)] hover:text-[color:var(--fg)] transition cursor-pointer"
         data-mode="inverse"
       >
         Inverse Target MOE &rarr; Required Sample Size
@@ -151,7 +151,7 @@ const schemaGraph = [
     </div>
 
     <!-- App Card -->
-    <div class="rounded-[2.5rem] border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-6 shadow-xs sm:p-10">
+    <div class="space-y-8">
       <div class="grid gap-8 lg:grid-cols-[1.15fr_0.85fr]">
         <!-- Form Panel -->
         <form class="space-y-5" onsubmit="return false;">
@@ -169,7 +169,7 @@ const schemaGraph = [
             </label>
             <select
               id="conf-level"
-              class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-sm font-semibold text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)]"
+              class="w-full rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-sm font-semibold text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)]"
             >
               <option value="90">90% (Z = 1.645)</option>
               <option value="95" selected>95% — Standard Scientific (Z = 1.960)</option>
@@ -188,7 +188,7 @@ const schemaGraph = [
                 type="number"
                 min="1"
                 step="1"
-                class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)]" placeholder="e.g. 400" />
+                class="w-full rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)]" placeholder="e.g. 400" />
             </div>
 
             <div class="space-y-1.5">
@@ -204,7 +204,7 @@ const schemaGraph = [
                 min="1"
                 max="99"
                 step="1"
-                class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)]" placeholder="e.g. 50" />
+                class="w-full rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)]" placeholder="e.g. 50" />
               <p class="text-[11px] text-[color:var(--muted)]">50% gives the most conservative (maximum) margin of error.</p>
             </div>
           </div>
@@ -220,7 +220,7 @@ const schemaGraph = [
                 type="number"
                 min="2"
                 step="1"
-                class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)]" placeholder="e.g. 100" />
+                class="w-full rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)]" placeholder="e.g. 100" />
             </div>
 
             <div class="space-y-1.5">
@@ -231,7 +231,7 @@ const schemaGraph = [
                 id="mean-val-input"
                 type="number"
                 step="0.1"
-                class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)]" placeholder="e.g. 50.0" />
+                class="w-full rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)]" placeholder="e.g. 50.0" />
             </div>
 
             <div class="space-y-1.5">
@@ -243,7 +243,7 @@ const schemaGraph = [
                 type="number"
                 min="0.001"
                 step="0.1"
-                class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)]" placeholder="e.g. 10.0" />
+                class="w-full rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)]" placeholder="e.g. 10.0" />
             </div>
           </div>
 
@@ -259,7 +259,7 @@ const schemaGraph = [
                 min="0.1"
                 max="25"
                 step="0.1"
-                class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)]" placeholder="e.g. 3.0" />
+                class="w-full rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)]" placeholder="e.g. 3.0" />
             </div>
 
             <div class="space-y-1.5">
@@ -272,7 +272,7 @@ const schemaGraph = [
                 min="1"
                 max="99"
                 step="1"
-                class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)]" placeholder="e.g. 50" />
+                class="w-full rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)]" placeholder="e.g. 50" />
             </div>
           </div>
 
@@ -287,19 +287,19 @@ const schemaGraph = [
               min="10"
               step="1"
               placeholder="Leave blank for infinite / large population"
-              class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-sm font-semibold text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)]" />
+              class="w-full rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-sm font-semibold text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)]" />
           </div>
         </form>
 
         <!-- Result Box -->
-        <div class="flex flex-col justify-between space-y-6 rounded-3xl border border-[color:var(--accent)]/30 bg-gradient-to-br from-[color:var(--accent-soft)] via-[color:var(--surface)] to-transparent p-6 sm:p-8 shadow-sm">
+        <div class="space-y-6">
           <div class="space-y-5">
             <div class="flex items-center justify-between">
               <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]" id="res-label">Margin of Error</span>
               <button
                 type="button"
                 id="copy-result-btn"
-                class="inline-flex items-center gap-1.5 rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] px-2.5 py-1 text-xs font-bold text-[color:var(--fg)] hover:border-[color:var(--accent)] hover:shadow-[0_0_12px_var(--accent-glow)] transition cursor-pointer"
+                class="inline-flex items-center gap-1.5 rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] px-2.5 py-1 text-xs font-bold text-[color:var(--fg)] hover:border-[color:var(--accent)] hover:shadow-[0_0_12px_var(--accent-glow)] transition cursor-pointer"
               >
                 Copy Result
               </button>
@@ -313,7 +313,7 @@ const schemaGraph = [
             </div>
 
             <!-- Confidence Interval Range Box -->
-            <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 space-y-2">
+            <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-4 space-y-2">
               <span class="text-[10px] font-bold uppercase tracking-wider text-[color:var(--muted)]">Confidence Interval Bounds</span>
               <div class="flex items-baseline justify-between">
                 <span class="text-xs font-semibold text-[color:var(--fg)]">Estimated Range:</span>
@@ -339,7 +339,7 @@ const schemaGraph = [
             </div>
           </div>
 
-          <div class="rounded-2xl border border-cyan-500/20 bg-cyan-500/10 p-3.5 text-xs leading-relaxed text-cyan-400">
+          <div class="rounded-none border border-cyan-500/20 bg-cyan-500/10 p-3.5 text-xs leading-relaxed text-cyan-400">
             <strong>Survey Finding:</strong> With <span id="callout-sample" class="font-bold font-mono">400</span> responses, your results are accurate to within <span id="callout-moe" class="font-bold font-mono">±4.90%</span> at <span id="callout-conf" class="font-bold">95%</span> confidence.
           </div>
         </div>
@@ -353,7 +353,7 @@ const schemaGraph = [
         <p class="text-xs text-[color:var(--muted)]">How survey precision scales across respondent counts at 90%, 95%, and 99% confidence (p = 0.50)</p>
       </div>
 
-      <div class="overflow-x-auto rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)]">
+      <div class="overflow-x-auto rounded-none border border-[color:var(--border)] bg-[color:var(--surface)]">
         <table class="w-full text-left text-xs">
           <thead class="bg-[color:var(--surface-strong)] text-[color:var(--muted)] border-b border-[color:var(--border)]">
             <tr>
@@ -418,7 +418,7 @@ const schemaGraph = [
       <h2 class="text-xl font-bold text-[color:var(--fg)]">Frequently Asked Questions</h2>
       <div class="space-y-3">
         {schemaFaq.map((faq) => (
-          <details class="group rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
+          <details class="group rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
             <summary class="cursor-pointer list-none font-semibold text-sm sm:text-base text-[color:var(--fg)] flex items-center justify-between gap-4">
               <span>{faq.question}</span>
               <span class="text-xs text-[color:var(--muted)] group-open:rotate-180 transition-transform">&blacktriangledown;</span>

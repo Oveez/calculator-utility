@@ -159,7 +159,7 @@ const schemaGraph = [
 
 
     <div
-      class="rounded-[2.5rem] border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-6 shadow-[var(--shadow)] sm:p-10"
+      class="space-y-8"
       data-ci-app
     >
       <div class="grid gap-8 lg:grid-cols-[1.1fr_0.9fr]">
@@ -171,14 +171,14 @@ const schemaGraph = [
             </button>
           </div>
 
-          <div class="flex items-center gap-1.5 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-1 text-xs font-semibold overflow-x-auto no-scrollbar sm:grid sm:grid-cols-3">
-            <button type="button" class="shrink-0 min-w-max sm:min-w-0 sm:shrink text-center cursor-pointer rounded-xl bg-[color:var(--accent)] px-2.5 py-2 text-white shadow-xs transition" data-mode-btn="mean">
+          <div class="flex items-center gap-1.5 rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-1 text-xs font-semibold overflow-x-auto no-scrollbar sm:grid sm:grid-cols-3">
+            <button type="button" class="shrink-0 min-w-max sm:min-w-0 sm:shrink text-center cursor-pointer rounded-none bg-[color:var(--accent)] px-2.5 py-2 text-white shadow-xs transition" data-mode-btn="mean">
               Mean (Summary)
             </button>
-            <button type="button" class="shrink-0 min-w-max sm:min-w-0 sm:shrink text-center cursor-pointer rounded-xl px-2.5 py-2 text-[color:var(--muted)] hover:text-[color:var(--fg)] transition" data-mode-btn="raw">
+            <button type="button" class="shrink-0 min-w-max sm:min-w-0 sm:shrink text-center cursor-pointer rounded-none px-2.5 py-2 text-[color:var(--muted)] hover:text-[color:var(--fg)] transition" data-mode-btn="raw">
               Raw Data Paste
             </button>
-            <button type="button" class="shrink-0 min-w-max sm:min-w-0 sm:shrink text-center cursor-pointer rounded-xl px-2.5 py-2 text-[color:var(--muted)] hover:text-[color:var(--fg)] transition" data-mode-btn="proportion">
+            <button type="button" class="shrink-0 min-w-max sm:min-w-0 sm:shrink text-center cursor-pointer rounded-none px-2.5 py-2 text-[color:var(--muted)] hover:text-[color:var(--fg)] transition" data-mode-btn="proportion">
               Proportion (%)
             </button>
           </div>
@@ -187,21 +187,21 @@ const schemaGraph = [
           <div class="space-y-4" data-mean-fields>
             <div class="space-y-1.5">
               <label for="sample-mean" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Sample Mean (x̄)</label>
-              <input id="sample-mean" type="number" step="any" class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none" data-sample-mean placeholder="e.g. 105.4" />
+              <input id="sample-mean" type="number" step="any" class="w-full rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none" data-sample-mean placeholder="e.g. 105.4" />
             </div>
             <div class="grid grid-cols-2 gap-3">
               <div>
                 <label for="sample-sd" class="block text-xs font-medium text-[color:var(--muted)]">Standard Deviation (s)</label>
-                <input id="sample-sd" type="number" min="0.0001" step="any" class="mt-1 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-sample-sd placeholder="e.g. 14.2" />
+                <input id="sample-sd" type="number" min="0.0001" step="any" class="mt-1 w-full rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-sample-sd placeholder="e.g. 14.2" />
               </div>
               <div>
                 <label for="sample-n-mean" class="block text-xs font-medium text-[color:var(--muted)]">Sample Size (n)</label>
-                <input id="sample-n-mean" type="number" min="2" step="1" class="mt-1 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-sample-n-mean placeholder="e.g. 45" />
+                <input id="sample-n-mean" type="number" min="2" step="1" class="mt-1 w-full rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-sample-n-mean placeholder="e.g. 45" />
               </div>
             </div>
             <div>
               <label for="dist-type" class="block text-xs font-medium text-[color:var(--muted)]">Distribution Engine</label>
-              <select id="dist-type" class="mt-1 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-dist-type>
+              <select id="dist-type" class="mt-1 w-full rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-dist-type>
                 <option value="t" selected>Student t-Distribution (Recommended: σ unknown)</option>
                 <option value="z">Standard Normal Z-Distribution (Known population σ or n &gt; 100)</option>
               </select>
@@ -215,7 +215,7 @@ const schemaGraph = [
               <textarea
                 id="raw-data-input"
                 rows="4"
-                class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] p-3 text-xs font-mono font-semibold text-[color:var(--fg)] outline-none"
+                class="w-full rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] p-3 text-xs font-mono font-semibold text-[color:var(--fg)] outline-none"
                 placeholder="e.g. 102.5, 98.4, 105.1, 110.3, 99.8, 104.2, 108.9, 103.7, 106.0, 101.4"
                 data-raw-data
               >102.5, 98.4, 105.1, 110.3, 99.8, 104.2, 108.9, 103.7, 106.0, 101.4, 107.2, 100.5</textarea>
@@ -230,15 +230,15 @@ const schemaGraph = [
           <div class="space-y-4" data-prop-fields hidden>
             <div class="space-y-1.5">
               <label for="success-count" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Observed Successes / Events (x)</label>
-              <input id="success-count" type="number" min="0" class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none" data-success-count placeholder="e.g. 65" />
+              <input id="success-count" type="number" min="0" class="w-full rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none" data-success-count placeholder="e.g. 65" />
             </div>
             <div class="space-y-1.5">
               <label for="prop-n" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Total Sample Trials (n)</label>
-              <input id="prop-n" type="number" min="1" class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none" data-prop-n placeholder="e.g. 100" />
+              <input id="prop-n" type="number" min="1" class="w-full rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none" data-prop-n placeholder="e.g. 100" />
             </div>
             <div>
               <label for="prop-method" class="block text-xs font-medium text-[color:var(--muted)]">Proportion Interval Method</label>
-              <select id="prop-method" class="mt-1 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-prop-method>
+              <select id="prop-method" class="mt-1 w-full rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-prop-method>
                 <option value="wilson" selected>Wilson Score Interval (Recommended: Robust, no boundary clipping)</option>
                 <option value="wald">Wald Normal Approximation (Standard textbook: p̂ ± Z*SE)</option>
               </select>
@@ -248,7 +248,7 @@ const schemaGraph = [
           <!-- Confidence Level Selector -->
           <div class="space-y-1.5">
             <label for="ci-conf" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Confidence Level</label>
-            <select id="ci-conf" class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-sm font-semibold text-[color:var(--fg)] outline-none" data-ci-conf>
+            <select id="ci-conf" class="w-full rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-sm font-semibold text-[color:var(--fg)] outline-none" data-ci-conf>
               <option value="80">80% Confidence Level (Z* = 1.282)</option>
               <option value="90">90% Confidence Level (Z* = 1.645)</option>
               <option value="95" selected>95% Confidence Level (Z* = 1.960 - Gold Standard)</option>
@@ -260,14 +260,14 @@ const schemaGraph = [
         </form>
 
         <!-- Result Box & Visualizer -->
-        <div class="flex flex-col justify-between space-y-6 rounded-3xl border border-[color:var(--accent)]/30 bg-gradient-to-br from-[color:var(--accent-soft)] via-[color:var(--surface)] to-transparent p-6 sm:p-8 shadow-sm">
+        <div class="space-y-6">
           <div class="space-y-5">
             <div class="flex items-center justify-between">
               <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Confidence Range</span>
               <div class="flex items-center gap-1.5">
                 <button
                   type="button"
-                  class="inline-flex items-center gap-1 rounded-lg border border-[color:var(--border)] bg-[color:var(--surface)] px-2.5 py-1 text-xs font-semibold text-[color:var(--fg)] hover:bg-[color:var(--bg)] transition cursor-pointer"
+                  class="inline-flex items-center gap-1 rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] px-2.5 py-1 text-xs font-semibold text-[color:var(--fg)] hover:bg-[color:var(--bg)] transition cursor-pointer"
                   data-copy-btn
                 >
                   <Icon name="copy" class="w-3.5 h-3.5" />
@@ -275,7 +275,7 @@ const schemaGraph = [
                 </button>
                 <button
                   type="button"
-                  class="inline-flex items-center gap-1 rounded-lg border border-[color:var(--border)] bg-[color:var(--surface)] px-2.5 py-1 text-xs font-semibold text-[color:var(--fg)] hover:bg-[color:var(--bg)] transition cursor-pointer"
+                  class="inline-flex items-center gap-1 rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] px-2.5 py-1 text-xs font-semibold text-[color:var(--fg)] hover:bg-[color:var(--bg)] transition cursor-pointer"
                   data-export-csv-btn
                 >
                   <span>CSV</span>
@@ -283,7 +283,7 @@ const schemaGraph = [
               </div>
             </div>
 
-            <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 text-center">
+            <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-6 text-center">
               <p class="text-xs font-semibold text-[color:var(--muted)]">Calculated Confidence Interval</p>
               <p class="mt-1 text-3xl sm:text-4xl font-black tracking-tight text-[color:var(--fg)] font-mono" data-res-range>
                 [ 101.14 , 109.66 ]
@@ -294,7 +294,7 @@ const schemaGraph = [
             </div>
 
             <!-- SVG Error Bar Visualizer -->
-            <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 space-y-2">
+            <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-4 space-y-2">
               <div class="flex justify-between text-xs font-semibold">
                 <span class="text-[color:var(--muted)]">Interval Forest Plot</span>
                 <span class="text-[color:var(--fg)]" data-plot-conf-label>95% Coverage</span>
@@ -318,7 +318,7 @@ const schemaGraph = [
             </div>
 
             <!-- Key Parameters Summary -->
-            <div class="space-y-2 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-xs">
+            <div class="space-y-2 rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-xs">
               <div class="flex justify-between">
                 <span class="text-[color:var(--muted)]">Margin of Error (E):</span>
                 <span class="font-mono font-bold text-[color:var(--fg)]" data-res-moe>±4.26</span>
@@ -342,7 +342,7 @@ const schemaGraph = [
     </div>
 
     <!-- Sensitivity Table Across Confidence Levels -->
-    <section class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 sm:p-8 space-y-4">
+    <section class="space-y-4 border-t border-[color:var(--border)] pt-8">
       <div class="flex items-center justify-between">
         <div>
           <p class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Sensitivity Matrix</p>
@@ -379,16 +379,16 @@ const schemaGraph = [
     </header>
 
     <!-- Mathematical Formulas & Distribution Theory -->
-    <section class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 sm:p-8 space-y-4">
+    <section class="space-y-4 border-t border-[color:var(--border)] pt-8">
       <div>
         <p class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Statistical Foundations</p>
         <h2 class="text-xl font-bold text-[color:var(--fg)] flex items-center gap-2"><Icon name="math" class="w-4 h-4 text-[color:var(--accent)]" /><span>Confidence Interval Formulas</span></h2>
       </div>
 
       <div class="grid gap-4 sm:grid-cols-3 text-xs sm:text-sm">
-        <div class="rounded-2xl bg-[color:var(--bg)] p-4 border border-[color:var(--border)] space-y-2">
+        <div class="rounded-none bg-[color:var(--bg)] p-4 border border-[color:var(--border)] space-y-2">
           <p class="font-bold text-[color:var(--fg)]">1. Continuous Mean (t-Distribution)</p>
-          <div class="rounded-xl bg-[color:var(--surface)] p-3 font-mono text-xs text-[color:var(--fg)] overflow-x-auto">
+          <div class="rounded-none bg-[color:var(--surface)] p-3 font-mono text-xs text-[color:var(--fg)] overflow-x-auto">
             CI = x̄ ± t*(df, α/2) × (s ÷ √n)
           </div>
           <p class="text-xs text-[color:var(--muted)]">
@@ -396,9 +396,9 @@ const schemaGraph = [
           </p>
         </div>
 
-        <div class="rounded-2xl bg-[color:var(--bg)] p-4 border border-[color:var(--border)] space-y-2">
+        <div class="rounded-none bg-[color:var(--bg)] p-4 border border-[color:var(--border)] space-y-2">
           <p class="font-bold text-[color:var(--fg)]">2. Wilson Score Interval (Proportion)</p>
-          <div class="rounded-xl bg-[color:var(--surface)] p-3 font-mono text-xs text-[color:var(--fg)] overflow-x-auto">
+          <div class="rounded-none bg-[color:var(--surface)] p-3 font-mono text-xs text-[color:var(--fg)] overflow-x-auto">
             (p̂ + Z²/(2n) ± Z√[p̂(1-p̂)/n + Z²/(4n²)]) ÷ (1 + Z²/n)
           </div>
           <p class="text-xs text-[color:var(--muted)]">
@@ -406,9 +406,9 @@ const schemaGraph = [
           </p>
         </div>
 
-        <div class="rounded-2xl bg-[color:var(--bg)] p-4 border border-[color:var(--border)] space-y-2">
+        <div class="rounded-none bg-[color:var(--bg)] p-4 border border-[color:var(--border)] space-y-2">
           <p class="font-bold text-[color:var(--fg)]">3. Wald Normal Approximation</p>
-          <div class="rounded-xl bg-[color:var(--surface)] p-3 font-mono text-xs text-[color:var(--fg)] overflow-x-auto">
+          <div class="rounded-none bg-[color:var(--surface)] p-3 font-mono text-xs text-[color:var(--fg)] overflow-x-auto">
             CI = p̂ ± Z*(α/2) × √[(p̂(1 - p̂)) ÷ n]
           </div>
           <p class="text-xs text-[color:var(--muted)]">
@@ -426,7 +426,7 @@ const schemaGraph = [
       <h2 class="text-xl font-bold text-[color:var(--fg)]">Frequently Asked Questions</h2>
       <div class="space-y-3">
         {faqs.map((faq) => (
-          <details class="group rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
+          <details class="group rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
             <summary class="cursor-pointer list-none font-semibold text-sm sm:text-base text-[color:var(--fg)] flex items-center justify-between gap-4">
               <span>{faq.question}</span>
               <span class="text-xs text-[color:var(--muted)] group-open:rotate-180 transition-transform">▼</span>
@@ -743,9 +743,9 @@ const schemaGraph = [
           currentMode = btn.dataset.modeBtn || 'mean';
           modeBtns.forEach((b) => {
             if (b === btn) {
-              b.className = 'shrink-0 min-w-max sm:min-w-0 sm:shrink text-center cursor-pointer rounded-xl bg-[color:var(--accent)] px-2.5 py-2 text-white shadow-xs transition';
+              b.className = 'shrink-0 min-w-max sm:min-w-0 sm:shrink text-center cursor-pointer rounded-none bg-[color:var(--accent)] px-2.5 py-2 text-white shadow-xs transition';
             } else {
-              b.className = 'shrink-0 min-w-max sm:min-w-0 sm:shrink text-center cursor-pointer rounded-xl px-2.5 py-2 text-[color:var(--muted)] hover:text-[color:var(--fg)] transition';
+              b.className = 'shrink-0 min-w-max sm:min-w-0 sm:shrink text-center cursor-pointer rounded-none px-2.5 py-2 text-[color:var(--muted)] hover:text-[color:var(--fg)] transition';
             }
           });
 

@@ -91,32 +91,32 @@ const schemaGraph = [
         <textarea
           id="resume-text"
           rows="10"
-          class="w-full font-mono text-xs leading-relaxed rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-[color:var(--fg)] focus:border-[color:var(--border-strong)] focus:outline-hidden"
+          class="w-full font-mono text-xs leading-relaxed rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-[color:var(--fg)] focus:border-[color:var(--border-strong)] focus:outline-hidden"
           placeholder="Paste your resume content here..."
         >Engineered scalable microservices architecture using Node.js, TypeScript, and AWS Lambda, improving throughput by 42%. Spearheaded automated CI/CD pipeline deployments with Docker and GitHub Actions. Collaborated with cross-functional product teams to deliver responsive React applications. Optimized PostgreSQL database queries reducing API latency by 180ms.</textarea>
       </div>
 
       <!-- Stats Grid -->
       <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 text-center">
-        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 space-y-1">
+        <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-5 space-y-1">
           <span class="text-xs font-bold text-[color:var(--muted)] uppercase">Action Verbs</span>
           <p id="verb-count" class="text-3xl font-extrabold text-emerald-500">0</p>
           <p class="text-[10px] text-[color:var(--muted)]">Strong Power Verbs</p>
         </div>
 
-        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 space-y-1">
+        <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-5 space-y-1">
           <span class="text-xs font-bold text-[color:var(--muted)] uppercase">Metric Quantifiers</span>
           <p id="metric-count" class="text-3xl font-extrabold text-blue-500">0</p>
           <p class="text-[10px] text-[color:var(--muted)]">%, $, Numbers Detected</p>
         </div>
 
-        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 space-y-1">
+        <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-5 space-y-1">
           <span class="text-xs font-bold text-[color:var(--muted)] uppercase">Total Words</span>
           <p id="word-count" class="text-3xl font-extrabold text-[color:var(--fg)]">0</p>
           <p class="text-[10px] text-[color:var(--muted)]">Resume Body Words</p>
         </div>
 
-        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 space-y-1">
+        <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-5 space-y-1">
           <span class="text-xs font-bold text-[color:var(--muted)] uppercase">Power Density</span>
           <p id="density-val" class="text-3xl font-extrabold text-purple-500">0%</p>
           <p class="text-[10px] text-[color:var(--muted)]">Verb to Word Ratio</p>
@@ -124,7 +124,7 @@ const schemaGraph = [
       </div>
 
       <!-- Identified Action Verbs Card -->
-      <div class="space-y-3 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 sm:p-6">
+      <div class="space-y-3 rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-5 sm:p-6">
         <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Detected Action Verbs &amp; Leadership Terms</span>
         <div id="verbs-tags" class="flex flex-wrap gap-2 pt-1 font-mono text-xs"></div>
       </div>
@@ -145,7 +145,7 @@ const schemaGraph = [
       <h2 class="text-xl font-bold text-[color:var(--fg)]">Frequently Asked Questions</h2>
       <div class="space-y-3">
         {schemaFaq.map((faq) => (
-          <details class="group rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
+          <details class="group rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
             <summary class="cursor-pointer list-none font-semibold text-sm sm:text-base text-[color:var(--fg)] flex items-center justify-between gap-4">
               <span>{faq.question}</span>
               <span class="text-xs text-[color:var(--muted)] group-open:rotate-180 transition-transform">▼</span>
@@ -216,9 +216,9 @@ const schemaGraph = [
           verbsTags.innerHTML = '<span class="text-xs text-[color:var(--muted)] italic">No strong action verbs detected yet. Try adding verbs like "Engineered", "Spearheaded", "Optimized".</span>';
         } else {
           verbsTags.innerHTML = Array.from(foundVerbs.entries()).map(([v, count]) => `
-            <span class="rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-3 py-1 font-semibold text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5">
+            <span class="rounded-none border border-emerald-500/30 bg-emerald-500/10 px-3 py-1 font-semibold text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5">
               <span>${v}</span>
-              ${count > 1 ? `<span class="rounded-full bg-emerald-500 text-white text-[9px] px-1.5 py-0.2">${count}x</span>` : ''}
+              ${count > 1 ? `<span class="rounded-none bg-emerald-500 text-white text-[9px] px-1.5 py-0.2">${count}x</span>` : ''}
             </span>
           `).join('');
         }

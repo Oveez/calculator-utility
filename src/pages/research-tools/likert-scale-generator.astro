@@ -125,10 +125,10 @@ const schemaGraph = [
 
     <div class="space-y-6">
       <!-- Controls Bar -->
-      <div class="grid gap-4 sm:grid-cols-3 rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-5 sm:p-6 text-xs">
+      <div class="grid gap-4 sm:grid-cols-3 rounded-none border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-5 sm:p-6 text-xs">
         <div>
           <label for="likert-dimension" class="font-bold text-[color:var(--fg)] block mb-1">Construct Dimension:</label>
-          <select id="likert-dimension" class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)]">
+          <select id="likert-dimension" class="w-full rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)]">
             <option value="agreement">Agreement (Agree &harr; Disagree)</option>
             <option value="satisfaction">Satisfaction (Satisfied &harr; Dissatisfied)</option>
             <option value="frequency">Frequency (Always &harr; Never)</option>
@@ -142,7 +142,7 @@ const schemaGraph = [
 
         <div>
           <label for="likert-points" class="font-bold text-[color:var(--fg)] block mb-1">Scale Granularity:</label>
-          <select id="likert-points" class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)]">
+          <select id="likert-points" class="w-full rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)]">
             <option value="5" selected>5-Point Scale (Standard Academic &amp; Research)</option>
             <option value="7">7-Point Scale (High Precision / Psychometrics)</option>
             <option value="4">4-Point Scale (Forced Choice — No Neutral Midpoint)</option>
@@ -152,7 +152,7 @@ const schemaGraph = [
 
         <div>
           <label for="likert-coding" class="font-bold text-[color:var(--fg)] block mb-1">Numerical Scoring Scheme:</label>
-          <select id="likert-coding" class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)]">
+          <select id="likert-coding" class="w-full rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)]">
             <option value="unipolar" selected>Unipolar Integers (1, 2, 3, 4, 5...)</option>
             <option value="bipolar">Centered Bipolar (-2, -1, 0, +1, +2)</option>
           </select>
@@ -160,7 +160,7 @@ const schemaGraph = [
       </div>
 
       <!-- Question Prompt Input -->
-      <div class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 sm:p-6 space-y-3">
+      <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-5 sm:p-6 space-y-3">
         <div class="flex items-center justify-between">
           <label for="question-prompt" class="text-xs font-bold uppercase tracking-wider text-[color:var(--fg)]">
             Survey Question / Statement Prompt:
@@ -170,7 +170,7 @@ const schemaGraph = [
         <textarea
           id="question-prompt"
           rows="3"
-          class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] p-3 font-sans text-xs sm:text-sm text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)]"
+          class="w-full rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] p-3 font-sans text-xs sm:text-sm text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)]"
         >The platform provides clear and actionable research insights.
 I found the user interface intuitive and easy to navigate.
 I would recommend this statistical tool to colleagues in academia.</textarea>
@@ -183,12 +183,12 @@ I would recommend this statistical tool to colleagues in academia.</textarea>
             <h2 class="text-lg font-bold text-[color:var(--fg)]">Interactive Survey Matrix Preview</h2>
             <p class="text-xs text-[color:var(--muted)]">Test respondent experience directly in this live preview</p>
           </div>
-          <span id="preview-badge" class="rounded-md bg-cyan-500/10 border border-emerald-500/30 px-2.5 py-1 text-xs font-mono text-cyan-500 dark:text-cyan-400 font-bold">
+          <span id="preview-badge" class="rounded-none bg-cyan-500/10 border border-emerald-500/30 px-2.5 py-1 text-xs font-mono text-cyan-500 dark:text-cyan-400 font-bold">
             5-Point Agreement Matrix
           </span>
         </div>
 
-        <div class="overflow-x-auto rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)]">
+        <div class="overflow-x-auto rounded-none border border-[color:var(--border)] bg-[color:var(--surface)]">
           <table class="w-full text-left text-xs" id="preview-table">
             <!-- Populated dynamically by JavaScript -->
           </table>
@@ -199,16 +199,16 @@ I would recommend this statistical tool to colleagues in academia.</textarea>
       <div class="space-y-4">
         <div class="flex flex-wrap items-center justify-between gap-3 border-b border-[color:var(--border)] pb-2 text-xs">
           <div class="flex flex-wrap gap-1.5" id="export-tabs">
-            <button type="button" class="export-tab active rounded-lg bg-[color:var(--accent)] px-3 py-1 font-bold text-white transition cursor-pointer" data-target="panel-csv">
+            <button type="button" class="export-tab active rounded-none bg-[color:var(--accent)] px-3 py-1 font-bold text-white transition cursor-pointer" data-target="panel-csv">
               CSV Questionnaire Template
             </button>
-            <button type="button" class="export-tab rounded-lg bg-[color:var(--surface)] border border-[color:var(--border)] px-3 py-1 font-bold text-[color:var(--muted)] hover:text-[color:var(--fg)] transition cursor-pointer" data-target="panel-html">
+            <button type="button" class="export-tab rounded-none bg-[color:var(--surface)] border border-[color:var(--border)] px-3 py-1 font-bold text-[color:var(--muted)] hover:text-[color:var(--fg)] transition cursor-pointer" data-target="panel-html">
               HTML &lt;form&gt; Snippet
             </button>
-            <button type="button" class="export-tab rounded-lg bg-[color:var(--surface)] border border-[color:var(--border)] px-3 py-1 font-bold text-[color:var(--muted)] hover:text-[color:var(--fg)] transition cursor-pointer" data-target="panel-md">
+            <button type="button" class="export-tab rounded-none bg-[color:var(--surface)] border border-[color:var(--border)] px-3 py-1 font-bold text-[color:var(--muted)] hover:text-[color:var(--fg)] transition cursor-pointer" data-target="panel-md">
               Markdown Table
             </button>
-            <button type="button" class="export-tab rounded-lg bg-[color:var(--surface)] border border-[color:var(--border)] px-3 py-1 font-bold text-[color:var(--muted)] hover:text-[color:var(--fg)] transition cursor-pointer" data-target="panel-json">
+            <button type="button" class="export-tab rounded-none bg-[color:var(--surface)] border border-[color:var(--border)] px-3 py-1 font-bold text-[color:var(--muted)] hover:text-[color:var(--fg)] transition cursor-pointer" data-target="panel-json">
               JSON Survey Schema
             </button>
           </div>
@@ -217,14 +217,14 @@ I would recommend this statistical tool to colleagues in academia.</textarea>
             <button
               type="button"
               id="copy-export-btn"
-              class="rounded-xl bg-[color:var(--accent)] px-3.5 py-1.5 text-xs font-bold text-white hover:opacity-90 transition cursor-pointer"
+              class="rounded-none bg-[color:var(--accent)] px-3.5 py-1.5 text-xs font-bold text-white hover:opacity-90 transition cursor-pointer"
             >
               Copy Export
             </button>
             <button
               type="button"
               id="dl-csv-btn"
-              class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1.5 text-xs font-bold text-[color:var(--fg)] hover:border-emerald-500 transition cursor-pointer"
+              class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1.5 text-xs font-bold text-[color:var(--fg)] hover:border-emerald-500 transition cursor-pointer"
             >
               Download .csv
             </button>
@@ -232,7 +232,7 @@ I would recommend this statistical tool to colleagues in academia.</textarea>
         </div>
 
         <div class="relative">
-          <pre id="export-code" class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-4 font-mono text-xs text-[color:var(--fg)] overflow-x-auto whitespace-pre-wrap select-all max-h-72"></pre>
+          <pre id="export-code" class="w-full rounded-none border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-4 font-mono text-xs text-[color:var(--fg)] overflow-x-auto whitespace-pre-wrap select-all max-h-72"></pre>
         </div>
       </div>
     </div>
@@ -284,7 +284,7 @@ I would recommend this statistical tool to colleagues in academia.</textarea>
       <h2 class="text-xl font-bold text-[color:var(--fg)]">Frequently Asked Questions</h2>
       <div class="space-y-3">
         {schemaFaq.map((faq) => (
-          <details class="group rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
+          <details class="group rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
             <summary class="cursor-pointer list-none font-semibold text-sm sm:text-base text-[color:var(--fg)] flex items-center justify-between gap-4">
               <span>{faq.question}</span>
               <span class="text-xs text-[color:var(--muted)] group-open:rotate-180 transition-transform">&blacktriangledown;</span>

@@ -158,35 +158,35 @@ const workedExampleData = {
 
     <!-- Metrics Summary Bar -->
     <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-      <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-center shadow-xs">
+      <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-center shadow-xs">
         <span class="block text-[11px] font-bold uppercase tracking-wider text-[color:var(--muted)]">Characters Cleaned</span>
         <span id="stat-chars-diff" class="mt-1 block text-xl sm:text-2xl font-black text-rose-600 dark:text-rose-400 font-mono">0</span>
       </div>
-      <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-center shadow-xs">
+      <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-center shadow-xs">
         <span class="block text-[11px] font-bold uppercase tracking-wider text-[color:var(--muted)]">Words Out</span>
         <span id="stat-words-out" class="mt-1 block text-xl sm:text-2xl font-black text-cyan-600 dark:text-cyan-400 dark:text-cyan-400 font-mono">0</span>
       </div>
-      <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-center shadow-xs">
+      <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-center shadow-xs">
         <span class="block text-[11px] font-bold uppercase tracking-wider text-[color:var(--muted)]">Lines Out</span>
         <span id="stat-lines-out" class="mt-1 block text-xl sm:text-2xl font-black text-[color:var(--fg)] font-mono">0</span>
       </div>
-      <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-center shadow-xs">
+      <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-center shadow-xs">
         <span class="block text-[11px] font-bold uppercase tracking-wider text-[color:var(--muted)]">Rules Active</span>
         <span id="stat-rules-active" class="mt-1 block text-xl sm:text-2xl font-black text-[color:var(--accent)] font-mono">0</span>
       </div>
     </div>
 
     <!-- Presets & Controls Panel -->
-    <div class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 sm:p-6 space-y-4 shadow-sm">
+    <div class="py-4 border-b border-[color:var(--border)] space-y-4">
       <!-- One-Click Presets -->
       <div class="flex flex-wrap items-center justify-between gap-3 border-b border-[color:var(--border)] pb-3 text-xs">
         <span class="font-bold text-[color:var(--fg)]">Quick Presets:</span>
         <div class="flex flex-wrap items-center gap-2">
-          <button type="button" data-preset="web" class="preset-btn cursor-pointer rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] px-3 py-1 font-semibold text-[color:var(--fg)] hover:border-[color:var(--accent)] transition">Web Copy Clean</button>
-          <button type="button" data-preset="code" class="preset-btn cursor-pointer rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] px-3 py-1 font-semibold text-[color:var(--fg)] hover:border-[color:var(--accent)] transition">Code &amp; Logs</button>
-          <button type="button" data-preset="ascii" class="preset-btn cursor-pointer rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] px-3 py-1 font-semibold text-[color:var(--fg)] hover:border-[color:var(--accent)] transition">ASCII Only</button>
-          <button type="button" data-preset="all" class="preset-btn cursor-pointer rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] px-3 py-1 font-semibold text-[color:var(--fg)] hover:border-[color:var(--accent)] transition">Select All</button>
-          <button type="button" data-preset="none" class="preset-btn cursor-pointer rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] px-3 py-1 font-semibold text-rose-500 hover:border-rose-300 transition">Deselect All</button>
+          <button type="button" data-preset="web" class="preset-btn cursor-pointer rounded-none border border-[color:var(--border)] bg-[color:var(--surface-strong)] px-3 py-1 font-semibold text-[color:var(--fg)] hover:border-[color:var(--accent)] transition">Web Copy Clean</button>
+          <button type="button" data-preset="code" class="preset-btn cursor-pointer rounded-none border border-[color:var(--border)] bg-[color:var(--surface-strong)] px-3 py-1 font-semibold text-[color:var(--fg)] hover:border-[color:var(--accent)] transition">Code &amp; Logs</button>
+          <button type="button" data-preset="ascii" class="preset-btn cursor-pointer rounded-none border border-[color:var(--border)] bg-[color:var(--surface-strong)] px-3 py-1 font-semibold text-[color:var(--fg)] hover:border-[color:var(--accent)] transition">ASCII Only</button>
+          <button type="button" data-preset="all" class="preset-btn cursor-pointer rounded-none border border-[color:var(--border)] bg-[color:var(--surface-strong)] px-3 py-1 font-semibold text-[color:var(--fg)] hover:border-[color:var(--accent)] transition">Select All</button>
+          <button type="button" data-preset="none" class="preset-btn cursor-pointer rounded-none border border-[color:var(--border)] bg-[color:var(--surface-strong)] px-3 py-1 font-semibold text-rose-500 hover:border-rose-300 transition">Deselect All</button>
         </div>
       </div>
 
@@ -262,7 +262,7 @@ const workedExampleData = {
         <textarea
           id="text-in"
           rows="15"
-          class="w-full font-mono text-xs leading-relaxed rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-[color:var(--fg)] focus:border-[color:var(--accent)] focus:outline-hidden transition shadow-inner"
+          class="w-full font-mono text-xs leading-relaxed rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-[color:var(--fg)] focus:border-[color:var(--accent)] focus:outline-hidden transition shadow-inner"
           placeholder="Paste messy text with HTML tags, smart quotes, or extra spaces here..."
         ></textarea>
       </div>
@@ -278,7 +278,7 @@ const workedExampleData = {
             <button
               type="button"
               id="btn-copy"
-              class="inline-flex cursor-pointer items-center gap-1.5 rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1.5 text-xs font-bold text-[color:var(--fg)] shadow-xs transition hover:bg-[color:var(--surface-strong)]"
+              class="inline-flex cursor-pointer items-center gap-1.5 rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1.5 text-xs font-bold text-[color:var(--fg)] shadow-xs transition hover:bg-[color:var(--surface-strong)]"
             >
               <Icon name="copy" class="w-3.5 h-3.5" />
               <span id="copy-label">Copy</span>
@@ -286,7 +286,7 @@ const workedExampleData = {
             <button
               type="button"
               id="btn-download"
-              class="inline-flex cursor-pointer items-center gap-1.5 rounded-xl bg-[color:var(--accent)] px-3 py-1.5 text-xs font-bold text-white shadow-xs transition hover:opacity-90"
+              class="inline-flex cursor-pointer items-center gap-1.5 rounded-none bg-[color:var(--accent)] px-3 py-1.5 text-xs font-bold text-white shadow-xs transition hover:opacity-90"
             >
               <span>Download .txt</span>
             </button>
@@ -296,7 +296,7 @@ const workedExampleData = {
           id="text-out"
           rows="15"
           readonly
-          class="w-full font-mono text-xs leading-relaxed rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-4 text-[color:var(--fg)] focus:outline-hidden transition shadow-inner"
+          class="w-full font-mono text-xs leading-relaxed rounded-none border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-4 text-[color:var(--fg)] focus:outline-hidden transition shadow-inner"
           placeholder="Clean sanitized text will appear here in real-time..."
         ></textarea>
       </div>
@@ -325,7 +325,7 @@ const workedExampleData = {
       <h2 class="text-xl font-bold text-[color:var(--fg)]">Frequently Asked Questions</h2>
       <div class="space-y-3">
         {schemaFaq.map((faq) => (
-          <details class="group rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
+          <details class="group rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
             <summary class="cursor-pointer list-none font-semibold text-sm sm:text-base text-[color:var(--fg)] flex items-center justify-between gap-4">
               <span>{faq.question}</span>
               <span class="text-xs text-[color:var(--muted)] group-open:rotate-180 transition-transform">▼</span>

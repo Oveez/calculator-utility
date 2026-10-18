@@ -83,7 +83,7 @@ const schemaGraph = [
 
 
     <div class="space-y-6">
-      <div class="grid gap-4 sm:grid-cols-3 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 text-xs">
+      <div class="grid gap-4 sm:grid-cols-3 rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-5 text-xs">
         <div>
           <label for="exam-rows" class="font-bold text-[color:var(--fg)] block mb-1">Hall Rows:</label>
           <input
@@ -91,7 +91,7 @@ const schemaGraph = [
             id="exam-rows"
             min="2"
             max="12"
-            class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-[color:var(--fg)]" placeholder="e.g. 5" />
+            class="w-full rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-[color:var(--fg)]" placeholder="e.g. 5" />
         </div>
         <div>
           <label for="exam-cols" class="font-bold text-[color:var(--fg)] block mb-1">Hall Columns:</label>
@@ -100,11 +100,11 @@ const schemaGraph = [
             id="exam-cols"
             min="2"
             max="12"
-            class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-[color:var(--fg)]" placeholder="e.g. 6" />
+            class="w-full rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-[color:var(--fg)]" placeholder="e.g. 6" />
         </div>
         <div>
           <label for="spacing-mode" class="font-bold text-[color:var(--fg)] block mb-1">Spacing Mode:</label>
-          <select id="spacing-mode" class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-[color:var(--fg)]">
+          <select id="spacing-mode" class="w-full rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-[color:var(--fg)]">
             <option value="checkerboard">Checkerboard (Every Other Seat)</option>
             <option value="sequential">Sequential (Fill Every Desk)</option>
           </select>
@@ -116,7 +116,7 @@ const schemaGraph = [
         <textarea
           id="students-in"
           rows="6"
-          class="w-full font-mono text-xs leading-relaxed rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-[color:var(--fg)] focus:border-[color:var(--border-strong)] focus:outline-hidden"
+          class="w-full font-mono text-xs leading-relaxed rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-[color:var(--fg)] focus:border-[color:var(--border-strong)] focus:outline-hidden"
           placeholder="Roll No 101&#10;Roll No 102"
         >ROLL-101
 ROLL-102
@@ -138,15 +138,15 @@ ROLL-115</textarea>
       <button
         type="button"
         id="gen-exam-btn"
-        class="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-[color:var(--accent)] py-2.5 text-xs font-bold text-white shadow-xs transition hover:opacity-90 cursor-pointer"
+        class="w-full inline-flex items-center justify-center gap-2 rounded-none bg-[color:var(--accent)] py-2.5 text-xs font-bold text-white shadow-xs transition hover:opacity-90 cursor-pointer"
       >
         <Icon name="education" class="w-4 h-4" />
         <span>Generate Exam Hall Layout</span>
       </button>
 
       <!-- Grid Visualizer -->
-      <div class="space-y-4 rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 sm:p-8">
-        <div class="rounded-xl bg-[color:var(--surface-strong)] py-2 text-center text-xs font-bold text-[color:var(--muted)] uppercase tracking-wider">
+      <div class="space-y-4 rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-6 sm:p-8">
+        <div class="rounded-none bg-[color:var(--surface-strong)] py-2 text-center text-xs font-bold text-[color:var(--muted)] uppercase tracking-wider">
           Invigilator Stage / Board
         </div>
 
@@ -169,7 +169,7 @@ ROLL-115</textarea>
       <h2 class="text-xl font-bold text-[color:var(--fg)]">Frequently Asked Questions</h2>
       <div class="space-y-3">
         {schemaFaq.map((faq) => (
-          <details class="group rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
+          <details class="group rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
             <summary class="cursor-pointer list-none font-semibold text-sm sm:text-base text-[color:var(--fg)] flex items-center justify-between gap-4">
               <span>{faq.question}</span>
               <span class="text-xs text-[color:var(--muted)] group-open:rotate-180 transition-transform">▼</span>
@@ -223,14 +223,14 @@ ROLL-115</textarea>
             if (isSeatAllowed && studentIdx < candidates.length) {
               const name = candidates[studentIdx++];
               cells.push(`
-                <div class="flex flex-col items-center justify-center rounded-xl border border-emerald-500/40 bg-cyan-500/10 p-2.5 text-center">
+                <div class="flex flex-col items-center justify-center rounded-none border border-emerald-500/40 bg-cyan-500/10 p-2.5 text-center">
                   <span class="text-[9px] font-mono text-cyan-600 dark:text-cyan-400 dark:text-cyan-400 font-bold">Desk R${r+1}C${c+1}</span>
                   <span class="text-xs font-extrabold text-[color:var(--fg)] truncate w-full mt-0.5">${name}</span>
                 </div>
               `);
             } else {
               cells.push(`
-                <div class="flex flex-col items-center justify-center rounded-xl border border-dashed border-[color:var(--border)] bg-[color:var(--surface-strong)]/40 p-2.5 text-center opacity-30">
+                <div class="flex flex-col items-center justify-center rounded-none border border-dashed border-[color:var(--border)] bg-[color:var(--surface-strong)]/40 p-2.5 text-center opacity-30">
                   <span class="text-[9px] font-mono text-[color:var(--muted)]">R${r+1}C${c+1}</span>
                   <span class="text-[10px] italic text-[color:var(--muted)]">Empty</span>
                 </div>

@@ -137,11 +137,11 @@ const workedExampleData = {
 
 
     <!-- Control Options Panel -->
-    <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5 space-y-4">
+    <div class="py-4 border-b border-[color:var(--border)] space-y-4">
       <div class="grid gap-4 sm:grid-cols-2 md:grid-cols-4 text-xs">
         <div>
           <label for="opt-links" class="block font-bold text-[color:var(--fg)] mb-1.5">Link Handling</label>
-          <select id="opt-links" class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-[color:var(--fg)]">
+          <select id="opt-links" class="w-full rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-[color:var(--fg)]">
             <option value="inline">Inline URL: Text (https://...)</option>
             <option value="strip">Strip Links: Keep Text Only</option>
             <option value="markdown">Markdown: [Text](https://...)</option>
@@ -151,7 +151,7 @@ const workedExampleData = {
 
         <div>
           <label for="opt-headings" class="block font-bold text-[color:var(--fg)] mb-1.5">Heading Style</label>
-          <select id="opt-headings" class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-[color:var(--fg)]">
+          <select id="opt-headings" class="w-full rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-[color:var(--fg)]">
             <option value="markdown">Markdown (# H1, ## H2)</option>
             <option value="uppercase">UPPERCASE Headings</option>
             <option value="underline">Underline Divider (=== / ---)</option>
@@ -161,7 +161,7 @@ const workedExampleData = {
 
         <div>
           <label for="opt-tables" class="block font-bold text-[color:var(--fg)] mb-1.5">Table Rendering</label>
-          <select id="opt-tables" class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-[color:var(--fg)]">
+          <select id="opt-tables" class="w-full rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-[color:var(--fg)]">
             <option value="ascii">ASCII Border Table</option>
             <option value="tsv">Tab-Separated (TSV for Excel)</option>
             <option value="csv">Comma-Separated (CSV)</option>
@@ -171,7 +171,7 @@ const workedExampleData = {
 
         <div>
           <label for="opt-lists" class="block font-bold text-[color:var(--fg)] mb-1.5">List Style</label>
-          <select id="opt-lists" class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-[color:var(--fg)]">
+          <select id="opt-lists" class="w-full rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-[color:var(--fg)]">
             <option value="bullet">Bullet Points (•)</option>
             <option value="dash">Hyphen Dash (-)</option>
             <option value="asterisk">Asterisk (*)</option>
@@ -208,19 +208,19 @@ const workedExampleData = {
 
     <!-- Live Statistics Bar -->
     <div class="grid grid-cols-2 gap-3 sm:grid-cols-4 text-center">
-      <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3">
+      <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-3">
         <div class="text-[11px] font-bold uppercase tracking-wider text-[color:var(--muted)]">Source HTML</div>
         <div id="stat-html-chars" class="text-xl font-extrabold text-[color:var(--fg)] mt-1">0 chars</div>
       </div>
-      <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3">
+      <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-3">
         <div class="text-[11px] font-bold uppercase tracking-wider text-[color:var(--muted)]">Plain Text Words</div>
         <div id="stat-words" class="text-xl font-extrabold text-[color:var(--fg)] mt-1">0 words</div>
       </div>
-      <div class="rounded-2xl border border-cyan-500/20 bg-emerald-500/5 p-3">
+      <div class="rounded-none border border-cyan-500/20 bg-emerald-500/5 p-3">
         <div class="text-[11px] font-bold uppercase tracking-wider text-cyan-600 dark:text-cyan-400 dark:text-cyan-400">Size Reduction</div>
         <div id="stat-reduction" class="text-xl font-extrabold text-cyan-600 dark:text-cyan-400 dark:text-cyan-400 mt-1">0%</div>
       </div>
-      <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3">
+      <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-3">
         <div class="text-[11px] font-bold uppercase tracking-wider text-[color:var(--muted)]">Extracted Lines</div>
         <div id="stat-lines" class="text-xl font-extrabold text-[color:var(--fg)] mt-1">0 lines</div>
       </div>
@@ -242,7 +242,7 @@ const workedExampleData = {
         <textarea
           id="html-in"
           rows="18"
-          class="w-full font-mono text-xs leading-relaxed rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-[color:var(--fg)] focus:border-[color:var(--accent)] focus:outline-hidden transition shadow-inner"
+          class="w-full font-mono text-xs leading-relaxed rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-[color:var(--fg)] focus:border-[color:var(--accent)] focus:outline-hidden transition shadow-inner"
           placeholder="Paste HTML source code here..."
         ></textarea>
       </div>
@@ -255,14 +255,14 @@ const workedExampleData = {
             <button
               type="button"
               id="btn-copy"
-              class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1 text-xs font-bold text-[color:var(--fg)] hover:border-[color:var(--accent)] transition cursor-pointer"
+              class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1 text-xs font-bold text-[color:var(--fg)] hover:border-[color:var(--accent)] transition cursor-pointer"
             >
               <Icon name="copy" class="w-3.5 h-3.5" /><span>Copy Text</span>
             </button>
             <button
               type="button"
               id="btn-download"
-              class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1 text-xs font-bold text-[color:var(--fg)] hover:border-[color:var(--accent)] transition cursor-pointer"
+              class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1 text-xs font-bold text-[color:var(--fg)] hover:border-[color:var(--accent)] transition cursor-pointer"
             >
               <Icon name="download" class="w-3.5 h-3.5" /><span>Download .txt</span>
             </button>
@@ -272,7 +272,7 @@ const workedExampleData = {
           id="text-out"
           rows="18"
           readonly
-          class="w-full font-mono text-xs leading-relaxed rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-4 text-[color:var(--fg)] focus:outline-hidden"
+          class="w-full font-mono text-xs leading-relaxed rounded-none border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-4 text-[color:var(--fg)] focus:outline-hidden"
           placeholder="Clean extracted text will appear here..."
         ></textarea>
       </div>
@@ -301,7 +301,7 @@ const workedExampleData = {
       <h2 class="text-xl font-bold text-[color:var(--fg)]">Frequently Asked Questions</h2>
       <div class="space-y-3">
         {schemaFaq.map((faq) => (
-          <details class="group rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
+          <details class="group rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
             <summary class="cursor-pointer list-none font-semibold text-sm sm:text-base text-[color:var(--fg)] flex items-center justify-between gap-4">
               <span>{faq.question}</span>
               <span class="text-xs text-[color:var(--muted)] group-open:rotate-180 transition-transform">▼</span>

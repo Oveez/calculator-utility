@@ -10,12 +10,12 @@ interface Props {
 const { profile, id = 'tax-year-select', class: className = '' } = Astro.props;
 ---
 
-<div class={`flex items-center gap-1.5 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-1 ${className}`}>
+<div class={`flex items-center gap-1.5 rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-1 ${className}`}>
   <label for={id} class="sr-only">Tax Year</label>
   <span class="pl-2 text-xs font-medium text-[color:var(--muted)]">Year:</span>
   <select
     id={id}
-    class="cursor-pointer rounded-xl bg-transparent px-2.5 py-1 text-xs font-bold text-[color:var(--fg)] outline-none focus:ring-1 focus:ring-[color:var(--accent)]"
+    class="cursor-pointer rounded-none bg-transparent px-2.5 py-1 text-xs font-bold text-[color:var(--fg)] outline-none focus:ring-1 focus:ring-[color:var(--accent)]"
     data-tax-year
   >
     {profile.availableTaxYears.map((yr) => (

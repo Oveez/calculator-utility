@@ -91,7 +91,7 @@ const schemaGraph = [
         <textarea
           id="jd-text"
           rows="8"
-          class="w-full font-mono text-xs leading-relaxed rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-[color:var(--fg)] focus:border-[color:var(--border-strong)] focus:outline-hidden"
+          class="w-full font-mono text-xs leading-relaxed rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-[color:var(--fg)] focus:border-[color:var(--border-strong)] focus:outline-hidden"
           placeholder="Paste job posting text here..."
         >We are seeking a Senior Full-Stack Engineer with 4+ years of experience in React, TypeScript, and Node.js. The ideal candidate has deep expertise with PostgreSQL, Redis, Docker, and AWS infrastructure (ECS, Lambda, S3). Strong understanding of REST APIs, GraphQL, automated testing (Jest, Cypress), and CI/CD pipelines is required. Experience with agile methodologies, Git, and Kubernetes is a plus.</textarea>
       </div>
@@ -124,7 +124,7 @@ const schemaGraph = [
       <h2 class="text-xl font-bold text-[color:var(--fg)]">Frequently Asked Questions</h2>
       <div class="space-y-3">
         {schemaFaq.map((faq) => (
-          <details class="group rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
+          <details class="group rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
             <summary class="cursor-pointer list-none font-semibold text-sm sm:text-base text-[color:var(--fg)] flex items-center justify-between gap-4">
               <span>{faq.question}</span>
               <span class="text-xs text-[color:var(--muted)] group-open:rotate-180 transition-transform">▼</span>
@@ -175,9 +175,9 @@ const schemaGraph = [
         }
 
         kwTags.innerHTML = sorted.map(([kw, count]) => `
-          <span class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1.5 font-semibold text-[color:var(--fg)] flex items-center gap-1.5">
+          <span class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1.5 font-semibold text-[color:var(--fg)] flex items-center gap-1.5">
             <span>${kw}</span>
-            <span class="rounded-full bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-[10px] px-1.5 py-0.2 font-mono">${count}x</span>
+            <span class="rounded-none bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-[10px] px-1.5 py-0.2 font-mono">${count}x</span>
           </span>
         `).join('');
       }

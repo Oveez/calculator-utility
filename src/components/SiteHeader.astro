@@ -146,7 +146,7 @@ const headerCategoriesWithTools = navCategories.map((cat) => {
     }
   }
 
-  /* Dropdown behavior on hover and focus */
+  /* Keep dropdowns open only while the pointer is over the trigger or pane. */
   .nav-dropdown-pane {
     opacity: 0;
     visibility: hidden;
@@ -155,28 +155,45 @@ const headerCategoriesWithTools = navCategories.map((cat) => {
     pointer-events: none;
   }
 
-  .nav-dropdown-item:hover .nav-dropdown-pane,
-  .nav-dropdown-item:focus-within .nav-dropdown-pane {
+  .nav-dropdown-item:hover .nav-dropdown-pane {
     opacity: 1;
     visibility: visible;
     transform: translateY(0);
     pointer-events: auto;
   }
 
-  .nav-dropdown-item:hover .nav-trigger-btn,
-  .nav-dropdown-item:focus-within .nav-trigger-btn {
+  .nav-dropdown-item:hover .nav-trigger-btn {
     color: var(--accent);
   }
 
-  .nav-dropdown-item:hover .chevron-icon,
-  .nav-dropdown-item:focus-within .chevron-icon {
+  .nav-dropdown-item:hover .chevron-icon {
     transform: rotate(180deg);
     color: var(--accent);
   }
 
-  .nav-action-icon:hover {
+  .nav-action-icon:hover,
+  .nav-action-icon:focus-visible {
     background-color: var(--accent);
-    color: #fff;
+    color: #fff !important;
+    border-radius: 9999px !important;
+  }
+
+  .nav-action-icon:hover svg,
+  .nav-action-icon:focus-visible svg {
+    color: #fff !important;
+    stroke: #fff !important;
+  }
+
+  /* Keep hamburger menu and search icon hover/focus cursor placing effect circular */
+  .nav-action-icon,
+  .nav-action-icon:focus-visible {
+    border-radius: 9999px !important;
+    overflow: hidden;
+  }
+
+  .nav-action-icon:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
   }
 
   /* Keep tool labels legible and consistently accent-colored when highlighted. */

@@ -83,26 +83,26 @@ const schemaGraph = [
 
 
     <div class="space-y-6">
-      <div class="grid gap-4 sm:grid-cols-2 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 text-xs">
+      <div class="grid gap-4 sm:grid-cols-2 rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-5 text-xs">
         <div>
           <label for="fg-color" class="font-bold text-[color:var(--fg)] block mb-1">Text / Foreground Color:</label>
           <div class="flex items-center gap-2">
-            <input type="color" id="fg-picker" value="#111827" class="h-9 w-12 rounded-xl border border-[color:var(--border)] cursor-pointer bg-transparent" />
-            <input type="text" id="fg-hex" value="#111827" class="flex-1 rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-[color:var(--fg)] uppercase" />
+            <input type="color" id="fg-picker" value="#111827" class="h-9 w-12 rounded-none border border-[color:var(--border)] cursor-pointer bg-transparent" />
+            <input type="text" id="fg-hex" value="#111827" class="flex-1 rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-[color:var(--fg)] uppercase" />
           </div>
         </div>
 
         <div>
           <label for="bg-color" class="font-bold text-[color:var(--fg)] block mb-1">Background Color:</label>
           <div class="flex items-center gap-2">
-            <input type="color" id="bg-picker" value="#FFFFFF" class="h-9 w-12 rounded-xl border border-[color:var(--border)] cursor-pointer bg-transparent" />
-            <input type="text" id="bg-hex" value="#FFFFFF" class="flex-1 rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-[color:var(--fg)] uppercase" />
+            <input type="color" id="bg-picker" value="#FFFFFF" class="h-9 w-12 rounded-none border border-[color:var(--border)] cursor-pointer bg-transparent" />
+            <input type="text" id="bg-hex" value="#FFFFFF" class="flex-1 rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-[color:var(--fg)] uppercase" />
           </div>
         </div>
       </div>
 
       <!-- Live Visual Preview Box -->
-      <div id="preview-box" class="rounded-3xl border border-[color:var(--border)] p-6 sm:p-10 text-center space-y-3 transition-colors">
+      <div id="preview-box" class="rounded-none border border-[color:var(--border)] p-6 sm:p-10 text-center space-y-3 transition-colors">
         <p class="text-3xl sm:text-4xl font-black">Contrast Ratio: <span id="ratio-num">16.1:1</span></p>
         <p class="text-base sm:text-lg font-bold">The quick brown fox jumps over the lazy dog.</p>
         <p class="text-xs max-w-lg mx-auto opacity-90">Sample regular paragraph copy text to verify legibility and readability across different screen calibrations.</p>
@@ -110,22 +110,22 @@ const schemaGraph = [
 
       <!-- WCAG Badge Grid -->
       <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 text-center">
-        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 space-y-1">
+        <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-4 space-y-1">
           <span class="text-xs text-[color:var(--muted)] font-medium">Normal Text (AA)</span>
           <p id="badge-aa-norm" class="text-lg font-extrabold text-cyan-500 dark:text-cyan-400">PASS</p>
           <p class="text-[10px] text-[color:var(--muted)]">Required: 4.5:1</p>
         </div>
-        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 space-y-1">
+        <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-4 space-y-1">
           <span class="text-xs text-[color:var(--muted)] font-medium">Large Text (AA)</span>
           <p id="badge-aa-lg" class="text-lg font-extrabold text-cyan-500 dark:text-cyan-400">PASS</p>
           <p class="text-[10px] text-[color:var(--muted)]">Required: 3.0:1</p>
         </div>
-        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 space-y-1">
+        <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-4 space-y-1">
           <span class="text-xs text-[color:var(--muted)] font-medium">Normal Text (AAA)</span>
           <p id="badge-aaa-norm" class="text-lg font-extrabold text-cyan-500 dark:text-cyan-400">PASS</p>
           <p class="text-[10px] text-[color:var(--muted)]">Required: 7.0:1</p>
         </div>
-        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 space-y-1">
+        <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-4 space-y-1">
           <span class="text-xs text-[color:var(--muted)] font-medium">Large Text (AAA)</span>
           <p id="badge-aaa-lg" class="text-lg font-extrabold text-cyan-500 dark:text-cyan-400">PASS</p>
           <p class="text-[10px] text-[color:var(--muted)]">Required: 4.5:1</p>
@@ -148,7 +148,7 @@ const schemaGraph = [
       <h2 class="text-xl font-bold text-[color:var(--fg)]">Frequently Asked Questions</h2>
       <div class="space-y-3">
         {schemaFaq.map((faq) => (
-          <details class="group rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
+          <details class="group rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
             <summary class="cursor-pointer list-none font-semibold text-sm sm:text-base text-[color:var(--fg)] flex items-center justify-between gap-4">
               <span>{faq.question}</span>
               <span class="text-xs text-[color:var(--muted)] group-open:rotate-180 transition-transform">▼</span>

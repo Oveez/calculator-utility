@@ -84,17 +84,17 @@ const schemaGraph = [
 
     <div class="space-y-6">
       <!-- Live Preview Hero -->
-      <div id="gradient-hero" class="h-64 sm:h-80 w-full rounded-3xl border border-[color:var(--border)] shadow-md transition-all flex items-center justify-center">
-        <div class="rounded-2xl bg-black/40 backdrop-blur-md px-6 py-3 text-white text-sm font-bold shadow-lg">
+      <div id="gradient-hero" class="h-64 sm:h-80 w-full rounded-none border border-[color:var(--border)] shadow-md transition-all flex items-center justify-center">
+        <div class="rounded-none bg-black/40 backdrop-blur-md px-6 py-3 text-white text-sm font-bold shadow-lg">
           Live CSS Gradient Preview
         </div>
       </div>
 
       <!-- Controls -->
-      <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 text-xs">
+      <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-5 text-xs">
         <div>
           <label for="grad-type" class="font-bold text-[color:var(--fg)] block mb-1">Gradient Type:</label>
-          <select id="grad-type" class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-[color:var(--fg)]">
+          <select id="grad-type" class="w-full rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-[color:var(--fg)]">
             <option value="linear">Linear Gradient</option>
             <option value="radial">Radial (Circle)</option>
           </select>
@@ -111,22 +111,22 @@ const schemaGraph = [
         <div>
           <label for="col-1" class="font-bold text-[color:var(--fg)] block mb-1">Color 1:</label>
           <div class="flex items-center gap-2">
-            <input type="color" id="col-1-picker" value="#3B82F6" class="h-8 w-10 rounded-lg cursor-pointer bg-transparent border border-[color:var(--border)]" />
-            <input type="text" id="col-1" value="#3B82F6" class="flex-1 rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-2.5 py-1.5 font-mono text-[color:var(--fg)] uppercase" />
+            <input type="color" id="col-1-picker" value="#3B82F6" class="h-8 w-10 rounded-none cursor-pointer bg-transparent border border-[color:var(--border)]" />
+            <input type="text" id="col-1" value="#3B82F6" class="flex-1 rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-2.5 py-1.5 font-mono text-[color:var(--fg)] uppercase" />
           </div>
         </div>
 
         <div>
           <label for="col-2" class="font-bold text-[color:var(--fg)] block mb-1">Color 2:</label>
           <div class="flex items-center gap-2">
-            <input type="color" id="col-2-picker" value="#9333EA" class="h-8 w-10 rounded-lg cursor-pointer bg-transparent border border-[color:var(--border)]" />
-            <input type="text" id="col-2" value="#9333EA" class="flex-1 rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-2.5 py-1.5 font-mono text-[color:var(--fg)] uppercase" />
+            <input type="color" id="col-2-picker" value="#9333EA" class="h-8 w-10 rounded-none cursor-pointer bg-transparent border border-[color:var(--border)]" />
+            <input type="text" id="col-2" value="#9333EA" class="flex-1 rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-2.5 py-1.5 font-mono text-[color:var(--fg)] uppercase" />
           </div>
         </div>
       </div>
 
       <!-- Copy CSS Code Card -->
-      <div class="space-y-3 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 sm:p-6">
+      <div class="space-y-3 rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-5 sm:p-6">
         <div class="flex items-center justify-between">
           <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Generated CSS Code</span>
           <button type="button" data-copy-css class="inline-flex items-center gap-1 text-xs font-bold text-[color:var(--fg)] hover:underline">
@@ -134,7 +134,7 @@ const schemaGraph = [
             <span>Copy CSS</span>
           </button>
         </div>
-        <pre id="css-out" class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-4 font-mono text-xs font-bold text-cyan-500 dark:text-cyan-400 overflow-x-auto select-all">-</pre>
+        <pre id="css-out" class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-4 font-mono text-xs font-bold text-cyan-500 dark:text-cyan-400 overflow-x-auto select-all">-</pre>
       </div>
     </div>
 
@@ -153,7 +153,7 @@ const schemaGraph = [
       <h2 class="text-xl font-bold text-[color:var(--fg)]">Frequently Asked Questions</h2>
       <div class="space-y-3">
         {schemaFaq.map((faq) => (
-          <details class="group rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
+          <details class="group rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
             <summary class="cursor-pointer list-none font-semibold text-sm sm:text-base text-[color:var(--fg)] flex items-center justify-between gap-4">
               <span>{faq.question}</span>
               <span class="text-xs text-[color:var(--muted)] group-open:rotate-180 transition-transform">▼</span>

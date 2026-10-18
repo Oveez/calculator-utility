@@ -8,7 +8,7 @@ interface Props {
 const { initialResult, category, inputsCount } = Astro.props as Props;
 ---
 
-<aside class="flex flex-col justify-between border-t border-[color:var(--border)] bg-[color:var(--surface-strong)]/40 p-4 sm:p-6 lg:border-l lg:border-t-0" data-calculator-result-card>
+<aside class="space-y-6" data-calculator-result-card>
   <div class="space-y-6">
     <!-- Primary Result Card -->
     <div>
@@ -16,7 +16,7 @@ const { initialResult, category, inputsCount } = Astro.props as Props;
         <p class="text-xs font-bold uppercase tracking-[0.2em] text-[color:var(--accent)]" data-primary-label>Result</p>
         <button
           type="button"
-          class="inline-flex items-center gap-1.5 rounded-lg border border-[color:var(--border)] bg-[color:var(--surface)] px-2.5 py-1 text-xs font-semibold text-[color:var(--fg)] shadow-xs transition hover:border-[color:var(--border-strong)] hover:bg-[color:var(--surface-strong)] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[color:var(--accent)] cursor-pointer"
+          class="inline-flex items-center gap-1.5 rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] px-2.5 py-1 text-xs font-semibold text-[color:var(--fg)] shadow-none transition hover:border-[color:var(--border-strong)] hover:bg-[color:var(--surface-strong)] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[color:var(--accent)] cursor-pointer"
           data-copy-result
           aria-label="Copy result to clipboard"
         >
@@ -28,7 +28,7 @@ const { initialResult, category, inputsCount } = Astro.props as Props;
         </button>
       </div>
 
-      <div class="mt-3 rounded-lg border border-[color:var(--border-strong)] bg-[color:var(--surface)] p-5 shadow-xs transition-all relative overflow-hidden" data-result-box>
+      <div class="mt-3 rounded-none border border-[color:var(--border-strong)] bg-[color:var(--surface)] p-5 shadow-none transition-all relative overflow-hidden" data-result-box>
         <p class="text-[11px] font-bold uppercase tracking-wider text-[color:var(--muted)]" data-primary-subtext>Calculated Output</p>
         <output
           class="mt-2 block break-words text-3xl sm:text-4xl font-black tracking-tight text-[color:var(--accent)] transition-all"
@@ -49,13 +49,13 @@ const { initialResult, category, inputsCount } = Astro.props as Props;
     </div>
 
     <!-- Visual Breakdown Progress Meter (Populated dynamically for split/composition results) -->
-    <div class="hidden space-y-2.5 rounded-lg border border-[color:var(--border)] bg-[color:var(--bg)] p-3.5" data-breakdown-container>
+    <div class="hidden space-y-2.5 rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] p-3.5" data-breakdown-container>
       <div class="flex items-center justify-between text-xs font-semibold text-[color:var(--fg)]">
         <span>Composition Breakdown</span>
         <span class="text-[color:var(--muted)]" data-breakdown-summary></span>
       </div>
       <!-- Multi-segment visual bar -->
-      <div class="flex h-3 w-full overflow-hidden rounded-full bg-[color:var(--surface-strong)] border border-[color:var(--border)]" data-breakdown-bar>
+      <div class="flex h-3 w-full overflow-hidden rounded-none bg-[color:var(--surface-strong)] border border-[color:var(--border)]" data-breakdown-bar>
         <!-- Segments inserted dynamically -->
       </div>
       <!-- Legend -->
@@ -65,9 +65,9 @@ const { initialResult, category, inputsCount } = Astro.props as Props;
     </div>
 
     <!-- Warnings / Smart Insights Callout -->
-    <div class="hidden rounded-lg border border-amber-500/30 bg-amber-500/10 p-3 text-xs text-amber-700 dark:text-amber-300" data-warnings-container>
+    <div class="hidden rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-3 text-xs text-[color:var(--fg)]" data-warnings-container>
       <div class="flex items-start gap-2">
-        <svg class="h-4 w-4 shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <svg class="h-4 w-4 shrink-0 mt-0.5 text-[color:var(--accent)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="12" cy="12" r="10"></circle>
           <line x1="12" y1="8" x2="12" y2="12"></line>
           <line x1="12" y1="16" x2="12.01" y2="16"></line>
@@ -75,27 +75,5 @@ const { initialResult, category, inputsCount } = Astro.props as Props;
         <div class="space-y-1" data-warnings-list></div>
       </div>
     </div>
-
-    <!-- Tool Metadata / Summary -->
-    <dl class="grid gap-2 border-t border-[color:var(--border)] pt-4 text-xs text-[color:var(--muted)]">
-      <div class="flex items-center justify-between gap-4">
-        <dt class="font-medium text-[color:var(--fg)]">Category</dt>
-        <dd class="rounded-full bg-[color:var(--surface)] px-2.5 py-0.5 font-semibold text-[color:var(--accent)] border border-[color:var(--border)]">
-          {category}
-        </dd>
-      </div>
-      <div class="flex items-center justify-between gap-4">
-        <dt class="font-medium text-[color:var(--fg)]">Parameters</dt>
-        <dd class="font-semibold text-[color:var(--fg)]">{inputsCount} active</dd>
-      </div>
-      <div class="flex items-center justify-between gap-4">
-        <dt class="font-medium text-[color:var(--fg)]">Execution</dt>
-        <dd class="font-semibold text-[color:var(--fg)]">Client-side / Instant</dd>
-      </div>
-    </dl>
-  </div>
-
-  <div class="mt-4 border-t border-[color:var(--border)] pt-3 text-[11px] text-[color:var(--muted)]">
-    <strong>Security &amp; Privacy:</strong> All calculations run locally in your browser with zero server data storage.
   </div>
 </aside>

@@ -125,13 +125,13 @@ const schemaGraph = [
 
     <div class="space-y-6">
       <!-- Configuration Controls -->
-      <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-5 sm:p-6 text-xs">
+      <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 rounded-none border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-5 sm:p-6 text-xs">
         <div>
           <label for="pid-prefix" class="font-bold text-[color:var(--fg)] block mb-1">Prefix String:</label>
           <input
             type="text"
             id="pid-prefix"
-            class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)]"
+            class="w-full rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)]"
             value="PID-"
             placeholder="e.g. PID-, SUBJ-, SITE1-" />
         </div>
@@ -143,7 +143,7 @@ const schemaGraph = [
             id="pid-count"
             min="1"
             max="2000"
-            class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)]" placeholder="e.g. 24" />
+            class="w-full rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)]" placeholder="e.g. 24" />
         </div>
 
         <div>
@@ -152,12 +152,12 @@ const schemaGraph = [
             type="number"
             id="pid-start"
             min="1"
-            class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)]" placeholder="e.g. 1" />
+            class="w-full rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)]" placeholder="e.g. 1" />
         </div>
 
         <div>
           <label for="pid-digits" class="font-bold text-[color:var(--fg)] block mb-1">Digit Padding:</label>
-          <select id="pid-digits" class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)]">
+          <select id="pid-digits" class="w-full rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)]">
             <option value="3">3 Digits (001)</option>
             <option value="4" selected>4 Digits (0001)</option>
             <option value="5">5 Digits (00001)</option>
@@ -167,10 +167,10 @@ const schemaGraph = [
       </div>
 
       <!-- Study Arm Allocation Settings -->
-      <div class="grid gap-4 sm:grid-cols-3 rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 sm:p-6 text-xs">
+      <div class="grid gap-4 sm:grid-cols-3 rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-5 sm:p-6 text-xs">
         <div>
           <label for="arm-type" class="font-bold text-[color:var(--fg)] block mb-1">Study Arm Allocation:</label>
-          <select id="arm-type" class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)]">
+          <select id="arm-type" class="w-full rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)]">
             <option value="none">None (IDs Only — Single Cohort)</option>
             <option value="2arms" selected>2 Arms: Control (50%) vs Treatment (50%)</option>
             <option value="3arms">3 Arms: Control (33%) vs Treatment A (33%) vs Treatment B (33%)</option>
@@ -180,7 +180,7 @@ const schemaGraph = [
 
         <div>
           <label for="rand-method" class="font-bold text-[color:var(--fg)] block mb-1">Randomization Engine:</label>
-          <select id="rand-method" class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)]">
+          <select id="rand-method" class="w-full rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)]">
             <option value="block4" selected>Permuted Block Randomization (Block Size 4)</option>
             <option value="block6">Permuted Block Randomization (Block Size 6)</option>
             <option value="simple">Simple Random Assignment (CSPRNG Coin-Flip)</option>
@@ -189,7 +189,7 @@ const schemaGraph = [
 
         <div>
           <label for="check-digit-toggle" class="font-bold text-[color:var(--fg)] block mb-1">Transcription Check Digit:</label>
-          <select id="check-digit-toggle" class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)]">
+          <select id="check-digit-toggle" class="w-full rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)]">
             <option value="none">No Check Digit</option>
             <option value="mod7" selected>Mod-7 Verification Character (A–G)</option>
             <option value="luhn">Luhn Checksum Digit (0–9)</option>
@@ -208,21 +208,21 @@ const schemaGraph = [
             <button
               type="button"
               id="copy-roster-btn"
-              class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] px-3.5 py-1.5 text-xs font-bold text-[color:var(--fg)] hover:border-emerald-500 transition cursor-pointer"
+              class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] px-3.5 py-1.5 text-xs font-bold text-[color:var(--fg)] hover:border-emerald-500 transition cursor-pointer"
             >
               Copy Roster (CSV)
             </button>
             <button
               type="button"
               id="dl-roster-btn"
-              class="rounded-xl bg-[color:var(--accent)] px-3.5 py-1.5 text-xs font-bold text-white hover:opacity-90 transition cursor-pointer"
+              class="rounded-none bg-[color:var(--accent)] px-3.5 py-1.5 text-xs font-bold text-white hover:opacity-90 transition cursor-pointer"
             >
               Download CSV
             </button>
           </div>
         </div>
 
-        <div class="overflow-x-auto rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)]">
+        <div class="overflow-x-auto rounded-none border border-[color:var(--border)] bg-[color:var(--surface)]">
           <table class="w-full text-left text-xs">
             <thead class="bg-[color:var(--surface-strong)] text-[color:var(--muted)] border-b border-[color:var(--border)]">
               <tr>
@@ -288,7 +288,7 @@ const schemaGraph = [
       <h2 class="text-xl font-bold text-[color:var(--fg)]">Frequently Asked Questions</h2>
       <div class="space-y-3">
         {schemaFaq.map((faq) => (
-          <details class="group rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
+          <details class="group rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
             <summary class="cursor-pointer list-none font-semibold text-sm sm:text-base text-[color:var(--fg)] flex items-center justify-between gap-4">
               <span>{faq.question}</span>
               <span class="text-xs text-[color:var(--muted)] group-open:rotate-180 transition-transform">&blacktriangledown;</span>
@@ -456,7 +456,7 @@ const schemaGraph = [
               <td class="p-3 text-center text-[color:var(--muted)]">${r.index}</td>
               <td class="p-3 font-bold text-[color:var(--fg)]">${r.id}</td>
               <td class="p-3">
-                <span class="inline-block px-2.5 py-0.5 rounded-full text-[11px] font-sans font-bold border ${armBadge}">
+                <span class="inline-block px-2.5 py-0.5 rounded-none text-[11px] font-sans font-bold border ${armBadge}">
                   ${r.arm}
                 </span>
               </td>

@@ -27,7 +27,7 @@ const {
     <span class="text-xs text-[color:var(--muted)]">Official Marginal Slices ({taxYear})</span>
   </div>
 
-  <div class="overflow-x-auto rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)]">
+  <div class="overflow-x-auto rounded-none border border-[color:var(--border)] bg-[color:var(--surface)]">
     <table class="w-full text-left text-xs text-[color:var(--fg)]">
       <thead class="border-b border-[color:var(--border)] bg-[color:var(--surface-strong)] text-[color:var(--muted)] uppercase font-semibold">
         <tr>
@@ -43,7 +43,7 @@ const {
             <td class="px-4 py-2.5 font-mono">{row.bracketRange}</td>
             <td class="px-4 py-2.5 font-bold">{row.ratePercent}</td>
             <td class="px-4 py-2.5">{formatCurrency(row.taxableInBracket, currency, currencySymbol)}</td>
-            <td class="px-4 py-2.5 text-right font-mono font-bold text-rose-500">{formatCurrency(row.taxAmount, currency, currencySymbol)}</td>
+            <td class="px-4 py-2.5 text-right font-mono font-bold text-[color:var(--fg)]">{formatCurrency(row.taxAmount, currency, currencySymbol)}</td>
           </tr>
         ))}
       </tbody>

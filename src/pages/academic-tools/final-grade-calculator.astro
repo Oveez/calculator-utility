@@ -99,7 +99,7 @@ const schemaGraph = [
 
     <!-- Calculator App Card -->
     <div
-      class="rounded-[2.5rem] border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-6 shadow-[var(--shadow)] sm:p-10"
+      class="space-y-8"
       data-final-grade-app
     >
       <div class="grid gap-8 lg:grid-cols-[1.1fr_0.9fr]">
@@ -122,7 +122,7 @@ const schemaGraph = [
               min="0"
               max="150"
               step="0.1"
-              class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none transition focus:border-[color:var(--accent)]"
+              class="w-full rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none transition focus:border-[color:var(--accent)]"
               data-curr-grade placeholder="e.g. 82" />
           </div>
 
@@ -145,7 +145,7 @@ const schemaGraph = [
               min="0"
               max="100"
               step="0.1"
-              class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none transition focus:border-[color:var(--accent)]"
+              class="w-full rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none transition focus:border-[color:var(--accent)]"
               data-target-grade placeholder="e.g. 90" />
           </div>
 
@@ -155,7 +155,7 @@ const schemaGraph = [
               <label for="exam-weight" class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">
                 Final Exam Weight (%)
               </label>
-              <span class="rounded-lg bg-[color:var(--surface)] border border-[color:var(--border)] px-2.5 py-0.5 text-xs font-bold text-[color:var(--fg)]" data-weight-display>
+              <span class="rounded-none bg-[color:var(--surface)] border border-[color:var(--border)] px-2.5 py-0.5 text-xs font-bold text-[color:var(--fg)]" data-weight-display>
                 30%
               </span>
             </div>
@@ -171,14 +171,14 @@ const schemaGraph = [
         </form>
 
         <!-- Result Box -->
-        <div class="flex flex-col justify-between space-y-6 rounded-3xl border border-[color:var(--accent)]/30 bg-gradient-to-br from-[color:var(--accent-soft)] via-[color:var(--surface)] to-transparent p-6 sm:p-8 shadow-sm">
+        <div class="space-y-6">
           <div class="space-y-5">
             <div class="flex items-center justify-between">
               <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Required Exam Score</span>
-              <span class="rounded-full px-3 py-0.5 text-xs font-bold" data-diff-badge>Awaiting Input</span>
+              <span class="rounded-none px-3 py-0.5 text-xs font-bold" data-diff-badge>Awaiting Input</span>
             </div>
 
-            <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 text-center">
+            <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-6 text-center">
               <p class="text-xs font-semibold text-[color:var(--muted)]">Score Needed on Final Exam</p>
               <p class="mt-1 text-5xl font-black tracking-tight text-[color:var(--fg)]" data-score-needed>
                 --%
@@ -202,16 +202,16 @@ const schemaGraph = [
 
     <!-- Methodology & Formula -->
     <section class="grid gap-6 sm:grid-cols-2">
-      <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 space-y-2">
+      <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-6 space-y-2">
         <h2 class="text-base font-bold text-[color:var(--fg)]">Final Grade Formula</h2>
         <p class="text-xs text-[color:var(--muted)] leading-relaxed">
           Course grading splits your overall standing into existing coursework weight <span class="font-mono">(1 - W)</span> and final exam weight <span class="font-mono">W</span>.
         </p>
-        <div class="rounded-xl bg-[color:var(--bg)] p-3 font-mono text-xs text-[color:var(--fg)] border border-[color:var(--border)]">
+        <div class="rounded-none bg-[color:var(--bg)] p-3 font-mono text-xs text-[color:var(--fg)] border border-[color:var(--border)]">
           Score Needed = [Target - (Current × (1 - W))] ÷ W
         </div>
       </div>
-      <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 space-y-2">
+      <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-6 space-y-2">
         <h2 class="text-base font-bold text-[color:var(--fg)]">Interpreting Results</h2>
         <p class="text-xs text-[color:var(--muted)] leading-relaxed">
           A score below 60% indicates you have a solid grade cushion and can comfortably pass. A score between 70% and 90% is typical for aiming for honors. Scores above 100% mean you will need extra credit assignments or a curve.
@@ -237,7 +237,7 @@ const schemaGraph = [
       <h2 class="text-xl font-bold text-[color:var(--fg)]">Frequently Asked Questions</h2>
       <div class="space-y-3">
         {faqs.map((faq) => (
-          <details class="group rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
+          <details class="group rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
             <summary class="cursor-pointer list-none font-semibold text-sm sm:text-base text-[color:var(--fg)] flex items-center justify-between gap-4">
               <span>{faq.question}</span>
               <span class="text-xs text-[color:var(--muted)] group-open:rotate-180 transition-transform">▼</span>
@@ -271,7 +271,7 @@ const schemaGraph = [
         if (!inCurr.value || !inTar.value) {
           if (scoreNeeded) scoreNeeded.textContent = '--%';
           if (diffBadge) {
-            diffBadge.className = 'rounded-full px-3 py-0.5 text-xs font-bold bg-gray-500/10 text-gray-500 border border-gray-500/20';
+            diffBadge.className = 'rounded-none px-3 py-0.5 text-xs font-bold bg-gray-500/10 text-gray-500 border border-gray-500/20';
             diffBadge.textContent = 'Awaiting Input';
           }
           if (scoreAdvice) scoreAdvice.textContent = 'Enter your current grade and target grade above.';
@@ -292,23 +292,23 @@ const schemaGraph = [
 
         if (diffBadge && scoreAdvice) {
           if (required <= 50) {
-            diffBadge.className = 'rounded-full px-3 py-0.5 text-xs font-bold bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 border border-cyan-500/20';
+            diffBadge.className = 'rounded-none px-3 py-0.5 text-xs font-bold bg-cyan-500/10 text-[color:var(--accent)] border border-cyan-500/20';
             diffBadge.textContent = 'Comfortable Target';
             scoreAdvice.textContent = `You only need a score of ${required.toFixed(1)}% to reach your target of ${target}%.`;
           } else if (required <= 80) {
-            diffBadge.className = 'rounded-full px-3 py-0.5 text-xs font-bold bg-blue-500/10 text-[color:var(--primary)] dark:text-blue-400 border border-blue-500/20';
+            diffBadge.className = 'rounded-none px-3 py-0.5 text-xs font-bold bg-[color:var(--accent-soft)] text-[color:var(--accent)] border border-[color:var(--accent)]/30';
             diffBadge.textContent = 'Moderate Target';
             scoreAdvice.textContent = `A steady study plan will achieve this target.`;
           } else if (required <= 95) {
-            diffBadge.className = 'rounded-full px-3 py-0.5 text-xs font-bold bg-yellow-500/10 text-yellow-600 dark:text-yellow-400 border border-yellow-500/20';
+            diffBadge.className = 'rounded-none px-3 py-0.5 text-xs font-bold bg-yellow-500/10 text-yellow-600 dark:text-yellow-400 border border-yellow-500/20';
             diffBadge.textContent = 'Challenging Target';
             scoreAdvice.textContent = `You will need a high score of ${required.toFixed(1)}% on your final exam.`;
           } else if (required <= 100) {
-            diffBadge.className = 'rounded-full px-3 py-0.5 text-xs font-bold bg-orange-500/10 text-orange-600 dark:text-orange-400 border border-orange-500/20';
+            diffBadge.className = 'rounded-none px-3 py-0.5 text-xs font-bold bg-orange-500/10 text-orange-600 dark:text-orange-400 border border-orange-500/20';
             diffBadge.textContent = 'Demanding Target (>95%)';
             scoreAdvice.textContent = `Near-perfect final exam score required (${required.toFixed(1)}%).`;
           } else {
-            diffBadge.className = 'rounded-full px-3 py-0.5 text-xs font-bold bg-red-500/10 text-red-600 dark:text-red-400 border border-red-500/20';
+            diffBadge.className = 'rounded-none px-3 py-0.5 text-xs font-bold bg-red-500/10 text-red-600 dark:text-red-400 border border-red-500/20';
             diffBadge.textContent = 'Requires Extra Credit';
             scoreAdvice.textContent = `Score exceeds 100% (${required.toFixed(1)}%). Extra credit or curve needed for a ${target}% course grade.`;
           }
@@ -319,7 +319,7 @@ const schemaGraph = [
           whatIfTable.innerHTML = testScores.map((score) => {
             const finalGrade = (curr * currFrac) + (score * wFrac);
             return `
-              <div class="flex items-center justify-between p-2 rounded-xl bg-[color:var(--surface)] border border-[color:var(--border)]">
+              <div class="flex items-center justify-between p-2 rounded-none bg-[color:var(--surface)] border border-[color:var(--border)]">
                 <span class="font-medium text-[color:var(--muted)]">If you score ${score}% on exam</span>
                 <span class="font-bold text-[color:var(--fg)]">${finalGrade.toFixed(2)}% Overall</span>
               </div>

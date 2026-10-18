@@ -137,7 +137,7 @@ const parameterGuide = [
 
 
     <!-- Metrics Bar -->
-    <div id="stats-bar" class="grid grid-cols-2 gap-3 sm:grid-cols-4 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-center">
+    <div id="stats-bar" class="grid grid-cols-2 gap-3 sm:grid-cols-4 rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-center">
       <div>
         <span class="block text-[11px] uppercase tracking-wider text-[color:var(--muted)]">Added Keys</span>
         <span id="stat-added" class="font-mono text-lg font-bold text-cyan-600 dark:text-cyan-400 dark:text-cyan-400">0</span>
@@ -172,7 +172,7 @@ const parameterGuide = [
           <textarea
             id="json1-input"
             rows="12"
-            class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3 font-mono text-xs leading-relaxed text-[color:var(--fg)] focus:border-[color:var(--border-strong)] focus:outline-hidden"
+            class="w-full rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-3 font-mono text-xs leading-relaxed text-[color:var(--fg)] focus:border-[color:var(--border-strong)] focus:outline-hidden"
             placeholder="Paste original JSON..."
           ></textarea>
         </div>
@@ -190,13 +190,13 @@ const parameterGuide = [
           <textarea
             id="json2-input"
             rows="12"
-            class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3 font-mono text-xs leading-relaxed text-[color:var(--fg)] focus:border-[color:var(--border-strong)] focus:outline-hidden"
+            class="w-full rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-3 font-mono text-xs leading-relaxed text-[color:var(--fg)] focus:border-[color:var(--border-strong)] focus:outline-hidden"
             placeholder="Paste modified JSON..."
           ></textarea>
         </div>
       </div>
 
-      <div class="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3">
+      <div class="flex flex-wrap items-center justify-between gap-3 rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-3">
         <label class="flex items-center gap-2 text-xs cursor-pointer">
           <input type="checkbox" id="normalize-keys" checked class="rounded border-[color:var(--border)] accent-[color:var(--fg)]" />
           <span class="font-semibold text-[color:var(--fg)]">Semantic Normalization (Ignore Key Order)</span>
@@ -204,7 +204,7 @@ const parameterGuide = [
         <button
           type="button"
           data-compare-btn
-          class="rounded-xl bg-[color:var(--accent)] px-6 py-2 text-xs font-bold text-white shadow-xs transition hover:opacity-90 cursor-pointer"
+          class="rounded-none bg-[color:var(--accent)] px-6 py-2 text-xs font-bold text-white shadow-xs transition hover:opacity-90 cursor-pointer"
         >
           <Icon name="bolt" class="w-3.5 h-3.5 text-white" /><span>Compare JSON Objects</span>
         </button>
@@ -215,18 +215,18 @@ const parameterGuide = [
         <div class="flex items-center justify-between">
           <div class="flex items-center gap-2">
             <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Diff Breakdown</span>
-            <span id="diff-badge" class="rounded-md bg-cyan-500/15 px-2 py-0.5 text-[10px] font-bold text-cyan-600 dark:text-cyan-400 dark:text-cyan-400">Ready</span>
+            <span id="diff-badge" class="rounded-none bg-cyan-500/15 px-2 py-0.5 text-[10px] font-bold text-cyan-600 dark:text-cyan-400 dark:text-cyan-400">Ready</span>
           </div>
           <div class="flex items-center gap-3 text-xs">
-            <span class="flex items-center gap-1 text-[11px]"><span class="h-2 w-2 rounded-full bg-emerald-500"></span> Added</span>
-            <span class="flex items-center gap-1 text-[11px]"><span class="h-2 w-2 rounded-full bg-rose-500"></span> Removed</span>
-            <span class="flex items-center gap-1 text-[11px]"><span class="h-2 w-2 rounded-full bg-amber-500"></span> Modified</span>
+            <span class="flex items-center gap-1 text-[11px]"><span class="h-2 w-2 rounded-none bg-emerald-500"></span> Added</span>
+            <span class="flex items-center gap-1 text-[11px]"><span class="h-2 w-2 rounded-none bg-rose-500"></span> Removed</span>
+            <span class="flex items-center gap-1 text-[11px]"><span class="h-2 w-2 rounded-none bg-amber-500"></span> Modified</span>
           </div>
         </div>
 
         <div
           id="diff-result"
-          class="min-h-36 max-h-[480px] overflow-y-auto rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-4 font-mono text-xs leading-relaxed text-[color:var(--fg)] space-y-1.5"
+          class="min-h-36 max-h-[480px] overflow-y-auto rounded-none border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-4 font-mono text-xs leading-relaxed text-[color:var(--fg)] space-y-1.5"
         >
           <p class="italic text-[color:var(--muted)]">Enter two JSON objects above and click Compare.</p>
         </div>
@@ -234,16 +234,16 @@ const parameterGuide = [
     </div>
 
     <!-- Step-by-Step Worked Example -->
-    <section class="space-y-4 rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 sm:p-8 text-xs sm:text-sm text-[color:var(--muted)] leading-relaxed">
+    <section class="space-y-4 border-t border-[color:var(--border)] pt-8 text-xs sm:text-sm text-[color:var(--muted)] leading-relaxed">
       <div class="flex items-center gap-2">
-        <span class="rounded-md bg-[color:var(--accent)]/15 px-2.5 py-1 text-xs font-bold text-[color:var(--accent)]">Worked Example</span>
+        <span class="rounded-none bg-[color:var(--accent)]/15 px-2.5 py-1 text-xs font-bold text-[color:var(--accent)]">Worked Example</span>
         <h2 class="text-base sm:text-lg font-bold text-[color:var(--fg)]">Auditing Configuration Changes Between Staging and Prod</h2>
       </div>
       <p>
         Suppose an application deployment modifies timeouts, adds a new cache replica, and deprecates an old feature flag:
       </p>
       <div class="grid gap-4 sm:grid-cols-2">
-        <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] p-4 font-mono text-xs">
+        <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] p-4 font-mono text-xs">
           <span class="text-[color:var(--muted)] block mb-1 font-bold font-sans">Base Staging:</span>
           &#123;<br/>
           &nbsp;&nbsp;&quot;timeout&quot;: 3000,<br/>
@@ -251,7 +251,7 @@ const parameterGuide = [
           &nbsp;&nbsp;&quot;replicas&quot;: 2<br/>
           &#125;
         </div>
-        <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] p-4 font-mono text-xs">
+        <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] p-4 font-mono text-xs">
           <span class="text-[color:var(--muted)] block mb-1 font-bold font-sans">Modified Production:</span>
           &#123;<br/>
           &nbsp;&nbsp;&quot;timeout&quot;: 5000,<br/>
@@ -283,7 +283,7 @@ const parameterGuide = [
       <h2 class="text-xl font-bold text-[color:var(--fg)]">Frequently Asked Questions</h2>
       <div class="space-y-3">
         {schemaFaq.map((faq) => (
-          <details class="group rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
+          <details class="group rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
             <summary class="cursor-pointer list-none font-semibold text-sm sm:text-base text-[color:var(--fg)] flex items-center justify-between gap-4">
               <span>{faq.question}</span>
               <span class="text-xs text-[color:var(--muted)] group-open:rotate-180 transition-transform">▼</span>
@@ -355,7 +355,7 @@ const parameterGuide = [
               } else {
                 modifiedCount++;
                 diffItems.push(`
-                  <div class="flex items-start gap-2 rounded-xl border border-amber-500/20 bg-amber-500/10 p-2.5 text-amber-700 dark:text-amber-300">
+                  <div class="flex items-start gap-2 rounded-none border border-amber-500/20 bg-amber-500/10 p-2.5 text-amber-700 dark:text-amber-300">
                     <span class="rounded bg-amber-500/20 px-1.5 py-0.5 font-bold text-[10px]">~ MODIFIED</span>
                     <div class="flex-1 overflow-x-auto">
                       <strong class="text-[color:var(--fg)]">${escapeHtml(path)}</strong><br/>
@@ -381,7 +381,7 @@ const parameterGuide = [
               if (in1 && !in2) {
                 removedCount++;
                 diffItems.push(`
-                  <div class="flex items-start gap-2 rounded-xl border border-rose-500/20 bg-rose-500/10 p-2.5 text-rose-700 dark:text-rose-300">
+                  <div class="flex items-start gap-2 rounded-none border border-rose-500/20 bg-rose-500/10 p-2.5 text-rose-700 dark:text-rose-300">
                     <span class="rounded bg-rose-500/20 px-1.5 py-0.5 font-bold text-[10px]">- REMOVED</span>
                     <div class="flex-1 overflow-x-auto">
                       <strong class="text-[color:var(--fg)]">${escapeHtml(curPath)}</strong>: ${escapeHtml(JSON.stringify(obj1[k]))}
@@ -391,7 +391,7 @@ const parameterGuide = [
               } else if (!in1 && in2) {
                 addedCount++;
                 diffItems.push(`
-                  <div class="flex items-start gap-2 rounded-xl border border-cyan-500/20 bg-cyan-500/10 p-2.5 text-cyan-600 dark:text-cyan-400 dark:text-cyan-300">
+                  <div class="flex items-start gap-2 rounded-none border border-cyan-500/20 bg-cyan-500/10 p-2.5 text-cyan-600 dark:text-cyan-400 dark:text-cyan-300">
                     <span class="rounded bg-cyan-500/20 px-1.5 py-0.5 font-bold text-[10px]">+ ADDED</span>
                     <div class="flex-1 overflow-x-auto">
                       <strong class="text-[color:var(--fg)]">${escapeHtml(curPath)}</strong>: ${escapeHtml(JSON.stringify(obj2[k]))}
@@ -407,7 +407,7 @@ const parameterGuide = [
                 } else if (JSON.stringify(val1) !== JSON.stringify(val2)) {
                   modifiedCount++;
                   diffItems.push(`
-                    <div class="flex items-start gap-2 rounded-xl border border-amber-500/20 bg-amber-500/10 p-2.5 text-amber-700 dark:text-amber-300">
+                    <div class="flex items-start gap-2 rounded-none border border-amber-500/20 bg-amber-500/10 p-2.5 text-amber-700 dark:text-amber-300">
                       <span class="rounded bg-amber-500/20 px-1.5 py-0.5 font-bold text-[10px]">~ MODIFIED</span>
                       <div class="flex-1 overflow-x-auto">
                         <strong class="text-[color:var(--fg)]">${escapeHtml(curPath)}</strong><br/>
@@ -432,22 +432,22 @@ const parameterGuide = [
 
           if (diffItems.length === 0) {
             diffBadge.textContent = 'Identical';
-            diffBadge.className = 'rounded-md bg-cyan-500/15 px-2 py-0.5 text-[10px] font-bold text-cyan-600 dark:text-cyan-400 dark:text-cyan-400';
+            diffBadge.className = 'rounded-none bg-cyan-500/15 px-2 py-0.5 text-[10px] font-bold text-cyan-600 dark:text-cyan-400 dark:text-cyan-400';
             diffResult.innerHTML = `
-              <div class="rounded-xl border border-cyan-500/20 bg-cyan-500/10 p-4 text-center text-cyan-600 dark:text-cyan-400 flex items-center justify-center gap-2">
+              <div class="rounded-none border border-cyan-500/20 bg-cyan-500/10 p-4 text-center text-cyan-600 dark:text-cyan-400 flex items-center justify-center gap-2">
                 <svg class="w-5 h-5 inline-block shrink-0 text-cyan-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
                 <span><strong>Both JSON documents are semantically identical!</strong> No differences found.</span>
               </div>
             `;
           } else {
             diffBadge.textContent = `${addedCount + removedCount + modifiedCount} Changes`;
-            diffBadge.className = 'rounded-md bg-amber-500/15 px-2 py-0.5 text-[10px] font-bold text-amber-600 dark:text-amber-400';
+            diffBadge.className = 'rounded-none bg-amber-500/15 px-2 py-0.5 text-[10px] font-bold text-amber-600 dark:text-amber-400';
             diffResult.innerHTML = diffItems.join('');
           }
         } catch (e) {
-          diffResult.innerHTML = `<div class="p-3 rounded-xl border border-rose-500/30 bg-rose-500/10 text-rose-600 dark:text-rose-400">Syntax Error: ${escapeHtml(e.message)}</div>`;
+          diffResult.innerHTML = `<div class="p-3 rounded-none border border-rose-500/30 bg-rose-500/10 text-rose-600 dark:text-rose-400">Syntax Error: ${escapeHtml(e.message)}</div>`;
           diffBadge.textContent = 'Error';
-          diffBadge.className = 'rounded-md bg-rose-500/15 px-2 py-0.5 text-[10px] font-bold text-rose-600 dark:text-rose-400';
+          diffBadge.className = 'rounded-none bg-rose-500/15 px-2 py-0.5 text-[10px] font-bold text-rose-600 dark:text-rose-400';
         }
       }
 

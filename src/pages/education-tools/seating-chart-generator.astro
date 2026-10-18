@@ -83,7 +83,7 @@ const schemaGraph = [
 
 
     <div class="space-y-6">
-      <div class="grid gap-4 sm:grid-cols-2 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 text-xs">
+      <div class="grid gap-4 sm:grid-cols-2 rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-5 text-xs">
         <div>
           <label for="grid-rows" class="font-bold text-[color:var(--fg)] block mb-1">Rows (Depth):</label>
           <input
@@ -91,7 +91,7 @@ const schemaGraph = [
             id="grid-rows"
             min="2"
             max="10"
-            class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-[color:var(--fg)]" placeholder="e.g. 4" />
+            class="w-full rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-[color:var(--fg)]" placeholder="e.g. 4" />
         </div>
         <div>
           <label for="grid-cols" class="font-bold text-[color:var(--fg)] block mb-1">Columns (Width):</label>
@@ -100,7 +100,7 @@ const schemaGraph = [
             id="grid-cols"
             min="2"
             max="10"
-            class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-[color:var(--fg)]" placeholder="e.g. 5" />
+            class="w-full rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-[color:var(--fg)]" placeholder="e.g. 5" />
         </div>
       </div>
 
@@ -109,7 +109,7 @@ const schemaGraph = [
         <textarea
           id="students-in"
           rows="6"
-          class="w-full font-mono text-xs leading-relaxed rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-[color:var(--fg)] focus:border-[color:var(--border-strong)] focus:outline-hidden"
+          class="w-full font-mono text-xs leading-relaxed rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-[color:var(--fg)] focus:border-[color:var(--border-strong)] focus:outline-hidden"
           placeholder="Student Name 1&#10;Student Name 2"
         >Alexander
 Charlotte
@@ -132,15 +132,15 @@ Ava</textarea>
       <button
         type="button"
         id="gen-chart-btn"
-        class="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-[color:var(--accent)] py-2.5 text-xs font-bold text-white shadow-xs transition hover:opacity-90 cursor-pointer"
+        class="w-full inline-flex items-center justify-center gap-2 rounded-none bg-[color:var(--accent)] py-2.5 text-xs font-bold text-white shadow-xs transition hover:opacity-90 cursor-pointer"
       >
         <Icon name="education" class="w-4 h-4" />
         <span>Generate Seating Chart</span>
       </button>
 
       <!-- Seating Chart Matrix Card -->
-      <div class="space-y-4 rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 sm:p-8">
-        <div class="rounded-xl bg-[color:var(--surface-strong)] py-2 text-center text-xs font-bold text-[color:var(--muted)] uppercase tracking-wider">
+      <div class="space-y-4 rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-6 sm:p-8">
+        <div class="rounded-none bg-[color:var(--surface-strong)] py-2 text-center text-xs font-bold text-[color:var(--muted)] uppercase tracking-wider">
           Teacher's Desk / Whiteboard
         </div>
 
@@ -163,7 +163,7 @@ Ava</textarea>
       <h2 class="text-xl font-bold text-[color:var(--fg)]">Frequently Asked Questions</h2>
       <div class="space-y-3">
         {schemaFaq.map((faq) => (
-          <details class="group rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
+          <details class="group rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
             <summary class="cursor-pointer list-none font-semibold text-sm sm:text-base text-[color:var(--fg)] flex items-center justify-between gap-4">
               <span>{faq.question}</span>
               <span class="text-xs text-[color:var(--muted)] group-open:rotate-180 transition-transform">▼</span>
@@ -213,14 +213,14 @@ Ava</textarea>
           const name = shuffled[i];
           if (name) {
             desks.push(`
-              <div class="flex flex-col items-center justify-center rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-3 text-center transition hover:border-emerald-500">
+              <div class="flex flex-col items-center justify-center rounded-none border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-3 text-center transition hover:border-emerald-500">
                 <span class="text-[10px] font-mono text-[color:var(--muted)]">Desk ${i + 1}</span>
                 <span class="text-xs font-bold text-[color:var(--fg)] truncate w-full mt-0.5">${name}</span>
               </div>
             `);
           } else {
             desks.push(`
-              <div class="flex flex-col items-center justify-center rounded-2xl border border-dashed border-[color:var(--border)] bg-transparent p-3 text-center opacity-40">
+              <div class="flex flex-col items-center justify-center rounded-none border border-dashed border-[color:var(--border)] bg-transparent p-3 text-center opacity-40">
                 <span class="text-[10px] font-mono text-[color:var(--muted)]">Desk ${i + 1}</span>
                 <span class="text-xs italic text-[color:var(--muted)]">Empty</span>
               </div>

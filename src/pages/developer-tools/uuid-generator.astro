@@ -137,7 +137,7 @@ const parameterGuide = [
 
 
     <!-- Telemetry Bar -->
-    <div id="stats-bar" class="grid grid-cols-2 gap-3 sm:grid-cols-4 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-center">
+    <div id="stats-bar" class="grid grid-cols-2 gap-3 sm:grid-cols-4 rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-center">
       <div>
         <span class="block text-[11px] uppercase tracking-wider text-[color:var(--muted)]">Active Version</span>
         <span id="stat-version" class="font-mono text-lg font-bold text-cyan-600 dark:text-cyan-400 dark:text-cyan-400">UUID v4</span>
@@ -157,7 +157,7 @@ const parameterGuide = [
     </div>
 
     <!-- Single Quick Generator Hero -->
-    <div class="space-y-3 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 sm:p-6">
+    <div class="space-y-3 rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-5 sm:p-6">
       <div class="flex items-center justify-between">
         <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Single Instant UUID</span>
         <button type="button" id="btn-refresh-hero" class="text-xs font-bold text-[color:var(--primary)] hover:underline cursor-pointer"><span class="inline-flex items-center gap-1"><Icon name="refresh" class="w-3.5 h-3.5" /><span>Generate New</span></span></button>
@@ -167,12 +167,12 @@ const parameterGuide = [
           type="text"
           id="hero-uuid"
           readonly
-          class="flex-1 rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] px-4 py-2.5 font-mono text-sm sm:text-base font-bold text-[color:var(--fg)] focus:outline-hidden select-all"
+          class="flex-1 rounded-none border border-[color:var(--border)] bg-[color:var(--surface-strong)] px-4 py-2.5 font-mono text-sm sm:text-base font-bold text-[color:var(--fg)] focus:outline-hidden select-all"
           value="f47ac10b-58cc-4372-a567-0e02b2c3d479" />
         <button
           type="button"
           id="btn-copy-hero"
-          class="inline-flex items-center justify-center gap-1.5 rounded-xl bg-[color:var(--accent)] px-5 py-2.5 text-xs font-bold text-white shadow-xs transition hover:opacity-90 cursor-pointer"
+          class="inline-flex items-center justify-center gap-1.5 rounded-none bg-[color:var(--accent)] px-5 py-2.5 text-xs font-bold text-white shadow-xs transition hover:opacity-90 cursor-pointer"
         >
           <Icon name="copy" class="h-3.5 w-3.5" />
           <span>Copy UUID</span>
@@ -184,10 +184,10 @@ const parameterGuide = [
     <div class="space-y-4">
       <h2 class="text-lg font-bold text-[color:var(--fg)]">Bulk Batch UUID Generator</h2>
 
-      <div class="grid gap-4 sm:grid-cols-4 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5 text-xs">
+      <div class="grid gap-4 sm:grid-cols-4 rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5 text-xs">
         <div>
           <label for="uuid-version" class="font-bold text-[color:var(--fg)] block mb-1.5">Version:</label>
-          <select id="uuid-version" class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] px-3 py-1.5 text-xs text-[color:var(--fg)]">
+          <select id="uuid-version" class="w-full rounded-none border border-[color:var(--border)] bg-[color:var(--surface-strong)] px-3 py-1.5 text-xs text-[color:var(--fg)]">
             <option value="v4">UUID v4 (Random / Universal)</option>
             <option value="v7">UUID v7 (Time-Ordered / DB Friendly)</option>
             <option value="v1">UUID v1 (Timestamp-Based)</option>
@@ -203,12 +203,12 @@ const parameterGuide = [
             min="1"
             max="500"
             placeholder="e.g. 10"
-            class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] px-3 py-1.5 font-mono text-xs text-[color:var(--fg)]" />
+            class="w-full rounded-none border border-[color:var(--border)] bg-[color:var(--surface-strong)] px-3 py-1.5 font-mono text-xs text-[color:var(--fg)]" />
         </div>
 
         <div>
           <label for="bulk-casing" class="font-bold text-[color:var(--fg)] block mb-1.5">Casing:</label>
-          <select id="bulk-casing" class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] px-3 py-1.5 text-xs text-[color:var(--fg)]">
+          <select id="bulk-casing" class="w-full rounded-none border border-[color:var(--border)] bg-[color:var(--surface-strong)] px-3 py-1.5 text-xs text-[color:var(--fg)]">
             <option value="lower">Lowercase (standard)</option>
             <option value="upper">Uppercase (GUID)</option>
           </select>
@@ -216,7 +216,7 @@ const parameterGuide = [
 
         <div>
           <label for="bulk-format" class="font-bold text-[color:var(--fg)] block mb-1.5">Enclosure / Style:</label>
-          <select id="bulk-format" class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] px-3 py-1.5 text-xs text-[color:var(--fg)]">
+          <select id="bulk-format" class="w-full rounded-none border border-[color:var(--border)] bg-[color:var(--surface-strong)] px-3 py-1.5 text-xs text-[color:var(--fg)]">
             <option value="hyphens">Standard (with hyphens)</option>
             <option value="no-hyphens">Compact (no hyphens)</option>
             <option value="braces">&#123; Wrapped in Braces &#125;</option>
@@ -229,7 +229,7 @@ const parameterGuide = [
         <button
           type="button"
           id="btn-generate-bulk"
-          class="rounded-xl bg-[color:var(--accent)] px-6 py-2.5 text-xs font-bold text-white shadow-xs transition hover:opacity-90 cursor-pointer"
+          class="rounded-none bg-[color:var(--accent)] px-6 py-2.5 text-xs font-bold text-white shadow-xs transition hover:opacity-90 cursor-pointer"
         >
           <Icon name="dice" class="w-3.5 h-3.5 text-white" /><span>Generate Batch</span>
         </button>
@@ -252,22 +252,22 @@ const parameterGuide = [
           id="bulk-output"
           rows="10"
           readonly
-          class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-4 font-mono text-xs leading-relaxed text-[color:var(--fg)] focus:outline-hidden"
+          class="w-full rounded-none border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-4 font-mono text-xs leading-relaxed text-[color:var(--fg)] focus:outline-hidden"
         ></textarea>
       </div>
     </div>
 
     <!-- Step-by-Step Worked Example -->
-    <section class="space-y-4 rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 sm:p-8 text-xs sm:text-sm text-[color:var(--muted)] leading-relaxed">
+    <section class="space-y-4 border-t border-[color:var(--border)] pt-8 text-xs sm:text-sm text-[color:var(--muted)] leading-relaxed">
       <div class="flex items-center gap-2">
-        <span class="rounded-md bg-[color:var(--accent)]/15 px-2.5 py-1 text-xs font-bold text-[color:var(--accent)]">Worked Example</span>
+        <span class="rounded-none bg-[color:var(--accent)]/15 px-2.5 py-1 text-xs font-bold text-[color:var(--accent)]">Worked Example</span>
         <h2 class="text-base sm:text-lg font-bold text-[color:var(--fg)]">Why Modern Databases Are Migrating to UUID v7</h2>
       </div>
       <p>
         Traditional random UUID v4 values fragment B-tree indexes because every new insert lands in an unpredictable index location. UUID v7 embeds millisecond epoch time in the first 48 bits:
       </p>
       <div class="space-y-2 font-mono text-xs">
-        <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] p-3">
+        <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] p-3">
           <span class="text-[color:var(--muted)] block font-bold font-sans text-[11px]">UUID v7 (Time-Ordered):</span>
           018e47b2-c0e8-7d8b-9e4a-5f6b7c8d9e0f
         </div>
@@ -295,7 +295,7 @@ const parameterGuide = [
       <h2 class="text-xl font-bold text-[color:var(--fg)]">Frequently Asked Questions</h2>
       <div class="space-y-3">
         {schemaFaq.map((faq) => (
-          <details class="group rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
+          <details class="group rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
             <summary class="cursor-pointer list-none font-semibold text-sm sm:text-base text-[color:var(--fg)] flex items-center justify-between gap-4">
               <span>{faq.question}</span>
               <span class="text-xs text-[color:var(--muted)] group-open:rotate-180 transition-transform">▼</span>

@@ -159,7 +159,7 @@ const schemaGraph = [
 
 
     <div
-      class="rounded-[2.5rem] border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-6 shadow-[var(--shadow)] sm:p-10"
+      class="space-y-8"
       data-pvalue-app
     >
       <div class="grid gap-8 lg:grid-cols-[1.1fr_0.9fr]">
@@ -173,7 +173,7 @@ const schemaGraph = [
 
           <div class="space-y-1.5">
             <label for="test-type" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Test Distribution</label>
-            <select id="test-type" class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-sm font-semibold text-[color:var(--fg)] outline-none" data-test-type>
+            <select id="test-type" class="w-full rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-sm font-semibold text-[color:var(--fg)] outline-none" data-test-type>
               <option value="z" selected>Z-Test (Standard Normal)</option>
               <option value="t">Student's t-Test</option>
               <option value="chisq">Chi-Square Test (χ²)</option>
@@ -183,30 +183,30 @@ const schemaGraph = [
 
           <div class="space-y-1.5">
             <label for="stat-score" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]" data-stat-label>Test Statistic Value (Z-Score)</label>
-            <input id="stat-score" type="number" step="any" class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none" data-stat-score placeholder="e.g. 2.15" />
+            <input id="stat-score" type="number" step="any" class="w-full rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none" data-stat-score placeholder="e.g. 2.15" />
           </div>
 
           <!-- Degrees of Freedom (For t and chi-square) -->
           <div class="space-y-1.5" data-df-wrapper hidden>
             <label for="df-input" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Degrees of Freedom (df)</label>
-            <input id="df-input" type="number" min="1" class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none" data-df-input placeholder="e.g. 25" />
+            <input id="df-input" type="number" min="1" class="w-full rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none" data-df-input placeholder="e.g. 25" />
           </div>
 
           <!-- F-Test Dual DF (Hidden by default) -->
           <div class="grid grid-cols-2 gap-3" data-f-df-wrapper hidden>
             <div>
               <label for="df1-input" class="block text-xs font-medium text-[color:var(--muted)]">Numerator df₁ (Groups - 1)</label>
-              <input id="df1-input" type="number" min="1" class="mt-1 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-df1-input placeholder="e.g. 3" />
+              <input id="df1-input" type="number" min="1" class="mt-1 w-full rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-df1-input placeholder="e.g. 3" />
             </div>
             <div>
               <label for="df2-input" class="block text-xs font-medium text-[color:var(--muted)]">Denominator df₂ (Error df)</label>
-              <input id="df2-input" type="number" min="1" class="mt-1 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-df2-input placeholder="e.g. 40" />
+              <input id="df2-input" type="number" min="1" class="mt-1 w-full rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-df2-input placeholder="e.g. 40" />
             </div>
           </div>
 
           <div class="space-y-1.5" data-hypo-wrapper>
             <label for="hypo-type" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Hypothesis Direction</label>
-            <select id="hypo-type" class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-sm font-semibold text-[color:var(--fg)] outline-none" data-hypo-type>
+            <select id="hypo-type" class="w-full rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-sm font-semibold text-[color:var(--fg)] outline-none" data-hypo-type>
               <option value="two_tailed" selected>Two-Tailed (Hₐ: μ ≠ μ₀)</option>
               <option value="right_tailed">Right-Tailed (Hₐ: μ &gt; μ₀)</option>
               <option value="left_tailed">Left-Tailed (Hₐ: μ &lt; μ₀)</option>
@@ -215,7 +215,7 @@ const schemaGraph = [
 
           <div class="space-y-1.5">
             <label for="alpha-level" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Significance Threshold (α)</label>
-            <select id="alpha-level" class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-sm font-semibold text-[color:var(--fg)] outline-none" data-alpha-level>
+            <select id="alpha-level" class="w-full rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-sm font-semibold text-[color:var(--fg)] outline-none" data-alpha-level>
               <option value="0.05" selected>α = 0.05 (Standard 95% Confidence)</option>
               <option value="0.01">α = 0.01 (High Rigor 99% Confidence)</option>
               <option value="0.001">α = 0.001 (Very High 99.9% Confidence)</option>
@@ -224,17 +224,17 @@ const schemaGraph = [
           </div>
         </form>
 
-        <div class="flex flex-col justify-between space-y-6 rounded-3xl border border-[color:var(--accent)]/30 bg-gradient-to-br from-[color:var(--accent-soft)] via-[color:var(--surface)] to-transparent p-6 sm:p-8 shadow-sm">
+        <div class="space-y-6">
           <div class="space-y-5">
             <div class="flex items-center justify-between">
               <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Evaluation</span>
               <div class="flex items-center gap-2">
-                <span class="rounded-full px-3 py-0.5 text-xs font-bold bg-cyan-500/10 text-cyan-500 dark:text-cyan-400 border border-cyan-500/20" data-sig-badge>
+                <span class="rounded-none px-3 py-0.5 text-xs font-bold bg-cyan-500/10 text-cyan-500 dark:text-cyan-400 border border-cyan-500/20" data-sig-badge>
                   Significant
                 </span>
                 <button
                   type="button"
-                  class="inline-flex items-center gap-1.5 rounded-lg border border-[color:var(--border)] bg-[color:var(--surface)] px-2.5 py-1 text-xs font-semibold text-[color:var(--fg)] hover:bg-[color:var(--bg)] transition cursor-pointer"
+                  class="inline-flex items-center gap-1.5 rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] px-2.5 py-1 text-xs font-semibold text-[color:var(--fg)] hover:bg-[color:var(--bg)] transition cursor-pointer"
                   data-copy-btn
                 >
                   <Icon name="copy" class="w-3.5 h-3.5" />
@@ -243,7 +243,7 @@ const schemaGraph = [
               </div>
             </div>
 
-            <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 text-center">
+            <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-6 text-center">
               <p class="text-xs font-semibold text-[color:var(--muted)]">Calculated p-Value</p>
               <p class="mt-1 text-4xl sm:text-5xl font-black tracking-tight text-[color:var(--fg)] font-mono" data-res-p>
                 0.0316
@@ -254,7 +254,7 @@ const schemaGraph = [
             </div>
 
             <!-- Evidence Strength Gauge -->
-            <div class="space-y-2 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-xs font-mono">
+            <div class="space-y-2 rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-xs font-mono">
               <div class="flex justify-between">
                 <span class="text-[color:var(--muted)] font-sans">Strength of Evidence:</span>
                 <span class="font-bold text-cyan-500 dark:text-cyan-400" data-evidence-tier>Moderate Evidence against H₀</span>
@@ -284,16 +284,16 @@ const schemaGraph = [
     </header>
 
     <!-- Mathematical Formulas & Hypothesis Testing Logic -->
-    <section class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 sm:p-8 space-y-4">
+    <section class="space-y-4 border-t border-[color:var(--border)] pt-8">
       <div>
         <p class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Inferential Probability</p>
         <h2 class="text-xl font-bold text-[color:var(--fg)]">P-Value Equations &amp; Decision Rules</h2>
       </div>
 
       <div class="grid gap-4 sm:grid-cols-2 text-xs sm:text-sm">
-        <div class="rounded-2xl bg-[color:var(--bg)] p-4 border border-[color:var(--border)] space-y-2">
+        <div class="rounded-none bg-[color:var(--bg)] p-4 border border-[color:var(--border)] space-y-2">
           <p class="font-bold text-[color:var(--fg)]">1. Tail Direction Formulas</p>
-          <div class="rounded-xl bg-[color:var(--surface)] p-3 font-mono text-xs text-[color:var(--fg)] overflow-x-auto space-y-1">
+          <div class="rounded-none bg-[color:var(--surface)] p-3 font-mono text-xs text-[color:var(--fg)] overflow-x-auto space-y-1">
             <p>Two-Tailed: p = 2 × min[P(T ≤ t), P(T ≥ t)]</p>
             <p>Right-Tailed: p = P(T ≥ t) = 1 - Φ(t)</p>
             <p>Left-Tailed: p = P(T ≤ t) = Φ(t)</p>
@@ -303,9 +303,9 @@ const schemaGraph = [
           </p>
         </div>
 
-        <div class="rounded-2xl bg-[color:var(--bg)] p-4 border border-[color:var(--border)] space-y-2">
+        <div class="rounded-none bg-[color:var(--bg)] p-4 border border-[color:var(--border)] space-y-2">
           <p class="font-bold text-[color:var(--fg)]">2. Significance Decision Rules</p>
-          <div class="rounded-xl bg-[color:var(--surface)] p-3 font-mono text-xs text-[color:var(--fg)] overflow-x-auto">
+          <div class="rounded-none bg-[color:var(--surface)] p-3 font-mono text-xs text-[color:var(--fg)] overflow-x-auto">
             p &lt; α &implies; Reject H₀ (Statistically Significant)
           </div>
           <p class="text-xs text-[color:var(--muted)]">
@@ -323,7 +323,7 @@ const schemaGraph = [
       <h2 class="text-xl font-bold text-[color:var(--fg)]">Frequently Asked Questions</h2>
       <div class="space-y-3">
         {faqs.map((faq) => (
-          <details class="group rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
+          <details class="group rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
             <summary class="cursor-pointer list-none font-semibold text-sm sm:text-base text-[color:var(--fg)] flex items-center justify-between gap-4">
               <span>{faq.question}</span>
               <span class="text-xs text-[color:var(--muted)] group-open:rotate-180 transition-transform">▼</span>
@@ -457,10 +457,10 @@ const schemaGraph = [
         const isSig = p < alpha;
         if (badge) {
           if (isSig) {
-            badge.className = 'rounded-full px-3 py-0.5 text-xs font-bold bg-cyan-500/10 text-cyan-500 dark:text-cyan-400 border border-cyan-500/20';
+            badge.className = 'rounded-none px-3 py-0.5 text-xs font-bold bg-cyan-500/10 text-cyan-500 dark:text-cyan-400 border border-cyan-500/20';
             badge.textContent = `Significant (p < ${alpha})`;
           } else {
-            badge.className = 'rounded-full px-3 py-0.5 text-xs font-bold bg-rose-500/10 text-rose-500 border border-rose-500/20';
+            badge.className = 'rounded-none px-3 py-0.5 text-xs font-bold bg-rose-500/10 text-rose-500 border border-rose-500/20';
             badge.textContent = `Not Significant (p ≥ ${alpha})`;
           }
         }

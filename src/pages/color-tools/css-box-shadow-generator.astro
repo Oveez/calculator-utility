@@ -84,14 +84,14 @@ const schemaGraph = [
 
     <div class="space-y-6">
       <!-- Live Preview Area -->
-      <div class="flex items-center justify-center rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-12 sm:p-20">
-        <div id="preview-box" class="h-40 w-56 rounded-3xl bg-[color:var(--surface)] flex items-center justify-center font-bold text-xs text-[color:var(--fg)] transition-all">
+      <div class="flex items-center justify-center rounded-none border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-12 sm:p-20">
+        <div id="preview-box" class="h-40 w-56 rounded-none bg-[color:var(--surface)] flex items-center justify-center font-bold text-xs text-[color:var(--fg)] transition-all">
           Box Shadow Preview
         </div>
       </div>
 
       <!-- Controls Grid -->
-      <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 text-xs">
+      <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-5 text-xs">
         <div>
           <div class="flex justify-between mb-1 font-bold text-[color:var(--fg)]">
             <span>X Offset:</span>
@@ -133,7 +133,7 @@ const schemaGraph = [
       </div>
 
       <!-- Generated CSS Output -->
-      <div class="space-y-3 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 sm:p-6">
+      <div class="space-y-3 rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-5 sm:p-6">
         <div class="flex items-center justify-between">
           <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Generated CSS Code</span>
           <button type="button" data-copy-css class="inline-flex items-center gap-1 text-xs font-bold text-[color:var(--fg)] hover:underline">
@@ -141,7 +141,7 @@ const schemaGraph = [
             <span>Copy CSS</span>
           </button>
         </div>
-        <pre id="css-out" class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-4 font-mono text-xs font-bold text-cyan-500 dark:text-cyan-400 overflow-x-auto select-all">-</pre>
+        <pre id="css-out" class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-4 font-mono text-xs font-bold text-cyan-500 dark:text-cyan-400 overflow-x-auto select-all">-</pre>
       </div>
     </div>
 
@@ -160,7 +160,7 @@ const schemaGraph = [
       <h2 class="text-xl font-bold text-[color:var(--fg)]">Frequently Asked Questions</h2>
       <div class="space-y-3">
         {schemaFaq.map((faq) => (
-          <details class="group rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
+          <details class="group rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
             <summary class="cursor-pointer list-none font-semibold text-sm sm:text-base text-[color:var(--fg)] flex items-center justify-between gap-4">
               <span>{faq.question}</span>
               <span class="text-xs text-[color:var(--muted)] group-open:rotate-180 transition-transform">▼</span>

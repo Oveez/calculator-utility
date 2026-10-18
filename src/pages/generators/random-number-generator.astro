@@ -84,7 +84,7 @@ const schemaGraph = [
 
     <div class="space-y-6">
       <!-- Single Number Hero Display -->
-      <div class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-8 sm:p-12 text-center space-y-4">
+      <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-8 sm:p-12 text-center space-y-4">
         <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Generated Random Result</span>
         <p id="hero-num" class="text-5xl sm:text-7xl font-black text-cyan-500 dark:text-cyan-400 min-h-20 flex items-center justify-center font-mono">
           42
@@ -93,7 +93,7 @@ const schemaGraph = [
         <button
           type="button"
           id="roll-btn"
-          class="inline-flex items-center justify-center gap-2 rounded-2xl bg-[color:var(--accent)] px-8 py-3.5 text-sm sm:text-base font-extrabold text-white shadow-md transition hover:opacity-90 active:scale-95 cursor-pointer"
+          class="inline-flex items-center justify-center gap-2 rounded-none bg-[color:var(--accent)] px-8 py-3.5 text-sm sm:text-base font-extrabold text-white shadow-md transition hover:opacity-90 active:scale-95 cursor-pointer"
         >
           <Icon name="dice" class="w-5 h-5" />
           <span>Roll Random Number</span>
@@ -101,20 +101,20 @@ const schemaGraph = [
       </div>
 
       <!-- Controls Grid -->
-      <div class="grid gap-4 sm:grid-cols-3 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 text-xs">
+      <div class="grid gap-4 sm:grid-cols-3 rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-5 text-xs">
         <div>
           <label for="min-val" class="font-bold text-[color:var(--fg)] block mb-1">Minimum (Min):</label>
           <input
             type="number"
             id="min-val"
-            class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-[color:var(--fg)]" placeholder="e.g. 1" />
+            class="w-full rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-[color:var(--fg)]" placeholder="e.g. 1" />
         </div>
         <div>
           <label for="max-val" class="font-bold text-[color:var(--fg)] block mb-1">Maximum (Max):</label>
           <input
             type="number"
             id="max-val"
-            class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-[color:var(--fg)]" placeholder="e.g. 100" />
+            class="w-full rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-[color:var(--fg)]" placeholder="e.g. 100" />
         </div>
         <div>
           <label for="bulk-count" class="font-bold text-[color:var(--fg)] block mb-1">Numbers to Generate:</label>
@@ -123,12 +123,12 @@ const schemaGraph = [
             id="bulk-count"
             min="1"
             max="1000"
-            class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-[color:var(--fg)]" placeholder="e.g. 1" />
+            class="w-full rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-[color:var(--fg)]" placeholder="e.g. 1" />
         </div>
       </div>
 
       <!-- Bulk Result Display -->
-      <div id="bulk-card" class="hidden space-y-3 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 sm:p-6">
+      <div id="bulk-card" class="hidden space-y-3 rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-5 sm:p-6">
         <div class="flex items-center justify-between">
           <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Bulk Number Sequence</span>
           <button type="button" data-copy-bulk class="inline-flex items-center gap-1 text-xs font-bold text-[color:var(--fg)] hover:underline">
@@ -155,7 +155,7 @@ const schemaGraph = [
       <h2 class="text-xl font-bold text-[color:var(--fg)]">Frequently Asked Questions</h2>
       <div class="space-y-3">
         {schemaFaq.map((faq) => (
-          <details class="group rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
+          <details class="group rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
             <summary class="cursor-pointer list-none font-semibold text-sm sm:text-base text-[color:var(--fg)] flex items-center justify-between gap-4">
               <span>{faq.question}</span>
               <span class="text-xs text-[color:var(--muted)] group-open:rotate-180 transition-transform">▼</span>
@@ -212,7 +212,7 @@ const schemaGraph = [
           heroNum.textContent = numbers[0];
           bulkCard.classList.remove('hidden');
           bulkList.innerHTML = numbers.map(n => `
-            <span class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] px-3 py-1 font-bold text-cyan-500 dark:text-cyan-400">
+            <span class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface-strong)] px-3 py-1 font-bold text-cyan-500 dark:text-cyan-400">
               ${n}
             </span>
           `).join('');

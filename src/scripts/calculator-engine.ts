@@ -102,7 +102,7 @@ function updateChartSvg(chartRoot: HTMLElement, chartConfig: any): void {
 	const elementsGroup = svg.querySelector<SVGGElement>('[data-chart-elements]');
 	if (!elementsGroup) return;
 
-	const defaultColors = ['#4f46e5', '#06b6d4', '#f59e0b', '#8b5cf6', '#ec4899', '#3b82f6'];
+	const defaultColors = ['#FA4619', '#0F172A', '#475569', '#94A3B8', '#CBD5E1', '#1E293B'];
 
 	if (chartConfig.type === 'donut' || chartConfig.type === 'pie') {
 		const total = chartConfig.datasets[0]?.data.reduce((sum: number, val: number) => sum + Math.max(val, 0), 0) || 1;
@@ -356,10 +356,10 @@ function setupRoot(root: HTMLElement): void {
 				secondaryGrid.innerHTML = detailed.secondary
 					.map(
 						(sec) => `
-					<div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] p-3 shadow-2xs">
+					<div class="rounded-none border border-[color:var(--border)] bg-white p-3 shadow-2xs">
 						<p class="text-[10px] font-bold uppercase tracking-wider text-[color:var(--muted)]">${sec.label}</p>
 						<p class="mt-1 text-base font-bold text-[color:var(--fg)]">${sec.formattedValue ?? sec.value}</p>
-						${sec.badge ? `<span class="mt-1 inline-block rounded bg-[color:var(--surface)] px-1.5 py-0.5 text-[10px] font-medium text-[color:var(--accent)] border border-[color:var(--border)]">${sec.badge}</span>` : ''}
+						${sec.badge ? `<span class="mt-1 inline-block rounded-none bg-white px-1.5 py-0.5 text-[10px] font-medium text-[color:var(--accent)] border border-[color:var(--border)]">${sec.badge}</span>` : ''}
 					</div>
 				`,
 					)
@@ -372,7 +372,7 @@ function setupRoot(root: HTMLElement): void {
 			if (breakdownContainer && breakdownBar && breakdownLegend && detailed.breakdown && detailed.breakdown.length > 0) {
 				breakdownContainer.classList.remove('hidden');
 				const total = detailed.breakdown.reduce((sum, item) => sum + (item.value || 0), 0) || 1;
-				const defaultColors = ['bg-blue-500', 'bg-cyan-500', 'bg-amber-500', 'bg-rose-500', 'bg-purple-500'];
+				const defaultColors = ['bg-[color:var(--accent)]', 'bg-[#0F172A]', 'bg-[#475569]', 'bg-[#94A3B8]', 'bg-[#CBD5E1]'];
 
 				breakdownBar.innerHTML = detailed.breakdown
 					.map((item, idx) => {

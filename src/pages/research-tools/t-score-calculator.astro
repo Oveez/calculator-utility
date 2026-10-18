@@ -159,7 +159,7 @@ const schemaGraph = [
 
 
     <div
-      class="rounded-[2.5rem] border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-6 shadow-[var(--shadow)] sm:p-10"
+      class="space-y-8"
       data-tscore-app
     >
       <div class="grid gap-8 lg:grid-cols-[1.1fr_0.9fr]">
@@ -171,11 +171,11 @@ const schemaGraph = [
             </button>
           </div>
 
-          <div class="flex items-center gap-2 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-1 text-xs font-semibold overflow-x-auto no-scrollbar sm:grid sm:grid-cols-2">
-            <button type="button" class="shrink-0 min-w-max sm:min-w-0 sm:shrink text-center cursor-pointer rounded-xl bg-[color:var(--accent)] px-3 py-2 text-white shadow-xs transition" data-mode-btn="ttest">
+          <div class="flex items-center gap-2 rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-1 text-xs font-semibold overflow-x-auto no-scrollbar sm:grid sm:grid-cols-2">
+            <button type="button" class="shrink-0 min-w-max sm:min-w-0 sm:shrink text-center cursor-pointer rounded-none bg-[color:var(--accent)] px-3 py-2 text-white shadow-xs transition" data-mode-btn="ttest">
               Student’s t-Test (Sample)
             </button>
-            <button type="button" class="shrink-0 min-w-max sm:min-w-0 sm:shrink text-center cursor-pointer rounded-xl px-3 py-2 text-[color:var(--muted)] hover:text-[color:var(--fg)] transition" data-mode-btn="psych">
+            <button type="button" class="shrink-0 min-w-max sm:min-w-0 sm:shrink text-center cursor-pointer rounded-none px-3 py-2 text-[color:var(--muted)] hover:text-[color:var(--fg)] transition" data-mode-btn="psych">
               Psychometric T-Score (50+10Z)
             </button>
           </div>
@@ -184,22 +184,22 @@ const schemaGraph = [
           <div class="space-y-4" data-ttest-fields>
             <div class="space-y-1.5">
               <label for="sample-mean-t" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Sample Mean (x̄)</label>
-              <input id="sample-mean-t" type="number" step="any" class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none" data-sample-mean placeholder="e.g. 24.8" />
+              <input id="sample-mean-t" type="number" step="any" class="w-full rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none" data-sample-mean placeholder="e.g. 24.8" />
             </div>
 
             <div class="space-y-1.5">
               <label for="hypo-mean-t" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Hypothesized Population Mean (μ₀)</label>
-              <input id="hypo-mean-t" type="number" step="any" class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none" data-hypo-mean placeholder="e.g. 20.0" />
+              <input id="hypo-mean-t" type="number" step="any" class="w-full rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none" data-hypo-mean placeholder="e.g. 20.0" />
             </div>
 
             <div class="grid grid-cols-2 gap-3">
               <div>
                 <label for="sample-sd-t" class="block text-xs font-medium text-[color:var(--muted)]">Sample SD (s)</label>
-                <input id="sample-sd-t" type="number" min="0.0001" step="any" class="mt-1 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-sample-sd placeholder="e.g. 5.2" />
+                <input id="sample-sd-t" type="number" min="0.0001" step="any" class="mt-1 w-full rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-sample-sd placeholder="e.g. 5.2" />
               </div>
               <div>
                 <label for="sample-n-t" class="block text-xs font-medium text-[color:var(--muted)]">Sample Size (n)</label>
-                <input id="sample-n-t" type="number" min="2" step="1" class="mt-1 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-sample-n placeholder="e.g. 16" />
+                <input id="sample-n-t" type="number" min="2" step="1" class="mt-1 w-full rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-sample-n placeholder="e.g. 16" />
               </div>
             </div>
           </div>
@@ -208,29 +208,29 @@ const schemaGraph = [
           <div class="space-y-4" data-psych-fields hidden>
             <div class="space-y-1.5">
               <label for="psych-raw-score" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Raw Individual Score (X)</label>
-              <input id="psych-raw-score" type="number" step="any" class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none" data-psych-raw placeholder="e.g. 78" />
+              <input id="psych-raw-score" type="number" step="any" class="w-full rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none" data-psych-raw placeholder="e.g. 78" />
             </div>
             <div class="grid grid-cols-2 gap-3">
               <div>
                 <label for="psych-norm-mean" class="block text-xs font-medium text-[color:var(--muted)]">Normative Mean (μ)</label>
-                <input id="psych-norm-mean" type="number" step="any" class="mt-1 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-psych-mean placeholder="e.g. 50" />
+                <input id="psych-norm-mean" type="number" step="any" class="mt-1 w-full rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-psych-mean placeholder="e.g. 50" />
               </div>
               <div>
                 <label for="psych-norm-sd" class="block text-xs font-medium text-[color:var(--muted)]">Normative SD (σ)</label>
-                <input id="psych-norm-sd" type="number" min="0.0001" step="any" class="mt-1 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-psych-sd placeholder="e.g. 12" />
+                <input id="psych-norm-sd" type="number" min="0.0001" step="any" class="mt-1 w-full rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-psych-sd placeholder="e.g. 12" />
               </div>
             </div>
           </div>
         </form>
 
         <!-- Result Box -->
-        <div class="flex flex-col justify-between space-y-6 rounded-3xl border border-[color:var(--accent)]/30 bg-gradient-to-br from-[color:var(--accent-soft)] via-[color:var(--surface)] to-transparent p-6 sm:p-8 shadow-sm">
+        <div class="space-y-6">
           <div class="space-y-5">
             <div class="flex items-center justify-between">
               <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]" data-res-header-label>Test Statistic</span>
               <button
                 type="button"
-                class="inline-flex items-center gap-1.5 rounded-lg border border-[color:var(--border)] bg-[color:var(--surface)] px-2.5 py-1 text-xs font-semibold text-[color:var(--fg)] hover:bg-[color:var(--bg)] transition cursor-pointer"
+                class="inline-flex items-center gap-1.5 rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] px-2.5 py-1 text-xs font-semibold text-[color:var(--fg)] hover:bg-[color:var(--bg)] transition cursor-pointer"
                 data-copy-btn
               >
                 <Icon name="copy" class="w-3.5 h-3.5" />
@@ -238,7 +238,7 @@ const schemaGraph = [
               </button>
             </div>
 
-            <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 text-center">
+            <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-6 text-center">
               <p class="text-xs font-semibold text-[color:var(--muted)]" data-primary-metric-label>Student's t-Statistic</p>
               <p class="mt-1 text-4xl sm:text-5xl font-black tracking-tight text-[color:var(--fg)] font-mono" data-res-t>
                 +3.692
@@ -248,7 +248,7 @@ const schemaGraph = [
               </p>
             </div>
 
-            <div class="space-y-2 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-xs font-mono">
+            <div class="space-y-2 rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-xs font-mono">
               <div class="flex justify-between">
                 <span class="text-[color:var(--muted)] font-sans">Standard Error (SE):</span>
                 <span class="font-bold text-[color:var(--fg)]" data-se-val>1.3000</span>
@@ -272,7 +272,7 @@ const schemaGraph = [
     </div>
 
     <!-- Critical Values Lookup Reference Table -->
-    <section class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 sm:p-8 space-y-4">
+    <section class="space-y-4 border-t border-[color:var(--border)] pt-8">
       <div>
         <p class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Thresholds Lookup</p>
         <h2 class="text-xl font-bold text-[color:var(--fg)]">Student’s Critical t* Cutoffs (for current df)</h2>
@@ -306,16 +306,16 @@ const schemaGraph = [
     </header>
 
     <!-- Mathematical Formulas & Hypothesis Testing -->
-    <section class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 sm:p-8 space-y-4">
+    <section class="space-y-4 border-t border-[color:var(--border)] pt-8">
       <div>
         <p class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Inferential Theory</p>
         <h2 class="text-xl font-bold text-[color:var(--fg)]">Student’s t-Distribution &amp; Psychometric T-Scores</h2>
       </div>
 
       <div class="grid gap-4 sm:grid-cols-2 text-xs sm:text-sm">
-        <div class="rounded-2xl bg-[color:var(--bg)] p-4 border border-[color:var(--border)] space-y-2">
+        <div class="rounded-none bg-[color:var(--bg)] p-4 border border-[color:var(--border)] space-y-2">
           <p class="font-bold text-[color:var(--fg)]">1. One-Sample Student's t-Statistic</p>
-          <div class="rounded-xl bg-[color:var(--surface)] p-3 font-mono text-xs text-[color:var(--fg)] overflow-x-auto">
+          <div class="rounded-none bg-[color:var(--surface)] p-3 font-mono text-xs text-[color:var(--fg)] overflow-x-auto">
             t = (x̄ - μ₀) ÷ (s ÷ √n) &emsp; [df = n - 1]
           </div>
           <p class="text-xs text-[color:var(--muted)]">
@@ -323,9 +323,9 @@ const schemaGraph = [
           </p>
         </div>
 
-        <div class="rounded-2xl bg-[color:var(--bg)] p-4 border border-[color:var(--border)] space-y-2">
+        <div class="rounded-none bg-[color:var(--bg)] p-4 border border-[color:var(--border)] space-y-2">
           <p class="font-bold text-[color:var(--fg)]">2. Standardized Psychometric T-Score</p>
-          <div class="rounded-xl bg-[color:var(--surface)] p-3 font-mono text-xs text-[color:var(--fg)] overflow-x-auto">
+          <div class="rounded-none bg-[color:var(--surface)] p-3 font-mono text-xs text-[color:var(--fg)] overflow-x-auto">
             T = 50 + (10 × Z) = 50 + [10 × ((X - μ) ÷ σ)]
           </div>
           <p class="text-xs text-[color:var(--muted)]">
@@ -343,7 +343,7 @@ const schemaGraph = [
       <h2 class="text-xl font-bold text-[color:var(--fg)]">Frequently Asked Questions</h2>
       <div class="space-y-3">
         {faqs.map((faq) => (
-          <details class="group rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
+          <details class="group rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
             <summary class="cursor-pointer list-none font-semibold text-sm sm:text-base text-[color:var(--fg)] flex items-center justify-between gap-4">
               <span>{faq.question}</span>
               <span class="text-xs text-[color:var(--muted)] group-open:rotate-180 transition-transform">▼</span>
@@ -508,9 +508,9 @@ const schemaGraph = [
           currentMode = btn.dataset.modeBtn || 'ttest';
           modeBtns.forEach(b => {
             if (b === btn) {
-              b.className = 'shrink-0 min-w-max sm:min-w-0 sm:shrink text-center cursor-pointer rounded-xl bg-[color:var(--accent)] px-3 py-2 text-white shadow-xs transition';
+              b.className = 'shrink-0 min-w-max sm:min-w-0 sm:shrink text-center cursor-pointer rounded-none bg-[color:var(--accent)] px-3 py-2 text-white shadow-xs transition';
             } else {
-              b.className = 'shrink-0 min-w-max sm:min-w-0 sm:shrink text-center cursor-pointer rounded-xl px-3 py-2 text-[color:var(--muted)] hover:text-[color:var(--fg)] transition';
+              b.className = 'shrink-0 min-w-max sm:min-w-0 sm:shrink text-center cursor-pointer rounded-none px-3 py-2 text-[color:var(--muted)] hover:text-[color:var(--fg)] transition';
             }
           });
 

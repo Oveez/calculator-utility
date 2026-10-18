@@ -137,7 +137,7 @@ const parameterGuide = [
 
 
     <!-- Metrics Bar -->
-    <div id="stats-bar" class="grid grid-cols-2 gap-3 sm:grid-cols-4 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-center">
+    <div id="stats-bar" class="grid grid-cols-2 gap-3 sm:grid-cols-4 rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-center">
       <div>
         <span class="block text-[11px] uppercase tracking-wider text-[color:var(--muted)]">Input Length</span>
         <span id="stat-len" class="font-mono text-lg font-bold text-[color:var(--fg)]">43 chars</span>
@@ -171,16 +171,16 @@ const parameterGuide = [
         <textarea
           id="hash-in"
           rows="4"
-          class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 font-mono text-xs leading-relaxed text-[color:var(--fg)] focus:border-[color:var(--border-strong)] focus:outline-hidden"
+          class="w-full rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-4 font-mono text-xs leading-relaxed text-[color:var(--fg)] focus:border-[color:var(--border-strong)] focus:outline-hidden"
           placeholder="Type or paste text to generate cryptographic hashes..."
         >The quick brown fox jumps over the lazy dog</textarea>
 
         <!-- Options Bar -->
-        <div class="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-xs">
+        <div class="flex flex-wrap items-center justify-between gap-3 rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-xs">
           <div class="flex flex-wrap items-center gap-4">
             <div class="flex items-center gap-2">
               <label for="casing-select" class="font-medium text-[color:var(--muted)]">Format:</label>
-              <select id="casing-select" class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] px-2.5 py-1 text-xs text-[color:var(--fg)]">
+              <select id="casing-select" class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface-strong)] px-2.5 py-1 text-xs text-[color:var(--fg)]">
                 <option value="hex-lower">Lowercase Hex</option>
                 <option value="hex-upper">Uppercase Hex</option>
                 <option value="base64">Base64 Encoded</option>
@@ -198,7 +198,7 @@ const parameterGuide = [
               type="text"
               id="hmac-key"
               placeholder="Enter secret HMAC key..."
-              class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] px-3 py-1.5 font-mono text-xs text-[color:var(--fg)] focus:outline-hidden"
+              class="w-full rounded-none border border-[color:var(--border)] bg-[color:var(--surface-strong)] px-3 py-1.5 font-mono text-xs text-[color:var(--fg)] focus:outline-hidden"
               value="secret-key-123" />
           </div>
         </div>
@@ -209,7 +209,7 @@ const parameterGuide = [
         <h2 class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Calculated Hash Digests</h2>
 
         <!-- SHA-256 -->
-        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 space-y-2">
+        <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-4 space-y-2">
           <div class="flex items-center justify-between">
             <div class="flex items-center gap-2">
               <span class="font-bold text-xs text-[color:var(--fg)]" id="label-sha256">SHA-256 (256-bit)</span>
@@ -220,11 +220,11 @@ const parameterGuide = [
               <span>Copy</span>
             </button>
           </div>
-          <p id="hash-sha256" class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-3 font-mono text-xs text-[color:var(--fg)] break-all select-all">-</p>
+          <p id="hash-sha256" class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-3 font-mono text-xs text-[color:var(--fg)] break-all select-all">-</p>
         </div>
 
         <!-- SHA-512 -->
-        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 space-y-2">
+        <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-4 space-y-2">
           <div class="flex items-center justify-between">
             <div class="flex items-center gap-2">
               <span class="font-bold text-xs text-[color:var(--fg)]" id="label-sha512">SHA-512 (512-bit)</span>
@@ -235,11 +235,11 @@ const parameterGuide = [
               <span>Copy</span>
             </button>
           </div>
-          <p id="hash-sha512" class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-3 font-mono text-xs text-[color:var(--fg)] break-all select-all">-</p>
+          <p id="hash-sha512" class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-3 font-mono text-xs text-[color:var(--fg)] break-all select-all">-</p>
         </div>
 
         <!-- SHA-384 -->
-        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 space-y-2">
+        <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-4 space-y-2">
           <div class="flex items-center justify-between">
             <span class="font-bold text-xs text-[color:var(--fg)]" id="label-sha384">SHA-384 (384-bit)</span>
             <button type="button" data-copy-hash="sha384" class="inline-flex items-center gap-1 text-xs font-bold text-[color:var(--fg)] hover:underline cursor-pointer">
@@ -247,11 +247,11 @@ const parameterGuide = [
               <span>Copy</span>
             </button>
           </div>
-          <p id="hash-sha384" class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-3 font-mono text-xs text-[color:var(--fg)] break-all select-all">-</p>
+          <p id="hash-sha384" class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-3 font-mono text-xs text-[color:var(--fg)] break-all select-all">-</p>
         </div>
 
         <!-- SHA-1 -->
-        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 space-y-2">
+        <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-4 space-y-2">
           <div class="flex items-center justify-between">
             <div class="flex items-center gap-2">
               <span class="font-bold text-xs text-[color:var(--fg)]" id="label-sha1">SHA-1 (160-bit)</span>
@@ -262,11 +262,11 @@ const parameterGuide = [
               <span>Copy</span>
             </button>
           </div>
-          <p id="hash-sha1" class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-3 font-mono text-xs text-[color:var(--fg)] break-all select-all">-</p>
+          <p id="hash-sha1" class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-3 font-mono text-xs text-[color:var(--fg)] break-all select-all">-</p>
         </div>
 
         <!-- MD5 (Standard Hash only) -->
-        <div id="md5-card" class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 space-y-2">
+        <div id="md5-card" class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-4 space-y-2">
           <div class="flex items-center justify-between">
             <div class="flex items-center gap-2">
               <span class="font-bold text-xs text-[color:var(--fg)]">MD5 (128-bit)</span>
@@ -277,26 +277,26 @@ const parameterGuide = [
               <span>Copy</span>
             </button>
           </div>
-          <p id="hash-md5" class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-3 font-mono text-xs text-[color:var(--fg)] break-all select-all">-</p>
+          <p id="hash-md5" class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-3 font-mono text-xs text-[color:var(--fg)] break-all select-all">-</p>
         </div>
       </div>
     </div>
 
     <!-- Step-by-Step Worked Example -->
-    <section class="space-y-4 rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 sm:p-8 text-xs sm:text-sm text-[color:var(--muted)] leading-relaxed">
+    <section class="space-y-4 border-t border-[color:var(--border)] pt-8 text-xs sm:text-sm text-[color:var(--muted)] leading-relaxed">
       <div class="flex items-center gap-2">
-        <span class="rounded-md bg-[color:var(--accent)]/15 px-2.5 py-1 text-xs font-bold text-[color:var(--accent)]">Worked Example</span>
+        <span class="rounded-none bg-[color:var(--accent)]/15 px-2.5 py-1 text-xs font-bold text-[color:var(--accent)]">Worked Example</span>
         <h2 class="text-base sm:text-lg font-bold text-[color:var(--fg)]">Standard Benchmark: "The quick brown fox jumps over the lazy dog"</h2>
       </div>
       <p>
         Cryptographic algorithms produce fixed-length deterministic digests from arbitrary text:
       </p>
       <div class="space-y-2 font-mono text-xs">
-        <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] p-3 break-all">
+        <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] p-3 break-all">
           <span class="text-[color:var(--muted)] block font-bold font-sans text-[11px]">SHA-256 Digest (64 Hex Characters):</span>
           d7a8fbb307d7809469ca9abcb0082e4f8d5651e468d7525f6183e2a4f383a8b4
         </div>
-        <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] p-3 break-all">
+        <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] p-3 break-all">
           <span class="text-[color:var(--muted)] block font-bold font-sans text-[11px]">MD5 Checksum (32 Hex Characters):</span>
           9e107d9d372bb6826bd81d3542a419d6
         </div>
@@ -324,7 +324,7 @@ const parameterGuide = [
       <h2 class="text-xl font-bold text-[color:var(--fg)]">Frequently Asked Questions</h2>
       <div class="space-y-3">
         {schemaFaq.map((faq) => (
-          <details class="group rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
+          <details class="group rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
             <summary class="cursor-pointer list-none font-semibold text-sm sm:text-base text-[color:var(--fg)] flex items-center justify-between gap-4">
               <span>{faq.question}</span>
               <span class="text-xs text-[color:var(--muted)] group-open:rotate-180 transition-transform">▼</span>

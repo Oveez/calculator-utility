@@ -52,7 +52,7 @@ const {
 } = Astro.props;
 ---
 
-<div class={`rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 sm:p-6 space-y-3 shadow-sm ${className}`}>
+<div class={`rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-5 space-y-3 ${className}`}>
   <div class="flex items-center justify-between border-b border-[color:var(--border)] pb-3">
     <h3 class="text-xs font-bold uppercase tracking-wider text-[color:var(--fg)]">
       {title}
@@ -91,43 +91,43 @@ const {
         {formatCurrency(taxableIncome, currency, currencySymbol)}
       </span>
     </div>
-    <div class="flex justify-between text-rose-500">
+    <div class="flex justify-between text-[color:var(--fg)]">
       <span>Regular Federal Income Tax</span>
       <span data-res-regular-tax>
         {formatCurrency(regularIncomeTax, currency, currencySymbol)}
       </span>
     </div>
-    <div class="flex justify-between text-rose-500" data-res-capgains-wrap>
+    <div class="flex justify-between text-[color:var(--fg)]" data-res-capgains-wrap>
       <span>Preferential Capital Gains Tax</span>
       <span data-res-capgains-tax>
         {formatCurrency(preferentialCapitalGainsTax, currency, currencySymbol)}
       </span>
     </div>
-    <div class="flex justify-between text-cyan-500 dark:text-cyan-400 font-semibold" data-res-credits-wrap>
+    <div class="flex justify-between text-[color:var(--accent)] font-semibold" data-res-credits-wrap>
       <span>Tax Credits (Child &amp; Dependent)</span>
       <span data-res-credits>
         -{formatCurrency(totalTaxCredits, currency, currencySymbol)}
       </span>
     </div>
-    <div class="flex justify-between font-semibold text-rose-600 border-t border-[color:var(--border)]/40 pt-1">
+    <div class="flex justify-between font-semibold text-[color:var(--fg)] border-t border-[color:var(--border)]/40 pt-1">
       <span>Net Federal Income Tax</span>
       <span data-res-net-fed>
         {formatCurrency(netFederalIncomeTax, currency, currencySymbol)}
       </span>
     </div>
-    <div class="flex justify-between text-indigo-500">
+    <div class="flex justify-between text-[color:var(--fg)]">
       <span data-res-fica-label>{ficaLabel}</span>
       <span data-res-fica>
         {formatCurrency(totalFicaTax, currency, currencySymbol)}
       </span>
     </div>
-    <div class="flex justify-between text-purple-500" data-res-se-wrap>
+    <div class="flex justify-between text-[color:var(--fg)]" data-res-se-wrap>
       <span>Self-Employment Tax (SE)</span>
       <span data-res-se>
         {formatCurrency(selfEmploymentTax, currency, currencySymbol)}
       </span>
     </div>
-    <div class="flex justify-between text-purple-500">
+    <div class="flex justify-between text-[color:var(--fg)]">
       <span data-res-state-name>{stateTaxName}</span>
       <span data-res-state-tax>
         {formatCurrency(stateIncomeTax, currency, currencySymbol)}
@@ -146,8 +146,8 @@ const {
       </span>
     </div>
     <div class="flex justify-between font-extrabold text-sm border-t-2 border-[color:var(--border)] pt-2" data-res-refund-row>
-      <span data-res-refund-label class="text-cyan-500 dark:text-cyan-400">Net Estimated Refund</span>
-      <span data-res-refund-val class="text-cyan-500 dark:text-cyan-400 font-mono">
+      <span data-res-refund-label class="text-[color:var(--accent)]">Net Estimated Refund</span>
+      <span data-res-refund-val class="text-[color:var(--accent)] font-mono">
         +{formatCurrency(federalRefundOrOwed, currency, currencySymbol)}
       </span>
     </div>

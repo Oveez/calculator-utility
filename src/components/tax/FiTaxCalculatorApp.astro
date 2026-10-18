@@ -72,7 +72,7 @@ const taxParameterGuide: CalculatorParameterInfo[] = [
 ---
 
 <div
-  class="relative overflow-hidden rounded-[2.5rem] border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-5 shadow-[var(--shadow)] sm:p-8 lg:p-10"
+  class="space-y-8"
   data-tax-app
   data-country-id="fi"
   data-profile-json={JSON.stringify(profile)}
@@ -86,7 +86,7 @@ const taxParameterGuide: CalculatorParameterInfo[] = [
           <h2 class="text-xl font-bold tracking-tight text-[color:var(--fg)] sm:text-2xl">
             Finland Income Tax &amp; Net Salary Calculator
           </h2>
-          <span class="inline-flex items-center rounded-full bg-blue-500/10 px-2.5 py-0.5 text-xs font-semibold text-blue-600 dark:text-blue-400 border border-blue-500/20">
+          <span class="inline-flex items-center rounded-none bg-[color:var(--accent-soft)] px-2.5 py-0.5 text-xs font-semibold text-[color:var(--accent)] border border-[color:var(--accent)]/30">
             Official 2026 Verohallinto
           </span>
         </div>
@@ -101,10 +101,10 @@ const taxParameterGuide: CalculatorParameterInfo[] = [
       <TaxYearSelector profile={profile} id="fi-tax-year-select" />
 
       <!-- Engine View Toggle -->
-      <div class="flex items-center rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-1 text-xs font-semibold overflow-x-auto no-scrollbar max-w-full shrink-0">
+      <div class="flex items-center rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-1 text-xs font-semibold overflow-x-auto no-scrollbar max-w-full shrink-0">
         <button
           type="button"
-          class="shrink-0 min-w-max cursor-pointer rounded-xl px-3 py-1.5 text-xs font-bold transition inline-flex items-center gap-1.5 bg-[color:var(--accent)] text-white shadow-xs active"
+          class="shrink-0 min-w-max cursor-pointer rounded-none px-3 py-1.5 text-xs font-bold transition inline-flex items-center gap-1.5 bg-[color:var(--accent)] text-white shadow-xs active"
           data-engine-tab="advanced"
         >
           <Icon name="bolt" class="w-3.5 h-3.5" />
@@ -112,7 +112,7 @@ const taxParameterGuide: CalculatorParameterInfo[] = [
         </button>
         <button
           type="button"
-          class="shrink-0 min-w-max cursor-pointer rounded-xl px-3 py-1.5 text-xs font-semibold text-[color:var(--muted)] hover:text-[color:var(--fg)] transition inline-flex items-center gap-1.5"
+          class="shrink-0 min-w-max cursor-pointer rounded-none px-3 py-1.5 text-xs font-semibold text-[color:var(--muted)] hover:text-[color:var(--fg)] transition inline-flex items-center gap-1.5"
           data-engine-tab="quick"
         >
           <Icon name="calculator" class="w-3.5 h-3.5" />
@@ -123,14 +123,14 @@ const taxParameterGuide: CalculatorParameterInfo[] = [
   </div>
 
   <!-- HERO DYNAMIC TAKE-HOME BANNER -->
-  <div class="mt-6 rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 sm:p-6 shadow-sm">
+  <div class="mt-6 border-b border-[color:var(--border)] pb-6 space-y-4">
     <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
       <div>
         <div class="flex items-center gap-2">
           <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Annual Net Take-Home (Nettopalkka)</span>
           <span
             data-hero-badge
-            class="inline-flex items-center gap-1 rounded-full bg-blue-500/10 px-2.5 py-0.5 text-xs font-bold text-blue-600 dark:text-blue-400 border border-blue-500/20"
+            class="inline-flex items-center gap-1 rounded-none bg-[color:var(--accent-soft)] px-2.5 py-0.5 text-xs font-bold text-[color:var(--accent)] border border-[color:var(--accent)]/30"
           >
             Net Pay
           </span>
@@ -144,23 +144,23 @@ const taxParameterGuide: CalculatorParameterInfo[] = [
       </div>
 
       <div class="grid grid-cols-2 gap-3 sm:grid-cols-3 border-t border-[color:var(--border)]/60 pt-3 md:border-t-0 md:pt-0">
-        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] p-3">
+        <div class="rounded-none border border-[color:var(--border)] bg-white p-3">
           <p class="text-[11px] font-medium text-[color:var(--muted)]">Income Tax (Valtio + Kunta)</p>
-          <p class="text-base font-extrabold text-blue-500" data-hero-incometax>
+          <p class="text-base font-extrabold text-[color:var(--accent)]" data-hero-incometax>
             {formatCurrency(initialResult.stateTax + initialResult.regionalTax, profile.defaultCurrency, profile.defaultCurrencySymbol)}
           </p>
           <p class="text-[10px] text-[color:var(--muted)]">State &amp; Municipal</p>
         </div>
-        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] p-3">
+        <div class="rounded-none border border-[color:var(--border)] bg-white p-3">
           <p class="text-[11px] font-medium text-[color:var(--muted)]">Social Insurances (9.19%)</p>
-          <p class="text-base font-extrabold text-amber-500" data-hero-social>
+          <p class="text-base font-extrabold text-[color:var(--fg)]" data-hero-social>
             {formatCurrency(initialResult.pensionContribution + initialResult.unemploymentContribution + initialResult.healthContribution, profile.defaultCurrency, profile.defaultCurrencySymbol)}
           </p>
           <p class="text-[10px] text-[color:var(--muted)]">Työeläke &amp; Sairaus</p>
         </div>
-        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] p-3 col-span-2 sm:col-span-1">
+        <div class="rounded-none border border-[color:var(--border)] bg-white p-3 col-span-2 sm:col-span-1">
           <p class="text-[11px] font-medium text-[color:var(--muted)]">Effective Tax Rate</p>
-          <p class="text-base font-extrabold text-purple-500" data-hero-effective-rate>
+          <p class="text-base font-extrabold text-[color:var(--accent)]" data-hero-effective-rate>
             {formatPercent(initialResult.effectiveTaxRate * 100, 1)}
           </p>
           <p class="text-[10px] text-[color:var(--muted)]">Overall statutory load</p>
@@ -174,10 +174,10 @@ const taxParameterGuide: CalculatorParameterInfo[] = [
     <!-- LEFT PANE: INPUT CONTROLS -->
     <div class="space-y-6 lg:col-span-5">
       <!-- Income Input Card -->
-      <div class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 sm:p-6 shadow-sm space-y-5">
+      <div class="space-y-5">
         <div class="flex items-center justify-between border-b border-[color:var(--border)]/60 pb-3">
           <h3 class="text-base font-bold text-[color:var(--fg)] flex items-center gap-2">
-            <Icon name="dollar-sign" class="w-4 h-4 text-blue-500" />
+            <Icon name="dollar-sign" class="w-4 h-4 text-[color:var(--accent)]" />
             <span>Salary &amp; Wages</span>
           </h3>
           <span class="text-xs font-semibold text-[color:var(--muted)]">Euros (EUR)</span>
@@ -187,7 +187,7 @@ const taxParameterGuide: CalculatorParameterInfo[] = [
           <label for="fi-salary-input" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--fg)] mb-1">
             Annual Gross Salary (Bruttopalkka)
           </label>
-          <div class="relative rounded-2xl shadow-inner">
+          <div class="relative rounded-none shadow-inner">
             <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4 font-bold text-[color:var(--muted)]">
               €
             </div>
@@ -198,7 +198,7 @@ const taxParameterGuide: CalculatorParameterInfo[] = [
               step="500"
               value={initialIncome || ''}
               placeholder="e.g. 50,000"
-              class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] py-3.5 pl-10 pr-4 text-base font-bold text-[color:var(--fg)] transition focus:border-[color:var(--accent)] focus:outline-none focus:ring-2 focus:ring-[color:var(--accent)]/20"
+              class="w-full rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] py-3.5 pl-10 pr-4 text-base font-bold text-[color:var(--fg)] transition focus:border-[color:var(--accent)] focus:outline-none focus:ring-2 focus:ring-[color:var(--accent)]/20"
             />
           </div>
           <p class="mt-1.5 text-[11px] text-[color:var(--muted)]">
@@ -213,7 +213,7 @@ const taxParameterGuide: CalculatorParameterInfo[] = [
           </label>
           <select
             id="fi-kunta-select"
-            class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] py-3 px-4 text-sm font-semibold text-[color:var(--fg)] transition focus:border-[color:var(--accent)] focus:outline-none focus:ring-2 focus:ring-[color:var(--accent)]/20"
+            class="w-full rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] py-3 px-4 text-sm font-semibold text-[color:var(--fg)] transition focus:border-[color:var(--accent)] focus:outline-none focus:ring-2 focus:ring-[color:var(--accent)]/20"
           >
             <option value="national_avg" selected>National Average Kunta (~7.50%)</option>
             <option value="helsinki">Helsinki (5.30%)</option>
@@ -235,7 +235,7 @@ const taxParameterGuide: CalculatorParameterInfo[] = [
           </label>
           <select
             id="fi-church-tax-select"
-            class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] py-3 px-4 text-sm font-semibold text-[color:var(--fg)] transition focus:border-[color:var(--accent)] focus:outline-none focus:ring-2 focus:ring-[color:var(--accent)]/20"
+            class="w-full rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] py-3 px-4 text-sm font-semibold text-[color:var(--fg)] transition focus:border-[color:var(--accent)] focus:outline-none focus:ring-2 focus:ring-[color:var(--accent)]/20"
           >
             <option value="no" selected>No (Non-member — 0%)</option>
             <option value="yes">Yes (Evangelical-Lutheran Church ~1.00%)</option>
@@ -250,7 +250,7 @@ const taxParameterGuide: CalculatorParameterInfo[] = [
           <label for="fi-extra-deductions" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--fg)] mb-1">
             Work-related Deductions (Matkakulut / Työhuone)
           </label>
-          <div class="relative rounded-2xl shadow-inner">
+          <div class="relative rounded-none shadow-inner">
             <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4 font-bold text-[color:var(--muted)]">
               €
             </div>
@@ -261,7 +261,7 @@ const taxParameterGuide: CalculatorParameterInfo[] = [
               step="100"
               value="0"
               placeholder="e.g. Commuting costs above €900 threshold"
-              class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] py-3 pl-10 pr-4 text-sm font-bold text-[color:var(--fg)] transition focus:border-[color:var(--accent)] focus:outline-none focus:ring-2 focus:ring-[color:var(--accent)]/20"
+              class="w-full rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] py-3 pl-10 pr-4 text-sm font-bold text-[color:var(--fg)] transition focus:border-[color:var(--accent)] focus:outline-none focus:ring-2 focus:ring-[color:var(--accent)]/20"
             />
           </div>
           <p class="mt-1.5 text-[11px] text-[color:var(--muted)]">
@@ -271,7 +271,7 @@ const taxParameterGuide: CalculatorParameterInfo[] = [
       </div>
 
       <!-- Quick Action / Copy Summary Card -->
-      <div class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 shadow-sm flex items-center justify-between">
+      <div class="py-4 border-b border-[color:var(--border)] flex items-center justify-between">
         <div>
           <p class="text-xs font-bold text-[color:var(--fg)]">Export Calculation</p>
           <p class="text-[11px] text-[color:var(--muted)]">Copy clean text breakdown to clipboard</p>
@@ -279,7 +279,7 @@ const taxParameterGuide: CalculatorParameterInfo[] = [
         <button
           type="button"
           id="fi-copy-summary-btn"
-          class="inline-flex items-center gap-1.5 rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3.5 py-2 text-xs font-bold text-[color:var(--fg)] transition hover:bg-[color:var(--surface)] active:scale-95"
+          class="inline-flex items-center gap-1.5 rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-3.5 py-2 text-xs font-bold text-[color:var(--fg)] transition hover:bg-[color:var(--surface)] active:scale-95"
         >
           <Icon name="copy" class="w-3.5 h-3.5" />
           <span>Copy Summary</span>
@@ -305,7 +305,7 @@ const taxParameterGuide: CalculatorParameterInfo[] = [
       />
 
       <!-- Line-Item Audit Trail -->
-      <div class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 sm:p-6 shadow-sm">
+      <div>
         <h3 class="text-base font-bold text-[color:var(--fg)] mb-4 flex items-center gap-2">
           <Icon name="list" class="w-4 h-4 text-[color:var(--accent)]" />
           <span>Verohallinto Official Tax Breakdown</span>
@@ -317,15 +317,15 @@ const taxParameterGuide: CalculatorParameterInfo[] = [
           </div>
           <div class="flex justify-between py-1.5 border-b border-[color:var(--border)]/40">
             <span class="text-[color:var(--muted)]">Pension Contribution (Työeläkemaksu 7.30%)</span>
-            <span class="font-mono font-bold text-amber-500" data-res-pension>-€0</span>
+            <span class="font-mono font-bold text-[color:var(--fg)]" data-res-pension>-€0</span>
           </div>
           <div class="flex justify-between py-1.5 border-b border-[color:var(--border)]/40">
             <span class="text-[color:var(--muted)]">Unemployment &amp; Health Insurance (1.89%)</span>
-            <span class="font-mono font-bold text-amber-600" data-res-unemp>-€0</span>
+            <span class="font-mono font-bold text-[color:var(--fg)]" data-res-unemp>-€0</span>
           </div>
           <div class="flex justify-between py-1.5 border-b border-[color:var(--border)]/40">
             <span class="text-[color:var(--muted)]">State Tax-Free Allowance (€22,000 threshold)</span>
-            <span class="font-mono font-semibold text-emerald-500" data-res-allowance>-€22,000</span>
+            <span class="font-mono font-semibold text-[color:var(--accent)]" data-res-allowance>-€22,000</span>
           </div>
           <div class="flex justify-between py-1.5 border-b border-[color:var(--border)]/40">
             <span class="text-[color:var(--muted)]">State Taxable Income (Verotettava tulo)</span>
@@ -333,25 +333,25 @@ const taxParameterGuide: CalculatorParameterInfo[] = [
           </div>
           <div class="flex justify-between py-1.5 border-b border-[color:var(--border)]/40">
             <span class="text-[color:var(--muted)]">State Progressive Tax (Valtionvero)</span>
-            <span class="font-mono font-bold text-blue-500" data-res-state-tax>-€0</span>
+            <span class="font-mono font-bold text-[color:var(--accent)]" data-res-state-tax>-€0</span>
           </div>
           <div class="flex justify-between py-1.5 border-b border-[color:var(--border)]/40">
             <span class="text-[color:var(--muted)]">Municipal Income Tax (Kunnallisvero)</span>
-            <span class="font-mono font-bold text-blue-600" data-res-kunta-tax>-€0</span>
+            <span class="font-mono font-bold text-[color:var(--accent)]" data-res-kunta-tax>-€0</span>
           </div>
           <div class="flex justify-between py-1.5 border-b border-[color:var(--border)]/40">
             <span class="text-[color:var(--muted)]">Total Taxes &amp; Social Contributions</span>
-            <span class="font-mono font-bold text-red-500" data-res-total-taxes>-€0</span>
+            <span class="font-mono font-bold text-[color:var(--fg)]" data-res-total-taxes>-€0</span>
           </div>
           <div class="flex justify-between py-2 border-t-2 border-[color:var(--border)] font-bold text-sm">
             <span class="text-[color:var(--fg)]">Net Annual Take-Home (Nettopalkka)</span>
-            <span class="font-mono text-emerald-600 dark:text-emerald-400" data-res-net-takehome>€0</span>
+            <span class="font-mono text-[color:var(--fg)]" data-res-net-takehome>€0</span>
           </div>
         </div>
       </div>
 
       <!-- Progressive Tax Brackets Table -->
-      <div class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 sm:p-6 shadow-sm">
+      <div>
         <h3 class="text-base font-bold text-[color:var(--fg)] mb-3 flex items-center gap-2">
           <Icon name="bar-chart-2" class="w-4 h-4 text-[color:var(--accent)]" />
           <span>2026 Finnish State Tax Brackets (Valtionvero)</span>
@@ -515,7 +515,7 @@ const taxParameterGuide: CalculatorParameterInfo[] = [
                   <td class="py-2 px-3 font-medium text-[color:var(--fg)]">${row.bracketRange}</td>
                   <td class="py-2 px-3 text-right font-mono text-[color:var(--muted)]">${row.ratePercent}</td>
                   <td class="py-2 px-3 text-right font-mono font-medium text-[color:var(--fg)]">${fmt(row.taxableInBracket)}</td>
-                  <td class="py-2 px-3 text-right font-mono font-bold text-blue-500">${fmt(row.taxAmount)}</td>
+                  <td class="py-2 px-3 text-right font-mono font-bold text-[color:var(--fg)]">${fmt(row.taxAmount)}</td>
                 </tr>
               `
               )
@@ -532,9 +532,9 @@ const taxParameterGuide: CalculatorParameterInfo[] = [
 
             engineTabs.forEach((t) => {
               if (t === tab) {
-                t.className = 'shrink-0 min-w-max cursor-pointer rounded-xl px-3 py-1.5 text-xs font-bold transition inline-flex items-center gap-1.5 bg-[color:var(--accent)] text-white shadow-xs active';
+                t.className = 'shrink-0 min-w-max cursor-pointer rounded-none px-3 py-1.5 text-xs font-bold transition inline-flex items-center gap-1.5 bg-[color:var(--accent)] text-white shadow-xs active';
               } else {
-                t.className = 'shrink-0 min-w-max cursor-pointer rounded-xl px-3 py-1.5 text-xs font-semibold text-[color:var(--muted)] hover:text-[color:var(--fg)] transition inline-flex items-center gap-1.5';
+                t.className = 'shrink-0 min-w-max cursor-pointer rounded-none px-3 py-1.5 text-xs font-semibold text-[color:var(--muted)] hover:text-[color:var(--fg)] transition inline-flex items-center gap-1.5';
               }
             });
 

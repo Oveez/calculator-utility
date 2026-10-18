@@ -125,28 +125,28 @@ const schemaGraph = [
 
     <div class="space-y-6">
       <!-- ISBN Lookup Card -->
-      <div class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-5 sm:p-6 space-y-4">
+      <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-5 sm:p-6 space-y-4">
         <div class="flex flex-col sm:flex-row items-stretch sm:items-end gap-3">
           <div class="grow space-y-1">
             <div class="flex items-center justify-between">
               <label for="isbn-val" class="font-bold text-xs uppercase tracking-wider text-[color:var(--fg)]">
                 ISBN-10 or ISBN-13:
               </label>
-              <span id="isbn-status-badge" class="rounded-md bg-cyan-500/10 border border-emerald-500/30 px-2 py-0.5 text-[10px] font-mono text-cyan-500 dark:text-cyan-400 font-bold">
+              <span id="isbn-status-badge" class="rounded-none bg-cyan-500/10 border border-emerald-500/30 px-2 py-0.5 text-[10px] font-mono text-cyan-500 dark:text-cyan-400 font-bold">
                 Valid ISBN-13
               </span>
             </div>
             <input
               type="text"
               id="isbn-val"
-              class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-2.5 font-mono text-xs sm:text-sm text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)]"
+              class="w-full rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-2.5 font-mono text-xs sm:text-sm text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)]"
               placeholder="e.g. 978-0262033848 or 0262033844"
                />
           </div>
           <button
             type="button"
             id="fetch-isbn-btn"
-            class="rounded-2xl bg-[color:var(--accent)] px-5 py-2.5 text-xs font-bold text-white shadow-xs transition hover:opacity-90 active:scale-95 cursor-pointer shrink-0"
+            class="rounded-none bg-[color:var(--accent)] px-5 py-2.5 text-xs font-bold text-white shadow-xs transition hover:opacity-90 active:scale-95 cursor-pointer shrink-0"
           >
             Fetch Book Details
           </button>
@@ -157,14 +157,14 @@ const schemaGraph = [
         <!-- Preset Book Samples -->
         <div class="flex flex-wrap items-center gap-2 text-xs pt-1 border-t border-[color:var(--border)]/60">
           <span class="text-[color:var(--muted)] font-semibold">Popular Textbooks:</span>
-          <button type="button" class="sample-isbn-btn rounded-lg border border-[color:var(--border)] bg-[color:var(--surface)] px-2.5 py-1 text-[color:var(--fg)] hover:border-emerald-500 cursor-pointer" data-isbn="978-0262033848">Intro to Algorithms (CLRS)</button>
-          <button type="button" class="sample-isbn-btn rounded-lg border border-[color:var(--border)] bg-[color:var(--surface)] px-2.5 py-1 text-[color:var(--fg)] hover:border-emerald-500 cursor-pointer" data-isbn="978-0132350884">Clean Code (Robert Martin)</button>
-          <button type="button" class="sample-isbn-btn rounded-lg border border-[color:var(--border)] bg-[color:var(--surface)] px-2.5 py-1 text-[color:var(--fg)] hover:border-emerald-500 cursor-pointer" data-isbn="978-0201633610">Design Patterns (GoF)</button>
+          <button type="button" class="sample-isbn-btn rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] px-2.5 py-1 text-[color:var(--fg)] hover:border-emerald-500 cursor-pointer" data-isbn="978-0262033848">Intro to Algorithms (CLRS)</button>
+          <button type="button" class="sample-isbn-btn rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] px-2.5 py-1 text-[color:var(--fg)] hover:border-emerald-500 cursor-pointer" data-isbn="978-0132350884">Clean Code (Robert Martin)</button>
+          <button type="button" class="sample-isbn-btn rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] px-2.5 py-1 text-[color:var(--fg)] hover:border-emerald-500 cursor-pointer" data-isbn="978-0201633610">Design Patterns (GoF)</button>
         </div>
       </div>
 
       <!-- Book Metadata Form -->
-      <div class="space-y-4 rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 sm:p-6 text-xs">
+      <div class="space-y-4 rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-5 sm:p-6 text-xs">
         <div class="flex items-center justify-between border-b border-[color:var(--border)] pb-2">
           <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Book Bibliographic Information</span>
           <button type="button" id="clear-btn" class="text-[11px] font-semibold text-[color:var(--muted)] hover:text-[color:var(--fg)] cursor-pointer">
@@ -178,7 +178,7 @@ const schemaGraph = [
             <input
               type="text"
               id="author-val"
-              class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-[color:var(--fg)]"
+              class="w-full rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-[color:var(--fg)]"
               placeholder="e.g. Cormen, Thomas H., Leiserson, Charles E., & Rivest, Ronald L."
               placeholder="e.g. Cormen, Thomas H., et al." />
           </div>
@@ -187,7 +187,7 @@ const schemaGraph = [
             <input
               type="text"
               id="title-val"
-              class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-[color:var(--fg)]"
+              class="w-full rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-[color:var(--fg)]"
               placeholder="e.g. Introduction to Algorithms"
               placeholder="e.g. Introduction to Algorithms" />
           </div>
@@ -199,7 +199,7 @@ const schemaGraph = [
             <input
               type="text"
               id="publisher-val"
-              class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-[color:var(--fg)]"
+              class="w-full rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-[color:var(--fg)]"
               placeholder="e.g. MIT Press" />
           </div>
           <div>
@@ -207,14 +207,14 @@ const schemaGraph = [
             <input
               type="number"
               id="year-val"
-              class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-[color:var(--fg)]" placeholder="e.g. 2,009" />
+              class="w-full rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-[color:var(--fg)]" placeholder="e.g. 2,009" />
           </div>
           <div>
             <label for="edition-val" class="font-bold text-[color:var(--fg)] block mb-1">Edition (Optional):</label>
             <input
               type="text"
               id="edition-val"
-              class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-[color:var(--fg)]"
+              class="w-full rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-[color:var(--fg)]"
               placeholder="e.g. 3rd ed." />
           </div>
         </div>
@@ -231,14 +231,14 @@ const schemaGraph = [
             <button
               type="button"
               id="dl-bib-btn"
-              class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1.5 text-xs font-semibold text-[color:var(--fg)] hover:border-emerald-500 transition cursor-pointer"
+              class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1.5 text-xs font-semibold text-[color:var(--fg)] hover:border-emerald-500 transition cursor-pointer"
             >
               Download .bib
             </button>
             <button
               type="button"
               id="copy-all-btn"
-              class="rounded-xl bg-[color:var(--accent)] px-3.5 py-1.5 text-xs font-bold text-white hover:opacity-90 transition cursor-pointer"
+              class="rounded-none bg-[color:var(--accent)] px-3.5 py-1.5 text-xs font-bold text-white hover:opacity-90 transition cursor-pointer"
             >
               Copy All Citations
             </button>
@@ -247,7 +247,7 @@ const schemaGraph = [
 
         <div class="grid gap-3.5">
           <!-- APA 7 -->
-          <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 space-y-1.5">
+          <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-4 space-y-1.5">
             <div class="flex items-center justify-between">
               <span class="text-xs font-bold text-cyan-500 dark:text-cyan-400 uppercase tracking-wider">APA 7th Edition</span>
               <button type="button" class="copy-single-btn text-xs font-bold text-[color:var(--fg)] hover:underline cursor-pointer" data-target="cite-apa">Copy APA</button>
@@ -256,7 +256,7 @@ const schemaGraph = [
           </div>
 
           <!-- MLA 9 -->
-          <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 space-y-1.5">
+          <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-4 space-y-1.5">
             <div class="flex items-center justify-between">
               <span class="text-xs font-bold text-cyan-500 dark:text-cyan-400 uppercase tracking-wider">MLA 9th Edition</span>
               <button type="button" class="copy-single-btn text-xs font-bold text-[color:var(--fg)] hover:underline cursor-pointer" data-target="cite-mla">Copy MLA</button>
@@ -265,7 +265,7 @@ const schemaGraph = [
           </div>
 
           <!-- Chicago (Author-Date) -->
-          <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 space-y-1.5">
+          <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-4 space-y-1.5">
             <div class="flex items-center justify-between">
               <span class="text-xs font-bold text-cyan-500 dark:text-cyan-400 uppercase tracking-wider">Chicago (Author-Date 17th)</span>
               <button type="button" class="copy-single-btn text-xs font-bold text-[color:var(--fg)] hover:underline cursor-pointer" data-target="cite-chicago">Copy Chicago</button>
@@ -274,7 +274,7 @@ const schemaGraph = [
           </div>
 
           <!-- Harvard Reference -->
-          <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 space-y-1.5">
+          <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-4 space-y-1.5">
             <div class="flex items-center justify-between">
               <span class="text-xs font-bold text-cyan-500 dark:text-cyan-400 uppercase tracking-wider">Harvard Style</span>
               <button type="button" class="copy-single-btn text-xs font-bold text-[color:var(--fg)] hover:underline cursor-pointer" data-target="cite-harvard">Copy Harvard</button>
@@ -283,12 +283,12 @@ const schemaGraph = [
           </div>
 
           <!-- BibTeX -->
-          <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 space-y-1.5">
+          <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-4 space-y-1.5">
             <div class="flex items-center justify-between">
               <span class="text-xs font-bold text-cyan-500 dark:text-cyan-400 uppercase tracking-wider">BibTeX Entry (LaTeX)</span>
               <button type="button" class="copy-single-btn text-xs font-bold text-[color:var(--fg)] hover:underline cursor-pointer" data-target="cite-bib">Copy BibTeX</button>
             </div>
-            <pre id="cite-bib" class="text-xs leading-relaxed text-[color:var(--fg)] font-mono whitespace-pre-wrap select-all bg-[color:var(--surface-strong)] p-3 rounded-xl border border-[color:var(--border)]">-</pre>
+            <pre id="cite-bib" class="text-xs leading-relaxed text-[color:var(--fg)] font-mono whitespace-pre-wrap select-all bg-[color:var(--surface-strong)] p-3 rounded-none border border-[color:var(--border)]">-</pre>
           </div>
         </div>
       </div>
@@ -341,7 +341,7 @@ const schemaGraph = [
       <h2 class="text-xl font-bold text-[color:var(--fg)]">Frequently Asked Questions</h2>
       <div class="space-y-3">
         {schemaFaq.map((faq) => (
-          <details class="group rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
+          <details class="group rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
             <summary class="cursor-pointer list-none font-semibold text-sm sm:text-base text-[color:var(--fg)] flex items-center justify-between gap-4">
               <span>{faq.question}</span>
               <span class="text-xs text-[color:var(--muted)] group-open:rotate-180 transition-transform">&blacktriangledown;</span>
@@ -411,13 +411,13 @@ const schemaGraph = [
       function updateBadge() {
         const type = validateIsbn(isbnVal.value);
         if (type === 'isbn13') {
-          isbnBadge.className = 'rounded-md bg-cyan-500/10 border border-emerald-500/30 px-2 py-0.5 text-[10px] font-mono text-cyan-500 dark:text-cyan-400 font-bold';
+          isbnBadge.className = 'rounded-none bg-cyan-500/10 border border-emerald-500/30 px-2 py-0.5 text-[10px] font-mono text-cyan-500 dark:text-cyan-400 font-bold';
           isbnBadge.textContent = 'Valid ISBN-13';
         } else if (type === 'isbn10') {
-          isbnBadge.className = 'rounded-md bg-teal-500/10 border border-teal-500/30 px-2 py-0.5 text-[10px] font-mono text-cyan-500 dark:text-cyan-400 font-bold';
+          isbnBadge.className = 'rounded-none bg-teal-500/10 border border-teal-500/30 px-2 py-0.5 text-[10px] font-mono text-cyan-500 dark:text-cyan-400 font-bold';
           isbnBadge.textContent = 'Valid ISBN-10';
         } else {
-          isbnBadge.className = 'rounded-md bg-amber-500/10 border border-amber-500/30 px-2 py-0.5 text-[10px] font-mono text-amber-500 font-bold';
+          isbnBadge.className = 'rounded-none bg-amber-500/10 border border-amber-500/30 px-2 py-0.5 text-[10px] font-mono text-amber-500 font-bold';
           isbnBadge.textContent = 'Check Digits Unverified';
         }
       }

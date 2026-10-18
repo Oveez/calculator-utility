@@ -159,7 +159,7 @@ const schemaGraph = [
 
 
     <div
-      class="rounded-[2.5rem] border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-6 shadow-[var(--shadow)] sm:p-10"
+      class="space-y-8"
       data-zscore-app
     >
       <div class="grid gap-8 lg:grid-cols-[1.1fr_0.9fr]">
@@ -171,11 +171,11 @@ const schemaGraph = [
             </button>
           </div>
 
-          <div class="flex items-center gap-2 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-1 text-xs font-semibold overflow-x-auto no-scrollbar sm:grid sm:grid-cols-2">
-            <button type="button" class="shrink-0 min-w-max sm:min-w-0 sm:shrink text-center cursor-pointer rounded-xl bg-[color:var(--accent)] px-3 py-2 text-white shadow-xs transition" data-mode-btn="forward">
+          <div class="flex items-center gap-2 rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-1 text-xs font-semibold overflow-x-auto no-scrollbar sm:grid sm:grid-cols-2">
+            <button type="button" class="shrink-0 min-w-max sm:min-w-0 sm:shrink text-center cursor-pointer rounded-none bg-[color:var(--accent)] px-3 py-2 text-white shadow-xs transition" data-mode-btn="forward">
               Raw Score → Z-Score
             </button>
-            <button type="button" class="shrink-0 min-w-max sm:min-w-0 sm:shrink text-center cursor-pointer rounded-xl px-3 py-2 text-[color:var(--muted)] hover:text-[color:var(--fg)] transition" data-mode-btn="inverse">
+            <button type="button" class="shrink-0 min-w-max sm:min-w-0 sm:shrink text-center cursor-pointer rounded-none px-3 py-2 text-[color:var(--muted)] hover:text-[color:var(--fg)] transition" data-mode-btn="inverse">
               Z / Percentile → Raw Score
             </button>
           </div>
@@ -184,7 +184,7 @@ const schemaGraph = [
           <div class="space-y-4" data-forward-fields>
             <div class="space-y-1.5">
               <label for="raw-score" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Raw Score (X)</label>
-              <input id="raw-score" type="number" step="any" class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none" data-raw-score placeholder="e.g. 85" />
+              <input id="raw-score" type="number" step="any" class="w-full rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none" data-raw-score placeholder="e.g. 85" />
             </div>
           </div>
 
@@ -192,14 +192,14 @@ const schemaGraph = [
           <div class="space-y-4" data-inverse-fields hidden>
             <div class="space-y-1.5">
               <label for="inv-target" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Target Input Type</label>
-              <select id="inv-target" class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-sm font-semibold text-[color:var(--fg)] outline-none" data-inv-target>
+              <select id="inv-target" class="w-full rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-sm font-semibold text-[color:var(--fg)] outline-none" data-inv-target>
                 <option value="z" selected>Known Z-Score (e.g. +1.96)</option>
                 <option value="percentile">Known Percentile Rank % (e.g. 95%)</option>
               </select>
             </div>
             <div class="space-y-1.5">
               <label for="inv-val" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]" data-inv-label>Target Z-Score</label>
-              <input id="inv-val" type="number" step="any" class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none" data-inv-val placeholder="e.g. 1.50" />
+              <input id="inv-val" type="number" step="any" class="w-full rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none" data-inv-val placeholder="e.g. 1.50" />
             </div>
           </div>
 
@@ -207,23 +207,23 @@ const schemaGraph = [
           <div class="grid grid-cols-2 gap-3">
             <div>
               <label for="pop-mean" class="block text-xs font-medium text-[color:var(--muted)]">Population Mean (μ)</label>
-              <input id="pop-mean" type="number" step="any" class="mt-1 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-pop-mean placeholder="e.g. 70" />
+              <input id="pop-mean" type="number" step="any" class="mt-1 w-full rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-pop-mean placeholder="e.g. 70" />
             </div>
             <div>
               <label for="pop-sd" class="block text-xs font-medium text-[color:var(--muted)]">Standard Deviation (σ)</label>
-              <input id="pop-sd" type="number" min="0.0001" step="any" class="mt-1 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-pop-sd placeholder="e.g. 10" />
+              <input id="pop-sd" type="number" min="0.0001" step="any" class="mt-1 w-full rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-pop-sd placeholder="e.g. 10" />
             </div>
           </div>
         </form>
 
         <!-- Result Box & Bell Curve Visualizer -->
-        <div class="flex flex-col justify-between space-y-6 rounded-3xl border border-[color:var(--accent)]/30 bg-gradient-to-br from-[color:var(--accent-soft)] via-[color:var(--surface)] to-transparent p-6 sm:p-8 shadow-sm">
+        <div class="space-y-6">
           <div class="space-y-5">
             <div class="flex items-center justify-between">
               <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Standard Normal Output</span>
               <button
                 type="button"
-                class="inline-flex items-center gap-1.5 rounded-lg border border-[color:var(--border)] bg-[color:var(--surface)] px-2.5 py-1 text-xs font-semibold text-[color:var(--fg)] hover:bg-[color:var(--bg)] transition cursor-pointer"
+                class="inline-flex items-center gap-1.5 rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] px-2.5 py-1 text-xs font-semibold text-[color:var(--fg)] hover:bg-[color:var(--bg)] transition cursor-pointer"
                 data-copy-btn
               >
                 <Icon name="copy" class="w-3.5 h-3.5" />
@@ -231,7 +231,7 @@ const schemaGraph = [
               </button>
             </div>
 
-            <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 text-center">
+            <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-6 text-center">
               <p class="text-xs font-semibold text-[color:var(--muted)]" data-out-primary-label>Calculated Z-Score</p>
               <p class="mt-1 text-4xl sm:text-5xl font-black tracking-tight text-[color:var(--fg)] font-mono" data-res-z>
                 +1.50
@@ -242,7 +242,7 @@ const schemaGraph = [
             </div>
 
             <!-- SVG Bell Curve Visualizer -->
-            <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3 space-y-1">
+            <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-3 space-y-1">
               <div class="flex justify-between text-[11px] font-semibold text-[color:var(--muted)]">
                 <span>Standard Normal Curve N(0, 1)</span>
                 <span class="text-[color:var(--accent)]" data-svg-pct-badge>93.32% Left-Tail</span>
@@ -268,7 +268,7 @@ const schemaGraph = [
             </div>
 
             <!-- Tail Areas Grid -->
-            <div class="space-y-2 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-xs font-mono">
+            <div class="space-y-2 rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-xs font-mono">
               <div class="flex justify-between">
                 <span class="text-[color:var(--muted)] font-sans">Left-Tail P(Z &lt; z):</span>
                 <span class="font-bold text-[color:var(--fg)]" data-p-left>0.9332 (93.32%)</span>
@@ -288,38 +288,38 @@ const schemaGraph = [
     </div>
 
     <!-- Standardized Assessment Scales Conversion Table -->
-    <section class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 sm:p-8 space-y-4">
+    <section class="space-y-4 border-t border-[color:var(--border)] pt-8">
       <div>
         <p class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Cross-Scale Equivalence</p>
         <h2 class="text-xl font-bold text-[color:var(--fg)]">Equivalent Scores Across Testing Scales</h2>
       </div>
 
       <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-5 text-xs font-mono">
-        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] p-4 space-y-1 text-center">
+        <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] p-4 space-y-1 text-center">
           <span class="text-[10px] uppercase font-bold text-[color:var(--muted)] font-sans">IQ Score (Wechsler)</span>
           <p class="text-2xl font-black text-[color:var(--fg)]" data-scale-iq>122.5</p>
           <p class="text-[10px] text-[color:var(--muted)] font-sans">μ = 100, σ = 15</p>
         </div>
 
-        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] p-4 space-y-1 text-center">
+        <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] p-4 space-y-1 text-center">
           <span class="text-[10px] uppercase font-bold text-[color:var(--muted)] font-sans">Psychometric T-Score</span>
           <p class="text-2xl font-black text-cyan-500 dark:text-cyan-400" data-scale-t>65.0</p>
           <p class="text-[10px] text-[color:var(--muted)] font-sans">μ = 50, σ = 10</p>
         </div>
 
-        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] p-4 space-y-1 text-center">
+        <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] p-4 space-y-1 text-center">
           <span class="text-[10px] uppercase font-bold text-[color:var(--muted)] font-sans">SAT Section Scale</span>
           <p class="text-2xl font-black text-[color:var(--fg)]" data-scale-sat>650</p>
           <p class="text-[10px] text-[color:var(--muted)] font-sans">μ = 500, σ = 100</p>
         </div>
 
-        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] p-4 space-y-1 text-center">
+        <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] p-4 space-y-1 text-center">
           <span class="text-[10px] uppercase font-bold text-[color:var(--muted)] font-sans">ACT Composite</span>
           <p class="text-2xl font-black text-[color:var(--fg)]" data-scale-act>29.3</p>
           <p class="text-[10px] text-[color:var(--muted)] font-sans">μ = 21, σ = 5.5</p>
         </div>
 
-        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] p-4 space-y-1 text-center">
+        <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] p-4 space-y-1 text-center">
           <span class="text-[10px] uppercase font-bold text-[color:var(--muted)] font-sans">Stanine (1–9)</span>
           <p class="text-2xl font-black text-[color:var(--accent)]" data-scale-stanine>8</p>
           <p class="text-[10px] text-[color:var(--muted)] font-sans">Standard Nine Scale</p>
@@ -338,16 +338,16 @@ const schemaGraph = [
     </header>
 
     <!-- Mathematical Formulas & Normal Distribution Properties -->
-    <section class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 sm:p-8 space-y-4">
+    <section class="space-y-4 border-t border-[color:var(--border)] pt-8">
       <div>
         <p class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Normal Distribution Theory</p>
         <h2 class="text-xl font-bold text-[color:var(--fg)]">Standard Normal Distribution &amp; Z-Scores</h2>
       </div>
 
       <div class="grid gap-4 sm:grid-cols-2 text-xs sm:text-sm">
-        <div class="rounded-2xl bg-[color:var(--bg)] p-4 border border-[color:var(--border)] space-y-2">
+        <div class="rounded-none bg-[color:var(--bg)] p-4 border border-[color:var(--border)] space-y-2">
           <p class="font-bold text-[color:var(--fg)]">1. Z-Score Standardization Formula</p>
-          <div class="rounded-xl bg-[color:var(--surface)] p-3 font-mono text-xs text-[color:var(--fg)] overflow-x-auto">
+          <div class="rounded-none bg-[color:var(--surface)] p-3 font-mono text-xs text-[color:var(--fg)] overflow-x-auto">
             Z = (X - μ) ÷ σ &nbsp;|&nbsp; X = μ + Z × σ
           </div>
           <p class="text-xs text-[color:var(--muted)]">
@@ -355,9 +355,9 @@ const schemaGraph = [
           </p>
         </div>
 
-        <div class="rounded-2xl bg-[color:var(--bg)] p-4 border border-[color:var(--border)] space-y-2">
+        <div class="rounded-none bg-[color:var(--bg)] p-4 border border-[color:var(--border)] space-y-2">
           <p class="font-bold text-[color:var(--fg)]">2. Percentile &amp; Empirical 68-95-99.7 Rule</p>
-          <div class="rounded-xl bg-[color:var(--surface)] p-3 font-mono text-xs text-[color:var(--fg)] overflow-x-auto">
+          <div class="rounded-none bg-[color:var(--surface)] p-3 font-mono text-xs text-[color:var(--fg)] overflow-x-auto">
             Percentile = Φ(Z) × 100% = [0.5 × (1 + erf(Z ÷ √2))] × 100%
           </div>
           <p class="text-xs text-[color:var(--muted)]">
@@ -375,7 +375,7 @@ const schemaGraph = [
       <h2 class="text-xl font-bold text-[color:var(--fg)]">Frequently Asked Questions</h2>
       <div class="space-y-3">
         {faqs.map((faq) => (
-          <details class="group rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
+          <details class="group rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
             <summary class="cursor-pointer list-none font-semibold text-sm sm:text-base text-[color:var(--fg)] flex items-center justify-between gap-4">
               <span>{faq.question}</span>
               <span class="text-xs text-[color:var(--muted)] group-open:rotate-180 transition-transform">▼</span>
@@ -580,9 +580,9 @@ const schemaGraph = [
           currentMode = btn.dataset.modeBtn || 'forward';
           modeBtns.forEach(b => {
             if (b === btn) {
-              b.className = 'shrink-0 min-w-max sm:min-w-0 sm:shrink text-center cursor-pointer rounded-xl bg-[color:var(--accent)] px-3 py-2 text-white shadow-xs transition';
+              b.className = 'shrink-0 min-w-max sm:min-w-0 sm:shrink text-center cursor-pointer rounded-none bg-[color:var(--accent)] px-3 py-2 text-white shadow-xs transition';
             } else {
-              b.className = 'shrink-0 min-w-max sm:min-w-0 sm:shrink text-center cursor-pointer rounded-xl px-3 py-2 text-[color:var(--muted)] hover:text-[color:var(--fg)] transition';
+              b.className = 'shrink-0 min-w-max sm:min-w-0 sm:shrink text-center cursor-pointer rounded-none px-3 py-2 text-[color:var(--muted)] hover:text-[color:var(--fg)] transition';
             }
           });
 

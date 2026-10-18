@@ -129,7 +129,7 @@ const schemaGraph = [
 
     <div class="space-y-6">
       <!-- DOI Quick Lookup Bar -->
-      <div class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-5 sm:p-6 space-y-4">
+      <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-5 sm:p-6 space-y-4">
         <div class="flex flex-col sm:flex-row items-stretch sm:items-end gap-3">
           <div class="grow space-y-1">
             <label for="doi-val" class="font-bold text-xs uppercase tracking-wider text-[color:var(--fg)] block">
@@ -139,7 +139,7 @@ const schemaGraph = [
               <input
                 type="text"
                 id="doi-val"
-                class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-2.5 font-mono text-xs sm:text-sm text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)]"
+                class="w-full rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-2.5 font-mono text-xs sm:text-sm text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)]"
                 placeholder="e.g. 10.1038/s41586-020-2649-2 or https://doi.org/..."
                  />
             </div>
@@ -147,7 +147,7 @@ const schemaGraph = [
           <button
             type="button"
             id="fetch-doi-btn"
-            class="rounded-2xl bg-[color:var(--accent)] px-5 py-2.5 text-xs font-bold text-white shadow-xs transition hover:opacity-90 active:scale-95 cursor-pointer shrink-0"
+            class="rounded-none bg-[color:var(--accent)] px-5 py-2.5 text-xs font-bold text-white shadow-xs transition hover:opacity-90 active:scale-95 cursor-pointer shrink-0"
           >
             Fetch Online Metadata
           </button>
@@ -158,14 +158,14 @@ const schemaGraph = [
         <!-- Quick Samples -->
         <div class="flex flex-wrap items-center gap-2 text-xs pt-1 border-t border-[color:var(--border)]/60">
           <span class="text-[color:var(--muted)] font-semibold">Sample DOIs:</span>
-          <button type="button" class="sample-doi-btn rounded-lg border border-[color:var(--border)] bg-[color:var(--surface)] px-2.5 py-1 text-[color:var(--fg)] hover:border-emerald-500 cursor-pointer" data-doi="10.1038/s41586-020-2649-2">AlphaFold 2 (Nature 2021)</button>
-          <button type="button" class="sample-doi-btn rounded-lg border border-[color:var(--border)] bg-[color:var(--surface)] px-2.5 py-1 text-[color:var(--fg)] hover:border-emerald-500 cursor-pointer" data-doi="10.1126/science.1102896">Higgs Boson (Science 2012)</button>
-          <button type="button" class="sample-doi-btn rounded-lg border border-[color:var(--border)] bg-[color:var(--surface)] px-2.5 py-1 text-[color:var(--fg)] hover:border-emerald-500 cursor-pointer" data-doi="10.1145/3065386">Deep Residual Learning (CVPR 2016)</button>
+          <button type="button" class="sample-doi-btn rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] px-2.5 py-1 text-[color:var(--fg)] hover:border-emerald-500 cursor-pointer" data-doi="10.1038/s41586-020-2649-2">AlphaFold 2 (Nature 2021)</button>
+          <button type="button" class="sample-doi-btn rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] px-2.5 py-1 text-[color:var(--fg)] hover:border-emerald-500 cursor-pointer" data-doi="10.1126/science.1102896">Higgs Boson (Science 2012)</button>
+          <button type="button" class="sample-doi-btn rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] px-2.5 py-1 text-[color:var(--fg)] hover:border-emerald-500 cursor-pointer" data-doi="10.1145/3065386">Deep Residual Learning (CVPR 2016)</button>
         </div>
       </div>
 
       <!-- Metadata Editor Form -->
-      <div class="space-y-4 rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 sm:p-6 text-xs">
+      <div class="space-y-4 rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-5 sm:p-6 text-xs">
         <div class="flex items-center justify-between border-b border-[color:var(--border)] pb-2">
           <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Bibliographic Fields</span>
           <button type="button" id="clear-btn" class="text-[11px] font-semibold text-[color:var(--muted)] hover:text-[color:var(--fg)] cursor-pointer">
@@ -179,7 +179,7 @@ const schemaGraph = [
             <input
               type="text"
               id="author-val"
-              class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-[color:var(--fg)]"
+              class="w-full rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-[color:var(--fg)]"
               placeholder="e.g. Jumper, John, Evans, Richard, & Pritzel, Alexander"
               placeholder="e.g. Jumper, John, et al." />
           </div>
@@ -188,7 +188,7 @@ const schemaGraph = [
             <input
               type="text"
               id="title-val"
-              class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-[color:var(--fg)]"
+              class="w-full rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-[color:var(--fg)]"
               placeholder="e.g. Highly accurate protein structure prediction with AlphaFold"
               placeholder="e.g. Highly accurate protein structure prediction with AlphaFold" />
           </div>
@@ -200,7 +200,7 @@ const schemaGraph = [
             <input
               type="text"
               id="journal-val"
-              class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-[color:var(--fg)]"
+              class="w-full rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-[color:var(--fg)]"
               placeholder="e.g. Nature" />
           </div>
           <div>
@@ -208,14 +208,14 @@ const schemaGraph = [
             <input
               type="number"
               id="year-val"
-              class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-[color:var(--fg)]" placeholder="e.g. 2,021" />
+              class="w-full rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-[color:var(--fg)]" placeholder="e.g. 2,021" />
           </div>
           <div>
             <label for="vol-val" class="font-bold text-[color:var(--fg)] block mb-1">Volume (Issue):</label>
             <input
               type="text"
               id="vol-val"
-              class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-[color:var(--fg)]"
+              class="w-full rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-[color:var(--fg)]"
               placeholder="e.g. 596(7873)" />
           </div>
         </div>
@@ -226,7 +226,7 @@ const schemaGraph = [
             <input
               type="text"
               id="pages-val"
-              class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-[color:var(--fg)]"
+              class="w-full rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-[color:var(--fg)]"
               placeholder="e.g. 583–589" />
           </div>
           <div class="sm:col-span-2">
@@ -234,7 +234,7 @@ const schemaGraph = [
             <input
               type="text"
               id="publisher-val"
-              class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-[color:var(--fg)]"
+              class="w-full rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-[color:var(--fg)]"
               placeholder="e.g. Nature Publishing Group" />
           </div>
         </div>
@@ -251,14 +251,14 @@ const schemaGraph = [
             <button
               type="button"
               id="dl-bib-btn"
-              class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1.5 text-xs font-semibold text-[color:var(--fg)] hover:border-emerald-500 transition cursor-pointer"
+              class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1.5 text-xs font-semibold text-[color:var(--fg)] hover:border-emerald-500 transition cursor-pointer"
             >
               Download .bib File
             </button>
             <button
               type="button"
               id="copy-all-btn"
-              class="rounded-xl bg-[color:var(--accent)] px-3.5 py-1.5 text-xs font-bold text-white hover:opacity-90 transition cursor-pointer"
+              class="rounded-none bg-[color:var(--accent)] px-3.5 py-1.5 text-xs font-bold text-white hover:opacity-90 transition cursor-pointer"
             >
               Copy All Citations
             </button>
@@ -267,7 +267,7 @@ const schemaGraph = [
 
         <div class="grid gap-3.5">
           <!-- APA 7 -->
-          <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 space-y-1.5">
+          <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-4 space-y-1.5">
             <div class="flex items-center justify-between">
               <span class="text-xs font-bold text-cyan-500 dark:text-cyan-400 uppercase tracking-wider">APA 7th Edition</span>
               <button type="button" class="copy-single-btn text-xs font-bold text-[color:var(--fg)] hover:underline cursor-pointer" data-target="cite-apa">Copy APA</button>
@@ -276,7 +276,7 @@ const schemaGraph = [
           </div>
 
           <!-- MLA 9 -->
-          <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 space-y-1.5">
+          <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-4 space-y-1.5">
             <div class="flex items-center justify-between">
               <span class="text-xs font-bold text-cyan-500 dark:text-cyan-400 uppercase tracking-wider">MLA 9th Edition</span>
               <button type="button" class="copy-single-btn text-xs font-bold text-[color:var(--fg)] hover:underline cursor-pointer" data-target="cite-mla">Copy MLA</button>
@@ -285,7 +285,7 @@ const schemaGraph = [
           </div>
 
           <!-- Chicago (Author-Date) -->
-          <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 space-y-1.5">
+          <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-4 space-y-1.5">
             <div class="flex items-center justify-between">
               <span class="text-xs font-bold text-cyan-500 dark:text-cyan-400 uppercase tracking-wider">Chicago (Author-Date 17th)</span>
               <button type="button" class="copy-single-btn text-xs font-bold text-[color:var(--fg)] hover:underline cursor-pointer" data-target="cite-chicago">Copy Chicago</button>
@@ -294,7 +294,7 @@ const schemaGraph = [
           </div>
 
           <!-- Harvard Reference -->
-          <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 space-y-1.5">
+          <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-4 space-y-1.5">
             <div class="flex items-center justify-between">
               <span class="text-xs font-bold text-cyan-500 dark:text-cyan-400 uppercase tracking-wider">Harvard Style</span>
               <button type="button" class="copy-single-btn text-xs font-bold text-[color:var(--fg)] hover:underline cursor-pointer" data-target="cite-harvard">Copy Harvard</button>
@@ -303,7 +303,7 @@ const schemaGraph = [
           </div>
 
           <!-- IEEE -->
-          <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 space-y-1.5">
+          <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-4 space-y-1.5">
             <div class="flex items-center justify-between">
               <span class="text-xs font-bold text-cyan-500 dark:text-cyan-400 uppercase tracking-wider">IEEE Format</span>
               <button type="button" class="copy-single-btn text-xs font-bold text-[color:var(--fg)] hover:underline cursor-pointer" data-target="cite-ieee">Copy IEEE</button>
@@ -312,12 +312,12 @@ const schemaGraph = [
           </div>
 
           <!-- BibTeX -->
-          <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 space-y-1.5">
+          <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-4 space-y-1.5">
             <div class="flex items-center justify-between">
               <span class="text-xs font-bold text-cyan-500 dark:text-cyan-400 uppercase tracking-wider">BibTeX Entry (LaTeX)</span>
               <button type="button" class="copy-single-btn text-xs font-bold text-[color:var(--fg)] hover:underline cursor-pointer" data-target="cite-bib">Copy BibTeX</button>
             </div>
-            <pre id="cite-bib" class="text-xs leading-relaxed text-[color:var(--fg)] font-mono whitespace-pre-wrap select-all bg-[color:var(--surface-strong)] p-3 rounded-xl border border-[color:var(--border)]">-</pre>
+            <pre id="cite-bib" class="text-xs leading-relaxed text-[color:var(--fg)] font-mono whitespace-pre-wrap select-all bg-[color:var(--surface-strong)] p-3 rounded-none border border-[color:var(--border)]">-</pre>
           </div>
         </div>
       </div>
@@ -370,7 +370,7 @@ const schemaGraph = [
       <h2 class="text-xl font-bold text-[color:var(--fg)]">Frequently Asked Questions</h2>
       <div class="space-y-3">
         {schemaFaq.map((faq) => (
-          <details class="group rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
+          <details class="group rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
             <summary class="cursor-pointer list-none font-semibold text-sm sm:text-base text-[color:var(--fg)] flex items-center justify-between gap-4">
               <span>{faq.question}</span>
               <span class="text-xs text-[color:var(--muted)] group-open:rotate-180 transition-transform">&blacktriangledown;</span>

@@ -93,19 +93,19 @@ const schemaGraph = [
 
     <!-- Telemetry Bar -->
     <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-      <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3 text-center">
+      <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-3 text-center">
         <p class="text-[10px] font-bold uppercase tracking-wider text-[color:var(--muted)]">Original Size</p>
         <p id="stat-orig" class="mt-1 font-mono text-base font-bold text-[color:var(--fg)]">0 B</p>
       </div>
-      <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3 text-center">
+      <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-3 text-center">
         <p class="text-[10px] font-bold uppercase tracking-wider text-[color:var(--muted)]">Compressed Size</p>
         <p id="stat-comp" class="mt-1 font-mono text-base font-bold text-emerald-500">0 B</p>
       </div>
-      <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3 text-center">
+      <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-3 text-center">
         <p class="text-[10px] font-bold uppercase tracking-wider text-[color:var(--muted)]">Bytes Saved</p>
         <p id="stat-saved" class="mt-1 font-mono text-base font-bold text-[color:var(--fg)]">0 B</p>
       </div>
-      <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3 text-center">
+      <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-3 text-center">
         <p class="text-[10px] font-bold uppercase tracking-wider text-[color:var(--muted)]">Reduction</p>
         <p id="stat-pct" class="mt-1 font-mono text-base font-bold text-emerald-500">0%</p>
       </div>
@@ -113,11 +113,11 @@ const schemaGraph = [
 
     <div class="space-y-6">
       <!-- Upload Dropzone -->
-      <div id="dropzone-box" class="space-y-3 rounded-3xl border-2 border-dashed border-[color:var(--border)] bg-[color:var(--surface)] p-6 sm:p-8 text-center transition hover:border-[color:var(--border-strong)]">
+      <div id="dropzone-box" class="space-y-3 rounded-none border-2 border-dashed border-[color:var(--border)] bg-[color:var(--surface)] p-6 sm:p-8 text-center transition hover:border-[color:var(--border-strong)]">
         <input type="file" id="img-file" accept="image/*" class="hidden" />
         
         <label for="img-file" id="upload-prompt" class="cursor-pointer space-y-2 block">
-          <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-[color:var(--surface-strong)] text-[color:var(--fg)]">
+          <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-none bg-[color:var(--surface-strong)] text-[color:var(--fg)]">
             <Icon name="image" class="w-6 h-6 text-[color:var(--accent)]" />
           </div>
           <p class="text-sm font-bold text-[color:var(--fg)]">Choose an image to compress or drag and drop</p>
@@ -125,9 +125,9 @@ const schemaGraph = [
         </label>
 
         <!-- Visual Upload Preview Box -->
-        <div id="upload-preview-box" class="hidden flex flex-col sm:flex-row items-center justify-between gap-4 rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] p-3.5 text-left">
+        <div id="upload-preview-box" class="hidden flex flex-col sm:flex-row items-center justify-between gap-4 rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] p-3.5 text-left">
           <div class="flex items-center gap-3 min-w-0">
-            <div class="h-14 w-14 rounded-xl bg-[color:var(--surface-strong)] overflow-hidden shrink-0 flex items-center justify-center border border-[color:var(--border)]">
+            <div class="h-14 w-14 rounded-none bg-[color:var(--surface-strong)] overflow-hidden shrink-0 flex items-center justify-center border border-[color:var(--border)]">
               <img id="thumb-preview" alt="Thumbnail" class="max-h-full max-w-full object-cover" />
             </div>
             <div class="min-w-0 space-y-0.5">
@@ -135,7 +135,7 @@ const schemaGraph = [
               <p id="thumb-info" class="text-[11px] text-[color:var(--muted)] font-mono">0 KB</p>
             </div>
           </div>
-          <label for="img-file" class="cursor-pointer shrink-0 rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1.5 text-xs font-semibold text-[color:var(--muted)] hover:text-[color:var(--fg)] transition">
+          <label for="img-file" class="cursor-pointer shrink-0 rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1.5 text-xs font-semibold text-[color:var(--muted)] hover:text-[color:var(--fg)] transition">
             Change Image
           </label>
         </div>
@@ -144,19 +144,19 @@ const schemaGraph = [
       <!-- Controls & Preview Section -->
       <div id="comp-wrapper" class="hidden space-y-6">
         <!-- Mode Tabs: Quality Slider vs Target Size -->
-        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 space-y-4 text-xs">
+        <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-5 space-y-4 text-xs">
           <div class="flex items-center gap-2 border-b border-[color:var(--border)] pb-3 overflow-x-auto no-scrollbar">
             <button
               type="button"
               id="tab-quality"
-              class="shrink-0 min-w-max rounded-xl bg-[color:var(--surface-strong)] border border-[color:var(--border)] px-4 py-2 text-xs font-bold text-[color:var(--fg)] transition cursor-pointer"
+              class="shrink-0 min-w-max rounded-none bg-[color:var(--surface-strong)] border border-[color:var(--border)] px-4 py-2 text-xs font-bold text-[color:var(--fg)] transition cursor-pointer"
             >
               Quality Slider Mode
             </button>
             <button
               type="button"
               id="tab-target"
-              class="shrink-0 min-w-max rounded-xl bg-transparent px-4 py-2 text-xs font-medium text-[color:var(--muted)] hover:text-[color:var(--fg)] transition cursor-pointer"
+              class="shrink-0 min-w-max rounded-none bg-transparent px-4 py-2 text-xs font-medium text-[color:var(--muted)] hover:text-[color:var(--fg)] transition cursor-pointer"
             >
               Target Max File Size Mode
             </button>
@@ -185,7 +185,7 @@ const schemaGraph = [
 
             <div>
               <label for="out-format" class="font-bold text-[color:var(--fg)] block mb-1.5">Output Format:</label>
-              <select id="out-format" class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-[color:var(--fg)] font-semibold">
+              <select id="out-format" class="w-full rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-[color:var(--fg)] font-semibold">
                 <option value="image/webp">WebP (Recommended &bull; High Efficiency)</option>
                 <option value="image/jpeg">JPEG (Standard &bull; Universal Compatibility)</option>
                 <option value="image/png">PNG (Lossless &bull; Best for Graphics)</option>
@@ -204,13 +204,13 @@ const schemaGraph = [
                   placeholder="e.g. 250"
                   min="10"
                   max="10000"
-                  class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-[color:var(--fg)]" />
+                  class="w-full rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 font-mono text-[color:var(--fg)]" />
               </div>
               <div class="flex items-end gap-1.5">
-                <button type="button" data-preset-kb="100" class="rounded-lg border border-[color:var(--border)] bg-[color:var(--bg)] px-2.5 py-2 font-medium hover:border-[color:var(--border-strong)]">100 KB</button>
-                <button type="button" data-preset-kb="250" class="rounded-lg border border-[color:var(--border)] bg-[color:var(--bg)] px-2.5 py-2 font-medium hover:border-[color:var(--border-strong)]">250 KB</button>
-                <button type="button" data-preset-kb="500" class="rounded-lg border border-[color:var(--border)] bg-[color:var(--bg)] px-2.5 py-2 font-medium hover:border-[color:var(--border-strong)]">500 KB</button>
-                <button type="button" data-preset-kb="1000" class="rounded-lg border border-[color:var(--border)] bg-[color:var(--bg)] px-2.5 py-2 font-medium hover:border-[color:var(--border-strong)]">1 MB</button>
+                <button type="button" data-preset-kb="100" class="rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-2.5 py-2 font-medium hover:border-[color:var(--border-strong)]">100 KB</button>
+                <button type="button" data-preset-kb="250" class="rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-2.5 py-2 font-medium hover:border-[color:var(--border-strong)]">250 KB</button>
+                <button type="button" data-preset-kb="500" class="rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-2.5 py-2 font-medium hover:border-[color:var(--border-strong)]">500 KB</button>
+                <button type="button" data-preset-kb="1000" class="rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-2.5 py-2 font-medium hover:border-[color:var(--border-strong)]">1 MB</button>
               </div>
             </div>
             <p class="text-[11px] text-[color:var(--muted)]">The compressor will iteratively tune quality to achieve the highest visual fidelity that stays under this limit.</p>
@@ -220,7 +220,7 @@ const schemaGraph = [
           <div class="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-[color:var(--border)]">
             <div class="flex items-center gap-2">
               <label for="scale-select" class="font-medium text-[color:var(--muted)]">Dimension Scaling:</label>
-              <select id="scale-select" class="rounded-lg border border-[color:var(--border)] bg-[color:var(--bg)] px-2.5 py-1 text-xs text-[color:var(--fg)]">
+              <select id="scale-select" class="rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-2.5 py-1 text-xs text-[color:var(--fg)]">
                 <option value="1">100% (Original Dimensions)</option>
                 <option value="0.75">75% Scaling</option>
                 <option value="0.5">50% Scaling (Half Dimensions)</option>
@@ -233,22 +233,22 @@ const schemaGraph = [
 
         <!-- Side-by-Side Visual Preview -->
         <div class="grid gap-6 sm:grid-cols-2">
-          <div class="space-y-2 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4">
+          <div class="space-y-2 rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-4">
             <div class="flex items-center justify-between">
               <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Original Preview</span>
               <span id="prev-orig-size" class="text-xs font-mono font-bold text-[color:var(--fg)]">-</span>
             </div>
-            <div class="h-64 rounded-xl bg-[color:var(--surface-strong)] overflow-hidden flex items-center justify-center p-2">
+            <div class="h-64 rounded-none bg-[color:var(--surface-strong)] overflow-hidden flex items-center justify-center p-2">
               <img id="img-orig-preview" alt="Original" class="max-h-full max-w-full object-contain" />
             </div>
           </div>
 
-          <div class="space-y-2 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4">
+          <div class="space-y-2 rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-4">
             <div class="flex items-center justify-between">
               <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Compressed Result</span>
               <span id="prev-comp-size" class="text-xs font-mono font-bold text-emerald-500">-</span>
             </div>
-            <div class="h-64 rounded-xl bg-[color:var(--surface-strong)] overflow-hidden flex items-center justify-center p-2">
+            <div class="h-64 rounded-none bg-[color:var(--surface-strong)] overflow-hidden flex items-center justify-center p-2">
               <img id="img-comp-preview" alt="Compressed" class="max-h-full max-w-full object-contain" />
             </div>
           </div>
@@ -257,7 +257,7 @@ const schemaGraph = [
         <button
           type="button"
           id="dl-comp-btn"
-          class="w-full rounded-xl bg-[color:var(--accent)] py-3 text-xs font-bold text-white shadow-xs transition hover:opacity-90 cursor-pointer flex items-center justify-center gap-2"
+          class="w-full rounded-none bg-[color:var(--accent)] py-3 text-xs font-bold text-white shadow-xs transition hover:opacity-90 cursor-pointer flex items-center justify-center gap-2"
         >
           <Icon name="download" class="w-4 h-4" />
           <span>Download Compressed Image</span>
@@ -339,7 +339,7 @@ const schemaGraph = [
       <h2 class="text-xl font-bold text-[color:var(--fg)]">Frequently Asked Questions</h2>
       <div class="space-y-3">
         {schemaFaq.map((faq) => (
-          <details class="group rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
+          <details class="group rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
             <summary class="cursor-pointer list-none font-semibold text-sm sm:text-base text-[color:var(--fg)] flex items-center justify-between gap-4">
               <span>{faq.question}</span>
               <span class="text-xs text-[color:var(--muted)] group-open:rotate-180 transition-transform">&#9660;</span>
@@ -404,13 +404,13 @@ const schemaGraph = [
       function switchMode(mode) {
         activeMode = mode;
         if (mode === 'quality') {
-          tabQuality.className = 'shrink-0 min-w-max rounded-xl bg-[color:var(--surface-strong)] border border-[color:var(--border)] px-4 py-2 text-xs font-bold text-[color:var(--fg)] transition cursor-pointer';
-          tabTarget.className = 'shrink-0 min-w-max rounded-xl bg-transparent px-4 py-2 text-xs font-medium text-[color:var(--muted)] hover:text-[color:var(--fg)] transition cursor-pointer';
+          tabQuality.className = 'shrink-0 min-w-max rounded-none bg-[color:var(--surface-strong)] border border-[color:var(--border)] px-4 py-2 text-xs font-bold text-[color:var(--fg)] transition cursor-pointer';
+          tabTarget.className = 'shrink-0 min-w-max rounded-none bg-transparent px-4 py-2 text-xs font-medium text-[color:var(--muted)] hover:text-[color:var(--fg)] transition cursor-pointer';
           panelQuality.classList.remove('hidden');
           panelTarget.classList.add('hidden');
         } else {
-          tabQuality.className = 'shrink-0 min-w-max rounded-xl bg-transparent px-4 py-2 text-xs font-medium text-[color:var(--muted)] hover:text-[color:var(--fg)] transition cursor-pointer';
-          tabTarget.className = 'shrink-0 min-w-max rounded-xl bg-[color:var(--surface-strong)] border border-[color:var(--border)] px-4 py-2 text-xs font-bold text-[color:var(--fg)] transition cursor-pointer';
+          tabQuality.className = 'shrink-0 min-w-max rounded-none bg-transparent px-4 py-2 text-xs font-medium text-[color:var(--muted)] hover:text-[color:var(--fg)] transition cursor-pointer';
+          tabTarget.className = 'shrink-0 min-w-max rounded-none bg-[color:var(--surface-strong)] border border-[color:var(--border)] px-4 py-2 text-xs font-bold text-[color:var(--fg)] transition cursor-pointer';
           panelQuality.classList.add('hidden');
           panelTarget.classList.remove('hidden');
         }

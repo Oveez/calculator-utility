@@ -137,7 +137,7 @@ const parameterGuide = [
 
 
     <!-- Metrics Bar -->
-    <div id="stats-bar" class="grid grid-cols-2 gap-3 sm:grid-cols-4 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-center">
+    <div id="stats-bar" class="grid grid-cols-2 gap-3 sm:grid-cols-4 rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-center">
       <div>
         <span class="block text-[11px] uppercase tracking-wider text-[color:var(--muted)]">Total Source Rows</span>
         <span id="stat-orig" class="font-mono text-lg font-bold text-[color:var(--fg)]">0</span>
@@ -174,28 +174,28 @@ const parameterGuide = [
             type="file"
             id="csv-file-in"
             accept=".csv,.tsv,.txt"
-            class="w-full text-xs text-[color:var(--muted)] file:mr-3 file:rounded-xl file:border file:border-[color:var(--border)] file:bg-[color:var(--surface)] file:px-3 file:py-1.5 file:text-xs file:font-semibold file:text-[color:var(--fg)] hover:file:bg-[color:var(--surface-strong)]" />
+            class="w-full text-xs text-[color:var(--muted)] file:mr-3 file:rounded-none file:border file:border-[color:var(--border)] file:bg-[color:var(--surface)] file:px-3 file:py-1.5 file:text-xs file:font-semibold file:text-[color:var(--fg)] hover:file:bg-[color:var(--surface-strong)]" />
           <textarea
             id="csv-in"
             rows="14"
-            class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 font-mono text-xs leading-relaxed text-[color:var(--fg)] focus:border-[color:var(--border-strong)] focus:outline-hidden"
+            class="w-full rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-4 font-mono text-xs leading-relaxed text-[color:var(--fg)] focus:border-[color:var(--border-strong)] focus:outline-hidden"
             placeholder="id,name,email,plan&#10;1,Alice,alice@example.com,Pro&#10;2,Bob,bob@example.com,Basic&#10;3,Alice,alice@example.com,Pro"
           ></textarea>
         </div>
 
         <!-- Controls -->
-        <div class="space-y-3 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-xs">
+        <div class="space-y-3 rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-xs">
           <div class="grid gap-3 sm:grid-cols-2">
             <div>
               <label for="scope-select" class="block font-medium text-[color:var(--muted)] mb-1">Deduplication Scope:</label>
-              <select id="scope-select" class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] px-3 py-1.5 text-xs text-[color:var(--fg)]">
+              <select id="scope-select" class="w-full rounded-none border border-[color:var(--border)] bg-[color:var(--surface-strong)] px-3 py-1.5 text-xs text-[color:var(--fg)]">
                 <option value="all">Match All Columns (Exact Row)</option>
                 <option value="col">Match Specific Key Column</option>
               </select>
             </div>
             <div id="key-col-wrapper" class="hidden">
               <label for="key-col-select" class="block font-medium text-[color:var(--muted)] mb-1">Key Column:</label>
-              <select id="key-col-select" class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] px-3 py-1.5 text-xs text-[color:var(--fg)]">
+              <select id="key-col-select" class="w-full rounded-none border border-[color:var(--border)] bg-[color:var(--surface-strong)] px-3 py-1.5 text-xs text-[color:var(--fg)]">
                 <option value="0">Column 1</option>
               </select>
             </div>
@@ -204,7 +204,7 @@ const parameterGuide = [
           <div class="grid gap-3 sm:grid-cols-2 pt-1">
             <div>
               <label for="policy-select" class="block font-medium text-[color:var(--muted)] mb-1">Retention Policy:</label>
-              <select id="policy-select" class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] px-3 py-1.5 text-xs text-[color:var(--fg)]">
+              <select id="policy-select" class="w-full rounded-none border border-[color:var(--border)] bg-[color:var(--surface-strong)] px-3 py-1.5 text-xs text-[color:var(--fg)]">
                 <option value="first">Keep First Occurrence</option>
                 <option value="last">Keep Last Occurrence</option>
               </select>
@@ -224,7 +224,7 @@ const parameterGuide = [
           <button
             type="button"
             data-dedup-btn
-            class="w-full mt-2 inline-flex items-center justify-center gap-2 rounded-xl bg-[color:var(--accent)] py-2.5 text-xs font-bold text-white shadow-xs transition hover:opacity-90 cursor-pointer"
+            class="w-full mt-2 inline-flex items-center justify-center gap-2 rounded-none bg-[color:var(--accent)] py-2.5 text-xs font-bold text-white shadow-xs transition hover:opacity-90 cursor-pointer"
           >
             <Icon name="sparkles" class="w-4 h-4" />
             <span>Clean &amp; Deduplicate CSV</span>
@@ -237,7 +237,7 @@ const parameterGuide = [
         <div class="flex items-center justify-between">
           <div class="flex items-center gap-2">
             <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Deduplicated Output</span>
-            <span id="status-badge" class="rounded-md bg-cyan-500/15 px-2 py-0.5 text-[10px] font-bold text-cyan-600 dark:text-cyan-400 dark:text-cyan-400">Ready</span>
+            <span id="status-badge" class="rounded-none bg-cyan-500/15 px-2 py-0.5 text-[10px] font-bold text-cyan-600 dark:text-cyan-400 dark:text-cyan-400">Ready</span>
           </div>
           <div class="flex items-center gap-2">
             <button type="button" data-copy-btn class="inline-flex items-center gap-1 text-xs font-bold text-[color:var(--fg)] hover:underline cursor-pointer">
@@ -252,14 +252,14 @@ const parameterGuide = [
           id="csv-out"
           rows="18"
           readonly
-          class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-4 font-mono text-xs leading-relaxed text-[color:var(--fg)] focus:outline-hidden"
+          class="w-full rounded-none border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-4 font-mono text-xs leading-relaxed text-[color:var(--fg)] focus:outline-hidden"
           placeholder="Unique CSV records will appear here..."
         ></textarea>
       </div>
     </div>
 
     <!-- Live Table Preview Section -->
-    <section class="space-y-3 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5">
+    <section class="space-y-3 rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-5">
       <div class="flex items-center justify-between">
         <h2 class="text-sm font-bold uppercase tracking-wider text-[color:var(--fg)] flex items-center gap-2">
           <Icon name="chart" class="w-4 h-4 text-[color:var(--accent)]" />
@@ -267,7 +267,7 @@ const parameterGuide = [
         </h2>
         <span id="preview-badge" class="text-xs text-[color:var(--muted)]">Live Clean View</span>
       </div>
-      <div class="overflow-x-auto rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)]">
+      <div class="overflow-x-auto rounded-none border border-[color:var(--border)] bg-[color:var(--bg)]">
         <table id="preview-table" class="min-w-full divide-y divide-[color:var(--border)] text-left text-xs font-mono">
           <thead id="preview-thead" class="bg-[color:var(--surface)] text-[color:var(--fg)]">
             <tr><th class="p-3 font-semibold text-[color:var(--muted)]">No data loaded yet</th></tr>
@@ -279,16 +279,16 @@ const parameterGuide = [
     </section>
 
     <!-- Step-by-Step Worked Example -->
-    <section class="space-y-4 rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 sm:p-8 text-xs sm:text-sm text-[color:var(--muted)] leading-relaxed">
+    <section class="space-y-4 border-t border-[color:var(--border)] pt-8 text-xs sm:text-sm text-[color:var(--muted)] leading-relaxed">
       <div class="flex items-center gap-2">
-        <span class="rounded-md bg-[color:var(--accent)]/15 px-2.5 py-1 text-xs font-bold text-[color:var(--accent)]">Worked Example</span>
+        <span class="rounded-none bg-[color:var(--accent)]/15 px-2.5 py-1 text-xs font-bold text-[color:var(--accent)]">Worked Example</span>
         <h2 class="text-base sm:text-lg font-bold text-[color:var(--fg)]">Deduplicating a Customer Newsletter List by Email</h2>
       </div>
       <p>
         A marketing spreadsheet contains multiple signups with different capitalization and trailing spaces. Selecting <code>Match Specific Key Column (email)</code> purges repeated subscribers:
       </p>
       <div class="grid gap-4 sm:grid-cols-2">
-        <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] p-4 font-mono text-xs">
+        <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] p-4 font-mono text-xs">
           <span class="text-[color:var(--muted)] block mb-1 font-bold font-sans">Input CSV (5 Rows):</span>
           id,name,email,tier<br/>
           101,Alice,alice@work.com,Pro<br/>
@@ -297,7 +297,7 @@ const parameterGuide = [
           104,Charlie,charlie@lab.io,Pro<br/>
           105,Bob B,"bob@corp.org ",Basic
         </div>
-        <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] p-4 font-mono text-xs">
+        <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] p-4 font-mono text-xs">
           <span class="text-[color:var(--muted)] block mb-1 font-bold font-sans">Clean Output (3 Unique Subscribers):</span>
           id,name,email,tier<br/>
           101,Alice,alice@work.com,Pro<br/>
@@ -328,7 +328,7 @@ const parameterGuide = [
       <h2 class="text-xl font-bold text-[color:var(--fg)]">Frequently Asked Questions</h2>
       <div class="space-y-3">
         {schemaFaq.map((faq) => (
-          <details class="group rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
+          <details class="group rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
             <summary class="cursor-pointer list-none font-semibold text-sm sm:text-base text-[color:var(--fg)] flex items-center justify-between gap-4">
               <span>{faq.question}</span>
               <span class="text-xs text-[color:var(--muted)] group-open:rotate-180 transition-transform">▼</span>

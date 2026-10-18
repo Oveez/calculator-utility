@@ -137,7 +137,7 @@ const parameterGuide = [
 
 
     <!-- Expiration Telemetry Bar -->
-    <div id="status-card" class="grid grid-cols-2 gap-3 sm:grid-cols-4 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-center">
+    <div id="status-card" class="grid grid-cols-2 gap-3 sm:grid-cols-4 rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-center">
       <div>
         <span class="block text-[11px] uppercase tracking-wider text-[color:var(--muted)]">Token Status</span>
         <span id="stat-status" class="font-mono text-sm font-bold text-cyan-600 dark:text-cyan-400 dark:text-cyan-400">Active</span>
@@ -173,10 +173,10 @@ const parameterGuide = [
         <textarea
           id="jwt-in"
           rows="5"
-          class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 font-mono text-xs leading-relaxed text-[color:var(--fg)] focus:border-[color:var(--border-strong)] focus:outline-hidden"
+          class="w-full rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-4 font-mono text-xs leading-relaxed text-[color:var(--fg)] focus:border-[color:var(--border-strong)] focus:outline-hidden"
           placeholder="Paste encoded JWT here (e.g. eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...)"
         ></textarea>
-        <div id="jwt-err" class="hidden rounded-xl border border-rose-500/30 bg-rose-500/10 p-3 text-xs text-rose-600 dark:text-rose-400 font-mono"></div>
+        <div id="jwt-err" class="hidden rounded-none border border-rose-500/30 bg-rose-500/10 p-3 text-xs text-rose-600 dark:text-rose-400 font-mono"></div>
       </div>
 
       <!-- Decoded Columns -->
@@ -191,7 +191,7 @@ const parameterGuide = [
             id="jwt-header"
             rows="8"
             readonly
-            class="w-full rounded-2xl border border-purple-500/30 bg-[color:var(--surface-strong)] p-4 font-mono text-xs leading-relaxed text-[color:var(--fg)] focus:outline-hidden"
+            class="w-full rounded-none border border-purple-500/30 bg-[color:var(--surface-strong)] p-4 font-mono text-xs leading-relaxed text-[color:var(--fg)] focus:outline-hidden"
             placeholder="Decoded header..."
           ></textarea>
         </div>
@@ -206,37 +206,37 @@ const parameterGuide = [
             id="jwt-payload"
             rows="8"
             readonly
-            class="w-full rounded-2xl border border-blue-500/30 bg-[color:var(--surface-strong)] p-4 font-mono text-xs leading-relaxed text-[color:var(--fg)] focus:outline-hidden"
+            class="w-full rounded-none border border-blue-500/30 bg-[color:var(--surface-strong)] p-4 font-mono text-xs leading-relaxed text-[color:var(--fg)] focus:outline-hidden"
             placeholder="Decoded payload claims..."
           ></textarea>
         </div>
       </div>
 
       <!-- Standard Claims Summary Table -->
-      <div id="claims-card" class="space-y-3 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 text-xs">
+      <div id="claims-card" class="space-y-3 rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-5 text-xs">
         <h2 class="text-sm font-bold uppercase tracking-wider text-[color:var(--fg)]">Key Claims Inspection</h2>
         <div class="grid gap-3 sm:grid-cols-3">
-          <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] p-3">
+          <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] p-3">
             <p class="text-[10px] uppercase tracking-wider text-[color:var(--muted)] font-bold">Subject (sub)</p>
             <p id="claim-sub" class="font-mono font-bold text-[color:var(--fg)] text-xs mt-1 truncate">-</p>
           </div>
-          <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] p-3">
+          <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] p-3">
             <p class="text-[10px] uppercase tracking-wider text-[color:var(--muted)] font-bold">Issuer (iss)</p>
             <p id="claim-iss" class="font-mono font-bold text-[color:var(--fg)] text-xs mt-1 truncate">-</p>
           </div>
-          <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] p-3">
+          <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] p-3">
             <p class="text-[10px] uppercase tracking-wider text-[color:var(--muted)] font-bold">Audience (aud)</p>
             <p id="claim-aud" class="font-mono font-bold text-[color:var(--fg)] text-xs mt-1 truncate">-</p>
           </div>
-          <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] p-3">
+          <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] p-3">
             <p class="text-[10px] uppercase tracking-wider text-[color:var(--muted)] font-bold">Issued At (iat)</p>
             <p id="claim-iat" class="font-mono text-xs text-[color:var(--fg)] mt-1">-</p>
           </div>
-          <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] p-3">
+          <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] p-3">
             <p class="text-[10px] uppercase tracking-wider text-[color:var(--muted)] font-bold">Expires (exp)</p>
             <p id="claim-exp" class="font-mono text-xs text-[color:var(--fg)] mt-1">-</p>
           </div>
-          <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] p-3">
+          <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] p-3">
             <p class="text-[10px] uppercase tracking-wider text-[color:var(--muted)] font-bold">Time Remaining</p>
             <p id="claim-remaining" class="font-mono font-bold text-xs mt-1 text-cyan-600 dark:text-cyan-400 dark:text-cyan-400">-</p>
           </div>
@@ -245,15 +245,15 @@ const parameterGuide = [
     </div>
 
     <!-- Step-by-Step Worked Example -->
-    <section class="space-y-4 rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 sm:p-8 text-xs sm:text-sm text-[color:var(--muted)] leading-relaxed">
+    <section class="space-y-4 border-t border-[color:var(--border)] pt-8 text-xs sm:text-sm text-[color:var(--muted)] leading-relaxed">
       <div class="flex items-center gap-2">
-        <span class="rounded-md bg-[color:var(--accent)]/15 px-2.5 py-1 text-xs font-bold text-[color:var(--accent)]">Worked Example</span>
+        <span class="rounded-none bg-[color:var(--accent)]/15 px-2.5 py-1 text-xs font-bold text-[color:var(--accent)]">Worked Example</span>
         <h2 class="text-base sm:text-lg font-bold text-[color:var(--fg)]">Decoding an OAuth2 User Access Token</h2>
       </div>
       <p>
         An OAuth2 / OpenID Connect provider returns a compact string composed of three dot-separated Base64URL segments:
       </p>
-      <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] p-4 font-mono text-xs overflow-x-auto">
+      <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] p-4 font-mono text-xs overflow-x-auto">
         <span class="text-purple-500 font-bold">eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9</span>.<span class="text-blue-500 font-bold">eyJzdWIiOiJ1c3JfOTA5MiIsIm5hbWUiOiJBbGljZSBTbWl0aCIsImFkbWluIjp0cnVlLCJleHAiOjE3NzI4MzkyMDB9</span>.<span class="text-cyan-500 font-bold">TJVA95OrM7E2cBab30RMHrHDcEfxjoYZgeFONFh7HgQ</span>
       </div>
       <p class="text-xs text-[color:var(--muted)]">
@@ -279,7 +279,7 @@ const parameterGuide = [
       <h2 class="text-xl font-bold text-[color:var(--fg)]">Frequently Asked Questions</h2>
       <div class="space-y-3">
         {schemaFaq.map((faq) => (
-          <details class="group rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
+          <details class="group rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
             <summary class="cursor-pointer list-none font-semibold text-sm sm:text-base text-[color:var(--fg)] flex items-center justify-between gap-4">
               <span>{faq.question}</span>
               <span class="text-xs text-[color:var(--muted)] group-open:rotate-180 transition-transform">▼</span>
@@ -411,12 +411,12 @@ const parameterGuide = [
 
             const diff = payloadObj.exp - nowSec;
             if (diff > 0) {
-              statStatus.innerHTML = '<span class="inline-flex items-center gap-1.5"><span class="h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span>Active</span>';
+              statStatus.innerHTML = '<span class="inline-flex items-center gap-1.5"><span class="h-2 w-2 rounded-none bg-emerald-500 animate-pulse"></span>Active</span>';
               statStatus.className = 'font-mono text-sm font-bold text-cyan-600 dark:text-cyan-400 dark:text-cyan-400';
               claimRemaining.textContent = formatDuration(diff);
               claimRemaining.className = 'font-mono font-bold text-xs mt-1 text-cyan-600 dark:text-cyan-400 dark:text-cyan-400';
             } else {
-              statStatus.innerHTML = '<span class="inline-flex items-center gap-1.5"><span class="h-2 w-2 rounded-full bg-rose-500"></span>Expired</span>';
+              statStatus.innerHTML = '<span class="inline-flex items-center gap-1.5"><span class="h-2 w-2 rounded-none bg-rose-500"></span>Expired</span>';
               statStatus.className = 'font-mono text-sm font-bold text-rose-600 dark:text-rose-400';
               claimRemaining.textContent = formatDuration(diff);
               claimRemaining.className = 'font-mono font-bold text-xs mt-1 text-rose-600 dark:text-rose-400';
@@ -424,7 +424,7 @@ const parameterGuide = [
           } else {
             statExp.textContent = 'Never (No exp)';
             claimExp.textContent = 'No expiration (exp) claim set';
-            statStatus.innerHTML = '<span class="inline-flex items-center gap-1.5"><span class="h-2 w-2 rounded-full bg-blue-500"></span>No Expiration</span>';
+            statStatus.innerHTML = '<span class="inline-flex items-center gap-1.5"><span class="h-2 w-2 rounded-none bg-blue-500"></span>No Expiration</span>';
             statStatus.className = 'font-mono text-sm font-bold text-blue-500';
             claimRemaining.textContent = 'Indefinite';
             claimRemaining.className = 'font-mono font-bold text-xs mt-1 text-blue-500';

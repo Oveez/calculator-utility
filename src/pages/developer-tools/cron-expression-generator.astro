@@ -137,7 +137,7 @@ const parameterGuide = [
 
 
     <!-- Cron Hero Result Card -->
-    <div class="space-y-4 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6">
+    <div class="space-y-4 rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-6">
       <div class="flex items-center justify-between">
         <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Active Cron Expression</span>
         <button type="button" id="btn-copy-cron" class="inline-flex items-center gap-1 text-xs font-bold text-[color:var(--fg)] hover:underline cursor-pointer">
@@ -146,7 +146,7 @@ const parameterGuide = [
         </button>
       </div>
 
-      <div class="flex items-center rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] px-4 py-3">
+      <div class="flex items-center rounded-none border border-[color:var(--border)] bg-[color:var(--surface-strong)] px-4 py-3">
         <input
           type="text"
           id="cron-expr"
@@ -155,7 +155,7 @@ const parameterGuide = [
       </div>
 
       <!-- Human Translation -->
-      <div class="rounded-xl border border-cyan-500/20 bg-cyan-500/10 p-3.5 text-xs text-cyan-600 dark:text-cyan-400 dark:text-cyan-400">
+      <div class="rounded-none border border-cyan-500/20 bg-cyan-500/10 p-3.5 text-xs text-cyan-600 dark:text-cyan-400 dark:text-cyan-400">
         <p class="font-bold">Human-Readable Schedule:</p>
         <p id="cron-human" class="mt-1 text-sm font-semibold">At 09:00 AM, Monday through Friday</p>
       </div>
@@ -165,19 +165,19 @@ const parameterGuide = [
     <div class="space-y-2">
       <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Quick Presets</span>
       <div class="flex flex-wrap gap-2 text-xs font-medium">
-        <button type="button" data-preset="* * * * *" class="rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1 text-[color:var(--fg)] hover:bg-[color:var(--surface-strong)] cursor-pointer">Every Minute</button>
-        <button type="button" data-preset="*/5 * * * *" class="rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1 text-[color:var(--fg)] hover:bg-[color:var(--surface-strong)] cursor-pointer">Every 5 Mins</button>
-        <button type="button" data-preset="*/15 * * * *" class="rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1 text-[color:var(--fg)] hover:bg-[color:var(--surface-strong)] cursor-pointer">Every 15 Mins</button>
-        <button type="button" data-preset="0 * * * *" class="rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1 text-[color:var(--fg)] hover:bg-[color:var(--surface-strong)] cursor-pointer">Every Hour</button>
-        <button type="button" data-preset="0 0 * * *" class="rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1 text-[color:var(--fg)] hover:bg-[color:var(--surface-strong)] cursor-pointer">Every Midnight</button>
-        <button type="button" data-preset="0 9 * * 1-5" class="rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1 text-[color:var(--fg)] hover:bg-[color:var(--surface-strong)] cursor-pointer">Weekdays 9:00 AM</button>
-        <button type="button" data-preset="0 0 * * 0" class="rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1 text-[color:var(--fg)] hover:bg-[color:var(--surface-strong)] cursor-pointer">Weekly (Sunday)</button>
-        <button type="button" data-preset="0 0 1 * *" class="rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1 text-[color:var(--fg)] hover:bg-[color:var(--surface-strong)] cursor-pointer">1st of Month</button>
+        <button type="button" data-preset="* * * * *" class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1 text-[color:var(--fg)] hover:bg-[color:var(--surface-strong)] cursor-pointer">Every Minute</button>
+        <button type="button" data-preset="*/5 * * * *" class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1 text-[color:var(--fg)] hover:bg-[color:var(--surface-strong)] cursor-pointer">Every 5 Mins</button>
+        <button type="button" data-preset="*/15 * * * *" class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1 text-[color:var(--fg)] hover:bg-[color:var(--surface-strong)] cursor-pointer">Every 15 Mins</button>
+        <button type="button" data-preset="0 * * * *" class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1 text-[color:var(--fg)] hover:bg-[color:var(--surface-strong)] cursor-pointer">Every Hour</button>
+        <button type="button" data-preset="0 0 * * *" class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1 text-[color:var(--fg)] hover:bg-[color:var(--surface-strong)] cursor-pointer">Every Midnight</button>
+        <button type="button" data-preset="0 9 * * 1-5" class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1 text-[color:var(--fg)] hover:bg-[color:var(--surface-strong)] cursor-pointer">Weekdays 9:00 AM</button>
+        <button type="button" data-preset="0 0 * * 0" class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1 text-[color:var(--fg)] hover:bg-[color:var(--surface-strong)] cursor-pointer">Weekly (Sunday)</button>
+        <button type="button" data-preset="0 0 1 * *" class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1 text-[color:var(--fg)] hover:bg-[color:var(--surface-strong)] cursor-pointer">1st of Month</button>
       </div>
     </div>
 
     <!-- Visual 5-Field Interactive Builder -->
-    <div class="space-y-4 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 text-xs">
+    <div class="space-y-4 rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-5 text-xs">
       <h2 class="font-bold text-sm text-[color:var(--fg)] uppercase tracking-wider">Visual 5-Field Schedule Builder</h2>
       <div class="grid gap-3 sm:grid-cols-5">
         <!-- Field 1: Minute -->
@@ -186,7 +186,7 @@ const parameterGuide = [
           <input
             type="text"
             id="f-minute"
-            class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] px-3 py-1.5 font-mono text-xs text-[color:var(--fg)] focus:outline-hidden"
+            class="w-full rounded-none border border-[color:var(--border)] bg-[color:var(--surface-strong)] px-3 py-1.5 font-mono text-xs text-[color:var(--fg)] focus:outline-hidden"
             value="0" />
           <span class="text-[10px] text-[color:var(--muted)] mt-0.5 block">e.g. *, */5, 0, 30</span>
         </div>
@@ -197,7 +197,7 @@ const parameterGuide = [
           <input
             type="text"
             id="f-hour"
-            class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] px-3 py-1.5 font-mono text-xs text-[color:var(--fg)] focus:outline-hidden"
+            class="w-full rounded-none border border-[color:var(--border)] bg-[color:var(--surface-strong)] px-3 py-1.5 font-mono text-xs text-[color:var(--fg)] focus:outline-hidden"
             value="9" />
           <span class="text-[10px] text-[color:var(--muted)] mt-0.5 block">e.g. *, 0, 9, 23</span>
         </div>
@@ -208,7 +208,7 @@ const parameterGuide = [
           <input
             type="text"
             id="f-dom"
-            class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] px-3 py-1.5 font-mono text-xs text-[color:var(--fg)] focus:outline-hidden"
+            class="w-full rounded-none border border-[color:var(--border)] bg-[color:var(--surface-strong)] px-3 py-1.5 font-mono text-xs text-[color:var(--fg)] focus:outline-hidden"
             value="*" />
           <span class="text-[10px] text-[color:var(--muted)] mt-0.5 block">e.g. *, 1, 15, 1-10</span>
         </div>
@@ -219,7 +219,7 @@ const parameterGuide = [
           <input
             type="text"
             id="f-month"
-            class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] px-3 py-1.5 font-mono text-xs text-[color:var(--fg)] focus:outline-hidden"
+            class="w-full rounded-none border border-[color:var(--border)] bg-[color:var(--surface-strong)] px-3 py-1.5 font-mono text-xs text-[color:var(--fg)] focus:outline-hidden"
             value="*" />
           <span class="text-[10px] text-[color:var(--muted)] mt-0.5 block">e.g. *, 1-6, */3</span>
         </div>
@@ -230,7 +230,7 @@ const parameterGuide = [
           <input
             type="text"
             id="f-dow"
-            class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] px-3 py-1.5 font-mono text-xs text-[color:var(--fg)] focus:outline-hidden"
+            class="w-full rounded-none border border-[color:var(--border)] bg-[color:var(--surface-strong)] px-3 py-1.5 font-mono text-xs text-[color:var(--fg)] focus:outline-hidden"
             value="1-5" />
           <span class="text-[10px] text-[color:var(--muted)] mt-0.5 block">0=Sun, 1-5=Mon-Fri</span>
         </div>
@@ -238,12 +238,12 @@ const parameterGuide = [
     </div>
 
     <!-- Next 8 Scheduled Runs Preview -->
-    <div class="space-y-3 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 text-xs">
+    <div class="space-y-3 rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-5 text-xs">
       <div class="flex items-center justify-between">
         <h2 class="font-bold text-sm text-[color:var(--fg)] uppercase tracking-wider">Next 8 Scheduled Executions</h2>
         <span class="text-[11px] text-[color:var(--muted)]">Local Timezone Preview</span>
       </div>
-      <div class="overflow-x-auto rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)]">
+      <div class="overflow-x-auto rounded-none border border-[color:var(--border)] bg-[color:var(--bg)]">
         <table class="min-w-full divide-y divide-[color:var(--border)] text-left font-mono text-xs">
           <thead class="bg-[color:var(--surface)] text-[color:var(--fg)]">
             <tr>
@@ -260,16 +260,16 @@ const parameterGuide = [
     </div>
 
     <!-- Step-by-Step Worked Example -->
-    <section class="space-y-4 rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 sm:p-8 text-xs sm:text-sm text-[color:var(--muted)] leading-relaxed">
+    <section class="space-y-4 border-t border-[color:var(--border)] pt-8 text-xs sm:text-sm text-[color:var(--muted)] leading-relaxed">
       <div class="flex items-center gap-2">
-        <span class="rounded-md bg-[color:var(--accent)]/15 px-2.5 py-1 text-xs font-bold text-[color:var(--accent)]">Worked Example</span>
+        <span class="rounded-none bg-[color:var(--accent)]/15 px-2.5 py-1 text-xs font-bold text-[color:var(--accent)]">Worked Example</span>
         <h2 class="text-base sm:text-lg font-bold text-[color:var(--fg)]">Scheduling Database Backups: "0 2 * * 0"</h2>
       </div>
       <p>
         A systems architect needs to run weekly full backups at 2:00 AM on Sunday mornings:
       </p>
       <div class="space-y-2 font-mono text-xs">
-        <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] p-3">
+        <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] p-3">
           <span class="text-[color:var(--muted)] block font-bold font-sans text-[11px]">Fields Breakdown:</span>
           0 &rarr; Minute 0 (top of the hour)<br/>
           2 &rarr; Hour 2 (2:00 AM)<br/>
@@ -301,7 +301,7 @@ const parameterGuide = [
       <h2 class="text-xl font-bold text-[color:var(--fg)]">Frequently Asked Questions</h2>
       <div class="space-y-3">
         {schemaFaq.map((faq) => (
-          <details class="group rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
+          <details class="group rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
             <summary class="cursor-pointer list-none font-semibold text-sm sm:text-base text-[color:var(--fg)] flex items-center justify-between gap-4">
               <span>{faq.question}</span>
               <span class="text-xs text-[color:var(--muted)] group-open:rotate-180 transition-transform">▼</span>

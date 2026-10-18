@@ -93,19 +93,19 @@ const schemaGraph = [
 
     <!-- Telemetry Bar -->
     <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-      <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3 text-center">
+      <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-3 text-center">
         <p class="text-[10px] font-bold uppercase tracking-wider text-[color:var(--muted)]">Raw Size</p>
         <p id="stat-raw-bytes" class="mt-1 font-mono text-base font-bold text-[color:var(--fg)]">0 B</p>
       </div>
-      <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3 text-center">
+      <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-3 text-center">
         <p class="text-[10px] font-bold uppercase tracking-wider text-[color:var(--muted)]">Base64 Size</p>
         <p id="stat-b64-bytes" class="mt-1 font-mono text-base font-bold text-cyan-500 dark:text-cyan-400">0 B</p>
       </div>
-      <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3 text-center">
+      <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-3 text-center">
         <p class="text-[10px] font-bold uppercase tracking-wider text-[color:var(--muted)]">Overhead Delta</p>
         <p id="stat-overhead" class="mt-1 font-mono text-base font-bold text-[color:var(--fg)]">+33.3%</p>
       </div>
-      <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3 text-center">
+      <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-3 text-center">
         <p class="text-[10px] font-bold uppercase tracking-wider text-[color:var(--muted)]">Mode</p>
         <p id="stat-mode" class="mt-1 font-mono text-base font-bold text-[color:var(--fg)]">UTF-8 Text</p>
       </div>
@@ -116,14 +116,14 @@ const schemaGraph = [
       <button
         type="button"
         data-tab="text"
-        class="tab-btn shrink-0 min-w-max rounded-xl bg-[color:var(--accent)] px-4 py-2 text-xs font-bold text-white border border-[color:var(--accent)] shadow-[0_0_12px_var(--accent-glow)] transition cursor-pointer"
+        class="tab-btn shrink-0 min-w-max rounded-none bg-[color:var(--accent)] px-4 py-2 text-xs font-bold text-white border border-[color:var(--accent)] shadow-[0_0_12px_var(--accent-glow)] transition cursor-pointer"
       >
         Text Input
       </button>
       <button
         type="button"
         data-tab="file"
-        class="tab-btn shrink-0 min-w-max rounded-xl bg-[color:var(--surface)] px-4 py-2 text-xs font-medium text-[color:var(--muted)] border border-[color:var(--border)] hover:border-[color:var(--accent)] hover:shadow-[0_0_12px_var(--accent-glow)] hover:text-[color:var(--fg)] transition cursor-pointer"
+        class="tab-btn shrink-0 min-w-max rounded-none bg-[color:var(--surface)] px-4 py-2 text-xs font-medium text-[color:var(--muted)] border border-[color:var(--border)] hover:border-[color:var(--accent)] hover:shadow-[0_0_12px_var(--accent-glow)] hover:text-[color:var(--fg)] transition cursor-pointer"
       >
         File &amp; Image Upload
       </button>
@@ -149,14 +149,14 @@ const schemaGraph = [
           <textarea
             id="b64-input"
             rows="13"
-            class="w-full font-mono text-xs leading-relaxed rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-[color:var(--fg)] focus:border-[color:var(--border-strong)] focus:outline-hidden"
+            class="w-full font-mono text-xs leading-relaxed rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-[color:var(--fg)] focus:border-[color:var(--border-strong)] focus:outline-hidden"
             placeholder="Type or paste plain text or a Base64 string here..."
           ></textarea>
         </div>
 
         <!-- File Input View -->
         <div id="file-view" class="hidden space-y-3">
-          <div class="relative flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-[color:var(--border)] bg-[color:var(--surface)] p-8 text-center hover:border-[color:var(--border-strong)] transition">
+          <div class="relative flex flex-col items-center justify-center rounded-none border-2 border-dashed border-[color:var(--border)] bg-[color:var(--surface)] p-8 text-center hover:border-[color:var(--border-strong)] transition">
             <input type="file" id="file-input" class="absolute inset-0 opacity-0 cursor-pointer w-full h-full" />
             <div class="space-y-2 pointer-events-none">
               <span class="text-3xl">&#128196;</span>
@@ -166,14 +166,14 @@ const schemaGraph = [
             </div>
           </div>
           <!-- Image Preview if file is an image -->
-          <div id="img-preview-box" class="hidden rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3 text-center">
+          <div id="img-preview-box" class="hidden rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-3 text-center">
             <p class="text-[11px] font-bold text-[color:var(--muted)] mb-2">Image Preview:</p>
-            <img id="img-preview" alt="Base64 preview" class="max-h-48 mx-auto rounded-lg shadow-xs object-contain" />
+            <img id="img-preview" alt="Base64 preview" class="max-h-48 mx-auto rounded-none shadow-xs object-contain" />
           </div>
         </div>
 
         <!-- Conversion Options -->
-        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 space-y-3">
+        <div class="py-4 border-b border-[color:var(--border)] space-y-3">
           <p class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Format Options</p>
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
             <label class="flex items-center gap-2 cursor-pointer">
@@ -190,7 +190,7 @@ const schemaGraph = [
             </label>
             <div class="flex items-center gap-2">
               <label for="line-wrap" class="text-[color:var(--muted)]">Line Wrap:</label>
-              <select id="line-wrap" class="rounded-lg border border-[color:var(--border)] bg-[color:var(--bg)] px-2 py-0.5 text-xs text-[color:var(--fg)]">
+              <select id="line-wrap" class="rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-2 py-0.5 text-xs text-[color:var(--fg)]">
                 <option value="none">No Wrapping</option>
                 <option value="64">64 chars (PEM)</option>
                 <option value="76">76 chars (MIME)</option>
@@ -202,14 +202,14 @@ const schemaGraph = [
             <button
               type="button"
               data-encode-btn
-              class="flex-1 rounded-xl bg-[color:var(--accent)] py-2.5 text-xs font-bold text-white shadow-xs transition hover:opacity-90"
+              class="flex-1 rounded-none bg-[color:var(--accent)] py-2.5 text-xs font-bold text-white shadow-xs transition hover:opacity-90"
             >
               Encode to Base64
             </button>
             <button
               type="button"
               data-decode-btn
-              class="flex-1 rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] py-2.5 text-xs font-bold text-[color:var(--fg)] transition hover:bg-[color:var(--surface-strong)]"
+              class="flex-1 rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] py-2.5 text-xs font-bold text-[color:var(--fg)] transition hover:bg-[color:var(--surface-strong)]"
             >
               Decode Base64
             </button>
@@ -237,11 +237,11 @@ const schemaGraph = [
           id="b64-output"
           rows="18"
           readonly
-          class="w-full font-mono text-xs leading-relaxed rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-4 text-[color:var(--fg)] focus:outline-hidden"
+          class="w-full font-mono text-xs leading-relaxed rounded-none border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-4 text-[color:var(--fg)] focus:outline-hidden"
           placeholder="Encoded or decoded output will appear here..."
         ></textarea>
 
-        <div id="b64-err" class="hidden rounded-xl border border-red-500/30 bg-red-500/10 p-3 text-xs text-red-600 dark:text-red-400 font-mono"></div>
+        <div id="b64-err" class="hidden rounded-none border border-red-500/30 bg-red-500/10 p-3 text-xs text-red-600 dark:text-red-400 font-mono"></div>
       </div>
     </div>
 
@@ -319,7 +319,7 @@ const schemaGraph = [
       <h2 class="text-xl font-bold text-[color:var(--fg)]">Frequently Asked Questions</h2>
       <div class="space-y-3">
         {schemaFaq.map((faq) => (
-          <details class="group rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
+          <details class="group rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
             <summary class="cursor-pointer list-none font-semibold text-sm sm:text-base text-[color:var(--fg)] flex items-center justify-between gap-4">
               <span>{faq.question}</span>
               <span class="text-xs text-[color:var(--muted)] group-open:rotate-180 transition-transform">&#9660;</span>
@@ -558,9 +558,9 @@ const schemaGraph = [
         activeTab = tab;
         tabBtns.forEach(btn => {
           if (btn.dataset.tab === tab) {
-            btn.className = 'tab-btn shrink-0 min-w-max rounded-xl bg-[color:var(--accent)] px-4 py-2 text-xs font-bold text-white border border-[color:var(--accent)] shadow-[0_0_12px_var(--accent-glow)] transition cursor-pointer';
+            btn.className = 'tab-btn shrink-0 min-w-max rounded-none bg-[color:var(--accent)] px-4 py-2 text-xs font-bold text-white border border-[color:var(--accent)] shadow-[0_0_12px_var(--accent-glow)] transition cursor-pointer';
           } else {
-            btn.className = 'tab-btn shrink-0 min-w-max rounded-xl bg-[color:var(--surface)] px-4 py-2 text-xs font-medium text-[color:var(--muted)] border border-[color:var(--border)] hover:border-[color:var(--accent)] hover:shadow-[0_0_12px_var(--accent-glow)] hover:text-[color:var(--fg)] transition cursor-pointer';
+            btn.className = 'tab-btn shrink-0 min-w-max rounded-none bg-[color:var(--surface)] px-4 py-2 text-xs font-medium text-[color:var(--muted)] border border-[color:var(--border)] hover:border-[color:var(--accent)] hover:shadow-[0_0_12px_var(--accent-glow)] hover:text-[color:var(--fg)] transition cursor-pointer';
           }
         });
 

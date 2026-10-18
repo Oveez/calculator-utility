@@ -84,7 +84,7 @@ const schemaGraph = [
 
     <div class="space-y-6">
       <!-- Winner Hero Display -->
-      <div class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-8 sm:p-12 text-center space-y-4">
+      <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-8 sm:p-12 text-center space-y-4">
         <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Selected Student</span>
         <p id="winner-name" class="text-3xl sm:text-5xl font-black text-cyan-500 dark:text-cyan-400 min-h-16 flex items-center justify-center">
           Ready to Pick!
@@ -93,7 +93,7 @@ const schemaGraph = [
         <button
           type="button"
           id="pick-btn"
-          class="inline-flex items-center justify-center gap-2 rounded-2xl bg-[color:var(--accent)] px-8 py-3.5 text-sm sm:text-base font-extrabold text-white shadow-md transition hover:opacity-90 active:scale-95 cursor-pointer"
+          class="inline-flex items-center justify-center gap-2 rounded-none bg-[color:var(--accent)] px-8 py-3.5 text-sm sm:text-base font-extrabold text-white shadow-md transition hover:opacity-90 active:scale-95 cursor-pointer"
         >
           <Icon name="dice" class="w-5 h-5" />
           <span>Pick Random Student</span>
@@ -110,7 +110,7 @@ const schemaGraph = [
           <textarea
             id="roster-in"
             rows="10"
-            class="w-full font-mono text-xs leading-relaxed rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-[color:var(--fg)] focus:border-[color:var(--border-strong)] focus:outline-hidden"
+            class="w-full font-mono text-xs leading-relaxed rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-[color:var(--fg)] focus:border-[color:var(--border-strong)] focus:outline-hidden"
             placeholder="Paste student names here..."
           >Emma Watson
 Liam Smith
@@ -134,7 +134,7 @@ Elijah Miller</textarea>
             <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Previously Called</span>
             <button type="button" data-clear-hist class="text-xs text-[color:var(--muted)] hover:text-[color:var(--fg)]">Clear History</button>
           </div>
-          <ul id="history-list" class="space-y-1.5 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-4 text-xs font-mono text-[color:var(--fg)] min-h-48 max-h-56 overflow-y-auto">
+          <ul id="history-list" class="space-y-1.5 rounded-none border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-4 text-xs font-mono text-[color:var(--fg)] min-h-48 max-h-56 overflow-y-auto">
             <li class="text-[color:var(--muted)] italic">No students picked yet.</li>
           </ul>
         </div>
@@ -156,7 +156,7 @@ Elijah Miller</textarea>
       <h2 class="text-xl font-bold text-[color:var(--fg)]">Frequently Asked Questions</h2>
       <div class="space-y-3">
         {schemaFaq.map((faq) => (
-          <details class="group rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
+          <details class="group rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
             <summary class="cursor-pointer list-none font-semibold text-sm sm:text-base text-[color:var(--fg)] flex items-center justify-between gap-4">
               <span>{faq.question}</span>
               <span class="text-xs text-[color:var(--muted)] group-open:rotate-180 transition-transform">▼</span>

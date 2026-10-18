@@ -81,7 +81,7 @@ const taxParameterGuide: CalculatorParameterInfo[] = [
 ---
 
 <div
-  class="relative overflow-hidden rounded-[2.5rem] border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-5 shadow-[var(--shadow)] sm:p-8 lg:p-10"
+  class="space-y-8"
   data-tax-app
   data-country-id="uk"
   data-profile-json={JSON.stringify(profile)}
@@ -95,7 +95,7 @@ const taxParameterGuide: CalculatorParameterInfo[] = [
           <h2 class="text-xl font-bold tracking-tight text-[color:var(--fg)] sm:text-2xl">
             UK Income Tax &amp; Salary Calculator
           </h2>
-          <span class="inline-flex items-center rounded-full bg-cyan-500/10 px-2.5 py-0.5 text-xs font-semibold text-cyan-600 dark:text-cyan-400 border border-cyan-500/20">
+          <span class="inline-flex items-center rounded-none bg-[color:var(--accent-soft)] px-2.5 py-0.5 text-xs font-semibold text-[color:var(--accent)] border border-[color:var(--accent)]/30">
             Official 2026/27 HMRC Data
           </span>
         </div>
@@ -110,10 +110,10 @@ const taxParameterGuide: CalculatorParameterInfo[] = [
       <TaxYearSelector profile={profile} id="uk-tax-year-select" />
 
       <!-- Engine View Toggle: Quick Salary vs Detailed PAYE -->
-      <div class="flex items-center rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-1 text-xs font-semibold overflow-x-auto no-scrollbar max-w-full shrink-0">
+      <div class="flex items-center rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-1 text-xs font-semibold overflow-x-auto no-scrollbar max-w-full shrink-0">
         <button
           type="button"
-          class="shrink-0 min-w-max cursor-pointer rounded-xl px-3 py-1.5 text-xs font-bold transition inline-flex items-center gap-1.5 bg-[color:var(--accent)] text-white shadow-xs active"
+          class="shrink-0 min-w-max cursor-pointer rounded-none px-3 py-1.5 text-xs font-bold transition inline-flex items-center gap-1.5 bg-[color:var(--accent)] text-white shadow-xs active"
           data-engine-tab="advanced"
         >
           <Icon name="bolt" class="w-3.5 h-3.5" />
@@ -121,7 +121,7 @@ const taxParameterGuide: CalculatorParameterInfo[] = [
         </button>
         <button
           type="button"
-          class="shrink-0 min-w-max cursor-pointer rounded-xl px-3 py-1.5 text-xs font-semibold text-[color:var(--muted)] hover:text-[color:var(--fg)] transition inline-flex items-center gap-1.5"
+          class="shrink-0 min-w-max cursor-pointer rounded-none px-3 py-1.5 text-xs font-semibold text-[color:var(--muted)] hover:text-[color:var(--fg)] transition inline-flex items-center gap-1.5"
           data-engine-tab="quick"
         >
           <Icon name="calculator" class="w-3.5 h-3.5" />
@@ -132,14 +132,14 @@ const taxParameterGuide: CalculatorParameterInfo[] = [
   </div>
 
   <!-- HERO DYNAMIC TAKE-HOME BANNER -->
-  <div class="mt-6 rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 sm:p-6 shadow-sm">
+  <div class="mt-6 border-b border-[color:var(--border)] pb-6 space-y-4">
     <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
       <div>
         <div class="flex items-center gap-2">
           <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Net Take-Home Pay</span>
           <span
             data-hero-badge
-            class="inline-flex items-center gap-1 rounded-full bg-cyan-500/10 px-2.5 py-0.5 text-xs font-bold text-cyan-600 dark:text-cyan-400 border border-cyan-500/20"
+            class="inline-flex items-center gap-1 rounded-none bg-[color:var(--accent-soft)] px-2.5 py-0.5 text-xs font-bold text-[color:var(--accent)] border border-[color:var(--accent)]/30"
           >
             Estimated Net Salary
           </span>
@@ -153,26 +153,26 @@ const taxParameterGuide: CalculatorParameterInfo[] = [
       </div>
 
       <div class="grid grid-cols-2 gap-3 sm:grid-cols-3 border-t border-[color:var(--border)]/60 pt-3 md:border-t-0 md:pt-0">
-        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] p-3">
+        <div class="rounded-none border border-[color:var(--border)] bg-white p-3">
           <p class="text-[11px] font-medium text-[color:var(--muted)]">PAYE Income Tax</p>
-          <p class="text-base font-extrabold text-rose-500" data-hero-incometax>
+          <p class="text-base font-extrabold text-[color:var(--accent)]" data-hero-incometax>
             {formatCurrency(initialResult.netFederalIncomeTax, profile.defaultCurrency, profile.defaultCurrencySymbol)}
           </p>
           <p class="text-[10px] text-[color:var(--muted)]">Annual HMRC liability</p>
         </div>
-        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] p-3">
+        <div class="rounded-none border border-[color:var(--border)] bg-white p-3">
           <p class="text-[11px] font-medium text-[color:var(--muted)]">National Insurance</p>
-          <p class="text-base font-extrabold text-indigo-500" data-hero-ni>
+          <p class="text-base font-extrabold text-[color:var(--fg)]" data-hero-ni>
             {formatCurrency(initialResult.totalFicaTax, profile.defaultCurrency, profile.defaultCurrencySymbol)}
           </p>
           <p class="text-[10px] text-[color:var(--muted)]">Class 1 Employee</p>
         </div>
-        <div class="col-span-2 sm:col-span-1 rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] p-3 flex flex-col justify-between">
+        <div class="col-span-2 sm:col-span-1 rounded-none border border-[color:var(--border)] bg-white p-3 flex flex-col justify-between">
           <p class="text-[11px] font-medium text-[color:var(--muted)]">Action</p>
           <button
             type="button"
             data-copy-summary-btn
-            class="inline-flex items-center justify-center gap-1.5 rounded-xl bg-[color:var(--surface)] px-2.5 py-1.5 text-xs font-bold text-[color:var(--fg)] border border-[color:var(--border)] hover:border-[color:var(--accent)] hover:shadow-[0_0_12px_var(--accent-glow)] transition cursor-pointer"
+            class="inline-flex items-center justify-center gap-1.5 rounded-none bg-[color:var(--surface)] px-2.5 py-1.5 text-xs font-bold text-[color:var(--fg)] border border-[color:var(--border)] hover:border-[color:var(--accent)] hover:shadow-[0_0_12px_var(--accent-glow)] transition cursor-pointer"
           >
             <Icon name="copy" class="w-3.5 h-3.5" />
             <span>Copy UK Tax Report</span>
@@ -191,7 +191,7 @@ const taxParameterGuide: CalculatorParameterInfo[] = [
     <div class="space-y-6">
 
       <!-- SECTION 1: Salary & Region -->
-      <div class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 sm:p-6 space-y-4 shadow-sm">
+      <div class="space-y-4 border-b border-[color:var(--border)] pb-6">
         <h3 class="text-sm font-bold uppercase tracking-wider text-[color:var(--fg)] flex items-center gap-2">
           <Icon name="user" class="w-4 h-4 text-[color:var(--accent)]" />
           <span>1. Employment Earnings &amp; Jurisdiction</span>
@@ -216,7 +216,7 @@ const taxParameterGuide: CalculatorParameterInfo[] = [
                 min="0"
                 step="500"
                 placeholder="e.g. 50,000"
-                class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] py-3 pl-8 pr-4 text-base font-black text-[color:var(--fg)] outline-none transition focus:border-[color:var(--accent)] focus:ring-2 focus:ring-[color:var(--accent)]/20"
+                class="w-full rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] py-3 pl-8 pr-4 text-base font-black text-[color:var(--fg)] outline-none transition focus:border-[color:var(--accent)] focus:ring-2 focus:ring-[color:var(--accent)]/20"
                 data-uk-salary />
             </div>
           </div>
@@ -229,7 +229,7 @@ const taxParameterGuide: CalculatorParameterInfo[] = [
               </label>
               <select
                 id="uk-region-select"
-                class="mt-1.5 w-full cursor-pointer rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3.5 py-2.5 text-sm font-semibold text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)]"
+                class="mt-1.5 w-full cursor-pointer rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-3.5 py-2.5 text-sm font-semibold text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)]"
                 data-uk-region
               >
                 <option value="england_wales_ni" selected>England, Wales &amp; Northern Ireland</option>
@@ -245,7 +245,7 @@ const taxParameterGuide: CalculatorParameterInfo[] = [
                 id="uk-tax-code"
                 type="text"
                 value="1257L"
-                class="mt-1.5 w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3.5 py-2.5 text-sm font-semibold text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)]"
+                class="mt-1.5 w-full rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-3.5 py-2.5 text-sm font-semibold text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)]"
                 data-uk-tax-code
               />
               <span class="text-[10px] text-[color:var(--muted)]">Default 1257L = £12,570 tax-free</span>
@@ -255,7 +255,7 @@ const taxParameterGuide: CalculatorParameterInfo[] = [
       </div>
 
       <!-- SECTION 2: Pension & Deductions (Detailed Mode) -->
-      <div class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 sm:p-6 space-y-4 shadow-sm" data-adv-only>
+      <div class="space-y-4 border-b border-[color:var(--border)] pb-6" data-adv-only>
         <h3 class="text-sm font-bold uppercase tracking-wider text-[color:var(--fg)] flex items-center gap-2">
           <Icon name="math" class="w-4 h-4 text-[color:var(--accent)]" />
           <span>2. Workplace Pension &amp; Student Loans</span>
@@ -276,7 +276,7 @@ const taxParameterGuide: CalculatorParameterInfo[] = [
                 step="0.5"
                 placeholder="5"
                 value="5"
-                class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] py-2 px-3 text-sm font-bold text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)]"
+                class="w-full rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] py-2 px-3 text-sm font-bold text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)]"
                 data-uk-pension />
             </div>
             <span class="text-[10px] text-[color:var(--muted)]">Auto-enrolment standard is 5% employee</span>
@@ -288,7 +288,7 @@ const taxParameterGuide: CalculatorParameterInfo[] = [
             </label>
             <select
               id="uk-student-loan"
-              class="mt-1 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-sm font-bold text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)]"
+              class="mt-1 w-full rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-sm font-bold text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)]"
               data-uk-student-loan
             >
               <option value="none" selected>No Student Loan</option>
@@ -302,7 +302,7 @@ const taxParameterGuide: CalculatorParameterInfo[] = [
         </div>
 
         <!-- Personal Allowance Taper Warning -->
-        <div data-uk-taper-notice class="hidden rounded-xl bg-amber-500/10 border border-amber-500/20 p-3 text-xs text-amber-600 dark:text-amber-400">
+        <div data-uk-taper-notice class="hidden rounded-none bg-slate-500/10 border border-[color:var(--border)] p-3 text-xs text-[color:var(--fg)]">
           <p class="font-bold flex items-center gap-1.5">
             <Icon name="bolt" class="w-3.5 h-3.5" />
             <span>Personal Allowance Tapering Active</span>
@@ -347,17 +347,17 @@ const taxParameterGuide: CalculatorParameterInfo[] = [
 
       <!-- Marginal Rates Summary Card -->
       <div class="grid grid-cols-2 gap-3">
-        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 shadow-sm">
+        <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-4 shadow-sm">
           <p class="text-xs font-medium text-[color:var(--muted)]">Top Marginal Rate</p>
-          <p class="mt-1 text-2xl font-bold text-rose-500" data-marginal-rate>
+          <p class="mt-1 text-2xl font-bold text-[color:var(--accent)]" data-marginal-rate>
             {formatPercent(initialResult.marginalFederalRate, 1)}
           </p>
           <p class="text-[10px] text-[color:var(--muted)]">On your next £ earned</p>
         </div>
 
-        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 shadow-sm">
+        <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-4 shadow-sm">
           <p class="text-xs font-medium text-[color:var(--muted)]">Effective Total Rate</p>
-          <p class="mt-1 text-2xl font-bold text-amber-500" data-effective-rate>
+          <p class="mt-1 text-2xl font-bold text-[color:var(--fg)]" data-effective-rate>
             {formatPercent(initialResult.effectiveTotalTaxRate, 1)}
           </p>
           <p class="text-[10px] text-[color:var(--muted)]">Tax + NI / Gross Salary</p>
@@ -375,7 +375,7 @@ const taxParameterGuide: CalculatorParameterInfo[] = [
   />
 
   <!-- Step-by-Step Worked Calculation Example -->
-  <section class="mt-8 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 sm:p-6 space-y-4">
+  <section class="mt-8 space-y-4 border-b border-[color:var(--border)] pb-6">
     <h3 class="text-base font-bold text-[color:var(--fg)] flex items-center gap-2">
       <Icon name="document" class="w-4 h-4 text-[color:var(--accent)]" />
       <span>Step-by-Step Worked PAYE Example ({defaultYearData.taxYear})</span>
@@ -391,15 +391,15 @@ const taxParameterGuide: CalculatorParameterInfo[] = [
         </li>
         <li>
           <strong class="text-[color:var(--fg)]">Calculate PAYE Income Tax:</strong><br />
-          The Basic Rate band (20%) covers the entire £37,430 of taxable income (£37,430 × 20% = <strong class="text-rose-500 font-bold">£7,486.00</strong>).
+          The Basic Rate band (20%) covers the entire £37,430 of taxable income (£37,430 × 20% = <strong class="text-[color:var(--fg)] font-bold">£7,486.00</strong>).
         </li>
         <li>
           <strong class="text-[color:var(--fg)]">Calculate Class 1 National Insurance:</strong><br />
-          Employee NI is charged at 8% on earnings between £12,570 and £50,270 (£37,430 × 8% = <strong class="text-indigo-500 font-bold">£2,994.40</strong>).
+          Employee NI is charged at 8% on earnings between £12,570 and £50,270 (£37,430 × 8% = <strong class="text-[color:var(--fg)] font-bold">£2,994.40</strong>).
         </li>
         <li>
           <strong class="text-[color:var(--fg)]">Net Take-Home Pay:</strong><br />
-          Subtracting total deductions (£10,480.40) from gross salary (£50,000) yields an annual take-home pay of <strong class="text-cyan-500 font-extrabold font-mono">£39,519.60</strong> (£3,293.30 per month).
+          Subtracting total deductions (£10,480.40) from gross salary (£50,000) yields an annual take-home pay of <strong class="text-[color:var(--accent)] font-extrabold font-mono">£39,519.60</strong> (£3,293.30 per month).
         </li>
       </ol>
     </div>
@@ -414,7 +414,7 @@ const taxParameterGuide: CalculatorParameterInfo[] = [
   <footer class="mt-8 pt-6 border-t border-[color:var(--border)] text-xs text-[color:var(--muted)] space-y-3">
     <div class="flex flex-wrap items-center justify-between gap-3">
       <div class="flex items-center gap-2">
-        <span class="inline-block w-2 h-2 rounded-full bg-cyan-500"></span>
+        <span class="inline-block w-2 h-2 rounded-none bg-[color:var(--accent)]"></span>
         <span class="font-medium text-[color:var(--fg)]">Official Authority:</span>
         <a href={defaultYearData.officialSourceUrl} target="_blank" rel="noopener noreferrer" class="text-[color:var(--accent)] hover:underline font-semibold">
           {defaultYearData.officialSourceName} ({defaultYearData.taxYear})
@@ -514,7 +514,7 @@ const taxParameterGuide: CalculatorParameterInfo[] = [
 
           if (taperNotice) {
             taperNotice.className = res.personalAllowance < 12570
-              ? 'block rounded-xl bg-amber-500/10 border border-amber-500/20 p-3 text-xs text-amber-600 dark:text-amber-400'
+              ? 'block rounded-none bg-slate-500/10 border border-[color:var(--border)] p-3 text-xs text-[color:var(--fg)]'
               : 'hidden';
           }
 
@@ -571,7 +571,7 @@ const taxParameterGuide: CalculatorParameterInfo[] = [
                 <td class="px-4 py-2.5 font-mono">${row.bracketRange}</td>
                 <td class="px-4 py-2.5 font-bold">${row.ratePercent}</td>
                 <td class="px-4 py-2.5">${fmt(row.taxableInBracket)}</td>
-                <td class="px-4 py-2.5 text-right font-mono font-bold text-rose-500">${fmt(row.taxAmount)}</td>
+                <td class="px-4 py-2.5 text-right font-mono font-bold text-[color:var(--fg)]">${fmt(row.taxAmount)}</td>
               </tr>
             `
               )
@@ -585,9 +585,9 @@ const taxParameterGuide: CalculatorParameterInfo[] = [
           engineTabs.forEach((tab) => {
             const tabMode = tab.getAttribute('data-engine-tab');
             if (tabMode === newMode) {
-              tab.className = 'shrink-0 min-w-max cursor-pointer rounded-xl px-3 py-1.5 text-xs font-bold transition inline-flex items-center gap-1.5 bg-[color:var(--accent)] text-white shadow-xs active';
+              tab.className = 'shrink-0 min-w-max cursor-pointer rounded-none px-3 py-1.5 text-xs font-bold transition inline-flex items-center gap-1.5 bg-[color:var(--accent)] text-white shadow-xs active';
             } else {
-              tab.className = 'shrink-0 min-w-max cursor-pointer rounded-xl px-3 py-1.5 text-xs font-semibold text-[color:var(--muted)] hover:text-[color:var(--fg)] transition inline-flex items-center gap-1.5';
+              tab.className = 'shrink-0 min-w-max cursor-pointer rounded-none px-3 py-1.5 text-xs font-semibold text-[color:var(--muted)] hover:text-[color:var(--fg)] transition inline-flex items-center gap-1.5';
             }
           });
 

@@ -159,7 +159,7 @@ const schemaGraph = [
 
 
     <div
-      class="rounded-[2.5rem] border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-6 shadow-[var(--shadow)] sm:p-10"
+      class="space-y-8"
       data-breakeven-app
     >
       <div class="grid gap-8 lg:grid-cols-[1.15fr_0.85fr]">
@@ -180,7 +180,7 @@ const schemaGraph = [
               type="number"
               min="0"
               step="100"
-              class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)]"
+              class="w-full rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)]"
               data-fixed-costs placeholder="e.g. 3,500" />
             <p class="text-[10px] text-[color:var(--muted)]">Rent, software, insurance, base salaries, utilities, subscriptions</p>
           </div>
@@ -188,11 +188,11 @@ const schemaGraph = [
           <div class="grid grid-cols-2 gap-3">
             <div>
               <label for="unit-price" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Selling Price ($ / Unit)</label>
-              <input id="unit-price" type="number" min="0.01" step="0.5" class="mt-1 w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)]" data-unit-price placeholder="e.g. 45.00" />
+              <input id="unit-price" type="number" min="0.01" step="0.5" class="mt-1 w-full rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)]" data-unit-price placeholder="e.g. 45.00" />
             </div>
             <div>
               <label for="var-cost" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Variable Cost ($ / Unit)</label>
-              <input id="var-cost" type="number" min="0" step="0.5" class="mt-1 w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)]" data-var-cost placeholder="e.g. 18.00" />
+              <input id="var-cost" type="number" min="0" step="0.5" class="mt-1 w-full rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)]" data-var-cost placeholder="e.g. 18.00" />
             </div>
           </div>
 
@@ -206,28 +206,28 @@ const schemaGraph = [
               type="number"
               min="0"
               step="250"
-              class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)]"
+              class="w-full rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)]"
               data-target-profit placeholder="e.g. 2,000" />
             <p class="text-[10px] text-[color:var(--muted)]">Desired net take-home profit after covering all fixed overhead</p>
           </div>
         </form>
 
         <!-- Right Side: Results Cards -->
-        <div class="flex flex-col justify-between space-y-6 rounded-3xl border border-[color:var(--accent)]/30 bg-gradient-to-br from-[color:var(--accent-soft)] via-[color:var(--surface)] to-transparent p-6 sm:p-8 shadow-sm">
+        <div class="space-y-6">
           <div class="space-y-5">
             <div class="flex items-center justify-between">
               <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Break-Even Analysis</span>
               <button
                 type="button"
                 data-copy-summary-btn
-                class="inline-flex items-center gap-1.5 rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] px-2.5 py-1 text-xs font-bold text-[color:var(--fg)] hover:border-[color:var(--accent)] hover:shadow-[0_0_12px_var(--accent-glow)] transition cursor-pointer"
+                class="inline-flex items-center gap-1.5 rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] px-2.5 py-1 text-xs font-bold text-[color:var(--fg)] hover:border-[color:var(--accent)] hover:shadow-[0_0_12px_var(--accent-glow)] transition cursor-pointer"
               >
                 <Icon name="copy" class="w-3.5 h-3.5" />
                 <span>Copy Summary</span>
               </button>
             </div>
 
-            <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 text-center shadow-sm">
+            <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-6 text-center shadow-sm">
               <p class="text-xs font-semibold text-[color:var(--muted)]">Break-Even Sales Volume</p>
               <p class="mt-1 text-4xl sm:text-5xl font-black tracking-tight text-[color:var(--fg)]" data-res-units>
                 0 Units
@@ -238,9 +238,9 @@ const schemaGraph = [
             </div>
 
             <!-- Target Profit Goal Card -->
-            <div class="rounded-2xl border border-cyan-500/30 bg-cyan-500/5 p-4 text-xs space-y-1">
+            <div class="rounded-none border border-cyan-500/30 bg-cyan-500/5 p-4 text-xs space-y-1">
               <div class="flex justify-between items-center">
-                <span class="font-bold text-cyan-600 dark:text-cyan-400">To Earn Target Profit:</span>
+                <span class="font-bold text-[color:var(--accent)]">To Earn Target Profit:</span>
                 <span class="font-black text-sm text-[color:var(--fg)]" data-target-units>0 Units</span>
               </div>
               <div class="flex justify-between text-[color:var(--muted)]">
@@ -249,10 +249,10 @@ const schemaGraph = [
               </div>
             </div>
 
-            <div class="space-y-2 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-xs">
+            <div class="space-y-2 rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-xs">
               <div class="flex justify-between">
                 <span class="text-[color:var(--muted)]">Unit Contribution Margin ($P - VC$):</span>
-                <span class="font-bold text-cyan-600 dark:text-cyan-400" data-unit-contrib>$0.00 / unit</span>
+                <span class="font-bold text-[color:var(--accent)]" data-unit-contrib>$0.00 / unit</span>
               </div>
               <div class="flex justify-between">
                 <span class="text-[color:var(--muted)]">Contribution Margin Ratio (CMR):</span>
@@ -283,25 +283,25 @@ const schemaGraph = [
     </header>
 
     <!-- Mathematical Formula Reference Card -->
-    <section class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 sm:p-6 space-y-3">
+    <section class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-5 sm:p-6 space-y-3">
       <h3 class="text-base font-bold text-[color:var(--fg)] flex items-center gap-2">
         <Icon name="math" class="w-4 h-4 text-[color:var(--accent)]" />
         <span>Cost-Volume-Profit (CVP) Mathematical Formulas</span>
       </h3>
       <div class="grid gap-4 sm:grid-cols-2 text-xs sm:text-sm text-[color:var(--muted)] leading-relaxed">
-        <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-4 space-y-1">
+        <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-4 space-y-1">
           <p class="font-bold text-[color:var(--fg)]">1. Unit Contribution Margin &amp; Ratio</p>
           <p class="font-mono text-[color:var(--accent)]">CM = Selling Price - Variable Cost</p>
           <p class="font-mono text-[color:var(--accent)]">CMR = (CM ÷ Selling Price) × 100%</p>
           <p class="text-[11px]">The exact portion of each sale contributing to covering fixed costs.</p>
         </div>
-        <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-4 space-y-1">
+        <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-4 space-y-1">
           <p class="font-bold text-[color:var(--fg)]">2. Break-Even Volume</p>
           <p class="font-mono text-[color:var(--accent)]">Break-Even Units (Q_BE) = Fixed Costs ÷ CM</p>
           <p class="font-mono text-[color:var(--accent)]">Break-Even Revenue (R_BE) = Q_BE × Selling Price</p>
           <p class="text-[11px]">Units required to cover all operating overhead with zero net loss.</p>
         </div>
-        <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-4 space-y-1 sm:col-span-2">
+        <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-4 space-y-1 sm:col-span-2">
           <p class="font-bold text-[color:var(--fg)]">3. Target Profit Sales Volume</p>
           <p class="font-mono text-[color:var(--accent)]">Target Units = (Total Fixed Costs + Target Net Profit) ÷ CM</p>
           <p class="text-[11px]">Volume required to cover both fixed operational costs and your net profit goal.</p>
@@ -310,7 +310,7 @@ const schemaGraph = [
     </section>
 
     <!-- Step-by-Step Worked Business Example -->
-    <section class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 sm:p-6 space-y-3">
+    <section class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-5 sm:p-6 space-y-3">
       <h3 class="text-base font-bold text-[color:var(--fg)] flex items-center gap-2">
         <Icon name="document" class="w-4 h-4 text-[color:var(--accent)]" />
         <span>Step-by-Step Worked Calculation Example</span>
@@ -327,12 +327,12 @@ const schemaGraph = [
           </li>
           <li>
             <strong class="text-[color:var(--fg)]">Calculate Break-Even Volume:</strong><br />
-            Break-Even Units = $3,500.00 ÷ $27.00 = 129.63 &rarr; <strong class="text-cyan-500 dark:text-cyan-400 font-bold">130 units/month</strong> (or 4.3 units/day).<br />
-            Break-Even Revenue = 130 × $45.00 = <strong class="text-cyan-500 dark:text-cyan-400 font-bold">$5,850.00 monthly revenue</strong>.
+            Break-Even Units = $3,500.00 ÷ $27.00 = 129.63 &rarr; <strong class="text-[color:var(--accent)] font-bold">130 units/month</strong> (or 4.3 units/day).<br />
+            Break-Even Revenue = 130 × $45.00 = <strong class="text-[color:var(--accent)] font-bold">$5,850.00 monthly revenue</strong>.
           </li>
           <li>
             <strong class="text-[color:var(--fg)]">Calculate Volume for $2,000.00 Target Monthly Profit:</strong><br />
-            Target Units = ($3,500.00 + $2,000.00) ÷ $27.00 = $5,500.00 ÷ $27.00 = 203.7 &rarr; <strong class="text-cyan-500 dark:text-cyan-400 font-bold">204 units</strong> ($9,180.00 monthly revenue).
+            Target Units = ($3,500.00 + $2,000.00) ÷ $27.00 = $5,500.00 ÷ $27.00 = 203.7 &rarr; <strong class="text-[color:var(--accent)] font-bold">204 units</strong> ($9,180.00 monthly revenue).
           </li>
         </ol>
       </div>
@@ -346,7 +346,7 @@ const schemaGraph = [
       <h2 class="text-xl font-bold text-[color:var(--fg)]">Frequently Asked Questions</h2>
       <div class="space-y-3">
         {faqs.map((faq) => (
-          <details class="group rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
+          <details class="group rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
             <summary class="cursor-pointer list-none font-semibold text-sm sm:text-base text-[color:var(--fg)] flex items-center justify-between gap-4">
               <span>{faq.question}</span>
               <span class="text-xs text-[color:var(--muted)] group-open:rotate-180 transition-transform">▼</span>
@@ -463,7 +463,7 @@ const schemaGraph = [
 
           navigator.clipboard.writeText(text).then(() => {
             const orig = copyBtn.innerHTML;
-            copyBtn.innerHTML = '<svg class="w-3.5 h-3.5 text-emerald-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"></polyline></svg><span>Copied!</span>';
+            copyBtn.innerHTML = '<svg class="w-3.5 h-3.5 text-[color:var(--accent)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"></polyline></svg><span>Copied!</span>';
             setTimeout(() => { copyBtn.innerHTML = orig; }, 2000);
           });
         });

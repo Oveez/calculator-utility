@@ -94,19 +94,19 @@ const schemaGraph = [
     <!-- Controls & Telemetry -->
     <div class="space-y-6">
       <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3 text-center">
+        <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-3 text-center">
           <p class="text-[10px] font-bold uppercase tracking-wider text-[color:var(--muted)]">Input Length</p>
           <p id="stat-orig" class="mt-1 font-mono text-base font-bold text-[color:var(--fg)]">0 chars</p>
         </div>
-        <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3 text-center">
+        <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-3 text-center">
           <p class="text-[10px] font-bold uppercase tracking-wider text-[color:var(--muted)]">Escaped Length</p>
           <p id="stat-escaped" class="mt-1 font-mono text-base font-bold text-cyan-500 dark:text-cyan-400">0 chars</p>
         </div>
-        <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3 text-center">
+        <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-3 text-center">
           <p class="text-[10px] font-bold uppercase tracking-wider text-[color:var(--muted)]">Metachars Escaped</p>
           <p id="stat-count" class="mt-1 font-mono text-base font-bold text-[color:var(--fg)]">0</p>
         </div>
-        <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3 text-center">
+        <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-3 text-center">
           <p class="text-[10px] font-bold uppercase tracking-wider text-[color:var(--muted)]">Length Delta</p>
           <p id="stat-delta" class="mt-1 font-mono text-base font-bold text-[color:var(--fg)]">+0%</p>
         </div>
@@ -129,14 +129,14 @@ const schemaGraph = [
           <textarea
             id="esc-in"
             rows="10"
-            class="w-full font-mono text-xs leading-relaxed rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-[color:var(--fg)] focus:border-[color:var(--border-strong)] focus:outline-hidden"
+            class="w-full font-mono text-xs leading-relaxed rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-[color:var(--fg)] focus:border-[color:var(--border-strong)] focus:outline-hidden"
             placeholder="Type or paste literal string containing special characters..."
           ></textarea>
 
           <div class="flex flex-wrap items-center justify-between gap-3">
             <div class="flex items-center gap-2">
               <label for="escape-mode" class="text-xs font-medium text-[color:var(--muted)]">Action:</label>
-              <select id="escape-mode" class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1.5 text-xs text-[color:var(--fg)] font-semibold">
+              <select id="escape-mode" class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1.5 text-xs text-[color:var(--fg)] font-semibold">
                 <option value="escape">Escape Metacharacters (Literal &rarr; RegExp)</option>
                 <option value="unescape">Unescape Metacharacters (RegExp &rarr; Literal)</option>
               </select>
@@ -167,68 +167,68 @@ const schemaGraph = [
             id="esc-out"
             rows="10"
             readonly
-            class="w-full font-mono text-xs leading-relaxed rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-4 text-[color:var(--fg)] focus:outline-hidden"
+            class="w-full font-mono text-xs leading-relaxed rounded-none border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-4 text-[color:var(--fg)] focus:outline-hidden"
             placeholder="Escaped pattern will appear here..."
           ></textarea>
 
           <!-- Generated JS Code Snippet -->
-          <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-xs space-y-2">
+          <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-xs space-y-2">
             <div class="flex items-center justify-between">
               <span class="font-bold text-[color:var(--fg)]">Ready-to-Use JavaScript Snippet:</span>
               <button type="button" data-copy-code class="text-[11px] font-bold text-[color:var(--primary)] hover:underline">
                 Copy Code
               </button>
             </div>
-            <code id="js-code-box" class="block rounded-lg bg-[color:var(--bg)] p-2.5 font-mono text-[11px] text-cyan-500 dark:text-cyan-400 overflow-x-auto whitespace-pre">const regex = new RegExp("", "g");</code>
+            <code id="js-code-box" class="block rounded-none bg-[color:var(--bg)] p-2.5 font-mono text-[11px] text-cyan-500 dark:text-cyan-400 overflow-x-auto whitespace-pre">const regex = new RegExp("", "g");</code>
           </div>
         </div>
       </div>
 
       <!-- Metacharacter Reference Grid -->
-      <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5 space-y-3">
+      <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5 space-y-3">
         <h2 class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Recognized Regex Metacharacters</h2>
         <div class="grid grid-cols-3 sm:grid-cols-7 gap-2 text-center text-xs font-mono">
-          <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] p-2">
+          <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] p-2">
             <span class="font-bold text-[color:var(--fg)] text-sm">.</span>
             <p class="text-[10px] text-[color:var(--muted)] mt-0.5">Dot / Any</p>
           </div>
-          <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] p-2">
+          <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] p-2">
             <span class="font-bold text-[color:var(--fg)] text-sm">*</span>
             <p class="text-[10px] text-[color:var(--muted)] mt-0.5">Asterisk (0+)</p>
           </div>
-          <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] p-2">
+          <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] p-2">
             <span class="font-bold text-[color:var(--fg)] text-sm">+</span>
             <p class="text-[10px] text-[color:var(--muted)] mt-0.5">Plus (1+)</p>
           </div>
-          <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] p-2">
+          <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] p-2">
             <span class="font-bold text-[color:var(--fg)] text-sm">?</span>
             <p class="text-[10px] text-[color:var(--muted)] mt-0.5">Optional (0-1)</p>
           </div>
-          <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] p-2">
+          <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] p-2">
             <span class="font-bold text-[color:var(--fg)] text-sm">^ $</span>
             <p class="text-[10px] text-[color:var(--muted)] mt-0.5">Line Anchors</p>
           </div>
-          <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] p-2">
+          <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] p-2">
             <span class="font-bold text-[color:var(--fg)] text-sm">( )</span>
             <p class="text-[10px] text-[color:var(--muted)] mt-0.5">Capture Group</p>
           </div>
-          <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] p-2">
+          <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] p-2">
             <span class="font-bold text-[color:var(--fg)] text-sm">[ ]</span>
             <p class="text-[10px] text-[color:var(--muted)] mt-0.5">Character Class</p>
           </div>
-          <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] p-2">
+          <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] p-2">
             <span class="font-bold text-[color:var(--fg)] text-sm">&#123; &#125;</span>
             <p class="text-[10px] text-[color:var(--muted)] mt-0.5">Quantifier</p>
           </div>
-          <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] p-2">
+          <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] p-2">
             <span class="font-bold text-[color:var(--fg)] text-sm">|</span>
             <p class="text-[10px] text-[color:var(--muted)] mt-0.5">Alternation</p>
           </div>
-          <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] p-2">
+          <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] p-2">
             <span class="font-bold text-[color:var(--fg)] text-sm">\</span>
             <p class="text-[10px] text-[color:var(--muted)] mt-0.5">Backslash</p>
           </div>
-          <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] p-2">
+          <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] p-2">
             <span class="font-bold text-[color:var(--fg)] text-sm">/</span>
             <p class="text-[10px] text-[color:var(--muted)] mt-0.5">Delimiter Slash</p>
           </div>
@@ -299,7 +299,7 @@ const schemaGraph = [
       <h2 class="text-xl font-bold text-[color:var(--fg)]">Frequently Asked Questions</h2>
       <div class="space-y-3">
         {schemaFaq.map((faq) => (
-          <details class="group rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
+          <details class="group rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
             <summary class="cursor-pointer list-none font-semibold text-sm sm:text-base text-[color:var(--fg)] flex items-center justify-between gap-4">
               <span>{faq.question}</span>
               <span class="text-xs text-[color:var(--muted)] group-open:rotate-180 transition-transform">&#9660;</span>

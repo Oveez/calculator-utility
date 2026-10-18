@@ -84,7 +84,7 @@ const schemaGraph = [
 
     <div class="space-y-6">
       <!-- Passphrase Display Box -->
-      <div class="space-y-3 rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 sm:p-8">
+      <div class="space-y-3 rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-6 sm:p-8">
         <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
           <input
             type="text"
@@ -95,7 +95,7 @@ const schemaGraph = [
           <button
             type="button"
             data-copy-btn
-            class="shrink-0 rounded-2xl bg-[color:var(--accent)] px-5 py-3 text-xs font-bold text-white shadow-xs transition hover:opacity-90 active:scale-95"
+            class="shrink-0 rounded-none bg-[color:var(--accent)] px-5 py-3 text-xs font-bold text-white shadow-xs transition hover:opacity-90 active:scale-95"
           >
             Copy Passphrase
           </button>
@@ -113,10 +113,10 @@ const schemaGraph = [
       </div>
 
       <!-- Settings -->
-      <div class="grid gap-4 sm:grid-cols-3 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 text-xs">
+      <div class="grid gap-4 sm:grid-cols-3 rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-5 text-xs">
         <div>
           <label for="word-count" class="font-bold text-[color:var(--fg)] block mb-1">Number of Words:</label>
-          <select id="word-count" class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-[color:var(--fg)]">
+          <select id="word-count" class="w-full rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-[color:var(--fg)]">
             <option value="4">4 Words (Strong)</option>
             <option value="5" selected>5 Words (Very Strong)</option>
             <option value="6">6 Words (Maximum Security)</option>
@@ -126,7 +126,7 @@ const schemaGraph = [
 
         <div>
           <label for="separator-char" class="font-bold text-[color:var(--fg)] block mb-1">Word Separator:</label>
-          <select id="separator-char" class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-[color:var(--fg)]">
+          <select id="separator-char" class="w-full rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-[color:var(--fg)]">
             <option value="-">Hyphen (-)</option>
             <option value=".">Period (.)</option>
             <option value="_">Underscore (_)</option>
@@ -136,7 +136,7 @@ const schemaGraph = [
 
         <div>
           <label for="case-style" class="font-bold text-[color:var(--fg)] block mb-1">Letter Capitalization:</label>
-          <select id="case-style" class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-[color:var(--fg)]">
+          <select id="case-style" class="w-full rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-[color:var(--fg)]">
             <option value="lower">lowercase</option>
             <option value="title">Title Case</option>
             <option value="upper">UPPERCASE</option>
@@ -160,7 +160,7 @@ const schemaGraph = [
       <h2 class="text-xl font-bold text-[color:var(--fg)]">Frequently Asked Questions</h2>
       <div class="space-y-3">
         {schemaFaq.map((faq) => (
-          <details class="group rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
+          <details class="group rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
             <summary class="cursor-pointer list-none font-semibold text-sm sm:text-base text-[color:var(--fg)] flex items-center justify-between gap-4">
               <span>{faq.question}</span>
               <span class="text-xs text-[color:var(--muted)] group-open:rotate-180 transition-transform">▼</span>

@@ -72,7 +72,7 @@ const taxParameterGuide: CalculatorParameterInfo[] = [
 ---
 
 <div
-  class="relative overflow-hidden rounded-[2.5rem] border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-5 shadow-[var(--shadow)] sm:p-8 lg:p-10"
+  class="space-y-8"
   data-tax-app
   data-country-id="it"
   data-profile-json={JSON.stringify(profile)}
@@ -86,7 +86,7 @@ const taxParameterGuide: CalculatorParameterInfo[] = [
           <h2 class="text-xl font-bold tracking-tight text-[color:var(--fg)] sm:text-2xl">
             Italy Income Tax &amp; Salary Calculator (Calcolo Stipendio Netto)
           </h2>
-          <span class="inline-flex items-center rounded-full bg-cyan-500/10 px-2.5 py-0.5 text-xs font-semibold text-cyan-600 dark:text-cyan-400 border border-cyan-500/20">
+          <span class="inline-flex items-center rounded-none bg-[color:var(--accent-soft)] px-2.5 py-0.5 text-xs font-semibold text-[color:var(--accent)] border border-[color:var(--accent)]/30">
             Official 2026 Agenzia delle Entrate Data
           </span>
         </div>
@@ -101,10 +101,10 @@ const taxParameterGuide: CalculatorParameterInfo[] = [
       <TaxYearSelector profile={profile} id="it-tax-year-select" />
 
       <!-- Engine View Toggle -->
-      <div class="flex items-center rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-1 text-xs font-semibold overflow-x-auto no-scrollbar max-w-full shrink-0">
+      <div class="flex items-center rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-1 text-xs font-semibold overflow-x-auto no-scrollbar max-w-full shrink-0">
         <button
           type="button"
-          class="shrink-0 min-w-max cursor-pointer rounded-xl px-3 py-1.5 text-xs font-bold transition inline-flex items-center gap-1.5 bg-[color:var(--accent)] text-white shadow-xs active"
+          class="shrink-0 min-w-max cursor-pointer rounded-none px-3 py-1.5 text-xs font-bold transition inline-flex items-center gap-1.5 bg-[color:var(--accent)] text-white shadow-xs active"
           data-engine-tab="advanced"
         >
           <Icon name="bolt" class="w-3.5 h-3.5" />
@@ -112,7 +112,7 @@ const taxParameterGuide: CalculatorParameterInfo[] = [
         </button>
         <button
           type="button"
-          class="shrink-0 min-w-max cursor-pointer rounded-xl px-3 py-1.5 text-xs font-semibold text-[color:var(--muted)] hover:text-[color:var(--fg)] transition inline-flex items-center gap-1.5"
+          class="shrink-0 min-w-max cursor-pointer rounded-none px-3 py-1.5 text-xs font-semibold text-[color:var(--muted)] hover:text-[color:var(--fg)] transition inline-flex items-center gap-1.5"
           data-engine-tab="quick"
         >
           <Icon name="calculator" class="w-3.5 h-3.5" />
@@ -123,14 +123,14 @@ const taxParameterGuide: CalculatorParameterInfo[] = [
   </div>
 
   <!-- HERO DYNAMIC TAKE-HOME BANNER -->
-  <div class="mt-6 rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 sm:p-6 shadow-sm">
+  <div class="mt-6 border-b border-[color:var(--border)] pb-6 space-y-4">
     <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
       <div>
         <div class="flex items-center gap-2">
           <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Stipendio Netto Annuo (Take-Home)</span>
           <span
             data-hero-badge
-            class="inline-flex items-center gap-1 rounded-full bg-cyan-500/10 px-2.5 py-0.5 text-xs font-bold text-cyan-600 dark:text-cyan-400 border border-cyan-500/20"
+            class="inline-flex items-center gap-1 rounded-none bg-[color:var(--accent-soft)] px-2.5 py-0.5 text-xs font-bold text-[color:var(--accent)] border border-[color:var(--accent)]/30"
           >
             Netto in Busta Paga
           </span>
@@ -144,26 +144,26 @@ const taxParameterGuide: CalculatorParameterInfo[] = [
       </div>
 
       <div class="grid grid-cols-2 gap-3 sm:grid-cols-3 border-t border-[color:var(--border)]/60 pt-3 md:border-t-0 md:pt-0">
-        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] p-3">
+        <div class="rounded-none border border-[color:var(--border)] bg-white p-3">
           <p class="text-[11px] font-medium text-[color:var(--muted)]">IRPEF Totale</p>
-          <p class="text-base font-extrabold text-blue-500" data-hero-incometax>
+          <p class="text-base font-extrabold text-[color:var(--accent)]" data-hero-incometax>
             {formatCurrency(initialResult.totalIncomeTax, profile.defaultCurrency, profile.defaultCurrencySymbol)}
           </p>
           <p class="text-[10px] text-[color:var(--muted)]">Netta + Addizionali</p>
         </div>
-        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] p-3">
+        <div class="rounded-none border border-[color:var(--border)] bg-white p-3">
           <p class="text-[11px] font-medium text-[color:var(--muted)]">Contributi INPS (9.19%)</p>
-          <p class="text-base font-extrabold text-amber-500" data-hero-social>
+          <p class="text-base font-extrabold text-[color:var(--fg)]" data-hero-social>
             {formatCurrency(initialResult.inpsContribution, profile.defaultCurrency, profile.defaultCurrencySymbol)}
           </p>
           <p class="text-[10px] text-[color:var(--muted)]">Fondo pensionistico</p>
         </div>
-        <div class="col-span-2 sm:col-span-1 rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] p-3 flex flex-col justify-between">
+        <div class="col-span-2 sm:col-span-1 rounded-none border border-[color:var(--border)] bg-white p-3 flex flex-col justify-between">
           <p class="text-[11px] font-medium text-[color:var(--muted)]">Azione</p>
           <button
             type="button"
             data-copy-summary-btn
-            class="inline-flex items-center justify-center gap-1.5 rounded-xl bg-[color:var(--surface)] px-2.5 py-1.5 text-xs font-bold text-[color:var(--fg)] border border-[color:var(--border)] hover:border-[color:var(--accent)] hover:shadow-[0_0_12px_var(--accent-glow)] transition cursor-pointer"
+            class="inline-flex items-center justify-center gap-1.5 rounded-none bg-[color:var(--surface)] px-2.5 py-1.5 text-xs font-bold text-[color:var(--fg)] border border-[color:var(--border)] hover:border-[color:var(--accent)] hover:shadow-[0_0_12px_var(--accent-glow)] transition cursor-pointer"
           >
             <Icon name="copy" class="w-3.5 h-3.5" />
             <span>Copia Report Fiscale</span>
@@ -182,7 +182,7 @@ const taxParameterGuide: CalculatorParameterInfo[] = [
     <div class="space-y-6">
 
       <!-- SECTION 1: Reddito Lordo & Regione -->
-      <div class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 sm:p-6 space-y-4 shadow-sm">
+      <div class="space-y-4 border-b border-[color:var(--border)] pb-6">
         <h3 class="text-sm font-bold uppercase tracking-wider text-[color:var(--fg)] flex items-center gap-2">
           <Icon name="user" class="w-4 h-4 text-[color:var(--accent)]" />
           <span>1. Reddito Lordo &amp; Mensilità</span>
@@ -207,7 +207,7 @@ const taxParameterGuide: CalculatorParameterInfo[] = [
                 min="0"
                 step="1000"
                 placeholder="e.g. 35,000"
-                class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] py-3 pl-8 pr-4 text-base font-black text-[color:var(--fg)] outline-none transition focus:border-[color:var(--accent)] focus:ring-2 focus:ring-[color:var(--accent)]/20"
+                class="w-full rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] py-3 pl-8 pr-4 text-base font-black text-[color:var(--fg)] outline-none transition focus:border-[color:var(--accent)] focus:ring-2 focus:ring-[color:var(--accent)]/20"
                 data-it-salary
               />
             </div>
@@ -225,7 +225,7 @@ const taxParameterGuide: CalculatorParameterInfo[] = [
               <select
                 id="it-mensilita"
                 data-it-mensilita
-                class="mt-1.5 w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] py-2.5 px-3 text-xs font-semibold text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)] cursor-pointer"
+                class="mt-1.5 w-full rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] py-2.5 px-3 text-xs font-semibold text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)] cursor-pointer"
               >
                 <option value="13" selected>13 Mensilità (Standard CCNL)</option>
                 <option value="12">12 Mensilità</option>
@@ -240,7 +240,7 @@ const taxParameterGuide: CalculatorParameterInfo[] = [
               <select
                 id="it-region"
                 data-it-region
-                class="mt-1.5 w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] py-2.5 px-3 text-xs font-semibold text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)] cursor-pointer"
+                class="mt-1.5 w-full rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] py-2.5 px-3 text-xs font-semibold text-[color:var(--fg)] outline-none focus:border-[color:var(--accent)] cursor-pointer"
               >
                 <option value="default" selected>Media Nazionale (1.73%)</option>
                 <option value="lombardia">Lombardia (1.23% - 1.73%)</option>
@@ -255,23 +255,23 @@ const taxParameterGuide: CalculatorParameterInfo[] = [
       </div>
 
       <!-- SECTION 2: Detrazioni e Contributi INPS (Advanced Only) -->
-      <div class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 sm:p-6 space-y-4 shadow-sm" data-advanced-section>
+      <div class="space-y-4 border-b border-[color:var(--border)] pb-6" data-advanced-section>
         <div class="flex items-center justify-between">
           <h3 class="text-sm font-bold uppercase tracking-wider text-[color:var(--fg)] flex items-center gap-2">
-            <Icon name="shield-check" class="w-4 h-4 text-emerald-500" />
+            <Icon name="shield-check" class="w-4 h-4 text-[color:var(--accent)]" />
             <span>2. Detrazioni &amp; Previdenza INPS</span>
           </h3>
-          <span class="text-[10px] font-bold text-emerald-600 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">
+          <span class="text-[10px] font-bold text-[color:var(--accent)] bg-[color:var(--accent-soft)] px-2 py-0.5 rounded-none border border-[color:var(--accent)]/30">
             Detrazioni Lavoro
           </span>
         </div>
 
         <div class="space-y-3">
           <!-- Detrazione Lavoro Dipendente Card -->
-          <div class="rounded-2xl border border-emerald-500/20 bg-emerald-500/5 p-4 space-y-2">
+          <div class="rounded-none border border-[color:var(--border)] bg-white p-4 space-y-2">
             <div class="flex justify-between items-center text-xs">
-              <span class="font-bold text-emerald-800 dark:text-emerald-300">Detrazione Lavoro Dipendente Calcolata:</span>
-              <span class="font-extrabold text-emerald-800 dark:text-emerald-300" data-it-detrazione-amount>€1,955</span>
+              <span class="font-bold text-[color:var(--fg)]">Detrazione Lavoro Dipendente Calcolata:</span>
+              <span class="font-extrabold text-[color:var(--fg)]" data-it-detrazione-amount>€1,955</span>
             </div>
             <p class="text-[11px] text-[color:var(--muted)]">
               Calcolata automaticamente con formula a scalare ex art. 13 TUIR per redditi fino a 50.000 €.
@@ -279,7 +279,7 @@ const taxParameterGuide: CalculatorParameterInfo[] = [
           </div>
 
           <!-- INPS and Surcharges Info Card -->
-          <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] p-3 text-xs space-y-1">
+          <div class="rounded-none border border-[color:var(--border)] bg-white p-3 text-xs space-y-1">
             <p class="font-bold text-[color:var(--fg)]">Aliquote previdenziali e locali (2026):</p>
             <div class="grid grid-cols-2 gap-2 text-[11px] text-[color:var(--muted)]">
               <div>Contributi INPS: <strong class="text-[color:var(--fg)]">9.19%</strong> (deducibile)</div>
@@ -297,7 +297,7 @@ const taxParameterGuide: CalculatorParameterInfo[] = [
     <div class="space-y-6">
 
       <!-- PAYCHECK FREQUENCY TABLE (Shared Primitive) -->
-      <div class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 sm:p-6 shadow-sm">
+      <div>
         <PaycheckFrequencyTable
           currencySymbol={profile.defaultCurrencySymbol}
           monthly={initialResult.netIncomeAnnual / 13}
@@ -309,7 +309,7 @@ const taxParameterGuide: CalculatorParameterInfo[] = [
       </div>
 
       <!-- AUDIT TRAIL / BREAKDOWN TABLE -->
-      <div class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 sm:p-6 shadow-sm space-y-4">
+      <div class="space-y-4">
         <div class="flex items-center justify-between border-b border-[color:var(--border)] pb-3">
           <h3 class="text-sm font-bold uppercase tracking-wider text-[color:var(--fg)] flex items-center gap-2">
             <Icon name="table" class="w-4 h-4 text-[color:var(--accent)]" />
@@ -330,12 +330,12 @@ const taxParameterGuide: CalculatorParameterInfo[] = [
 
           <div class="flex justify-between py-1.5 border-b border-[color:var(--border)]/40">
             <span class="text-[color:var(--muted)]">Min: Contributi INPS (9.19%)</span>
-            <span class="font-bold text-amber-500" data-res-inps>
+            <span class="font-bold text-[color:var(--fg)]" data-res-inps>
               -{formatCurrency(initialResult.inpsContribution, profile.defaultCurrency, profile.defaultCurrencySymbol)}
             </span>
           </div>
 
-          <div class="flex justify-between py-1.5 border-b border-[color:var(--border)]/40 font-bold bg-[color:var(--bg)] px-2 rounded-lg">
+          <div class="flex justify-between py-1.5 border-b border-[color:var(--border)]/40 font-bold bg-[color:var(--bg)] px-2 rounded-none">
             <span class="text-[color:var(--fg)]">Imponibile Fiscale IRPEF</span>
             <span class="text-[color:var(--fg)]" data-res-taxable>
               {formatCurrency(initialResult.taxableIncomeIrpef, profile.defaultCurrency, profile.defaultCurrencySymbol)}
@@ -344,35 +344,35 @@ const taxParameterGuide: CalculatorParameterInfo[] = [
 
           <div class="flex justify-between py-1.5 border-b border-[color:var(--border)]/40">
             <span class="text-[color:var(--muted)]">IRPEF Lorda</span>
-            <span class="font-bold text-blue-500" data-res-gross-irpef>
+            <span class="font-bold text-[color:var(--accent)]" data-res-gross-irpef>
               {formatCurrency(initialResult.grossIrpef, profile.defaultCurrency, profile.defaultCurrencySymbol)}
             </span>
           </div>
 
           <div class="flex justify-between py-1.5 border-b border-[color:var(--border)]/40">
             <span class="text-[color:var(--muted)]">Min: Detrazione Lavoro Dipendente</span>
-            <span class="font-bold text-emerald-500" data-res-detrazione>
+            <span class="font-bold text-[color:var(--accent)]" data-res-detrazione>
               -{formatCurrency(initialResult.employeeTaxCredit, profile.defaultCurrency, profile.defaultCurrencySymbol)}
             </span>
           </div>
 
           <div class="flex justify-between py-1.5 border-b border-[color:var(--border)]/40 font-bold">
             <span class="text-[color:var(--fg)]">IRPEF Netta Nazionale</span>
-            <span class="text-blue-600 dark:text-blue-400" data-res-net-irpef>
+            <span class="text-[color:var(--fg)]" data-res-net-irpef>
               {formatCurrency(initialResult.netIrpef, profile.defaultCurrency, profile.defaultCurrencySymbol)}
             </span>
           </div>
 
           <div class="flex justify-between py-1.5 border-b border-[color:var(--border)]/40">
             <span class="text-[color:var(--muted)]">Addizionale Regionale</span>
-            <span class="font-bold text-blue-500" data-res-reg-tax>
+            <span class="font-bold text-[color:var(--fg)]" data-res-reg-tax>
               {formatCurrency(initialResult.regionalSurcharge, profile.defaultCurrency, profile.defaultCurrencySymbol)}
             </span>
           </div>
 
           <div class="flex justify-between py-1.5 border-b border-[color:var(--border)]/40">
             <span class="text-[color:var(--muted)]">Addizionale Comunale</span>
-            <span class="font-bold text-blue-500" data-res-com-tax>
+            <span class="font-bold text-[color:var(--fg)]" data-res-com-tax>
               {formatCurrency(initialResult.municipalSurcharge, profile.defaultCurrency, profile.defaultCurrencySymbol)}
             </span>
           </div>
@@ -384,7 +384,7 @@ const taxParameterGuide: CalculatorParameterInfo[] = [
             </span>
           </div>
 
-          <div class="flex justify-between py-2 rounded-xl bg-[color:var(--accent)]/10 px-3 text-sm font-black text-[color:var(--accent)]">
+          <div class="flex justify-between py-2 rounded-none bg-[color:var(--accent)]/10 px-3 text-sm font-black text-[color:var(--accent)]">
             <span>Stipendio Netto Annuo</span>
             <span data-res-net-takehome>
               {formatCurrency(initialResult.netIncomeAnnual, profile.defaultCurrency, profile.defaultCurrencySymbol)}
@@ -399,7 +399,7 @@ const taxParameterGuide: CalculatorParameterInfo[] = [
       </div>
 
       <!-- SCAGLIONI IRPEF BRACKETS TABLE (Shared Primitive) -->
-      <div class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 sm:p-6 shadow-sm">
+      <div>
         <TaxBracketsTable
           breakdown={initialResult.bracketBreakdown || []}
           currencySymbol={profile.defaultCurrencySymbol}
@@ -568,7 +568,7 @@ const taxParameterGuide: CalculatorParameterInfo[] = [
                   <td class="py-2 px-3 font-medium text-[color:var(--fg)]">${row.bracketRange}</td>
                   <td class="py-2 px-3 text-right font-mono text-[color:var(--muted)]">${row.ratePercent}</td>
                   <td class="py-2 px-3 text-right font-mono font-medium text-[color:var(--fg)]">${fmt(row.taxableInBracket)}</td>
-                  <td class="py-2 px-3 text-right font-mono font-bold text-blue-500">${fmt(row.taxAmount)}</td>
+                  <td class="py-2 px-3 text-right font-mono font-bold text-[color:var(--fg)]">${fmt(row.taxAmount)}</td>
                 </tr>
               `
               )
@@ -585,9 +585,9 @@ const taxParameterGuide: CalculatorParameterInfo[] = [
 
             engineTabs.forEach((t) => {
               if (t === tab) {
-                t.className = 'shrink-0 min-w-max cursor-pointer rounded-xl px-3 py-1.5 text-xs font-bold transition inline-flex items-center gap-1.5 bg-[color:var(--accent)] text-white shadow-xs active';
+                t.className = 'shrink-0 min-w-max cursor-pointer rounded-none px-3 py-1.5 text-xs font-bold transition inline-flex items-center gap-1.5 bg-[color:var(--accent)] text-white shadow-xs active';
               } else {
-                t.className = 'shrink-0 min-w-max cursor-pointer rounded-xl px-3 py-1.5 text-xs font-semibold text-[color:var(--muted)] hover:text-[color:var(--fg)] transition inline-flex items-center gap-1.5';
+                t.className = 'shrink-0 min-w-max cursor-pointer rounded-none px-3 py-1.5 text-xs font-semibold text-[color:var(--muted)] hover:text-[color:var(--fg)] transition inline-flex items-center gap-1.5';
               }
             });
 

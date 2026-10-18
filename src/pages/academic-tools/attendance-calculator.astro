@@ -104,7 +104,7 @@ const schemaGraph = [
 
     <!-- Interactive Calculator Card -->
     <div
-      class="rounded-[2.5rem] border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-6 shadow-[var(--shadow)] sm:p-10"
+      class="space-y-8"
       data-attendance-app
     >
       <div class="grid gap-8 lg:grid-cols-[1.1fr_0.9fr]">
@@ -134,7 +134,7 @@ const schemaGraph = [
               type="number"
               min="0"
               step="1"
-              class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none transition focus:border-[color:var(--accent)] focus:ring-2 focus:ring-[color:var(--accent-soft)]"
+              class="w-full rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none transition focus:border-[color:var(--accent)] focus:ring-2 focus:ring-[color:var(--accent-soft)]"
               data-input-attended
               placeholder="e.g. 38" />
           </div>
@@ -152,7 +152,7 @@ const schemaGraph = [
               type="number"
               min="1"
               step="1"
-              class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none transition focus:border-[color:var(--accent)] focus:ring-2 focus:ring-[color:var(--accent-soft)]"
+              class="w-full rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none transition focus:border-[color:var(--accent)] focus:ring-2 focus:ring-[color:var(--accent-soft)]"
               data-input-total
               placeholder="e.g. 50" />
           </div>
@@ -163,7 +163,7 @@ const schemaGraph = [
               <label for="target-attendance" class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">
                 Target Attendance Goal
               </label>
-              <span class="rounded-lg bg-[color:var(--surface)] border border-[color:var(--border)] px-2.5 py-0.5 text-xs font-bold text-[color:var(--fg)]" data-target-display>
+              <span class="rounded-none bg-[color:var(--surface)] border border-[color:var(--border)] px-2.5 py-0.5 text-xs font-bold text-[color:var(--fg)]" data-target-display>
                 75%
               </span>
             </div>
@@ -188,22 +188,22 @@ const schemaGraph = [
           <div class="pt-1">
             <p class="text-xs font-bold text-[color:var(--muted)] mb-2">Preset Thresholds:</p>
             <div class="grid grid-cols-4 gap-2">
-              <button type="button" class="cursor-pointer rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] py-2 text-xs font-bold text-[color:var(--fg)] hover:bg-[color:var(--surface-strong)] transition" data-preset="75">75%</button>
-              <button type="button" class="cursor-pointer rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] py-2 text-xs font-bold text-[color:var(--fg)] hover:bg-[color:var(--surface-strong)] transition" data-preset="80">80%</button>
-              <button type="button" class="cursor-pointer rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] py-2 text-xs font-bold text-[color:var(--fg)] hover:bg-[color:var(--surface-strong)] transition" data-preset="85">85%</button>
-              <button type="button" class="cursor-pointer rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] py-2 text-xs font-bold text-[color:var(--fg)] hover:bg-[color:var(--surface-strong)] transition" data-preset="90">90%</button>
+              <button type="button" class="cursor-pointer rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] py-2 text-xs font-bold text-[color:var(--fg)] hover:bg-[color:var(--surface-strong)] transition" data-preset="75">75%</button>
+              <button type="button" class="cursor-pointer rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] py-2 text-xs font-bold text-[color:var(--fg)] hover:bg-[color:var(--surface-strong)] transition" data-preset="80">80%</button>
+              <button type="button" class="cursor-pointer rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] py-2 text-xs font-bold text-[color:var(--fg)] hover:bg-[color:var(--surface-strong)] transition" data-preset="85">85%</button>
+              <button type="button" class="cursor-pointer rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] py-2 text-xs font-bold text-[color:var(--fg)] hover:bg-[color:var(--surface-strong)] transition" data-preset="90">90%</button>
             </div>
           </div>
         </form>
 
         <!-- Live Results Panel -->
-        <div class="flex flex-col justify-between space-y-6 rounded-3xl border border-[color:var(--accent)]/30 bg-gradient-to-br from-[color:var(--accent-soft)] via-[color:var(--surface)] to-transparent p-6 sm:p-8 shadow-sm">
+        <div class="space-y-6">
           <div class="space-y-5">
             <div class="flex items-center justify-between">
               <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Current Standing</span>
               <button
                 type="button"
-                class="inline-flex items-center gap-1.5 rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1.5 text-xs font-bold text-[color:var(--fg)] hover:bg-[color:var(--surface-strong)] transition cursor-pointer"
+                class="inline-flex items-center gap-1.5 rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1.5 text-xs font-bold text-[color:var(--fg)] hover:bg-[color:var(--surface-strong)] transition cursor-pointer"
                 data-copy-btn
               >
                 <Icon name="copy" class="w-3.5 h-3.5" />
@@ -212,18 +212,18 @@ const schemaGraph = [
             </div>
 
             <!-- Primary Attendance Percentage Display -->
-            <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 text-center">
+            <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-5 text-center">
               <p class="text-xs font-semibold text-[color:var(--muted)]">Current Attendance Percentage</p>
               <p class="mt-1 text-4xl sm:text-5xl font-extrabold tracking-tight text-[color:var(--fg)]" data-res-pct>
                 76.0%
               </p>
-              <div class="mt-3 inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-bold" data-status-badge>
+              <div class="mt-3 inline-flex items-center gap-2 rounded-none px-3 py-1 text-xs font-bold" data-status-badge>
                 <span data-status-text>Safe (Above 75% Target)</span>
               </div>
             </div>
 
             <!-- Action Advice Metric -->
-            <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 space-y-2" data-advice-box>
+            <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-4 space-y-2" data-advice-box>
               <p class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Action Guidance</p>
               <p class="text-sm font-semibold text-[color:var(--fg)]" data-advice-text>
                 You can safely miss <strong>0 more classes</strong> and remain at or above 75%.
@@ -232,12 +232,12 @@ const schemaGraph = [
 
             <!-- Projections for Next Class -->
             <div class="grid grid-cols-2 gap-3">
-              <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3 text-center">
+              <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-3 text-center">
                 <p class="text-[11px] font-medium text-[color:var(--muted)]">If You Attend Next Class</p>
                 <p class="mt-1 text-base font-bold text-[color:var(--fg)]" data-proj-attend>76.47%</p>
                 <p class="text-[10px] text-[color:var(--muted)]">+0.47%</p>
               </div>
-              <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3 text-center">
+              <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-3 text-center">
                 <p class="text-[11px] font-medium text-[color:var(--muted)]">If You Miss Next Class</p>
                 <p class="mt-1 text-base font-bold text-[color:var(--fg)]" data-proj-miss>74.51%</p>
                 <p class="text-[10px] text-[color:var(--muted)]">-1.49%</p>
@@ -258,22 +258,22 @@ const schemaGraph = [
 
     <!-- Educational Content Sections -->
     <section class="grid gap-6 lg:grid-cols-2">
-      <div class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 space-y-3">
+      <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-6 space-y-3">
         <h2 class="text-lg font-bold text-[color:var(--fg)] flex items-center gap-2"><Icon name="math" class="w-4 h-4 text-[color:var(--accent)]" /><span>How Attendance Is Calculated</span></h2>
         <p class="text-xs sm:text-sm text-[color:var(--muted)] leading-relaxed">
           Your attendance percentage reflects the ratio of lectures attended to total lectures scheduled. When planning absences or recovering from medical leaves, simple addition cannot be used because both the numerator (attended classes) and denominator (total classes held) increment simultaneously.
         </p>
-        <div class="rounded-xl bg-[color:var(--bg)] p-3 font-mono text-xs text-[color:var(--fg)] border border-[color:var(--border)]">
+        <div class="rounded-none bg-[color:var(--bg)] p-3 font-mono text-xs text-[color:var(--fg)] border border-[color:var(--border)]">
           Attendance % = (Attended ÷ Total) × 100
         </div>
       </div>
 
-      <div class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 space-y-3">
+      <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-6 space-y-3">
         <h2 class="text-lg font-bold text-[color:var(--fg)] flex items-center gap-2"><Icon name="math" class="w-4 h-4 text-[color:var(--accent)]" /><span>Attendance Shortage Formula</span></h2>
         <p class="text-xs sm:text-sm text-[color:var(--muted)] leading-relaxed">
           To find how many consecutive future classes <span class="font-mono">X</span> you must attend to elevate your attendance to target fraction <span class="font-mono">T</span>:
         </p>
-        <div class="rounded-xl bg-[color:var(--bg)] p-3 font-mono text-xs text-[color:var(--fg)] border border-[color:var(--border)]">
+        <div class="rounded-none bg-[color:var(--bg)] p-3 font-mono text-xs text-[color:var(--fg)] border border-[color:var(--border)]">
           X = ⌈(T × Total - Attended) ÷ (1 - T)⌉
         </div>
         <p class="text-xs text-[color:var(--muted)]">
@@ -283,27 +283,27 @@ const schemaGraph = [
     </section>
 
     <!-- Step-by-Step Worked Example -->
-    <section class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 sm:p-8 space-y-4">
+    <section class="space-y-4 border-t border-[color:var(--border)] pt-8">
       <div>
         <p class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Step-By-Step Walkthrough</p>
         <h2 class="text-xl font-bold text-[color:var(--fg)] flex items-center gap-2"><Icon name="math" class="w-4 h-4 text-[color:var(--accent)]" /><span>Example Calculation: 75% Attendance Requirement</span></h2>
       </div>
 
       <div class="grid gap-4 sm:grid-cols-3 text-xs sm:text-sm">
-        <div class="rounded-2xl bg-[color:var(--bg)] p-4 border border-[color:var(--border)] space-y-1.5">
+        <div class="rounded-none bg-[color:var(--bg)] p-4 border border-[color:var(--border)] space-y-1.5">
           <p class="font-bold text-[color:var(--fg)]">1. Starting Situation</p>
           <p class="text-[color:var(--muted)]">Total classes conducted = 60.</p>
           <p class="text-[color:var(--muted)]">Classes attended = 40 (66.67%).</p>
           <p class="text-[color:var(--muted)]">Current status: Attendance Shortage.</p>
         </div>
-        <div class="rounded-2xl bg-[color:var(--bg)] p-4 border border-[color:var(--border)] space-y-1.5">
+        <div class="rounded-none bg-[color:var(--bg)] p-4 border border-[color:var(--border)] space-y-1.5">
           <p class="font-bold text-[color:var(--fg)]">2. Compute Needed Classes</p>
           <p class="text-[color:var(--muted)]">T = 0.75, (0.75 × 60) = 45.</p>
           <p class="text-[color:var(--muted)]">Numerator: 45 - 40 = 5.</p>
           <p class="text-[color:var(--muted)]">Denominator: 1 - 0.75 = 0.25.</p>
           <p class="text-[color:var(--muted)]">X = 5 ÷ 0.25 = <strong>20 classes</strong>.</p>
         </div>
-        <div class="rounded-2xl bg-[color:var(--bg)] p-4 border border-[color:var(--border)] space-y-1.5">
+        <div class="rounded-none bg-[color:var(--bg)] p-4 border border-[color:var(--border)] space-y-1.5">
           <p class="font-bold text-[color:var(--fg)]">3. Verification</p>
           <p class="text-[color:var(--muted)]">New Attended = 40 + 20 = 60.</p>
           <p class="text-[color:var(--muted)]">New Total = 60 + 20 = 80.</p>
@@ -334,7 +334,7 @@ const schemaGraph = [
 
       <div class="space-y-3">
         {faqs.map((faq) => (
-          <details class="group rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
+          <details class="group rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
             <summary class="cursor-pointer list-none font-semibold text-sm sm:text-base text-[color:var(--fg)] flex items-center justify-between gap-4">
               <span>{faq.question}</span>
               <span class="text-xs text-[color:var(--muted)] group-open:rotate-180 transition-transform">▼</span>
@@ -351,15 +351,15 @@ const schemaGraph = [
     <section class="space-y-4">
       <h2 class="text-lg font-bold text-[color:var(--fg)]">Related Academic Tools</h2>
       <div class="grid gap-3 sm:grid-cols-3">
-        <a href={withBasePath('/academic-tools/bunk-calculator/')} class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 hover:border-[color:var(--border-strong)] transition">
+        <a href={withBasePath('/academic-tools/bunk-calculator/')} class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-4 hover:border-[color:var(--border-strong)] transition">
           <p class="font-bold text-xs text-[color:var(--fg)]">Bunk Calculator →</p>
           <p class="text-[11px] text-[color:var(--muted)] mt-1">Check how many lectures you can safely skip.</p>
         </a>
-        <a href={withBasePath('/academic-tools/final-grade-calculator/')} class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 hover:border-[color:var(--border-strong)] transition">
+        <a href={withBasePath('/academic-tools/final-grade-calculator/')} class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-4 hover:border-[color:var(--border-strong)] transition">
           <p class="font-bold text-xs text-[color:var(--fg)]">Final Grade Calculator →</p>
           <p class="text-[11px] text-[color:var(--muted)] mt-1">Calculate score needed on your final exam.</p>
         </a>
-        <a href={withBasePath('/academic-tools/semester-gpa-calculator/')} class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 hover:border-[color:var(--border-strong)] transition">
+        <a href={withBasePath('/academic-tools/semester-gpa-calculator/')} class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-4 hover:border-[color:var(--border-strong)] transition">
           <p class="font-bold text-xs text-[color:var(--fg)]">Semester GPA Calculator →</p>
           <p class="text-[11px] text-[color:var(--muted)] mt-1">Calculate 4.0 scale weighted course GPA.</p>
         </a>
@@ -418,7 +418,7 @@ const schemaGraph = [
         // Status Badge & Advice Box
         if (pct >= target) {
           if (statusBadge) {
-            statusBadge.className = 'mt-3 inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-bold bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 dark:text-cyan-400 border border-cyan-500/20';
+            statusBadge.className = 'mt-3 inline-flex items-center gap-2 rounded-none px-3 py-1 text-xs font-bold bg-cyan-500/10 text-[color:var(--accent)] border border-cyan-500/20';
           }
           if (statusText) statusText.textContent = `Safe (Above ${target}% Target)`;
           if (adviceText) {
@@ -426,7 +426,7 @@ const schemaGraph = [
           }
         } else {
           if (statusBadge) {
-            statusBadge.className = 'mt-3 inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-bold bg-red-500/10 text-red-600 dark:text-red-400 border border-red-500/20';
+            statusBadge.className = 'mt-3 inline-flex items-center gap-2 rounded-none px-3 py-1 text-xs font-bold bg-red-500/10 text-red-600 dark:text-red-400 border border-red-500/20';
           }
           if (statusText) statusText.textContent = `Attendance Shortage (Below ${target}%)`;
           if (adviceText) {
@@ -448,14 +448,14 @@ const schemaGraph = [
             let note = '';
             if (pct >= t) {
               const m = Math.max(0, Math.floor((attended / tFrac) - total));
-              note = `<span class="text-cyan-600 dark:text-cyan-400 dark:text-cyan-400 font-bold">Can miss ${m} class${m === 1 ? '' : 'es'}</span>`;
+              note = `<span class="text-[color:var(--accent)] font-bold">Can miss ${m} class${m === 1 ? '' : 'es'}</span>`;
             } else {
               const a = tFrac >= 1 ? 999 : Math.max(0, Math.ceil((tFrac * total - attended) / (1 - tFrac)));
               note = `<span class="text-red-600 dark:text-red-400 font-bold">Must attend ${a} class${a === 1 ? '' : 'es'}</span>`;
             }
 
             return `
-              <div class="flex items-center justify-between p-2 rounded-xl bg-[color:var(--surface)] border border-[color:var(--border)]">
+              <div class="flex items-center justify-between p-2 rounded-none bg-[color:var(--surface)] border border-[color:var(--border)]">
                 <span class="font-bold text-[color:var(--fg)]">${t}% Goal</span>
                 <span>${note}</span>
               </div>
@@ -493,7 +493,7 @@ const schemaGraph = [
           try {
             await navigator.clipboard.writeText(text);
             const original = copyBtn.innerHTML;
-            copyBtn.innerHTML = '<span class="inline-flex items-center gap-1"><svg class="w-3.5 h-3.5 inline shrink-0 text-emerald-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"></polyline></svg><span>Copied!</span></span>';
+            copyBtn.innerHTML = '<span class="inline-flex items-center gap-1"><svg class="w-3.5 h-3.5 inline shrink-0 text-[color:var(--accent)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"></polyline></svg><span>Copied!</span></span>';
             setTimeout(() => { copyBtn.innerHTML = original; }, 2000);
           } catch (e) {}
         });

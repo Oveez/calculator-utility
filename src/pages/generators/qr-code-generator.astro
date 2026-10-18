@@ -85,10 +85,10 @@ const schemaGraph = [
     <div class="space-y-6">
       <div class="grid gap-6 lg:grid-cols-2">
         <!-- Input Configuration -->
-        <div class="space-y-4 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 sm:p-6 text-xs">
+        <div class="space-y-4 rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-5 sm:p-6 text-xs">
           <div>
             <label for="qr-type" class="font-bold text-[color:var(--fg)] block mb-1">QR Code Content Type:</label>
-            <select id="qr-type" class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-[color:var(--fg)]">
+            <select id="qr-type" class="w-full rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-[color:var(--fg)]">
               <option value="url">Website URL (https://...)</option>
               <option value="text">Plain Text Message</option>
               <option value="wifi">WiFi Network Credentials</option>
@@ -102,7 +102,7 @@ const schemaGraph = [
             <input
               type="url"
               id="qr-url-input"
-              class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-[color:var(--fg)] font-mono"
+              class="w-full rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-[color:var(--fg)] font-mono"
               placeholder="https://example.com"
               value="https://toolscastle.app" />
           </div>
@@ -112,7 +112,7 @@ const schemaGraph = [
             <textarea
               id="qr-plain-text"
               rows="3"
-              class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-[color:var(--fg)]"
+              class="w-full rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-[color:var(--fg)]"
               placeholder="Enter message or notes..."
             ></textarea>
           </div>
@@ -120,16 +120,16 @@ const schemaGraph = [
           <div id="field-wifi" class="hidden space-y-3">
             <div>
               <label for="wifi-ssid" class="font-bold text-[color:var(--fg)] block mb-1">Network Name (SSID):</label>
-              <input type="text" id="wifi-ssid" placeholder="MyWiFiNetwork" class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-[color:var(--fg)]" />
+              <input type="text" id="wifi-ssid" placeholder="MyWiFiNetwork" class="w-full rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-[color:var(--fg)]" />
             </div>
             <div class="grid grid-cols-2 gap-2">
               <div>
                 <label for="wifi-pass" class="font-bold text-[color:var(--fg)] block mb-1">Password:</label>
-                <input type="text" id="wifi-pass" placeholder="Password123" class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-[color:var(--fg)]" />
+                <input type="text" id="wifi-pass" placeholder="Password123" class="w-full rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-[color:var(--fg)]" />
               </div>
               <div>
                 <label for="wifi-auth" class="font-bold text-[color:var(--fg)] block mb-1">Security:</label>
-                <select id="wifi-auth" class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-[color:var(--fg)]">
+                <select id="wifi-auth" class="w-full rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-[color:var(--fg)]">
                   <option value="WPA">WPA/WPA2/WPA3</option>
                   <option value="WEP">WEP</option>
                   <option value="nopass">None (Open)</option>
@@ -141,29 +141,29 @@ const schemaGraph = [
           <div id="field-email" class="hidden space-y-3">
             <div>
               <label for="email-addr" class="font-bold text-[color:var(--fg)] block mb-1">Recipient Email:</label>
-              <input type="email" id="email-addr" placeholder="support@example.com" class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-[color:var(--fg)]" />
+              <input type="email" id="email-addr" placeholder="support@example.com" class="w-full rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-[color:var(--fg)]" />
             </div>
             <div>
               <label for="email-sub" class="font-bold text-[color:var(--fg)] block mb-1">Subject:</label>
-              <input type="text" id="email-sub" placeholder="Inquiry from QR" class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-[color:var(--fg)]" />
+              <input type="text" id="email-sub" placeholder="Inquiry from QR" class="w-full rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-[color:var(--fg)]" />
             </div>
           </div>
 
           <div class="grid grid-cols-2 gap-3 pt-2">
             <div>
               <label for="fg-color" class="font-bold text-[color:var(--fg)] block mb-1">QR Color:</label>
-              <input type="color" id="fg-color" value="#09090b" class="h-9 w-full rounded-xl border border-[color:var(--border)] cursor-pointer bg-transparent" />
+              <input type="color" id="fg-color" value="#09090b" class="h-9 w-full rounded-none border border-[color:var(--border)] cursor-pointer bg-transparent" />
             </div>
             <div>
               <label for="bg-color" class="font-bold text-[color:var(--fg)] block mb-1">Background:</label>
-              <input type="color" id="bg-color" value="#ffffff" class="h-9 w-full rounded-xl border border-[color:var(--border)] cursor-pointer bg-transparent" />
+              <input type="color" id="bg-color" value="#ffffff" class="h-9 w-full rounded-none border border-[color:var(--border)] cursor-pointer bg-transparent" />
             </div>
           </div>
         </div>
 
         <!-- Live QR Code Canvas & Download -->
-        <div class="flex flex-col items-center justify-center space-y-4 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 sm:p-8 text-center">
-          <div class="p-3 bg-[color:var(--surface)] rounded-2xl border border-[color:var(--border)] shadow-sm inline-block">
+        <div class="flex flex-col items-center justify-center space-y-4 rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-6 sm:p-8 text-center">
+          <div class="p-3 bg-[color:var(--surface)] rounded-none border border-[color:var(--border)] shadow-sm inline-block">
             <canvas id="qr-canvas" width="240" height="240" class="block"></canvas>
           </div>
           <p class="text-xs text-[color:var(--muted)]">Scan with any standard smartphone camera or QR reader.</p>
@@ -171,7 +171,7 @@ const schemaGraph = [
             <button
               type="button"
               id="dl-btn"
-              class="flex-1 inline-flex items-center justify-center gap-1.5 rounded-xl bg-[color:var(--accent)] py-2.5 text-xs font-bold text-white shadow-xs transition hover:opacity-90 active:scale-95 cursor-pointer"
+              class="flex-1 inline-flex items-center justify-center gap-1.5 rounded-none bg-[color:var(--accent)] py-2.5 text-xs font-bold text-white shadow-xs transition hover:opacity-90 active:scale-95 cursor-pointer"
             >
               <svg class="w-3.5 h-3.5 stroke-current" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                 <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
@@ -183,7 +183,7 @@ const schemaGraph = [
             <button
               type="button"
               id="copy-qr-btn"
-              class="inline-flex items-center justify-center gap-1.5 rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] px-3.5 py-2.5 text-xs font-bold text-[color:var(--fg)] shadow-xs transition hover:bg-[color:var(--surface-strong)] active:scale-95 cursor-pointer"
+              class="inline-flex items-center justify-center gap-1.5 rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] px-3.5 py-2.5 text-xs font-bold text-[color:var(--fg)] shadow-xs transition hover:bg-[color:var(--surface-strong)] active:scale-95 cursor-pointer"
               title="Copy Image to Clipboard"
             >
               <svg class="w-3.5 h-3.5 stroke-current" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -212,7 +212,7 @@ const schemaGraph = [
       <h2 class="text-xl font-bold text-[color:var(--fg)]">Frequently Asked Questions</h2>
       <div class="space-y-3">
         {schemaFaq.map((faq) => (
-          <details class="group rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
+          <details class="group rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
             <summary class="cursor-pointer list-none font-semibold text-sm sm:text-base text-[color:var(--fg)] flex items-center justify-between gap-4">
               <span>{faq.question}</span>
               <span class="text-xs text-[color:var(--muted)] group-open:rotate-180 transition-transform">▼</span>

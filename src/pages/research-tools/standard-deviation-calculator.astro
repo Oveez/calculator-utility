@@ -161,7 +161,7 @@ const schemaGraph = [
 
 
     <div
-      class="rounded-[2.5rem] border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-6 shadow-[var(--shadow)] sm:p-10 space-y-8"
+      class="space-y-8"
     >
       <div class="space-y-3">
         <div class="flex items-center justify-between">
@@ -180,7 +180,7 @@ const schemaGraph = [
         <textarea
           id="data-vals"
           rows="4"
-          class="w-full font-mono text-xs leading-relaxed rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] p-4 text-[color:var(--fg)] outline-none"
+          class="w-full font-mono text-xs leading-relaxed rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] p-4 text-[color:var(--fg)] outline-none"
           placeholder="10, 12, 23, 23, 16, 23, 21, 16"
         >10, 12, 23, 23, 16, 23, 21, 16</textarea>
       </div>
@@ -192,7 +192,7 @@ const schemaGraph = [
           <button
             type="button"
             data-copy-btn
-            class="inline-flex items-center gap-1.5 rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1.5 text-xs font-semibold text-[color:var(--fg)] hover:border-[color:var(--border-strong)] transition cursor-pointer"
+            class="inline-flex items-center gap-1.5 rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1.5 text-xs font-semibold text-[color:var(--fg)] hover:border-[color:var(--border-strong)] transition cursor-pointer"
           >
             <Icon name="copy" class="w-3.5 h-3.5" />
             <span>Copy Summary</span>
@@ -200,7 +200,7 @@ const schemaGraph = [
           <button
             type="button"
             data-export-csv-btn
-            class="inline-flex items-center gap-1.5 rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1.5 text-xs font-semibold text-[color:var(--fg)] hover:border-[color:var(--border-strong)] transition cursor-pointer"
+            class="inline-flex items-center gap-1.5 rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1.5 text-xs font-semibold text-[color:var(--fg)] hover:border-[color:var(--border-strong)] transition cursor-pointer"
           >
             <span>Export CSV</span>
           </button>
@@ -209,25 +209,25 @@ const schemaGraph = [
 
       <!-- Primary Stats Grid -->
       <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 text-center">
-        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] p-5 space-y-1">
+        <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] p-5 space-y-1">
           <span class="text-xs font-bold text-[color:var(--muted)] uppercase">Sample SD (s)</span>
           <p id="res-sample-sd" class="text-3xl font-extrabold text-cyan-500 dark:text-cyan-400 font-mono">5.2372</p>
           <p class="text-[10px] text-[color:var(--muted)]">Bessel Divisor: n - 1 = 7</p>
         </div>
 
-        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] p-5 space-y-1">
+        <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] p-5 space-y-1">
           <span class="text-xs font-bold text-[color:var(--muted)] uppercase">Population SD (σ)</span>
           <p id="res-pop-sd" class="text-3xl font-extrabold text-[color:var(--fg)] font-mono">4.8990</p>
           <p class="text-[10px] text-[color:var(--muted)]">Population Census Divisor: N = 8</p>
         </div>
 
-        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] p-5 space-y-1">
+        <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] p-5 space-y-1">
           <span class="text-xs font-bold text-[color:var(--muted)] uppercase">Sample Variance (s²)</span>
           <p id="res-var" class="text-3xl font-extrabold text-[color:var(--fg)] font-mono">27.4286</p>
           <p class="text-[10px] text-[color:var(--muted)]">SS / (n - 1)</p>
         </div>
 
-        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] p-5 space-y-1">
+        <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] p-5 space-y-1">
           <span class="text-xs font-bold text-[color:var(--muted)] uppercase">Arithmetic Mean (x̄)</span>
           <p id="res-mean" class="text-3xl font-extrabold text-[color:var(--fg)] font-mono">18.0000</p>
           <p id="res-count" class="text-[10px] text-[color:var(--muted)]">Count: 8 (Sum: 144.00)</p>
@@ -235,7 +235,7 @@ const schemaGraph = [
       </div>
 
       <!-- Secondary Comprehensive Stats Grid -->
-      <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-xs font-mono">
+      <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4 rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-xs font-mono">
         <div class="flex justify-between border-b sm:border-b-0 border-[color:var(--border)] pb-1 sm:pb-0">
           <span class="text-[color:var(--muted)] font-sans">Median:</span>
           <span class="font-bold text-[color:var(--fg)]" data-res-median>18.50</span>
@@ -276,7 +276,7 @@ const schemaGraph = [
           <h3 class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Step-By-Step Deviations (SS Calculation)</h3>
           <span class="text-[11px] text-[color:var(--muted)]">Showing individual observation deviations</span>
         </div>
-        <div class="max-h-64 overflow-y-auto rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)]">
+        <div class="max-h-64 overflow-y-auto rounded-none border border-[color:var(--border)] bg-[color:var(--bg)]">
           <table class="w-full text-left text-xs font-mono">
             <thead class="sticky top-0 bg-[color:var(--surface)] text-[color:var(--muted)] border-b border-[color:var(--border)]">
               <tr>
@@ -313,16 +313,16 @@ const schemaGraph = [
     </header>
 
     <!-- Mathematical Formulas Reference Card -->
-    <section class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 sm:p-8 space-y-4">
+    <section class="space-y-4 border-t border-[color:var(--border)] pt-8">
       <div>
         <p class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Statistical Dispersion Theory</p>
         <h2 class="text-xl font-bold text-[color:var(--fg)] flex items-center gap-2"><Icon name="math" class="w-4 h-4 text-[color:var(--accent)]" /><span>Dispersion Formulas &amp; Bessel's Correction</span></h2>
       </div>
 
       <div class="grid gap-4 sm:grid-cols-2 text-xs sm:text-sm text-[color:var(--muted)]">
-        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] p-5 space-y-2">
+        <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] p-5 space-y-2">
           <p class="font-bold text-[color:var(--fg)]">1. Sample Standard Deviation &amp; Variance</p>
-          <div class="font-mono text-xs text-cyan-500 dark:text-cyan-400 bg-[color:var(--surface)] p-2.5 rounded-xl">
+          <div class="font-mono text-xs text-cyan-500 dark:text-cyan-400 bg-[color:var(--surface)] p-2.5 rounded-none">
             s = √[ Σ(xᵢ - x̄)² / (n - 1) ]
           </div>
           <p class="text-xs">
@@ -330,9 +330,9 @@ const schemaGraph = [
           </p>
         </div>
 
-        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] p-5 space-y-2">
+        <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] p-5 space-y-2">
           <p class="font-bold text-[color:var(--fg)]">2. Population Standard Deviation &amp; Variance</p>
-          <div class="font-mono text-xs text-[color:var(--fg)] bg-[color:var(--surface)] p-2.5 rounded-xl">
+          <div class="font-mono text-xs text-[color:var(--fg)] bg-[color:var(--surface)] p-2.5 rounded-none">
             σ = √[ Σ(xᵢ - μ)² / N ]
           </div>
           <p class="text-xs">
@@ -350,7 +350,7 @@ const schemaGraph = [
       <h2 class="text-xl font-bold text-[color:var(--fg)]">Frequently Asked Questions</h2>
       <div class="space-y-3">
         {schemaFaq.map((faq) => (
-          <details class="group rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
+          <details class="group rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
             <summary class="cursor-pointer list-none font-semibold text-sm sm:text-base text-[color:var(--fg)] flex items-center justify-between gap-4">
               <span>{faq.question}</span>
               <span class="text-xs text-[color:var(--muted)] group-open:rotate-180 transition-transform">▼</span>

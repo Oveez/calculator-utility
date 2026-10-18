@@ -93,19 +93,19 @@ const schemaGraph = [
 
     <!-- Telemetry Bar -->
     <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-      <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3 text-center">
+      <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-3 text-center">
         <p class="text-[10px] font-bold uppercase tracking-wider text-[color:var(--muted)]">Original Format</p>
         <p id="stat-orig-fmt" class="mt-1 font-mono text-base font-bold text-[color:var(--fg)]">-</p>
       </div>
-      <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3 text-center">
+      <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-3 text-center">
         <p class="text-[10px] font-bold uppercase tracking-wider text-[color:var(--muted)]">Target Format</p>
         <p id="stat-target-fmt" class="mt-1 font-mono text-base font-bold text-emerald-500">WEBP</p>
       </div>
-      <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3 text-center">
+      <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-3 text-center">
         <p class="text-[10px] font-bold uppercase tracking-wider text-[color:var(--muted)]">Original Size</p>
         <p id="stat-orig-size" class="mt-1 font-mono text-base font-bold text-[color:var(--fg)]">0 B</p>
       </div>
-      <div class="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] p-3 text-center">
+      <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-3 text-center">
         <p class="text-[10px] font-bold uppercase tracking-wider text-[color:var(--muted)]">Converted Size</p>
         <p id="stat-conv-size" class="mt-1 font-mono text-base font-bold text-emerald-500">0 B</p>
       </div>
@@ -113,10 +113,10 @@ const schemaGraph = [
 
     <div class="space-y-6">
       <!-- Upload Dropzone -->
-      <div id="dropzone-box" class="space-y-3 rounded-3xl border-2 border-dashed border-[color:var(--border)] bg-[color:var(--surface)] p-6 sm:p-8 text-center transition hover:border-[color:var(--border-strong)]">
+      <div id="dropzone-box" class="space-y-3 rounded-none border-2 border-dashed border-[color:var(--border)] bg-[color:var(--surface)] p-6 sm:p-8 text-center transition hover:border-[color:var(--border-strong)]">
         <input type="file" id="img-file" accept="image/*" class="hidden" />
         <label for="img-file" id="upload-prompt" class="cursor-pointer space-y-2 block">
-          <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-[color:var(--surface-strong)] text-[color:var(--fg)]">
+          <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-none bg-[color:var(--surface-strong)] text-[color:var(--fg)]">
             <Icon name="image" class="w-6 h-6 text-[color:var(--accent)]" />
           </div>
           <p class="text-sm font-bold text-[color:var(--fg)]">Select an image to convert or drag and drop</p>
@@ -124,9 +124,9 @@ const schemaGraph = [
         </label>
 
         <!-- Visual Upload Preview Window -->
-        <div id="upload-preview-box" class="hidden flex flex-col sm:flex-row items-center justify-between gap-4 rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] p-3.5 text-left">
+        <div id="upload-preview-box" class="hidden flex flex-col sm:flex-row items-center justify-between gap-4 rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] p-3.5 text-left">
           <div class="flex items-center gap-3 min-w-0">
-            <div class="h-14 w-14 rounded-xl bg-[color:var(--surface-strong)] overflow-hidden shrink-0 flex items-center justify-center border border-[color:var(--border)]">
+            <div class="h-14 w-14 rounded-none bg-[color:var(--surface-strong)] overflow-hidden shrink-0 flex items-center justify-center border border-[color:var(--border)]">
               <img id="thumb-preview" alt="Thumbnail" class="max-h-full max-w-full object-cover" />
             </div>
             <div class="min-w-0 space-y-0.5">
@@ -134,7 +134,7 @@ const schemaGraph = [
               <p id="thumb-info" class="text-[11px] text-[color:var(--muted)] font-mono">0 KB</p>
             </div>
           </div>
-          <label for="img-file" class="cursor-pointer shrink-0 rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1.5 text-xs font-semibold text-[color:var(--muted)] hover:text-[color:var(--fg)] transition">
+          <label for="img-file" class="cursor-pointer shrink-0 rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1.5 text-xs font-semibold text-[color:var(--muted)] hover:text-[color:var(--fg)] transition">
             Change Image
           </label>
         </div>
@@ -142,14 +142,14 @@ const schemaGraph = [
 
       <!-- Conversion Settings Card -->
       <div id="conv-card" class="hidden space-y-6">
-        <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 space-y-4 text-xs">
+        <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-5 space-y-4 text-xs">
           <p class="font-bold uppercase tracking-wider text-[color:var(--muted)] text-[10px]">Conversion &amp; Output Configuration</p>
 
           <div class="grid gap-4 sm:grid-cols-3">
             <!-- Format Selector -->
             <div>
               <label for="target-fmt" class="font-bold text-[color:var(--fg)] block mb-1.5">Convert To Format:</label>
-              <select id="target-fmt" class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-[color:var(--fg)] font-semibold">
+              <select id="target-fmt" class="w-full rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-[color:var(--fg)] font-semibold">
                 <option value="image/webp">WebP (Modern Web Standard)</option>
                 <option value="image/jpeg">JPEG (Universal Compatibility)</option>
                 <option value="image/png">PNG (Lossless Transparency)</option>
@@ -159,13 +159,13 @@ const schemaGraph = [
             <!-- Transparency Background Fill -->
             <div id="bg-fill-box">
               <label for="bg-fill-select" class="font-bold text-[color:var(--fg)] block mb-1.5">Background Fill (If Transparent):</label>
-              <select id="bg-fill-select" class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-[color:var(--fg)]">
+              <select id="bg-fill-select" class="w-full rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-[color:var(--fg)]">
                 <option value="#ffffff">Solid White (#FFFFFF)</option>
                 <option value="#000000">Solid Black (#000000)</option>
                 <option value="transparent">Transparent (PNG/WebP only)</option>
                 <option value="custom">Custom Color Fill</option>
               </select>
-              <input type="color" id="custom-color" value="#ffffff" class="hidden mt-2 h-8 w-full rounded-lg cursor-pointer border border-[color:var(--border)]" />
+              <input type="color" id="custom-color" value="#ffffff" class="hidden mt-2 h-8 w-full rounded-none cursor-pointer border border-[color:var(--border)]" />
             </div>
 
             <!-- Quality Slider for Lossy Formats -->
@@ -188,7 +188,7 @@ const schemaGraph = [
           <div class="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-[color:var(--border)]">
             <div class="flex items-center gap-2">
               <label for="scale-select" class="font-medium text-[color:var(--muted)]">Dimension Rescaling:</label>
-              <select id="scale-select" class="rounded-lg border border-[color:var(--border)] bg-[color:var(--bg)] px-2.5 py-1 text-xs text-[color:var(--fg)]">
+              <select id="scale-select" class="rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-2.5 py-1 text-xs text-[color:var(--fg)]">
                 <option value="1">100% (Original Dimensions)</option>
                 <option value="0.75">75% Scaling</option>
                 <option value="0.5">50% Scaling (Half Dimensions)</option>
@@ -200,12 +200,12 @@ const schemaGraph = [
         </div>
 
         <!-- Live Preview Card -->
-        <div class="space-y-2 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4">
+        <div class="space-y-2 rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-4">
           <div class="flex items-center justify-between">
             <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Converted Output Preview</span>
             <span id="conv-badge" class="text-xs font-mono font-bold text-emerald-500">-</span>
           </div>
-          <div class="h-64 rounded-xl bg-[color:var(--surface-strong)] overflow-hidden flex items-center justify-center p-2">
+          <div class="h-64 rounded-none bg-[color:var(--surface-strong)] overflow-hidden flex items-center justify-center p-2">
             <img id="img-conv-preview" alt="Converted" class="max-h-full max-w-full object-contain" />
           </div>
         </div>
@@ -214,7 +214,7 @@ const schemaGraph = [
         <button
           type="button"
           id="dl-conv-btn"
-          class="w-full rounded-xl bg-[color:var(--accent)] py-3 text-xs font-bold text-white shadow-xs transition hover:opacity-90 active:scale-95 cursor-pointer flex items-center justify-center gap-2"
+          class="w-full rounded-none bg-[color:var(--accent)] py-3 text-xs font-bold text-white shadow-xs transition hover:opacity-90 active:scale-95 cursor-pointer flex items-center justify-center gap-2"
         >
           <Icon name="download" class="w-4 h-4" />
           <span>Convert &amp; Download Image</span>
@@ -296,7 +296,7 @@ const schemaGraph = [
       <h2 class="text-xl font-bold text-[color:var(--fg)]">Frequently Asked Questions</h2>
       <div class="space-y-3">
         {schemaFaq.map((faq) => (
-          <details class="group rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
+          <details class="group rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
             <summary class="cursor-pointer list-none font-semibold text-sm sm:text-base text-[color:var(--fg)] flex items-center justify-between gap-4">
               <span>{faq.question}</span>
               <span class="text-xs text-[color:var(--muted)] group-open:rotate-180 transition-transform">&#9660;</span>

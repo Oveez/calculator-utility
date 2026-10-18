@@ -158,30 +158,30 @@ const workedExampleData = {
 
     <!-- Metrics Summary Bar -->
     <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-      <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-center shadow-xs">
+      <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-center shadow-xs">
         <span class="block text-[11px] font-bold uppercase tracking-wider text-[color:var(--muted)]">Original Lines</span>
         <span id="stat-in-lines" class="mt-1 block text-xl sm:text-2xl font-black text-[color:var(--fg)] font-mono">0</span>
       </div>
-      <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-center shadow-xs">
+      <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-center shadow-xs">
         <span class="block text-[11px] font-bold uppercase tracking-wider text-[color:var(--muted)]">Unique Lines</span>
         <span id="stat-out-lines" class="mt-1 block text-xl sm:text-2xl font-black text-cyan-600 dark:text-cyan-400 dark:text-cyan-400 font-mono">0</span>
       </div>
-      <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-center shadow-xs">
+      <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-center shadow-xs">
         <span class="block text-[11px] font-bold uppercase tracking-wider text-[color:var(--muted)]">Duplicates Removed</span>
         <span id="stat-dups-removed" class="mt-1 block text-xl sm:text-2xl font-black text-rose-600 dark:text-rose-400 font-mono">0</span>
       </div>
-      <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-center shadow-xs">
+      <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-center shadow-xs">
         <span class="block text-[11px] font-bold uppercase tracking-wider text-[color:var(--muted)]">Reduction</span>
         <span id="stat-pct-reduced" class="mt-1 block text-xl sm:text-2xl font-black text-[color:var(--accent)] font-mono">0%</span>
       </div>
     </div>
 
     <!-- Controls Panel -->
-    <div class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 sm:p-6 space-y-4 shadow-sm">
+    <div class="py-4 border-b border-[color:var(--border)] space-y-4">
       <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 text-xs">
         <div>
           <label for="opt-filter-mode" class="block font-bold text-[color:var(--fg)] mb-1.5">Action Mode</label>
-          <select id="opt-filter-mode" class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-[color:var(--fg)] font-semibold">
+          <select id="opt-filter-mode" class="w-full rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-[color:var(--fg)] font-semibold">
             <option value="remove-duplicates">Remove Duplicates (Keep Unique)</option>
             <option value="show-duplicates-only">Show Duplicates Only (Invert)</option>
           </select>
@@ -189,7 +189,7 @@ const workedExampleData = {
 
         <div>
           <label for="opt-occurrence" class="block font-bold text-[color:var(--fg)] mb-1.5">Occurrence Strategy</label>
-          <select id="opt-occurrence" class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-[color:var(--fg)]">
+          <select id="opt-occurrence" class="w-full rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-[color:var(--fg)]">
             <option value="first">Keep First Occurrence</option>
             <option value="last">Keep Last Occurrence</option>
           </select>
@@ -197,7 +197,7 @@ const workedExampleData = {
 
         <div>
           <label for="opt-sort" class="block font-bold text-[color:var(--fg)] mb-1.5">Sort Output</label>
-          <select id="opt-sort" class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-[color:var(--fg)]">
+          <select id="opt-sort" class="w-full rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-[color:var(--fg)]">
             <option value="original">Retain Original Order</option>
             <option value="az">Alphabetical (A &rarr; Z)</option>
             <option value="za">Reverse Alphabetical (Z &rarr; A)</option>
@@ -245,7 +245,7 @@ const workedExampleData = {
         <textarea
           id="text-in"
           rows="15"
-          class="w-full font-mono text-xs leading-relaxed rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-[color:var(--fg)] focus:border-[color:var(--accent)] focus:outline-hidden transition shadow-inner"
+          class="w-full font-mono text-xs leading-relaxed rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-[color:var(--fg)] focus:border-[color:var(--accent)] focus:outline-hidden transition shadow-inner"
           placeholder="Paste or type lines of text here..."
         ></textarea>
       </div>
@@ -261,7 +261,7 @@ const workedExampleData = {
             <button
               type="button"
               id="btn-copy"
-              class="inline-flex cursor-pointer items-center gap-1.5 rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1.5 text-xs font-bold text-[color:var(--fg)] shadow-xs transition hover:bg-[color:var(--surface-strong)]"
+              class="inline-flex cursor-pointer items-center gap-1.5 rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1.5 text-xs font-bold text-[color:var(--fg)] shadow-xs transition hover:bg-[color:var(--surface-strong)]"
             >
               <Icon name="copy" class="w-3.5 h-3.5" />
               <span id="copy-label">Copy</span>
@@ -269,7 +269,7 @@ const workedExampleData = {
             <button
               type="button"
               id="btn-download"
-              class="inline-flex cursor-pointer items-center gap-1.5 rounded-xl bg-[color:var(--accent)] px-3 py-1.5 text-xs font-bold text-white shadow-xs transition hover:opacity-90"
+              class="inline-flex cursor-pointer items-center gap-1.5 rounded-none bg-[color:var(--accent)] px-3 py-1.5 text-xs font-bold text-white shadow-xs transition hover:opacity-90"
             >
               <span>Download .txt</span>
             </button>
@@ -279,17 +279,17 @@ const workedExampleData = {
           id="text-out"
           rows="15"
           readonly
-          class="w-full font-mono text-xs leading-relaxed rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-4 text-[color:var(--fg)] focus:outline-hidden transition shadow-inner"
+          class="w-full font-mono text-xs leading-relaxed rounded-none border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-4 text-[color:var(--fg)] focus:outline-hidden transition shadow-inner"
           placeholder="Deduplicated lines will appear here in real-time..."
         ></textarea>
       </div>
     </div>
 
     <!-- Duplicate Frequency Breakdown Card -->
-    <div id="freq-card" class="hidden rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-5 sm:p-6 space-y-3 shadow-sm">
+    <div id="freq-card" class="hidden rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-5 sm:p-6 space-y-3 shadow-sm">
       <div class="flex items-center justify-between border-b border-[color:var(--border)] pb-2.5">
         <h3 class="text-sm font-bold text-[color:var(--fg)]">Repeated Items Frequency Audit</h3>
-        <span id="freq-count-badge" class="rounded-full bg-rose-500/10 px-2.5 py-0.5 text-[11px] font-bold text-rose-600 dark:text-rose-400 border border-rose-500/20">0 items</span>
+        <span id="freq-count-badge" class="rounded-none bg-rose-500/10 px-2.5 py-0.5 text-[11px] font-bold text-rose-600 dark:text-rose-400 border border-rose-500/20">0 items</span>
       </div>
       <div class="max-h-60 overflow-y-auto space-y-1.5 pr-1" id="freq-list"></div>
     </div>
@@ -317,7 +317,7 @@ const workedExampleData = {
       <h2 class="text-xl font-bold text-[color:var(--fg)]">Frequently Asked Questions</h2>
       <div class="space-y-3">
         {schemaFaq.map((faq) => (
-          <details class="group rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
+          <details class="group rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
             <summary class="cursor-pointer list-none font-semibold text-sm sm:text-base text-[color:var(--fg)] flex items-center justify-between gap-4">
               <span>{faq.question}</span>
               <span class="text-xs text-[color:var(--muted)] group-open:rotate-180 transition-transform">▼</span>
@@ -470,9 +470,9 @@ const workedExampleData = {
           duplicateEntries.sort((a, b) => b[1] - a[1]);
           freqCountBadge.textContent = `${duplicateEntries.length} unique repeats`;
           freqList.innerHTML = duplicateEntries.map(([key, count]) => `
-            <div class="flex items-center justify-between py-1.5 px-3 rounded-xl bg-[color:var(--surface-strong)] text-xs border border-[color:var(--border)]">
+            <div class="flex items-center justify-between py-1.5 px-3 rounded-none bg-[color:var(--surface-strong)] text-xs border border-[color:var(--border)]">
               <span class="font-mono text-[color:var(--fg)] truncate max-w-[80%]">${escapeHtml(key)}</span>
-              <span class="rounded-full bg-rose-500/10 px-2 py-0.5 text-[11px] font-bold text-rose-600 dark:text-rose-400 font-mono">${count}x</span>
+              <span class="rounded-none bg-rose-500/10 px-2 py-0.5 text-[11px] font-bold text-rose-600 dark:text-rose-400 font-mono">${count}x</span>
             </div>
           `).join('');
           freqCard.classList.remove('hidden');

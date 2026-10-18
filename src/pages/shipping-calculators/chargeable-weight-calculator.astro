@@ -96,7 +96,7 @@ const schemaGraph = [
 
 
     <div
-      class="rounded-[2.5rem] border border-[color:var(--border)] bg-[color:var(--surface-strong)] p-6 shadow-[var(--shadow)] sm:p-10"
+      class="space-y-8"
       data-chargeable-app
     >
       <div class="grid gap-8 lg:grid-cols-[1.15fr_0.85fr]">
@@ -110,7 +110,7 @@ const schemaGraph = [
 
           <div class="space-y-1.5">
             <label for="freight-mode" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Transport Mode</label>
-            <select id="freight-mode" class="w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-sm font-semibold text-[color:var(--fg)] outline-none" data-freight-mode>
+            <select id="freight-mode" class="w-full rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-sm font-semibold text-[color:var(--fg)] outline-none" data-freight-mode>
               <option value="air_6000" selected>Standard Air Freight (1:6000 / Divisor 6000)</option>
               <option value="express_5000">Express Courier (DHL/FedEx/UPS 1:5000)</option>
               <option value="sea_lcl">Sea Freight LCL (1 CBM = 1,000 kg)</option>
@@ -120,42 +120,42 @@ const schemaGraph = [
           <div class="grid grid-cols-2 gap-3">
             <div>
               <label for="act-gross-wt" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Actual Gross Weight (kg)</label>
-              <input id="act-gross-wt" type="number" min="0" step="any" class="mt-1 w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none" data-act-gross-wt placeholder="e.g. 85" />
+              <input id="act-gross-wt" type="number" min="0" step="any" class="mt-1 w-full rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none" data-act-gross-wt placeholder="e.g. 85" />
             </div>
             <div>
               <label for="pkg-qty" class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Quantity of Cartons</label>
-              <input id="pkg-qty" type="number" min="1" step="1" class="mt-1 w-full rounded-2xl border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none" data-pkg-qty placeholder="e.g. 4" />
+              <input id="pkg-qty" type="number" min="1" step="1" class="mt-1 w-full rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-4 py-3 text-base font-semibold text-[color:var(--fg)] outline-none" data-pkg-qty placeholder="e.g. 4" />
             </div>
           </div>
 
           <div class="grid grid-cols-3 gap-3">
             <div>
               <label for="c-l" class="block text-xs font-medium text-[color:var(--muted)]">Length (cm)</label>
-              <input id="c-l" type="number" min="0" step="any" class="mt-1 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-c-l placeholder="e.g. 65" />
+              <input id="c-l" type="number" min="0" step="any" class="mt-1 w-full rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-c-l placeholder="e.g. 65" />
             </div>
             <div>
               <label for="c-w" class="block text-xs font-medium text-[color:var(--muted)]">Width (cm)</label>
-              <input id="c-w" type="number" min="0" step="any" class="mt-1 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-c-w placeholder="e.g. 50" />
+              <input id="c-w" type="number" min="0" step="any" class="mt-1 w-full rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-c-w placeholder="e.g. 50" />
             </div>
             <div>
               <label for="c-h" class="block text-xs font-medium text-[color:var(--muted)]">Height (cm)</label>
-              <input id="c-h" type="number" min="0" step="any" class="mt-1 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-c-h placeholder="e.g. 45" />
+              <input id="c-h" type="number" min="0" step="any" class="mt-1 w-full rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-c-h placeholder="e.g. 45" />
             </div>
           </div>
 
           <div class="space-y-1.5 pt-1">
             <label for="freight-rate" class="block text-xs font-medium text-[color:var(--muted)]">Freight Rate ($ / kg or $ / CBM Optional)</label>
-            <input id="freight-rate" type="number" min="0" step="0.5" class="w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-freight-rate placeholder="e.g. 4.80" />
+            <input id="freight-rate" type="number" min="0" step="0.5" class="w-full rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-2 text-xs font-semibold text-[color:var(--fg)] outline-none" data-freight-rate placeholder="e.g. 4.80" />
           </div>
         </form>
 
-        <div class="flex flex-col justify-between space-y-6 rounded-3xl border border-[color:var(--accent)]/30 bg-gradient-to-br from-[color:var(--accent-soft)] via-[color:var(--surface)] to-transparent p-6 sm:p-8 shadow-sm">
+        <div class="space-y-6">
           <div class="space-y-5">
             <div class="flex items-center justify-between">
               <span class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Chargeable Weight</span>
               <button
                 type="button"
-                class="inline-flex items-center gap-1.5 rounded-xl border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1.5 text-xs font-bold text-[color:var(--fg)] hover:bg-[color:var(--surface-strong)] transition cursor-pointer"
+                class="inline-flex items-center gap-1.5 rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-1.5 text-xs font-bold text-[color:var(--fg)] hover:bg-[color:var(--surface-strong)] transition cursor-pointer"
                 data-copy-btn
               >
                 <Icon name="copy" class="w-3.5 h-3.5" />
@@ -163,7 +163,7 @@ const schemaGraph = [
               </button>
             </div>
 
-            <div class="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 text-center">
+            <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-6 text-center">
               <p class="text-xs font-semibold text-[color:var(--muted)]">Billable Chargeable Weight</p>
               <p class="mt-1 text-5xl font-black tracking-tight text-[color:var(--fg)]" data-res-chargeable>
                 0.00 kg
@@ -173,7 +173,7 @@ const schemaGraph = [
               </p>
             </div>
 
-            <div class="space-y-2 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-xs">
+            <div class="space-y-2 rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-4 text-xs">
               <div class="flex justify-between">
                 <span class="text-[color:var(--muted)]">Total Cargo Volume:</span>
                 <span class="font-bold text-[color:var(--fg)]" data-cargo-vol>0.0000 CBM (0.00 CFT)</span>
@@ -203,16 +203,16 @@ const schemaGraph = [
     </header>
 
     <!-- Mathematical Formula & Industry Rules -->
-    <section class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 sm:p-8 space-y-4">
+    <section class="space-y-4 border-t border-[color:var(--border)] pt-8">
       <div>
         <p class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Logistics Mathematics</p>
         <h2 class="text-xl font-bold text-[color:var(--fg)]">How Chargeable Freight Weight Is Determined</h2>
       </div>
 
       <div class="grid gap-4 sm:grid-cols-2 text-xs sm:text-sm">
-        <div class="rounded-2xl bg-[color:var(--bg)] p-4 border border-[color:var(--border)] space-y-2">
+        <div class="rounded-none bg-[color:var(--bg)] p-4 border border-[color:var(--border)] space-y-2">
           <p class="font-bold text-[color:var(--fg)]">1. The Rule of Chargeable Weight</p>
-          <div class="rounded-xl bg-[color:var(--surface)] p-3 font-mono text-xs text-[color:var(--fg)] overflow-x-auto">
+          <div class="rounded-none bg-[color:var(--surface)] p-3 font-mono text-xs text-[color:var(--fg)] overflow-x-auto">
             Chargeable Weight = max(Actual Gross Scale Weight, Volumetric Weight)
           </div>
           <p class="text-xs text-[color:var(--muted)]">
@@ -220,9 +220,9 @@ const schemaGraph = [
           </p>
         </div>
 
-        <div class="rounded-2xl bg-[color:var(--bg)] p-4 border border-[color:var(--border)] space-y-2">
+        <div class="rounded-none bg-[color:var(--bg)] p-4 border border-[color:var(--border)] space-y-2">
           <p class="font-bold text-[color:var(--fg)]">2. Mode Conversion Divisors</p>
-          <div class="rounded-xl bg-[color:var(--surface)] p-3 font-mono text-xs text-[color:var(--fg)] overflow-x-auto">
+          <div class="rounded-none bg-[color:var(--surface)] p-3 font-mono text-xs text-[color:var(--fg)] overflow-x-auto">
             Air = cm³ ÷ 6,000 | Courier = cm³ ÷ 5,000 | Ocean LCL = 1 CBM : 1,000 kg
           </div>
           <p class="text-xs text-[color:var(--muted)]">
@@ -233,26 +233,26 @@ const schemaGraph = [
     </section>
 
     <!-- Step-by-Step Worked Example -->
-    <section class="rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 sm:p-8 space-y-4">
+    <section class="space-y-4 border-t border-[color:var(--border)] pt-8">
       <div>
         <p class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Step-By-Step Walkthrough</p>
         <h2 class="text-xl font-bold text-[color:var(--fg)] flex items-center gap-2"><Icon name="document" class="w-4 h-4 text-[color:var(--accent)]" /><span>Worked Example: 4 Air Freight Cartons (85 kg Gross @ $4.80/kg)</span></h2>
       </div>
 
       <div class="grid gap-4 sm:grid-cols-3 text-xs sm:text-sm">
-        <div class="rounded-2xl bg-[color:var(--bg)] p-4 border border-[color:var(--border)] space-y-1.5">
+        <div class="rounded-none bg-[color:var(--bg)] p-4 border border-[color:var(--border)] space-y-1.5">
           <p class="font-bold text-[color:var(--fg)]">1. Volume &amp; Density</p>
           <p class="text-[color:var(--muted)]">Per carton: 65 × 50 × 45 cm.</p>
           <p class="text-[color:var(--muted)]">CBM = (65 × 50 × 45 ÷ 1,000,000) × 4 = <strong>0.5850 CBM</strong>.</p>
           <p class="text-[color:var(--muted)]">Actual Gross Scale Weight = <strong>85.00 kg</strong>.</p>
         </div>
-        <div class="rounded-2xl bg-[color:var(--bg)] p-4 border border-[color:var(--border)] space-y-1.5">
+        <div class="rounded-none bg-[color:var(--bg)] p-4 border border-[color:var(--border)] space-y-1.5">
           <p class="font-bold text-[color:var(--fg)]">2. Volumetric Weight</p>
           <p class="text-[color:var(--muted)]">Standard Air Divisor: 6,000.</p>
           <p class="text-[color:var(--muted)]">Vol Wt = (146,250 cm³ ÷ 6,000) × 4.</p>
           <p class="text-[color:var(--muted)]">Vol Wt = 24.375 × 4 = <strong>97.50 kg</strong>.</p>
         </div>
-        <div class="rounded-2xl bg-[color:var(--bg)] p-4 border border-[color:var(--border)] space-y-1.5">
+        <div class="rounded-none bg-[color:var(--bg)] p-4 border border-[color:var(--border)] space-y-1.5">
           <p class="font-bold text-[color:var(--fg)]">3. Invoiced Billing</p>
           <p class="text-[color:var(--muted)]">Volumetric (97.50 kg) &gt; Scale (85 kg).</p>
           <p class="text-[color:var(--muted)]">Chargeable Weight = <strong>97.50 kg</strong>.</p>
@@ -269,7 +269,7 @@ const schemaGraph = [
       <h2 class="text-xl font-bold text-[color:var(--fg)]">Frequently Asked Questions</h2>
       <div class="space-y-3">
         {faqs.map((faq) => (
-          <details class="group rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
+          <details class="group rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-4 sm:p-5">
             <summary class="cursor-pointer list-none font-semibold text-sm sm:text-base text-[color:var(--fg)] flex items-center justify-between gap-4">
               <span>{faq.question}</span>
               <span class="text-xs text-[color:var(--muted)] group-open:rotate-180 transition-transform">▼</span>
@@ -352,7 +352,7 @@ const schemaGraph = [
             outReason.className = 'mt-2 text-xs font-medium text-red-500';
           } else {
             outReason.textContent = `Actual gross scale weight (${gross.toFixed(2)} kg) exceeds volumetric weight (${volKg.toFixed(2)} kg).`;
-            outReason.className = 'mt-2 text-xs font-medium text-cyan-600 dark:text-cyan-400';
+            outReason.className = 'mt-2 text-xs font-medium text-[color:var(--accent)]';
           }
         }
       }
