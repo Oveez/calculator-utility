@@ -5,8 +5,6 @@ import MobileSearchModal from '../components/MobileSearchModal.astro';
 import Analytics from '../components/Analytics.astro';
 import CookieConsent from '../components/CookieConsent.astro';
 import Footer from '../components/Footer.astro';
-import AdsterraResponsiveBanner from '../components/ads/AdsterraResponsiveBanner.astro';
-import AdsterraNativeAd from '../components/ads/AdsterraNativeAd.astro';
 import '../styles/global.css';
 import { siteName, siteTagline, siteUrl, withBasePath } from '../utils/site';
 
@@ -138,9 +136,7 @@ const websiteSchema = {
       id="content"
       class={`relative z-0 flex-1 mx-auto w-full max-w-6xl px-3 sm:px-6 lg:px-8 pb-10 ${heroLayout ? 'pt-0' : 'py-5 sm:py-8'}`}
     >
-      {showAds && <AdsterraResponsiveBanner class="mb-6" />}
       <slot />
-      {showAds && <AdsterraNativeAd class="mt-10" />}
     </main>
 
     <!-- Clean, High-Contrast SaaS Dark Footer -->

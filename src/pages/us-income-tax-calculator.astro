@@ -1,6 +1,5 @@
 ---
 import SiteLayout from '../layouts/SiteLayout.astro';
-import AdsterraDisplayAd from '../components/AdsterraDisplayAd.astro';
 import UsTaxCalculatorApp from '../components/tax/UsTaxCalculatorApp.astro';
 import TaxFaqSection from '../components/tax/TaxFaqSection.astro';
 import CountryTaxSelector from '../components/tax/CountryTaxSelector.astro';
@@ -24,9 +23,8 @@ const defaultYear = profile.years[profile.defaultTaxYear];
 
 
     <!-- Flagship Interactive Calculator App and desktop-only sidebar ad -->
-    <div class="grid gap-8 xl:grid-cols-[minmax(0,1fr)_160px] xl:items-start">
+    <div class="grid gap-8">
       <UsTaxCalculatorApp profile={profile} />
-      <AdsterraDisplayAd format="skyscraper" />
     </div>
 
     <!-- Description Section -->
