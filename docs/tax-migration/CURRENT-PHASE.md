@@ -5,6 +5,12 @@
 ## Objective
 Finalize comprehensive end-to-end verification across all 24 country engines, validate AGPL-3.0 open-source licensing compliance and source-code access obligations, establish reproducible deployment manifests across serverless container runtimes (Cloud Run, Fly.io, Render), and provide production sign-off.
 
+## Maintenance Update (2026-10-24)
+- Removed remaining frontend ad script tags from:
+  - `/home/runner/work/calculator-utility/calculator-utility/src/layouts/SiteLayout.astro`
+  - `/home/runner/work/calculator-utility/calculator-utility/src/pages/pdf-tools/pdf-editor.astro`
+- Confirmed no ad network script injection remains in active source layouts/pages.
+
 ## Completed Milestones
 - [x] **Phase A:** Complete 24-Country Architecture, Call Path & File Inventory
 - [x] **Phase B0:** Independent Reproduction of Critical Architecture Findings (Dual-Engine Divergence & Tautological Tests)
@@ -163,5 +169,4 @@ Finalize comprehensive end-to-end verification across all 24 country engines, va
 ## Project Status
 **ALL PHASES COMPLETE (PHASES 1–9 SIGNED OFF) — FULL PRODUCTION READY.**
 The PolicyEngine US calculation engine (`policyengine-us==2.44.0`) is fully integrated into ToolCastle, preserving 100% UI fidelity, existing routing, dark mode, responsive styling, and zero-downtime statutory fallback. All 24 countries verified with 0.00 divergence.
-
 
