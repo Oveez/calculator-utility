@@ -1,0 +1,75 @@
+---
+interface Props {
+  class?: string;
+}
+
+const { class: className = '' } = Astro.props as Props;
+---
+
+<aside
+  class={`adsterra-responsive-slot mx-auto max-w-full overflow-hidden ${className}`}
+  aria-label="Advertisement"
+>
+  <span class="adsterra-label">Advertisement</span>
+  <div class="adsterra-frame">
+    <!-- Desktop: 728x90 Leaderboard -->
+    <iframe
+      class="hidden md:block mx-auto"
+      srcdoc={`<!DOCTYPE html><html><head><style>body{margin:0;padding:0;overflow:hidden;display:flex;justify-content:center;align-items:center;background:transparent;}</style></head><body><script>atOptions = {'key' : '128ec5e03e4921d4d2751a9cc07d2808','format' : 'iframe','height' : 90,'width' : 728,'params' : {}};</script><script src="https://www.highrevenueformat.com/128ec5e03e4921d4d2751a9cc07d2808/invoke.js"></script></body></html>`}
+      width="728"
+      height="90"
+      style="border:none;overflow:hidden;max-width:100%;"
+      scrolling="no"
+      loading="lazy"
+      title="Advertisement"
+    ></iframe>
+
+    <!-- Mobile: 320x50 Banner -->
+    <iframe
+      class="block md:hidden mx-auto"
+      srcdoc={`<!DOCTYPE html><html><head><style>body{margin:0;padding:0;overflow:hidden;display:flex;justify-content:center;align-items:center;background:transparent;}</style></head><body><script>atOptions = {'key' : '7972ace1d0daa4818b81871a83db36a8','format' : 'iframe','height' : 50,'width' : 320,'params' : {}};</script><script src="https://www.highrevenueformat.com/7972ace1d0daa4818b81871a83db36a8/invoke.js"></script></body></html>`}
+      width="320"
+      height="50"
+      style="border:none;overflow:hidden;max-width:100%;"
+      scrolling="no"
+      loading="lazy"
+      title="Advertisement"
+    ></iframe>
+  </div>
+</aside>
+
+<style>
+  .adsterra-responsive-slot {
+    box-sizing: border-box;
+    width: min(728px, 100%);
+    min-height: calc(50px + 1.25rem);
+    text-align: center;
+  }
+  @media (min-width: 768px) {
+    .adsterra-responsive-slot {
+      min-height: calc(90px + 1.25rem);
+    }
+  }
+  .adsterra-label {
+    display: block;
+    height: 1.25rem;
+    color: var(--muted);
+    font-size: 0.625rem;
+    line-height: 1.25rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .adsterra-frame {
+    width: 100%;
+    min-height: 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+  }
+  @media (min-width: 768px) {
+    .adsterra-frame {
+      min-height: 90px;
+    }
+  }
+</style>
