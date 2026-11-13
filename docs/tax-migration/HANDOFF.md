@@ -5,7 +5,20 @@
 **Current Objective:** Production Deployment to Cloudflare Pages & Ongoing Verification.
 
 ## State
-- **Last Completed Task:** Designed & deployed modern SaaS product landing page and dedicated `/all-tools/` directory:
+- **Last Completed Task:** Implemented comprehensive text selectability & copyability system across the entire application:
+  1. **User Problem Addressed:**
+     - Interactive UI controls (buttons, tabs, navigation bars, dropdown triggers, keypads, badges, labels) were unintentionally selectable on double-click or drag, creating confusing blue highlight artifacts.
+  2. **Selective Copyability Architecture (`src/styles/global.css`):**
+     - **Unselectable UI Chrome (`user-select: none`):**
+       - Buttons, CTAs, dropdown toggles, tabs (`.playground-tab`, `data-category-tab`), Keypad buttons (`.keypad-btn-*`), carousel controls (`[data-carousel-prev]`, `[data-carousel-next]`, `[data-carousel-track]`), navigation bars (`nav`, `header`, `footer nav`), badges, chips, form `<label>` elements, and icons.
+     - **100% Selectable & Copyable Content (`user-select: text !important`):**
+       - All blogs, articles, and educational guides (`article`, `.guide-content`, `.prose`, `.markdown-body`, KaTeX display formulas, tables in articles).
+       - All calculator outputs and numerical results (`[data-calculator-result]`, `[data-keypad-display]`, `[data-currency-result]`, `[data-loan-monthly]`, `[data-tax-net]`, `table`, `code`, `pre`).
+       - Form input fields and textareas (`input`, `textarea`, `select`, `[contenteditable]`).
+  3. **Verification:**
+     - 162/162 Vitest unit tests pass 100% green.
+     - Astro build cleanly compiles all 208 static routes in 8.21s with zero errors.
+- **Previous Completed Task:** Designed & deployed modern SaaS product landing page and dedicated `/all-tools/` directory:
   1. **User Problem Addressed:**
      - The site already has all tools organized in the header navigation menus, mobile drawer, and global search. Showing an endless directory of 186 tools on the homepage was redundant and resembled an obsolete 2008 link directory rather than a modern software platform (like GitHub, Raycast, or Linear).
   2. **Modern SaaS Landing Page Implemented (`src/pages/index.astro`):**

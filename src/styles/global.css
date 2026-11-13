@@ -109,6 +109,130 @@ button, a, input, select, textarea {
   touch-action: manipulation;
 }
 
+/* ==========================================================================
+   SELECTABILITY & TEXT COPYABILITY SYSTEM
+   - UI Chrome, Buttons, Navigation, Keypads, Badges, Tabs: unselectable (no accidental blue highlight)
+   - Blogs, Guides, Articles, Calculator Results, Outputs, Code, Inputs: fully selectable & copyable
+   ========================================================================== */
+
+/* 1. Interactive UI Chrome, Buttons, Controls & Navigation: Unselectable */
+button,
+[role="button"],
+[role="tab"],
+nav,
+header,
+label,
+summary,
+svg,
+img,
+.select-none,
+.no-select,
+.nav-trigger-btn,
+.nav-dropdown-item button,
+.playground-tab,
+.carousel-nav-btn,
+[data-category-tab],
+[data-carousel-prev],
+[data-carousel-next],
+[data-carousel-track],
+[data-tab-count],
+.badge,
+.chip,
+.keypad-btn,
+.keypad-btn-num,
+.keypad-btn-op,
+.keypad-btn-fn,
+.keypad-btn-equals,
+.keypad-btn-secondary,
+.ped-tool-btn,
+.ped-btn,
+.ped-nav-btn,
+[data-keypad-calc] button,
+[data-keypad-calc] [data-action],
+footer nav,
+footer .space-y-4,
+footer .space-y-3 {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+
+/* 2. Text Inputs & Editable Content: Always Selectable & Editable */
+input,
+textarea,
+select,
+[contenteditable="true"] {
+  -webkit-user-select: text !important;
+  -moz-user-select: text !important;
+  -ms-user-select: text !important;
+  user-select: text !important;
+}
+
+/* 3. Blogs, Educational Guides, Articles & Editorial Content: 100% Selectable & Copyable */
+article,
+article *,
+.guide-content,
+.guide-content *,
+.prose,
+.prose *,
+.markdown-body,
+.markdown-body *,
+.katex,
+.katex *,
+.katex-display,
+.katex-display *,
+main h1,
+main h2,
+main h3,
+main p,
+main li,
+main blockquote {
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+  user-select: text;
+}
+
+/* 4. Calculator Outputs, Numerical Results, Breakdown Tables & Code Snippets: 100% Selectable & Copyable */
+[data-calculator-result],
+[data-calculator-result] *,
+[data-result-value],
+[data-result-value] *,
+[data-keypad-display],
+[data-currency-result],
+[data-loan-monthly],
+[data-loan-interest],
+[data-loan-total],
+[data-tax-net],
+[data-tax-rate],
+[data-tax-total-deduction],
+.calculator-result,
+.calculator-result *,
+.result-card,
+.result-card *,
+.tax-breakdown-table,
+.tax-breakdown-table *,
+.output-value,
+.output-display,
+table,
+table td,
+table th,
+pre,
+pre *,
+code,
+code *,
+.copyable,
+.copyable *,
+.select-text,
+.select-text * {
+  -webkit-user-select: text !important;
+  -moz-user-select: text !important;
+  -ms-user-select: text !important;
+  user-select: text !important;
+}
+
 /* Form controls adopt theme typography and shrink gracefully */
 input, select, textarea {
   color: var(--fg);
