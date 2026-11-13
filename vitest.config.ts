@@ -7,7 +7,6 @@ export default defineConfig({
       'tests/all-countries-parity.test.ts',
       'tests/ads-txt.test.ts',
       'tests/us-adapter.test.ts',
-      'tests/adsterra.test.ts',
     ],
     globals: true,
   },

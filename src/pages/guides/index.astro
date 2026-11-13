@@ -1,0 +1,137 @@
+---
+import SiteLayout from '../../layouts/SiteLayout.astro';
+import { getCollection } from 'astro:content';
+import { withBasePath } from '../../utils/site';
+
+const guides = await getCollection('guides');
+
+// Sort by publishDate descending
+const sortedGuides = guides.sort((a, b) => {
+  return new Date(b.data.publishDate).getTime() - new Date(a.data.publishDate).getTime();
+});
+
+const pageTitle = "Guides & Methodologies · Authoritative Educational Resources";
+const pageDescription = "In-depth mathematical breakdowns, statutory tax mechanics, and formula analyses written by Tanvirul Islam (University of Dhaka) and reviewed with academic advisors.";
+---
+
+<SiteLayout
+  title={pageTitle}
+  description={pageDescription}
+  canonical="/guides/"
+  ogType="website"
+>
+  <div class="mx-auto max-w-5xl py-6 sm:py-10">
+    <!-- Breadcrumbs -->
+    <nav class="mb-6 flex items-center gap-2 text-xs font-medium text-slate-500" aria-label="Breadcrumb">
+      <a href={withBasePath('/')} class="hover:text-[color:var(--accent)] transition-colors">Home</a>
+      <span>/</span>
+      <span class="text-slate-800 font-semibold" aria-current="page">Guides</span>
+    </nav>
+
+    <!-- Header Section -->
+    <header class="border-b border-slate-200 pb-8 mb-10">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-50 border border-orange-200 text-xs font-semibold text-[color:var(--accent)] mb-4">
+        <span>ToolsCastle Editorial & Research</span>
+      </div>
+      <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-slate-900 mb-4">
+        Educational Guides & Mathematical Methodologies
+      </h1>
+      <p class="text-base sm:text-lg text-slate-600 max-w-3xl leading-relaxed">
+        Comprehensive companions to our browser-based utility calculators. Every guide provides verified statutory definitions, explicit step-by-step arithmetic formulas, worked numerical examples, and common financial misconceptions.
+      </p>
+
+      <div class="mt-6 flex flex-wrap items-center gap-4 text-xs text-slate-500">
+        <div class="flex items-center gap-1.5">
+          <span class="font-semibold text-slate-700">Author:</span>
+          <span>Tanvirul Islam (Dept. of MIS, University of Dhaka)</span>
+        </div>
+        <span>•</span>
+        <div class="flex items-center gap-1.5">
+          <span class="font-semibold text-slate-700">Reviewers:</span>
+          <span>Tax Specialist Faculty & CA Advisors</span>
+        </div>
+        <span>•</span>
+        <div class="flex items-center gap-1.5">
+          <span class="font-semibold text-slate-700">Standards:</span>
+          <span>IRS, HMRC, CRA, OECD & Statutory Cutoffs</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Guides Grid -->
+    <div class="grid gap-6 sm:grid-cols-2">
+      {sortedGuides.map((guide) => (
+        <article class="flex flex-col rounded-xl border border-slate-200 bg-white p-6 shadow-xs hover:border-[color:var(--accent)] hover:shadow-md transition-all duration-200">
+          {guide.data.coverImage && (
+            <a href={withBasePath(`/guides/${guide.id}/`)} class="mb-4 block overflow-hidden rounded-lg border border-slate-100 bg-slate-50 aspect-video">
+              <img
+                src={withBasePath(guide.data.coverImage)}
+                alt={guide.data.title}
+                class="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                loading="lazy"
+              />
+            </a>
+          )}
+
+          <div class="flex items-center justify-between gap-2 mb-3">
+            <span class="inline-block rounded-md bg-slate-100 px-2.5 py-1 text-xs font-semibold text-slate-700">
+              {guide.data.category}
+            </span>
+            <time datetime={guide.data.publishDate} class="text-xs text-slate-400">
+              {new Date(guide.data.publishDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+            </time>
+          </div>
+
+          <h2 class="text-lg font-bold text-slate-900 group-hover:text-[color:var(--accent)] transition-colors mb-2 leading-snug">
+            <a href={withBasePath(`/guides/${guide.id}/`)} class="hover:text-[color:var(--accent)]">
+              {guide.data.title}
+            </a>
+          </h2>
+
+          <p class="text-sm text-slate-600 leading-relaxed mb-6 flex-1">
+            {guide.data.description}
+          </p>
+
+          <div class="pt-4 border-t border-slate-100 flex items-center justify-between gap-3 text-xs">
+            <a
+              href={withBasePath(`/guides/${guide.id}/`)}
+              class="font-semibold text-[color:var(--accent)] hover:underline inline-flex items-center gap-1"
+            >
+              Read Full Guide
+              <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M5 12h14"></path>
+                <path d="M12 5l7 7-7 7"></path>
+              </svg>
+            </a>
+
+            {guide.data.relatedTool && (
+              <a
+                href={withBasePath(guide.data.relatedTool)}
+                class="text-slate-500 hover:text-slate-800 transition-colors bg-slate-50 border border-slate-200 px-2.5 py-1 rounded"
+                title={`Launch ${guide.data.relatedToolName}`}
+              >
+                Use Calculator ↗
+              </a>
+            )}
+          </div>
+        </article>
+      ))}
+    </div>
+
+    <!-- Methodology & E-E-A-T Assurance Banner -->
+    <div class="mt-14 rounded-2xl border border-slate-200 bg-slate-50/70 p-6 sm:p-8">
+      <h3 class="text-lg font-bold text-slate-900 mb-2">Our Editorial & Mathematical Standards</h3>
+      <p class="text-sm text-slate-600 leading-relaxed mb-4">
+        ToolsCastle operates under a four-stage mathematical verification protocol. We never publish speculative tax projections or approximate financial shortcuts without explicit statutory footnotes. All calculations are evaluated against verified government source tables (such as IRS Revenue Procedures and statutory tax acts) and verified through independent unit tests.
+      </p>
+      <div class="flex flex-wrap items-center gap-4 text-xs font-semibold">
+        <a href={withBasePath('/about/')} class="text-[color:var(--accent)] hover:underline">
+          Read full Editorial & Verification Methodology →
+        </a>
+        <a href="https://www.linkedin.com/in/tanveerovee" target="_blank" rel="noopener noreferrer" class="text-slate-600 hover:text-slate-900">
+          Connect with Tanvirul Islam on LinkedIn ↗
+        </a>
+      </div>
+    </div>
+  </div>
+</SiteLayout>

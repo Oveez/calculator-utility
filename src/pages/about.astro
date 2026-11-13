@@ -1,55 +1,277 @@
 ---
 import SiteLayout from '../layouts/SiteLayout.astro';
 import Icon from '../components/Icon.astro';
-import { siteName, withBasePath } from '../utils/site';
+import { siteName, toAbsoluteUrl, withBasePath } from '../utils/site';
+
+const pageTitle = `About Us · ${siteName}`;
+const pageDesc = `Learn about the developer, academic background in Management Information Systems, tax specialist mentorship, calculation methodology, and privacy-first architecture of ${siteName}.`;
+const canonicalUrl = toAbsoluteUrl('/about/');
+
+const breadcrumbItems = [
+  { label: 'Home', href: toAbsoluteUrl('/') },
+  { label: 'About' },
+];
+
+const schemaGraph = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'AboutPage',
+    name: pageTitle,
+    url: canonicalUrl,
+    description: pageDesc,
+    mainEntity: {
+      '@type': 'Person',
+      name: 'Tanvirul Islam',
+      jobTitle: 'Software Developer & Information Systems Researcher',
+      description: 'Solo developer of ToolsCastle, Department of Management Information Systems (MIS), University of Dhaka. Specializing in client-side architectures, automated calculations, and open financial utilities.',
+      affiliation: {
+        '@type': 'EducationalOrganization',
+        name: 'University of Dhaka',
+      },
+      sameAs: [
+        'https://www.linkedin.com/in/tanveerovee',
+        'https://github.com/Oveez',
+      ],
+    },
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: breadcrumbItems.map((item, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      name: item.label,
+      item: item.href,
+    })),
+  },
+];
 ---
 
-<SiteLayout title={`About · ${siteName}`} description="Learn about the design principles, zero-tracking privacy, and static architecture of Toolscastle.">
-  <article class="mx-auto max-w-4xl space-y-8 py-4">
+<SiteLayout title={pageTitle} description={pageDesc} canonical={canonicalUrl}>
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(schemaGraph)} />
+
+  <article class="mx-auto max-w-4xl space-y-10 py-2">
+    <!-- Breadcrumb -->
+    <nav class="site-tool-breadcrumb mb-2" aria-label="Breadcrumb">
+      <ol class="flex flex-wrap items-center gap-2 text-xs text-[color:var(--muted)]">
+        {breadcrumbItems.map((item, index) => (
+          <li class="flex items-center gap-2">
+            {index > 0 && <span aria-hidden="true" class="opacity-50">/</span>}
+            {item.href ? (
+              <a class="transition hover:text-[color:var(--fg)]" href={item.href}>
+                {item.label}
+              </a>
+            ) : (
+              <span aria-current="page" class="font-semibold text-[color:var(--fg)]">
+                {item.label}
+              </span>
+            )}
+          </li>
+        ))}
+      </ol>
+    </nav>
+
+    <!-- Page Header -->
     <header class="space-y-3">
-      <p class="text-xs font-bold uppercase tracking-wider text-[color:var(--accent)]">About The Project</p>
+      <p class="text-xs font-bold uppercase tracking-wider text-[color:var(--accent)]">About The Platform &amp; Mission</p>
       <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-[color:var(--fg)]">
-        Fast, Transparent, and Private Tools for Everyone.
+        Transparent, Auditable, and Privacy-First Utilities for Everyone.
       </h1>
       <p class="max-w-3xl text-sm sm:text-base leading-relaxed text-[color:var(--muted)]">
-        {siteName} is a zero-backend, statically built collection of everyday calculators and career builders designed for speed, clarity, and uncompromising privacy.
+        {siteName} is an independent, zero-server-storage collection of everyday mathematical engines, international income tax calculators, and digital tools designed for instant performance, complete mathematical clarity, and user privacy.
       </p>
     </header>
 
-    <section class="grid gap-6 sm:grid-cols-2">
-      <div class="space-y-1.5 border-l-2 border-[color:var(--border)] pl-4">
-        <h2 class="text-base font-bold text-[color:var(--fg)]">Instant Performance</h2>
-        <p class="text-xs sm:text-sm leading-relaxed text-[color:var(--muted)]">
-          Pre-rendered static HTML and CSS. Calculations execute directly in browser memory without API delays or network lag.
-        </p>
+    <!-- Creator & Academic Background (E-E-A-T Foundation) -->
+    <section class="space-y-4 border-t border-[color:var(--border)] pt-8">
+      <div>
+        <p class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">The Creator</p>
+        <h2 class="text-xl font-bold text-[color:var(--fg)]">Meet the Developer</h2>
       </div>
 
-      <div class="space-y-1.5 border-l-2 border-[color:var(--border)] pl-4">
-        <h2 class="text-base font-bold text-[color:var(--fg)]">100% Client-Side Privacy</h2>
-        <p class="text-xs sm:text-sm leading-relaxed text-[color:var(--muted)]">
-          Your numbers, financial records, and resume inputs never leave your device. We use zero tracking cookies and zero server logging.
-        </p>
-      </div>
+      <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-6 space-y-4">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[color:var(--border)] pb-4">
+          <div class="space-y-1">
+            <h3 class="text-lg font-bold text-[color:var(--fg)]">Tanvirul Islam</h3>
+            <p class="text-xs text-[color:var(--muted)]">
+              Department of Management Information Systems (MIS), University of Dhaka · Solo Developer &amp; Systems Builder
+            </p>
+          </div>
+          <div class="flex items-center gap-3">
+            <a
+              href="https://www.linkedin.com/in/tanveerovee"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="inline-flex items-center gap-1.5 rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-1.5 text-xs font-semibold text-[color:var(--fg)] transition hover:border-[color:var(--accent)] hover:text-[color:var(--accent)]"
+              aria-label="LinkedIn Profile"
+            >
+              <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
+              </svg>
+              <span>LinkedIn Profile</span>
+              <Icon name="arrow-right" class="w-3 h-3" />
+            </a>
+            <a
+              href="https://github.com/Oveez/calculator-utility"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="inline-flex items-center gap-1.5 rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] px-3 py-1.5 text-xs font-semibold text-[color:var(--fg)] transition hover:border-[color:var(--accent)] hover:text-[color:var(--accent)]"
+              aria-label="GitHub Repository"
+            >
+              <Icon name="github" class="w-3.5 h-3.5" />
+              <span>Source Code</span>
+            </a>
+          </div>
+        </div>
 
-      <div class="space-y-1.5 border-l-2 border-[color:var(--border)] pl-4">
-        <h2 class="text-base font-bold text-[color:var(--fg)]">Clear &amp; Auditable Math</h2>
         <p class="text-xs sm:text-sm leading-relaxed text-[color:var(--muted)]">
-          Every tool is accompanied by an in-depth breakdown of the underlying equations, worked numerical examples, and verified official government rates.
+          I started {siteName} as a solo developer from the <strong>Department of Management Information Systems (MIS) at the University of Dhaka</strong>. Throughout my academic study, I became fascinated by how computational systems can bridge complex governmental policies, financial formulas, and everyday productivity tools into intuitive, lightning-fast digital interfaces.
         </p>
-      </div>
-
-      <div class="space-y-1.5 border-l-2 border-[color:var(--border)] pl-4">
-        <h2 class="text-base font-bold text-[color:var(--fg)]">Universal Accessibility</h2>
         <p class="text-xs sm:text-sm leading-relaxed text-[color:var(--muted)]">
-          Engineered with responsive layouts, dark mode support, screen reader ARIA landmarks, and keyboard shortcuts for seamless operation on all devices.
+          Unlike conventional calculator websites filled with obtrusive ads, slow server roundtrips, and hidden data harvesting, I wanted to build an authentic public utility: a platform where every single calculation runs <strong>100% locally in your web browser</strong> with absolute transparency, mathematical rigor, and zero data leakage.
         </p>
       </div>
     </section>
 
-    <div class="flex justify-center pt-2">
+    <!-- Mentorship & Professional Collaboration -->
+    <section class="space-y-4 border-t border-[color:var(--border)] pt-8">
+      <div>
+        <p class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Domain Guidance &amp; Review</p>
+        <h2 class="text-xl font-bold text-[color:var(--fg)]">Academic Mentorship &amp; Expert Collaboration</h2>
+      </div>
+
+      <div class="grid gap-4 sm:grid-cols-2 text-xs sm:text-sm">
+        <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-5 space-y-2">
+          <div class="flex items-center gap-2 text-[color:var(--accent)]">
+            <Icon name="education" class="w-4 h-4" />
+            <h3 class="font-bold text-[color:var(--fg)]">Tax Specialist Teachers &amp; Professors</h3>
+          </div>
+          <p class="text-xs leading-relaxed text-[color:var(--muted)]">
+            Building multi-jurisdiction progressive tax engines requires deep domain comprehension. My university teachers and faculty members—who are seasoned academic specialists in public finance and taxation—provided invaluable mentorship on statutory allowances, progressive bracket step-ups, and social insurance contribution ceilings.
+          </p>
+        </div>
+
+        <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--surface)] p-5 space-y-2">
+          <div class="flex items-center gap-2 text-[color:var(--accent)]">
+            <Icon name="briefcase" class="w-4 h-4" />
+            <h3 class="font-bold text-[color:var(--fg)]">Chartered Accountant (CA) Peer Review</h3>
+          </div>
+          <p class="text-xs leading-relaxed text-[color:var(--muted)]">
+            Close friends and colleagues who are practicing <strong>Chartered Accountants (CAs)</strong> reviewed our calculation logic against real-world sample scenarios. Their feedback helped fine-tune complex payroll nuances, such as standard vs. itemized deduction trade-offs, universal social charges, and take-home paycheck frequencies.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Calculation & Verification Methodology -->
+    <section class="space-y-4 border-t border-[color:var(--border)] pt-8">
+      <div>
+        <p class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">How We Build Tools</p>
+        <h2 class="text-xl font-bold text-[color:var(--fg)]">Our 4-Stage Verification Methodology</h2>
+      </div>
+
+      <div class="space-y-3 text-xs sm:text-sm">
+        <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] p-4 space-y-1.5">
+          <div class="flex items-center gap-2 font-bold text-[color:var(--fg)]">
+            <span class="flex h-5 w-5 items-center justify-center rounded-none bg-[color:var(--surface-strong)] text-[10px] font-mono border border-[color:var(--border)]">1</span>
+            <span>Authoritative Statutory Sources</span>
+          </div>
+          <p class="text-xs leading-relaxed text-[color:var(--muted)] pl-7">
+            We never guess or approximate tax brackets. Every rule is pulled directly from official national revenue authorities and government gazettes (e.g., US Internal Revenue Service Rev. Proc. 2025-32, UK HM Revenue &amp; Customs PAYE, Canada Revenue Agency, Australian Taxation Office, German Bundeszentralamt für Steuern).
+          </p>
+        </div>
+
+        <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] p-4 space-y-1.5">
+          <div class="flex items-center gap-2 font-bold text-[color:var(--fg)]">
+            <span class="flex h-5 w-5 items-center justify-center rounded-none bg-[color:var(--surface-strong)] text-[10px] font-mono border border-[color:var(--border)]">2</span>
+            <span>AI-Assisted Simulation &amp; Algorithmic Audits</span>
+          </div>
+          <p class="text-xs leading-relaxed text-[color:var(--muted)] pl-7">
+            To eliminate mathematical edge-case errors, we utilize artificial intelligence models and formal simulation frameworks (such as open-source PolicyEngine models) to rigorously stress-test bracket transitions, phase-outs, and multi-tier income thresholds.
+          </p>
+        </div>
+
+        <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] p-4 space-y-1.5">
+          <div class="flex items-center gap-2 font-bold text-[color:var(--fg)]">
+            <span class="flex h-5 w-5 items-center justify-center rounded-none bg-[color:var(--surface-strong)] text-[10px] font-mono border border-[color:var(--border)]">3</span>
+            <span>Human Expert Cross-Verification</span>
+          </div>
+          <p class="text-xs leading-relaxed text-[color:var(--muted)] pl-7">
+            Calculated results are repeatedly verified by our academic mentors and Chartered Accountant peers against published government worked examples, sample paystubs, and official tax tables to guarantee fidelity.
+          </p>
+        </div>
+
+        <div class="rounded-none border border-[color:var(--border)] bg-[color:var(--bg)] p-4 space-y-1.5">
+          <div class="flex items-center gap-2 font-bold text-[color:var(--fg)]">
+            <span class="flex h-5 w-5 items-center justify-center rounded-none bg-[color:var(--surface-strong)] text-[10px] font-mono border border-[color:var(--border)]">4</span>
+            <span>Automated Unit Test Suites</span>
+          </div>
+          <p class="text-xs leading-relaxed text-[color:var(--muted)] pl-7">
+            Every calculation engine is backed by automated continuous integration unit tests (running under Vitest and Pytest). Every build verifies dozens of independent test scenarios to ensure zero regressions across our entire mathematical codebase.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Estimation Scope & Legal Disclosure -->
+    <section class="space-y-4 border-t border-[color:var(--border)] pt-8">
+      <div>
+        <p class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Transparency &amp; Limits</p>
+        <h2 class="text-xl font-bold text-[color:var(--fg)]">Estimation Purpose &amp; Professional Advice Disclaimer</h2>
+      </div>
+
+      <div class="rounded-none border-l-2 border-[color:var(--accent)] bg-[color:var(--surface)] p-4 text-xs sm:text-sm leading-relaxed text-[color:var(--muted)] space-y-2">
+        <p>
+          <strong class="text-[color:var(--fg)]">Estimation Purpose:</strong> All calculators, tax models, salary converters, and loan estimators across {siteName} are engineered strictly for <strong>educational, informational, and personal estimation purposes</strong>.
+        </p>
+        <p>
+          Real-world taxation and financial planning are inherently personalized and subject to local municipal surcharges, specific tax treaty status, business deductions, and evolving legislation. <strong>These tools do not constitute certified financial, accounting, legal, or tax advice.</strong> Users should always consult a licensed Certified Public Accountant (CPA), chartered tax practitioner, or their national revenue authority before making binding financial decisions or submitting tax returns.
+        </p>
+      </div>
+    </section>
+
+    <!-- Platform Design Pillars -->
+    <section class="space-y-4 border-t border-[color:var(--border)] pt-8">
+      <div>
+        <p class="text-xs font-bold uppercase tracking-wider text-[color:var(--muted)]">Core Architecture</p>
+        <h2 class="text-xl font-bold text-[color:var(--fg)]">Platform Design Principles</h2>
+      </div>
+
+      <div class="grid gap-6 sm:grid-cols-2">
+        <div class="space-y-1.5 border-l-2 border-[color:var(--border)] pl-4">
+          <h3 class="text-base font-bold text-[color:var(--fg)]">Instant Performance</h3>
+          <p class="text-xs sm:text-sm leading-relaxed text-[color:var(--muted)]">
+            Pre-rendered static HTML and CSS. Calculations execute directly in browser memory without API delays, cold starts, or unnecessary network roundtrips.
+          </p>
+        </div>
+
+        <div class="space-y-1.5 border-l-2 border-[color:var(--border)] pl-4">
+          <h3 class="text-base font-bold text-[color:var(--fg)]">100% Client-Side Privacy</h3>
+          <p class="text-xs sm:text-sm leading-relaxed text-[color:var(--muted)]">
+            Your numbers, financial records, resume entries, and personal parameters never leave your device. We use zero tracking cookies, zero session recording, and zero server logging.
+          </p>
+        </div>
+
+        <div class="space-y-1.5 border-l-2 border-[color:var(--border)] pl-4">
+          <h3 class="text-base font-bold text-[color:var(--fg)]">Clear &amp; Auditable Math</h3>
+          <p class="text-xs sm:text-sm leading-relaxed text-[color:var(--muted)]">
+            Every tool is accompanied by an in-depth breakdown of the underlying equations, worked numerical examples, and references to statutory government rates.
+          </p>
+        </div>
+
+        <div class="space-y-1.5 border-l-2 border-[color:var(--border)] pl-4">
+          <h3 class="text-base font-bold text-[color:var(--fg)]">Open-Source Community</h3>
+          <p class="text-xs sm:text-sm leading-relaxed text-[color:var(--muted)]">
+            We welcome constructive feedback, calculation discrepancy reports, and formula reviews from developers, educators, and financial professionals worldwide.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <div class="flex justify-center pt-4">
       <a
         href={withBasePath('/#calculators')}
-        class="inline-flex items-center gap-2 rounded-xl bg-[color:var(--accent)] px-6 py-2.5 text-xs font-bold text-white shadow-xs transition hover:opacity-90"
+        class="inline-flex items-center gap-2 rounded-none bg-[color:var(--accent)] px-6 py-2.5 text-xs font-bold text-white shadow-xs transition hover:opacity-90"
       >
         <span>Explore All Tools</span>
         <Icon name="arrow-right" class="w-3.5 h-3.5" />

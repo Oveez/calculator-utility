@@ -26,10 +26,61 @@ const { calculator } = Astro.props as Props;
 const relatedCalculators = calculator.relatedSlugs
   .map((slug) => calculators.find((entry) => entry.slug === slug))
   .filter((entry): entry is CalculatorConfig => Boolean(entry));
+
+const companionGuides: Record<string, { title: string; url: string; summary: string }> = {
+  'mortgage-calculator': {
+    title: 'How Mortgage Amortization Works: The Real Math Behind Extra Principal Payments',
+    url: '/guides/how-mortgage-amortization-works/',
+    summary: 'Learn the exact mathematical payment formula, why early payments are mostly interest, and how extra principal payments shave years off a 30-year loan.'
+  },
+  'compound-interest-calculator': {
+    title: 'The Mathematics of Compound Growth: How Time and Frequency Shape Wealth',
+    url: '/guides/mathematics-of-compound-interest/',
+    summary: 'Explore compounding formulas, APY vs APR, compounding frequencies, and the mathematical Rule of 72.'
+  },
+  'gpa-calculator': {
+    title: 'GPA vs. CGPA: How Weighted Credit Hours and Quality Points Determine Academic Standing',
+    url: '/guides/gpa-vs-cgpa-credit-hours/',
+    summary: 'Discover how quality points and credit hour weights mathematically determine semester GPA versus cumulative CGPA.'
+  },
+  'cgpa-calculator': {
+    title: 'GPA vs. CGPA: How Weighted Credit Hours and Quality Points Determine Academic Standing',
+    url: '/guides/gpa-vs-cgpa-credit-hours/',
+    summary: 'Discover how quality points and credit hour weights mathematically determine semester GPA versus cumulative CGPA.'
+  },
+  'salary-calculator': {
+    title: 'Gross Pay vs. Net Pay: Understanding Payroll Taxes, FICA, and Take-Home Salary',
+    url: '/guides/gross-pay-vs-net-pay/',
+    summary: 'Learn how gross wages translate into take-home pay through FICA Social Security, Medicare, and statutory withholding rules.'
+  }
+};
+
+const guideMatch = companionGuides[calculator.slug];
 ---
 
 <CalculatorLayout calculator={calculator} breadcrumbs={getCalculatorBreadcrumbs(calculator)} canonical={getCalculatorPath(calculator.slug)}>
   <article class="space-y-10">
+    {guideMatch && (
+      <aside class="rounded-2xl border border-orange-200 bg-orange-50/60 p-5 shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div class="space-y-1">
+          <span class="inline-block rounded-md bg-[color:var(--accent)] px-2 py-0.5 text-[10px] font-bold text-white uppercase tracking-wider">
+            Editorial Guide &amp; Mathematical Breakdown
+          </span>
+          <h2 class="text-base sm:text-lg font-bold text-slate-900">
+            {guideMatch.title}
+          </h2>
+          <p class="text-xs text-slate-600 max-w-2xl leading-relaxed">
+            {guideMatch.summary}
+          </p>
+        </div>
+        <a
+          href={guideMatch.url}
+          class="shrink-0 rounded-xl bg-[color:var(--accent)] px-4 py-2.5 text-xs font-bold text-white shadow-xs hover:bg-[#d84315] transition-colors inline-flex items-center gap-1.5"
+        >
+          Read Full Guide →
+        </a>
+      </aside>
+    )}
     <section class="grid gap-8 lg:grid-cols-2">
       <div>
         <h2 class="text-xl sm:text-2xl font-bold tracking-tight text-[color:var(--fg)]">

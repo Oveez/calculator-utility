@@ -155,13 +155,14 @@ Finalize comprehensive end-to-end verification across all 24 country engines, va
 
 ## Test & Build Verification
 - **Test Suite Status:** 27/27 Vitest test suites pass (162/162 tests green, 0 failures) + 30/30 Python Pytest tests green (100% pass).
-- **Production Build:** 212/212 pages built cleanly in 40.44s (Astro v7.3.1).
+- **Production Build:** 207 static HTML pages built cleanly (Astro v7.4.11).
 - **SSR/Client Parity:** 0.00 discrepancy across all 24 countries.
 - **PolicyEngine API Status:** Healthy, engine pre-warmed, operational with 64KB body limits, 60 req/min rate limiting, and zero-PII logging.
 - **Authoritative Verification Cutoff:** October 1, 2026 verified across all datasets.
+- **Editorial Content & AdSense Readiness:** 10 comprehensive editorial guides (1,200–1,800 words each) live under `/guides/` with KaTeX math formulas, Schema.org `TechArticle` structured data, and bi-directional contextual tool links.
 
 ## Project Status
-**ALL PHASES COMPLETE (PHASES 1–9 SIGNED OFF) — FULL PRODUCTION READY.**
-The PolicyEngine US calculation engine (`policyengine-us==2.44.0`) is fully integrated into ToolCastle, preserving 100% UI fidelity, existing routing, dark mode, responsive styling, and zero-downtime statutory fallback. All 24 countries verified with 0.00 divergence.
+**ALL PHASES COMPLETE (PHASES 1–9 SIGNED OFF) — FULL PRODUCTION READY & ADSENSE OPTIMIZED.**
+The PolicyEngine US calculation engine (`policyengine-us==2.44.0`) is fully integrated into ToolCastle, preserving 100% UI fidelity, existing routing, dark mode, responsive styling, and zero-downtime statutory fallback. All 24 countries verified with 0.00 divergence. AdSense compliance upgraded with full author attribution (Tanvirul Islam, MIS Dept, University of Dhaka), 10 in-depth editorial guides, and purged third-party ad scripts.
 
 

@@ -88,6 +88,25 @@
   3. **PDF Editor Header Badge:** Removed the `100% Private — In-Browser` badge (`.ped-upload-badge`) from the upload header in `src/pages/pdf-tools/pdf-editor.astro`.
   4. **Mobile Drawer Footer:** Replaced `100% Client-Side Privacy` with clean `All rights reserved.` in `src/components/MobileDrawer.astro`.
   5. **Verification:** All 169 Vitest unit tests pass and all 196 static pages build with 0 errors in 36.43s.
+- **Editorial Content & Google AdSense Compliance Upgrade (2026-11-13):**
+  1. **Adsterra Purge & AdSense Compliance:** Completely removed all Adsterra scripts/ads. Excluded AdSense Auto Ads from the 404 error page per policy.
+  2. **E-E-A-T Authority Integration:** Updated About and Contact pages with developer identity (Tanvirul Islam, Department of Management Information Systems, University of Dhaka), LinkedIn credentials, faculty/CA peer review, and statutory verification methodology.
+  3. **10 Authoritative Companion Guides:** Added 10 comprehensive editorial guides in `src/content/guides/` (each 1,200–1,800 words with mathematical equations, statutory definitions, worked numerical proofs, FAQs, and author attribution):
+     - `progressive-tax-brackets-explained.md`
+     - `gross-pay-vs-net-pay.md`
+     - `standard-vs-itemized-deductions.md`
+     - `how-mortgage-amortization-works.md`
+     - `mathematics-of-compound-interest.md`
+     - `sales-commission-structures-guide.md`
+     - `vat-and-gst-explained.md`
+     - `gpa-vs-cgpa-credit-hours.md`
+     - `cbm-and-volumetric-weight-shipping.md`
+     - `in-browser-client-side-privacy.md`
+  4. **Guides Hub & Article Reader:** Created `src/pages/guides/index.astro` and `src/pages/guides/[...slug].astro` with KaTeX math rendering, Schema.org `TechArticle` structured data, author box, and interactive calculator callouts.
+  5. **Bidirectional Tool Cross-Linking:** Embedded companion guide cards across all matching calculators (`/us-income-tax-calculator/`, `/tax-calculators/salary-to-hourly/`, `/tax-calculators/vat-calculator/`, `/business-tools/commission-calculator/`, `/shipping-calculators/cbm-calculator/`, `/pdf-tools/pdf-editor/`, and all dynamic `/calculators/[slug]` pages).
+  6. **Sitemap & Navigation:** Added `/guides/` and all 10 article URLs to `public/sitemap.xml`, and linked Guides in `SiteHeader.astro`, `MobileDrawer.astro`, and `Footer.astro`.
+  7. **Infographic Illustrations Added:** Generated 10 bespoke 16:9 vector infographic illustrations stored in `public/images/guides/` matching the brand financial palette (deep slate navy, charcoal, and warm vibrant orange). Integrated into each guide article's header, structured data (`TechArticle.image`), and the `/guides/` hub thumbnail cards.
+  8. **Verification:** 162/162 unit tests passing (100% green); 207 static pages compiling cleanly with zero errors.
 
 
 

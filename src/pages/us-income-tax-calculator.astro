@@ -1,6 +1,5 @@
 ---
 import SiteLayout from '../layouts/SiteLayout.astro';
-import AdsterraDisplayAd from '../components/AdsterraDisplayAd.astro';
 import UsTaxCalculatorApp from '../components/tax/UsTaxCalculatorApp.astro';
 import TaxFaqSection from '../components/tax/TaxFaqSection.astro';
 import CountryTaxSelector from '../components/tax/CountryTaxSelector.astro';
@@ -23,10 +22,50 @@ const defaultYear = profile.years[profile.defaultTaxYear];
     </nav>
 
 
-    <!-- Flagship Interactive Calculator App and desktop-only sidebar ad -->
-    <div class="grid gap-8 xl:grid-cols-[minmax(0,1fr)_160px] xl:items-start">
-      <UsTaxCalculatorApp profile={profile} />
-      <AdsterraDisplayAd format="skyscraper" />
+    <!-- Flagship Interactive Calculator App -->
+    <UsTaxCalculatorApp profile={profile} />
+
+    <!-- Editorial Companion Guide Callouts (E-E-A-T & Deep Content) -->
+    <div class="grid gap-4 sm:grid-cols-2">
+      <aside class="rounded-2xl border border-orange-200 bg-orange-50/60 p-5 shadow-xs flex flex-col justify-between gap-4">
+        <div class="space-y-1">
+          <span class="inline-block rounded-md bg-[color:var(--accent)] px-2 py-0.5 text-[10px] font-bold text-white uppercase tracking-wider">
+            Editorial Guide #1
+          </span>
+          <h2 class="text-base font-bold text-slate-900">
+            Progressive Tax Brackets: Marginal vs. Effective Rates
+          </h2>
+          <p class="text-xs text-slate-600 leading-relaxed">
+            Why crossing into a higher tax bracket never reduces take-home pay, with piecewise IRS equations and 2026 single-filer schedules.
+          </p>
+        </div>
+        <a
+          href="/guides/progressive-tax-brackets-explained/"
+          class="inline-flex items-center justify-center rounded-xl bg-[color:var(--accent)] px-4 py-2 text-xs font-bold text-white shadow-xs hover:bg-[#d84315] transition-colors"
+        >
+          Read Bracket Guide →
+        </a>
+      </aside>
+
+      <aside class="rounded-2xl border border-orange-200 bg-orange-50/60 p-5 shadow-xs flex flex-col justify-between gap-4">
+        <div class="space-y-1">
+          <span class="inline-block rounded-md bg-[color:var(--accent)] px-2 py-0.5 text-[10px] font-bold text-white uppercase tracking-wider">
+            Editorial Guide #2
+          </span>
+          <h2 class="text-base font-bold text-slate-900">
+            Standard vs. Itemized Deductions: Which Lowers Tax More?
+          </h2>
+          <p class="text-xs text-slate-600 leading-relaxed">
+            Compare the $16,100 single standard deduction against Schedule A (SALT cap, mortgage interest, and medical expenses).
+          </p>
+        </div>
+        <a
+          href="/guides/standard-vs-itemized-deductions/"
+          class="inline-flex items-center justify-center rounded-xl bg-[color:var(--accent)] px-4 py-2 text-xs font-bold text-white shadow-xs hover:bg-[#d84315] transition-colors"
+        >
+          Read Deductions Guide →
+        </a>
+      </aside>
     </div>
 
     <!-- Description Section -->
