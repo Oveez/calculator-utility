@@ -17,8 +17,8 @@ Value-added tax (VAT) and goods and services tax (GST) are consumption taxes col
 
 The skill that matters most day to day is moving correctly between **net** (tax-exclusive) and **gross** (tax-inclusive) prices:
 
-- To **add** tax: multiply the net price by $(1 + r)$.
-- To **extract** tax from a gross price: divide by $(1 + r)$. Do not multiply by $(1 - r)$.
+- To **add** tax: multiply the net price by \((1 + r)\).
+- To **extract** tax from a gross price: divide by \((1 + r)\). Do not multiply by \((1 - r)\).
 
 On a £1,500 price including 20% UK VAT, the VAT is **£250**, not £300. Subtracting 20% of the gross overstates the tax and understates the net price.
 
@@ -38,7 +38,7 @@ On a £1,500 price including 20% UK VAT, the VAT is **£250**, not £300. Subtra
 
 ## The Exact Mathematical Formula & Step-by-Step Breakdown
 
-With net price $N$, gross price $G$, VAT amount $V$, and rate $r$:
+With net price \(N\), gross price \(G\), VAT amount \(V\), and rate \(r\):
 
 **Forward calculation (exclusive to inclusive):**
 
@@ -48,21 +48,21 @@ $$G = N \times (1 + r) \qquad V = N \times r$$
 
 $$N = \frac{G}{1 + r} \qquad V = G - \frac{G}{1+r} = G \times \frac{r}{1 + r}$$
 
-The fraction $\frac{r}{1+r}$ is the share of a gross price that is tax. At 20% it is $\frac{1}{6}$, at 19% it is $\frac{19}{119}$, at 21% it is $\frac{21}{121}$, and at 10% it is $\frac{1}{11}$.
+The fraction \(\frac{r}{1+r}\) is the share of a gross price that is tax. At 20% it is \(\frac{1}{6}\), at 19% it is \(\frac{19}{119}\), at 21% it is \(\frac{21}{121}\), and at 10% it is \(\frac{1}{11}\).
 
 **The common error.** Applying a flat percentage to a gross price:
 
-$$N_{\text{wrong}} = G \times (1 - r) \quad \Rightarrow \quad \text{VAT overstated by } G \times \frac{r^2}{1 + r}$$
+$$N\_{\text{wrong}} = G \times (1 - r) \quad \Rightarrow \quad \text{VAT overstated by } G \times \frac{r^2}{1 + r}$$
 
 **Net VAT payable** over a period:
 
-$$V_{\text{payable}} = V_{\text{out}} - V_{\text{in}}$$
+$$V\_{\text{payable}} = V\_{\text{out}} - V\_{\text{in}}$$
 
-**Reverse charge.** For a net purchase $N$ at the buyer's local rate $r$, with $d$ as the deductible share of input tax (between 0 and 1):
+**Reverse charge.** For a net purchase \(N\) at the buyer's local rate \(r\), with \(d\) as the deductible share of input tax (between 0 and 1):
 
-$$V_{\text{out}} = N \times r \qquad V_{\text{in}} = N \times r \times d \qquad \text{Net VAT cost} = N \times r \times (1 - d)$$
+$$V\_{\text{out}} = N \times r \qquad V\_{\text{in}} = N \times r \times d \qquad \text{Net VAT cost} = N \times r \times (1 - d)$$
 
-If the buyer can fully recover input tax ($d = 1$), the reverse charge costs nothing.
+If the buyer can fully recover input tax (\(d = 1\)), the reverse charge costs nothing.
 
 **Steps:** (1) identify the correct rate class and rate, (2) decide whether your starting price is net or gross, (3) apply the matching formula, (4) round the net price and derive VAT as the difference so totals reconcile.
 
@@ -72,27 +72,27 @@ If the buyer can fully recover input tax ($d = 1$), the reverse charge costs not
 
 **Adding VAT.** Net £1,250.00:
 
-$$V = £1{,}250 \times 0.20 = £250.00 \qquad G = £1{,}250 \times 1.20 = £1{,}500.00$$
+$$V = 1{,}250 \times 0.20 = 250.00 \quad (\text{GBP}) \qquad G = 1{,}250 \times 1.20 = 1{,}500.00 \quad (\text{GBP})$$
 
 **Extracting VAT.** Gross £1,500.00:
 
-$$N = \frac{£1{,}500}{1.20} = £1{,}250.00 \qquad V = £1{,}500 \times \frac{1}{6} = £250.00$$
+$$N = \frac{1{,}500}{1.20} = 1{,}250.00 \quad (\text{GBP}) \qquad V = 1{,}500 \times \frac{1}{6} = 250.00 \quad (\text{GBP})$$
 
-**The mistake.** $£1{,}500 \times 20\% = £300$ would give a net price of £1,200, which is £50 too low. The formula above gives the overstatement as $£1{,}500 \times \frac{0.04}{1.20} = £50$.
+**The mistake.** £1,500 × 20% = £300 would give an incorrect net price of £1,200 (which is £50 too low). The formula above gives the exact overstatement as: \(1{,}500 \times \frac{0.04}{1.20} = £50.00\).
 
 ### Example 2: Germany (EUR, 19%)
 
 **Extracting VAT.** Gross €2,380.00:
 
-$$N = \frac{€2{,}380}{1.19} = €2{,}000.00 \qquad V = €2{,}380 - €2{,}000 = €380.00$$
+$$N = \frac{2{,}380}{1.19} = 2{,}000.00 \quad (\text{EUR}) \qquad V = 2{,}380 - 2{,}000 = 380.00 \quad (\text{EUR})$$
 
-Check: $€2{,}380 \times \frac{19}{119} = €380.00$. The flat-percentage mistake gives $€2{,}380 \times 19\% = €452.20$, which overstates VAT by €72.20 and understates the net price (€1,927.80 instead of €2,000.00).
+Check: \(2{,}380 \times \frac{19}{119} = €380.00\). The flat-percentage mistake gives €2,380 × 19% = €452.20, which overstates VAT by €72.20 and understates the net price (€1,927.80 instead of €2,000.00).
 
 ### Example 3: Reverse charge (EUR)
 
 A German business buys €5,000 of consulting from a supplier in another EU country. Under the general B2B rule for services (Article 196 of the VAT Directive), the supplier invoices €5,000 with no VAT and marks the invoice as reverse charge. The German buyer self-assesses at 19%:
 
-$$V_{\text{out}} = €5{,}000 \times 0.19 = €950 \qquad V_{\text{in}} = €950 \ (\text{fully deductible})$$
+$$V_{\text{out}} = 5{,}000 \times 0.19 = 950 \quad (\text{EUR}) \qquad V_{\text{in}} = 950 \quad (\text{fully deductible})$$
 
 The buyer pays the supplier €5,000, reports €950 as output tax and €950 as input tax in the same return, and the net VAT effect is €0.
 
@@ -119,7 +119,7 @@ Rates change, so confirm the current rate with the relevant tax authority before
 
 ## Common Mistakes & Misconceptions
 
-**1. Subtracting a flat percentage from a gross price.** This is the most common error and it understates the net price. Always divide by $(1 + r)$.
+**1. Subtracting a flat percentage from a gross price.** This is the most common error and it understates the net price. Always divide by \((1 + r)\).
 
 **2. Using the wrong rate class.** A reduced-rated, zero-rated, or exempt supply is not taxed like a standard-rated one. Treating zero-rated sales as exempt can cost you the right to recover input tax.
 
@@ -134,7 +134,7 @@ Rates change, so confirm the current rate with the relevant tax authority before
 ## Frequently Asked Questions
 
 **How do I calculate VAT from a VAT-inclusive price?**
-Divide the gross price by $(1 + r)$ to get the net price, then subtract the net price from the gross. Or multiply the gross by $\frac{r}{1+r}$. At 20%, VAT is one-sixth of the gross price.
+Divide the gross price by \((1 + r)\) to get the net price, then subtract the net price from the gross. Or multiply the gross by \(\frac{r}{1+r}\). At 20%, VAT is one-sixth of the gross price.
 
 **What is the difference between VAT and GST?**
 The mechanism is the same: tax on supplies, with credit for tax paid on purchases. The name differs by country. The UK and EU say VAT, while Australia, Canada, New Zealand, and Singapore say GST.

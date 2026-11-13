@@ -41,27 +41,27 @@ Other countries follow the same gross-to-net structure. HMRC administers PAYE an
 
 ## The Exact Mathematical Formula & Step-by-Step Breakdown
 
-Let $G$ be gross pay, $S_{125}$ the Section 125 deductions, $K$ the traditional 401(k) deferral, and $D$ the standard deduction. The wages used for each tax are:
+Let \(G\) be gross pay, \(S_{125}\) the Section 125 deductions, \(K\) the traditional 401(k) deferral, and \(D\) the standard deduction. The wages used for each tax are:
 
-$$W_{\text{FICA}} = G - S_{125} \qquad W_{\text{FIT}} = G - S_{125} - K$$
+$$W\_{\text{FICA}} = G - S\_{125} \qquad W\_{\text{FIT}} = G - S\_{125} - K$$
 
 The FICA taxes are:
 
-$$T_{SS} = 0.062 \times \min\bigl(W_{\text{FICA}},\ \$184{,}500\bigr)$$
+$$T\_{SS} = 0.062 \times \min\bigl(W\_{\text{FICA}},\; 184{,}500\bigr)$$
 
-$$T_{Med} = 0.0145 \times W_{\text{FICA}}$$
+$$T\_{Med} = 0.0145 \times W\_{\text{FICA}}$$
 
-$$T_{AMT} = 0.009 \times \max\bigl(0,\ W_{\text{FICA}} - \$200{,}000\bigr)$$
+$$T\_{AMT} = 0.009 \times \max\bigl(0,\; W\_{\text{FICA}} - 200{,}000\bigr)$$
 
-Federal income tax applies the progressive bracket function to taxable income: $T_{FIT} = f(W_{\text{FIT}} - D)$. Net pay is then:
+Federal income tax applies the progressive bracket function to taxable income: \(T_{FIT} = f(W_{\text{FIT}} - D)\). Net pay is then:
 
-$$\text{Net} = G - K - S_{125} - T_{FIT} - T_{SS} - T_{Med} - T_{AMT} - T_{state}$$
+$$\text{Net} = G - K - S\_{125} - T\_{FIT} - T\_{SS} - T\_{Med} - T\_{AMT} - T\_{state}$$
 
-To convert to other pay frequencies, divide by the number of periods $n$ (26 bi-weekly, 24 semi-monthly, 12 monthly), or divide by annual hours for an hourly rate:
+To convert to other pay frequencies, divide by the number of periods \(n\) (26 bi-weekly, 24 semi-monthly, 12 monthly), or divide by annual hours for an hourly rate:
 
 $$\text{Hourly} = \frac{\text{Annual amount}}{h \times 52}, \quad h = 40 \Rightarrow 2{,}080 \text{ hours}$$
 
-The most Social Security tax any employee pays in 2026 is $0.062 \times \$184{,}500 = \$11{,}439$.
+The most Social Security tax any employee pays in 2026 is \(0.062 \times 184{,}500 = \$11{,}439\).
 
 **Steps:** (1) subtract Section 125 items to get FICA wages, (2) subtract the 401(k) as well to get income tax wages, (3) compute FICA, (4) compute federal and state income tax, (5) subtract everything from gross.
 
@@ -86,27 +86,27 @@ State income tax is mandatory in most states, and the rules and rates vary widel
 
 **Step 1: Wage bases.**
 
-$$S_{125} = \$2{,}400 + \$1{,}200 = \$3{,}600 \qquad W_{\text{FICA}} = \$72{,}000 - \$3{,}600 = \$68{,}400$$
+$$S_{125} = 2{,}400 + 1{,}200 = 3{,}600 \qquad W_{\text{FICA}} = 72{,}000 - 3{,}600 = 68{,}400$$
 
-$$W_{\text{FIT}} = \$68{,}400 - \$4{,}320 = \$64{,}080$$
+$$W_{\text{FIT}} = 68{,}400 - 4{,}320 = 64{,}080$$
 
 **Step 2: FICA.**
 
-$$T_{SS} = 0.062 \times \$68{,}400 = \$4{,}240.80 \qquad T_{Med} = 0.0145 \times \$68{,}400 = \$991.80$$
+$$T_{SS} = 0.062 \times 68{,}400 = 4{,}240.80 \qquad T_{Med} = 0.0145 \times 68{,}400 = 991.80$$
 
 Total FICA is \$5,232.60. Wages are far below \$184,500, so the cap does not apply, and below \$200,000, so no Additional Medicare Tax applies.
 
 **Step 3: Federal income tax** (2026 single brackets, as covered in our guide to progressive tax brackets).
 
-$$x = \$64{,}080 - \$16{,}100 = \$47{,}980$$
+$$x = 64{,}080 - 16{,}100 = 47{,}980 \quad \text{(taxable income)}$$
 
-$$T_{FIT} = 0.10 \times \$12{,}400 + 0.12 \times (\$47{,}980 - \$12{,}400) = \$1{,}240 + \$4{,}269.60 = \$5{,}509.60$$
+$$T_{FIT} = 0.10 \times 12{,}400 + 0.12 \times (47{,}980 - 12{,}400) = 1{,}240 + 4{,}269.60 = 5{,}509.60 \quad \text{(USD)}$$
 
-**Step 4: State tax.** $0.04 \times \$64{,}080 = \$2{,}563.20$
+**Step 4: State tax.** \(0.04 \times 64{,}080 = \$2{,}563.20\)
 
 **Step 5: Net pay.**
 
-$$\text{Net} = \$72{,}000 - \$4{,}320 - \$3{,}600 - \$5{,}232.60 - \$5{,}509.60 - \$2{,}563.20 = \$50{,}774.60$$
+$$\text{Net} = 72{,}000 - 4{,}320 - 3{,}600 - 5{,}232.60 - 5{,}509.60 - 2{,}563.20 = 50{,}774.60 \quad \text{(USD)}$$
 
 That is 70.5% of gross. Total deductions are \$21,225.40, of which \$7,920 is voluntary and builds retirement or health savings.
 

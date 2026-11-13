@@ -27,7 +27,7 @@ Key takeaways:
 
 **Amortization.** Repaying a loan through scheduled payments that each cover the interest accrued since the last payment plus a portion of principal. An **amortization schedule** is the month-by-month table of that split.
 
-**Principal ($P$).** The amount borrowed. **Periodic rate ($r$).** The annual interest rate divided by 12, expressed as a decimal. **Term ($n$).** The number of monthly payments, which is years multiplied by 12.
+**Principal (\(P\)).** The amount borrowed. **Periodic rate (\(r\)).** The annual interest rate divided by 12, expressed as a decimal. **Term (\(n\)).** The number of monthly payments, which is years multiplied by 12.
 
 **Regulatory framework.** In the United States, mortgage disclosures fall under the Truth in Lending Act, implemented by Regulation Z and administered by the Consumer Financial Protection Bureau (CFPB). Lenders must disclose the payment amount, the annual percentage rate (APR), and the total interest percentage on the Loan Estimate and Closing Disclosure.
 
@@ -43,17 +43,17 @@ The fixed monthly payment is:
 
 $$M = P \times \frac{r(1+r)^n}{(1+r)^n - 1}$$
 
-Each month follows a simple recurrence, where $B_{k-1}$ is the balance before payment $k$:
+Each month follows a simple recurrence, where \(B_{k-1}\) is the balance before payment \(k\):
 
-$$I_k = r \times B_{k-1} \qquad \text{Principal}_k = M - I_k \qquad B_k = B_{k-1} - (M - I_k)$$
+$$I\_k = r \times B\_{k-1} \qquad \text{Principal}\_k = M - I\_k \qquad B\_k = B\_{k-1} - (M - I\_k)$$
 
-The balance after $k$ payments also has a closed form:
+The balance after \(k\) payments also has a closed form:
 
 $$B_k = P(1+r)^k - M \times \frac{(1+r)^k - 1}{r}$$
 
 ### Why Early Payments Are Mostly Interest
 
-Because $M$ is fixed and $I_k = r \times B_{k-1}$, the principal portion starts small. Each payment shrinks the balance slightly, which shrinks next month's interest, which leaves slightly more for principal. The principal portion grows by exactly the monthly rate each period:
+Because \(M\) is fixed and \(I_k = r \times B_{k-1}\), the principal portion starts small. Each payment shrinks the balance slightly, which shrinks next month's interest, which leaves slightly more for principal. The principal portion grows by exactly the monthly rate each period:
 
 $$\text{Principal}_{k+1} = \text{Principal}_k \times (1+r)$$
 
@@ -61,27 +61,27 @@ This is geometric growth at a low rate, so it takes decades for principal to ove
 
 ### Payoff Time With an Extra Payment
 
-If you add a fixed extra amount $x$ each month, the number of payments needed becomes:
+If you add a fixed extra amount \(x\) each month, the number of payments needed becomes:
 
 $$n' = \frac{\ln\left(\dfrac{M + x}{M + x - rP}\right)}{\ln(1+r)}$$
 
-**Steps:** (1) convert the annual rate to a monthly rate, (2) compute $M$, (3) generate the schedule with the interest-then-principal recurrence, (4) rerun it with the larger payment to compare.
+**Steps:** (1) convert the annual rate to a monthly rate, (2) compute \(M\), (3) generate the schedule with the interest-then-principal recurrence, (4) rerun it with the larger payment to compare.
 
 ## Comprehensive Real-World Worked Numerical Example
 
-**Loan:** $P = \$350{,}000$, annual rate 6.5%, 30 years.
+**Loan:** \(P = \$350{,}000\), annual rate 6.5%, 30 years.
 
 **Step 1: Inputs.**
 
-$$r = \frac{0.065}{12} = 0.0054167 \qquad n = 30 \times 12 = 360$$
+$$r = \frac{0.065}{12} \approx 0.0054167 \qquad n = 30 \times 12 = 360$$
 
-**Step 2: Payment.** With $(1+r)^{360} \approx 6.99180$:
+**Step 2: Payment.** With \((1+r)^{360} \approx 6.99180\):
 
-$$M = \$350{,}000 \times \frac{0.0054167 \times 6.99180}{6.99180 - 1} = \$350{,}000 \times 0.0063207 \approx \$2{,}212.24$$
+$$M = 350{,}000 \times \frac{0.0054167 \times 6.99180}{6.99180 - 1} = 350{,}000 \times 0.0063207 \approx 2{,}212.24 \quad \text{(USD/month)}$$
 
 **Step 3: The first payment.**
 
-$$I_1 = 0.0054167 \times \$350{,}000 = \$1{,}895.83 \qquad \text{Principal}_1 = \$2{,}212.24 - \$1{,}895.83 = \$316.41$$
+$$I_1 = 0.0054167 \times 350{,}000 = 1{,}895.83 \qquad \text{Principal}_1 = 2{,}212.24 - 1{,}895.83 = 316.41 \quad \text{(USD)}$$
 
 Interest takes **85.7%** of the first payment. After five years the borrower has paid \$132,734.40 but reduced the balance by only \$22,361.74, or 6.4% of the loan.
 

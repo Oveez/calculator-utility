@@ -5,18 +5,19 @@
 **Current Objective:** Production Deployment to Cloudflare Pages & Ongoing Verification.
 
 ## State
-- **Last Completed Task:** Investigated Cloudflare Pages build failure following commit `80c5a59`:
+- **Last Completed Task:** Repaired LaTeX rendering across all 10 educational guide articles and reader template:
   1. **Root Cause Analysis:**
-     - In commit `80c5a59`, `package.json` had bumped `astro` from `^7.3.1` to `^7.4.11`, which regenerated `package-lock.json` with 1,186 lines changed.
-     - On Cloudflare Pages, the build failed due to dependency divergence and version mismatch with the cached runner environment.
+     - KaTeX auto-render was configured with `{left: '$', right: '$'}` for inline math, which mistakenly matched ordinary currency mentions (e.g., "$16,100 ... $85,000") in financial texts, converting entire prose paragraphs into broken LaTeX.
+     - Markdown parsing converted subscripts (`_k`) into `<em>k</em>` tags and unescaped `\$` into raw `$`, causing KaTeX parse errors (`Can't use function '$' in math mode`).
+     - Occurrences of `$\$` in shortcut check lines compiled into `$$`, flipping math delimiters across entire articles.
   2. **Remediation & Fixes Implemented:**
-     - Reverted `package.json` dependency back to `"astro": "^7.3.1"`.
-     - Restored the verified, synchronized `package-lock.json` matching commit `b0f64a2`.
-     - Verified clean `npm ci` executes with code 0.
-     - Verified all 27 Vitest test suites pass (162/162 unit tests green).
-     - Verified static production build (`npm run build`) compiles all 207 pages in 9.47s with zero errors.
-  3. **Verification & Deployment:**
-     - Ready to commit and push to `origin/main` for immediate Cloudflare Pages automatic redeployment.
+     - Updated `src/pages/guides/[...slug].astro` auto-render delimiters to `{left: '$$', right: '$$'}` and `\(` / `\)`, removing single `$` delimiter.
+     - Added pre-sanitization in `runKaTeX()` to restore underscores from markdown italics, decode HTML entities (`&amp;`, `&lt;`, `&gt;`), and normalize smart quotes within display math blocks.
+     - Cleaned all 10 guides (`src/content/guides/`) to use standard LaTeX numerical values, escaped subscripts (`\_`), and moved currency units to text labels.
+     - Replaced broken `\begin{aligned}` blocks with clear calculation tables and individual display equations.
+  3. **Verification:**
+     - 162/162 Vitest unit tests passing across all 27 suites.
+     - 207/207 pages built cleanly in 6.30s. All math blocks verified in compiled HTML.
 
 ## Active Context & Key Findings
 - **Tax Data Cutoff:** October 1, 2026 verified across all datasets.

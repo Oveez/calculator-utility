@@ -33,17 +33,17 @@ In this guide's example, a rep with a \$3,000 monthly base, a \$40,000 quota, an
 
 ## The Exact Mathematical Formula & Step-by-Step Breakdown
 
-**Flat commission**, with sales $S$ and rate $r$:
+**Flat commission**, with sales \(S\) and rate \(r\):
 
 $$C = r \times S$$
 
-**Base plus commission**, with base $B$:
+**Base plus commission**, with base \(B\):
 
 $$\text{Pay} = B + r \times S$$
 
-**Graduated tiers.** With quota $Q$, breakpoints $T_0 = 0 < T_1 = Q < T_2 = 1.25Q$, and rates $r_1, r_2, r_3$:
+**Graduated tiers.** With quota \(Q\), breakpoints \(T_0 = 0 < T_1 = Q < T_2 = 1.25Q\), and rates \(r_1, r_2, r_3\):
 
-$$C = \sum_{j=1}^{3} r_j \times \max\bigl(0,\; \min(S, T_j) - T_{j-1}\bigr), \qquad T_3 = \infty$$
+$$C = \sum_{j=1}^{3} r\_j \times \max\bigl(0,\; \min(S, T\_j) - T\_{j-1}\bigr), \qquad T\_3 = \infty$$
 
 This is the same piecewise structure used in progressive income tax brackets.
 
@@ -51,9 +51,9 @@ This is the same piecewise structure used in progressive income tax brackets.
 
 $$\text{ECR} = \frac{C}{S} \qquad \text{Total pay rate} = \frac{B + C}{S}$$
 
-The effective rate is the flat rate that would pay the same commission on the same sales. It also equals a weighted average of the tier rates, where $w_j$ is the share of sales falling in tier $j$:
+The effective rate is the flat rate that would pay the same commission on the same sales. It also equals a weighted average of the tier rates, where \(w_j\) is the share of sales falling in tier \(j\):
 
-$$\text{ECR} = \sum_{j} w_j \, r_j, \qquad w_j = \frac{\text{sales in tier } j}{S}$$
+$$\text{ECR} = \sum_{j} w\_j \, r\_j, \qquad w\_j = \frac{\text{sales in tier } j}{S}$$
 
 The **marginal rate** is the rate of the tier your last dollar falls in. It is always at least as high as the effective rate.
 
@@ -84,17 +84,17 @@ The **marginal rate** is the rate of the tier your last dollar falls in. It is a
 
 **Step 2: Total commission.**
 
-$$C = 0.05 \times \$40{,}000 + 0.08 \times \$10{,}000 + 0.12 \times \$15{,}000 = \$2{,}000 + \$800 + \$1{,}800 = \$4{,}600$$
+$$C = 0.05 \times 40{,}000 + 0.08 \times 10{,}000 + 0.12 \times 15{,}000 = 2{,}000 + 800 + 1{,}800 = 4{,}600 \quad \text{(USD)}$$
 
 **Step 3: Effective commission rate.**
 
-$$\text{ECR} = \frac{\$4{,}600}{\$65{,}000} = 7.08\%$$
+$$\text{ECR} = \frac{4{,}600}{65{,}000} \approx 7.08\%$$
 
-The weighted-average check agrees: $0.6154 \times 5\% + 0.1538 \times 8\% + 0.2308 \times 12\% = 7.08\%$.
+The weighted-average check agrees: \(0.6154 \times 5\% + 0.1538 \times 8\% + 0.2308 \times 12\% = 7.08\%\).
 
 **Step 4: Total pay.**
 
-$$\text{Pay} = \$3{,}000 + \$4{,}600 = \$7{,}600 \qquad \text{Total pay rate} = \frac{\$7{,}600}{\$65{,}000} = 11.69\%$$
+$$\text{Pay} = 3{,}000 + 4{,}600 = 7{,}600 \quad (\text{USD}) \qquad \text{Total pay rate} = \frac{7{,}600}{65{,}000} \approx 11.69\%$$
 
 The rep's OTE at exactly 100% of quota is \$3,000 + \$2,000 = \$5,000 per month.
 

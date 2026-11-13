@@ -35,31 +35,31 @@ The mechanism has three steps: multiply each course's grade points by its credit
 
 ## The Exact Mathematical Formula & Step-by-Step Breakdown
 
-For one term with courses $k = 1, \dots, m$, grade points $g_k$ and credit hours $c_k$:
+For one term with courses \(k = 1, \dots, m\), grade points \(g_k\) and credit hours \(c_k\):
 
-$$\text{QP}_k = g_k \times c_k \qquad \text{GPA} = \frac{\sum_{k=1}^{m} g_k \, c_k}{\sum_{k=1}^{m} c_k} = \frac{\text{Total QP}}{\text{Total credits}}$$
+$$\text{QP}\_k = g\_k \times c\_k \qquad \text{GPA} = \frac{\sum_{k=1}^{m} g\_k \, c\_k}{\sum_{k=1}^{m} c\_k} = \frac{\text{Total QP}}{\text{Total credits}}$$
 
-Cumulative GPA sums over every term $s$:
+Cumulative GPA sums over every term \(s\):
 
-$$\text{CGPA} = \frac{\sum_{s} \text{QP}_s}{\sum_{s} C_s}$$
+$$\text{CGPA} = \frac{\sum_{s} \text{QP}\_s}{\sum_{s} C\_s}$$
 
 Equivalently, CGPA is a credit-weighted average of semester GPAs:
 
-$$\text{CGPA} = \sum_{s} \frac{C_s}{C_{\text{total}}} \times \text{GPA}_s$$
+$$\text{CGPA} = \sum_{s} \frac{C\_s}{C\_{\text{total}}} \times \text{GPA}\_s$$
 
 ### Why Credits Weight Courses Unequally
 
-Each course's weight is its share of total credits, $w_k = c_k / \sum c$. A grade change of $\Delta g$ in one course moves the GPA by:
+Each course's weight is its share of total credits, \(w_k = c_k / \sum c\). A grade change of \(\Delta g\) in one course moves the GPA by:
 
-$$\Delta \text{GPA} = \frac{c_k \times \Delta g}{\sum c}$$
+$$\Delta \text{GPA} = \frac{c\_k \times \Delta g}{\sum c}$$
 
 For the same grade change, the effect is proportional to credits. A 4-credit course has twice the leverage of a 2-credit course.
 
 ### Grade Needed to Reach a Target CGPA
 
-With prior quality points $\text{QP}_p$ over $C_p$ credits, and $C_n$ new credits, the semester GPA required to hit a target is:
+With prior quality points \(\text{QP}_p\) over \(C_p\) credits, and \(C_n\) new credits, the semester GPA required to hit a target is:
 
-$$\text{GPA}_{\text{needed}} = \frac{\text{Target} \times (C_p + C_n) - \text{QP}_p}{C_n}$$
+$$\text{GPA}\_{\text{needed}} = \frac{\text{Target} \times (C\_p + C\_n) - \text{QP}\_p}{C\_n}$$
 
 **Steps:** (1) convert each grade to points, (2) multiply by credits, (3) sum quality points and credits, (4) divide.
 
@@ -86,21 +86,21 @@ Some schools omit minus grades or add an A+ at 4.0. Use your own scale.
 
 **Semester GPA:**
 
-$$\text{GPA} = \frac{13.2 + 12.0 + 11.1 + 4.0 + 9.0}{4 + 3 + 3 + 2 + 3} = \frac{49.3}{15} = 3.29$$
+$$\text{GPA} = \frac{13.2 + 12.0 + 11.1 + 4.0 + 9.0}{4 + 3 + 3 + 2 + 3} = \frac{49.3}{15} \approx 3.29$$
 
-A plain average of the five grade points gives $\frac{16.0}{5} = 3.20$. The weighted result is higher because the highest grades fell in larger courses, which count more.
+A plain average of the five grade points gives \(\frac{16.0}{5} = 3.20\). The weighted result is higher because the highest grades fell in larger courses, which count more.
 
 **Credit leverage.** Raise the grade in any course by one full grade point (for example, B to A):
 
-$$\text{4-credit course: } \Delta\text{GPA} = \frac{4 \times 1.0}{15} = +0.267 \qquad \text{2-credit course: } \Delta\text{GPA} = \frac{2 \times 1.0}{15} = +0.133$$
+$$\text{4-credit course: } \Delta\text{GPA} = \frac{4 \times 1.0}{15} \approx +0.267 \qquad \text{2-credit course: } \Delta\text{GPA} = \frac{2 \times 1.0}{15} \approx +0.133$$
 
 Improving Calculus by one grade point is worth twice as much as improving Physics Lab by one grade point.
 
-**Adding the semester to a record.** Suppose the student already has **45 credits** at a **3.10 CGPA**, which is $45 \times 3.10 = 139.5$ quality points.
+**Adding the semester to a record.** Suppose the student already has **45 credits** at a **3.10 CGPA**, which is \(45 \times 3.10 = 139.5\) quality points.
 
-$$\text{CGPA} = \frac{139.5 + 49.3}{45 + 15} = \frac{188.8}{60} = 3.15$$
+$$\text{CGPA} = \frac{139.5 + 49.3}{45 + 15} = \frac{188.8}{60} \approx 3.15$$
 
-Averaging the two GPAs gives $\frac{3.10 + 3.29}{2} = 3.19$, which is wrong because it treats a 15-credit semester and a 45-credit history as equal.
+Averaging the two GPAs gives \(\frac{3.10 + 3.29}{2} = 3.195\), which is wrong because it treats a 15-credit semester and a 45-credit history as equal.
 
 **Target check.** To lift this record from 3.10 to 3.30 after one 15-credit semester:
 

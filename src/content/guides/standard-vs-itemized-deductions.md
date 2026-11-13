@@ -40,23 +40,23 @@ Other countries handle this differently. The UK gives every taxpayer a fixed per
 
 ## The Exact Mathematical Formula & Step-by-Step Breakdown
 
-Let $D$ be the standard deduction. Itemized deductions $I$ are the sum of four capped components:
+Let \(D\) be the standard deduction. Itemized deductions \(I\) are the sum of four capped components:
 
-$$M = \max\bigl(0,\; E_{med} - 0.075 \times \text{AGI}\bigr)$$
+$$M = \max\bigl(0,\; E\_{med} - 0.075 \times \text{AGI}\bigr)$$
 
-$$S = \min\bigl(T_{SALT},\; \text{Cap}\bigr), \quad \text{Cap} = \max\bigl(\$10{,}000,\; \$40{,}400 - 0.30 \times \max(0,\ \text{MAGI} - \$505{,}000)\bigr)$$
+$$S = \min\bigl(T\_{SALT},\; \text{Cap}\bigr), \quad \text{Cap} = \max\bigl(10{,}000,\; 40{,}400 - 0.30 \times \max(0,\ \text{MAGI} - 505{,}000)\bigr)$$
 
-$$C = \max\bigl(0,\; E_{char} - 0.005 \times \text{AGI}\bigr)$$
+$$C = \max\bigl(0,\; E\_{char} - 0.005 \times \text{AGI}\bigr)$$
 
 $$I = M + S + H + C$$
 
-Here $E_{med}$ is unreimbursed medical expense, $T_{SALT}$ is state and local tax paid, $E_{char}$ is charitable giving, and $H$ is qualifying mortgage interest.
+Here \(E_{med}\) is unreimbursed medical expense, \(T_{SALT}\) is state and local tax paid, \(E_{char}\) is charitable giving, and \(H\) is qualifying mortgage interest.
 
 **Decision rule:**
 
 $$\text{Itemize if } I > D \qquad \text{Standard if } I \le D$$
 
-**Tax benefit of itemizing**, when the change stays within one bracket, where $r$ is your marginal rate:
+**Tax benefit of itemizing**, when the change stays within one bracket, where \(r\) is your marginal rate:
 
 $$\Delta T \approx r \times (I - D)$$
 
@@ -64,9 +64,9 @@ $$\Delta T \approx r \times (I - D)$$
 
 $$H^{*} = D - (M + S + C)$$
 
-If your other deductions already total \$15,100 and you are single, mortgage interest above \$1,000 tips the decision, because $\$16{,}100 - \$15{,}100 = \$1{,}000$.
+If your other deductions already total \$15,100 and you are single, mortgage interest above \$1,000 tips the decision, because $16,100 − $15,100 = $1,000.
 
-**Steps:** (1) compute each component with its limit, (2) add them to get $I$, (3) compare with $D$, (4) multiply any excess by your marginal rate to estimate the saving.
+**Steps:** (1) compute each component with its limit, (2) add them to get \(I\), (3) compare with \(D\), (4) multiply any excess by your marginal rate to estimate the saving.
 
 ## Side-by-Side Comparison
 
@@ -87,19 +87,19 @@ If your other deductions already total \$15,100 and you are single, mortgage int
 
 **Step 1: Compute each component.**
 
-$$M = \max(0,\ \$10{,}500 - 0.075 \times \$120{,}000) = \$10{,}500 - \$9{,}000 = \$1{,}500$$
+$$M = \max(0,\; 10{,}500 - 0.075 \times 120{,}000) = 10{,}500 - 9{,}000 = 1{,}500$$
 
-$$S = \min(\$10{,}200,\ \$40{,}400) = \$10{,}200$$
+$$S = \min(10{,}200,\; 40{,}400) = 10{,}200$$
 
-$$C = \$4{,}000 - 0.005 \times \$120{,}000 = \$4{,}000 - \$600 = \$3{,}400$$
+$$C = 4{,}000 - 0.005 \times 120{,}000 = 4{,}000 - 600 = 3{,}400$$
 
-$$H = \$9{,}500$$
+$$H = 9{,}500$$
 
 **Step 2: Total itemized deductions.**
 
-$$I = \$1{,}500 + \$10{,}200 + \$9{,}500 + \$3{,}400 = \$24{,}600$$
+$$I = 1{,}500 + 10{,}200 + 9{,}500 + 3{,}400 = 24{,}600 \quad \text{(USD)}$$
 
-**Step 3: Compare.** $\$24{,}600 > \$16{,}100$, so itemizing wins by \$8,500.
+**Step 3: Compare.** $24,600 > $16,100, so itemizing wins by **$8,500**.
 
 **Step 4: Tax under each method** (2026 single brackets).
 
@@ -110,11 +110,11 @@ $$I = \$1{,}500 + \$10{,}200 + \$9{,}500 + \$3{,}400 = \$24{,}600$$
 | Taxable income | \$103,900 | \$95,400 |
 | Federal tax | \$17,570 | \$15,700 |
 
-The standard-method tax is $\$5{,}800 + 0.22 \times (\$103{,}900 - \$50{,}400) = \$17{,}570$. The itemized tax is $\$5{,}800 + 0.22 \times (\$95{,}400 - \$50{,}400) = \$15{,}700$. The saving is \$1,870, which matches $0.22 \times \$8{,}500$.
+The standard-method tax is $5,800 + 0.22 × ($103,900 − $50,400) = **$17,570**. The itemized tax is $5,800 + 0.22 × ($95,400 − $50,400) = **$15,700**. The tax saving is **$1,870**, which matches 0.22 × $8,500.
 
 **Contrast: the same filer as a renter.** With no mortgage interest and no property tax, only state income tax (\$5,200), the charitable amount (\$3,400), and the medical amount (\$1,500) remain:
 
-$$I = \$5{,}200 + \$3{,}400 + \$1{,}500 = \$10{,}100 < \$16{,}100$$
+$$I = 5{,}200 + 3{,}400 + 1{,}500 = 10{,}100 < 16{,}100 \quad \text{(USD)}$$
 
 The standard deduction wins by \$6,000. This filer would also claim the \$1,000 non-itemizer charitable deduction, giving taxable income of \$102,900 and tax of \$17,350.
 

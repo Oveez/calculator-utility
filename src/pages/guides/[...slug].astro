@@ -196,19 +196,47 @@ const articleSchema = {
 
   <!-- Auto-render KaTeX math scripts -->
   <script is:inline defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js" crossorigin="anonymous"></script>
-  <script is:inline defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js" crossorigin="anonymous"></script>
+  <script is:inline defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js" crossorigin="anonymous" id="katex-autorender-script"></script>
   <script is:inline>
-    document.addEventListener("DOMContentLoaded", function() {
-      if (window.renderMathInElement) {
-        window.renderMathInElement(document.getElementById('guide-article'), {
-          delimiters: [
-            {left: '$$', right: '$$', display: true},
-            {left: '$', right: '$', display: false}
-          ],
-          throwOnError: false
-        });
-      }
-    });
+    function runKaTeX() {
+      if (!window.renderMathInElement) return;
+      const article = document.getElementById('guide-article');
+      if (!article) return;
+
+      // Pre-sanitize any HTML entities or markdown-injected italics inside display math
+      const blocks = article.querySelectorAll('p, li, td');
+      const dbl = '$' + '$';
+      blocks.forEach(function(el) {
+        if (el.innerHTML.indexOf(dbl) !== -1) {
+          el.innerHTML = el.innerHTML.replace(/\$\$([\s\S]*?)\$\$/g, function(match, math) {
+            var clean = math
+              .replace(/<em>(.*?)<\/em>/g, '_$1')
+              .replace(/&amp;/g, '&')
+              .replace(/&lt;/g, '<')
+              .replace(/&gt;/g, '>')
+              .replace(/[’‘]/g, "'");
+            return dbl + clean + dbl;
+          });
+        }
+      });
+
+      window.renderMathInElement(article, {
+        delimiters: [
+          { left: dbl, right: dbl, display: true },
+          { left: '\\[', right: '\\]', display: true },
+          { left: '\\(', right: '\\)', display: false }
+        ],
+        ignoredTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+        throwOnError: false
+      });
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', runKaTeX);
+    } else {
+      runKaTeX();
+    }
+    window.addEventListener('load', runKaTeX);
   </script>
 
   <!-- Article JSON-LD Structured Data -->

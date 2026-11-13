@@ -42,31 +42,31 @@ Other countries use the same logic. HMRC in the United Kingdom taxes income in b
 
 ## The Exact Mathematical Formula & Step-by-Step Breakdown
 
-Let $G$ be gross income, $D$ the deduction, and $x$ taxable income:
+Let \(G\) be gross income, \(D\) the deduction, and \(x\) taxable income:
 
 $$x = \max(0,\; G - D)$$
 
-The tax function is piecewise linear. With bracket floors $b_0 = 0 < b_1 < \dots < b_6$ and rates $r_1, \dots, r_7$, tax on taxable income $x$ is:
+The tax function is piecewise linear. With bracket floors \(b_0 = 0 < b_1 < \dots < b_6\) and rates \(r_1, \dots, r_7\), tax on taxable income \(x\) is:
 
-$$T(x) = \sum_{i=1}^{7} r_i \cdot \max\bigl(0,\; \min(x,\, b_i) - b_{i-1}\bigr), \qquad b_7 = \infty$$
+$$T(x) = \sum_{i=1}^{7} r\_i \cdot \max\bigl(0,\; \min(x,\, b\_i) - b\_{i-1}\bigr), \qquad b\_7 = \infty$$
 
-Each term measures how much of your income sits inside bracket $i$, then multiplies it by that bracket's rate. If your income reaches bracket $k$, the formula collapses to a shortcut, which is how the IRS tax tables are built:
+Each term measures how much of your income sits inside bracket \(i\), then multiplies it by that bracket's rate. If your income reaches bracket \(k\), the formula collapses to a shortcut, which is how the IRS tax tables are built:
 
-$$T(x) = T(b_{k-1}) + r_k \,(x - b_{k-1})$$
+$$T(x) = T(b\_{k-1}) + r\_k \,(x - b\_{k-1})$$
 
 The two rates are then:
 
-$$\text{Marginal rate} = r_k \quad \text{where } b_{k-1} < x \le b_k$$
+$$\text{Marginal rate} = r\_k \quad \text{where } b\_{k-1} < x \le b\_k$$
 
 $$\text{Effective rate (on gross)} = \frac{T(x)}{G} \qquad \text{Effective rate (on taxable)} = \frac{T(x)}{x}$$
 
 **Step by step:**
 
-1. Subtract the deduction from gross income to get $x$.
-2. Find which bracket contains $x$.
+1. Subtract the deduction from gross income to get \(x\).
+2. Find which bracket contains \(x\).
 3. Tax each bracket's slice at its own rate, from the bottom up.
-4. Add the slices to get $T(x)$.
-5. Divide $T(x)$ by gross income for the effective rate.
+4. Add the slices to get \(T(x)\).
+5. Divide \(T(x)\) by gross income for the effective rate.
 
 ### 2026 Federal Brackets, Single Filers
 
@@ -88,27 +88,27 @@ The cumulative column is useful because it lets you skip the lower brackets. For
 
 **Step 1: Taxable income.**
 
-$$x = \$85{,}000 - \$16{,}100 = \$68{,}900$$
+$$x = 85{,}000 - 16{,}100 = 68{,}900 \quad \text{(taxable income)}$$
 
 **Step 2: Locate the bracket.** \$68,900 falls between \$50,401 and \$105,700, so the filer is in the 22% bracket.
 
 **Step 3: Tax each slice.**
 
-$$\begin{aligned}
-\text{10\% slice:} \quad & 0.10 \times \$12{,}400 = \$1{,}240 \\
-\text{12\% slice:} \quad & 0.12 \times (\$50{,}400 - \$12{,}400) = 0.12 \times \$38{,}000 = \$4{,}560 \\
-\text{22\% slice:} \quad & 0.22 \times (\$68{,}900 - \$50{,}400) = 0.22 \times \$18{,}500 = \$4{,}070
-\end{aligned}$$
+| Bracket Tier | Taxable Slice in Bracket | Rate | Calculation | Tax Assessed |
+|---|---|---|---|---|
+| **10% bracket** | \$0 – \$12,400 | 10% | `0.10 × $12,400` | **\$1,240.00** |
+| **12% bracket** | \$12,401 – \$50,400 | 12% | `0.12 × ($50,400 − $12,400)` | **\$4,560.00** |
+| **22% bracket** | \$50,401 – \$68,900 | 22% | `0.22 × ($68,900 − $50,400)` | **\$4,070.00** |
 
 **Step 4: Total tax.**
 
-$$T = \$1{,}240 + \$4{,}560 + \$4{,}070 = \$9{,}870$$
+$$T(68{,}900) = 1{,}240 + 4{,}560 + 4{,}070 = 9{,}870 \quad \text{(USD)}$$
 
-**Shortcut check:** $\$5{,}800 + 0.22 \times \$18{,}500 = \$9{,}870$. ✓
+**Shortcut check:** $5,800 + (0.22 × $18,500) = **$9,870**. ✓
 
 **Step 5: Effective rates.**
 
-$$\frac{\$9{,}870}{\$85{,}000} = 11.61\% \text{ (on gross)} \qquad \frac{\$9{,}870}{\$68{,}900} = 14.32\% \text{ (on taxable)}$$
+$$\text{Effective rate (on gross)} = \frac{9{,}870}{85{,}000} \approx 11.61\% \qquad \text{Effective rate (on taxable)} = \frac{9{,}870}{68{,}900} \approx 14.32\%$$
 
 Federal income tax therefore takes about 11.6 cents of every gross dollar, even though the marginal rate is 22%. Before payroll taxes, state tax, or credits, the filer keeps \$85,000 − \$9,870 = **\$75,130**.
 
@@ -116,13 +116,13 @@ Federal income tax therefore takes about 11.6 cents of every gross dollar, even 
 
 **Test 1: a raise within the same bracket.** Suppose a \$5,000 raise lifts gross pay to \$90,000.
 
-$$x = \$90{,}000 - \$16{,}100 = \$73{,}900$$
+$$x = 90{,}000 - 16{,}100 = 73{,}900$$
 
-$$T = \$5{,}800 + 0.22 \times (\$73{,}900 - \$50{,}400) = \$5{,}800 + \$5{,}170 = \$10{,}970$$
+$$T(73{,}900) = 5{,}800 + 0.22 \times (73{,}900 - 50{,}400) = 5{,}800 + 5{,}170 = 10{,}970 \quad \text{(USD)}$$
 
 Tax rises by \$1,100 (22% of \$5,000). Net pay rises by \$3,900.
 
-**Test 2: a raise that crosses a bracket threshold.** With the \$16,100 deduction, the 22% bracket begins at gross pay of \$66,500, because $\$50{,}400 + \$16{,}100 = \$66{,}500$.
+**Test 2: a raise that crosses a bracket threshold.** With the \$16,100 deduction, the 22% bracket begins at gross pay of \$66,500, because $50,400 + $16,100 = $66,500.
 
 | Gross income | Taxable income | Federal tax | Net after federal tax |
 |---|---|---|---|

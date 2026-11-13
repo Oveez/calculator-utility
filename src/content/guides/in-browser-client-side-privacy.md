@@ -48,11 +48,11 @@ A typical client-side PDF tool works in six steps:
 5. **Export.** The result is assembled as a `Blob` and offered as a local download through an object URL, with no server involved.
 6. **Cleanup.** The memory is released when references are dropped or the tab closes.
 
-For upload-based tools, transfer time is a simple function of file size $S$ in megabytes and upload speed $R$ in megabits per second:
+For upload-based tools, transfer time is a simple function of file size \(S\) in megabytes and upload speed \(R\) in megabits per second:
 
 $$t = \frac{8 \times S}{R}$$
 
-A 4.2 MB file on a 10 Mbps connection needs $\frac{8 \times 4.2}{10} = 3.36$ seconds to upload, before any server processing or download. A client-side tool needs none of it.
+A 4.2 MB file on a 10 Mbps connection needs \(\frac{8 \times 4.2}{10} = 3.36\text{ seconds}\) to upload, before any server processing or download. A client-side tool needs none of it.
 
 ## Worked Scenario: Editing a 4.2 MB Invoice PDF
 

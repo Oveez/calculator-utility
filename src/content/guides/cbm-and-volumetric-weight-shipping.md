@@ -45,11 +45,11 @@ A 60 × 45 × 40 cm carton weighing 8.5 kg is billed as **21.6 kg** by an expres
 
 **Cubic meters:**
 
-$$\text{CBM} = L_m \times W_m \times H_m = \frac{L_{cm} \times W_{cm} \times H_{cm}}{1{,}000{,}000}$$
+$$\text{CBM} = L\_m \times W\_m \times H\_m = \frac{L\_{cm} \times W\_{cm} \times H\_{cm}}{1{,}000{,}000}$$
 
 **Volumetric weight (air):**
 
-$$\text{Volumetric weight (kg)} = \frac{L_{cm} \times W_{cm} \times H_{cm}}{\text{divisor}}, \quad \text{divisor} = 5{,}000 \text{ or } 6{,}000$$
+$$\text{Volumetric weight (kg)} = \frac{L\_{cm} \times W\_{cm} \times H\_{cm}}{\text{divisor}}, \quad \text{divisor} = 5{,}000 \text{ or } 6{,}000$$
 
 The same result in terms of CBM:
 
@@ -67,7 +67,7 @@ $$\text{Revenue tons} = \max\left(\frac{\text{Gross weight (kg)}}{1{,}000},\ \te
 
 $$\rho^{*} = \frac{1{,}000{,}000}{\text{divisor}} \ \text{kg/m}^3 = 200 \ (5{,}000) \quad \text{or} \quad 166.67 \ (6{,}000)$$
 
-For ocean LCL, $\rho^{*} = 1{,}000$ kg/m³.
+For ocean LCL, \(\rho^{*} = 1{,}000\text{ kg/m}^3\).
 
 **Steps:** (1) measure the outer carton in cm, (2) compute volume in cm³, (3) divide by the carrier's divisor, (4) compare with gross weight, (5) bill the larger, after the carrier's rounding rule.
 
@@ -91,7 +91,7 @@ An e-commerce seller ships two cartons.
 
 $$\text{CBM} = 0.60 \times 0.45 \times 0.40 = 0.108 \qquad \text{Volumetric} = \frac{60 \times 45 \times 40}{5{,}000} = \frac{108{,}000}{5{,}000} = 21.6 \text{ kg}$$
 
-Because $21.6 > 8.5$, volumetric weight is chargeable. Many carriers round up to the next 0.5 kg, giving 22.0 kg.
+Because \(21.6 > 8.5\), volumetric weight is chargeable. Many carriers round up to the next 0.5 kg, giving 22.0 kg.
 
 **Box B, step by step:**
 
@@ -99,11 +99,11 @@ $$\text{Volumetric} = \frac{30 \times 25 \times 20}{5{,}000} = 3.0 \text{ kg} < 
 
 Gross weight is chargeable.
 
-**Illustrative cost.** At a hypothetical express rate of \$4.50 per kg, Box A costs $22.0 \times \$4.50 = \$99.00$, against \$38.25 if billed on its actual 8.5 kg. That is about 159% more. Box B costs $12.0 \times \$4.50 = \$54.00$.
+**Illustrative cost.** At a hypothetical express rate of $4.50 per kg, Box A costs 22.0 × $4.50 = **$99.00**, against $38.25 if billed on its actual 8.5 kg. That is about 159% more. Box B costs 12.0 × $4.50 = **$54.00**.
 
-**Ocean contrast.** Box B is heavy by air standards but light by ocean standards: 800 kg/m³ is below 1,000, so LCL bills it on volume. Only goods denser than 1,000 kg/m³, such as metal parts, are billed on weight in LCL. For 50 cartons like Box A, the cargo is $50 \times 0.108 = 5.4$ CBM and weighs 425 kg. At an illustrative \$70 per W/M, it is billed 5.4 revenue tons, or \$378.00.
+**Ocean contrast.** Box B is heavy by air standards but light by ocean standards: 800 kg/m³ is below 1,000, so LCL bills it on volume. Only goods denser than 1,000 kg/m³, such as metal parts, are billed on weight in LCL. For 50 cartons like Box A, the cargo is \(50 \times 0.108 = 5.4\text{ CBM}\) and weighs 425 kg. At an illustrative \$70 per W/M, it is billed 5.4 revenue tons, or \$378.00.
 
-**Right-sizing.** Repacking Box A into a 50 × 40 × 35 cm carton gives $\frac{70{,}000}{5{,}000} = 14.0$ kg, which cuts chargeable weight by 7.6 kg, or 35.2%.
+**Right-sizing.** Repacking Box A into a 50 × 40 × 35 cm carton gives \(\frac{70{,}000}{5{,}000} = 14.0\text{ kg}\), which cuts chargeable weight by 7.6 kg, or 35.2%.
 
 ## Comparing Conversion Standards
 

@@ -39,7 +39,7 @@ Investor-education sites such as the SEC's Investor.gov explain compounding in t
 
 $$I = P \times r \times t \qquad A = P(1 + rt)$$
 
-**Compound interest** for a lump sum, with $r$ as the annual rate and $n$ compounding periods per year:
+**Compound interest** for a lump sum, with \(r\) as the annual rate and \(n\) compounding periods per year:
 
 $$A = P\left(1 + \frac{r}{n}\right)^{nt}$$
 
@@ -47,7 +47,7 @@ $$A = P\left(1 + \frac{r}{n}\right)^{nt}$$
 
 $$\text{EAR} = \left(1 + \frac{r}{n}\right)^{n} - 1$$
 
-**Regular contributions.** Let $i = r/n$ be the periodic rate, $N = nt$ the number of periods, and PMT the deposit at the end of each period:
+**Regular contributions.** Let \(i = r/n\) be the periodic rate, \(N = nt\) the number of periods, and PMT the deposit at the end of each period:
 
 $$FV = PMT \times \frac{(1+i)^{N} - 1}{i}$$
 
@@ -69,7 +69,7 @@ $$A = P(1+i)^{N} + PMT \times \frac{(1+i)^{N} - 1}{i}$$
 | Monthly | \$18,193.97 | \$8,193.97 | 6.1678% |
 | Daily | \$18,220.29 | \$8,220.29 | 6.1831% |
 
-Moving from annual to daily compounding adds \$311.81 in 10 years. Compounding itself, against simple interest, adds \$1,908.48 even at the lowest frequency. As frequency increases, results approach the continuous limit $A = Pe^{rt}$, which gives \$18,221.19 here.
+Moving from annual to daily compounding adds \$311.81 in 10 years. Compounding itself, against simple interest, adds \$1,908.48 even at the lowest frequency. As frequency increases, results approach the continuous limit \(A = Pe^{rt}\), which gives \$18,221.19 here.
 
 ## The Rule of 72
 
@@ -90,21 +90,21 @@ $$t \approx \frac{72}{\text{rate in percent}}$$
 | 10% | 7.20 years | 7.27 years |
 | 12% | 6.00 years | 6.12 years |
 
-The estimate is most accurate near 8%. The rule also works in reverse. To double money in 9 years, you need about $72 \div 9 = 8\%$ per year.
+The estimate is most accurate near 8%. The rule also works in reverse. To double money in 9 years, you need about \(72 \div 9 = 8\%\) per year.
 
 ## Comprehensive Real-World Worked Numerical Example
 
-**Assumptions:** both investors retire at age 65, earn a constant 7% nominal annual return compounded monthly, and deposit at the end of each month. So $i = 0.07/12 = 0.0058333$.
+**Assumptions:** both investors retire at age 65, earn a constant 7% nominal annual return compounded monthly, and deposit at the end of each month. So \(i = 0.07/12 \approx 0.0058333\).
 
-**Early investor:** \$200 per month from age 22, which is 43 years or $N = 516$ deposits.
+**Early investor:** \$200 per month from age 22, which is 43 years or \(N = 516\) deposits.
 
-$$FV = \$200 \times \frac{(1.0058333)^{516} - 1}{0.0058333} = \$200 \times 3{,}276.13 = \$655{,}225.94$$
+$$FV = 200 \times \frac{(1.0058333)^{516} - 1}{0.0058333} = 200 \times 3{,}276.13 = 655{,}225.94 \quad \text{(USD)}$$
 
-Contributions total $\$200 \times 516 = \$103{,}200$, so growth is \$552,025.94, or 84.3% of the final balance.
+Contributions total $200 × 516 = **$103,200**, so growth is **$552,025.94**, or 84.3% of the final balance.
 
-**Late investor:** \$500 per month from age 35, which is 30 years or $N = 360$ deposits.
+**Late investor:** \$500 per month from age 35, which is 30 years or \(N = 360\) deposits.
 
-$$FV = \$500 \times \frac{(1.0058333)^{360} - 1}{0.0058333} = \$500 \times 1{,}219.97 = \$609{,}985.50$$
+$$FV = 500 \times \frac{(1.0058333)^{360} - 1}{0.0058333} = 500 \times 1{,}219.97 = 609{,}985.50 \quad \text{(USD)}$$
 
 Contributions total \$180,000, so growth is \$429,985.50, or 70.5% of the final balance.
 
