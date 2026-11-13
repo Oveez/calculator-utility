@@ -45,7 +45,7 @@ $$M = P \times \frac{r(1+r)^n}{(1+r)^n - 1}$$
 
 Each month follows a simple recurrence, where \(B_{k-1}\) is the balance before payment \(k\):
 
-$$I\_k = r \times B\_{k-1} \qquad \text{Principal}\_k = M - I\_k \qquad B\_k = B\_{k-1} - (M - I\_k)$$
+$$I_k = r \times B_{k-1} \qquad \text{Principal}_k = M - I_k \qquad B_k = B_{k-1} - (M - I_k)$$
 
 The balance after \(k\) payments also has a closed form:
 

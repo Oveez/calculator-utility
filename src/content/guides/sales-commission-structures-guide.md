@@ -43,7 +43,7 @@ $$\text{Pay} = B + r \times S$$
 
 **Graduated tiers.** With quota \(Q\), breakpoints \(T_0 = 0 < T_1 = Q < T_2 = 1.25Q\), and rates \(r_1, r_2, r_3\):
 
-$$C = \sum_{j=1}^{3} r\_j \times \max\bigl(0,\; \min(S, T\_j) - T\_{j-1}\bigr), \qquad T\_3 = \infty$$
+$$C = \sum_{j=1}^{3} r_j \times \max\bigl(0,\; \min(S, T_j) - T_{j-1}\bigr), \qquad T_3 = \infty$$
 
 This is the same piecewise structure used in progressive income tax brackets.
 
@@ -53,7 +53,7 @@ $$\text{ECR} = \frac{C}{S} \qquad \text{Total pay rate} = \frac{B + C}{S}$$
 
 The effective rate is the flat rate that would pay the same commission on the same sales. It also equals a weighted average of the tier rates, where \(w_j\) is the share of sales falling in tier \(j\):
 
-$$\text{ECR} = \sum_{j} w\_j \, r\_j, \qquad w\_j = \frac{\text{sales in tier } j}{S}$$
+$$\text{ECR} = \sum_{j} w_j \, r_j, \qquad w_j = \frac{\text{sales in tier } j}{S}$$
 
 The **marginal rate** is the rate of the tier your last dollar falls in. It is always at least as high as the effective rate.
 

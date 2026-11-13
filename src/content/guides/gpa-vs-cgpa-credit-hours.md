@@ -37,21 +37,21 @@ The mechanism has three steps: multiply each course's grade points by its credit
 
 For one term with courses \(k = 1, \dots, m\), grade points \(g_k\) and credit hours \(c_k\):
 
-$$\text{QP}\_k = g\_k \times c\_k \qquad \text{GPA} = \frac{\sum_{k=1}^{m} g\_k \, c\_k}{\sum_{k=1}^{m} c\_k} = \frac{\text{Total QP}}{\text{Total credits}}$$
+$$\text{QP}_k = g_k \times c_k \qquad \text{GPA} = \frac{\sum_{k=1}^{m} g_k \, c_k}{\sum_{k=1}^{m} c_k} = \frac{\text{Total QP}}{\text{Total credits}}$$
 
 Cumulative GPA sums over every term \(s\):
 
-$$\text{CGPA} = \frac{\sum_{s} \text{QP}\_s}{\sum_{s} C\_s}$$
+$$\text{CGPA} = \frac{\sum_{s} \text{QP}_s}{\sum_{s} C_s}$$
 
 Equivalently, CGPA is a credit-weighted average of semester GPAs:
 
-$$\text{CGPA} = \sum_{s} \frac{C\_s}{C\_{\text{total}}} \times \text{GPA}\_s$$
+$$\text{CGPA} = \sum_{s} \frac{C_s}{C_{\text{total}}} \times \text{GPA}_s$$
 
 ### Why Credits Weight Courses Unequally
 
 Each course's weight is its share of total credits, \(w_k = c_k / \sum c\). A grade change of \(\Delta g\) in one course moves the GPA by:
 
-$$\Delta \text{GPA} = \frac{c\_k \times \Delta g}{\sum c}$$
+$$\Delta \text{GPA} = \frac{c_k \times \Delta g}{\sum c}$$
 
 For the same grade change, the effect is proportional to credits. A 4-credit course has twice the leverage of a 2-credit course.
 
@@ -59,7 +59,7 @@ For the same grade change, the effect is proportional to credits. A 4-credit cou
 
 With prior quality points \(\text{QP}_p\) over \(C_p\) credits, and \(C_n\) new credits, the semester GPA required to hit a target is:
 
-$$\text{GPA}\_{\text{needed}} = \frac{\text{Target} \times (C\_p + C\_n) - \text{QP}\_p}{C\_n}$$
+$$\text{GPA}_{\text{needed}} = \frac{\text{Target} \times (C_p + C_n) - \text{QP}_p}{C_n}$$
 
 **Steps:** (1) convert each grade to points, (2) multiply by credits, (3) sum quality points and credits, (4) divide.
 

@@ -5,7 +5,29 @@
 **Current Objective:** Production Deployment to Cloudflare Pages & Ongoing Verification.
 
 ## State
-- **Last Completed Task:** Repaired LaTeX rendering across all 10 educational guide articles and reader template:
+- **Last Completed Task:** Modernized homepage layout with horizontal scroll-snap carousels and streamlined directory:
+  1. **User Problem Addressed:**
+     - The previous homepage dumped all 186 tools into an endless vertical 3-column grid (~6,000px height), creating high vertical scroll fatigue.
+  2. **Modern Scrolling Architecture Implemented:**
+     - **Curated Horizontal Shelves (Scroll-Snap Carousels):**
+       - Built 5 curated shelves with horizontal scroll-snap (`overflow-x: auto; scroll-snap-type: x mandatory`), smooth inertia scrolling, `<` / `>` chevron navigation buttons, desktop mouse drag-to-scroll support, edge gradient fade masks, and dynamic progress bars:
+         1. *Trending & Popular Calculators* (10 flagship tools).
+         2. *24-Country Statutory Tax Suite* (24 national income tax engines with official flags and authorities).
+         3. *Academic & Student Utilities* (8 college/university tools).
+         4. *PDF, Image & Media Studio* (8 in-browser client-side privacy tools).
+         5. *Developer & Data Arsenal* (8 web developer utilities).
+     - **Sticky Category Navigator Rail:**
+       - Added smooth horizontal scrolling category pill rail with SVG icons and live counts.
+     - **Streamlined All Tools Directory (Elimination of Infinite Scroll):**
+       - Default "All" view now renders a clean initial 12 cards with an interactive pagination bar (`Load More (+18)` / `Show All 186 Tools`).
+       - Selecting any category tab instantly displays that category's items without vertical bloat.
+       - Typing into the search bar instantly filters all 186 tools in real time.
+       - Added keyboard shortcut (`/`) for immediate search focus.
+  3. **Verification:**
+     - 162/162 Vitest unit tests pass 100% green across all 27 test suites.
+     - Astro production build cleanly generates all 207 static routes in 10.66s.
+     - All routes, URLs, and slugs preserved.
+- **Previous Completed Task:** Repaired LaTeX rendering across all 10 educational guide articles and reader template:
   1. **Root Cause Analysis:**
      - KaTeX auto-render was configured with `{left: '$', right: '$'}` for inline math, which mistakenly matched ordinary currency mentions (e.g., "$16,100 ... $85,000") in financial texts, converting entire prose paragraphs into broken LaTeX.
      - Markdown parsing converted subscripts (`_k`) into `<em>k</em>` tags and unescaped `\$` into raw `$`, causing KaTeX parse errors (`Can't use function '$' in math mode`).

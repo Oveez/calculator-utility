@@ -205,9 +205,8 @@ const articleSchema = {
 
       // Pre-sanitize any HTML entities or markdown-injected italics inside display math
       const blocks = article.querySelectorAll('p, li, td');
-      const dbl = '$' + '$';
       blocks.forEach(function(el) {
-        if (el.innerHTML.indexOf(dbl) !== -1) {
+        if (el.innerHTML.indexOf('$$') !== -1) {
           el.innerHTML = el.innerHTML.replace(/\$\$([\s\S]*?)\$\$/g, function(match, math) {
             var clean = math
               .replace(/<em>(.*?)<\/em>/g, '_$1')
@@ -215,14 +214,14 @@ const articleSchema = {
               .replace(/&lt;/g, '<')
               .replace(/&gt;/g, '>')
               .replace(/[’‘]/g, "'");
-            return dbl + clean + dbl;
+            return '$$' + clean + '$$';
           });
         }
       });
 
       window.renderMathInElement(article, {
         delimiters: [
-          { left: dbl, right: dbl, display: true },
+          { left: '$$', right: '$$', display: true },
           { left: '\\[', right: '\\]', display: true },
           { left: '\\(', right: '\\)', display: false }
         ],

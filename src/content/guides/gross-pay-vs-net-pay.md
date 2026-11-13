@@ -43,19 +43,19 @@ Other countries follow the same gross-to-net structure. HMRC administers PAYE an
 
 Let \(G\) be gross pay, \(S_{125}\) the Section 125 deductions, \(K\) the traditional 401(k) deferral, and \(D\) the standard deduction. The wages used for each tax are:
 
-$$W\_{\text{FICA}} = G - S\_{125} \qquad W\_{\text{FIT}} = G - S\_{125} - K$$
+$$W_{\text{FICA}} = G - S_{125} \qquad W_{\text{FIT}} = G - S_{125} - K$$
 
 The FICA taxes are:
 
-$$T\_{SS} = 0.062 \times \min\bigl(W\_{\text{FICA}},\; 184{,}500\bigr)$$
+$$T_{SS} = 0.062 \times \min\bigl(W_{\text{FICA}},\; 184{,}500\bigr)$$
 
-$$T\_{Med} = 0.0145 \times W\_{\text{FICA}}$$
+$$T_{Med} = 0.0145 \times W_{\text{FICA}}$$
 
-$$T\_{AMT} = 0.009 \times \max\bigl(0,\; W\_{\text{FICA}} - 200{,}000\bigr)$$
+$$T_{AMT} = 0.009 \times \max\bigl(0,\; W_{\text{FICA}} - 200{,}000\bigr)$$
 
 Federal income tax applies the progressive bracket function to taxable income: \(T_{FIT} = f(W_{\text{FIT}} - D)\). Net pay is then:
 
-$$\text{Net} = G - K - S\_{125} - T\_{FIT} - T\_{SS} - T\_{Med} - T\_{AMT} - T\_{state}$$
+$$\text{Net} = G - K - S_{125} - T_{FIT} - T_{SS} - T_{Med} - T_{AMT} - T_{state}$$
 
 To convert to other pay frequencies, divide by the number of periods \(n\) (26 bi-weekly, 24 semi-monthly, 12 monthly), or divide by annual hours for an hourly rate:
 
