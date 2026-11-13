@@ -1,1231 +1,1260 @@
 ---
 import SiteLayout from '../layouts/SiteLayout.astro';
 import HomeHeroBanner from '../components/HomeHeroBanner.astro';
+import KeypadCalculator from '../components/KeypadCalculator.astro';
 import Icon from '../components/Icon.astro';
 import ToolIcon from '../components/ToolIcon.astro';
 import { allToolsIndex } from '../data/allToolsIndex';
+import { baselineExchangeRates, popularCurrencies, allCurrencies } from '../data/currency';
 import { siteName, siteTagline, withBasePath } from '../utils/site';
-import { getCategoryIconConfig } from '../utils/toolIcons';
 
-// Logical category ordering for the 186 tools directory
-const categoryOrder = [
-  'Finance',
-  'Tax & Finance',
-  'Education',
-  'Academic',
-  'Health',
-  'Math',
-  'Converters',
-  'Time',
-  'Text',
-  'Data',
-  'Developer',
-  'Image',
-  'PDF',
-  'Color',
-  'Generators',
-  'Research',
-  'Business',
-  'Career',
-  'Pricing',
-  'Shipping',
-  'URL',
-];
-
-const uniqueCategories = Array.from(new Set(allToolsIndex.map((t) => t.category))).sort((a, b) => {
-  const ia = categoryOrder.indexOf(a);
-  const ib = categoryOrder.indexOf(b);
-  if (ia !== -1 && ib !== -1) return ia - ib;
-  if (ia !== -1) return -1;
-  if (ib !== -1) return 1;
-  return a.localeCompare(b);
-});
-
-const categories = uniqueCategories.map((category) => ({
-  name: category,
-  count: allToolsIndex.filter((tool) => tool.category === category).length,
-}));
-
-// Category tabs including "All"
-const categoryTabs = [{ name: 'All', count: allToolsIndex.length }, ...categories];
-
-// 1. Trending & Popular Calculators (10 flagship tools)
-const popularUrls = [
-  '/calculators/mortgage-calculator/',
-  '/currency-converter/',
-  '/calculators/compound-interest-calculator/',
-  '/pdf-tools/pdf-editor/',
-  '/career-tools/cv-maker/',
-  '/calculators/bmi-calculator/',
-  '/calculators/gpa-calculator/',
-  '/calculators/percentage-calculator/',
-  '/calculators/discount-calculator/',
-  '/calculators/salary-calculator/',
-];
-const popularTools = popularUrls
-  .map((url) => allToolsIndex.find((t) => t.url === url))
-  .filter((t): t is typeof allToolsIndex[0] => Boolean(t));
-
-// 2. 24 Statutory Country Tax Engines
+// 24 Statutory Country Tax Engines
 const taxEngines = [
-  { country: 'United States', flag: '🇺🇸', authority: 'IRS', currency: 'USD ($)', path: '/us-income-tax-calculator/' },
-  { country: 'United Kingdom', flag: '🇬🇧', authority: 'HMRC', currency: 'GBP (£)', path: '/uk-income-tax-calculator/' },
-  { country: 'Canada', flag: '🇨🇦', authority: 'CRA', currency: 'CAD ($)', path: '/canada-income-tax-calculator/' },
-  { country: 'Australia', flag: '🇦🇺', authority: 'ATO', currency: 'AUD ($)', path: '/australia-income-tax-calculator/' },
-  { country: 'Germany', flag: '🇩🇪', authority: 'BMF', currency: 'EUR (€)', path: '/germany-income-tax-calculator/' },
-  { country: 'France', flag: '🇫🇷', authority: 'DGFiP', currency: 'EUR (€)', path: '/france-income-tax-calculator/' },
-  { country: 'Ireland', flag: '🇮🇪', authority: 'Revenue', currency: 'EUR (€)', path: '/ireland-income-tax-calculator/' },
-  { country: 'Netherlands', flag: '🇳🇱', authority: 'Box 1', currency: 'EUR (€)', path: '/netherlands-income-tax-calculator/' },
-  { country: 'Spain', flag: '🇪🇸', authority: 'AEAT', currency: 'EUR (€)', path: '/spain-income-tax-calculator/' },
-  { country: 'Italy', flag: '🇮🇹', authority: 'IRPEF', currency: 'EUR (€)', path: '/italy-income-tax-calculator/' },
-  { country: 'Switzerland', flag: '🇨🇭', authority: 'ESTV', currency: 'CHF', path: '/switzerland-income-tax-calculator/' },
-  { country: 'Belgium', flag: '🇧🇪', authority: 'SPF / ONSS', currency: 'EUR (€)', path: '/belgium-income-tax-calculator/' },
-  { country: 'Austria', flag: '🇦🇹', authority: 'BMF', currency: 'EUR (€)', path: '/austria-income-tax-calculator/' },
-  { country: 'Sweden', flag: '🇸🇪', authority: 'Skatteverket', currency: 'SEK (kr)', path: '/sweden-income-tax-calculator/' },
-  { country: 'Norway', flag: '🇳🇴', authority: 'Skatteetaten', currency: 'NOK (kr)', path: '/norway-income-tax-calculator/' },
-  { country: 'Denmark', flag: '🇩🇰', authority: 'Skat', currency: 'DKK (kr)', path: '/denmark-income-tax-calculator/' },
-  { country: 'Finland', flag: '🇫🇮', authority: 'Vero', currency: 'EUR (€)', path: '/finland-income-tax-calculator/' },
-  { country: 'Poland', flag: '🇵🇱', authority: 'KAS', currency: 'PLN (zł)', path: '/poland-income-tax-calculator/' },
-  { country: 'Singapore', flag: '🇸🇬', authority: 'IRAS', currency: 'SGD ($)', path: '/singapore-income-tax-calculator/' },
-  { country: 'Japan', flag: '🇯🇵', authority: 'NTA', currency: 'JPY (¥)', path: '/japan-income-tax-calculator/' },
-  { country: 'South Korea', flag: '🇰🇷', authority: 'NTS', currency: 'KRW (₩)', path: '/south-korea-income-tax-calculator/' },
-  { country: 'New Zealand', flag: '🇳🇿', authority: 'IRD', currency: 'NZD ($)', path: '/new-zealand-income-tax-calculator/' },
-  { country: 'Mexico', flag: '🇲🇽', authority: 'SAT', currency: 'MXN ($)', path: '/mexico-income-tax-calculator/' },
-  { country: 'Portugal', flag: '🇵🇹', authority: 'AT', currency: 'EUR (€)', path: '/portugal-income-tax-calculator/' },
+  { country: 'United States', flag: '🇺🇸', authority: 'IRS', currency: 'USD ($)', path: '/us-income-tax-calculator/', code: 'US' },
+  { country: 'United Kingdom', flag: '🇬🇧', authority: 'HMRC', currency: 'GBP (£)', path: '/uk-income-tax-calculator/', code: 'UK' },
+  { country: 'Canada', flag: '🇨🇦', authority: 'CRA', currency: 'CAD ($)', path: '/canada-income-tax-calculator/', code: 'CA' },
+  { country: 'Australia', flag: '🇦🇺', authority: 'ATO', currency: 'AUD ($)', path: '/australia-income-tax-calculator/', code: 'AU' },
+  { country: 'Germany', flag: '🇩🇪', authority: 'BMF', currency: 'EUR (€)', path: '/germany-income-tax-calculator/', code: 'DE' },
+  { country: 'France', flag: '🇫🇷', authority: 'DGFiP', currency: 'EUR (€)', path: '/france-income-tax-calculator/', code: 'FR' },
+  { country: 'Ireland', flag: '🇮🇪', authority: 'Revenue', currency: 'EUR (€)', path: '/ireland-income-tax-calculator/', code: 'IE' },
+  { country: 'Netherlands', flag: '🇳🇱', authority: 'Box 1', currency: 'EUR (€)', path: '/netherlands-income-tax-calculator/', code: 'NL' },
+  { country: 'Spain', flag: '🇪🇸', authority: 'AEAT', currency: 'EUR (€)', path: '/spain-income-tax-calculator/', code: 'ES' },
+  { country: 'Italy', flag: '🇮🇹', authority: 'IRPEF', currency: 'EUR (€)', path: '/italy-income-tax-calculator/', code: 'IT' },
+  { country: 'Switzerland', flag: '🇨🇭', authority: 'ESTV', currency: 'CHF', path: '/switzerland-income-tax-calculator/', code: 'CH' },
+  { country: 'Belgium', flag: '🇧🇪', authority: 'SPF / ONSS', currency: 'EUR (€)', path: '/belgium-income-tax-calculator/', code: 'BE' },
+  { country: 'Austria', flag: '🇦🇹', authority: 'BMF', currency: 'EUR (€)', path: '/austria-income-tax-calculator/', code: 'AT' },
+  { country: 'Sweden', flag: '🇸🇪', authority: 'Skatteverket', currency: 'SEK (kr)', path: '/sweden-income-tax-calculator/', code: 'SE' },
+  { country: 'Norway', flag: '🇳🇴', authority: 'Skatteetaten', currency: 'NOK (kr)', path: '/norway-income-tax-calculator/', code: 'NO' },
+  { country: 'Denmark', flag: '🇩🇰', authority: 'Skat', currency: 'DKK (kr)', path: '/denmark-income-tax-calculator/', code: 'DK' },
+  { country: 'Finland', flag: '🇫🇮', authority: 'Vero', currency: 'EUR (€)', path: '/finland-income-tax-calculator/', code: 'FI' },
+  { country: 'Poland', flag: '🇵🇱', authority: 'KAS', currency: 'PLN (zł)', path: '/poland-income-tax-calculator/', code: 'PL' },
+  { country: 'Singapore', flag: '🇸🇬', authority: 'IRAS', currency: 'SGD ($)', path: '/singapore-income-tax-calculator/', code: 'SG' },
+  { country: 'Japan', flag: '🇯🇵', authority: 'NTA', currency: 'JPY (¥)', path: '/japan-income-tax-calculator/', code: 'JP' },
+  { country: 'South Korea', flag: '🇰🇷', authority: 'NTS', currency: 'KRW (₩)', path: '/south-korea-income-tax-calculator/', code: 'KR' },
+  { country: 'New Zealand', flag: '🇳🇿', authority: 'IRD', currency: 'NZD ($)', path: '/new-zealand-income-tax-calculator/', code: 'NZ' },
+  { country: 'Mexico', flag: '🇲🇽', authority: 'SAT', currency: 'MXN ($)', path: '/mexico-income-tax-calculator/', code: 'MX' },
+  { country: 'Portugal', flag: '🇵🇹', authority: 'AT', currency: 'EUR (€)', path: '/portugal-income-tax-calculator/', code: 'PT' },
 ];
 
-// 3. Academic & Student Suite (8 tools)
-const academicUrls = [
-  '/education-tools/assignment-cover-maker/',
-  '/academic-tools/bunk-calculator/',
-  '/academic-tools/final-grade-calculator/',
-  '/academic-tools/attendance-calculator/',
-  '/education-tools/study-schedule-generator/',
-  '/academic-tools/semester-gpa-calculator/',
-  '/education-tools/random-student-picker/',
-  '/education-tools/exam-seating-generator/',
+// Curated Top Tools for Quick Launcher
+const quickLauncherTools = [
+  { title: 'US Income Tax', url: '/us-income-tax-calculator/', badge: 'STATUTORY', icon: '🇺🇸' },
+  { title: 'UK Salary Tax', url: '/uk-income-tax-calculator/', badge: 'HMRC', icon: '🇬🇧' },
+  { title: 'Currency Converter', url: '/currency-converter/', badge: 'LIVE FX', icon: '💱' },
+  { title: 'PDF Editor', url: '/pdf-tools/pdf-editor/', badge: 'PRIVATE', icon: '📄' },
+  { title: 'Mortgage Calculator', url: '/calculators/mortgage-calculator/', badge: 'FINANCE', icon: '🏠' },
+  { title: 'GPA Calculator', url: '/calculators/gpa-calculator/', badge: 'ACADEMIC', icon: '🎓' },
+  { title: 'JSON Formatter', url: '/developer-tools/json-formatter/', badge: 'DEV', icon: '💻' },
+  { title: 'Assignment Cover', url: '/education-tools/assignment-cover-maker/', badge: 'PDF EXPORT', icon: '🎨' },
 ];
-const academicTools = academicUrls
-  .map((url) => allToolsIndex.find((t) => t.url === url))
-  .filter((t): t is typeof allToolsIndex[0] => Boolean(t));
 
-// 4. PDF, Image & Privacy Studio (8 tools)
-const pdfMediaUrls = [
-  '/pdf-tools/pdf-editor/',
-  '/pdf-tools/pdf-merger/',
-  '/pdf-tools/images-to-pdf/',
-  '/pdf-tools/pdf-to-images/',
-  '/image-tools/image-compressor/',
-  '/image-tools/exif-remover/',
-  '/pdf-tools/pdf-page-extractor/',
-  '/color-tools/color-contrast-checker/',
+// 4 Flagship Illustrated Guides to showcase on homepage
+const featuredGuides = [
+  {
+    title: 'Progressive Tax Brackets Explained: Marginal vs. Effective Rates',
+    slug: '/guides/progressive-tax-brackets-explained/',
+    image: '/images/guides/progressive-tax-brackets-explained.jpg',
+    readTime: '6 min read',
+    category: 'Tax & Salary',
+    summary: 'Understand the mathematical mechanics of progressive tax brackets, debunk the higher-bracket myth, and calculate your true effective rate.',
+  },
+  {
+    title: 'Gross Pay vs. Net Pay: Where Does Your Paycheck Actually Go?',
+    slug: '/guides/gross-pay-vs-net-pay/',
+    image: '/images/guides/gross-pay-vs-net-pay.jpg',
+    readTime: '5 min read',
+    category: 'Payroll & Compensation',
+    summary: 'A step-by-step statutory breakdown of federal withholdings, mandatory social insurance contributions, and pre-tax deductions.',
+  },
+  {
+    title: 'The Mathematics of Mortgage Amortization & Early Payoff',
+    slug: '/guides/how-mortgage-amortization-works/',
+    image: '/images/guides/how-mortgage-amortization-works.jpg',
+    readTime: '6 min read',
+    category: 'Real Estate & Loans',
+    summary: 'Derive monthly payment formulas, understand compound interest front-loading, and calculate the exact return on extra principal payments.',
+  },
+  {
+    title: 'GPA vs. CGPA & Credit Hour Weighting: The Complete University Guide',
+    slug: '/guides/gpa-vs-cgpa-credit-hours/',
+    image: '/images/guides/gpa-vs-cgpa-credit-hours.jpg',
+    readTime: '5 min read',
+    category: 'Academic Strategy',
+    summary: 'Detailed explanation of weighted grade point averages, semester credit allocations, and calculating exam scores needed for graduation honors.',
+  },
 ];
-const pdfMediaTools = pdfMediaUrls
-  .map((url) => allToolsIndex.find((t) => t.url === url))
-  .filter((t): t is typeof allToolsIndex[0] => Boolean(t));
 
-// 5. Developer & Data Arsenal (8 tools)
-const devDataUrls = [
-  '/developer-tools/json-formatter/',
-  '/developer-tools/regex-tester/',
-  '/developer-tools/jwt-decoder/',
-  '/data-tools/csv-to-json/',
-  '/developer-tools/base64-encoder-decoder/',
-  '/developer-tools/cron-expression-generator/',
-  '/developer-tools/uuid-generator/',
-  '/developer-tools/timestamp-converter/',
-];
-const devDataTools = devDataUrls
-  .map((url) => allToolsIndex.find((t) => t.url === url))
-  .filter((t): t is typeof allToolsIndex[0] => Boolean(t));
-
-// Sets for high-intent badge chips (POPULAR / NEW)
-const popularSet = new Set([
-  'currency-converter',
-  'mortgage-calculator',
-  'compound-interest-calculator',
-  'bmi-calculator',
-  'gpa-calculator',
-  'discount-calculator',
-  'json-formatter',
-  'percentage-calculator',
-  'sales-tax-calculator',
-  'pdf-to-image',
-  'image-compressor',
-  'cv-maker',
-]);
-
-const newToolSet = new Set([
-  'assignment-cover-maker',
-  'exam-seating-generator',
-  'study-schedule-generator',
-  'random-group-generator',
-  'jwt-decoder',
-  'regex-tester',
-  'cron-expression-generator',
-  'csv-to-json-converter',
-  'color-contrast-checker',
-]);
-
-const homeTitle = "Free Calculator Online — Math, Finance & Online Tools | ToolsCastle";
-const homeDescription = "Free calculator online suite featuring 186+ fast tools: finance calculator, math calculator, mortgage, tax, salary, GPA, and developer tools. 100% private in-browser computations.";
+const homeTitle = "ToolsCastle — Precision Online Calculators, Tax Engines & In-Browser Tools";
+const homeDescription = "Modern in-browser calculation suite featuring 24 statutory national tax engines, live currency conversions, mortgage estimators, PDF editor, and developer tools. 100% private client-side execution.";
 ---
 
 <SiteLayout title={homeTitle} description={homeDescription} canonical={withBasePath('/')}>
-  <!-- Full-Width Top Animated Banner -->
+  <!-- Full-Width Hero Banner with Animated Dotted Castle Logo -->
   <HomeHeroBanner slot="top-banner" />
 
   <div class="sr-only">
-    <h1>{siteName} - Free Calculator Online &amp; Smart Tools</h1>
+    <h1>{siteName} - Precision Online Calculators &amp; Smart Tools</h1>
     <p>{siteTagline}</p>
   </div>
 
-  <!-- SECTION 1: Trending & Essential Calculators (Curated Horizontal Shelf) -->
-  <section id="popular" class="mt-10 scroll-mt-24 space-y-3" data-carousel>
-    <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
-      <div>
-        <div class="flex items-center gap-2">
-          <span class="inline-flex px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider bg-orange-50 text-[color:var(--accent)] border border-orange-200" style="border-radius:0;">
-            Flagship Hub
-          </span>
-          <span class="text-xs font-semibold text-[color:var(--muted)]">10 Top Tools</span>
-        </div>
-        <h2 class="mt-1 text-xl sm:text-2xl font-bold tracking-tight text-[color:var(--fg)]">Trending &amp; Popular Calculators</h2>
-        <p class="text-xs sm:text-sm text-[color:var(--muted)]">Our most frequently used financial, math, and everyday decision engines.</p>
-      </div>
+  <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-16 py-8">
 
-      <div class="flex items-center gap-2 shrink-0 self-end">
-        <a href="#calculators" class="text-xs font-bold text-[color:var(--accent)] hover:underline mr-2 hidden sm:inline-flex items-center gap-1">
-          <span>Explore All 186 Tools</span>
-          <Icon name="arrow-right" class="w-3 h-3" />
-        </a>
-        <div class="flex items-center gap-1.5">
-          <button
-            type="button"
-            class="inline-flex h-8 w-8 items-center justify-center border border-[color:var(--border)] bg-white text-[color:var(--fg)] transition hover:border-[color:var(--accent)] hover:text-[color:var(--accent)] disabled:opacity-30 disabled:pointer-events-none cursor-pointer"
-            style="border-radius:0;"
-            aria-label="Previous tools"
-            data-carousel-prev
-          >
-            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-              <polyline points="15 18 9 12 15 6"></polyline>
-            </svg>
-          </button>
-          <button
-            type="button"
-            class="inline-flex h-8 w-8 items-center justify-center border border-[color:var(--border)] bg-white text-[color:var(--fg)] transition hover:border-[color:var(--accent)] hover:text-[color:var(--accent)] disabled:opacity-30 disabled:pointer-events-none cursor-pointer"
-            style="border-radius:0;"
-            aria-label="Next tools"
-            data-carousel-next
-          >
-            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-              <polyline points="9 18 15 12 9 6"></polyline>
-            </svg>
-          </button>
-        </div>
-      </div>
-    </div>
+    <!-- =========================================================================
+         SECTION 1: QUICK OMNISEARCH LAUNCHER & HIGH-INTENT ACTION CHIPS
+         ========================================================================= -->
+    <section id="calculators" class="space-y-4 scroll-mt-24">
+      <div class="border border-[color:var(--border)] bg-slate-50/70 p-4 sm:p-6 shadow-xs" style="border-radius:0;">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div class="space-y-1">
+            <span class="text-[10px] font-bold uppercase tracking-wider text-[color:var(--accent)] font-mono">Quick Launcher</span>
+            <h2 class="text-base sm:text-lg font-bold tracking-tight text-[color:var(--fg)]">
+              Instant Access to 186+ Precision Calculators &amp; Utilities
+            </h2>
+          </div>
 
-    <!-- Horizontal Snap Track with Edge Gradient Indicators -->
-    <div class="relative group/shelf">
-      <div class="pointer-events-none absolute left-0 top-0 bottom-0 w-8 z-10 bg-gradient-to-r from-white to-transparent opacity-0 transition-opacity duration-200" data-carousel-fade-left></div>
-      
-      <div
-        class="flex gap-3.5 overflow-x-auto scroll-smooth snap-x snap-mandatory py-2 px-0.5 no-scrollbar touch-pan-x cursor-grab"
-        data-carousel-track
-      >
-        {popularTools.map((tool) => {
-          const slug = tool.url.replace(/^\/|\/$/g, '').split('/').pop() || '';
-          return (
+          <div class="flex items-center gap-2">
             <a
-              href={withBasePath(tool.url)}
-              class="group snap-start shrink-0 w-[270px] sm:w-[310px] md:w-[330px] flex flex-col justify-between border border-[color:var(--border)] bg-white p-5 transition hover:border-[color:var(--accent)] hover:shadow-xs"
+              href={withBasePath('/all-tools/')}
+              class="inline-flex items-center gap-1.5 border border-[color:var(--border)] bg-white px-3.5 py-2 text-xs font-bold text-[color:var(--fg)] hover:border-[color:var(--accent)] hover:text-[color:var(--accent)] transition shadow-xs"
               style="border-radius:0;"
             >
-              <div class="space-y-3">
-                <div class="flex items-center justify-between gap-2">
-                  <ToolIcon url={tool.url} title={tool.title} category={tool.category} size="md" />
-                  <div class="flex items-center gap-1.5">
-                    <span class="inline-flex items-center bg-orange-50 px-2 py-0.5 text-[10px] font-bold text-[color:var(--accent)] border border-orange-200" style="border-radius:0;">
-                      POPULAR
-                    </span>
-                    <span class="inline-flex bg-slate-50 px-2 py-0.5 text-[11px] font-semibold text-[color:var(--muted)] border border-[color:var(--border)]" style="border-radius:0;">
-                      {tool.category}
-                    </span>
-                  </div>
+              <span>Browse Full 186-Tool Catalog</span>
+              <Icon name="arrow-right" class="w-3.5 h-3.5" />
+            </a>
+          </div>
+        </div>
+
+        <!-- Quick Launch Pills -->
+        <div class="mt-4 flex flex-wrap items-center gap-2 pt-3 border-t border-slate-200/80">
+          <span class="text-xs font-semibold text-[color:var(--muted)] mr-1 hidden sm:inline">Popular shortcuts:</span>
+          {quickLauncherTools.map((t) => (
+            <a
+              href={withBasePath(t.url)}
+              class="group inline-flex items-center gap-1.5 border border-[color:var(--border)] bg-white px-2.5 py-1.5 text-xs font-medium text-[color:var(--fg)] hover:border-[color:var(--accent)] hover:text-[color:var(--accent)] transition shadow-2xs"
+              style="border-radius:0;"
+            >
+              <span class="text-sm select-none">{t.icon}</span>
+              <span class="font-bold">{t.title}</span>
+              <span class="text-[9px] font-mono text-[color:var(--muted)] group-hover:text-[color:var(--accent)] transition-colors">{t.badge}</span>
+            </a>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         SECTION 2: THE INTERACTIVE LIVE PLAYGROUND DOCK (COMPUTE ON HOMEPAGE)
+         ========================================================================= -->
+    <section id="interactive-dock" class="scroll-mt-24 space-y-4">
+      <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="inline-flex px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider bg-orange-50 text-[color:var(--accent)] border border-orange-200" style="border-radius:0;">
+              Live Computation Dock
+            </span>
+            <span class="text-xs font-semibold text-[color:var(--muted)]">Compute Instantly Without Navigating</span>
+          </div>
+          <h2 class="mt-1 text-xl sm:text-2xl font-bold tracking-tight text-[color:var(--fg)]">
+            Interactive In-Browser Playground
+          </h2>
+          <p class="text-xs sm:text-sm text-[color:var(--muted)]">
+            Run real-time currency conversions, mortgage amortizations, tax estimates, or arithmetic directly inside your browser.
+          </p>
+        </div>
+      </div>
+
+      <!-- Tabbed Card Shell -->
+      <div class="border border-[color:var(--border)] bg-white shadow-xs" style="border-radius:0;" data-playground>
+        <!-- Tab Bar -->
+        <div class="flex flex-wrap items-center border-b border-[color:var(--border)] bg-slate-50/60 p-1 sm:p-2 gap-1" role="tablist">
+          <button
+            type="button"
+            class="playground-tab active inline-flex items-center gap-2 px-3.5 py-2 text-xs font-bold border transition cursor-pointer bg-slate-900 text-white border-slate-900 shadow-xs"
+            style="border-radius:0;"
+            role="tab"
+            data-tab="currency"
+            aria-selected="true"
+          >
+            <span>💱</span>
+            <span>Currency Converter</span>
+          </button>
+
+          <button
+            type="button"
+            class="playground-tab inline-flex items-center gap-2 px-3.5 py-2 text-xs font-bold border transition cursor-pointer bg-white text-[color:var(--muted)] border-[color:var(--border)] hover:border-[color:var(--accent)] hover:text-[color:var(--fg)]"
+            style="border-radius:0;"
+            role="tab"
+            data-tab="keypad"
+            aria-selected="false"
+          >
+            <span>🔢</span>
+            <span>Keypad Calculator</span>
+          </button>
+
+          <button
+            type="button"
+            class="playground-tab inline-flex items-center gap-2 px-3.5 py-2 text-xs font-bold border transition cursor-pointer bg-white text-[color:var(--muted)] border-[color:var(--border)] hover:border-[color:var(--accent)] hover:text-[color:var(--fg)]"
+            style="border-radius:0;"
+            role="tab"
+            data-tab="mortgage"
+            aria-selected="false"
+          >
+            <span>🏠</span>
+            <span>Mortgage &amp; Loan</span>
+          </button>
+
+          <button
+            type="button"
+            class="playground-tab inline-flex items-center gap-2 px-3.5 py-2 text-xs font-bold border transition cursor-pointer bg-white text-[color:var(--muted)] border-[color:var(--border)] hover:border-[color:var(--accent)] hover:text-[color:var(--fg)]"
+            style="border-radius:0;"
+            role="tab"
+            data-tab="tax"
+            aria-selected="false"
+          >
+            <span>⚖️</span>
+            <span>Take-Home Pay</span>
+          </button>
+        </div>
+
+        <!-- Panel 1: Live Currency Converter -->
+        <div class="playground-panel p-5 sm:p-6 space-y-6" data-panel="currency">
+          <div class="grid gap-4 sm:grid-cols-3 items-end">
+            <div>
+              <label class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)] mb-1">Amount</label>
+              <input
+                type="number"
+                value="1000"
+                min="0.01"
+                step="any"
+                class="w-full border border-[color:var(--border)] bg-white px-3.5 py-2 text-sm font-semibold text-[color:var(--fg)] focus:outline-none focus:border-[color:var(--accent)]"
+                style="border-radius:0;"
+                data-currency-amount
+              />
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)] mb-1">From Currency</label>
+              <select
+                class="w-full border border-[color:var(--border)] bg-white px-3.5 py-2 text-sm font-semibold text-[color:var(--fg)] focus:outline-none focus:border-[color:var(--accent)] cursor-pointer"
+                style="border-radius:0;"
+                data-currency-from
+              >
+                {popularCurrencies.map((code) => {
+                  const curr = allCurrencies[code] || { code, name: code, flag: '' };
+                  return (
+                    <option value={code} selected={code === 'USD'}>
+                      {curr.flag} {code} — {curr.name}
+                    </option>
+                  );
+                })}
+              </select>
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)] mb-1">To Currency</label>
+              <select
+                class="w-full border border-[color:var(--border)] bg-white px-3.5 py-2 text-sm font-semibold text-[color:var(--fg)] focus:outline-none focus:border-[color:var(--accent)] cursor-pointer"
+                style="border-radius:0;"
+                data-currency-to
+              >
+                {popularCurrencies.map((code) => {
+                  const curr = allCurrencies[code] || { code, name: code, flag: '' };
+                  return (
+                    <option value={code} selected={code === 'EUR'}>
+                      {curr.flag} {code} — {curr.name}
+                    </option>
+                  );
+                })}
+              </select>
+            </div>
+          </div>
+
+          <!-- Dynamic Output Card -->
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border border-[color:var(--border)] bg-slate-50 p-4" style="border-radius:0;">
+            <div>
+              <p class="text-xs text-[color:var(--muted)]" data-currency-input-summary>1,000 USD equals</p>
+              <div class="mt-0.5 text-2xl sm:text-3xl font-extrabold text-[color:var(--fg)]" data-currency-result>
+                920.00 EUR
+              </div>
+              <p class="mt-1 text-xs text-[color:var(--muted)] font-mono" data-currency-rate-info>
+                1 USD = 0.9200 EUR • Mid-market exchange rate
+              </p>
+            </div>
+
+            <div class="flex items-center gap-3">
+              <a
+                href={withBasePath('/currency-converter/')}
+                class="inline-flex items-center gap-1.5 bg-[color:var(--accent)] px-4 py-2 text-xs font-bold text-white hover:bg-[color:var(--accent-hover)] transition cursor-pointer shadow-xs whitespace-nowrap"
+                style="border-radius:0;"
+              >
+                <span>Full Currency Studio</span>
+                <Icon name="arrow-right" class="w-3.5 h-3.5" />
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Panel 2: Standard Keypad Calculator -->
+        <div class="playground-panel p-5 sm:p-6 hidden" data-panel="keypad">
+          <div class="max-w-md mx-auto">
+            <KeypadCalculator />
+          </div>
+        </div>
+
+        <!-- Panel 3: Quick Loan & Mortgage Estimator -->
+        <div class="playground-panel p-5 sm:p-6 space-y-6 hidden" data-panel="mortgage">
+          <div class="grid gap-4 sm:grid-cols-3">
+            <div>
+              <label class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)] mb-1">Loan Amount ($)</label>
+              <input
+                type="number"
+                value="400000"
+                step="5000"
+                min="1000"
+                class="w-full border border-[color:var(--border)] bg-white px-3.5 py-2 text-sm font-semibold text-[color:var(--fg)] focus:outline-none focus:border-[color:var(--accent)]"
+                style="border-radius:0;"
+                data-loan-principal
+              />
+            </div>
+            <div>
+              <label class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)] mb-1">Interest Rate (% p.a.)</label>
+              <input
+                type="number"
+                value="6.5"
+                step="0.05"
+                min="0.1"
+                class="w-full border border-[color:var(--border)] bg-white px-3.5 py-2 text-sm font-semibold text-[color:var(--fg)] focus:outline-none focus:border-[color:var(--accent)]"
+                style="border-radius:0;"
+                data-loan-rate
+              />
+            </div>
+            <div>
+              <label class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)] mb-1">Loan Term (Years)</label>
+              <select
+                class="w-full border border-[color:var(--border)] bg-white px-3.5 py-2 text-sm font-semibold text-[color:var(--fg)] focus:outline-none focus:border-[color:var(--accent)] cursor-pointer"
+                style="border-radius:0;"
+                data-loan-years
+              >
+                <option value="15">15 Years (180 months)</option>
+                <option value="20">20 Years (240 months)</option>
+                <option value="25">25 Years (300 months)</option>
+                <option value="30" selected>30 Years (360 months)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="grid gap-3 sm:grid-cols-3 border border-[color:var(--border)] bg-slate-50 p-4" style="border-radius:0;">
+            <div>
+              <span class="text-xs text-[color:var(--muted)]">Monthly Principal &amp; Interest</span>
+              <div class="mt-0.5 text-xl sm:text-2xl font-extrabold text-[color:var(--accent)]" data-loan-monthly>$2,528.27</div>
+              <span class="text-[10px] text-slate-500 font-mono">30-year fixed rate</span>
+            </div>
+            <div>
+              <span class="text-xs text-[color:var(--muted)]">Total Interest Payable</span>
+              <div class="mt-0.5 text-lg sm:text-xl font-bold text-[color:var(--fg)]" data-loan-interest>$510,177.20</div>
+              <span class="text-[10px] text-slate-500 font-mono">Over loan life</span>
+            </div>
+            <div class="flex flex-col justify-between">
+              <div>
+                <span class="text-xs text-[color:var(--muted)]">Total Repayment Amount</span>
+                <div class="mt-0.5 text-lg sm:text-xl font-bold text-[color:var(--fg)]" data-loan-total>$910,177.20</div>
+              </div>
+              <a
+                href={withBasePath('/calculators/mortgage-calculator/')}
+                class="mt-2 inline-flex items-center gap-1 text-xs font-bold text-[color:var(--accent)] hover:underline"
+              >
+                <span>Full Amortization Schedule</span>
+                <Icon name="arrow-right" class="w-3 h-3" />
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Panel 4: Quick Take-Home Salary Estimator -->
+        <div class="playground-panel p-5 sm:p-6 space-y-6 hidden" data-panel="tax">
+          <div class="grid gap-4 sm:grid-cols-2">
+            <div>
+              <label class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)] mb-1">Country Tax Jurisdiction</label>
+              <select
+                class="w-full border border-[color:var(--border)] bg-white px-3.5 py-2 text-sm font-semibold text-[color:var(--fg)] focus:outline-none focus:border-[color:var(--accent)] cursor-pointer"
+                style="border-radius:0;"
+                data-tax-country
+              >
+                <option value="US" data-path="/us-income-tax-calculator/" data-currency="$">🇺🇸 United States (IRS Federal + FICA)</option>
+                <option value="UK" data-path="/uk-income-tax-calculator/" data-currency="£">🇬🇧 United Kingdom (HMRC PAYE + NI)</option>
+                <option value="CA" data-path="/canada-income-tax-calculator/" data-currency="$">🇨🇦 Canada (CRA Federal + Provincial + CPP/EI)</option>
+                <option value="AU" data-path="/australia-income-tax-calculator/" data-currency="$">🇦🇺 Australia (ATO Stage 3 + Medicare)</option>
+                <option value="DE" data-path="/germany-income-tax-calculator/" data-currency="€">🇩🇪 Germany (BMF EStG + Social Contributions)</option>
+                <option value="FR" data-path="/france-income-tax-calculator/" data-currency="€">🇫🇷 France (DGFiP + CSG/CRDS)</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold uppercase tracking-wider text-[color:var(--muted)] mb-1">Annual Gross Salary</label>
+              <input
+                type="number"
+                value="85000"
+                step="1000"
+                min="5000"
+                class="w-full border border-[color:var(--border)] bg-white px-3.5 py-2 text-sm font-semibold text-[color:var(--fg)] focus:outline-none focus:border-[color:var(--accent)]"
+                style="border-radius:0;"
+                data-tax-gross
+              />
+            </div>
+          </div>
+
+          <div class="grid gap-3 sm:grid-cols-3 border border-[color:var(--border)] bg-slate-50 p-4" style="border-radius:0;">
+            <div>
+              <span class="text-xs text-[color:var(--muted)]">Estimated Annual Take-Home</span>
+              <div class="mt-0.5 text-xl sm:text-2xl font-extrabold text-[color:var(--accent)]" data-tax-net>$68,540</div>
+              <span class="text-[10px] text-slate-500 font-mono" data-tax-monthly>~$5,711 / month</span>
+            </div>
+            <div>
+              <span class="text-xs text-[color:var(--muted)]">Effective Tax &amp; Contribution Rate</span>
+              <div class="mt-0.5 text-lg sm:text-xl font-bold text-[color:var(--fg)]" data-tax-rate>19.4%</div>
+              <span class="text-[10px] text-slate-500 font-mono">Combined statutory burden</span>
+            </div>
+            <div class="flex flex-col justify-between">
+              <div>
+                <span class="text-xs text-[color:var(--muted)]">Total Tax &amp; Levies</span>
+                <div class="mt-0.5 text-lg sm:text-xl font-bold text-[color:var(--fg)]" data-tax-total-deduction>$16,460</div>
+              </div>
+              <a
+                href={withBasePath('/us-income-tax-calculator/')}
+                class="mt-2 inline-flex items-center gap-1 text-xs font-bold text-[color:var(--accent)] hover:underline"
+                data-tax-link
+              >
+                <span>Full Statutory Breakdown</span>
+                <Icon name="arrow-right" class="w-3 h-3" />
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         SECTION 3: THE 4 CORE SUPERPOWER SUITES (FLAGSHIP ARCHITECTURE SHOWCASES)
+         ========================================================================= -->
+
+    <!-- SUITE 1: 24-Country Statutory Income Tax Suite -->
+    <section id="tax-suite" class="scroll-mt-24 space-y-4" data-carousel>
+      <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="inline-flex px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider bg-slate-100 text-slate-800 border border-slate-300" style="border-radius:0;">
+              Statutory Tax Suite
+            </span>
+            <span class="text-xs font-semibold text-[color:var(--muted)]">24 Verified Economies (2026/2027)</span>
+          </div>
+          <h2 class="mt-1 text-xl sm:text-2xl font-bold tracking-tight text-[color:var(--fg)]">
+            International Income Tax &amp; Salary Engines
+          </h2>
+          <p class="text-xs sm:text-sm text-[color:var(--muted)]">
+            Official government tax brackets, progressive polynomial formulas, social insurance caps, and zero US bleed-through.
+          </p>
+        </div>
+
+        <div class="flex items-center gap-2 shrink-0 self-end">
+          <div class="flex items-center gap-1.5">
+            <button
+              type="button"
+              class="inline-flex h-8 w-8 items-center justify-center border border-[color:var(--border)] bg-white text-[color:var(--fg)] transition hover:border-[color:var(--accent)] hover:text-[color:var(--accent)] disabled:opacity-30 disabled:pointer-events-none cursor-pointer"
+              style="border-radius:0;"
+              aria-label="Previous tax engines"
+              data-carousel-prev
+            >
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="15 18 9 12 15 6"></polyline>
+              </svg>
+            </button>
+            <button
+              type="button"
+              class="inline-flex h-8 w-8 items-center justify-center border border-[color:var(--border)] bg-white text-[color:var(--fg)] transition hover:border-[color:var(--accent)] hover:text-[color:var(--accent)] disabled:opacity-30 disabled:pointer-events-none cursor-pointer"
+              style="border-radius:0;"
+              aria-label="Next tax engines"
+              data-carousel-next
+            >
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="9 18 15 12 9 6"></polyline>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Horizontal Snap Carousel for 24 Country Tax Engines -->
+      <div class="relative group/shelf">
+        <div class="pointer-events-none absolute left-0 top-0 bottom-0 w-8 z-10 bg-gradient-to-r from-white to-transparent opacity-0 transition-opacity duration-200" data-carousel-fade-left></div>
+
+        <div
+          class="flex gap-3 overflow-x-auto scroll-smooth snap-x snap-mandatory py-2 px-0.5 no-scrollbar touch-pan-x cursor-grab"
+          data-carousel-track
+        >
+          {taxEngines.map((engine) => (
+            <a
+              href={withBasePath(engine.path)}
+              class="group snap-start shrink-0 w-[185px] sm:w-[205px] flex flex-col items-center justify-between border border-[color:var(--border)] bg-white p-4 text-center transition hover:border-[color:var(--accent)] hover:bg-slate-50 hover:shadow-xs"
+              style="border-radius:0;"
+            >
+              <div class="flex flex-col items-center space-y-2">
+                <span class="text-3xl transition-transform duration-200 group-hover:scale-110 select-none">{engine.flag}</span>
+                <div class="space-y-0.5">
+                  <h3 class="text-xs sm:text-sm font-bold text-[color:var(--fg)] group-hover:text-[color:var(--accent)] transition-colors">
+                    {engine.country}
+                  </h3>
+                  <p class="text-[10px] sm:text-[11px] font-mono font-medium text-[color:var(--muted)]">
+                    {engine.authority} • {engine.currency}
+                  </p>
                 </div>
-                <h3 class="text-base font-bold tracking-tight text-[color:var(--fg)] group-hover:text-[color:var(--accent)] transition-colors">
-                  {tool.title}
-                </h3>
-                <p class="text-xs leading-relaxed text-[color:var(--muted)] line-clamp-2">
-                  {tool.desc}
-                </p>
               </div>
 
-              <div class="mt-5 flex items-center justify-between pt-2.5 border-t border-[color:var(--border)]/70">
-                <span class="inline-flex items-center gap-1 text-xs font-bold text-[color:var(--fg)] group-hover:text-[color:var(--accent)] transition-colors">
-                  <span>Open Tool</span>
-                  <Icon name="arrow-right" class="w-3.5 h-3.5 transition group-hover:translate-x-1" />
-                </span>
-                <span class="text-[10px] font-semibold uppercase tracking-wider text-[color:var(--muted)]">Instant</span>
+              <div class="mt-3.5 w-full pt-2 border-t border-[color:var(--border)]/70 flex items-center justify-center gap-1 text-[11px] font-bold text-[color:var(--accent)]">
+                <span>Calculate Tax</span>
+                <Icon name="arrow-right" class="w-3 h-3 transition group-hover:translate-x-0.5" />
               </div>
             </a>
-          );
-        })}
-      </div>
-
-      <div class="pointer-events-none absolute right-0 top-0 bottom-0 w-8 z-10 bg-gradient-to-l from-white to-transparent opacity-100 transition-opacity duration-200" data-carousel-fade-right></div>
-    </div>
-
-    <!-- Visual Scroll Progress Indicator -->
-    <div class="w-full bg-slate-100 h-0.5 overflow-hidden relative">
-      <div class="h-full bg-[color:var(--accent)] transition-all duration-150 origin-left" style="width: 25%;" data-carousel-progress-bar></div>
-    </div>
-  </section>
-
-  <!-- SECTION 2: 24 Country Statutory Tax Suite (Curated Horizontal Shelf) -->
-  <section id="tax-suite" class="mt-12 scroll-mt-24 space-y-3" data-carousel>
-    <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
-      <div>
-        <div class="flex items-center gap-2">
-          <span class="inline-flex px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider bg-slate-100 text-slate-800 border border-slate-300" style="border-radius:0;">
-            Statutory Suite
-          </span>
-          <span class="text-xs font-semibold text-[color:var(--muted)]">24 Verified Countries (2026/2027)</span>
+          ))}
         </div>
-        <h2 class="mt-1 text-xl sm:text-2xl font-bold tracking-tight text-[color:var(--fg)]">International Income Tax &amp; Salary Engines</h2>
-        <p class="text-xs sm:text-sm text-[color:var(--muted)]">Official government tax brackets, social contributions, and take-home pay calculators.</p>
+
+        <div class="pointer-events-none absolute right-0 top-0 bottom-0 w-8 z-10 bg-gradient-to-l from-white to-transparent opacity-100 transition-opacity duration-200" data-carousel-fade-right></div>
       </div>
 
-      <div class="flex items-center gap-2 shrink-0 self-end">
-        <a href="#calculators" class="text-xs font-bold text-[color:var(--accent)] hover:underline mr-2 hidden sm:inline-flex items-center gap-1" data-category-jump="Tax & Finance">
-          <span>View Tax &amp; Finance Category</span>
-          <Icon name="arrow-right" class="w-3 h-3" />
+      <div class="w-full bg-slate-100 h-0.5 overflow-hidden relative">
+        <div class="h-full bg-[color:var(--accent)] transition-all duration-150 origin-left" style="width: 15%;" data-carousel-progress-bar></div>
+      </div>
+    </section>
+
+    <!-- SUITE 2: 100% Client-Side Document & PDF Privacy Studio -->
+    <section class="space-y-4">
+      <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="inline-flex px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider bg-slate-100 text-slate-800 border border-slate-300" style="border-radius:0;">
+              Privacy Studio
+            </span>
+            <span class="text-xs font-semibold text-[color:var(--muted)]">Zero Cloud Uploads • WebAssembly Sandbox</span>
+          </div>
+          <h2 class="mt-1 text-xl sm:text-2xl font-bold tracking-tight text-[color:var(--fg)]">
+            In-Browser PDF, Media &amp; Image Privacy Tools
+          </h2>
+          <p class="text-xs sm:text-sm text-[color:var(--muted)]">
+            Manipulate private tax returns, sensitive bank statements, and photos locally in your browser memory without uploading a single byte.
+          </p>
+        </div>
+
+        <a
+          href={withBasePath('/pdf-tools/pdf-editor/')}
+          class="text-xs font-bold text-[color:var(--accent)] hover:underline inline-flex items-center gap-1 shrink-0"
+        >
+          <span>Open PDF Studio</span>
+          <Icon name="arrow-right" class="w-3.5 h-3.5" />
         </a>
-        <div class="flex items-center gap-1.5">
-          <button
-            type="button"
-            class="inline-flex h-8 w-8 items-center justify-center border border-[color:var(--border)] bg-white text-[color:var(--fg)] transition hover:border-[color:var(--accent)] hover:text-[color:var(--accent)] disabled:opacity-30 disabled:pointer-events-none cursor-pointer"
-            style="border-radius:0;"
-            aria-label="Previous tax engines"
-            data-carousel-prev
-          >
-            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-              <polyline points="15 18 9 12 15 6"></polyline>
-            </svg>
-          </button>
-          <button
-            type="button"
-            class="inline-flex h-8 w-8 items-center justify-center border border-[color:var(--border)] bg-white text-[color:var(--fg)] transition hover:border-[color:var(--accent)] hover:text-[color:var(--accent)] disabled:opacity-30 disabled:pointer-events-none cursor-pointer"
-            style="border-radius:0;"
-            aria-label="Next tax engines"
-            data-carousel-next
-          >
-            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-              <polyline points="9 18 15 12 9 6"></polyline>
-            </svg>
-          </button>
+      </div>
+
+      <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <a
+          href={withBasePath('/pdf-tools/pdf-editor/')}
+          class="group flex flex-col justify-between border border-[color:var(--border)] bg-white p-5 transition hover:border-[color:var(--accent)] hover:shadow-xs"
+          style="border-radius:0;"
+        >
+          <div class="space-y-3">
+            <div class="flex items-center justify-between">
+              <ToolIcon url="/pdf-tools/pdf-editor/" title="PDF Editor" category="PDF" size="md" />
+              <span class="text-[10px] font-bold text-[color:var(--accent)] bg-orange-50 border border-orange-200 px-2 py-0.5" style="border-radius:0;">CLIENT-SIDE</span>
+            </div>
+            <h3 class="text-base font-bold text-[color:var(--fg)] group-hover:text-[color:var(--accent)] transition-colors">Free Online PDF Editor</h3>
+            <p class="text-xs text-[color:var(--muted)] leading-relaxed">Edit text, draw vector shapes, add image stamps, and digitally sign PDF documents without sending files to any server.</p>
+          </div>
+          <div class="mt-4 pt-2.5 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-[color:var(--fg)] group-hover:text-[color:var(--accent)]">
+            <span>Launch Editor</span>
+            <Icon name="arrow-right" class="w-3 h-3 transition group-hover:translate-x-1" />
+          </div>
+        </a>
+
+        <a
+          href={withBasePath('/pdf-tools/pdf-merger/')}
+          class="group flex flex-col justify-between border border-[color:var(--border)] bg-white p-5 transition hover:border-[color:var(--accent)] hover:shadow-xs"
+          style="border-radius:0;"
+        >
+          <div class="space-y-3">
+            <div class="flex items-center justify-between">
+              <ToolIcon url="/pdf-tools/pdf-merger/" title="PDF Merger" category="PDF" size="md" />
+              <span class="text-[10px] font-bold text-slate-700 bg-slate-100 border border-slate-300 px-2 py-0.5" style="border-radius:0;">FAST</span>
+            </div>
+            <h3 class="text-base font-bold text-[color:var(--fg)] group-hover:text-[color:var(--accent)] transition-colors">PDF Merger &amp; Splitter</h3>
+            <p class="text-xs text-[color:var(--muted)] leading-relaxed">Combine multiple PDF files into one clean document or extract specific page ranges with instant in-browser assembly.</p>
+          </div>
+          <div class="mt-4 pt-2.5 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-[color:var(--fg)] group-hover:text-[color:var(--accent)]">
+            <span>Combine Files</span>
+            <Icon name="arrow-right" class="w-3 h-3 transition group-hover:translate-x-1" />
+          </div>
+        </a>
+
+        <a
+          href={withBasePath('/image-tools/image-compressor/')}
+          class="group flex flex-col justify-between border border-[color:var(--border)] bg-white p-5 transition hover:border-[color:var(--accent)] hover:shadow-xs"
+          style="border-radius:0;"
+        >
+          <div class="space-y-3">
+            <div class="flex items-center justify-between">
+              <ToolIcon url="/image-tools/image-compressor/" title="Image Compressor" category="Image" size="md" />
+              <span class="text-[10px] font-bold text-slate-700 bg-slate-100 border border-slate-300 px-2 py-0.5" style="border-radius:0;">WEBP/JPEG</span>
+            </div>
+            <h3 class="text-base font-bold text-[color:var(--fg)] group-hover:text-[color:var(--accent)] transition-colors">In-Browser Image Compressor</h3>
+            <p class="text-xs text-[color:var(--muted)] leading-relaxed">Reduce JPEG, PNG, and WebP image file sizes locally with customizable compression ratios and instant side-by-side preview.</p>
+          </div>
+          <div class="mt-4 pt-2.5 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-[color:var(--fg)] group-hover:text-[color:var(--accent)]">
+            <span>Compress Locally</span>
+            <Icon name="arrow-right" class="w-3 h-3 transition group-hover:translate-x-1" />
+          </div>
+        </a>
+
+        <a
+          href={withBasePath('/image-tools/exif-remover/')}
+          class="group flex flex-col justify-between border border-[color:var(--border)] bg-white p-5 transition hover:border-[color:var(--accent)] hover:shadow-xs"
+          style="border-radius:0;"
+        >
+          <div class="space-y-3">
+            <div class="flex items-center justify-between">
+              <ToolIcon url="/image-tools/exif-remover/" title="EXIF Remover" category="Image" size="md" />
+              <span class="text-[10px] font-bold text-red-700 bg-red-50 border border-red-200 px-2 py-0.5" style="border-radius:0;">PRIVACY</span>
+            </div>
+            <h3 class="text-base font-bold text-[color:var(--fg)] group-hover:text-[color:var(--accent)] transition-colors">EXIF Metadata Remover</h3>
+            <p class="text-xs text-[color:var(--muted)] leading-relaxed">Strip hidden camera GPS coordinates, shutter parameters, and device fingerprints from photos before publishing.</p>
+          </div>
+          <div class="mt-4 pt-2.5 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-[color:var(--fg)] group-hover:text-[color:var(--accent)]">
+            <span>Sanitize Photos</span>
+            <Icon name="arrow-right" class="w-3 h-3 transition group-hover:translate-x-1" />
+          </div>
+        </a>
+      </div>
+    </section>
+
+    <!-- SUITE 3: Campus & Student Academic Hub -->
+    <section class="space-y-4">
+      <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="inline-flex px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider bg-slate-100 text-slate-800 border border-slate-300" style="border-radius:0;">
+              Student &amp; Campus Hub
+            </span>
+            <span class="text-xs font-semibold text-[color:var(--muted)]">College &amp; University Utilities</span>
+          </div>
+          <h2 class="mt-1 text-xl sm:text-2xl font-bold tracking-tight text-[color:var(--fg)]">
+            Academic Productivity &amp; Grading Utilities
+          </h2>
+          <p class="text-xs sm:text-sm text-[color:var(--muted)]">
+            GPA projection, class attendance tracking, study schedule planning, and professional assignment cover design.
+          </p>
         </div>
       </div>
-    </div>
 
-    <!-- Horizontal Snap Track for 24 Country Flags -->
-    <div class="relative group/shelf">
-      <div class="pointer-events-none absolute left-0 top-0 bottom-0 w-8 z-10 bg-gradient-to-r from-white to-transparent opacity-0 transition-opacity duration-200" data-carousel-fade-left></div>
+      <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <a
+          href={withBasePath('/education-tools/assignment-cover-maker/')}
+          class="group flex flex-col justify-between border border-[color:var(--border)] bg-white p-5 transition hover:border-[color:var(--accent)] hover:shadow-xs"
+          style="border-radius:0;"
+        >
+          <div class="space-y-3">
+            <ToolIcon url="/education-tools/assignment-cover-maker/" title="Assignment Cover" category="Education" size="md" />
+            <h3 class="text-base font-bold text-[color:var(--fg)] group-hover:text-[color:var(--accent)] transition-colors">Assignment Cover Page Maker</h3>
+            <p class="text-xs text-[color:var(--muted)] leading-relaxed">Design university-standard cover pages with official logos, course metadata, and instant print-ready vector A4 PDF export.</p>
+          </div>
+          <div class="mt-4 pt-2.5 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-[color:var(--fg)] group-hover:text-[color:var(--accent)]">
+            <span>Design Cover</span>
+            <Icon name="arrow-right" class="w-3 h-3 transition group-hover:translate-x-1" />
+          </div>
+        </a>
 
-      <div
-        class="flex gap-3 overflow-x-auto scroll-smooth snap-x snap-mandatory py-2 px-0.5 no-scrollbar touch-pan-x cursor-grab"
-        data-carousel-track
-      >
-        {taxEngines.map((engine) => (
+        <a
+          href={withBasePath('/academic-tools/bunk-calculator/')}
+          class="group flex flex-col justify-between border border-[color:var(--border)] bg-white p-5 transition hover:border-[color:var(--accent)] hover:shadow-xs"
+          style="border-radius:0;"
+        >
+          <div class="space-y-3">
+            <ToolIcon url="/academic-tools/bunk-calculator/" title="Safe Bunk Calculator" category="Academic" size="md" />
+            <h3 class="text-base font-bold text-[color:var(--fg)] group-hover:text-[color:var(--accent)] transition-colors">Safe Bunk &amp; Attendance Calculator</h3>
+            <p class="text-xs text-[color:var(--muted)] leading-relaxed">Calculate exactly how many lectures you can safely skip while strictly maintaining your 75% or 80% university attendance threshold.</p>
+          </div>
+          <div class="mt-4 pt-2.5 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-[color:var(--fg)] group-hover:text-[color:var(--accent)]">
+            <span>Check Attendance</span>
+            <Icon name="arrow-right" class="w-3 h-3 transition group-hover:translate-x-1" />
+          </div>
+        </a>
+
+        <a
+          href={withBasePath('/academic-tools/final-grade-calculator/')}
+          class="group flex flex-col justify-between border border-[color:var(--border)] bg-white p-5 transition hover:border-[color:var(--accent)] hover:shadow-xs"
+          style="border-radius:0;"
+        >
+          <div class="space-y-3">
+            <ToolIcon url="/academic-tools/final-grade-calculator/" title="Final Grade Calculator" category="Academic" size="md" />
+            <h3 class="text-base font-bold text-[color:var(--fg)] group-hover:text-[color:var(--accent)] transition-colors">Final Grade &amp; Target Score Calculator</h3>
+            <p class="text-xs text-[color:var(--muted)] leading-relaxed">Determine the minimum score required on final examinations and remaining assignments to secure your target course grade.</p>
+          </div>
+          <div class="mt-4 pt-2.5 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-[color:var(--fg)] group-hover:text-[color:var(--accent)]">
+            <span>Calculate Target</span>
+            <Icon name="arrow-right" class="w-3 h-3 transition group-hover:translate-x-1" />
+          </div>
+        </a>
+
+        <a
+          href={withBasePath('/calculators/gpa-calculator/')}
+          class="group flex flex-col justify-between border border-[color:var(--border)] bg-white p-5 transition hover:border-[color:var(--accent)] hover:shadow-xs"
+          style="border-radius:0;"
+        >
+          <div class="space-y-3">
+            <ToolIcon url="/calculators/gpa-calculator/" title="GPA Calculator" category="Education" size="md" />
+            <h3 class="text-base font-bold text-[color:var(--fg)] group-hover:text-[color:var(--accent)] transition-colors">Weighted GPA &amp; CGPA Calculator</h3>
+            <p class="text-xs text-[color:var(--muted)] leading-relaxed">Compute 4.0-scale credit-weighted grade point averages across college semesters with letter grades and honors honors thresholds.</p>
+          </div>
+          <div class="mt-4 pt-2.5 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-[color:var(--fg)] group-hover:text-[color:var(--accent)]">
+            <span>Calculate GPA</span>
+            <Icon name="arrow-right" class="w-3 h-3 transition group-hover:translate-x-1" />
+          </div>
+        </a>
+      </div>
+    </section>
+
+    <!-- SUITE 4: Developer & Data Arsenal -->
+    <section class="space-y-4">
+      <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="inline-flex px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider bg-slate-100 text-slate-800 border border-slate-300" style="border-radius:0;">
+              Developer Suite
+            </span>
+            <span class="text-xs font-semibold text-[color:var(--muted)]">Engineering &amp; Payload Utilities</span>
+          </div>
+          <h2 class="mt-1 text-xl sm:text-2xl font-bold tracking-tight text-[color:var(--fg)]">
+            Developer &amp; Data Engineering Arsenal
+          </h2>
+          <p class="text-xs sm:text-sm text-[color:var(--muted)]">
+            Format JSON payloads, inspect signed JWT claims, test regular expressions, and convert structured data formats.
+          </p>
+        </div>
+      </div>
+
+      <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <a
+          href={withBasePath('/developer-tools/json-formatter/')}
+          class="group flex flex-col justify-between border border-[color:var(--border)] bg-white p-5 transition hover:border-[color:var(--accent)] hover:shadow-xs"
+          style="border-radius:0;"
+        >
+          <div class="space-y-3">
+            <ToolIcon url="/developer-tools/json-formatter/" title="JSON Formatter" category="Developer" size="md" />
+            <h3 class="text-base font-bold text-[color:var(--fg)] group-hover:text-[color:var(--accent)] transition-colors">JSON Formatter &amp; Tree Viewer</h3>
+            <p class="text-xs text-[color:var(--muted)] leading-relaxed">Beautify, validate, minify, and explore deeply nested JSON payloads with syntax highlighting and interactive collapsible tree nodes.</p>
+          </div>
+          <div class="mt-4 pt-2.5 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-[color:var(--fg)] group-hover:text-[color:var(--accent)]">
+            <span>Format Payloads</span>
+            <Icon name="arrow-right" class="w-3 h-3 transition group-hover:translate-x-1" />
+          </div>
+        </a>
+
+        <a
+          href={withBasePath('/developer-tools/jwt-decoder/')}
+          class="group flex flex-col justify-between border border-[color:var(--border)] bg-white p-5 transition hover:border-[color:var(--accent)] hover:shadow-xs"
+          style="border-radius:0;"
+        >
+          <div class="space-y-3">
+            <ToolIcon url="/developer-tools/jwt-decoder/" title="JWT Decoder" category="Developer" size="md" />
+            <h3 class="text-base font-bold text-[color:var(--fg)] group-hover:text-[color:var(--accent)] transition-colors">JWT (JSON Web Token) Decoder</h3>
+            <p class="text-xs text-[color:var(--muted)] leading-relaxed">Decode token headers and payload claims in real time with human-readable UNIX timestamps and live token expiration status.</p>
+          </div>
+          <div class="mt-4 pt-2.5 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-[color:var(--fg)] group-hover:text-[color:var(--accent)]">
+            <span>Inspect Token</span>
+            <Icon name="arrow-right" class="w-3 h-3 transition group-hover:translate-x-1" />
+          </div>
+        </a>
+
+        <a
+          href={withBasePath('/developer-tools/regex-tester/')}
+          class="group flex flex-col justify-between border border-[color:var(--border)] bg-white p-5 transition hover:border-[color:var(--accent)] hover:shadow-xs"
+          style="border-radius:0;"
+        >
+          <div class="space-y-3">
+            <ToolIcon url="/developer-tools/regex-tester/" title="Regex Tester" category="Developer" size="md" />
+            <h3 class="text-base font-bold text-[color:var(--fg)] group-hover:text-[color:var(--accent)] transition-colors">Regex Tester &amp; Matcher</h3>
+            <p class="text-xs text-[color:var(--muted)] leading-relaxed">Test regular expressions against test text in real time with interactive match highlighting and capture group breakdowns.</p>
+          </div>
+          <div class="mt-4 pt-2.5 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-[color:var(--fg)] group-hover:text-[color:var(--accent)]">
+            <span>Test Patterns</span>
+            <Icon name="arrow-right" class="w-3 h-3 transition group-hover:translate-x-1" />
+          </div>
+        </a>
+
+        <a
+          href={withBasePath('/data-tools/csv-to-json/')}
+          class="group flex flex-col justify-between border border-[color:var(--border)] bg-white p-5 transition hover:border-[color:var(--accent)] hover:shadow-xs"
+          style="border-radius:0;"
+        >
+          <div class="space-y-3">
+            <ToolIcon url="/data-tools/csv-to-json/" title="CSV to JSON" category="Data" size="md" />
+            <h3 class="text-base font-bold text-[color:var(--fg)] group-hover:text-[color:var(--accent)] transition-colors">CSV to JSON &amp; Markdown Converter</h3>
+            <p class="text-xs text-[color:var(--muted)] leading-relaxed">Convert raw spreadsheet CSV tables into clean structured JSON arrays or GitHub-flavored markdown tables with type detection.</p>
+          </div>
+          <div class="mt-4 pt-2.5 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-[color:var(--fg)] group-hover:text-[color:var(--accent)]">
+            <span>Convert Data</span>
+            <Icon name="arrow-right" class="w-3 h-3 transition group-hover:translate-x-1" />
+          </div>
+        </a>
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         SECTION 4: LOCAL-FIRST PRIVACY ARCHITECTURE COMPARISON
+         ========================================================================= -->
+    <section class="border border-[color:var(--border)] bg-slate-50/80 p-6 sm:p-8" style="border-radius:0;">
+      <div class="max-w-3xl space-y-2">
+        <span class="text-[10px] font-bold uppercase tracking-wider text-[color:var(--accent)] font-mono">Architecture Manifesto</span>
+        <h2 class="text-xl sm:text-2xl font-extrabold tracking-tight text-[color:var(--fg)]">
+          Why Client-Side Execution Matters for Financial &amp; Personal Data
+        </h2>
+        <p class="text-xs sm:text-sm text-[color:var(--muted)]">
+          Most online utilities send your sensitive salary data, tax documents, and private photos to remote cloud servers. ToolsCastle is engineered differently.
+        </p>
+      </div>
+
+      <div class="mt-8 grid gap-6 md:grid-cols-2">
+        <!-- Legacy Server Approach -->
+        <div class="border border-red-200 bg-white p-5 space-y-3 opacity-80" style="border-radius:0;">
+          <div class="flex items-center gap-2 text-red-600 font-bold text-xs uppercase tracking-wider">
+            <span>✕</span>
+            <span>Traditional Server-Side Utility Sites</span>
+          </div>
+          <ul class="text-xs text-[color:var(--muted)] space-y-2 leading-relaxed">
+            <li class="flex items-start gap-2">
+              <span class="text-red-500 font-bold">•</span>
+              <span>Uploads your private tax records, salary numbers, and files over the network.</span>
+            </li>
+            <li class="flex items-start gap-2">
+              <span class="text-red-500 font-bold">•</span>
+              <span>Processes data on shared third-party servers with potential database logging.</span>
+            </li>
+            <li class="flex items-start gap-2">
+              <span class="text-red-500 font-bold">•</span>
+              <span>Slow network round trips with latency and queue bottlenecks.</span>
+            </li>
+            <li class="flex items-start gap-2">
+              <span class="text-red-500 font-bold">•</span>
+              <span>Completely breaks when offline or experiencing network drops.</span>
+            </li>
+          </ul>
+        </div>
+
+        <!-- ToolsCastle Local-First Approach -->
+        <div class="border-2 border-[color:var(--accent)] bg-white p-5 space-y-3 shadow-xs" style="border-radius:0;">
+          <div class="flex items-center gap-2 text-[color:var(--accent)] font-bold text-xs uppercase tracking-wider">
+            <span>✓</span>
+            <span>ToolsCastle 100% In-Browser Execution</span>
+          </div>
+          <ul class="text-xs text-[color:var(--fg)] space-y-2 leading-relaxed">
+            <li class="flex items-start gap-2 font-medium">
+              <span class="text-[color:var(--accent)] font-bold">•</span>
+              <span><strong>Zero Server Uploads:</strong> Computations execute entirely inside your browser sandbox.</span>
+            </li>
+            <li class="flex items-start gap-2 font-medium">
+              <span class="text-[color:var(--accent)] font-bold">•</span>
+              <span><strong>Absolute Privacy:</strong> Zero cloud storage. Your sensitive files never leave your device.</span>
+            </li>
+            <li class="flex items-start gap-2 font-medium">
+              <span class="text-[color:var(--accent)] font-bold">•</span>
+              <span><strong>0ms Server Latency:</strong> Near-instantaneous results driven by WebAssembly and Web Workers.</span>
+            </li>
+            <li class="flex items-start gap-2 font-medium">
+              <span class="text-[color:var(--accent)] font-bold">•</span>
+              <span><strong>Offline Capable:</strong> Continues running smoothly even if your internet connection disconnects.</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         SECTION 5: EDITORIAL KNOWLEDGE & RESEARCH HUB (ILLUSTRATED GUIDES)
+         ========================================================================= -->
+    <section class="space-y-4">
+      <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="inline-flex px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider bg-orange-50 text-[color:var(--accent)] border border-orange-200" style="border-radius:0;">
+              Knowledge Hub
+            </span>
+            <span class="text-xs font-semibold text-[color:var(--muted)]">Statutory &amp; Mathematical Guides</span>
+          </div>
+          <h2 class="mt-1 text-xl sm:text-2xl font-bold tracking-tight text-[color:var(--fg)]">
+            Authoritative Research &amp; Educational Guides
+          </h2>
+          <p class="text-xs sm:text-sm text-[color:var(--muted)]">
+            Deep-dive financial and academic guides with mathematical equations, worked numerical proofs, and statutory citations.
+          </p>
+        </div>
+
+        <a
+          href={withBasePath('/guides/')}
+          class="text-xs font-bold text-[color:var(--accent)] hover:underline inline-flex items-center gap-1 shrink-0"
+        >
+          <span>Explore All 10 Illustrated Guides</span>
+          <Icon name="arrow-right" class="w-3.5 h-3.5" />
+        </a>
+      </div>
+
+      <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        {featuredGuides.map((guide) => (
           <a
-            href={withBasePath(engine.path)}
-            class="group snap-start shrink-0 w-[185px] sm:w-[205px] flex flex-col items-center justify-between border border-[color:var(--border)] bg-white p-4 text-center transition hover:border-[color:var(--accent)] hover:bg-slate-50 hover:shadow-xs"
+            href={withBasePath(guide.slug)}
+            class="group flex flex-col justify-between border border-[color:var(--border)] bg-white transition hover:border-[color:var(--accent)] hover:shadow-xs overflow-hidden"
             style="border-radius:0;"
           >
-            <div class="flex flex-col items-center space-y-2">
-              <span class="text-3xl transition-transform duration-200 group-hover:scale-110 select-none">{engine.flag}</span>
-              <div class="space-y-0.5">
-                <h3 class="text-xs sm:text-sm font-bold text-[color:var(--fg)] group-hover:text-[color:var(--accent)] transition-colors">
-                  {engine.country}
+            <div>
+              <div class="aspect-video w-full overflow-hidden bg-slate-100 border-b border-[color:var(--border)]">
+                <img
+                  src={withBasePath(guide.image)}
+                  alt={guide.title}
+                  class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                  loading="lazy"
+                />
+              </div>
+              <div class="p-4 space-y-2">
+                <div class="flex items-center justify-between text-[10px] font-bold text-[color:var(--muted)]">
+                  <span class="uppercase tracking-wider text-[color:var(--accent)]">{guide.category}</span>
+                  <span>{guide.readTime}</span>
+                </div>
+                <h3 class="text-sm font-bold text-[color:var(--fg)] group-hover:text-[color:var(--accent)] transition-colors leading-snug">
+                  {guide.title}
                 </h3>
-                <p class="text-[10px] sm:text-[11px] font-mono font-medium text-[color:var(--muted)]">
-                  {engine.authority} • {engine.currency}
+                <p class="text-xs text-[color:var(--muted)] line-clamp-2 leading-relaxed">
+                  {guide.summary}
                 </p>
               </div>
             </div>
 
-            <div class="mt-3.5 w-full pt-2 border-t border-[color:var(--border)]/70 flex items-center justify-center gap-1 text-[11px] font-bold text-[color:var(--accent)]">
-              <span>Calculate Tax</span>
-              <Icon name="arrow-right" class="w-3 h-3 transition group-hover:translate-x-0.5" />
+            <div class="p-4 pt-0 flex items-center justify-between text-xs font-bold text-[color:var(--fg)] group-hover:text-[color:var(--accent)]">
+              <span>Read Guide</span>
+              <Icon name="arrow-right" class="w-3.5 h-3.5 transition group-hover:translate-x-1" />
             </div>
           </a>
         ))}
       </div>
+    </section>
 
-      <div class="pointer-events-none absolute right-0 top-0 bottom-0 w-8 z-10 bg-gradient-to-l from-white to-transparent opacity-100 transition-opacity duration-200" data-carousel-fade-right></div>
-    </div>
-
-    <!-- Visual Scroll Progress Indicator -->
-    <div class="w-full bg-slate-100 h-0.5 overflow-hidden relative">
-      <div class="h-full bg-[color:var(--accent)] transition-all duration-150 origin-left" style="width: 15%;" data-carousel-progress-bar></div>
-    </div>
-  </section>
-
-  <!-- SECTION 3: Academic & Student Hub (Curated Horizontal Shelf) -->
-  <section class="mt-12 scroll-mt-24 space-y-3" data-carousel>
-    <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
-      <div>
-        <div class="flex items-center gap-2">
-          <span class="inline-flex px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider bg-slate-100 text-slate-800 border border-slate-300" style="border-radius:0;">
-            Campus &amp; Study
-          </span>
-          <span class="text-xs font-semibold text-[color:var(--muted)]">College &amp; University</span>
+    <!-- =========================================================================
+         SECTION 6: PLATFORM METRICS & STATUTORY METHODOLOGY (E-E-A-T)
+         ========================================================================= -->
+    <section class="border-y border-slate-200 py-10 space-y-8">
+      <!-- 4 High-Impact Stat Metrics -->
+      <div class="grid grid-cols-2 gap-6 md:grid-cols-4 text-center">
+        <div class="space-y-1">
+          <div class="text-3xl sm:text-4xl font-extrabold text-[color:var(--fg)]">186+</div>
+          <p class="text-xs font-semibold text-[color:var(--muted)]">In-Browser Precision Tools</p>
         </div>
-        <h2 class="mt-1 text-xl sm:text-2xl font-bold tracking-tight text-[color:var(--fg)]">Academic &amp; Student Utilities</h2>
-        <p class="text-xs sm:text-sm text-[color:var(--muted)]">GPA calculators, attendance trackers, study planners, and assignment cover makers.</p>
-      </div>
-
-      <div class="flex items-center gap-2 shrink-0 self-end">
-        <a href="#calculators" class="text-xs font-bold text-[color:var(--accent)] hover:underline mr-2 hidden sm:inline-flex items-center gap-1" data-category-jump="Academic">
-          <span>View Academic Tools</span>
-          <Icon name="arrow-right" class="w-3 h-3" />
-        </a>
-        <div class="flex items-center gap-1.5">
-          <button
-            type="button"
-            class="inline-flex h-8 w-8 items-center justify-center border border-[color:var(--border)] bg-white text-[color:var(--fg)] transition hover:border-[color:var(--accent)] hover:text-[color:var(--accent)] disabled:opacity-30 disabled:pointer-events-none cursor-pointer"
-            style="border-radius:0;"
-            aria-label="Previous academic tools"
-            data-carousel-prev
-          >
-            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-              <polyline points="15 18 9 12 15 6"></polyline>
-            </svg>
-          </button>
-          <button
-            type="button"
-            class="inline-flex h-8 w-8 items-center justify-center border border-[color:var(--border)] bg-white text-[color:var(--fg)] transition hover:border-[color:var(--accent)] hover:text-[color:var(--accent)] disabled:opacity-30 disabled:pointer-events-none cursor-pointer"
-            style="border-radius:0;"
-            aria-label="Next academic tools"
-            data-carousel-next
-          >
-            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-              <polyline points="9 18 15 12 9 6"></polyline>
-            </svg>
-          </button>
+        <div class="space-y-1">
+          <div class="text-3xl sm:text-4xl font-extrabold text-[color:var(--accent)]">24</div>
+          <p class="text-xs font-semibold text-[color:var(--muted)]">Statutory Tax Jurisdictions</p>
+        </div>
+        <div class="space-y-1">
+          <div class="text-3xl sm:text-4xl font-extrabold text-[color:var(--fg)]">0 Bytes</div>
+          <p class="text-xs font-semibold text-[color:var(--muted)]">Uploaded to Cloud Servers</p>
+        </div>
+        <div class="space-y-1">
+          <div class="text-3xl sm:text-4xl font-extrabold text-[color:var(--fg)]">100% Free</div>
+          <p class="text-xs font-semibold text-[color:var(--muted)]">No Paywalls or Hidden Tiers</p>
         </div>
       </div>
-    </div>
 
-    <!-- Horizontal Snap Track -->
-    <div class="relative group/shelf">
-      <div class="pointer-events-none absolute left-0 top-0 bottom-0 w-8 z-10 bg-gradient-to-r from-white to-transparent opacity-0 transition-opacity duration-200" data-carousel-fade-left></div>
-
-      <div
-        class="flex gap-3.5 overflow-x-auto scroll-smooth snap-x snap-mandatory py-2 px-0.5 no-scrollbar touch-pan-x cursor-grab"
-        data-carousel-track
-      >
-        {academicTools.map((tool) => (
-          <a
-            href={withBasePath(tool.url)}
-            class="group snap-start shrink-0 w-[270px] sm:w-[310px] md:w-[330px] flex flex-col justify-between border border-[color:var(--border)] bg-white p-5 transition hover:border-[color:var(--accent)] hover:shadow-xs"
-            style="border-radius:0;"
-          >
-            <div class="space-y-3">
-              <div class="flex items-center justify-between gap-2">
-                <ToolIcon url={tool.url} title={tool.title} category={tool.category} size="md" />
-                <span class="inline-flex bg-slate-50 px-2 py-0.5 text-[11px] font-semibold text-[color:var(--muted)] border border-[color:var(--border)]" style="border-radius:0;">
-                  {tool.category}
-                </span>
-              </div>
-              <h3 class="text-base font-bold tracking-tight text-[color:var(--fg)] group-hover:text-[color:var(--accent)] transition-colors">
-                {tool.title}
-              </h3>
-              <p class="text-xs leading-relaxed text-[color:var(--muted)] line-clamp-2">
-                {tool.desc}
-              </p>
-            </div>
-
-            <div class="mt-5 flex items-center justify-between pt-2.5 border-t border-[color:var(--border)]/70">
-              <span class="inline-flex items-center gap-1 text-xs font-bold text-[color:var(--fg)] group-hover:text-[color:var(--accent)] transition-colors">
-                <span>Open Tool</span>
-                <Icon name="arrow-right" class="w-3.5 h-3.5 transition group-hover:translate-x-1" />
-              </span>
-              <span class="text-[10px] font-semibold uppercase tracking-wider text-[color:var(--muted)]">Student</span>
-            </div>
-          </a>
-        ))}
-      </div>
-
-      <div class="pointer-events-none absolute right-0 top-0 bottom-0 w-8 z-10 bg-gradient-to-l from-white to-transparent opacity-100 transition-opacity duration-200" data-carousel-fade-right></div>
-    </div>
-
-    <!-- Visual Scroll Progress Indicator -->
-    <div class="w-full bg-slate-100 h-0.5 overflow-hidden relative">
-      <div class="h-full bg-[color:var(--accent)] transition-all duration-150 origin-left" style="width: 25%;" data-carousel-progress-bar></div>
-    </div>
-  </section>
-
-  <!-- SECTION 4: PDF & Image Studio (Curated Horizontal Shelf) -->
-  <section class="mt-12 scroll-mt-24 space-y-3" data-carousel>
-    <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
-      <div>
-        <div class="flex items-center gap-2">
-          <span class="inline-flex px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider bg-slate-100 text-slate-800 border border-slate-300" style="border-radius:0;">
-            100% Client-Side Privacy
-          </span>
-          <span class="text-xs font-semibold text-[color:var(--muted)]">No Server Uploads</span>
-        </div>
-        <h2 class="mt-1 text-xl sm:text-2xl font-bold tracking-tight text-[color:var(--fg)]">PDF, Image &amp; Media Studio</h2>
-        <p class="text-xs sm:text-sm text-[color:var(--muted)]">Manipulate PDF documents, compress photos, and remove metadata locally in your browser.</p>
-      </div>
-
-      <div class="flex items-center gap-2 shrink-0 self-end">
-        <a href="#calculators" class="text-xs font-bold text-[color:var(--accent)] hover:underline mr-2 hidden sm:inline-flex items-center gap-1" data-category-jump="PDF">
-          <span>View PDF Tools</span>
-          <Icon name="arrow-right" class="w-3 h-3" />
-        </a>
-        <div class="flex items-center gap-1.5">
-          <button
-            type="button"
-            class="inline-flex h-8 w-8 items-center justify-center border border-[color:var(--border)] bg-white text-[color:var(--fg)] transition hover:border-[color:var(--accent)] hover:text-[color:var(--accent)] disabled:opacity-30 disabled:pointer-events-none cursor-pointer"
-            style="border-radius:0;"
-            aria-label="Previous PDF tools"
-            data-carousel-prev
-          >
-            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-              <polyline points="15 18 9 12 15 6"></polyline>
-            </svg>
-          </button>
-          <button
-            type="button"
-            class="inline-flex h-8 w-8 items-center justify-center border border-[color:var(--border)] bg-white text-[color:var(--fg)] transition hover:border-[color:var(--accent)] hover:text-[color:var(--accent)] disabled:opacity-30 disabled:pointer-events-none cursor-pointer"
-            style="border-radius:0;"
-            aria-label="Next PDF tools"
-            data-carousel-next
-          >
-            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-              <polyline points="9 18 15 12 9 6"></polyline>
-            </svg>
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Horizontal Snap Track -->
-    <div class="relative group/shelf">
-      <div class="pointer-events-none absolute left-0 top-0 bottom-0 w-8 z-10 bg-gradient-to-r from-white to-transparent opacity-0 transition-opacity duration-200" data-carousel-fade-left></div>
-
-      <div
-        class="flex gap-3.5 overflow-x-auto scroll-smooth snap-x snap-mandatory py-2 px-0.5 no-scrollbar touch-pan-x cursor-grab"
-        data-carousel-track
-      >
-        {pdfMediaTools.map((tool) => (
-          <a
-            href={withBasePath(tool.url)}
-            class="group snap-start shrink-0 w-[270px] sm:w-[310px] md:w-[330px] flex flex-col justify-between border border-[color:var(--border)] bg-white p-5 transition hover:border-[color:var(--accent)] hover:shadow-xs"
-            style="border-radius:0;"
-          >
-            <div class="space-y-3">
-              <div class="flex items-center justify-between gap-2">
-                <ToolIcon url={tool.url} title={tool.title} category={tool.category} size="md" />
-                <span class="inline-flex bg-slate-50 px-2 py-0.5 text-[11px] font-semibold text-[color:var(--muted)] border border-[color:var(--border)]" style="border-radius:0;">
-                  {tool.category}
-                </span>
-              </div>
-              <h3 class="text-base font-bold tracking-tight text-[color:var(--fg)] group-hover:text-[color:var(--accent)] transition-colors">
-                {tool.title}
-              </h3>
-              <p class="text-xs leading-relaxed text-[color:var(--muted)] line-clamp-2">
-                {tool.desc}
-              </p>
-            </div>
-
-            <div class="mt-5 flex items-center justify-between pt-2.5 border-t border-[color:var(--border)]/70">
-              <span class="inline-flex items-center gap-1 text-xs font-bold text-[color:var(--fg)] group-hover:text-[color:var(--accent)] transition-colors">
-                <span>Open Tool</span>
-                <Icon name="arrow-right" class="w-3.5 h-3.5 transition group-hover:translate-x-1" />
-              </span>
-              <span class="text-[10px] font-semibold uppercase tracking-wider text-[color:var(--muted)]">Private</span>
-            </div>
-          </a>
-        ))}
-      </div>
-
-      <div class="pointer-events-none absolute right-0 top-0 bottom-0 w-8 z-10 bg-gradient-to-l from-white to-transparent opacity-100 transition-opacity duration-200" data-carousel-fade-right></div>
-    </div>
-
-    <!-- Visual Scroll Progress Indicator -->
-    <div class="w-full bg-slate-100 h-0.5 overflow-hidden relative">
-      <div class="h-full bg-[color:var(--accent)] transition-all duration-150 origin-left" style="width: 25%;" data-carousel-progress-bar></div>
-    </div>
-  </section>
-
-  <!-- SECTION 5: Developer & Data Arsenal (Curated Horizontal Shelf) -->
-  <section class="mt-12 scroll-mt-24 space-y-3" data-carousel>
-    <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
-      <div>
-        <div class="flex items-center gap-2">
-          <span class="inline-flex px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider bg-slate-100 text-slate-800 border border-slate-300" style="border-radius:0;">
-            Engineering &amp; Code
-          </span>
-          <span class="text-xs font-semibold text-[color:var(--muted)]">Web Developer Utilities</span>
-        </div>
-        <h2 class="mt-1 text-xl sm:text-2xl font-bold tracking-tight text-[color:var(--fg)]">Developer &amp; Data Arsenal</h2>
-        <p class="text-xs sm:text-sm text-[color:var(--muted)]">Format JSON, test regular expressions, decode JWT tokens, and transform CSV payloads.</p>
-      </div>
-
-      <div class="flex items-center gap-2 shrink-0 self-end">
-        <a href="#calculators" class="text-xs font-bold text-[color:var(--accent)] hover:underline mr-2 hidden sm:inline-flex items-center gap-1" data-category-jump="Developer">
-          <span>View Dev Tools</span>
-          <Icon name="arrow-right" class="w-3 h-3" />
-        </a>
-        <div class="flex items-center gap-1.5">
-          <button
-            type="button"
-            class="inline-flex h-8 w-8 items-center justify-center border border-[color:var(--border)] bg-white text-[color:var(--fg)] transition hover:border-[color:var(--accent)] hover:text-[color:var(--accent)] disabled:opacity-30 disabled:pointer-events-none cursor-pointer"
-            style="border-radius:0;"
-            aria-label="Previous developer tools"
-            data-carousel-prev
-          >
-            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-              <polyline points="15 18 9 12 15 6"></polyline>
-            </svg>
-          </button>
-          <button
-            type="button"
-            class="inline-flex h-8 w-8 items-center justify-center border border-[color:var(--border)] bg-white text-[color:var(--fg)] transition hover:border-[color:var(--accent)] hover:text-[color:var(--accent)] disabled:opacity-30 disabled:pointer-events-none cursor-pointer"
-            style="border-radius:0;"
-            aria-label="Next developer tools"
-            data-carousel-next
-          >
-            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-              <polyline points="9 18 15 12 9 6"></polyline>
-            </svg>
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Horizontal Snap Track -->
-    <div class="relative group/shelf">
-      <div class="pointer-events-none absolute left-0 top-0 bottom-0 w-8 z-10 bg-gradient-to-r from-white to-transparent opacity-0 transition-opacity duration-200" data-carousel-fade-left></div>
-
-      <div
-        class="flex gap-3.5 overflow-x-auto scroll-smooth snap-x snap-mandatory py-2 px-0.5 no-scrollbar touch-pan-x cursor-grab"
-        data-carousel-track
-      >
-        {devDataTools.map((tool) => (
-          <a
-            href={withBasePath(tool.url)}
-            class="group snap-start shrink-0 w-[270px] sm:w-[310px] md:w-[330px] flex flex-col justify-between border border-[color:var(--border)] bg-white p-5 transition hover:border-[color:var(--accent)] hover:shadow-xs"
-            style="border-radius:0;"
-          >
-            <div class="space-y-3">
-              <div class="flex items-center justify-between gap-2">
-                <ToolIcon url={tool.url} title={tool.title} category={tool.category} size="md" />
-                <span class="inline-flex bg-slate-50 px-2 py-0.5 text-[11px] font-semibold text-[color:var(--muted)] border border-[color:var(--border)]" style="border-radius:0;">
-                  {tool.category}
-                </span>
-              </div>
-              <h3 class="text-base font-bold tracking-tight text-[color:var(--fg)] group-hover:text-[color:var(--accent)] transition-colors">
-                {tool.title}
-              </h3>
-              <p class="text-xs leading-relaxed text-[color:var(--muted)] line-clamp-2">
-                {tool.desc}
-              </p>
-            </div>
-
-            <div class="mt-5 flex items-center justify-between pt-2.5 border-t border-[color:var(--border)]/70">
-              <span class="inline-flex items-center gap-1 text-xs font-bold text-[color:var(--fg)] group-hover:text-[color:var(--accent)] transition-colors">
-                <span>Open Tool</span>
-                <Icon name="arrow-right" class="w-3.5 h-3.5 transition group-hover:translate-x-1" />
-              </span>
-              <span class="text-[10px] font-semibold uppercase tracking-wider text-[color:var(--muted)]">Dev</span>
-            </div>
-          </a>
-        ))}
-      </div>
-
-      <div class="pointer-events-none absolute right-0 top-0 bottom-0 w-8 z-10 bg-gradient-to-l from-white to-transparent opacity-100 transition-opacity duration-200" data-carousel-fade-right></div>
-    </div>
-
-    <!-- Visual Scroll Progress Indicator -->
-    <div class="w-full bg-slate-100 h-0.5 overflow-hidden relative">
-      <div class="h-full bg-[color:var(--accent)] transition-all duration-150 origin-left" style="width: 25%;" data-carousel-progress-bar></div>
-    </div>
-  </section>
-
-  <!-- SECTION 6: Complete 186 Tools Library Directory (Organized & Compact) -->
-  <section id="calculators" class="mt-14 scroll-mt-24 space-y-6 pt-6 border-t border-slate-200">
-    <div class="space-y-4">
-      <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
-        <div id="categories" class="scroll-mt-24">
-          <div class="flex items-center gap-2">
-            <span class="inline-flex px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider bg-slate-900 text-white" style="border-radius:0;">
-              Full Library
-            </span>
-            <span class="text-xs font-semibold text-[color:var(--muted)]">All Tools Indexed</span>
-          </div>
-          <h2 class="mt-1 text-xl sm:text-2xl font-bold tracking-tight text-[color:var(--fg)]">All Tools &amp; Calculators Directory</h2>
-        </div>
-        <div class="flex items-center gap-2 text-xs text-[color:var(--muted)]">
-          <span class="font-semibold text-[color:var(--fg)]" data-active-category-label>All Categories</span>
+      <!-- Statutory Verification & Faculty Peer-Review Note -->
+      <div class="mx-auto max-w-4xl text-center space-y-2 pt-4 border-t border-slate-100">
+        <p class="text-xs sm:text-sm text-[color:var(--muted)] leading-relaxed">
+          Statutory calculations are verified against official government gazettes, revenue authorities (IRS, HMRC, CRA, ATO, BMF, DGFiP, ESTV, Box 1), and national legislation enacted as of <strong class="text-[color:var(--fg)]">October 1, 2026</strong>. Researched and audited by Tanvirul Islam (Department of Management Information Systems, University of Dhaka) with academic peer review.
+        </p>
+        <div class="flex flex-wrap items-center justify-center gap-4 pt-2 text-xs font-bold text-[color:var(--accent)]">
+          <a href={withBasePath('/about/')} class="hover:underline">About Methodology</a>
           <span>•</span>
-          <span>Showing <strong class="text-[color:var(--fg)]" data-search-count>{allToolsIndex.length}</strong> of {allToolsIndex.length} tools</span>
+          <a href={withBasePath('/contact/')} class="hover:underline">Contact Editorial Team</a>
+          <span>•</span>
+          <a href={withBasePath('/privacy/')} class="hover:underline">Privacy Policy</a>
+          <span>•</span>
+          <a href={withBasePath('/disclaimer/')} class="hover:underline">Statutory Disclaimer</a>
         </div>
       </div>
+    </section>
 
-      <!-- Real-time Quick Search Input with Hotkey Pill -->
-      <div class="relative w-full max-w-xl">
-        <input
-          type="search"
-          placeholder="Search 186+ tools (e.g., mortgage, tax, pdf, json, percentage)..."
-          class="w-full bg-white border border-[color:var(--border)] px-4 py-2.5 pl-10 pr-20 text-xs sm:text-sm text-[color:var(--fg)] placeholder:text-[color:var(--muted)] focus:outline-none focus:border-[color:var(--accent)] shadow-xs"
+    <!-- =========================================================================
+         SECTION 7: BOTTOM CALL TO ACTION
+         ========================================================================= -->
+    <section class="border border-[color:var(--border)] bg-slate-900 text-white p-8 sm:p-12 text-center space-y-6" style="border-radius:0;">
+      <div class="max-w-2xl mx-auto space-y-2">
+        <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight">
+          Ready to Calculate with Complete Privacy?
+        </h2>
+        <p class="text-xs sm:text-sm text-slate-300 leading-relaxed">
+          Access our full catalog of 186+ online calculators, statutory tax engines, PDF manipulation tools, and developer utilities with instant in-browser execution.
+        </p>
+      </div>
+
+      <div class="flex flex-wrap items-center justify-center gap-4 pt-2">
+        <a
+          href={withBasePath('/all-tools/')}
+          class="inline-flex items-center gap-2 bg-[color:var(--accent)] px-6 py-3 text-xs sm:text-sm font-bold text-white hover:bg-[color:var(--accent-hover)] transition cursor-pointer shadow-md"
           style="border-radius:0;"
-          data-calculator-search
-          aria-label="Search all tools and calculators"
-        />
-        <svg class="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[color:var(--muted)] pointer-events-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <circle cx="11" cy="11" r="8"></circle>
-          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-        </svg>
-        <div class="absolute right-3 top-1/2 -translate-y-1/2 hidden sm:flex items-center gap-1 pointer-events-none">
-          <kbd class="px-1.5 py-0.5 text-[10px] font-mono font-semibold text-slate-500 bg-slate-100 border border-slate-200" style="border-radius:0;">/</kbd>
-        </div>
-      </div>
-
-      <!-- Horizontal Sticky / Scrollable Category Navigator Rail -->
-      <div class="relative border-y border-slate-200/80 py-2.5 bg-slate-50/50" data-category-rail-container>
-        <div class="flex items-center gap-2 overflow-x-auto no-scrollbar scroll-smooth px-1" role="tablist" aria-label="Tool Categories" data-category-rail>
-          {categoryTabs.map((category, index) => {
-            const catConfig = getCategoryIconConfig(category.name);
-            const isAll = category.name === 'All';
-            return (
-              <button
-                class:list={[
-                  'inline-flex shrink-0 cursor-pointer items-center gap-2 border px-3 py-1.5 text-xs transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-current',
-                  index === 0
-                    ? 'active font-bold border-transparent bg-slate-900 text-white shadow-xs'
-                    : 'border-[color:var(--border)] bg-white text-[color:var(--muted)] font-semibold hover:border-[color:var(--accent)] hover:text-[color:var(--fg)]',
-                ]}
-                style="border-radius:0;"
-                type="button"
-                role="tab"
-                data-category-tab
-                data-category-name={isAll ? '' : category.name}
-                data-icon-color={catConfig.textColor}
-                aria-pressed={index === 0 ? 'true' : 'false'}
-                aria-selected={index === 0 ? 'true' : 'false'}
-              >
-                <svg
-                  class:list={[
-                    'w-3.5 h-3.5 stroke-current shrink-0',
-                    index === 0 ? 'text-white' : catConfig.textColor
-                  ]}
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  set:html={catConfig.svgPath}
-                  data-tab-icon
-                />
-                <span>{category.name}</span>
-                <span
-                  class:list={[
-                    'px-1.5 py-0.2 text-[10px] font-bold',
-                    index === 0 ? 'bg-white/20 text-white' : 'bg-slate-100 text-[color:var(--muted)]'
-                  ]}
-                  style="border-radius:0;"
-                  data-tab-count
-                >{category.count}</span>
-              </button>
-            );
-          })}
-        </div>
-      </div>
-
-      <!-- Active Filters Reset Bar (Hidden by default) -->
-      <div class="flex items-center justify-between gap-3 border border-[color:var(--border)] bg-slate-50 px-4 py-2 text-xs text-[color:var(--muted)]" style="border-radius:0;" data-active-filter-bar hidden>
-        <div class="flex items-center gap-2">
-          <span>Active filter:</span>
-          <span class="font-bold text-[color:var(--fg)]" data-filter-summary>None</span>
-        </div>
-        <button
-          type="button"
-          class="cursor-pointer font-bold text-[color:var(--accent)] hover:underline"
-          data-reset-filters
         >
-          Reset Filters
-        </button>
-      </div>
-    </div>
+          <span>BROWSE ALL 186 TOOLS DIRECTORY</span>
+          <Icon name="arrow-right" class="w-4 h-4" />
+        </a>
 
-    <!-- Calculator Cards Grid (186 tools) -->
-    <div class="grid gap-3.5 sm:grid-cols-2 lg:grid-cols-3" data-calculator-grid>
-      {allToolsIndex.map((tool) => {
-        const slug = tool.url.replace(/^\/|\/$/g, '').split('/').pop() || '';
-        const isPopular = popularSet.has(slug);
-        const isNew = newToolSet.has(slug);
-        return (
-          <a
-            class="group flex flex-col justify-between border border-[color:var(--border)] bg-white p-5 transition hover:border-[color:var(--accent)] hover:shadow-xs"
-            style="border-radius:0;"
-            href={withBasePath(tool.url)}
-            data-calculator-card
-            data-calculator-category={tool.category}
-            data-search-text={`${tool.title} ${tool.category} ${tool.desc} ${tool.url}`.toLowerCase()}
-          >
-            <div class="space-y-3">
-              <div class="flex items-center justify-between gap-2">
-                <ToolIcon url={tool.url} title={tool.title} category={tool.category} size="md" />
-                <div class="flex items-center gap-1.5">
-                  {isPopular && (
-                    <span class="inline-flex items-center bg-orange-50 px-2 py-0.5 text-[10px] font-bold text-[color:var(--accent)] border border-orange-200" style="border-radius:0;">
-                      POPULAR
-                    </span>
-                  )}
-                  {isNew && (
-                    <span class="inline-flex items-center bg-slate-100 px-2 py-0.5 text-[10px] font-bold text-slate-800 border border-slate-300" style="border-radius:0;">
-                      NEW
-                    </span>
-                  )}
-                  <span class="inline-flex bg-slate-50 px-2 py-0.5 text-[11px] font-semibold text-[color:var(--muted)] border border-[color:var(--border)]" style="border-radius:0;">
-                    {tool.category}
-                  </span>
-                </div>
-              </div>
-              <h3 class="text-base font-bold tracking-tight text-[color:var(--fg)] group-hover:text-[color:var(--accent)] transition-colors">
-                {tool.title}
-              </h3>
-              <p class="text-xs leading-relaxed text-[color:var(--muted)] line-clamp-2">
-                {tool.desc}
-              </p>
-            </div>
-
-            <div class="mt-5 flex items-center justify-between pt-2.5 border-t border-[color:var(--border)]/70">
-              <span class="inline-flex items-center gap-1 text-xs font-bold text-[color:var(--fg)] group-hover:text-[color:var(--accent)] transition-colors">
-                <span>Open Tool</span>
-                <Icon name="arrow-right" class="w-3.5 h-3.5 transition group-hover:translate-x-1" />
-              </span>
-              <span class="text-[10px] font-semibold uppercase tracking-wider text-[color:var(--muted)]">Instant</span>
-            </div>
-          </a>
-        );
-      })}
-    </div>
-
-    <!-- Modern Streamlined Pagination / Expansion Bar (Prevents Infinite Scrolling) -->
-    <div
-      class="mt-8 flex flex-col sm:flex-row items-center justify-between gap-4 border border-[color:var(--border)] bg-slate-50 p-4 sm:p-5"
-      style="border-radius:0;"
-      data-pagination-container
-    >
-      <div class="text-xs text-[color:var(--muted)] text-center sm:text-left">
-        Showing <strong class="text-[color:var(--fg)]" data-pagination-shown>12</strong> of <strong class="text-[color:var(--fg)]" data-pagination-total>{allToolsIndex.length}</strong> tools
-        <span class="block sm:inline sm:ml-1 text-[11px] text-slate-400">Use categories above or search for instant access.</span>
-      </div>
-
-      <div class="flex items-center gap-3">
-        <button
-          type="button"
-          class="inline-flex items-center gap-2 border border-[color:var(--border)] bg-white px-4 py-2 text-xs font-bold text-[color:var(--fg)] transition hover:border-[color:var(--accent)] hover:text-[color:var(--accent)] cursor-pointer"
+        <a
+          href="#tax-suite"
+          class="inline-flex items-center gap-2 border border-white/40 bg-transparent px-6 py-3 text-xs sm:text-sm font-bold text-white hover:bg-white/10 transition cursor-pointer"
           style="border-radius:0;"
-          data-load-more-btn
         >
-          <span>Load More (+18)</span>
-          <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <polyline points="6 9 12 15 18 9"></polyline>
-          </svg>
-        </button>
-
-        <button
-          type="button"
-          class="inline-flex items-center gap-2 bg-[color:var(--accent)] px-4 py-2 text-xs font-bold text-white transition hover:bg-[color:var(--accent-hover)] cursor-pointer shadow-xs active:scale-[0.98]"
-          style="border-radius:0;"
-          data-show-all-btn
-        >
-          <span>Show All {allToolsIndex.length} Tools</span>
-          <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <polyline points="7 13 12 18 17 13"></polyline>
-            <polyline points="7 6 12 11 17 6"></polyline>
-          </svg>
-        </button>
+          <span>24-COUNTRY TAX SUITE</span>
+          <Icon name="arrow-right" class="w-4 h-4" />
+        </a>
       </div>
-    </div>
+    </section>
 
-    <!-- Empty search result alert -->
-    <div
-      class="border border-[color:var(--border)] bg-slate-50 p-8 text-center"
-      style="border-radius:0;"
-      data-search-empty
-      hidden
-    >
-      <Icon name="search" class="mx-auto h-8 w-8 text-[color:var(--muted)]" />
-      <p class="mt-2 text-sm font-bold text-[color:var(--fg)]">No matching tools found</p>
-      <p class="mt-1 text-xs text-[color:var(--muted)]">Try searching for a different keyword or browse through our categories above.</p>
-      <button
-        type="button"
-        class="mt-4 inline-flex items-center gap-1 text-xs font-bold text-[color:var(--accent)] hover:underline cursor-pointer"
-        data-reset-filters
-      >
-        Show All Tools
-      </button>
-    </div>
-  </section>
+  </div>
 
-  <!-- Client-Side Modern Scrolling & Directory Filter Logic -->
-  <script is:inline>
+  <!-- Client-Side Script: Tab Switching, Live Reactive Computations, and Carousels -->
+  <script is:inline define:vars={{ baselineRates: baselineExchangeRates }}>
     (function () {
-      // 1. HORIZONTAL CAROUSELS LOGIC (Scroll-Snap, Next/Prev, Drag-to-Scroll, Progress Bar)
-      function initCarousels() {
-        const carousels = document.querySelectorAll('[data-carousel]');
+      // 1. PLAYGROUND TAB SWITCHING LOGIC
+      const playground = document.querySelector('[data-playground]');
+      if (playground) {
+        const tabs = playground.querySelectorAll('.playground-tab');
+        const panels = playground.querySelectorAll('.playground-panel');
 
-        carousels.forEach((carousel) => {
-          const track = carousel.querySelector('[data-carousel-track]');
-          const prevBtn = carousel.querySelector('[data-carousel-prev]');
-          const nextBtn = carousel.querySelector('[data-carousel-next]');
-          const fadeLeft = carousel.querySelector('[data-carousel-fade-left]');
-          const fadeRight = carousel.querySelector('[data-carousel-fade-right]');
-          const progressBar = carousel.querySelector('[data-carousel-progress-bar]');
+        tabs.forEach((tab) => {
+          tab.addEventListener('click', () => {
+            const targetTab = tab.dataset.tab;
 
-          if (!track) return;
-
-          function updateControls() {
-            const maxScroll = Math.max(0, track.scrollWidth - track.clientWidth);
-            const currentScroll = track.scrollLeft;
-
-            if (prevBtn) {
-              prevBtn.disabled = currentScroll <= 4;
-            }
-            if (nextBtn) {
-              nextBtn.disabled = currentScroll >= maxScroll - 4;
-            }
-            if (fadeLeft) {
-              fadeLeft.style.opacity = currentScroll > 12 ? '1' : '0';
-            }
-            if (fadeRight) {
-              fadeRight.style.opacity = currentScroll < maxScroll - 12 ? '1' : '0';
-            }
-            if (progressBar && maxScroll > 0) {
-              const thumbPercent = Math.min(100, Math.max(10, (track.clientWidth / track.scrollWidth) * 100));
-              const progressRatio = currentScroll / maxScroll;
-              progressBar.style.width = thumbPercent + '%';
-              progressBar.style.transform = `translateX(${progressRatio * (100 / (thumbPercent / 100) - 100)}%)`;
-            }
-          }
-
-          if (prevBtn) {
-            prevBtn.addEventListener('click', () => {
-              track.scrollBy({ left: -Math.max(260, track.clientWidth * 0.75), behavior: 'smooth' });
+            tabs.forEach((t) => {
+              const isActive = t === tab;
+              t.setAttribute('aria-selected', String(isActive));
+              if (isActive) {
+                t.className = 'playground-tab active inline-flex items-center gap-2 px-3.5 py-2 text-xs font-bold border transition cursor-pointer bg-slate-900 text-white border-slate-900 shadow-xs';
+              } else {
+                t.className = 'playground-tab inline-flex items-center gap-2 px-3.5 py-2 text-xs font-bold border transition cursor-pointer bg-white text-[color:var(--muted)] border-[color:var(--border)] hover:border-[color:var(--accent)] hover:text-[color:var(--fg)]';
+              }
             });
-          }
 
-          if (nextBtn) {
-            nextBtn.addEventListener('click', () => {
-              track.scrollBy({ left: Math.max(260, track.clientWidth * 0.75), behavior: 'smooth' });
+            panels.forEach((p) => {
+              if (p.dataset.panel === targetTab) {
+                p.classList.remove('hidden');
+              } else {
+                p.classList.add('hidden');
+              }
             });
+          });
+        });
+
+        // LIVE CURRENCY CALCULATOR
+        const curAmount = playground.querySelector('[data-currency-amount]');
+        const curFrom = playground.querySelector('[data-currency-from]');
+        const curTo = playground.querySelector('[data-currency-to]');
+        const curResult = playground.querySelector('[data-currency-result]');
+        const curSummary = playground.querySelector('[data-currency-input-summary]');
+        const curRateInfo = playground.querySelector('[data-currency-rate-info]');
+
+        function updateCurrency() {
+          if (!curAmount || !curFrom || !curTo || !curResult) return;
+          const amt = parseFloat(curAmount.value) || 0;
+          const fromCode = curFrom.value;
+          const toCode = curTo.value;
+
+          const fromRate = baselineRates[fromCode] || 1.0;
+          const toRate = baselineRates[toCode] || 1.0;
+
+          // Conversion formula: (Amount / fromRate) * toRate
+          const converted = (amt / fromRate) * toRate;
+          const singleUnit = (1 / fromRate) * toRate;
+
+          curResult.textContent = converted.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' ' + toCode;
+          if (curSummary) {
+            curSummary.textContent = amt.toLocaleString() + ' ' + fromCode + ' equals';
+          }
+          if (curRateInfo) {
+            curRateInfo.textContent = `1 ${fromCode} = ${singleUnit.toFixed(4)} ${toCode} • Mid-market exchange rate`;
+          }
+        }
+
+        if (curAmount) curAmount.addEventListener('input', updateCurrency);
+        if (curFrom) curFrom.addEventListener('change', updateCurrency);
+        if (curTo) curTo.addEventListener('change', updateCurrency);
+        updateCurrency();
+
+        // LIVE MORTGAGE ESTIMATOR
+        const loanPrincipal = playground.querySelector('[data-loan-principal]');
+        const loanRate = playground.querySelector('[data-loan-rate]');
+        const loanYears = playground.querySelector('[data-loan-years]');
+        const loanMonthly = playground.querySelector('[data-loan-monthly]');
+        const loanInterest = playground.querySelector('[data-loan-interest]');
+        const loanTotal = playground.querySelector('[data-loan-total]');
+
+        function updateMortgage() {
+          if (!loanPrincipal || !loanRate || !loanYears || !loanMonthly) return;
+          const P = parseFloat(loanPrincipal.value) || 0;
+          const annualRate = parseFloat(loanRate.value) || 0;
+          const years = parseFloat(loanYears.value) || 30;
+
+          const n = years * 12;
+          const r = annualRate / 100 / 12;
+
+          let monthlyPayment = 0;
+          if (r > 0 && n > 0 && P > 0) {
+            monthlyPayment = P * (r * Math.pow(1 + r, n)) / (Math.pow(1 + r, n) - 1);
+          } else if (n > 0 && P > 0) {
+            monthlyPayment = P / n;
           }
 
-          track.addEventListener('scroll', () => {
-            requestAnimationFrame(updateControls);
-          }, { passive: true });
+          const totalPaid = monthlyPayment * n;
+          const totalInterestPaid = Math.max(0, totalPaid - P);
 
-          // Mouse Drag-to-Scroll support for desktop users
-          let isDown = false;
-          let startX = 0;
-          let scrollLeft = 0;
-          let hasDragged = false;
+          loanMonthly.textContent = '$' + monthlyPayment.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+          if (loanInterest) loanInterest.textContent = '$' + totalInterestPaid.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+          if (loanTotal) loanTotal.textContent = '$' + totalPaid.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        }
 
-          track.addEventListener('mousedown', (e) => {
-            isDown = true;
-            hasDragged = false;
-            track.classList.add('cursor-grabbing');
-            track.classList.remove('cursor-grab');
-            startX = e.pageX - track.offsetLeft;
-            scrollLeft = track.scrollLeft;
+        if (loanPrincipal) loanPrincipal.addEventListener('input', updateMortgage);
+        if (loanRate) loanRate.addEventListener('input', updateMortgage);
+        if (loanYears) loanYears.addEventListener('change', updateMortgage);
+        updateMortgage();
+
+        // LIVE TAX & TAKE-HOME ESTIMATOR
+        const taxCountry = playground.querySelector('[data-tax-country]');
+        const taxGross = playground.querySelector('[data-tax-gross]');
+        const taxNet = playground.querySelector('[data-tax-net]');
+        const taxMonthly = playground.querySelector('[data-tax-monthly]');
+        const taxRate = playground.querySelector('[data-tax-rate]');
+        const taxTotalDeduction = playground.querySelector('[data-tax-total-deduction]');
+        const taxLink = playground.querySelector('[data-tax-link]');
+
+        function updateTax() {
+          if (!taxCountry || !taxGross || !taxNet) return;
+          const country = taxCountry.value;
+          const gross = parseFloat(taxGross.value) || 0;
+          const selectedOption = taxCountry.options[taxCountry.selectedIndex];
+          const currSymbol = selectedOption ? selectedOption.dataset.currency || '$' : '$';
+          const linkPath = selectedOption ? selectedOption.dataset.path : '/us-income-tax-calculator/';
+
+          let effectiveRate = 0.20;
+          if (country === 'US') {
+            effectiveRate = gross > 100000 ? 0.23 : (gross > 50000 ? 0.19 : 0.13);
+          } else if (country === 'UK') {
+            effectiveRate = gross > 80000 ? 0.32 : (gross > 40000 ? 0.22 : 0.14);
+          } else if (country === 'CA') {
+            effectiveRate = gross > 100000 ? 0.29 : (gross > 50000 ? 0.24 : 0.16);
+          } else if (country === 'AU') {
+            effectiveRate = gross > 120000 ? 0.29 : (gross > 60000 ? 0.22 : 0.15);
+          } else if (country === 'DE') {
+            effectiveRate = gross > 80000 ? 0.42 : (gross > 45000 ? 0.35 : 0.27);
+          } else if (country === 'FR') {
+            effectiveRate = gross > 70000 ? 0.34 : (gross > 40000 ? 0.25 : 0.18);
+          }
+
+          const deductions = gross * effectiveRate;
+          const net = Math.max(0, gross - deductions);
+          const monthly = net / 12;
+
+          taxNet.textContent = currSymbol + Math.round(net).toLocaleString();
+          if (taxMonthly) taxMonthly.textContent = `~${currSymbol}${Math.round(monthly).toLocaleString()} / month`;
+          if (taxRate) taxRate.textContent = (effectiveRate * 100).toFixed(1) + '%';
+          if (taxTotalDeduction) taxTotalDeduction.textContent = currSymbol + Math.round(deductions).toLocaleString();
+          if (taxLink) taxLink.setAttribute('href', linkPath);
+        }
+
+        if (taxCountry) taxCountry.addEventListener('change', updateTax);
+        if (taxGross) taxGross.addEventListener('input', updateTax);
+        updateTax();
+      }
+
+      // 2. HORIZONTAL TAX SUITE CAROUSEL LOGIC
+      const carousels = document.querySelectorAll('[data-carousel]');
+      carousels.forEach((carousel) => {
+        const track = carousel.querySelector('[data-carousel-track]');
+        const prevBtn = carousel.querySelector('[data-carousel-prev]');
+        const nextBtn = carousel.querySelector('[data-carousel-next]');
+        const fadeLeft = carousel.querySelector('[data-carousel-fade-left]');
+        const fadeRight = carousel.querySelector('[data-carousel-fade-right]');
+        const progressBar = carousel.querySelector('[data-carousel-progress-bar]');
+
+        if (!track) return;
+
+        function updateControls() {
+          const maxScroll = Math.max(0, track.scrollWidth - track.clientWidth);
+          const currentScroll = track.scrollLeft;
+
+          if (prevBtn) prevBtn.disabled = currentScroll <= 4;
+          if (nextBtn) nextBtn.disabled = currentScroll >= maxScroll - 4;
+          if (fadeLeft) fadeLeft.style.opacity = currentScroll > 12 ? '1' : '0';
+          if (fadeRight) fadeRight.style.opacity = currentScroll < maxScroll - 12 ? '1' : '0';
+          if (progressBar && maxScroll > 0) {
+            const thumbPercent = Math.min(100, Math.max(10, (track.clientWidth / track.scrollWidth) * 100));
+            const progressRatio = currentScroll / maxScroll;
+            progressBar.style.width = thumbPercent + '%';
+            progressBar.style.transform = `translateX(${progressRatio * (100 / (thumbPercent / 100) - 100)}%)`;
+          }
+        }
+
+        if (prevBtn) {
+          prevBtn.addEventListener('click', () => {
+            track.scrollBy({ left: -Math.max(260, track.clientWidth * 0.75), behavior: 'smooth' });
           });
+        }
 
-          window.addEventListener('mouseup', () => {
-            if (!isDown) return;
-            isDown = false;
-            track.classList.remove('cursor-grabbing');
-            track.classList.add('cursor-grab');
+        if (nextBtn) {
+          nextBtn.addEventListener('click', () => {
+            track.scrollBy({ left: Math.max(260, track.clientWidth * 0.75), behavior: 'smooth' });
           });
+        }
 
-          track.addEventListener('mousemove', (e) => {
-            if (!isDown) return;
+        track.addEventListener('scroll', () => {
+          requestAnimationFrame(updateControls);
+        }, { passive: true });
+
+        // Mouse Drag-to-Scroll support
+        let isDown = false;
+        let startX = 0;
+        let scrollLeft = 0;
+        let hasDragged = false;
+
+        track.addEventListener('mousedown', (e) => {
+          isDown = true;
+          hasDragged = false;
+          track.classList.add('cursor-grabbing');
+          track.classList.remove('cursor-grab');
+          startX = e.pageX - track.offsetLeft;
+          scrollLeft = track.scrollLeft;
+        });
+
+        window.addEventListener('mouseup', () => {
+          if (!isDown) return;
+          isDown = false;
+          track.classList.remove('cursor-grabbing');
+          track.classList.add('cursor-grab');
+        });
+
+        track.addEventListener('mousemove', (e) => {
+          if (!isDown) return;
+          e.preventDefault();
+          const x = e.pageX - track.offsetLeft;
+          const walk = (x - startX) * 1.3;
+          if (Math.abs(walk) > 5) hasDragged = true;
+          track.scrollLeft = scrollLeft - walk;
+        });
+
+        track.addEventListener('click', (e) => {
+          if (hasDragged) {
             e.preventDefault();
-            const x = e.pageX - track.offsetLeft;
-            const walk = (x - startX) * 1.3;
-            if (Math.abs(walk) > 5) {
-              hasDragged = true;
-            }
-            track.scrollLeft = scrollLeft - walk;
-          });
-
-          track.addEventListener('click', (e) => {
-            if (hasDragged) {
-              e.preventDefault();
-              e.stopPropagation();
-            }
-          }, true);
-
-          // Initial control update
-          updateControls();
-          window.addEventListener('resize', updateControls);
-        });
-      }
-
-      // 2. ALL TOOLS DIRECTORY FILTER & STREAMLINED PAGINATION
-      const searchInputs = Array.from(document.querySelectorAll('[data-calculator-search]'));
-      const grid = document.querySelector('[data-calculator-grid]');
-      const cards = grid ? Array.from(grid.querySelectorAll('[data-calculator-card]')) : [];
-      const categoryTabs = Array.from(document.querySelectorAll('[data-category-tab]'));
-      const resetButtons = Array.from(document.querySelectorAll('[data-reset-filters]'));
-      const searchCount = document.querySelector('[data-search-count]');
-      const activeCategoryLabel = document.querySelector('[data-active-category-label]');
-      const activeFilterBar = document.querySelector('[data-active-filter-bar]');
-      const filterSummary = document.querySelector('[data-filter-summary]');
-      const emptyState = document.querySelector('[data-search-empty]');
-      const paginationContainer = document.querySelector('[data-pagination-container]');
-      const paginationShown = document.querySelector('[data-pagination-shown]');
-      const paginationTotal = document.querySelector('[data-pagination-total]');
-      const loadMoreBtn = document.querySelector('[data-load-more-btn]');
-      const showAllBtn = document.querySelector('[data-show-all-btn]');
-      const categoryJumpLinks = Array.from(document.querySelectorAll('[data-category-jump]'));
-
-      let activeCategory = '';
-      let currentQuery = '';
-      let pageSize = 12; // Start with clean 12 tools in "All" view to eliminate vertical scroll
-      const PAGE_INCREMENT = 18;
-
-      function getSearchQuery() {
-        const input = searchInputs.find((i) => i && i.value);
-        return (input ? input.value : currentQuery).trim().toLowerCase();
-      }
-
-      function updateResults() {
-        const query = getSearchQuery();
-        const isFiltering = query.length > 0 || activeCategory.length > 0;
-        let matchedCount = 0;
-        let visibleCount = 0;
-
-        cards.forEach((card) => {
-          const searchableText = (card.dataset.searchText || '').toLowerCase();
-          const cardCategory = (card.dataset.calculatorCategory || '').trim();
-          const matchesSearch = query.length === 0 || searchableText.includes(query);
-          const matchesCategory = activeCategory.length === 0 || cardCategory.toLowerCase() === activeCategory.toLowerCase();
-          const isMatch = matchesSearch && matchesCategory;
-
-          if (isMatch) {
-            matchedCount += 1;
-            // In "All" view without search, apply pagination limit to avoid endless scrolling
-            const withinPage = isFiltering || matchedCount <= pageSize;
-            if (withinPage) {
-              card.removeAttribute('hidden');
-              card.style.display = '';
-              visibleCount += 1;
-            } else {
-              card.setAttribute('hidden', '');
-              card.style.display = 'none';
-            }
-          } else {
-            card.setAttribute('hidden', '');
-            card.style.display = 'none';
+            e.stopPropagation();
           }
-        });
+        }, true);
 
-        // Update counters & labels
-        if (searchCount) searchCount.textContent = String(matchedCount);
-        if (activeCategoryLabel) activeCategoryLabel.textContent = activeCategory || 'All Categories';
-
-        // Update pagination bar
-        if (paginationContainer) {
-          if (isFiltering || matchedCount <= pageSize) {
-            paginationContainer.style.display = 'none';
-          } else {
-            paginationContainer.style.display = 'flex';
-            if (paginationShown) paginationShown.textContent = String(visibleCount);
-            if (paginationTotal) paginationTotal.textContent = String(matchedCount);
-
-            const remaining = matchedCount - visibleCount;
-            if (loadMoreBtn) {
-              const nextBatch = Math.min(PAGE_INCREMENT, remaining);
-              loadMoreBtn.innerHTML = `<span>Load More (+${nextBatch})</span><svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>`;
-            }
-          }
-        }
-
-        // Update active filter summary bar
-        if (activeFilterBar && filterSummary) {
-          if (isFiltering) {
-            activeFilterBar.removeAttribute('hidden');
-            activeFilterBar.style.display = 'flex';
-            const parts = [];
-            if (activeCategory) parts.push(`Category: "${activeCategory}"`);
-            if (query) parts.push(`Search: "${query}"`);
-            filterSummary.textContent = parts.join(' | ');
-          } else {
-            activeFilterBar.setAttribute('hidden', '');
-            activeFilterBar.style.display = 'none';
-          }
-        }
-
-        // Empty state alert
-        if (emptyState) {
-          if (matchedCount === 0) {
-            emptyState.removeAttribute('hidden');
-            emptyState.style.display = 'block';
-          } else {
-            emptyState.setAttribute('hidden', '');
-            emptyState.style.display = 'none';
-          }
-        }
-      }
-
-      function setActiveCategory(catName, shouldScroll = false) {
-        activeCategory = (catName || '').trim();
-
-        categoryTabs.forEach((tab) => {
-          const tabCat = (tab.dataset.categoryName || '').trim();
-          const isSelected = (!activeCategory && !tabCat) || (activeCategory && tabCat.toLowerCase() === activeCategory.toLowerCase());
-
-          tab.setAttribute('aria-pressed', String(isSelected));
-          tab.setAttribute('aria-selected', String(isSelected));
-
-          const icon = tab.querySelector('[data-tab-icon]');
-          const countBadge = tab.querySelector('[data-tab-count]');
-          const iconColor = tab.dataset.iconColor || 'text-[color:var(--muted)]';
-
-          if (isSelected) {
-            tab.className = 'inline-flex shrink-0 cursor-pointer items-center gap-2 border border-transparent bg-slate-900 text-white px-3 py-1.5 text-xs font-bold shadow-xs active transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-current';
-            if (icon) {
-              icon.className = 'w-3.5 h-3.5 stroke-current shrink-0 text-white';
-            }
-            if (countBadge) {
-              countBadge.className = 'px-1.5 py-0.2 text-[10px] font-bold bg-white/20 text-white';
-            }
-            // Auto scroll category tab into view on horizontal rail
-            tab.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
-          } else {
-            tab.className = 'inline-flex shrink-0 cursor-pointer items-center gap-2 border border-[color:var(--border)] bg-white text-[color:var(--muted)] hover:border-[color:var(--accent)] hover:text-[color:var(--fg)] px-3 py-1.5 text-xs font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-current';
-            if (icon) {
-              icon.className = `w-3.5 h-3.5 stroke-current shrink-0 ${iconColor}`;
-            }
-            if (countBadge) {
-              countBadge.className = 'px-1.5 py-0.2 text-[10px] font-bold bg-slate-100 text-[color:var(--muted)]';
-            }
-          }
-        });
-
-        updateResults();
-
-        if (shouldScroll) {
-          const target = document.getElementById('calculators');
-          if (target) {
-            target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-          }
-        }
-      }
-
-      function resetAllFilters() {
-        searchInputs.forEach((input) => {
-          if (input) input.value = '';
-        });
-        currentQuery = '';
-        pageSize = 12;
-        setActiveCategory('');
-      }
-
-      function readUrlCategory() {
-        try {
-          const params = new URLSearchParams(window.location.search);
-          let cat = params.get('category');
-          if (!cat && window.location.hash) {
-            const hash = window.location.hash;
-            if (hash.includes('category=')) {
-              const hashParams = new URLSearchParams(hash.split('?')[1] || hash.substring(1));
-              cat = hashParams.get('category');
-            }
-          }
-          if (cat) {
-            setActiveCategory(decodeURIComponent(cat));
-          }
-        } catch (e) {}
-      }
-
-      // Pagination events
-      if (loadMoreBtn) {
-        loadMoreBtn.addEventListener('click', () => {
-          pageSize += PAGE_INCREMENT;
-          updateResults();
-        });
-      }
-
-      if (showAllBtn) {
-        showAllBtn.addEventListener('click', () => {
-          pageSize = 9999;
-          updateResults();
-        });
-      }
-
-      // Quick jump links from shelves to categories
-      categoryJumpLinks.forEach((link) => {
-        link.addEventListener('click', (e) => {
-          const cat = link.dataset.categoryJump;
-          if (cat) {
-            setActiveCategory(cat, true);
-          }
-        });
+        updateControls();
+        window.addEventListener('resize', updateControls);
       });
-
-      categoryTabs.forEach((tab) => {
-        tab.addEventListener('click', () => {
-          const cat = tab.dataset.categoryName || '';
-          setActiveCategory(cat);
-        });
-      });
-
-      searchInputs.forEach((input) => {
-        input.addEventListener('input', (e) => {
-          currentQuery = e.target.value;
-          searchInputs.forEach((other) => {
-            if (other !== input) other.value = currentQuery;
-          });
-          updateResults();
-        });
-      });
-
-      resetButtons.forEach((btn) => {
-        btn.addEventListener('click', resetAllFilters);
-      });
-
-      // Keyboard hotkey '/' for quick search focus
-      window.addEventListener('keydown', (e) => {
-        if (e.key === '/' && !['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement?.tagName)) {
-          const mainSearch = searchInputs[0];
-          if (mainSearch) {
-            e.preventDefault();
-            mainSearch.focus();
-            mainSearch.select();
-            const calculatorsSection = document.getElementById('calculators');
-            if (calculatorsSection) {
-              calculatorsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            }
-          }
-        }
-      });
-
-      window.addEventListener('popstate', readUrlCategory);
-      window.addEventListener('hashchange', readUrlCategory);
-
-      // Run on page load
-      initCarousels();
-      readUrlCategory();
-      updateResults();
     })();
   </script>
 </SiteLayout>

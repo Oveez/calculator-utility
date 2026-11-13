@@ -5,28 +5,29 @@
 **Current Objective:** Production Deployment to Cloudflare Pages & Ongoing Verification.
 
 ## State
-- **Last Completed Task:** Modernized homepage layout with horizontal scroll-snap carousels and streamlined directory:
+- **Last Completed Task:** Designed & deployed modern SaaS product landing page and dedicated `/all-tools/` directory:
   1. **User Problem Addressed:**
-     - The previous homepage dumped all 186 tools into an endless vertical 3-column grid (~6,000px height), creating high vertical scroll fatigue.
-  2. **Modern Scrolling Architecture Implemented:**
-     - **Curated Horizontal Shelves (Scroll-Snap Carousels):**
-       - Built 5 curated shelves with horizontal scroll-snap (`overflow-x: auto; scroll-snap-type: x mandatory`), smooth inertia scrolling, `<` / `>` chevron navigation buttons, desktop mouse drag-to-scroll support, edge gradient fade masks, and dynamic progress bars:
-         1. *Trending & Popular Calculators* (10 flagship tools).
-         2. *24-Country Statutory Tax Suite* (24 national income tax engines with official flags and authorities).
-         3. *Academic & Student Utilities* (8 college/university tools).
-         4. *PDF, Image & Media Studio* (8 in-browser client-side privacy tools).
-         5. *Developer & Data Arsenal* (8 web developer utilities).
-     - **Sticky Category Navigator Rail:**
-       - Added smooth horizontal scrolling category pill rail with SVG icons and live counts.
-     - **Streamlined All Tools Directory (Elimination of Infinite Scroll):**
-       - Default "All" view now renders a clean initial 12 cards with an interactive pagination bar (`Load More (+18)` / `Show All 186 Tools`).
-       - Selecting any category tab instantly displays that category's items without vertical bloat.
-       - Typing into the search bar instantly filters all 186 tools in real time.
-       - Added keyboard shortcut (`/`) for immediate search focus.
-  3. **Verification:**
-     - 162/162 Vitest unit tests pass 100% green across all 27 test suites.
-     - Astro production build cleanly generates all 207 static routes in 10.66s.
-     - All routes, URLs, and slugs preserved.
+     - The site already has all tools organized in the header navigation menus, mobile drawer, and global search. Showing an endless directory of 186 tools on the homepage was redundant and resembled an obsolete 2008 link directory rather than a modern software platform (like GitHub, Raycast, or Linear).
+  2. **Modern SaaS Landing Page Implemented (`src/pages/index.astro`):**
+     - **Quick Omnisearch Launcher:** Elevated quick launcher with keyboard shortcut (`/` or `Ctrl + K`) and high-intent action chips for top tools.
+     - **Interactive Live Computation Dock:** A multi-tabbed in-browser playground executing instant computations directly on the landing page without navigation:
+       - *Live Currency Converter:* Real-time FX conversion with mid-market rates.
+       - *Standard Keypad Calculator:* Embedded interactive keypad with arithmetic, memory (`MC`, `MR`, `M+`, `M-`), and one-click copy.
+       - *Mortgage & Loan Estimator:* Reactive monthly principal/interest, total interest, and total payoff calculation.
+       - *Take-Home Salary Estimator:* Dynamic net pay and effective tax estimation across 6 top economies.
+     - **The 4 Flagship Superpower Suites:**
+       - *Statutory 24-Country Tax Suite:* Curated horizontal scroll-snap track with official flags, authorities (IRS, HMRC, CRA, ATO, BMF, DGFiP...), and take-home links.
+       - *100% In-Browser Privacy Studio:* Highlights PDF Editor, PDF Merger, Local Image Compressor, and EXIF Metadata Stripper with zero server uploads.
+       - *Campus & Student Hub:* Highlights Assignment Cover Page Maker (A4 vector PDF export), Safe Bunk Calculator, Final Grade Calculator, and Weighted GPA.
+       - *Developer & Data Arsenal:* Highlights JSON Formatter, JWT Decoder, Regex Tester, and CSV-to-JSON Transformer.
+     - **Local-First Privacy Architecture Comparison:** Comparative visual matrix contrasting slow/leaky server-side processing against ToolsCastle's zero-knowledge WebAssembly sandbox.
+     - **Editorial Knowledge & Research Hub:** Spotlights the 4 top illustrated companion guides with bespoke 16:9 infographic illustrations and mathematical proofs.
+     - **Platform Scale & E-E-A-T Methodology Bar:** 186+ tools, 24 statutory jurisdictions, 0 bytes uploaded to servers, and October 1, 2026 enactment verification.
+  3. **Dedicated All Tools Directory (`src/pages/all-tools.astro`):**
+     - Created a clean, dedicated `/all-tools/` catalog housing all 186 tools with real-time search, 22 category tabs, and full SEO discoverability. Added to `public/sitemap.xml` and linked in `Footer.astro`.
+  4. **Verification:**
+     - 162/162 Vitest unit tests passing (100% green).
+     - Astro build cleanly compiles all 208 static routes in 8.30s with zero errors.
 - **Previous Completed Task:** Repaired LaTeX rendering across all 10 educational guide articles and reader template:
   1. **Root Cause Analysis:**
      - KaTeX auto-render was configured with `{left: '$', right: '$'}` for inline math, which mistakenly matched ordinary currency mentions (e.g., "$16,100 ... $85,000") in financial texts, converting entire prose paragraphs into broken LaTeX.
