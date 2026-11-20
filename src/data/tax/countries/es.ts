@@ -11,8 +11,12 @@ export const esProfile: CountryTaxProfile = {
   availableTaxYears: ['2026', '2025'],
   hasRegionalTax: true,
   regionalEntityName: 'Autonomous Community',
-  metaDescription: 'Calculate Spanish IRPF income tax, Seguridad Social employee contributions, and net take-home salary with official 2026 Agencia Tributaria & Seguridad Social rates.',
+  metaDescription: 'Free Spain income tax calculator: calculate Spanish income tax (IRPF), Seguridad Social contributions, and net take-home salary with official 2026 rates.',
   faqItems: [
+    {
+      question: 'How does this Spain income tax calculator estimate Spanish net salary?',
+      answer: 'Our Spanish income tax calculator computes take-home pay by combining statutory state IRPF rates with regional autonomous community brackets, deducting 6.47% employee Seguridad Social contributions, and applying the €5,550 standard personal minimum (mínimo personal y familiar).',
+    },
     {
       question: 'How is IRPF calculated in Spain for 2026?',
       answer: 'IRPF consists of a state portion (gravamen estatal) and an autonomous community portion (gravamen autonómico). Baseline combined rates range from 19% on income up to €12,450 to 47% on income over €300,000.',

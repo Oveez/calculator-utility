@@ -10,8 +10,12 @@ export const ieProfile: CountryTaxProfile = {
   defaultTaxYear: '2026',
   availableTaxYears: ['2026', '2025'],
   hasRegionalTax: false,
-  metaDescription: 'Calculate Irish PAYE income tax, Universal Social Charge (USC), and PRSI with official 2026 Revenue Commissioners rates, standard cut-off (€44,000), and USC tiers.',
+  metaDescription: 'Free Irish wage tax calculator: calculate 2026 PAYE income tax, standard rate cut-offs (€44,000), USC tiers, employee PRSI, and net salary take-home pay.',
   faqItems: [
+    {
+      question: 'How does this Irish wage tax calculator work for employed and self employed individuals?',
+      answer: 'This Irish tax calculator computes PAYE income tax using the 20% standard rate up to €44,000 and 40% on balance, applies the standard Personal and Employee tax credits (€2,000 each), and calculates USC and PRSI (Class A for employees, Class S at 4.2% for self employed).',
+    },
     {
       question: 'What is the 2026 Standard Rate Cut-Off Point in Ireland?',
       answer: 'For a single individual in 2026, the standard rate cut-off point is €44,000. Income up to €44,000 is taxed at the 20% standard rate, and any balance is taxed at the 40% higher rate.',

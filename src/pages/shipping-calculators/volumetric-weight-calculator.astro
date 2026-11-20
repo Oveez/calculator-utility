@@ -4,8 +4,8 @@ import Icon from '../../components/Icon.astro';
 import CalculatorParameterGuide from '../../components/calculator/CalculatorParameterGuide.astro';
 import { siteName, toAbsoluteUrl } from '../../utils/site';
 
-const pageTitle = `Volumetric Weight Calculator — Volumetric Calculator & Weight Calculator · ${siteName}`;
-const pageDesc = 'Free volumetric weight calculator and volumetric calculator for air freight and courier shipping. Calculate dimensional volume weight in kg and lbs with standard carrier divisors.';
+const pageTitle = `Freight Weight Calculator: Volumetric DIM · ${siteName}`;
+const pageDesc = 'Free freight weight calculator for air, ocean, and courier shipping. Calculate volumetric weight and billable dimensional weight in kg or lbs accurately.';
 const canonicalUrl = toAbsoluteUrl('/shipping-calculators/volumetric-weight-calculator/');
 
 const breadcrumbItems = [
@@ -14,6 +14,10 @@ const breadcrumbItems = [
 ];
 
 const faqs = [
+  {
+    question: 'How does a freight weight calculator determine chargeable air cargo weight?',
+    answer: 'A freight weight calculator determines chargeable weight by comparing physical gross scale weight against volumetric weight. For air cargo using metric units, volumetric weight (kg) = (Length × Width × Height in cm) ÷ 6000 (IATA standard). The airline charges for whichever weight is higher.',
+  },
   {
     question: 'How is volumetric weight calculated for air freight and couriers?',
     answer: 'For dimensions in centimeters: Volumetric Weight (kg) = (Length × Width × Height) ÷ Divisor. Express couriers (DHL, FedEx, UPS International) use divisor 5000 (1 CBM = 200 kg). Standard IATA Air Freight uses divisor 6000 (1 CBM = 167 kg).',
@@ -233,10 +237,10 @@ const schemaGraph = [
     <!-- Description Section -->
     <header class="space-y-3">
       <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-[color:var(--fg)]">
-        Volumetric Weight Calculator
+        Freight Weight Calculator &amp; Volumetric Weight Calculator
       </h1>
       <p class="max-w-3xl text-sm sm:text-base leading-relaxed text-[color:var(--muted)]">
-        Calculate dimensional weight for air cargo and express courier shipments. Supports standard 5000 and 6000 divisors in metric (cm/kg) and imperial (in/lbs) units.
+        Calculate dimensional cargo weight and billable air freight with our free freight weight calculator. Supports standard 5000 and 6000 divisors in metric (cm/kg) and imperial (in/lbs) units. For domestic US courier parcels, use our <a href="/shipping-calculators/dimensional-weight-calculator/" class="font-semibold text-[color:var(--accent)] hover:underline">SmartPost &amp; Dimensional Weight Calculator</a>.
       </p>
     </header>
 

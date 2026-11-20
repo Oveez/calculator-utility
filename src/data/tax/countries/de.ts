@@ -10,8 +10,12 @@ export const deProfile: CountryTaxProfile = {
   defaultTaxYear: '2026',
   availableTaxYears: ['2026', '2025'],
   hasRegionalTax: false,
-  metaDescription: 'Calculate German income tax (Einkommensteuer), Solidaritätszuschlag, and social security contributions with official 2026 BMF data (€12,348 Grundfreibetrag).',
+  metaDescription: 'Free income tax calculator Germany: compute German taxes in Germany (Einkommensteuer), Solidaritätszuschlag, and social security with official 2026 BMF data.',
   faqItems: [
+    {
+      question: 'How does this income tax calculator Germany compute taxes in Germany?',
+      answer: 'Our taxes in Germany calculator applies the 2026 BMF formula across progressive zones starting above the €12,348 Grundfreibetrag, accounts for statutory employee social insurance contributions (~20.5%), and evaluates Solidaritätszuschlag exemptions to calculate exact net monthly salary.',
+    },
     {
       question: 'What is the German Grundfreibetrag in 2026?',
       answer: 'The Grundfreibetrag (basic tax-free allowance) for 2026 is €12,348 for single individuals (Tax Class 1). Income below this threshold is completely tax-free.',

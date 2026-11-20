@@ -5,8 +5,8 @@ import CalculatorParameterGuide from '../../components/calculator/CalculatorPara
 import type { CalculatorParameterInfo } from '../../types/calculator';
 import { siteName, toAbsoluteUrl, withBasePath } from '../../utils/site';
 
-const pageTitle = `Image DPI & Print Size Calculator — Calculate PPI, Inches & Resolution · ${siteName}`;
-const pageDesc = 'Calculate physical print dimensions (inches & cm) from digital pixel dimensions based on target DPI (72, 150, 300, 600 DPI), or compute required megapixels for any photo print size.';
+const pageTitle = `DPI Count & Image Resolution Calculator · ${siteName}`;
+const pageDesc = 'Check DPI count and calculate print dimensions in inches and cm from digital pixels. Compute required photo megapixels for 72, 150, 300, and 600 DPI sizes.';
 const canonicalUrl = toAbsoluteUrl('/image-tools/image-dpi-checker/');
 
 const breadcrumbItems = [
@@ -46,6 +46,10 @@ const parameterGuideData: CalculatorParameterInfo[] = [
 ];
 
 const schemaFaq = [
+  {
+    question: 'How do I check and calculate DPI count for print?',
+    answer: 'Enter the pixel width and height of your image along with the physical print size. The tool calculates your effective DPI count and indicates whether it meets gallery printing standards (300 DPI) or poster standards (150 DPI).',
+  },
   {
     question: 'What is the formula to calculate print size from image pixels and DPI?',
     answer: 'Print Width (inches) = Pixel Width ÷ DPI. Print Height (inches) = Pixel Height ÷ DPI. To convert to centimeters, multiply inches by 2.54: Print Width (cm) = (Pixel Width ÷ DPI) × 2.54.',
@@ -428,10 +432,10 @@ const schemaGraph = [
     <!-- Description Section -->
     <header class="space-y-3">
       <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-[color:var(--fg)]">
-        Image DPI / PPI &amp; Print Size Calculator
+        DPI Count &amp; Image Print Size Calculator
       </h1>
       <p class="max-w-3xl text-sm sm:text-base leading-relaxed text-[color:var(--muted)]">
-        Accurately calculate physical print dimensions in inches, centimeters, and millimeters from digital image pixels, or reverse-calculate required resolution for any print format at 72, 150, 300, or 600 DPI.
+        Check your image DPI count and calculate physical print size dimensions in inches or centimeters from digital pixels. Compute required camera megapixels for high-resolution photo prints.
       </p>
     </header>
 

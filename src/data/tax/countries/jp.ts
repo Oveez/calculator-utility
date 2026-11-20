@@ -11,8 +11,12 @@ export const jpProfile: CountryTaxProfile = {
   availableTaxYears: ['2026', '2025'],
   hasRegionalTax: true,
   regionalEntityName: 'Prefecture / Municipality',
-  metaDescription: 'Calculate Japanese national income tax (Shotokuzei), inhabitant tax (Juminzei 10%), Shakai Hoken, and net salary with official 2026 NTA (国税庁) tax reform data.',
+  metaDescription: 'Free Japan tax calculator: calculate 2026 national income tax (Shotokuzei), inhabitant tax (Juminzei 10%), Shakai Hoken, and net monthly take-home pay.',
   faqItems: [
+    {
+      question: 'How do I use this Japan tax calculator to estimate take-home pay in 2026?',
+      answer: 'Our Japan tax calculator subtracts mandatory employee Shakai Hoken social contributions (~14.75%), applies the employment income deduction (Kyuyo shotoku kojo) and basic deduction (Kiso kojo), then computes progressive National Income Tax (5% to 45% + surtax) and flat 10% Local Inhabitant Tax (Juminzei).',
+    },
     {
       question: 'How is income tax calculated for employees in Japan in 2026?',
       answer: 'Japanese wage earners are taxed in two tiers: progressive National Income Tax (Shotokuzei, 5% to 45% plus 2.1% reconstruction surtax) and flat Local Inhabitant Tax (Juminzei, 10%). Standard deductions include the basic deduction (Kiso kojo) and employment income deduction (Kyuyo shotoku kojo), which expand the non-taxable threshold to ~¥1,780,000 under the 2026 tax reform.',

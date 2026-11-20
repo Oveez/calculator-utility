@@ -13,8 +13,8 @@ const parameterGuide = [
   { id: 'billedWeight', name: 'Final Billed Shipping Weight (lbs)', description: 'The greater of actual scale weight vs dimensional weight.', whyItMatters: 'The exact billable weight displayed on the courier shipping label and monthly invoice.', typicalRange: 'Calculated dynamically', unit: 'lbs' },
 ];
 
-const pageTitle = `Dimensional Weight Calculator | FedEx, UPS & USPS DIM Weight · ${siteName}`;
-const pageDesc = 'Calculate domestic and international dimensional weight for FedEx (139/166), UPS, and USPS Priority Mail packages in inches and pounds.';
+const pageTitle = `SmartPost Dimensional Weight Calculator · ${siteName}`;
+const pageDesc = 'Calculate SmartPost dimensional weight and billable shipping weight for FedEx, UPS, and USPS packages using accurate 139 and 166 cubic divisors.';
 const canonicalUrl = toAbsoluteUrl('/shipping-calculators/dimensional-weight-calculator/');
 
 const breadcrumbItems = [
@@ -26,6 +26,10 @@ const faqs = [
   {
     question: 'How do FedEx and UPS calculate DIM weight in the US?',
     answer: 'FedEx and UPS calculate dimensional weight in pounds as: DIM Weight (lbs) = (Length × Width × Height in inches) ÷ 139 for daily commercial contract rates, or ÷ 166 for retail counter rates. Carriers round up to the next whole pound.',
+  },
+  {
+    question: 'How is SmartPost dimensional weight calculated?',
+    answer: 'FedEx Ground Economy (formerly SmartPost) calculates dimensional weight using Length × Width × Height (in inches) divided by 166 (or 139 for specific enterprise contract tiers). If the SmartPost dimensional weight exceeds actual scale weight, shipping is billed at the dimensional weight.',
   },
   {
     question: 'When does USPS apply dimensional weight pricing?',
@@ -178,10 +182,10 @@ const schemaGraph = [
     <!-- Description Section -->
     <header class="space-y-3">
       <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-[color:var(--fg)]">
-        Dimensional Weight Calculator (DIM)
+        Dimensional Weight Calculator &amp; SmartPost Dimensional Weight
       </h1>
       <p class="max-w-3xl text-sm sm:text-base leading-relaxed text-[color:var(--muted)]">
-        Check if your parcel will be billed by dimensional weight or actual weight. Pre-configured with official FedEx, UPS, and USPS 139 / 166 divisors.
+        Check if your parcel will be billed by dimensional weight or actual weight. Calculate SmartPost dimensional weight and commercial courier rates with official FedEx, UPS, and USPS 139 / 166 divisors. For metric air and ocean freight, see our <a href="/shipping-calculators/volumetric-weight-calculator/" class="font-semibold text-[color:var(--accent)] hover:underline">Freight &amp; Volumetric Weight Calculator</a>.
       </p>
     </header>
 

@@ -10,8 +10,12 @@ export const nlProfile: CountryTaxProfile = {
   defaultTaxYear: '2026',
   availableTaxYears: ['2026', '2025'],
   hasRegionalTax: false,
-  metaDescription: 'Calculate Dutch Box 1 income tax, national insurance (volksverzekeringen), and net salary with official 2026 Belastingdienst tax brackets.',
+  metaDescription: 'Free salary calculator Netherlands: compute Dutch net salary, Box 1 tax brackets, and national insurance with official 2026 Belastingdienst rules.',
   faqItems: [
+    {
+      question: 'How does this Dutch salary tax calculator determine take-home pay in Amsterdam and the Netherlands?',
+      answer: 'This Dutch net salary calculator computes take-home pay by applying the three 2026 Box 1 Belastingdienst tax brackets (35.75%, 37.56%, and 49.50%), deducting national insurance contributions (volksverzekeringen), and applying standard statutory tax credits (algemene heffingskorting and arbeidskorting).',
+    },
     {
       question: 'What are the 2026 Box 1 income tax rates in the Netherlands?',
       answer: 'For 2026, Box 1 features 3 brackets for individuals under state pension age: 35.75% on income up to €38,883; 37.56% on income from €38,883 to €78,426; and 49.50% on income exceeding €78,426.',

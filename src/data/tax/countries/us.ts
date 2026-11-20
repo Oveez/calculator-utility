@@ -129,7 +129,7 @@ export const usProfile: CountryTaxProfile = {
   availableTaxYears: ['2026', '2025'],
   hasRegionalTax: true,
   regionalEntityName: 'State',
-  metaDescription: 'Free USA IRS tax calculator and federal income tax calculator for 2026. Calculate 2026 federal tax brackets, state income tax, FICA, taxable income, and estimate take home pay or refund tax.',
+  metaDescription: 'Free IRS tax calculator for calculating IRS taxes in 2026. Estimate federal tax brackets, state income taxes, FICA withholding, and take-home pay.',
   faqItems: [
     {
       question: 'What are the official 2026 federal tax brackets and tax rates?',

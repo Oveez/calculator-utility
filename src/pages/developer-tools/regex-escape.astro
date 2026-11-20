@@ -4,8 +4,8 @@ import Icon from '../../components/Icon.astro';
 import CalculatorParameterGuide from '../../components/calculator/CalculatorParameterGuide.astro';
 import { siteName, toAbsoluteUrl, withBasePath } from '../../utils/site';
 
-const pageTitle = `Regex Escape Tool — Escape Special Regex Characters · ${siteName}`;
-const pageDesc = 'Escape special regex metacharacters (. * + ? ^ $ { } [ ] ( ) | \\ /) in literal strings for safe inclusion in dynamic JavaScript and backend RegExp constructors.';
+const pageTitle = `Regex Escape Tool — Free Regex Escaper · ${siteName}`;
+const pageDesc = 'Free regex escape tool to escape special metacharacters (. * + ? ^ $ { } [ ] ( ) | \\) for safe dynamic JavaScript code and RegExp constructors.';
 const canonicalUrl = toAbsoluteUrl('/developer-tools/regex-escape/');
 
 const breadcrumbItems = [
@@ -21,6 +21,10 @@ const schemaFaq = [
   {
     question: 'What is the standard JavaScript RegExp escaping pattern?',
     answer: 'In ECMAScript, the recommended pattern is `string.replace(/[.*+?^${}()|[\\]\\\\]/g, "\\\\$&")`. This safely prepends a backslash before any regex metacharacter.',
+  },
+  {
+    question: 'How do I test my escaped regex against sample text?',
+    answer: 'Once your literal string has been escaped by our regex escape tool, test it with live matching in our companion <a href="/developer-tools/regex-tester/" class="text-[color:var(--accent)] font-semibold hover:underline">Regex Tester & Calculator Tool</a>.',
   },
   {
     question: 'Can this tool unescape previously escaped regex strings?',
@@ -238,10 +242,10 @@ const schemaGraph = [
     <!-- Description Section -->
     <header class="space-y-3">
       <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-[color:var(--fg)]">
-        Regex Special Character Escaper
+        Regex Escape Tool &amp; Special Character Escaper
       </h1>
       <p class="max-w-3xl text-sm sm:text-base leading-relaxed text-[color:var(--muted)]">
-        Escape or unescape special regular expression metacharacters in literal text strings. Generate production-ready JavaScript snippets for safe dynamic RegExp constructors.
+        Use this free online regex escape tool to escape special regular expression metacharacters in literal text strings. Generate production-ready JavaScript snippets for safe dynamic RegExp constructors.
       </p>
     </header>
 
@@ -303,9 +307,7 @@ const schemaGraph = [
               <span>{faq.question}</span>
               <span class="text-xs text-[color:var(--muted)] group-open:rotate-180 transition-transform">&#9660;</span>
             </summary>
-            <p class="mt-3 text-xs sm:text-sm leading-relaxed text-[color:var(--muted)]">
-              {faq.answer}
-            </p>
+            <p class="mt-3 text-xs sm:text-sm leading-relaxed text-[color:var(--muted)]" set:html={faq.answer} />
           </details>
         ))}
       </div>

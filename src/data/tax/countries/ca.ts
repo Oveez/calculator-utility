@@ -16,8 +16,12 @@ export const caProfile: CountryTaxProfile = {
   availableTaxYears: ['2026', '2025'],
   hasRegionalTax: true,
   regionalEntityName: 'Province / Territory',
-  metaDescription: 'Free Canada income tax calculator and CRA salary calculator for 2026. Calculate federal and provincial tax brackets, CPP/EI payroll deductions, and estimate take home pay or refund.',
+  metaDescription: 'Free tax calculator Canada: compute CRA federal & provincial income tax brackets, CPP, EI deductions, and net take-home salary for the 2026 tax year.',
   faqItems: [
+    {
+      question: 'How do I use this CRA tax calculator to calculate my Canadian take-home pay?',
+      answer: 'Our tax calculator Canada combines the official CRA federal tax brackets with your specific provincial tax schedule (such as Ontario, BC, Alberta, or Quebec). It deducts CPP/QPP pension contributions, EI premiums, and applies the federal basic personal amount to give you an accurate net paycheck figure.',
+    },
     {
       question: 'What are the official federal income tax brackets in Canada for 2026?',
       answer: 'For tax year 2026, the Canada Revenue Agency (CRA) federal tax brackets are: 14.0% on taxable income up to $58,523; 20.5% between $58,523 and $117,045; 26.0% between $117,045 and $181,440; 29.0% between $181,440 and $258,482; and 33.0% on taxable income exceeding $258,482. You only pay each bracket’s specific rate on the income portion within that tier.',

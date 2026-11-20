@@ -4,8 +4,8 @@ import Icon from '../../components/Icon.astro';
 import CalculatorParameterGuide from '../../components/calculator/CalculatorParameterGuide.astro';
 import { siteName, toAbsoluteUrl, withBasePath } from '../../utils/site';
 
-const pageTitle = `JSON Diff & Comparator — Compare JSON Files Online · ${siteName}`;
-const pageDesc = 'Compare two JSON objects or files online. Highlights added keys, removed properties, and modified values with semantic key normalization and side-by-side diffing. 100% private in-browser tool.';
+const pageTitle = `Compare Two JSONs Online: JSON Diff Tool · ${siteName}`;
+const pageDesc = 'Easily compare two JSONs online. Spot structural differences, changed values, and missing keys with semantic key sorting and side-by-side visual diffing.';
 const canonicalUrl = toAbsoluteUrl('/developer-tools/json-diff/');
 
 const breadcrumbItems = [
@@ -14,6 +14,10 @@ const breadcrumbItems = [
 ];
 
 const schemaFaq = [
+  {
+    question: 'How do I compare two JSONs with this tool?',
+    answer: 'Paste your base JSON on the left and the updated JSON on the right, or click Load Sample Diff. Click Compare JSONs to instantly see highlighted additions, deletions, and value modifications side-by-side.',
+  },
   {
     question: 'How does semantic JSON diffing work?',
     answer: 'Unlike line-by-line text diffing tools, this engine parses both inputs into structural objects, normalizes key order, and performs deep recursive equality checks across arrays and nested keys.',
@@ -267,10 +271,10 @@ const parameterGuide = [
     <!-- Description Section -->
     <header class="space-y-3">
       <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-[color:var(--fg)]">
-        JSON Diff &amp; Comparator
+        Compare Two JSONs &amp; JSON Diff Tool
       </h1>
       <p class="max-w-3xl text-sm sm:text-base leading-relaxed text-[color:var(--muted)]">
-        Compare two JSON documents to pinpoint added keys, removed properties, and modified values with semantic key normalization and side-by-side inspection.
+        Compare two JSONs online to pinpoint added keys, removed properties, and modified values with semantic key normalization and side-by-side inspection.
       </p>
     </header>
 

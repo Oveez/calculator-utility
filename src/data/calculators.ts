@@ -446,11 +446,11 @@ const calculators: CalculatorConfig[] = [
 		),
 	},
 	{
-		metaTitle: 'Discount Calculator — Sales Tax & Markdown Savings',
+		metaTitle: 'Discount Calculator With Tax: Savings · ToolsCastle',
 		slug: 'discount-calculator',
 		title: 'Discount & Sales Tax Calculator',
 		category: 'Finance',
-		metaDescription: 'Calculate discount prices, retail sale markdowns, net savings, and checkout totals with local sales tax included.',
+		metaDescription: 'Free online discount calculator with tax. Calculate store markdowns, promotional coupon savings, sales tax totals, and final register checkout prices.',
 		inputs: [
 			{ id: 'originalPrice', label: 'Original retail price', type: 'number', min: 0.01, step: 1, defaultValue: 120, unit: '$', prefix: '$', colSpan: 'half' },
 			{ id: 'discountPercent', label: 'Store discount %', type: 'number', min: 0, max: 100, step: 1, defaultValue: 25, unit: '%', suffix: '%', colSpan: 'half' },
@@ -517,10 +517,14 @@ const calculators: CalculatorConfig[] = [
 				question: 'Is sales tax applied before or after the discount prices are calculated?',
 				answer: 'In standard retail transactions, sales tax is applied to the discounted sale price rather than the original manufacturer price.'
 			},
+			{
+				question: 'How does a discount calculator with tax compute final register totals?',
+				answer: 'Our discount calculator with tax first subtracts promotional markdowns or stacked coupons from the original retail price to find the discounted subtotal. It then multiplies that subtotal by your local sales tax rate to determine exact final checkout cost.'
+			},
 		],
 		relatedSlugs: ['tip-calculator', 'percentage-calculator', 'percentage-difference'],
 		content: makeContent(
-			'The discount calculator helps shoppers evaluate real savings during promotional sales and clearance events. Check discount prices, coupon markdowns, and final register costs with sales tax accounted for in real time.',
+			'This free discount calculator with tax helps shoppers calculate real markdowns, promotional coupon savings, and final register costs with local sales tax applied in real time.',
 			'The calculator subtracts the markdown percentage from the original price, then applies local sales tax to the discounted subtotal.',
 			'Formula: Discounted Price = Original Price × (1 – Discount % / 100); Final Price = Discounted Price × (1 + Sales Tax % / 100).',
 			[
@@ -530,11 +534,11 @@ const calculators: CalculatorConfig[] = [
 		),
 	},
 	{
-		metaTitle: 'Salary Calculator — Take Home Pay & Paycheck Calculator',
+		metaTitle: 'Wage Rate Calculator: Salary Pay Tool · ToolsCastle',
 		slug: 'salary-calculator',
-		title: 'Salary Calculator & Take Home Pay Calculator',
+		title: 'Wage Rate Calculator & Salary Calculator Tool',
 		category: 'Finance',
-		metaDescription: 'Free online salary calculator and paycheck calculator. Compute take home pay, annual wage, monthly earnings, gross income, and hourly payroll conversion.',
+		metaDescription: 'Free wage rate calculator and salary calculator tool. Convert hourly wages to annual pay, job salary earnings, overtime, and compensation structures.',
 		inputs: [
 			{ id: 'hourlyWage', label: 'Hourly base wage', type: 'number', min: 1, step: 0.5, defaultValue: 32.5, unit: '$/hr', prefix: '$', suffix: '$/hr', colSpan: 'half' },
 			{ id: 'hoursPerWeek', label: 'Hours worked per week', type: 'number', min: 1, max: 100, step: 1, defaultValue: 40, unit: 'hrs', suffix: 'hrs/wk', colSpan: 'half' },
@@ -598,22 +602,22 @@ const calculators: CalculatorConfig[] = [
 		],
 		faq: [
 			{
-				question: 'How does an annual salary calculator compute take home pay and gross wage?',
-				answer: 'Our salary calculator multiplies your base hourly rate by hours worked per week and annual paid weeks (typically 52), breaking down compensation into annual income, monthly pay, and bi-weekly paycheck figures.'
+				question: 'How does this salary calculator tool convert hourly wage rates to annual salary?',
+				answer: 'Our wage rate calculator multiplies your hourly base rate by your regular weekly working hours and annual paid weeks (typically 52). It also incorporates weekly overtime hours paid at time-and-a-half (1.5x) and annual bonus incentives to provide an exact compensation structure.'
 			},
 			{
-				question: 'What is the difference between gross income and take home pay?',
-				answer: 'Gross income represents total earnings before any payroll withholding. Take home pay (net income) is the actual wage received after statutory tax deductions and social contributions.'
+				question: 'How do I use this job salary calculator to compare employment offers?',
+				answer: 'Enter the proposed hourly wage or compute an annual salary equivalent. This salary wage calculator breaks down compensation into daily, weekly, bi-weekly (26 paychecks), and monthly gross income figures so you can evaluate contract vs. full-time jobs accurately.'
 			},
 			{
-				question: 'How do I convert an hourly wage to an annual salary?',
-				answer: 'Multiply your hourly pay rate by weekly working hours (e.g. 40 hours) and total working weeks per year (typically 52 weeks). For example, $32.50/hr × 40 hrs × 52 weeks = $67,600 annual salary.'
+				question: 'How do tax deductions affect take-home pay on an annual salary?',
+				answer: 'Gross salary reflects total earnings before deductions. For detailed tax deduction calculations including federal brackets, state taxes, and FICA withholdings, explore our USA IRS Tax Calculator or our country-specific tax calculator suite.'
 			},
 		],
 		relatedSlugs: ['tip-calculator', 'mortgage-calculator', 'compound-interest-calculator'],
 		content: makeContent(
-			'This salary calculator and paycheck calculator provides complete compensation analysis, converting hourly wages into gross annual salary, monthly earnings, and take home pay estimates. Perfect for evaluating job offers, understanding payroll deductions, and planning household budgets.',
-			'The salary wage engine multiplies your contracted hourly rate by weekly working hours and annual paid weeks, generating a full breakdown across all standard payroll payment frequencies.',
+			'This free online wage rate calculator and salary calculator tool converts hourly wages into gross annual salary, monthly earnings, and bi-weekly pay. Whether you need a job salary calculator to evaluate employment offers or a salary wage calculator to plan overtime compensation structures, this tool delivers instant, accurate payroll conversions.',
+			'The salary calculator tool multiplies your contracted hourly wage rate by weekly working hours and annual paid weeks, generating a full breakdown across all standard payroll payment frequencies. For statutory deductions, consult our dedicated tax calculator directory.',
 			'Formula: Annual Salary = Hourly Wage × Hours per Week × Weeks per Year; Monthly Pay = Annual Salary ÷ 12; Bi-Weekly Pay = Annual Salary ÷ 26.',
 			[
 				{ title: 'Full-Time $32.50/hr', description: '40 hours per week, 52 paid weeks.', values: { hourlyWage: 32.5, hoursPerWeek: 40, weeksPerYear: 52 }, result: '$67,600 / year' },
@@ -622,11 +626,11 @@ const calculators: CalculatorConfig[] = [
 		),
 	},
 	{
-		metaTitle: 'Auto Loan Calculator — Car Payment & Vehicle Finance Calculator',
+		metaTitle: 'Vehicle Loan Calculator: Auto Loan Tool · ToolsCastle',
 		slug: 'auto-loan-calculator',
-		title: 'Auto Loan Calculator & Vehicle Finance Calculator',
+		title: 'Vehicle Loan Calculator & Automobile Loan Calculator',
 		category: 'Finance',
-		metaDescription: 'Free online auto loan calculator to compute loan payments, vehicle finance rates, car interest charges, down payments, and monthly loan payment schedules.',
+		metaDescription: 'Free vehicle loan calculator to compute monthly car payments, vehicle loan interest rates, down payments, and automobile loan amortization schedules.',
 		inputs: [
 			{ id: 'vehiclePrice', label: 'Vehicle purchase price', type: 'number', min: 1000, step: 500, defaultValue: 28000, unit: '$', prefix: '$', colSpan: 'half' },
 			{ id: 'downPayment', label: 'Cash down payment', type: 'number', min: 0, step: 500, defaultValue: 4000, unit: '$', prefix: '$', colSpan: 'half' },
@@ -701,22 +705,30 @@ const calculators: CalculatorConfig[] = [
 		],
 		faq: [
 			{
-				question: 'How do I compute auto loan payments and interest charges?',
-				answer: 'Our auto loan payment calculator calculates your exact monthly payment by amortizing the financed amount (vehicle sticker price minus down payment and trade-in value) over your loan term at the contracted APR.'
+				question: 'How does this vehicle loan calculator compute monthly car payments and interest?',
+				answer: 'Our vehicle loan interest calculator determines your exact monthly payment by amortizing the financed automobile loan balance over your chosen loan duration. It factors in vehicle purchase price, down payment, trade-in allowance, sales tax, and annual percentage rate (APR) to calculate car loans accurately.'
 			},
 			{
-				question: 'How do down payment and trade-in credit reduce my car loan costs?',
-				answer: 'Down payments and trade-in credits directly lower the net principal financed, reducing your monthly payment and total lifetime vehicle loan interest expenses.'
+				question: 'How do cash down payments and trade-in credits affect my vehicle car loan calculator results?',
+				answer: 'Down payments and trade-in credits directly lower your net financed principal. Using an online car loan calculator before visiting a dealership shows how an extra $1,000 down reduces your monthly payment and saves hundreds in vehicle loan interest charges over the life of the loan.'
 			},
 			{
-				question: 'What is the recommended duration on an auto loan calculator?',
-				answer: 'Typical auto loan terms range from 36 to 60 months (3 to 5 years). Shorter terms have higher monthly payments but save significantly on vehicle loan interest charges compared to 72 or 84-month terms.'
+				question: 'What loan term should I choose on an auto vehicle loan calculator?',
+				answer: 'Typical automobile financing terms span 36 to 72 months. Shorter 36-to-48 month terms have higher monthly payments but substantially lower total interest, whereas longer 60-to-72 month terms lower monthly payments but increase total finance charges.'
+			},
+			{
+				question: 'Can I calculate auto loan rate options for new vs. used cars?',
+				answer: 'Yes. Use this auto loan online calculator to compare financing offers across different APR tiers. New vehicle loan calculator rates typically range from 4.5% to 7.0%, while used car financing rates may range from 7.0% to 11.0% depending on your credit profile.'
+			},
+			{
+				question: 'How does a vehicle APR calculator differ from a mortgage or simple interest calculator?',
+				answer: 'While all amortizing loans use standard payment formulas, vehicle financing incorporates vehicle sales tax, dealer documentation fees, and trade-in equity. If you are comparing broader borrowing options, explore our mortgage calculator or simple interest calculator.'
 			},
 		],
 		relatedSlugs: ['mortgage-calculator', 'compound-interest-calculator', 'simple-interest-calculator'],
 		content: makeContent(
-			'This auto loan calculator and vehicle finance calculator helps you estimate monthly car payments, evaluate dealership financing offers, and compute total loan costs. Adjust cash down payments, trade-in values, sales tax, and interest rates to plan an affordable auto loan payment.',
-			'The vehicle loan calculator subtracts your down payment and trade-in value from the purchase price to calculate the net financed principal, then applies standard amortization across the chosen loan duration.',
+			'This free online vehicle loan calculator and loan calculator for automobile purchases helps you calculate monthly car payments, compare dealership financing offers, and evaluate total interest charges. Whether you need an auto vehicle loan calculator for a new purchase or want to calculate auto loan rate options with trade-in credits, this tool delivers instant, accurate payment breakdowns.',
+			'The vehicle car loan calculator subtracts your down payment and trade-in credit from the purchase price to determine the net principal financed. As an automotive loan calculator, it computes monthly loan amortization and shows how extra principal payments reduce your overall vehicle interest charges.',
 			'Formula: Net Financed Principal = Purchase Price – Down Payment – Trade-In + Taxes & Fees; Monthly Payment = P [ i(1 + i)^n ] / [ (1 + i)^n – 1 ].',
 			[
 				{ title: 'New Sedan Purchase', description: '$28,000 car with $4,000 down and $2,000 trade-in at 5.9% for 5 years.', values: { vehiclePrice: 28000, downPayment: 4000, tradeIn: 2000, interestRate: 5.9, loanTermYears: 5 }, result: '$424.32 / month' },
@@ -829,11 +841,11 @@ const calculators: CalculatorConfig[] = [
 	// EDUCATION & GRADES (4 Calculators)
 	// ==========================================
 	{
-		metaTitle: 'GPA Calculator — College GPA & Grading Calculator Online',
+		metaTitle: 'Academic Calculator: GPA & Grade Average · ToolsCastle',
 		slug: 'gpa-calculator',
-		title: 'GPA Calculator & Grading Calculator',
+		title: 'Academic Calculator & College GPA Calculator',
 		category: 'Education',
-		metaDescription: 'Free online GPA calculator and grading calculator. Calculate weighted semester grade point average across courses and credit hours on 4.0, 5.0, or 10.0 scales.',
+		metaDescription: 'Free academic calculator and GPA calculator. Calculate weighted semester grade point averages across college courses and credit hours with instant reports.',
 		inputs: [
 			{ id: 'course1Grade', label: 'Course 1 grade points', type: 'number', min: 0, max: 100, step: 0.01, placeholder: 'e.g. 3.75', defaultValue: 3.7, unit: 'pts', colSpan: 'half', helpText: 'Grade points earned (e.g. 3.7 on 4.0 scale)' },
 			{ id: 'course1Credits', label: 'Course 1 credits', type: 'number', min: 0.5, max: 30, step: 0.5, placeholder: 'e.g. 3', defaultValue: 3, unit: 'credits', suffix: 'credits', colSpan: 'half' },
@@ -917,6 +929,10 @@ const calculators: CalculatorConfig[] = [
 			{ id: 'academicStanding', name: 'Academic Standing & Honors', description: 'Institutional benchmarks for semester academic distinction.', whyItMatters: 'Dean\'s list, honors standing, and graduation distinctions are defined by your specific academic standard.', typicalRange: 'Institution specific' },
 		],
 		faq: [
+			{
+				question: 'How does an academic calculator calculate semester GPA?',
+				answer: 'An academic calculator multiplies each course grade point by its earned credit hours, sums all quality points, and divides by total course credits to yield an exact weighted grade point average.'
+			},
 			{
 				question: 'How is weighted GPA calculated across different courses?',
 				answer: 'Weighted GPA multiplies each course’s numeric grade point by its credit weight, sums all quality points, and divides by total completed credits: GPA = Σ(Grade Points × Credits) ÷ Total Credits.'
@@ -1060,11 +1076,11 @@ const calculators: CalculatorConfig[] = [
 		),
 	},
 	{
-		metaTitle: 'Percentage Calculator — Free Math Calculator & Percentage Tool',
+		metaTitle: 'Quick Math Percentage Calculator Tool · ToolsCastle',
 		slug: 'percentage-calculator',
-		title: 'Percentage Calculator & Math Tool',
+		title: 'Percentage Calculator & Quick Math Calculator',
 		category: 'Math',
-		metaDescription: 'Free online percentage calculator and math calculator. Calculate percentages, parts of whole numbers, ratio proportions, and verify calculations with our instant math checker.',
+		metaDescription: 'Free quick math percentage calculator. Calculate percentages, convert percentage as fraction, and compute proportions with instant math formula breakdown.',
 		inputs: [
 			{ id: 'part', label: 'Part / Score', type: 'number', min: 0, step: 0.01, defaultValue: 42, unit: 'units', colSpan: 'half', helpText: 'Numerator or portion' },
 			{ id: 'whole', label: 'Whole / Total', type: 'number', min: 0.01, step: 0.01, defaultValue: 50, unit: 'units', colSpan: 'half', helpText: 'Denominator or total available' },
@@ -1134,6 +1150,10 @@ const calculators: CalculatorConfig[] = [
 		],
 		faq: [
 			{
+				question: 'How does this percentage as fraction calculator work?',
+				answer: 'Our percentage as fraction calculator automatically finds the greatest common divisor between the part and whole, displaying the exact simplified fraction alongside decimal and percentage equivalents.'
+			},
+			{
 				question: 'What is the standard percentage calculator formula?',
 				answer: 'The standard percentage calculator formula is: Percentage = (Part ÷ Whole) × 100. This determines what portion one number is of another.'
 			},
@@ -1153,11 +1173,11 @@ const calculators: CalculatorConfig[] = [
 		),
 	},
 	{
-		metaTitle: 'Grade Calculator & Grading Calculator — Test Score & Marks Converter',
+		metaTitle: 'Grades Calculator: Enter Score Calculator · ToolsCastle',
 		slug: 'grade-calculator',
-		title: 'Grade Calculator & Grading Calculator',
+		title: 'Grades Calculator & Enter Score Calculator',
 		category: 'Education',
-		metaDescription: 'Free grading calculator and score calculator. Convert test marks and raw exam scores into course percentages, letter grades, and academic standing.',
+		metaDescription: 'Free grades calculator and score calculator. Enter score and marks to compute percentages, letter grades, and GPA standing instantly with report details.',
 		inputs: [
 			{ id: 'marks', label: 'Marks obtained', type: 'number', min: 0, step: 0.5, placeholder: 'e.g. 80', defaultValue: 80, unit: 'marks', colSpan: 'half' },
 			{ id: 'totalMarks', label: 'Total marks available', type: 'number', min: 1, step: 0.5, placeholder: 'e.g. 100', defaultValue: 100, unit: 'marks', colSpan: 'half' },
@@ -1259,6 +1279,10 @@ const calculators: CalculatorConfig[] = [
 			{ id: 'curvePoints', name: 'Extra Credit / Curve', description: 'Optional adjustment points added directly to raw score.', whyItMatters: 'Directly elevates your total marks earned when awarded by the instructor.', typicalRange: '0 to 15 pts' },
 		],
 		faq: [
+			{
+				question: 'How do I use this enter score calculator?',
+				answer: 'Simply enter score marks obtained and total marks available. The grades calculator instantly computes your percentage score, letter grade (A-F), and 4.0 GPA scale equivalent.'
+			},
 			{
 				question: 'Does this grade calculator assume a specific grading scale?',
 				answer: 'No. The universal calculation Percentage = (Marks ÷ Total Marks) × 100 operates independently of any grading scale. You can select specific academic standards (US 4.0, Canadian OMSAS, UK Honours, or Custom) to view applicable letter grade and GPA equivalents.'
@@ -1733,11 +1757,11 @@ const calculators: CalculatorConfig[] = [
 		),
 	},
 	{
-		metaTitle: 'Ratio Calculator — Solve & Simplify Ratios Online',
+		metaTitle: 'Simplify Ratio Calculator: Proportions · ToolsCastle',
 		slug: 'ratio-calculator',
-		title: 'Ratio Calculator',
+		title: 'Simplify Ratio Calculator & Proportion Solver',
 		category: 'Math',
-		metaDescription: 'Free ratio calculator to simplify ratios, scale quantities, and compute proportions with our fast math calculator tool.',
+		metaDescription: 'Free simplify ratio calculator and proportion solver. Simplify ratios, scale quantities, and compute proportions with exact instant math breakdowns.',
 		inputs: [
 			{ id: 'partA', label: 'First quantity (A)', type: 'number', step: 0.01, defaultValue: 18, unit: 'units' },
 			{ id: 'partB', label: 'Second quantity (B)', type: 'number', min: 0.001, step: 0.01, defaultValue: 24, unit: 'units' },
@@ -1749,6 +1773,7 @@ const calculators: CalculatorConfig[] = [
 		},
 		resultFormat: (value) => `${formatNumber(value)} : 1`,
 		faq: [
+			{ question: 'How do I use this simplify ratio calculator?', answer: 'Enter the two quantities (A and B). The simplify ratio calculator divides A by B to display the normalized ratio relative to 1 unit.' },
 			{ question: 'How is the ratio displayed?', answer: 'It displays the proportional value of A relative to 1 unit of B.' },
 		],
 		relatedSlugs: ['fraction-calculator', 'percentage-difference', 'average-calculator'],
@@ -1762,11 +1787,11 @@ const calculators: CalculatorConfig[] = [
 		),
 	},
 	{
-		metaTitle: 'Fraction Calculator — Fraction to Decimal & Percentage Tool',
+		metaTitle: 'Fraction Calculator: Percentage as Fraction · ToolsCastle',
 		slug: 'fraction-calculator',
-		title: 'Fraction Calculator',
+		title: 'Fraction Calculator & Percentage as Fraction Tool',
 		category: 'Math',
-		metaDescription: 'Free fraction calculator to convert fractions into decimals and percentages instantly with clean numerical breakdowns.',
+		metaDescription: 'Free fraction calculator & percentage as fraction tool. Convert fractions into decimals and percentages instantly with step-by-step math breakdowns.',
 		inputs: [
 			{ id: 'numerator', label: 'Numerator (top number)', type: 'number', step: 1, defaultValue: 3, unit: 'parts' },
 			{ id: 'denominator', label: 'Denominator (bottom number)', type: 'number', min: 0.001, step: 1, defaultValue: 4, unit: 'parts' },
@@ -1778,6 +1803,7 @@ const calculators: CalculatorConfig[] = [
 		},
 		resultFormat: (value) => `${formatNumber(Number(value))} (${formatNumber(Number(value) * 100)}%)`,
 		faq: [
+			{ question: 'How does this percentage as fraction calculator convert numbers?', answer: 'The fraction calculator divides the numerator by the denominator to generate the exact decimal value, and multiplies by 100 for the percentage equivalent.' },
 			{ question: 'What does this fraction calculator output?', answer: 'It provides both decimal and equivalent percentage representations simultaneously.' },
 		],
 		relatedSlugs: ['ratio-calculator', 'percentage-calculator', 'average-calculator'],
@@ -2051,11 +2077,11 @@ const calculators: CalculatorConfig[] = [
 	// CONVERTERS & UNITS (5 Calculators)
 	// ==========================================
 	{
-		metaTitle: 'Currency Converter — Live Currency Exchange Rates & Forex Calculator',
+		metaTitle: 'Currency Converter Calculator & FX Rates · ToolsCastle',
 		slug: 'currency-converter',
-		title: 'Currency Converter & Exchange Rate Calculator',
+		title: 'Currency Converter Calculator & FX Exchange Rate Calculator',
 		category: 'Converters',
-		metaDescription: 'Free online currency converter and exchange rate calculator. Convert foreign currencies with real-time currency exchange rates, live forex calculators, and instant money converter tools.',
+		metaDescription: 'Free currency converter calculator with live FX exchange rate calculator data. Convert 160+ world currencies instantly with real-time foreign market rates.',
 		inputs: [
 			{ id: 'amount', label: 'Amount', type: 'number', min: 0, step: 1, defaultValue: 100, unit: 'val' },
 			{
@@ -2114,6 +2140,10 @@ const calculators: CalculatorConfig[] = [
 		resultFormat: (value) => `${formatNumber(Number(value))} Converted`,
 		faq: [
 			{
+				question: 'How do I use this currency converter calculator?',
+				answer: 'Select your source currency and target currency, enter the amount, and our live FX exchange rate calculator instantly computes the converted value using current mid-market rates.'
+			},
+			{
 				question: 'How often are currency exchange rates updated?',
 				answer: 'Our free currency converter uses updated daily central bank exchange rates to estimate live market conversion values.'
 			},
@@ -2134,11 +2164,11 @@ const calculators: CalculatorConfig[] = [
 		),
 	},
 	{
-		metaTitle: 'Length Converter — Unit Converter & Distance Conversion Calculator',
+		metaTitle: 'Distance Conversion Calculator & Unit Tool · ToolsCastle',
 		slug: 'length-converter',
-		title: 'Length Converter & Unit Converter',
+		title: 'Distance Conversion Calculator & Length Unit Converter',
 		category: 'Converters',
-		metaDescription: 'Free length converter and unit converter calculator. Convert metric and imperial distances across meters, feet, inches, kilometers, miles, and size converter units.',
+		metaDescription: 'Free distance conversion calculator and length tool. Convert metric and imperial distances across meters, feet, inches, kilometers, and miles instantly.',
 		inputs: [
 			{ id: 'value', label: 'Measurement value', type: 'number', min: 0, step: 0.01, defaultValue: 10, unit: 'val' },
 			{
@@ -2184,6 +2214,10 @@ const calculators: CalculatorConfig[] = [
 			),
 		resultFormat: (value) => String(value),
 		faq: [
+			{
+				question: 'How do I use this distance conversion calculator?',
+				answer: 'Select your starting measurement unit, enter your value, and pick your target distance unit. The distance conversion calculator instantly converts between metric and imperial scales with high decimal accuracy.'
+			},
 			{
 				question: 'How does this unit converter calculator switch between metric and imperial?',
 				answer: 'Our metric to imperial calculator normalizes values to standard SI base meters before applying exact destination conversion factors.'

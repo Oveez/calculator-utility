@@ -10,8 +10,12 @@ export const atProfile: CountryTaxProfile = {
   defaultTaxYear: '2026',
   availableTaxYears: ['2026', '2025'],
   hasRegionalTax: false,
-  metaDescription: 'Calculate Austrian income tax (Einkommensteuer / Lohnsteuer), social insurance (SV ~18.12%), and net salary with official 2026 BMF inflation-adjusted brackets (€13,539 Grundfreibetrag).',
+  metaDescription: 'Free salary calculator Austria & gross to net calculator. Compute Austrian net take-home pay, SV insurance, and official 2026 BMF progressive tax brackets.',
   faqItems: [
+    {
+      question: 'How does the Austria gross to net calculation work for 2026 salaries?',
+      answer: 'This Austrian salary calculator converts gross earnings to net take-home pay by first deducting employee social insurance (Sozialversicherung at ~18.12% up to the Höchstbeitragsgrundlage of €82,200). It then applies the 2026 BMF progressive tax brackets after the €13,539 tax-free basic allowance (Grundfreibetrag), factoring in standard 13th and 14th month special payments (Urlaubszuschuss & Weihnachtsgeld).',
+    },
     {
       question: 'What is the tax-free basic allowance (Grundfreibetrag) in Austria for 2026?',
       answer: 'For 2026, annual income up to €13,539 is taxed at 0% (Grundfreibetrag adjusted for kalte Progression).',

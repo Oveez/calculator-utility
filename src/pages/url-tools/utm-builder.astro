@@ -3,19 +3,27 @@ import SiteLayout from '../../layouts/SiteLayout.astro';
 import Icon from '../../components/Icon.astro';
 import { siteName, toAbsoluteUrl, withBasePath } from '../../utils/site';
 
-const pageTitle = `Google Analytics UTM Builder — Free Campaign URL Maker · ${siteName}`;
-const pageDesc = 'Create tracking URLs for Google Analytics 4 (GA4), marketing campaigns, newsletters, and social media ads with utm_source, utm_medium, and utm_campaign tags.';
+const pageTitle = `UTM Campaign Creator — Free UTM URL Maker · ${siteName}`;
+const pageDesc = 'Free UTM campaign creator and UTM url maker. Build custom tracking links with utm parameter creator tags for Google Analytics GA4 and campaign ads.';
 const canonicalUrl = toAbsoluteUrl('/url-tools/utm-builder/');
 
 const breadcrumbItems = [
   { label: 'Home', href: toAbsoluteUrl('/') },
-  { label: 'UTM Builder' },
+  { label: 'UTM Campaign Creator' },
 ];
 
 const schemaFaq = [
   {
-    question: 'What are UTM parameters and why are they used?',
-    answer: 'UTM (Urchin Tracking Module) parameters are 5 standard query tags added to URLs to track marketing campaign performance in Google Analytics: Source, Medium, Campaign, Term, and Content.',
+    question: 'What is a UTM campaign creator and why use a UTM URL maker?',
+    answer: 'A UTM campaign creator and UTM URL maker attaches 5 standardized query tags (source, medium, campaign, term, content) to your web links so Google Analytics 4 (GA4) can track where your marketing traffic originates.',
+  },
+  {
+    question: 'How does this UTM parameter creator handle campaign source and medium?',
+    answer: 'This online UTM code builder formats utm_source (e.g., newsletter, google) and utm_medium (e.g., email, cpc) according to Google Analytics URL conventions, stripping errant spaces and avoiding duplicate question marks.',
+  },
+  {
+    question: 'Can I parse or inspect existing tracking links?',
+    answer: 'Yes. If you already have a tagged URL and want to extract or audit its query parameters, use our companion <a href="/url-tools/utm-parser/" class="text-[color:var(--accent)] font-semibold hover:underline">UTM Parser Tool</a>.',
   },
 ];
 
@@ -177,10 +185,10 @@ const schemaGraph = [
     <!-- Description Section -->
     <header class="space-y-3">
       <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-[color:var(--fg)]">
-        Google Analytics UTM Campaign Builder
+        UTM Campaign Creator &amp; UTM URL Maker
       </h1>
       <p class="max-w-3xl text-sm sm:text-base leading-relaxed text-[color:var(--muted)]">
-        Generate standard tracking links for Google Analytics 4, email blasts, paid search, and social media campaigns.
+        Create custom campaign tracking links with our free UTM campaign creator and UTM URL maker. Add essential tags like campaign source, medium, and name with this online UTM parameter creator for Google Analytics 4 (GA4).
       </p>
     </header>
 
@@ -194,9 +202,7 @@ const schemaGraph = [
               <span>{faq.question}</span>
               <span class="text-xs text-[color:var(--muted)] group-open:rotate-180 transition-transform">▼</span>
             </summary>
-            <p class="mt-3 text-xs sm:text-sm leading-relaxed text-[color:var(--muted)]">
-              {faq.answer}
-            </p>
+            <p class="mt-3 text-xs sm:text-sm leading-relaxed text-[color:var(--muted)]" set:html={faq.answer} />
           </details>
         ))}
       </div>

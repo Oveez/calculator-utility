@@ -12,8 +12,8 @@ export const allToolsIndex: ToolIndexItem[] = [
   { title: 'Simple Interest Calculator', category: 'Finance', url: '/calculators/simple-interest-calculator/', desc: 'Calculate interest on short-term promissory notes and loans.' },
   { title: 'Tip & Bill Split Calculator', category: 'Finance', url: '/calculators/tip-calculator/', desc: 'Calculate tip percentages, total dining bills, and per-person splits.' },
   { title: 'Discount & Sales Tax Calculator', category: 'Finance', url: '/calculators/discount-calculator/', desc: 'Compute clearance discounts, net savings, and sales tax totals.' },
-  { title: 'Salary & Wage Calculator', category: 'Finance', url: '/calculators/salary-calculator/', desc: 'Take home pay calculator to convert hourly wages to annual and paycheck totals.' },
-  { title: 'Auto Loan Calculator', category: 'Finance', url: '/calculators/auto-loan-calculator/', desc: 'Auto loan payment calculator to estimate vehicle financing and loan payments.' },
+  { title: 'Wage Rate & Salary Calculator', category: 'Finance', url: '/calculators/salary-calculator/', desc: 'Wage rate calculator and salary calculator tool to convert hourly wages to annual pay.' },
+  { title: 'Vehicle Loan Calculator', category: 'Finance', url: '/calculators/auto-loan-calculator/', desc: 'Free online vehicle loan calculator and automobile loan payment calculator for car financing.' },
   { title: 'Investment Growth Calculator', category: 'Finance', url: '/calculators/investment-calculator/', desc: 'Online investment calculator and finance calculator for long-term compound growth.' },
 
   // 2. Education (4)

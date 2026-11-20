@@ -4,18 +4,22 @@ import Icon from '../../components/Icon.astro';
 import CalculatorParameterGuide from '../../components/calculator/CalculatorParameterGuide.astro';
 import { siteName, toAbsoluteUrl, withBasePath } from '../../utils/site';
 
-const pageTitle = `Regex Tester & Debugger — Free Online Regular Expression Matcher · ${siteName}`;
-const pageDesc = 'Live regular expression tester with real-time match highlighting, capture groups breakdown, substitution preview, flag selectors (g, i, m, s, u, y), and regex cheatsheet.';
+const pageTitle = `Regex Calculator & Regular Expression Tester · ${siteName}`;
+const pageDesc = 'Free online regex calculator and regex test tool. Real-time regex pattern checker with match highlighting, capture groups, and replacement substitution.';
 const canonicalUrl = toAbsoluteUrl('/developer-tools/regex-tester/');
 
 const breadcrumbItems = [
   { label: 'Home', href: toAbsoluteUrl('/') },
-  { label: 'Regex Tester' },
+  { label: 'Regex Calculator' },
 ];
 
 const schemaFaq = [
   {
-    question: 'What regular expression flags are supported?',
+    question: 'How does this regex calculator and regex test tool evaluate patterns?',
+    answer: 'This online regex test tool and pattern checker runs standard ECMAScript regular expressions against your test strings in real time, calculating match count, capturing groups, and executing substitution strings instantaneously.',
+  },
+  {
+    question: 'What regular expression flags are supported in this regex matcher?',
     answer: 'This tester supports standard ECMAScript regex flags: Global (g) for all matches, Case-Insensitive (i), Multiline (m) where ^ and $ match line boundaries, DotAll (s) allowing . to match newlines, Unicode (u) for full UTF-16 surrogate pairs, and Sticky (y) for matching strictly at the lastIndex position.',
   },
   {
@@ -23,8 +27,8 @@ const schemaFaq = [
     answer: 'Any unescaped parentheses (e.g. `(\\w+)@(\\w+\\.\\w+)`) create numbered capture groups ($1, $2). Named capture groups `(?<name>...)` are also parsed. The tool automatically lists each capture group and its extracted substring for every match found.',
   },
   {
-    question: 'Can I test regex string replacement and substitutions?',
-    answer: 'Yes. Enter a replacement string in the Substitution panel using tokens like $1, $2, or $& (entire match) to see an instant real-time preview of the substituted output text.',
+    question: 'How do I safely escape literal strings before regex matching?',
+    answer: 'If you have user input containing special metacharacters like dots, brackets, or plus signs, use our companion <a href="/developer-tools/regex-escape/" class="text-[color:var(--accent)] font-semibold hover:underline">Regex Escape Tool</a> to escape them safely.',
   },
 ];
 
@@ -307,10 +311,10 @@ const schemaGraph = [
     <!-- Description Section -->
     <header class="space-y-3">
       <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-[color:var(--fg)]">
-        Regex Tester &amp; Debugger
+        Regex Calculator, Pattern Checker &amp; Test Tool
       </h1>
       <p class="max-w-3xl text-sm sm:text-base leading-relaxed text-[color:var(--muted)]">
-        Test JavaScript regular expressions in real-time. Highlights matched boundaries, inspects capture groups, previews string replacements, and diagnoses pattern syntax errors instantly.
+        Test regular expressions online with our free regex calculator and regex test tool. This live regex pattern checker and regex matcher provides real-time match highlighting, capture group extraction, and instant substitution previews.
       </p>
     </header>
 
@@ -395,9 +399,7 @@ const schemaGraph = [
               <span>{faq.question}</span>
               <span class="text-xs text-[color:var(--muted)] group-open:rotate-180 transition-transform">&#9660;</span>
             </summary>
-            <p class="mt-3 text-xs sm:text-sm leading-relaxed text-[color:var(--muted)]">
-              {faq.answer}
-            </p>
+            <p class="mt-3 text-xs sm:text-sm leading-relaxed text-[color:var(--muted)]" set:html={faq.answer} />
           </details>
         ))}
       </div>

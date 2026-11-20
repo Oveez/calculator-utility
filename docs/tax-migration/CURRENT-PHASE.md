@@ -1,11 +1,20 @@
 # Current Phase
 
-**Currently Active Phase:** FULL PLATFORM RELEASE COMPLETE — MODERN SAAS LANDING PAGE ARCHITECTURE DEPLOYED
+**Currently Active Phase:** SEO ON-PAGE OPTIMIZATION COMPLETE (BATCHES 1–4 ACROSS 28 CLUSTERS) — BUILD & TESTS 100% PASSING
 
 ## Objective
-Elevate the platform from an old-fashioned tool directory to a modern SaaS landing page (featuring an interactive live computation playground, 4 flagship superpower suites, privacy architecture comparisons, and an illustrated research hub) while preserving the full 186-tool directory at `/all-tools/`.
+Execute structured, SEO-safe on-page optimization across existing tool pages using `ranked_potential_keywords.csv` across Tier 1, Tier 2, and Tier 3 search opportunities while preserving all URL slugs, routing, calculation logic, and responsive UI.
 
 ## Completed Milestones
+- [x] **SEO On-Page Optimization (Batches 1–4):**
+  - **Batch 1 (Vehicle / Auto Loan Calculator):** CTR and striking-distance push across 37 keywords in `src/data/calculators.ts`, `src/data/allToolsIndex.ts`, and `src/pages/calculators/[slug].astro`.
+  - **Batch 2 (Tier 1 Country Tax & Salary Calculators):** CTR optimization (Title 50–60 chars, Meta Description 140–155 chars, H1/intro alignment, and custom FAQs) for Italy, Austria, Netherlands, Canada, and United States.
+  - **Batch 3 (General Tax & Supporting Country Tax Pages):** Striking-distance and supporting depth for Discount Calculator With Tax, Wage Rate & Salary Calculator, Hourly-to-Salary, Salary-to-Hourly, Poland, Ireland, Singapore, Germany, Japan, and Spain.
+  - **Batch 4 (Developer, Marketing, Text, Image, Shipping, Academic & Math Tools):** Complete optimization across UTM Builder, Regex Escaper & Tester, PDF Merger, Empty Line Remover, Lorem Ipsum Generator, Image Color Picker, Fresher Resume Maker, ISBN Citation Generator, Dimensional Weight (SmartPost), Volumetric Weight (Freight), Realtor Commission, JSON Diff, Currency Converter, Percentage Calculator, Ratio Calculator, Fraction Calculator, Coefficient of Variation (RSD vs CV), Standard Error (SEM), Attendance Calculator, Study Hours Calculator, Credit Hour Calculator, and Image DPI Checker.
+- [x] **Quality Assurance:**
+  - 162/162 Vitest unit tests pass 100% green across 27 suites.
+  - 208 static routes compiled cleanly in Astro with zero build errors.
+  - Zero URL slugs or canonical links modified; zero calculator math engines altered.
 - [x] **Modern SaaS Landing Page (`src/pages/index.astro`):**
   - Integrated animated dotted castle logo hero banner with quick launcher chips.
   - Implemented interactive in-browser Playground Dock with 4 live reactive tabs: Live Currency Converter, Standard Keypad Calculator, Mortgage & Loan Estimator, and Take-Home Salary Estimator.

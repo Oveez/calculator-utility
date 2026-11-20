@@ -13,6 +13,10 @@ export const sgProfile: CountryTaxProfile = {
   metaDescription: 'Calculate Singapore individual resident income tax, employee CPF contributions ($8,000/mo cap), and take-home pay with official IRAS / CPF Board 2026 data.',
   faqItems: [
     {
+      question: 'Does IRAS have a Singapore tax calculator for non residents?',
+      answer: 'Non-residents staying or working in Singapore for 61 to 182 days in a calendar year are taxed at a flat 15% rate on employment income or the progressive resident rate (without personal reliefs), whichever results in a higher tax amount. Director fees and other income are generally taxed at 24% without CPF deductions.',
+    },
+    {
       question: 'What are the individual income tax rates in Singapore for 2026?',
       answer: 'Singapore uses a progressive resident tax system starting at 0% for the first SGD 20,000, progressing up to a top marginal rate of 24% for chargeable income exceeding SGD 1,000,000.',
     },

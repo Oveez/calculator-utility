@@ -10,8 +10,12 @@ export const plProfile: CountryTaxProfile = {
   defaultTaxYear: '2026',
   availableTaxYears: ['2026', '2025'],
   hasRegionalTax: false,
-  metaDescription: 'Calculate Polish PIT income tax (Skala podatkowa 12%/32%), ZUS social insurance (13.71%), and health insurance (9%) with official 2026 KAS / Podatki.gov.pl rates.',
+  metaDescription: 'Calculate income tax Poland (PIT 12%/32%), ZUS social insurance (13.71%), and net take-home salary with official 2026 Podatki.gov.pl progressive brackets.',
   faqItems: [
+    {
+      question: 'How is income tax in Poland calculated for employees in 2026?',
+      answer: 'Income tax Poland uses a two-tier progressive PIT scale (Skala podatkowa): 12% on taxable income up to 120,000 PLN, and 32% on the excess above 120,000 PLN, with a 30,000 PLN tax-free allowance (kwota wolna od podatku) and employee ZUS deductions.',
+    },
     {
       question: 'What is the tax-free allowance (Kwota wolna od podatku) in Poland for 2026?',
       answer: 'The tax-free amount in Poland is 30,000 PLN per year under the progressive tax scale (corresponding to a 12% tax reduction / kwota zmniejszająca podatek of 3,600 PLN).',

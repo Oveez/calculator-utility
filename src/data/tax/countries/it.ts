@@ -11,8 +11,12 @@ export const itProfile: CountryTaxProfile = {
   availableTaxYears: ['2026', '2025'],
   hasRegionalTax: true,
   regionalEntityName: 'Region / Municipality',
-  metaDescription: 'Calculate Italian IRPEF income tax, INPS employee social contributions, and net monthly salary (Stipendio Netto) with official 2026 Agenzia delle Entrate rates (33% second bracket).',
+  metaDescription: 'Free salary calculator Italy: calculate net take-home pay, IRPEF progressive brackets, INPS deductions, and regional surcharges with official 2026 rates.',
   faqItems: [
+    {
+      question: 'How does this Italian tax calculator estimate monthly net salary (stipendio netto)?',
+      answer: 'This salary calculator Italy subtracts mandatory INPS employee pension contributions (9.19%) from your gross annual salary to determine taxable base, computes gross IRPEF across statutory progressive brackets (23%, 33%, and 43%), applies the employment tax credit, and adds regional and municipal surcharges to determine exact net pay across 13 or 14 monthly payments.',
+    },
     {
       question: 'What are the 2026 IRPEF tax brackets in Italy?',
       answer: 'Under the 2026 tax structure, Italy uses 3 IRPEF brackets: Up to €28,000 at 23%; from €28,001 to €50,000 at 33% (reduced from 35%); and over €50,000 at 43%.',
